@@ -15,25 +15,22 @@
   <meta property="og:description" content="Fidelidade total ao escudo e acabamento cinematográfico. Orçamentos pelo WhatsApp.">
   <meta property="og:url" content="https://djohnni.github.io/omascote/">
   <meta property="og:image" content="./opengraph.jpg">
-  <meta property="og:image:width" content="1200">
-  <meta property="og:image:height" content="630">
   <meta name="twitter:card" content="summary_large_image">
 
-  <!-- CSS inline para funcionar mesmo sem estilos.css -->
+  <!-- CSS inline para evitar qualquer problema de caminho -->
   <style>
-    :root { --green:#22c55e; --dark:#0f172a; --muted:#64748b; }
-    *{box-sizing:border-box} html,body{margin:0;padding:0}
-    body{font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Arial,sans-serif; color:#0b1220; line-height:1.6; background:#fff}
-    a{color:#0b5cff; text-decoration:none} a:hover{text-decoration:underline}
-    .topbar{position:sticky;top:0;background:#fff;border-bottom:1px solid #eef2f7; z-index:20}
+    :root { --green:#22c55e; --ink:#0b1220; --muted:#64748b; }
+    *{box-sizing:border-box} html,body{margin:0}
+    body{font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Arial,sans-serif;color:var(--ink);background:#fff;line-height:1.6}
+    a{color:#0b5cff;text-decoration:none} a:hover{text-decoration:underline}
+    .topbar{position:sticky;top:0;background:#fff;border-bottom:1px solid #eef2f7;z-index:10}
     .container{max-width:1100px;margin:0 auto;padding:14px 20px}
     .nav{display:flex;align-items:center;gap:18px}
-    .logo{font-weight:800; letter-spacing:.2px}
+    .logo{font-weight:800}
     .menu{margin-left:auto;display:flex;gap:18px;flex-wrap:wrap}
-    .menu-btn{display:none}
     .hero{padding:28px 0 8px}
     .hero-grid{display:grid;grid-template-columns:1.2fr .8fr;gap:24px;align-items:center}
-    h1{font-size:40px;line-height:1.15;margin:4px 0 12px}
+    h1{font-size:40px;line-height:1.15;margin:6px 0 12px}
     .highlight{color:var(--green)}
     .cta-row{display:flex;gap:12px;margin:14px 0 8px;flex-wrap:wrap}
     .btn{background:var(--green);color:#fff;font-weight:700;padding:12px 18px;border-radius:10px}
@@ -50,23 +47,18 @@
     .muted{color:var(--muted)}
     .footer{border-top:1px solid #eef2f7;margin-top:22px}
     .marca-ia4tube{position:fixed;right:10px;bottom:10px;background:#0b1220;color:#fff;padding:8px 10px;border-radius:10px;font-size:12px;opacity:.82}
-    /* Responsivo */
     @media (max-width:900px){
       .hero-grid{grid-template-columns:1fr}
       h1{font-size:32px}
-      .menu-btn{display:inline-flex;margin-left:auto;background:#f1f5ff;border:1px solid #e2e8f0;padding:6px 10px;border-radius:8px}
-      .menu{display:none;width:100%}
-      .menu.open{display:flex}
     }
   </style>
 </head>
 <body>
   <header class="topbar" role="banner">
     <div class="container nav">
-      <a class="logo" href="/">iA4TUBE</a>
+      <a class="logo" href="/" aria-label="iA4TUBE Home">iA4TUBE</a>
       <small class="powered" aria-label="Produzido por iA4TUBE">Produzido por <strong>iA4TUBE</strong></small>
-      <button class="menu-btn" aria-label="Abrir menu" onclick="document.getElementById('menu').classList.toggle('open')">☰</button>
-      <nav id="menu" class="menu" role="navigation">
+      <nav class="menu" role="navigation">
         <a href="#servicos">Serviços</a>
         <a href="#cases">Portfólio</a>
         <a href="#faq">Dúvidas</a>
@@ -92,8 +84,8 @@
           </ul>
         </div>
         <figure class="hero-card">
-          <!-- herói.jpeg com acento -> usa URL codificada -->
-          <img src="./her%C3%B3i.jpeg" width="600" height="400" alt="Exemplo de mascote 3D cinematográfico criado pela iA4TUBE" loading="eager" />
+          <!-- hero.jpeg (Los Hermanos) -->
+          <img src="./hero.jpeg" width="600" height="400" alt="Exemplo de mascote 3D cinematográfico criado pela iA4TUBE" loading="eager" />
         </figure>
       </div>
     </section>
@@ -122,28 +114,10 @@
       <div class="container">
         <h2>Portfólio recente</h2>
         <div class="grid-cases">
-          <img src="./caso1.png" alt="Mascote de time em 3D" loading="lazy" width="360" height="220">
-          <img src="./caso2.png" alt="Mascote de empresa em 3D" loading="lazy" width="360" height="220">
+          <img src="./case1.png" alt="Mascote de time em 3D" loading="lazy" width="360" height="220">
+          <img src="./case2.png" alt="Mascote de empresa em 3D" loading="lazy" width="360" height="220">
           <img src="./case3.png" alt="Animação curta de mascote" loading="lazy" width="360" height="220">
         </div>
-      </div>
-    </section>
-
-    <section id="faq" class="section">
-      <div class="container">
-        <h2>Dúvidas frequentes</h2>
-        <details>
-          <summary>Quanto tempo leva para entregar?</summary>
-          <p>Imagens 3D costumam sair em 24–48h. Animações, 3–7 dias (depende do briefing).</p>
-        </details>
-        <details>
-          <summary>Vocês respeitam 100% as cores e o escudo?</summary>
-          <p>Sim — fidelidade integral às cores, letras e proporções do escudo enviado.</p>
-        </details>
-        <details>
-          <summary>Como recebo os arquivos?</summary>
-          <p>Enviamos em formatos prontos para Instagram (9:16/1:1) e com fundo transparente quando necessário.</p>
-        </details>
       </div>
     </section>
 
@@ -168,6 +142,5 @@
     // Ano automático no rodapé
     document.getElementById('ano').textContent = new Date().getFullYear();
   </script>
-  <script src="./script.js"></script>
 </body>
 </html>
