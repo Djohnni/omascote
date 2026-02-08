@@ -7,15 +7,32 @@
   <style>
     body{font-family:Arial,Helvetica,sans-serif;background:#0b0f19;color:#fff;margin:0;min-height:100vh;padding:24px}
     .top{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
-    .card{margin-top:18px;max-width:720px;background:#121a2a;border:1px solid #23304d;border-radius:14px;padding:18px}
     h1{margin:0;font-size:24px}
     .sub{opacity:.85;margin:6px 0 0}
+    .row{display:flex;gap:10px;flex-wrap:wrap}
+    button{padding:10px 14px;border:0;border-radius:10px;color:#fff;font-weight:700;cursor:pointer}
+    .btnBlue{background:#4f7cff}
+    .btnRed{background:#ff4f4f}
+    .btnGreen{background:#2ecc71}
+    button:disabled{opacity:.6;cursor:not-allowed}
+
+    .card{margin-top:18px;max-width:860px;background:#121a2a;border:1px solid #23304d;border-radius:14px;padding:18px}
     .meta{display:flex;gap:12px;flex-wrap:wrap;margin-top:10px}
     .pill{background:#0b1222;border:1px solid #2b3a5e;border-radius:999px;padding:8px 12px;font-size:13px;opacity:.95}
-    button{padding:10px 14px;border:0;border-radius:10px;background:#ff4f4f;color:#fff;font-weight:700;cursor:pointer}
-    .linkbtn{background:#4f7cff}
-    .row{display:flex;gap:10px;flex-wrap:wrap}
-    .msg{margin-top:10px;font-size:13px;opacity:.9}
+    .msg{margin-top:10px;font-size:13px;opacity:.92}
+
+    .formGrid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:16px}
+    .full{grid-column:1 / -1}
+    label{display:block;font-size:13px;opacity:.9;margin:0 0 6px}
+    input, textarea{
+      width:100%; box-sizing:border-box;
+      padding:12px;border-radius:10px;border:1px solid #2b3a5e;
+      background:#0b1222;color:#fff;outline:none
+    }
+    input:focus, textarea:focus{border-color:#4f7cff}
+    textarea{min-height:70px;resize:vertical}
+    .hint{font-size:12px;opacity:.7;margin-top:6px}
+    .sep{height:1px;background:#23304d;margin:18px 0}
   </style>
 </head>
 <body>
@@ -25,8 +42,8 @@
       <div class="sub">Seu painel de pedidos</div>
     </div>
     <div class="row">
-      <button class="linkbtn" id="btnTesteMe">Atualizar dados</button>
-      <button id="btnSair">Sair</button>
+      <button class="btnBlue" id="btnAtualizar">Atualizar dados</button>
+      <button class="btnRed" id="btnSair">Sair</button>
     </div>
   </div>
 
@@ -37,6 +54,67 @@
       <div class="pill" id="status">Status: —</div>
     </div>
     <div class="msg" id="msg"></div>
+
+    <div class="sep"></div>
+
+    <h2 style="margin:0;font-size:18px">Criar pedido (Flyer do jogo)</h2>
+    <div class="hint">Preencha os dados e envie. (Depois a gente melhora o design.)</div>
+
+    <form id="pedidoForm" class="formGrid" enctype="multipart/form-data">
+      <div>
+        <label>Rodada / Fase *</label>
+        <input id="rodada" placeholder="Ex: Semi final" required />
+      </div>
+
+      <div>
+        <label>Data do jogo *</label>
+        <input id="dataJogo" placeholder="Ex: 10/02/2026" required />
+      </div>
+
+      <div>
+        <label>Horário *</label>
+        <input id="hora" placeholder="Ex: 20:00" required />
+      </div>
+
+      <div>
+        <label>Arena / Local *</label>
+        <input id="arena" placeholder="Ex: Arena Municipal" required />
+      </div>
+
+      <div class="full">
+        <label>Qual animal você quer que vire mascote? (opcional)</label>
+        <input id="mascoteTipo" placeholder="Ex: Leão, Lobo, Águia..." />
+        <div class="hint">Se você já tiver mascote pronto, envie a imagem abaixo.</div>
+      </div>
+
+      <div class="full">
+        <label>Mascote (imagem) (opcional)</label>
+        <input id="mascoteImg" type="file" accept="image/png,image/jpeg" />
+      </div>
+
+      <div>
+        <label>Escudo 1 (upload) *</label>
+        <input id="escudo1" type="file" accept="image/png,image/jpeg" required />
+      </div>
+
+      <div>
+        <label>Escudo 2 (upload) *</label>
+        <input id="escudo2" type="file" accept="image/png,image/jpeg" required />
+      </div>
+
+      <div class="full">
+        <label>Patrocinadores (opcional) — pode selecionar vários</label>
+        <input id="patrocinadores" type="file" accept="image/png,image/jpeg" multiple />
+        <div class="hint">Cada patrocinador é uma imagem. (Depois a gente coloca o cálculo do +R$2.)</div>
+      </div>
+
+      <div class="full row" style="margin-top:6px">
+        <button class="btnGreen" id="btnEnviar" type="submit">Enviar pedido</button>
+        <button class="btnBlue" id="btnLimpar" type="button">Limpar</button>
+      </div>
+
+      <div class="full msg" id="msgPedido"></div>
+    </form>
   </div>
 
   <script>
@@ -51,7 +129,11 @@
     const statusEl = document.getElementById("status");
     const msgEl = document.getElementById("msg");
 
+    const msgPedidoEl = document.getElementById("msgPedido");
+    const btnEnviar = document.getElementById("btnEnviar");
+
     function setMsg(t){ msgEl.textContent = t || ""; }
+    function setMsgPedido(t){ msgPedidoEl.textContent = t || ""; }
 
     function applyLocal(){
       const nome = localStorage.getItem("omascote_nome_time") || "";
@@ -96,10 +178,86 @@
       window.location.href = "index.html";
     });
 
-    document.getElementById("btnTesteMe").addEventListener("click", refreshMe);
+    document.getElementById("btnAtualizar").addEventListener("click", refreshMe);
+
+    document.getElementById("btnLimpar").addEventListener("click", () => {
+      document.getElementById("pedidoForm").reset();
+      setMsgPedido("");
+    });
+
+    // Envio do pedido
+    document.getElementById("pedidoForm").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      setMsgPedido("");
+
+      const rodada = document.getElementById("rodada").value.trim();
+      const data = document.getElementById("dataJogo").value.trim();
+      const hora = document.getElementById("hora").value.trim();
+      const arena = document.getElementById("arena").value.trim();
+      const mascote_tipo = document.getElementById("mascoteTipo").value.trim();
+
+      const escudo1 = document.getElementById("escudo1").files[0];
+      const escudo2 = document.getElementById("escudo2").files[0];
+      const mascote = document.getElementById("mascoteImg").files[0];
+      const patrocinadores = Array.from(document.getElementById("patrocinadores").files || []);
+
+      if(!rodada || !data || !hora || !arena){
+        setMsgPedido("Preencha Rodada/Fase, Data, Horário e Arena.");
+        return;
+      }
+      if(!escudo1 || !escudo2){
+        setMsgPedido("Envie Escudo 1 e Escudo 2.");
+        return;
+      }
+
+      const fd = new FormData();
+      fd.append("rodada", rodada);
+      fd.append("data", data);
+      fd.append("hora", hora);
+      fd.append("arena", arena);
+      if(mascote_tipo) fd.append("mascote_tipo", mascote_tipo);
+
+      fd.append("escudo1", escudo1);
+      fd.append("escudo2", escudo2);
+      if(mascote) fd.append("mascote", mascote);
+
+      patrocinadores.forEach(f => fd.append("patrocinadores", f));
+
+      btnEnviar.disabled = true;
+      btnEnviar.textContent = "Enviando...";
+
+      try{
+        const r = await fetch(`${API_BASE}/pedidos`, {
+          method: "POST",
+          headers: { "Authorization": `Bearer ${token}` },
+          body: fd
+        });
+
+        const out = await r.json().catch(()=>({}));
+
+        if(!r.ok || !out.ok){
+          setMsgPedido(out.error || "Não foi possível enviar o pedido.");
+          btnEnviar.disabled = false;
+          btnEnviar.textContent = "Enviar pedido";
+          return;
+        }
+
+        setMsgPedido(`✅ Pedido enviado! ID: ${out.pedido_id}`);
+        document.getElementById("pedidoForm").reset();
+
+        // atualiza contador no topo
+        await refreshMe();
+
+      }catch(err){
+        setMsgPedido("Erro de rede ao enviar. Tente novamente.");
+      }finally{
+        btnEnviar.disabled = false;
+        btnEnviar.textContent = "Enviar pedido";
+      }
+    });
 
     applyLocal();
-    refreshMe(); // carrega ao entrar
+    refreshMe();
   </script>
 </body>
 </html>
