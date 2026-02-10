@@ -4,117 +4,305 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>O Mascote — Painel</title>
+
   <style>
-    body{font-family:Arial,Helvetica,sans-serif;background:#0b0f19;color:#fff;margin:0;min-height:100vh;padding:24px}
-    .top{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
-    h1{margin:0;font-size:24px}
-    .sub{opacity:.85;margin:6px 0 0}
-    .row{display:flex;gap:10px;flex-wrap:wrap}
-    button{padding:10px 14px;border:0;border-radius:10px;color:#fff;font-weight:700;cursor:pointer}
-    .btnBlue{background:#4f7cff}
-    .btnRed{background:#ff4f4f}
-    .btnGreen{background:#2ecc71}
-    button:disabled{opacity:.6;cursor:not-allowed}
-
-    .card{margin-top:18px;max-width:860px;background:#121a2a;border:1px solid #23304d;border-radius:14px;padding:18px}
-    .meta{display:flex;gap:12px;flex-wrap:wrap;margin-top:10px}
-    .pill{background:#0b1222;border:1px solid #2b3a5e;border-radius:999px;padding:8px 12px;font-size:13px;opacity:.95}
-    .msg{margin-top:10px;font-size:13px;opacity:.92}
-
-    .formGrid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:16px}
-    .full{grid-column:1 / -1}
-    label{display:block;font-size:13px;opacity:.9;margin:0 0 6px}
-    input, textarea{
-      width:100%; box-sizing:border-box;
-      padding:12px;border-radius:10px;border:1px solid #2b3a5e;
-      background:#0b1222;color:#fff;outline:none
+    :root{
+      --bg:#0b0f19;
+      --panel:#0f172a;
+      --card:#111b31;
+      --border:#223152;
+      --text:#eaf0ff;
+      --muted:rgba(234,240,255,.78);
+      --muted2:rgba(234,240,255,.60);
+      --primary:#4f7cff;
+      --primary2:#2f5bff;
+      --danger:#ff4f4f;
+      --success:#2ecc71;
+      --radius:16px;
+      --shadow: 0 16px 45px rgba(0,0,0,.35);
     }
-    input:focus, textarea:focus{border-color:#4f7cff}
-    textarea{min-height:70px;resize:vertical}
-    .hint{font-size:12px;opacity:.7;margin-top:6px}
-    .sep{height:1px;background:#23304d;margin:18px 0}
+
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      min-height:100vh;
+      padding:22px;
+      font-family: ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,Arial,Helvetica,sans-serif;
+      color:var(--text);
+      background:
+        radial-gradient(900px 500px at 20% 10%, rgba(79,124,255,.20), transparent 55%),
+        radial-gradient(800px 500px at 85% 35%, rgba(47,91,255,.12), transparent 60%),
+        var(--bg);
+    }
+
+    .container{max-width:1040px;margin:0 auto}
+
+    /* Top bar */
+    .top{
+      display:flex;
+      justify-content:space-between;
+      align-items:flex-start;
+      gap:14px;
+      flex-wrap:wrap;
+      margin-bottom:14px;
+    }
+    .titleBlock h1{margin:0;font-size:26px;line-height:1.1}
+    .sub{margin:6px 0 0;color:var(--muted);font-size:13px}
+
+    .actions{display:flex;gap:10px;flex-wrap:wrap}
+
+    button{
+      border:0;
+      border-radius:12px;
+      padding:11px 14px;
+      color:#fff;
+      font-weight:800;
+      cursor:pointer;
+      letter-spacing:.2px;
+      transition: transform .08s ease, opacity .2s ease, filter .2s ease;
+    }
+    button:active{transform: translateY(1px)}
+    button:disabled{opacity:.65;cursor:not-allowed}
+
+    .btnBlue{background: linear-gradient(180deg, var(--primary), var(--primary2))}
+    .btnRed{background: linear-gradient(180deg, rgba(255,79,79,1), rgba(220,40,40,1))}
+    .btnGreen{background: linear-gradient(180deg, rgba(46,204,113,1), rgba(28,170,88,1))}
+    .btnGhost{
+      background: rgba(11,18,34,.75);
+      border:1px solid rgba(34,49,82,.85);
+      color:var(--text);
+      font-weight:800;
+    }
+    .btnGhost:hover{filter:brightness(1.08)}
+
+    /* Cards */
+    .grid{
+      display:grid;
+      grid-template-columns: 360px 1fr;
+      gap:14px;
+      align-items:start;
+    }
+
+    .card{
+      background: rgba(17,27,49,.92);
+      border:1px solid rgba(34,49,82,.80);
+      border-radius: var(--radius);
+      padding:18px;
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(6px);
+    }
+
+    .card h2{margin:0 0 6px;font-size:16px}
+    .card .desc{margin:0 0 12px;color:var(--muted);font-size:12.5px;line-height:1.35}
+
+    .meta{
+      display:flex;
+      flex-direction:column;
+      gap:10px;
+    }
+    .pill{
+      display:flex;
+      justify-content:space-between;
+      gap:10px;
+      align-items:center;
+      background: rgba(11,18,34,.70);
+      border:1px solid rgba(34,49,82,.90);
+      border-radius: 14px;
+      padding:10px 12px;
+      font-size:13px;
+      color:var(--text);
+    }
+    .pill span{color:var(--muted)}
+    .msg{
+      margin-top:10px;
+      font-size:13px;
+      line-height:1.35;
+      color:var(--muted);
+      min-height:18px;
+    }
+
+    /* Form */
+    .sectionTitle{
+      display:flex;
+      align-items:baseline;
+      justify-content:space-between;
+      gap:10px;
+      margin:0 0 10px;
+    }
+    .sectionTitle h2{margin:0;font-size:18px}
+    .sectionTitle .tiny{color:var(--muted2);font-size:12px}
+
+    .formGrid{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:12px;
+      margin-top:10px;
+    }
+    .full{grid-column:1 / -1}
+
+    label{
+      display:block;
+      font-size:12px;
+      color:var(--muted);
+      margin:0 0 6px;
+      letter-spacing:.2px;
+    }
+    input, textarea{
+      width:100%;
+      padding:12px;
+      border-radius:12px;
+      border:1px solid rgba(34,49,82,.95);
+      background: rgba(11,18,34,.85);
+      color:var(--text);
+      outline:none;
+      transition: box-shadow .15s ease, border-color .15s ease;
+    }
+    input:focus, textarea:focus{
+      border-color: rgba(79,124,255,.95);
+      box-shadow: 0 0 0 4px rgba(79,124,255,.14);
+    }
+    textarea{min-height:72px;resize:vertical}
+
+    .hint{font-size:12px;color:var(--muted2);margin-top:6px;line-height:1.35}
+
+    .divider{
+      height:1px;
+      background: rgba(34,49,82,.85);
+      margin:14px 0;
+    }
+
+    .formActions{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      margin-top:6px;
+      align-items:center;
+    }
+    .formActions .btnGreen{min-width:180px}
+    .formFooterMsg{
+      margin-top:10px;
+      font-size:13px;
+      line-height:1.35;
+      color:var(--muted);
+      min-height:18px;
+    }
+
+    .alertOk{color: rgba(134,255,177,1)}
+    .alertErr{color: rgba(255,139,139,1)}
+
+    @media (max-width: 980px){
+      .grid{grid-template-columns:1fr}
+    }
+    @media (max-width: 560px){
+      body{padding:16px}
+      .formGrid{grid-template-columns:1fr}
+      .actions{width:100%}
+      .actions button{flex:1}
+    }
   </style>
 </head>
+
 <body>
-  <div class="top">
-    <div>
-      <h1 id="welcome">BEM-VINDO</h1>
-      <div class="sub">Seu painel de pedidos</div>
+  <div class="container">
+    <div class="top">
+      <div class="titleBlock">
+        <h1 id="welcome">Painel</h1>
+        <div class="sub">Crie e envie seu pedido de flyer em poucos segundos.</div>
+      </div>
+
+      <div class="actions">
+        <button class="btnGhost" id="btnAtualizar" type="button">Atualizar dados</button>
+        <button class="btnRed" id="btnSair" type="button">Sair</button>
+      </div>
     </div>
-    <div class="row">
-      <button class="btnBlue" id="btnAtualizar">Atualizar dados</button>
-      <button class="btnRed" id="btnSair">Sair</button>
+
+    <div class="grid">
+      <!-- Conta / Status -->
+      <aside class="card">
+        <h2>Sua conta</h2>
+        <p class="desc">Plano, uso do mês e status da assinatura.</p>
+
+        <div class="meta">
+          <div class="pill" id="plano"><span>Plano</span> —</div>
+          <div class="pill" id="usados"><span>Usados no mês</span> —</div>
+          <div class="pill" id="status"><span>Status</span> —</div>
+        </div>
+
+        <div class="msg" id="msg" aria-live="polite"></div>
+
+        <div class="divider"></div>
+
+        <p class="desc" style="margin:0">
+          Dica: se aparecer “sessão inválida”, faça login novamente.
+        </p>
+      </aside>
+
+      <!-- Formulário -->
+      <section class="card">
+        <div class="sectionTitle">
+          <h2>Criar pedido</h2>
+          <div class="tiny">Flyer do jogo</div>
+        </div>
+
+        <p class="desc">Preencha os dados, anexe os escudos e envie. Você pode limpar e reenviar quando quiser.</p>
+
+        <form id="pedidoForm" class="formGrid" enctype="multipart/form-data">
+          <div>
+            <label>Rodada / Fase *</label>
+            <input id="rodada" placeholder="Ex: Semi final" required />
+          </div>
+
+          <div>
+            <label>Data do jogo *</label>
+            <input id="dataJogo" placeholder="Ex: 10/02/2026" required />
+          </div>
+
+          <div>
+            <label>Horário *</label>
+            <input id="hora" placeholder="Ex: 20:00" required />
+          </div>
+
+          <div>
+            <label>Arena / Local *</label>
+            <input id="arena" placeholder="Ex: Arena Municipal" required />
+          </div>
+
+          <div class="full">
+            <label>Animal para virar mascote (opcional)</label>
+            <input id="mascoteTipo" placeholder="Ex: Leão, Lobo, Águia..." />
+            <div class="hint">Se você já tiver um mascote pronto, envie a imagem abaixo.</div>
+          </div>
+
+          <div class="full">
+            <label>Mascote (imagem) (opcional)</label>
+            <input id="mascoteImg" type="file" accept="image/png,image/jpeg" />
+          </div>
+
+          <div>
+            <label>Escudo 1 (upload) *</label>
+            <input id="escudo1" type="file" accept="image/png,image/jpeg" required />
+          </div>
+
+          <div>
+            <label>Escudo 2 (upload) *</label>
+            <input id="escudo2" type="file" accept="image/png,image/jpeg" required />
+          </div>
+
+          <div class="full">
+            <label>Patrocinadores (opcional) — pode selecionar vários</label>
+            <input id="patrocinadores" type="file" accept="image/png,image/jpeg" multiple />
+            <div class="hint">Cada patrocinador é uma imagem. (Depois a gente coloca o cálculo do +R$2.)</div>
+          </div>
+
+          <div class="full formActions">
+            <button class="btnGreen" id="btnEnviar" type="submit">Enviar pedido</button>
+            <button class="btnGhost" id="btnLimpar" type="button">Limpar</button>
+          </div>
+
+          <div class="full formFooterMsg" id="msgPedido" aria-live="polite"></div>
+        </form>
+      </section>
     </div>
-  </div>
-
-  <div class="card">
-    <div class="meta">
-      <div class="pill" id="plano">Plano: —</div>
-      <div class="pill" id="usados">Usados no mês: —</div>
-      <div class="pill" id="status">Status: —</div>
-    </div>
-    <div class="msg" id="msg"></div>
-
-    <div class="sep"></div>
-
-    <h2 style="margin:0;font-size:18px">Criar pedido (Flyer do jogo)</h2>
-    <div class="hint">Preencha os dados e envie. (Depois a gente melhora o design.)</div>
-
-    <form id="pedidoForm" class="formGrid" enctype="multipart/form-data">
-      <div>
-        <label>Rodada / Fase *</label>
-        <input id="rodada" placeholder="Ex: Semi final" required />
-      </div>
-
-      <div>
-        <label>Data do jogo *</label>
-        <input id="dataJogo" placeholder="Ex: 10/02/2026" required />
-      </div>
-
-      <div>
-        <label>Horário *</label>
-        <input id="hora" placeholder="Ex: 20:00" required />
-      </div>
-
-      <div>
-        <label>Arena / Local *</label>
-        <input id="arena" placeholder="Ex: Arena Municipal" required />
-      </div>
-
-      <div class="full">
-        <label>Qual animal você quer que vire mascote? (opcional)</label>
-        <input id="mascoteTipo" placeholder="Ex: Leão, Lobo, Águia..." />
-        <div class="hint">Se você já tiver mascote pronto, envie a imagem abaixo.</div>
-      </div>
-
-      <div class="full">
-        <label>Mascote (imagem) (opcional)</label>
-        <input id="mascoteImg" type="file" accept="image/png,image/jpeg" />
-      </div>
-
-      <div>
-        <label>Escudo 1 (upload) *</label>
-        <input id="escudo1" type="file" accept="image/png,image/jpeg" required />
-      </div>
-
-      <div>
-        <label>Escudo 2 (upload) *</label>
-        <input id="escudo2" type="file" accept="image/png,image/jpeg" required />
-      </div>
-
-      <div class="full">
-        <label>Patrocinadores (opcional) — pode selecionar vários</label>
-        <input id="patrocinadores" type="file" accept="image/png,image/jpeg" multiple />
-        <div class="hint">Cada patrocinador é uma imagem. (Depois a gente coloca o cálculo do +R$2.)</div>
-      </div>
-
-      <div class="full row" style="margin-top:6px">
-        <button class="btnGreen" id="btnEnviar" type="submit">Enviar pedido</button>
-        <button class="btnBlue" id="btnLimpar" type="button">Limpar</button>
-      </div>
-
-      <div class="full msg" id="msgPedido"></div>
-    </form>
   </div>
 
   <script>
@@ -139,7 +327,7 @@
       const nome = localStorage.getItem("omascote_nome_time") || "";
       const plano = localStorage.getItem("omascote_plano") || "";
       const usados = localStorage.getItem("omascote_usados") || "";
-      welcomeEl.textContent = `BEM-VINDO, ${nome || "TIME"}`;
+      welcomeEl.textContent = `Bem-vindo, ${nome || "TIME"}`;
       planoEl.textContent = `Plano: ${plano || "—"} pedidos/mês`;
       usadosEl.textContent = `Usados no mês: ${usados || "—"}`;
     }
@@ -202,10 +390,12 @@
       const patrocinadores = Array.from(document.getElementById("patrocinadores").files || []);
 
       if(!rodada || !data || !hora || !arena){
+        msgPedidoEl.className = "full formFooterMsg alertErr";
         setMsgPedido("Preencha Rodada/Fase, Data, Horário e Arena.");
         return;
       }
       if(!escudo1 || !escudo2){
+        msgPedidoEl.className = "full formFooterMsg alertErr";
         setMsgPedido("Envie Escudo 1 e Escudo 2.");
         return;
       }
@@ -236,19 +426,21 @@
         const out = await r.json().catch(()=>({}));
 
         if(!r.ok || !out.ok){
+          msgPedidoEl.className = "full formFooterMsg alertErr";
           setMsgPedido(out.error || "Não foi possível enviar o pedido.");
           btnEnviar.disabled = false;
           btnEnviar.textContent = "Enviar pedido";
           return;
         }
 
+        msgPedidoEl.className = "full formFooterMsg alertOk";
         setMsgPedido(`✅ Pedido enviado! ID: ${out.pedido_id}`);
         document.getElementById("pedidoForm").reset();
 
-        // atualiza contador no topo
         await refreshMe();
 
       }catch(err){
+        msgPedidoEl.className = "full formFooterMsg alertErr";
         setMsgPedido("Erro de rede ao enviar. Tente novamente.");
       }finally{
         btnEnviar.disabled = false;
