@@ -3,42 +3,206 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>O Mascote — Login</title>
+  <title>O Mascote — Entrar</title>
+
   <style>
-    body{font-family:Arial,Helvetica,sans-serif;background:#0b0f19;color:#fff;margin:0;display:flex;min-height:100vh;align-items:center;justify-content:center;padding:24px}
-    .card{width:100%;max-width:420px;background:#121a2a;border:1px solid #23304d;border-radius:14px;padding:22px}
-    h1{margin:0 0 6px;font-size:22px}
-    p{margin:0 0 18px;opacity:.85}
-    label{display:block;margin:10px 0 6px;font-size:13px;opacity:.9}
-    input{width:100%;padding:12px;border-radius:10px;border:1px solid #2b3a5e;background:#0b1222;color:#fff;outline:none}
-    input:focus{border-color:#4f7cff}
-    button{width:100%;margin-top:14px;padding:12px;border:0;border-radius:10px;background:#4f7cff;color:#fff;font-weight:700;cursor:pointer}
-    button:disabled{opacity:.6;cursor:not-allowed}
-    .msg{margin-top:12px;font-size:13px;line-height:1.35}
-    .err{color:#ff8b8b}
-    .ok{color:#86ffb1}
-    .row{display:flex;gap:10px}
-    .hint{font-size:12px;opacity:.75;margin-top:6px}
+    :root{
+      --bg:#0b0f19;
+      --panel:#0f172a;
+      --card:#111b31;
+      --border:#223152;
+      --text:#eaf0ff;
+      --muted:rgba(234,240,255,.78);
+      --muted2:rgba(234,240,255,.60);
+      --primary:#4f7cff;
+      --primary2:#2f5bff;
+      --danger:#ff8b8b;
+      --ok:#86ffb1;
+      --radius:16px;
+    }
+
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      min-height:100vh;
+      display:grid;
+      place-items:center;
+      padding:24px;
+      font-family:ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,Arial,Helvetica,sans-serif;
+      color:var(--text);
+      background:
+        radial-gradient(900px 500px at 20% 10%, rgba(79,124,255,.22), transparent 55%),
+        radial-gradient(800px 500px at 85% 35%, rgba(47,91,255,.14), transparent 60%),
+        var(--bg);
+    }
+
+    .wrap{
+      width:100%;
+      max-width:980px;
+      display:grid;
+      grid-template-columns: 1.1fr .9fr;
+      gap:18px;
+      align-items:stretch;
+    }
+
+    .hero{
+      border:1px solid rgba(34,49,82,.6);
+      background: linear-gradient(180deg, rgba(17,27,49,.95), rgba(15,23,42,.85));
+      border-radius: var(--radius);
+      padding:26px;
+      position:relative;
+      overflow:hidden;
+    }
+
+    .brand{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      margin-bottom:18px;
+      opacity:.95;
+    }
+    .dot{
+      width:12px;height:12px;border-radius:999px;
+      background: var(--primary);
+      box-shadow: 0 0 0 6px rgba(79,124,255,.15);
+    }
+    .brand b{letter-spacing:.2px}
+    .hero h1{
+      margin:0 0 10px;
+      font-size:30px;
+      line-height:1.1;
+    }
+    .hero p{
+      margin:0;
+      color:var(--muted);
+      max-width:48ch;
+      line-height:1.45;
+    }
+
+    .badges{
+      margin-top:18px;
+      display:flex;
+      flex-wrap:wrap;
+      gap:10px;
+    }
+    .badge{
+      font-size:12px;
+      color:var(--muted);
+      border:1px solid rgba(34,49,82,.7);
+      background: rgba(11,18,34,.55);
+      padding:8px 10px;
+      border-radius:999px;
+      backdrop-filter: blur(6px);
+    }
+
+    .card{
+      border:1px solid rgba(34,49,82,.75);
+      background: rgba(17,27,49,.92);
+      border-radius: var(--radius);
+      padding:22px;
+      box-shadow: 0 16px 45px rgba(0,0,0,.35);
+    }
+
+    .card h2{margin:0 0 6px;font-size:20px}
+    .card .sub{margin:0 0 18px;color:var(--muted);font-size:13px;line-height:1.4}
+
+    label{
+      display:block;
+      margin:12px 0 6px;
+      font-size:12px;
+      color:var(--muted);
+      letter-spacing:.2px;
+    }
+
+    .input{
+      width:100%;
+      padding:12px 12px;
+      border-radius:12px;
+      border:1px solid rgba(34,49,82,.95);
+      background: rgba(11,18,34,.85);
+      color:var(--text);
+      outline:none;
+      transition: border-color .15s ease, transform .08s ease;
+    }
+    .input:focus{
+      border-color: rgba(79,124,255,.95);
+      box-shadow: 0 0 0 4px rgba(79,124,255,.14);
+    }
+
+    .btn{
+      width:100%;
+      margin-top:14px;
+      padding:12px 14px;
+      border:0;
+      border-radius:12px;
+      background: linear-gradient(180deg, var(--primary), var(--primary2));
+      color:#fff;
+      font-weight:800;
+      cursor:pointer;
+      letter-spacing:.2px;
+      transition: transform .08s ease, opacity .2s ease;
+    }
+    .btn:active{transform: translateY(1px)}
+    .btn:disabled{opacity:.7;cursor:not-allowed}
+
+    .msg{
+      margin-top:12px;
+      font-size:13px;
+      line-height:1.35;
+      min-height:18px;
+    }
+    .err{color:var(--danger)}
+    .ok{color:var(--ok)}
+
+    .hint{
+      margin-top:10px;
+      font-size:12px;
+      color:var(--muted2);
+      line-height:1.35;
+    }
+
+    @media (max-width: 860px){
+      .wrap{grid-template-columns:1fr}
+      .hero{display:none;} /* se quiser, dá pra manter, mas assim fica mais “app” no mobile */
+    }
   </style>
 </head>
+
 <body>
-  <div class="card">
-    <h1>Entrar</h1>
-    <p>Acesse sua conta pelo WhatsApp e senha.</p>
+  <main class="wrap">
+    <section class="hero" aria-hidden="true">
+      <div class="brand">
+        <span class="dot"></span>
+        <b>O Mascote</b>
+      </div>
+      <h1>Seu painel de pedidos, do jeito certo.</h1>
+      <p>Crie o flyer do jogo em poucos segundos. Envie os dados, anexe o mascote se quiser, e pronto.</p>
 
-    <form id="loginForm">
-      <label for="whatsapp">WhatsApp (somente números)</label>
-      <input id="whatsapp" inputmode="numeric" autocomplete="username" placeholder="15991120599" required />
+      <div class="badges">
+        <span class="badge">✅ Rápido</span>
+        <span class="badge">✅ Padrão profissional</span>
+        <span class="badge">✅ Mobile-friendly</span>
+      </div>
+    </section>
 
-      <label for="senha">Senha</label>
-      <input id="senha" type="password" autocomplete="current-password" placeholder="••••••••" required />
+    <section class="card">
+      <h2>Entrar</h2>
+      <p class="sub">Acesse sua conta pelo WhatsApp e senha.</p>
 
-      <button id="btn" type="submit">Entrar</button>
+      <form id="loginForm">
+        <label for="whatsapp">WhatsApp (somente números)</label>
+        <input class="input" id="whatsapp" inputmode="numeric" autocomplete="username" placeholder="15991120599" required />
 
-      <div class="msg" id="msg"></div>
-      <div class="hint">Dica: se der erro, confirme seu número e sua senha.</div>
-    </form>
-  </div>
+        <label for="senha">Senha</label>
+        <input class="input" id="senha" type="password" autocomplete="current-password" placeholder="••••••••" required />
+
+        <button class="btn" id="btn" type="submit">Entrar</button>
+
+        <div class="msg" id="msg" aria-live="polite"></div>
+        <div class="hint">Dica: se der erro, confirme seu número e sua senha.</div>
+      </form>
+    </section>
+  </main>
 
   <script>
     const API_BASE = "https://api.omascote.com.br";
@@ -95,7 +259,6 @@
           return;
         }
 
-        // salva token e dados básicos
         localStorage.setItem("omascote_token", data.token);
         localStorage.setItem("omascote_nome_time", data.nome_time || "");
         localStorage.setItem("omascote_plano", String(data.plano ?? ""));
