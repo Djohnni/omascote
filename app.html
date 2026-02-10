@@ -4,338 +4,265 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>O Mascote — Painel</title>
-<style>
-  :root{
-    --bg:#0b0f19;
-    --panel:#0f172a;
-    --card:#111b31;
-    --border:#223152;
-    --text:#eaf0ff;
-    --muted:rgba(234,240,255,.78);
-    --muted2:rgba(234,240,255,.60);
-    --primary:#4f7cff;
-    --primary2:#2f5bff;
-    --danger:#ff4f4f;
-    --success:#2ecc71;
-    --radius:16px;
-    --shadow: 0 16px 45px rgba(0,0,0,.35);
-  }
 
-  *{box-sizing:border-box}
-  body{
-    margin:0;
-    min-height:100vh;
-    padding:22px;
-    font-family: ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,Arial,Helvetica,sans-serif;
-    color:var(--text);
-    background:
-      radial-gradient(900px 500px at 20% 10%, rgba(79,124,255,.20), transparent 55%),
-      radial-gradient(800px 500px at 85% 35%, rgba(47,91,255,.12), transparent 60%),
-      var(--bg);
-  }
+  <style>
+    :root{
+      --bg:#0b0f19;
+      --card:#111b31;
+      --border:#223152;
+      --text:#eaf0ff;
+      --muted:rgba(234,240,255,.75);
+      --muted2:rgba(234,240,255,.55);
+      --primary:#4f7cff;
+      --primary2:#2f5bff;
+      --danger:#ff4f4f;
+      --success:#2ecc71;
+      --radius:16px;
+      --shadow: 0 16px 45px rgba(0,0,0,.35);
+    }
 
-  .container{max-width:1040px;margin:0 auto}
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      min-height:100vh;
+      padding:18px;
+      font-family: ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,Arial,Helvetica,sans-serif;
+      color:var(--text);
+      background:
+        radial-gradient(900px 500px at 20% 10%, rgba(79,124,255,.18), transparent 55%),
+        radial-gradient(800px 500px at 85% 35%, rgba(47,91,255,.10), transparent 60%),
+        var(--bg);
+    }
 
-  .top{
-    display:flex;
-    justify-content:space-between;
-    align-items:flex-start;
-    gap:14px;
-    flex-wrap:wrap;
-    margin-bottom:14px;
-  }
-  .titleBlock h1{margin:0;font-size:26px;line-height:1.1}
-  .sub{margin:6px 0 0;color:var(--muted);font-size:13px}
+    .container{max-width:980px;margin:0 auto}
 
-  .actions{display:flex;gap:10px;flex-wrap:wrap}
+    /* Top */
+    .top{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:10px;
+      flex-wrap:wrap;
+      margin-bottom:12px;
+    }
+    #welcome{margin:0;font-size:20px;letter-spacing:.2px}
+    .actions{display:flex;gap:10px;flex-wrap:wrap}
+    button{
+      border:0;
+      border-radius:12px;
+      padding:10px 14px;
+      color:#fff;
+      font-weight:800;
+      cursor:pointer;
+      letter-spacing:.2px;
+      transition: transform .08s ease, opacity .2s ease, filter .2s ease;
+    }
+    button:active{transform: translateY(1px)}
+    button:disabled{opacity:.65;cursor:not-allowed}
 
-  button{
-    border:0;
-    border-radius:12px;
-    padding:11px 14px;
-    color:#fff;
-    font-weight:800;
-    cursor:pointer;
-    letter-spacing:.2px;
-    transition: transform .08s ease, opacity .2s ease, filter .2s ease;
-  }
-  button:active{transform: translateY(1px)}
-  button:disabled{opacity:.65;cursor:not-allowed}
+    .btnGhost{
+      background: rgba(11,18,34,.75);
+      border:1px solid rgba(34,49,82,.85);
+      color:var(--text);
+    }
+    .btnGhost:hover{filter:brightness(1.08)}
+    .btnRed{background: linear-gradient(180deg, rgba(255,79,79,1), rgba(220,40,40,1))}
+    .btnGreen{background: linear-gradient(180deg, rgba(46,204,113,1), rgba(28,170,88,1))}
 
-  .btnRed{background: linear-gradient(180deg, rgba(255,79,79,1), rgba(220,40,40,1))}
-  .btnGreen{background: linear-gradient(180deg, rgba(46,204,113,1), rgba(28,170,88,1))}
-  .btnGhost{
-    background: rgba(11,18,34,.75);
-    border:1px solid rgba(34,49,82,.85);
-    color:var(--text);
-    font-weight:800;
-  }
-  .btnGhost:hover{filter:brightness(1.08)}
+    /* Layout */
+    .grid{
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap:14px;
+      align-items:start;
+    }
 
-  .grid{
-    display:grid;
-    grid-template-columns: 360px 1fr;
-    gap:14px;
-    align-items:start;
-  }
+    .card{
+      background: rgba(17,27,49,.92);
+      border:1px solid rgba(34,49,82,.80);
+      border-radius: var(--radius);
+      padding:16px;
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(6px);
+      text-align:center;
+    }
 
-  .card{
-    background: rgba(17,27,49,.92);
-    border:1px solid rgba(34,49,82,.80);
-    border-radius: var(--radius);
-    padding:18px;
-    box-shadow: var(--shadow);
-    backdrop-filter: blur(6px);
-  }
+    /* Conta compacta */
+    .accountLine{
+      display:flex;
+      gap:10px;
+      justify-content:center;
+      flex-wrap:wrap;
+      margin-top:6px;
+      font-size:13px;
+      color:var(--muted);
+    }
+    .accountLine b{color:var(--text)}
+    .msg{
+      margin-top:10px;
+      font-size:13px;
+      color:var(--muted2);
+      min-height:18px;
+    }
 
-  .card h2{margin:0 0 6px;font-size:16px}
-  .card .desc{margin:0 0 12px;color:var(--muted);font-size:12.5px;line-height:1.35}
+    /* Form */
+    .title{
+      margin:0 0 10px;
+      font-size:16px;
+      letter-spacing:.2px;
+    }
 
-  .meta{display:flex;flex-direction:column;gap:10px}
-  .pill{
-    display:flex;
-    justify-content:space-between;
-    gap:10px;
-    align-items:center;
-    background: rgba(11,18,34,.70);
-    border:1px solid rgba(34,49,82,.90);
-    border-radius: 14px;
-    padding:10px 12px;
-    font-size:13px;
-    color:var(--text);
-  }
-  .pill span{color:var(--muted)}
-  .msg{
-    margin-top:10px;
-    font-size:13px;
-    line-height:1.35;
-    color:var(--muted);
-    min-height:18px;
-  }
+    .stack{
+      display:flex;
+      flex-direction:column;
+      gap:10px;
+      text-align:left;
+      margin-top:10px;
+    }
 
-  .divider{height:1px;background: rgba(34,49,82,.85);margin:14px 0}
+    label{
+      display:block;
+      font-size:12px;
+      color:var(--muted);
+      margin:0 0 6px;
+      letter-spacing:.2px;
+      text-align:center;
+    }
 
-  .sectionTitle{
-    display:flex;
-    align-items:baseline;
-    justify-content:space-between;
-    gap:10px;
-    margin:0 0 10px;
-  }
-  .sectionTitle h2{margin:0;font-size:18px}
-  .sectionTitle .tiny{color:var(--muted2);font-size:12px}
+    input{
+      width:100%;
+      padding:12px;
+      border-radius:12px;
+      border:1px solid rgba(34,49,82,.95);
+      background: rgba(11,18,34,.85);
+      color:var(--text);
+      outline:none;
+      transition: box-shadow .15s ease, border-color .15s ease;
+    }
+    input:focus{
+      border-color: rgba(79,124,255,.95);
+      box-shadow: 0 0 0 4px rgba(79,124,255,.14);
+    }
+    input::placeholder{color:rgba(234,240,255,.45)}
 
-  /* ========= FORM NOVO: 2 colunas (Textos | Uploads) ========= */
-  .formGrid{
-    display:grid;
-    grid-template-columns: 1fr 1fr;
-    gap:14px;
-    margin-top:10px;
-    align-items:start;
-  }
+    /* arquivo (deixar simples e menos “feio”) */
+    input[type="file"]{
+      padding:10px;
+      cursor:pointer;
+    }
 
-  .formCol{
-    display:flex;
-    flex-direction:column;
-    gap:14px;
-    min-width:0;
-  }
+    .actionsRow{
+      display:flex;
+      gap:10px;
+      justify-content:center;
+      flex-wrap:wrap;
+      margin-top:12px;
+    }
 
-  .group{
-    background: rgba(11,18,34,.45);
-    border: 1px solid rgba(34,49,82,.75);
-    border-radius: 14px;
-    padding:12px;
-  }
+    .formFooterMsg{
+      margin-top:10px;
+      font-size:13px;
+      min-height:18px;
+      color:var(--muted2);
+      text-align:center;
+    }
+    .alertOk{color: rgba(134,255,177,1); font-weight:800}
+    .alertErr{color: rgba(255,139,139,1); font-weight:800}
 
-  .groupTitle{
-    margin:0 0 10px;
-    font-size:12px;
-    color: var(--muted);
-    font-weight:900;
-    letter-spacing:.5px;
-    text-transform: uppercase;
-  }
-
-  label{
-    display:block;
-    font-size:12px;
-    color:var(--muted);
-    margin:0 0 6px;
-    letter-spacing:.2px;
-  }
-
-  input, textarea{
-    width:100%;
-    padding:12px;
-    border-radius:12px;
-    border:1px solid rgba(34,49,82,.95);
-    background: rgba(11,18,34,.85);
-    color:var(--text);
-    outline:none;
-    transition: box-shadow .15s ease, border-color .15s ease;
-  }
-  input:focus, textarea:focus{
-    border-color: rgba(79,124,255,.95);
-    box-shadow: 0 0 0 4px rgba(79,124,255,.14);
-  }
-
-  .hint{font-size:12px;color:var(--muted2);margin-top:6px;line-height:1.35}
-
-  .formActions{
-    grid-column: 1 / -1;
-    display:flex;
-    gap:10px;
-    flex-wrap:wrap;
-    margin-top:6px;
-    align-items:center;
-  }
-  .formFooterMsg{
-    grid-column: 1 / -1;
-    margin-top:10px;
-    font-size:13px;
-    line-height:1.35;
-    color:var(--muted);
-    min-height:18px;
-  }
-
-  .alertOk{color: rgba(134,255,177,1); font-weight:800}
-  .alertErr{color: rgba(255,139,139,1); font-weight:800}
-
-  @media (max-width: 980px){
-    .grid{grid-template-columns:1fr}
-  }
-  @media (max-width: 900px){
-    .formGrid{grid-template-columns:1fr}
-  }
-  @media (max-width: 560px){
-    body{padding:16px}
-    .actions{width:100%}
-    .actions button{flex:1}
-  }
-</style>
-
+    @media (max-width: 860px){
+      .grid{grid-template-columns:1fr}
+      .actions button{flex:1}
+    }
+  </style>
 </head>
 
-<body class="app">
+<body>
   <div class="container">
     <div class="top">
-      <div class="titleBlock">
-        <h1 id="welcome">Painel</h1>
-        <div class="sub">Crie e envie seu pedido de flyer em poucos segundos.</div>
-      </div>
-
+      <h1 id="welcome">Painel</h1>
       <div class="actions">
-        <button class="btnGhost" id="btnAtualizar" type="button">Atualizar dados</button>
+        <button class="btnGhost" id="btnAtualizar" type="button">Atualizar</button>
         <button class="btnRed" id="btnSair" type="button">Sair</button>
       </div>
     </div>
 
     <div class="grid">
-      <!-- Conta / Status -->
+      <!-- CONTA (SIMPLONA) -->
       <aside class="card">
-        <h2>Sua conta</h2>
-        <p class="desc">Plano, uso do mês e status da assinatura.</p>
+        <h2 class="title">Sua conta</h2>
 
-        <div class="meta">
-          <div class="pill" id="plano"><span>Plano</span> —</div>
-          <div class="pill" id="usados"><span>Usados no mês</span> —</div>
-          <div class="pill" id="status"><span>Status</span> —</div>
+        <!-- Aqui fica compacto: Plano / Usados / Status -->
+        <div class="accountLine">
+          <span id="plano"><b>Plano:</b> —</span>
+          <span id="usados"><b>Usados:</b> —</span>
+          <span id="status"><b>Status:</b> —</span>
         </div>
 
         <div class="msg" id="msg" aria-live="polite"></div>
-
-        <div class="divider"></div>
-
-        <p class="desc" style="margin:0">
-          Dica: se aparecer “sessão inválida”, faça login novamente.
-        </p>
       </aside>
 
-      <!-- Formulário -->
+      <!-- CRIAR PEDIDO (TUDO CENTRALIZADO E SIMPLES) -->
       <section class="card">
-        <div class="sectionTitle">
-          <h2>Criar pedido</h2>
-          <div class="tiny">Flyer do jogo</div>
-        </div>
+        <h2 class="title">Criar pedido</h2>
 
-        <p class="desc">Preencha os dados, anexe os escudos e envie. Você pode limpar e reenviar quando quiser.</p>
-
-        <!-- NOVO LAYOUT: 2 COLUNAS (TEXTO | UPLOADS) -->
-        <form id="pedidoForm" class="formGrid" enctype="multipart/form-data">
-
-          <!-- COLUNA ESQUERDA: TEXTOS -->
-          <div class="formCol">
-            <div class="group">
-              <p class="groupTitle">Informações do jogo</p>
-
-              <div class="field">
-                <label>Rodada / Fase *</label>
-                <input id="rodada" placeholder="Ex: Semi final" required />
-              </div>
-
-              <div class="field">
-                <label>Data do jogo *</label>
-                <input id="dataJogo" placeholder="Ex: 10/02/2026" required />
-              </div>
-
-              <div class="field">
-                <label>Horário *</label>
-                <input id="hora" placeholder="Ex: 20:00" required />
-              </div>
-
-              <div class="field">
-                <label>Arena / Local *</label>
-                <input id="arena" placeholder="Ex: Arena Municipal" required />
-              </div>
+        <form id="pedidoForm" enctype="multipart/form-data">
+          <!-- TEXTOS -->
+          <div class="stack">
+            <div>
+              <label>Rodada/Fase</label>
+              <input id="rodada" placeholder="Ex: Semi final" required />
             </div>
 
-            <div class="group">
-              <p class="groupTitle">Mascote (opcional)</p>
+            <div>
+              <label>Data/Jogo</label>
+              <input id="dataJogo" placeholder="Ex: 10/02/2026" required />
+            </div>
 
-              <div class="field">
-                <label>Animal para virar mascote (opcional)</label>
-                <input id="mascoteTipo" placeholder="Ex: Leão, Lobo, Águia..." />
-                <div class="hint">Se você já tiver um mascote pronto, envie a imagem na coluna da direita.</div>
-              </div>
+            <div>
+              <label>Horário</label>
+              <input id="hora" placeholder="Ex: 20:00" required />
+            </div>
+
+            <div>
+              <label>Arena/Local</label>
+              <input id="arena" placeholder="Ex: Arena Municipal" required />
+            </div>
+
+            <div>
+              <label>Mascote</label>
+              <input id="mascoteTipo" placeholder="Ex: Leão, Lobo, Águia..." />
             </div>
           </div>
 
-          <!-- COLUNA DIREITA: UPLOADS -->
-          <div class="formCol">
-            <div class="group">
-              <p class="groupTitle">Uploads</p>
+          <!-- UPLOADS -->
+          <div style="margin-top:14px">
+            <h3 class="title" style="margin-bottom:8px">Upload</h3>
 
-              <div class="field">
+            <div class="stack">
+              <div>
                 <label>Mascote (imagem) (opcional)</label>
                 <input id="mascoteImg" type="file" accept="image/png,image/jpeg" />
               </div>
 
-              <div class="field">
-                <label>Escudo 1 (upload) *</label>
+              <div>
+                <label>Escudo 1</label>
                 <input id="escudo1" type="file" accept="image/png,image/jpeg" required />
               </div>
 
-              <div class="field">
-                <label>Escudo 2 (upload) *</label>
+              <div>
+                <label>Escudo 2</label>
                 <input id="escudo2" type="file" accept="image/png,image/jpeg" required />
               </div>
-            </div>
 
-            <div class="group">
-              <p class="groupTitle">Patrocinadores (opcional)</p>
-
-              <div class="field">
-                <label>Patrocinadores — pode selecionar vários</label>
+              <div>
+                <label>Patrocinadores (opcional)</label>
                 <input id="patrocinadores" type="file" accept="image/png,image/jpeg" multiple />
-                <div class="hint">Cada patrocinador é uma imagem. (Depois a gente coloca o cálculo do +R$2.)</div>
               </div>
             </div>
           </div>
 
-          <!-- AÇÕES -->
-          <div class="formActions">
-            <button class="btnGreen" id="btnEnviar" type="submit">Enviar pedido</button>
+          <div class="actionsRow">
+            <button class="btnGreen" id="btnEnviar" type="submit">Enviar</button>
             <button class="btnGhost" id="btnLimpar" type="button">Limpar</button>
           </div>
 
@@ -367,20 +294,21 @@
       const nome = localStorage.getItem("omascote_nome_time") || "";
       const plano = localStorage.getItem("omascote_plano") || "";
       const usados = localStorage.getItem("omascote_usados") || "";
+
       welcomeEl.textContent = `Bem-vindo, ${nome || "TIME"}`;
-      planoEl.textContent = `Plano: ${plano || "—"} pedidos/mês`;
-      usadosEl.textContent = `Usados no mês: ${usados || "—"}`;
+      planoEl.innerHTML = `<b>Plano:</b> ${plano || "—"} pedidos`;
+      usadosEl.innerHTML = `<b>Usados:</b> ${usados || "—"}`;
     }
 
     async function refreshMe(){
-      statusEl.textContent = "Status: carregando…";
+      statusEl.innerHTML = `<b>Status:</b> carregando…`;
       try{
         const r = await fetch(`${API_BASE}/me`, {
           headers: { "Authorization": `Bearer ${token}` }
         });
         const data = await r.json().catch(()=>({}));
         if(!r.ok || !data.ok){
-          statusEl.textContent = "Status: sessão inválida";
+          statusEl.innerHTML = `<b>Status:</b> sessão inválida`;
           setMsg("Sessão expirada. Faça login novamente.");
           localStorage.removeItem("omascote_token");
           setTimeout(()=>window.location.href="index.html", 600);
@@ -390,11 +318,11 @@
         localStorage.setItem("omascote_plano", String(data.plano ?? ""));
         localStorage.setItem("omascote_usados", String(data.usados_no_ciclo ?? ""));
         applyLocal();
-        statusEl.textContent = data.ativo ? "Status: ativo" : "Status: inativo";
-        setMsg("Dados atualizados com sucesso.");
+        statusEl.innerHTML = `<b>Status:</b> ${data.ativo ? "ativo" : "inativo"}`;
+        setMsg("Dados atualizados.");
       }catch(e){
-        statusEl.textContent = "Status: erro de rede";
-        setMsg("Erro de rede ao atualizar. Tente novamente.");
+        statusEl.innerHTML = `<b>Status:</b> erro de rede`;
+        setMsg("Erro de rede ao atualizar.");
       }
     }
 
@@ -410,12 +338,14 @@
 
     document.getElementById("btnLimpar").addEventListener("click", () => {
       document.getElementById("pedidoForm").reset();
+      msgPedidoEl.className = "formFooterMsg";
       setMsgPedido("");
     });
 
     // Envio do pedido
     document.getElementById("pedidoForm").addEventListener("submit", async (e) => {
       e.preventDefault();
+      msgPedidoEl.className = "formFooterMsg";
       setMsgPedido("");
 
       const rodada = document.getElementById("rodada").value.trim();
@@ -431,12 +361,12 @@
 
       if(!rodada || !data || !hora || !arena){
         msgPedidoEl.className = "formFooterMsg alertErr";
-        setMsgPedido("Preencha Rodada/Fase, Data, Horário e Arena.");
+        setMsgPedido("Preencha: Rodada/Fase, Data/Jogo, Horário e Arena/Local.");
         return;
       }
       if(!escudo1 || !escudo2){
         msgPedidoEl.className = "formFooterMsg alertErr";
-        setMsgPedido("Envie Escudo 1 e Escudo 2.");
+        setMsgPedido("Envie: Escudo 1 e Escudo 2.");
         return;
       }
 
@@ -469,7 +399,7 @@
           msgPedidoEl.className = "formFooterMsg alertErr";
           setMsgPedido(out.error || "Não foi possível enviar o pedido.");
           btnEnviar.disabled = false;
-          btnEnviar.textContent = "Enviar pedido";
+          btnEnviar.textContent = "Enviar";
           return;
         }
 
@@ -484,7 +414,7 @@
         setMsgPedido("Erro de rede ao enviar. Tente novamente.");
       }finally{
         btnEnviar.disabled = false;
-        btnEnviar.textContent = "Enviar pedido";
+        btnEnviar.textContent = "Enviar";
       }
     });
 
