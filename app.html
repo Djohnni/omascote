@@ -5,143 +5,364 @@
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>O Mascote — Painel</title>
   <style>
+    :root{
+      --bg0:#070a12;
+      --bg1:#0b1020;
+      --card:#0f172a;
+      --card2:#0b1222;
+      --stroke:#223055;
+      --stroke2:#2b3a5e;
+      --txt:#ffffff;
+      --muted:rgba(255,255,255,.75);
+
+      /* cores dinâmicas do escudo (JS atualiza) */
+      --accent1:#2f5bff;
+      --accent2:#1730a8;
+      --gold:#d7b05a;
+
+      --radius:18px;
+      --radius2:14px;
+      --shadow:0 20px 60px rgba(0,0,0,.45);
+      --shadow2:0 10px 28px rgba(0,0,0,.35);
+    }
+
+    *{box-sizing:border-box}
     body{
-      font-family:Arial,Helvetica,sans-serif;
-      background:#0b0f19;
-      color:#fff;
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, Helvetica, sans-serif;
+      color:var(--txt);
       margin:0;
       min-height:100vh;
-      padding:24px
+      padding:20px 14px 28px;
+      background:
+        radial-gradient(1200px 800px at 30% 10%, color-mix(in oklab, var(--accent1) 35%, transparent) 0%, transparent 55%),
+        radial-gradient(1000px 700px at 70% 20%, color-mix(in oklab, var(--accent2) 30%, transparent) 0%, transparent 55%),
+        radial-gradient(900px 600px at 50% 90%, rgba(255,255,255,.06) 0%, transparent 60%),
+        linear-gradient(180deg, var(--bg0), var(--bg1));
     }
-    .top{
+
+    .wrap{
+      max-width:520px;
+      margin:0 auto;
+    }
+
+    .topbar{
       display:flex;
       justify-content:space-between;
       align-items:center;
       gap:12px;
-      flex-wrap:wrap
+      margin:6px 2px 14px;
     }
-    h1{margin:0;font-size:24px}
-    .sub{opacity:.85;margin:6px 0 0}
-    .row{display:flex;gap:10px;flex-wrap:wrap}
+
+    .row{display:flex; gap:10px; flex-wrap:wrap; justify-content:flex-end; align-items:center}
+
     button{
       padding:10px 14px;
       border:0;
-      border-radius:10px;
+      border-radius:999px;
       color:#fff;
+      font-weight:800;
+      cursor:pointer;
+      transition:transform .08s ease, filter .15s ease, opacity .15s ease;
+      box-shadow:var(--shadow2);
+      letter-spacing:.2px;
+    }
+    button:active{transform:translateY(1px)}
+    button:disabled{opacity:.55; cursor:not-allowed}
+    .btnBlue{
+      background:linear-gradient(135deg, color-mix(in oklab, var(--accent1) 90%, #ffffff 10%), color-mix(in oklab, var(--accent2) 90%, #000 10%));
+    }
+    .btnRed{
+      background:linear-gradient(135deg, #ff4f4f, #c22d2d);
+    }
+    .btnGreen{
+      background:linear-gradient(135deg, #2ecc71, #1b9b51);
+      border-radius:16px;
+      padding:14px 18px;
+      min-width:170px;
+      font-size:16px;
+    }
+
+    /* “cartão grande” estilo app */
+    .panel{
+      border-radius:24px;
+      padding:18px 16px 18px;
+      background:
+        radial-gradient(900px 500px at 50% -10%, rgba(255,255,255,.10) 0%, transparent 55%),
+        linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.03));
+      border:1px solid rgba(255,255,255,.10);
+      box-shadow:var(--shadow);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+    }
+
+    .welcomeBox{
+      text-align:center;
+      padding:10px 8px 6px;
+    }
+    .welcomeLabel{
+      font-size:13px;
+      letter-spacing:.22em;
+      text-transform:uppercase;
+      color:rgba(255,255,255,.7);
+      margin-bottom:8px;
+    }
+    h1{
+      margin:0;
+      font-size:28px;
+      line-height:1.05;
+      letter-spacing:.2px;
+      text-shadow:0 10px 25px rgba(0,0,0,.35);
+    }
+    .sub{
+      margin:8px 0 0;
+      font-size:13px;
+      color:rgba(255,255,255,.72);
+    }
+
+    .crestWrap{
+      display:flex;
+      justify-content:center;
+      margin:14px 0 12px;
+    }
+    .crestCard{
+      width:min(320px, 92vw);
+      aspect-ratio: 1 / 1;
+      border-radius:22px;
+      background:
+        radial-gradient(280px 200px at 50% 20%, rgba(255,255,255,.10) 0%, transparent 60%),
+        linear-gradient(180deg, rgba(255,255,255,.05), rgba(0,0,0,.10));
+      border:1px solid rgba(255,255,255,.10);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      overflow:hidden;
+      position:relative;
+      box-shadow:var(--shadow2);
+    }
+    .crestGlow{
+      position:absolute;
+      inset:-40%;
+      background:
+        radial-gradient(circle at 50% 50%, color-mix(in oklab, var(--accent1) 35%, transparent) 0%, transparent 55%),
+        radial-gradient(circle at 45% 55%, color-mix(in oklab, var(--accent2) 25%, transparent) 0%, transparent 65%);
+      filter: blur(18px);
+      opacity:.9;
+      pointer-events:none;
+    }
+    .crestImg{
+      width:78%;
+      height:78%;
+      object-fit:contain;
+      filter: drop-shadow(0 18px 24px rgba(0,0,0,.45));
+      position:relative;
+      z-index:2;
+    }
+    .crestPlaceholder{
+      width:86%;
+      height:86%;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      text-align:center;
+      padding:16px;
+      border-radius:18px;
+      border:1px dashed rgba(255,255,255,.20);
+      color:rgba(255,255,255,.70);
+      position:relative;
+      z-index:2;
+      background:rgba(0,0,0,.12);
       font-weight:700;
-      cursor:pointer
+      font-size:13px;
+      line-height:1.35;
     }
-    .btnBlue{background:#4f7cff}
-    .btnRed{background:#ff4f4f}
-    .btnGreen{background:#2ecc71}
-    button:disabled{opacity:.6;cursor:not-allowed}
+
     .card{
-      margin-top:18px;
-      max-width:860px;
-      background:#121a2a;
-      border:1px solid #23304d;
-      border-radius:14px;
-      padding:18px
+      margin-top:10px;
+      background:rgba(5,10,22,.55);
+      border:1px solid rgba(255,255,255,.10);
+      border-radius:18px;
+      padding:14px;
     }
+
     .meta{
       display:flex;
-      gap:12px;
+      gap:10px;
       flex-wrap:wrap;
-      margin-top:10px
+      justify-content:center;
+      margin-top:4px;
     }
     .pill{
-      background:#0b1222;
-      border:1px solid #2b3a5e;
+      background:rgba(0,0,0,.22);
+      border:1px solid rgba(255,255,255,.12);
       border-radius:999px;
       padding:8px 12px;
-      font-size:13px;
-      opacity:.95
+      font-size:12px;
+      color:rgba(255,255,255,.90);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
     }
-    .msg{margin-top:10px;font-size:13px;opacity:.92}
+
+    .msg{margin-top:10px; font-size:13px; color:rgba(255,255,255,.85); text-align:center}
+
+    .sep{
+      height:1px;
+      background:linear-gradient(90deg, transparent, rgba(255,255,255,.18), transparent);
+      margin:14px 0 14px;
+    }
+
+    h2{
+      margin:0;
+      font-size:18px;
+      text-align:center;
+      letter-spacing:.3px;
+    }
+    .hint{
+      font-size:12px;
+      color:rgba(255,255,255,.65);
+      margin-top:6px;
+      text-align:center;
+    }
+
     .formGrid{
       display:grid;
       grid-template-columns:1fr 1fr;
       gap:12px;
-      margin-top:16px
+      margin-top:14px;
     }
     .full{grid-column:1 / -1}
-    label{display:block;font-size:13px;opacity:.9;margin:0 0 6px}
+
+    label{
+      display:block;
+      font-size:12px;
+      color:rgba(255,255,255,.78);
+      margin:0 0 6px;
+    }
+
     input, textarea{
       width:100%;
-      box-sizing:border-box;
-      padding:12px;
-      border-radius:10px;
-      border:1px solid #2b3a5e;
-      background:#0b1222;
+      padding:12px 12px;
+      border-radius:14px;
+      border:1px solid rgba(255,255,255,.12);
+      background:rgba(0,0,0,.22);
       color:#fff;
-      outline:none
+      outline:none;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.04);
     }
-    input:focus, textarea:focus{border-color:#4f7cff}
-    textarea{min-height:70px;resize:vertical}
-    .hint{font-size:12px;opacity:.7;margin-top:6px}
-    .sep{height:1px;background:#23304d;margin:18px 0}
+    input:focus, textarea:focus{
+      border-color: color-mix(in oklab, var(--accent1) 70%, #ffffff 10%);
+      box-shadow: 0 0 0 3px rgba(79,124,255,.18);
+    }
+    textarea{min-height:70px; resize:vertical}
+
+    .submitRow{
+      display:flex;
+      justify-content:center;
+      margin-top:4px;
+    }
+
+    .msgSmall{
+      margin-top:10px;
+      font-size:13px;
+      text-align:center;
+      color:rgba(255,255,255,.85);
+    }
+
+    /* deixa responsivo no celular */
+    @media (max-width:520px){
+      .formGrid{grid-template-columns:1fr}
+      h1{font-size:26px}
+      .crestCard{width:min(300px, 92vw)}
+    }
   </style>
 </head>
 
 <body>
-  <div class="top">
-    <div>
-      <h1 id="welcome">BEM-VINDO</h1>
-      <div class="sub">Seu painel de pedidos</div>
-    </div>
-    <div class="row">
-      <button class="btnBlue" id="btnAtualizar">Atualizar dados</button>
-      <button class="btnRed" id="btnSair">Sair</button>
-    </div>
-  </div>
+  <div class="wrap">
 
-  <div class="card">
-    <div class="meta">
-      <div class="pill" id="plano">Plano: —</div>
-      <div class="pill" id="usados">Usados no mês: —</div>
-      <div class="pill" id="status">Status: —</div>
+    <!-- Topbar com botões (estrutura original mantida via IDs) -->
+    <div class="topbar">
+      <div style="opacity:.85; font-weight:800; letter-spacing:.14em; font-size:12px; text-transform:uppercase">
+        O Mascote
+      </div>
+      <div class="row">
+        <button class="btnBlue" id="btnAtualizar">Atualizar</button>
+        <button class="btnRed" id="btnSair">Sair</button>
+      </div>
     </div>
 
-    <div class="msg" id="msg"></div>
-    <div class="sep"></div>
+    <div class="panel">
 
-    <h2 style="margin:0;font-size:18px">Criar pedido (Flyer do jogo)</h2>
-    <div class="hint">Preencha os dados e envie.</div>
+      <!-- Bem-vindo + time acima do escudo -->
+      <div class="welcomeBox">
+        <div class="welcomeLabel">Bem-vindo</div>
+        <h1 id="welcome">Seu time</h1>
+        <div class="sub">Seu painel de pedidos</div>
+      </div>
 
-    <form id="pedidoForm" class="formGrid" enctype="multipart/form-data">
-      <div>
-        <label>Rodada / Fase *</label>
-        <input id="rodada" required />
+      <!-- Escudo centralizado -->
+      <div class="crestWrap">
+        <div class="crestCard" id="crestCard">
+          <div class="crestGlow"></div>
+          <img id="crestPreview" class="crestImg" alt="Escudo do time" style="display:none" />
+          <div id="crestPlaceholder" class="crestPlaceholder">
+            Envie o escudo do seu time<br/>para personalizar o visual do app
+          </div>
+        </div>
       </div>
-      <div>
-        <label>Data do jogo *</label>
-        <input id="dataJogo" required />
+
+      <!-- Status do plano -->
+      <div class="card">
+        <div class="meta">
+          <div class="pill" id="plano">Plano: —</div>
+          <div class="pill" id="usados">Usados no mês: —</div>
+          <div class="pill" id="status">Status: —</div>
+        </div>
+
+        <div class="msg" id="msg"></div>
+        <div class="sep"></div>
+
+        <h2>Criar pedido</h2>
+        <div class="hint">Preencha os dados e envie. Os arquivos ficam salvos para próximos pedidos.</div>
+
+        <!-- FORM E IDS ORIGINAIS (não mexi) -->
+        <form id="pedidoForm" class="formGrid" enctype="multipart/form-data">
+          <div>
+            <label>Rodada / Fase *</label>
+            <input id="rodada" required />
+          </div>
+          <div>
+            <label>Data do jogo *</label>
+            <input id="dataJogo" required />
+          </div>
+          <div>
+            <label>Horário *</label>
+            <input id="hora" required />
+          </div>
+          <div>
+            <label>Arena / Local *</label>
+            <input id="arena" required />
+          </div>
+          <div class="full">
+            <label>Mascote (opcional)</label>
+            <input id="mascoteImg" type="file" />
+          </div>
+          <div>
+            <label>Escudo 1 *</label>
+            <input id="escudo1" type="file" required />
+          </div>
+          <div>
+            <label>Escudo 2 *</label>
+            <input id="escudo2" type="file" required />
+          </div>
+
+          <div class="full submitRow">
+            <button class="btnGreen" id="btnEnviar" type="submit">Criar pedido</button>
+          </div>
+
+          <div class="full msgSmall" id="msgPedido"></div>
+        </form>
       </div>
-      <div>
-        <label>Horário *</label>
-        <input id="hora" required />
-      </div>
-      <div>
-        <label>Arena / Local *</label>
-        <input id="arena" required />
-      </div>
-      <div class="full">
-        <label>Mascote (opcional)</label>
-        <input id="mascoteImg" type="file" />
-      </div>
-      <div>
-        <label>Escudo 1 *</label>
-        <input id="escudo1" type="file" required />
-      </div>
-      <div>
-        <label>Escudo 2 *</label>
-        <input id="escudo2" type="file" required />
-      </div>
-      <div class="full row">
-        <button class="btnGreen" id="btnEnviar" type="submit">Enviar pedido</button>
-      </div>
-      <div class="full msg" id="msgPedido"></div>
-    </form>
+    </div>
   </div>
 
 <script>
@@ -155,12 +376,96 @@ const usadosEl = document.getElementById("usados");
 const statusEl = document.getElementById("status");
 const msgPedidoEl = document.getElementById("msgPedido");
 
+// ==== VISUAL: escudo salvo + preview + cores do fundo (NÃO afeta estrutura do pedido) ====
+const crestPreview = document.getElementById("crestPreview");
+const crestPlaceholder = document.getElementById("crestPlaceholder");
+const escudo1Input = document.getElementById("escudo1");
+
+// chave de storage só do visual (não interfere no backend)
+const CREST_KEY = "omascote_escudo_principal_dataurl";
+
+function setCrestUI(dataUrl){
+  if(!dataUrl){
+    crestPreview.style.display = "none";
+    crestPlaceholder.style.display = "flex";
+    return;
+  }
+  crestPreview.src = dataUrl;
+  crestPreview.style.display = "block";
+  crestPlaceholder.style.display = "none";
+  // quando carregar, extrai cor e aplica no fundo
+  crestPreview.onload = () => {
+    try{ applyThemeFromImage(crestPreview); }catch(e){}
+  };
+}
+
+function readFileAsDataURL(file){
+  return new Promise((resolve, reject)=>{
+    const r = new FileReader();
+    r.onload = () => resolve(r.result);
+    r.onerror = reject;
+    r.readAsDataURL(file);
+  });
+}
+
+/* Extrai uma “cor média” e uma segunda cor mais escura para o gradiente */
+function applyThemeFromImage(img){
+  const c = document.createElement("canvas");
+  const ctx = c.getContext("2d", { willReadFrequently:true });
+  const w = 80, h = 80;
+  c.width = w; c.height = h;
+  ctx.drawImage(img, 0, 0, w, h);
+  const { data } = ctx.getImageData(0,0,w,h);
+
+  // amostra simples (ignora pixels transparentes)
+  let r=0,g=0,b=0, n=0;
+  for(let i=0;i<data.length;i+=16){ // pula pixels pra ser leve
+    const a = data[i+3];
+    if(a < 40) continue;
+    const rr = data[i], gg = data[i+1], bb = data[i+2];
+
+    // ignora quase-branco (evita puxar fundo branco do escudo)
+    const max = Math.max(rr,gg,bb);
+    const min = Math.min(rr,gg,bb);
+    if(max > 245 && (max-min) < 12) continue;
+
+    r += rr; g += gg; b += bb; n++;
+  }
+  if(n < 20) return;
+
+  r = Math.round(r/n); g = Math.round(g/n); b = Math.round(b/n);
+
+  // cria uma segunda cor mais escura pro gradiente
+  const r2 = Math.max(0, Math.round(r * 0.55));
+  const g2 = Math.max(0, Math.round(g * 0.55));
+  const b2 = Math.max(0, Math.round(b * 0.55));
+
+  document.documentElement.style.setProperty("--accent1", `rgb(${r},${g},${b})`);
+  document.documentElement.style.setProperty("--accent2", `rgb(${r2},${g2},${b2})`);
+}
+
+// quando usuário escolher escudo1, salva pro visual e mostra no topo
+escudo1Input.addEventListener("change", async ()=>{
+  const f = escudo1Input.files && escudo1Input.files[0];
+  if(!f) return;
+  try{
+    const dataUrl = await readFileAsDataURL(f);
+    localStorage.setItem(CREST_KEY, dataUrl);
+    setCrestUI(dataUrl);
+  }catch(e){}
+});
+
+// carrega escudo salvo (se já tiver usado antes)
+setCrestUI(localStorage.getItem(CREST_KEY) || "");
+
+// ==== LÓGICA ORIGINAL (mantida) ====
 function applyLocal(){
   const nome = localStorage.getItem("omascote_nome_time") || "";
   const plano = localStorage.getItem("omascote_plano") || "";
   const usados = localStorage.getItem("omascote_usados") || "";
 
-  welcomeEl.textContent = `BEM-VINDO, ${nome || "TIME"}`;
+  // agora o H1 vira o nome do time (visual como na sua referência)
+  welcomeEl.textContent = nome || "Seu time";
   planoEl.textContent = `Plano: ${plano || "—"} pedidos/mês`;
   usadosEl.textContent = `Usados no mês: ${usados || "—"}`;
 }
@@ -213,6 +518,13 @@ document.getElementById("pedidoForm").addEventListener("submit", async (e)=>{
 
 applyLocal();
 refreshMe();
+
+// botões (se você já tinha handlers em outro lugar, mantém; aqui só deixo básico)
+document.getElementById("btnSair").addEventListener("click", ()=>{
+  localStorage.removeItem("omascote_token");
+  window.location.href = "index.html";
+});
+document.getElementById("btnAtualizar").addEventListener("click", refreshMe);
 </script>
 </body>
 </html>
