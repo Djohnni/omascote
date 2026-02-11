@@ -4,229 +4,320 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>O Mascote — Painel</title>
-
   <style>
-    :root{
-      --bg:#0b0f19;
-      --card:#111b31;
-      --border:#223152;
-      --text:#eaf0ff;
-      --muted:rgba(234,240,255,.7);
-      --primary:#4f7cff;
-      --danger:#ff4f4f;
-      --success:#2ecc71;
-      --radius:16px;
-    }
-
-    *{box-sizing:border-box}
     body{
+      font-family:Arial,Helvetica,sans-serif;
+      background:#0b0f19;
+      color:#fff;
       margin:0;
       min-height:100vh;
-      padding:18px;
-      font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial;
-      color:var(--text);
-      background: var(--bg);
+      padding:24px
     }
-
-    .container{max-width:980px;margin:0 auto}
-
     .top{
       display:flex;
       justify-content:space-between;
       align-items:center;
-      gap:10px;
-      margin-bottom:12px;
+      gap:12px;
+      flex-wrap:wrap
     }
-
-    h1{margin:0;font-size:20px}
-
+    h1{margin:0;font-size:24px}
+    .sub{opacity:.85;margin:6px 0 0}
+    .row{display:flex;gap:10px;flex-wrap:wrap}
     button{
-      border:0;
-      border-radius:12px;
       padding:10px 14px;
-      font-weight:800;
-      cursor:pointer;
+      border:0;
+      border-radius:10px;
       color:#fff;
+      font-weight:700;
+      cursor:pointer
     }
-    .btnGhost{background:#1a2236}
-    .btnRed{background:#c0392b}
-    .btnGreen{background:#27ae60}
-
-    .grid{
-      display:grid;
-      grid-template-columns: 1fr 1fr;
-      gap:14px;
-    }
-
+    .btnBlue{background:#4f7cff}
+    .btnRed{background:#ff4f4f}
+    .btnGreen{background:#2ecc71}
+    button:disabled{opacity:.6;cursor:not-allowed}
     .card{
-      background:var(--card);
-      border-radius:var(--radius);
-      padding:16px;
-      text-align:center;
+      margin-top:18px;
+      max-width:860px;
+      background:#121a2a;
+      border:1px solid #23304d;
+      border-radius:14px;
+      padding:18px
     }
-
-    .teamBox{
+    .meta{
       display:flex;
-      flex-direction:column;
-      align-items:center;
-      gap:10px;
+      gap:12px;
+      flex-wrap:wrap;
+      margin-top:10px
     }
-
-    .teamBox img{
-      width:96px;
-      height:96px;
-      object-fit:contain;
+    .pill{
       background:#0b1222;
-      border-radius:12px;
       border:1px solid #2b3a5e;
+      border-radius:999px;
+      padding:8px 12px;
+      font-size:13px;
+      opacity:.95
     }
-
-    label{
-      font-size:12px;
-      color:var(--muted);
-      display:block;
-      margin-bottom:4px;
+    .msg{margin-top:10px;font-size:13px;opacity:.92}
+    .formGrid{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:12px;
+      margin-top:16px
     }
-
-    input{
+    .full{grid-column:1 / -1}
+    label{display:block;font-size:13px;opacity:.9;margin:0 0 6px}
+    input, textarea{
       width:100%;
-      padding:10px;
+      box-sizing:border-box;
+      padding:12px;
       border-radius:10px;
       border:1px solid #2b3a5e;
       background:#0b1222;
       color:#fff;
+      outline:none
     }
-
-    .stack{display:flex;flex-direction:column;gap:10px}
-
-    .actionsRow{
-      display:flex;
-      gap:10px;
-      justify-content:center;
-      margin-top:12px;
-    }
-
-    .msg{font-size:13px;color:var(--muted);margin-top:8px}
-
-    @media (max-width:860px){
-      .grid{grid-template-columns:1fr}
-    }
+    input:focus, textarea:focus{border-color:#4f7cff}
+    textarea{min-height:70px;resize:vertical}
+    .hint{font-size:12px;opacity:.7;margin-top:6px}
+    .sep{height:1px;background:#23304d;margin:18px 0}
   </style>
 </head>
 
 <body>
-<div class="container">
-
   <div class="top">
-    <h1 id="welcome">Time</h1>
     <div>
-      <button class="btnGhost" id="btnAtualizar">Atualizar</button>
+      <h1 id="welcome">BEM-VINDO</h1>
+      <div class="sub">Seu painel de pedidos</div>
+    </div>
+
+    <div class="row">
+      <button class="btnBlue" id="btnAtualizar">Atualizar dados</button>
       <button class="btnRed" id="btnSair">Sair</button>
     </div>
   </div>
 
-  <div class="grid">
+  <div class="card">
+    <div class="meta">
+      <div class="pill" id="plano">Plano: —</div>
+      <div class="pill" id="usados">Usados no mês: —</div>
+      <div class="pill" id="status">Status: —</div>
+    </div>
 
-    <!-- TIME -->
-    <aside class="card">
-      <h2>Seu time</h2>
+    <div class="msg" id="msg"></div>
 
-      <div class="teamBox">
-        <img id="escudoPreview" src="" alt="Escudo do time">
-        <strong id="nomeTime">—</strong>
+    <div class="sep"></div>
+
+    <h2 style="margin:0;font-size:18px">Criar pedido (Flyer do jogo)</h2>
+    <div class="hint">Preencha os dados e envie. (Depois a gente melhora o design.)</div>
+
+    <form id="pedidoForm" class="formGrid" enctype="multipart/form-data">
+      <div>
+        <label>Rodada / Fase *</label>
+        <input id="rodada" placeholder="Ex: Semi final" required />
       </div>
 
-      <div class="stack" style="margin-top:12px">
-        <div>
-          <label>Escudo do time</label>
-          <input id="escudo1" type="file" accept="image/png,image/jpeg" required>
-        </div>
-
-        <div>
-          <label>Mascote do time (opcional)</label>
-          <input id="mascoteImg" type="file" accept="image/png,image/jpeg">
-        </div>
+      <div>
+        <label>Data do jogo *</label>
+        <input id="dataJogo" placeholder="Ex: 10/02/2026" required />
       </div>
 
-      <div class="msg">
-        Esses arquivos ficam salvos para os próximos pedidos.
+      <div>
+        <label>Horário *</label>
+        <input id="hora" placeholder="Ex: 20:00" required />
       </div>
-    </aside>
 
-    <!-- PEDIDO -->
-    <section class="card">
-      <h2>Criar pedido</h2>
+      <div>
+        <label>Arena / Local *</label>
+        <input id="arena" placeholder="Ex: Arena Municipal" required />
+      </div>
 
-      <form id="pedidoForm" enctype="multipart/form-data">
-        <div class="stack">
-          <div>
-            <label>Rodada / Fase</label>
-            <input id="rodada" placeholder="Semi final" required>
-          </div>
+      <div class="full">
+        <label>Qual animal você quer que vire mascote? (opcional)</label>
+        <input id="mascoteTipo" placeholder="Ex: Leão, Lobo, Águia..." />
+        <div class="hint">Se você já tiver mascote pronto, envie a imagem abaixo.</div>
+      </div>
 
-          <div>
-            <label>Data do jogo</label>
-            <input id="dataJogo" placeholder="10/02/2026" required>
-          </div>
+      <div class="full">
+        <label>Mascote (imagem) (opcional)</label>
+        <input id="mascoteImg" type="file" accept="image/png,image/jpeg" />
+      </div>
 
-          <div>
-            <label>Horário</label>
-            <input id="hora" placeholder="20:00" required>
-          </div>
+      <div>
+        <label>Escudo 1 (upload) *</label>
+        <input id="escudo1" type="file" accept="image/png,image/jpeg" required />
+      </div>
 
-          <div>
-            <label>Arena / Local</label>
-            <input id="arena" placeholder="Arena Municipal" required>
-          </div>
+      <div>
+        <label>Escudo 2 (upload) *</label>
+        <input id="escudo2" type="file" accept="image/png,image/jpeg" required />
+      </div>
 
-          <!-- NOVO: ESCUDO DO ADVERSÁRIO -->
-          <div>
-            <label>Escudo do adversário *</label>
-            <input id="escudo2" type="file" accept="image/png,image/jpeg" required>
-          </div>
+      <div class="full">
+        <label>Patrocinadores (opcional) — pode selecionar vários</label>
+        <input id="patrocinadores" type="file" accept="image/png,image/jpeg" multiple />
+        <div class="hint">Cada patrocinador é uma imagem. (Depois a gente coloca o cálculo do +R$2.)</div>
+      </div>
 
-          <div>
-            <label>Patrocinadores (opcional)</label>
-            <input id="patrocinadores" type="file" multiple>
-          </div>
-        </div>
+      <div class="full row" style="margin-top:6px">
+        <button class="btnGreen" id="btnEnviar" type="submit">Enviar pedido</button>
+        <button class="btnBlue" id="btnLimpar" type="button">Limpar</button>
+      </div>
 
-        <div class="actionsRow">
-          <button class="btnGreen" id="btnEnviar" type="submit">Enviar</button>
-          <button class="btnGhost" id="btnLimpar" type="button">Limpar</button>
-        </div>
-
-        <div class="msg" id="msgPedido"></div>
-      </form>
-    </section>
-
+      <div class="full msg" id="msgPedido"></div>
+    </form>
   </div>
-</div>
 
-<script>
-  const API_BASE = "https://api.omascote.com.br";
-  const token = localStorage.getItem("omascote_token");
-  if(!token) location.href = "index.html";
+  <script>
+    const API_BASE = "https://api.omascote.com.br";
 
-  const nome = localStorage.getItem("omascote_nome_time") || "TIME";
-  document.getElementById("welcome").textContent = nome;
-  document.getElementById("nomeTime").textContent = nome;
+    const token = localStorage.getItem("omascote_token");
+    if (!token) window.location.href = "index.html";
 
-  const escudoInput = document.getElementById("escudo1");
-  const escudoPreview = document.getElementById("escudoPreview");
+    const welcomeEl = document.getElementById("welcome");
+    const planoEl = document.getElementById("plano");
+    const usadosEl = document.getElementById("usados");
+    const statusEl = document.getElementById("status");
+    const msgEl = document.getElementById("msg");
+    const msgPedidoEl = document.getElementById("msgPedido");
+    const btnEnviar = document.getElementById("btnEnviar");
 
-  escudoInput.addEventListener("change", () => {
-    const f = escudoInput.files[0];
-    if(f){
-      escudoPreview.src = URL.createObjectURL(f);
+    function setMsg(t){
+      msgEl.textContent = t || "";
     }
-  });
 
-  document.getElementById("btnSair").onclick = () => {
-    localStorage.clear();
-    location.href = "index.html";
-  };
-</script>
+    function setMsgPedido(t){
+      msgPedidoEl.textContent = t || "";
+    }
 
+    function applyLocal(){
+      const nome = localStorage.getItem("omascote_nome_time") || "";
+      const plano = localStorage.getItem("omascote_plano") || "";
+      const usados = localStorage.getItem("omascote_usados") || "";
+
+      welcomeEl.textContent = BEM-VINDO, ${nome || "TIME"};
+      planoEl.textContent = Plano: ${plano || "—"} pedidos/mês;
+      usadosEl.textContent = Usados no mês: ${usados || "—"};
+    }
+
+    async function refreshMe(){
+      statusEl.textContent = "Status: carregando…";
+      try{
+        const r = await fetch(${API_BASE}/me, {
+          headers: { "Authorization": Bearer ${token} }
+        });
+
+        const data = await r.json().catch(()=>({}));
+
+        if(!r.ok || !data.ok){
+          statusEl.textContent = "Status: sessão inválida";
+          setMsg("Sessão expirada. Faça login novamente.");
+          localStorage.removeItem("omascote_token");
+          setTimeout(()=>window.location.href="index.html", 600);
+          return;
+        }
+
+        localStorage.setItem("omascote_nome_time", data.nome_time || "");
+        localStorage.setItem("omascote_plano", String(data.plano ?? ""));
+        localStorage.setItem("omascote_usados", String(data.usados_no_ciclo ?? ""));
+
+        applyLocal();
+        statusEl.textContent = data.ativo ? "Status: ativo" : "Status: inativo";
+        setMsg("Dados atualizados com sucesso.");
+      }catch(e){
+        statusEl.textContent = "Status: erro de rede";
+        setMsg("Erro de rede ao atualizar. Tente novamente.");
+      }
+    }
+
+    document.getElementById("btnSair").addEventListener("click", () => {
+      localStorage.removeItem("omascote_token");
+      localStorage.removeItem("omascote_nome_time");
+      localStorage.removeItem("omascote_plano");
+      localStorage.removeItem("omascote_usados");
+      window.location.href = "index.html";
+    });
+
+    document.getElementById("btnAtualizar").addEventListener("click", refreshMe);
+
+    document.getElementById("btnLimpar").addEventListener("click", () => {
+      document.getElementById("pedidoForm").reset();
+      setMsgPedido("");
+    });
+
+    // Envio do pedido
+    document.getElementById("pedidoForm").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      setMsgPedido("");
+
+      const rodada = document.getElementById("rodada").value.trim();
+      const data = document.getElementById("dataJogo").value.trim();
+      const hora = document.getElementById("hora").value.trim();
+      const arena = document.getElementById("arena").value.trim();
+      const mascote_tipo = document.getElementById("mascoteTipo").value.trim();
+
+      const escudo1 = document.getElementById("escudo1").files[0];
+      const escudo2 = document.getElementById("escudo2").files[0];
+      const mascote = document.getElementById("mascoteImg").files[0];
+      const patrocinadores = Array.from(document.getElementById("patrocinadores").files || []);
+
+      if(!rodada || !data || !hora || !arena){
+        setMsgPedido("Preencha Rodada/Fase, Data, Horário e Arena.");
+        return;
+      }
+
+      if(!escudo1 || !escudo2){
+        setMsgPedido("Envie Escudo 1 e Escudo 2.");
+        return;
+      }
+
+      const fd = new FormData();
+      fd.append("rodada", rodada);
+      fd.append("data", data);
+      fd.append("hora", hora);
+      fd.append("arena", arena);
+      if(mascote_tipo) fd.append("mascote_tipo", mascote_tipo);
+
+      fd.append("escudo1", escudo1);
+      fd.append("escudo2", escudo2);
+      if(mascote) fd.append("mascote", mascote);
+
+      patrocinadores.forEach(f => fd.append("patrocinadores", f));
+
+      btnEnviar.disabled = true;
+      btnEnviar.textContent = "Enviando...";
+
+      try{
+        const r = await fetch(${API_BASE}/pedidos, {
+          method: "POST",
+          headers: { "Authorization": Bearer ${token} },
+          body: fd
+        });
+
+        const out = await r.json().catch(()=>({}));
+
+        if(!r.ok || !out.ok){
+          setMsgPedido(out.error || "Não foi possível enviar o pedido.");
+          btnEnviar.disabled = false;
+          btnEnviar.textContent = "Enviar pedido";
+          return;
+        }
+
+        setMsgPedido(✅ Pedido enviado! ID: ${out.pedido_id});
+        document.getElementById("pedidoForm").reset();
+
+        // atualiza contador no topo
+        await refreshMe();
+
+      }catch(err){
+        setMsgPedido("Erro de rede ao enviar. Tente novamente.");
+      }finally{
+        btnEnviar.disabled = false;
+        btnEnviar.textContent = "Enviar pedido";
+      }
+    });
+
+    applyLocal();
+    refreshMe();
+  </script>
 </body>
 </html>
