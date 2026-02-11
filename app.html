@@ -1,1 +1,674 @@
-<!doctype html> <html lang="pt-br"> <head> <meta charset="utf-8" /> <meta name="viewport" content="width=device-width,initial-scale=1" /> <title>O Mascote — Painel</title> <style> :root{ --bg0:#070a12; --bg1:#0b1020; --card:#0f172a; --card2:#0b1222; --stroke:#223055; --stroke2:#2b3a5e; --txt:#ffffff; --muted:rgba(255,255,255,.75); /* cores dinâmicas do escudo (JS atualiza) */ --accent1:#2f5bff; --accent2:#1730a8; --gold:#d7b05a; --radius:18px; --radius2:14px; --shadow:0 20px 60px rgba(0,0,0,.45); --shadow2:0 10px 28px rgba(0,0,0,.35); } *{box-sizing:border-box} body{ font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, Helvetica, sans-serif; color:var(--txt); margin:0; min-height:100vh; padding:20px 14px 28px; background: radial-gradient(1200px 800px at 30% 10%, color-mix(in oklab, var(--accent1) 35%, transparent) 0%, transparent 55%), radial-gradient(1000px 700px at 70% 20%, color-mix(in oklab, var(--accent2) 30%, transparent) 0%, transparent 55%), radial-gradient(900px 600px at 50% 90%, rgba(255,255,255,.06) 0%, transparent 60%), linear-gradient(180deg, var(--bg0), var(--bg1)); } .wrap{ max-width:520px; margin:0 auto; } .topbar{ display:flex; justify-content:space-between; align-items:center; gap:12px; margin:6px 2px 14px; } .row{display:flex; gap:10px; flex-wrap:wrap; justify-content:flex-end; align-items:center} button{ padding:10px 14px; border:0; border-radius:999px; color:#fff; font-weight:800; cursor:pointer; transition:transform .08s ease, filter .15s ease, opacity .15s ease; box-shadow:var(--shadow2); letter-spacing:.2px; } button:active{transform:translateY(1px)} button:disabled{opacity:.55; cursor:not-allowed} .btnBlue{ background:linear-gradient(135deg, color-mix(in oklab, var(--accent1) 90%, #ffffff 10%), color-mix(in oklab, var(--accent2) 90%, #000 10%)); } .btnRed{ background:linear-gradient(135deg, #ff4f4f, #c22d2d); } .btnGreen{ background:linear-gradient(135deg, #2ecc71, #1b9b51); border-radius:16px; padding:14px 18px; min-width:170px; font-size:16px; } /* “cartão grande” estilo app */ .panel{ border-radius:24px; padding:18px 16px 18px; background: radial-gradient(900px 500px at 50% -10%, rgba(255,255,255,.10) 0%, transparent 55%), linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.03)); border:1px solid rgba(255,255,255,.10); box-shadow:var(--shadow); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); } .welcomeBox{ text-align:center; padding:10px 8px 6px; } .welcomeLabel{ font-size:13px; letter-spacing:.22em; text-transform:uppercase; color:rgba(255,255,255,.7); margin-bottom:8px; } h1{ margin:0; font-size:28px; line-height:1.05; letter-spacing:.2px; text-shadow:0 10px 25px rgba(0,0,0,.35); } .sub{ margin:8px 0 0; font-size:13px; color:rgba(255,255,255,.72); } .crestWrap{ display:flex; justify-content:center; margin:14px 0 12px; } .crestCard{ width:min(320px, 92vw); aspect-ratio: 1 / 1; border-radius:22px; background: radial-gradient(280px 200px at 50% 20%, rgba(255,255,255,.10) 0%, transparent 60%), linear-gradient(180deg, rgba(255,255,255,.05), rgba(0,0,0,.10)); border:1px solid rgba(255,255,255,.10); display:flex; align-items:center; justify-content:center; overflow:hidden; position:relative; box-shadow:var(--shadow2); } .crestGlow{ position:absolute; inset:-40%; background: radial-gradient(circle at 50% 50%, color-mix(in oklab, var(--accent1) 35%, transparent) 0%, transparent 55%), radial-gradient(circle at 45% 55%, color-mix(in oklab, var(--accent2) 25%, transparent) 0%, transparent 65%); filter: blur(18px); opacity:.9; pointer-events:none; } .crestImg{ width:78%; height:78%; object-fit:contain; filter: drop-shadow(0 18px 24px rgba(0,0,0,.45)); position:relative; z-index:2; } .crestPlaceholder{ width:86%; height:86%; display:flex; align-items:center; justify-content:center; text-align:center; padding:16px; border-radius:18px; border:1px dashed rgba(255,255,255,.20); color:rgba(255,255,255,.70); position:relative; z-index:2; background:rgba(0,0,0,.12); font-weight:700; font-size:13px; line-height:1.35; } .card{ margin-top:10px; background:rgba(5,10,22,.55); border:1px solid rgba(255,255,255,.10); border-radius:18px; padding:14px; } .meta{ display:flex; gap:10px; flex-wrap:wrap; justify-content:center; margin-top:4px; } .pill{ background:rgba(0,0,0,.22); border:1px solid rgba(255,255,255,.12); border-radius:999px; padding:8px 12px; font-size:12px; color:rgba(255,255,255,.90); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); } .msg{margin-top:10px; font-size:13px; color:rgba(255,255,255,.85); text-align:center} .sep{ height:1px; background:linear-gradient(90deg, transparent, rgba(255,255,255,.18), transparent); margin:14px 0 14px; } h2{ margin:0; font-size:18px; text-align:center; letter-spacing:.3px; } .hint{ font-size:12px; color:rgba(255,255,255,.65); margin-top:6px; text-align:center; } .formGrid{ display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-top:14px; } .full{grid-column:1 / -1} label{ display:block; font-size:12px; color:rgba(255,255,255,.78); margin:0 0 6px; } input, textarea{ width:100%; padding:12px 12px; border-radius:14px; border:1px solid rgba(255,255,255,.12); background:rgba(0,0,0,.22); color:#fff; outline:none; box-shadow: inset 0 1px 0 rgba(255,255,255,.04); } input:focus, textarea:focus{ border-color: color-mix(in oklab, var(--accent1) 70%, #ffffff 10%); box-shadow: 0 0 0 3px rgba(79,124,255,.18); } textarea{min-height:70px; resize:vertical} .submitRow{ display:flex; justify-content:center; margin-top:4px; } .msgSmall{ margin-top:10px; font-size:13px; text-align:center; color:rgba(255,255,255,.85); } /* deixa responsivo no celular */ @media (max-width:520px){ .formGrid{grid-template-columns:1fr} h1{font-size:26px} .crestCard{width:min(300px, 92vw)} } </style> </head> <body> <div class="wrap"> <!-- Topbar com botões (estrutura original mantida via IDs) --> <div class="topbar"> <div style="opacity:.85; font-weight:800; letter-spacing:.14em; font-size:12px; text-transform:uppercase"> O Mascote </div> <div class="row"> <button class="btnBlue" id="btnAtualizar">Atualizar</button> <button class="btnRed" id="btnSair">Sair</button> </div> </div> <div class="panel"> <!-- Bem-vindo + time acima do escudo --> <div class="welcomeBox"> <div class="welcomeLabel">Bem-vindo</div> <h1 id="welcome">Seu time</h1> <div class="sub">Seu painel de pedidos</div> </div> <!-- Escudo centralizado --> <div class="crestWrap"> <div class="crestCard" id="crestCard"> <div class="crestGlow"></div> <img id="crestPreview" class="crestImg" alt="Escudo do time" style="display:none" /> <div id="crestPlaceholder" class="crestPlaceholder"> Envie o escudo do seu time<br/>para personalizar o visual do app </div> </div> </div> <!-- Status do plano --> <div class="card"> <div class="meta"> <div class="pill" id="plano">Plano: —</div> <div class="pill" id="usados">Usados no mês: —</div> <div class="pill" id="status">Status: —</div> </div> <div class="msg" id="msg"></div> <div class="sep"></div> <h2>Criar pedido</h2> <div class="hint">Preencha os dados e envie. Os arquivos ficam salvos para próximos pedidos.</div> <!-- FORM E IDS ORIGINAIS (não mexi) --> <form id="pedidoForm" class="formGrid" enctype="multipart/form-data"> <div> <label>Rodada / Fase *</label> <input id="rodada" required /> </div> <div> <label>Data do jogo *</label> <input id="dataJogo" required /> </div> <div> <label>Horário *</label> <input id="hora" required /> </div> <div> <label>Arena / Local *</label> <input id="arena" required /> </div> <div class="full"> <label>Mascote (opcional)</label> <input id="mascote" type="file" /> </div> <div> <label>Escudo 1 *</label> <input id="escudo1" type="file" required /> </div> <div> <label>Escudo 2 *</label> <input id="escudo2" type="file" required /> </div> <!-- ✅ PATROCINADORES (opcional) - múltiplos --> <div class="full"> <label>Imagens de patrocinadores (opcional) — pode enviar várias</label> <input id="patrocinadores" type="file" multiple /> <div class="hint">Dica: segure Ctrl (Windows) para selecionar vários arquivos.</div> </div> <div class="full submitRow"> <button class="btnGreen" id="btnEnviar" type="submit">Criar pedido</button> </div> <div class="full msgSmall" id="msgPedido"></div> </form> </div> </div> </div> <script> const API_BASE = "https://api.omascote.com.br"; const token = localStorage.getItem("omascote_token"); if (!token) window.location.href = "index.html"; const welcomeEl = document.getElementById("welcome"); const planoEl = document.getElementById("plano"); const usadosEl = document.getElementById("usados"); const statusEl = document.getElementById("status"); const msgPedidoEl = document.getElementById("msgPedido"); // ==== VISUAL: escudo salvo + preview + cores do fundo (NÃO afeta estrutura do pedido) ==== const crestPreview = document.getElementById("crestPreview"); const crestPlaceholder = document.getElementById("crestPlaceholder"); const escudo1Input = document.getElementById("escudo1"); // chave de storage só do visual (não interfere no backend) const CREST_KEY = "omascote_escudo_principal_dataurl"; function setCrestUI(dataUrl){ if(!dataUrl){ crestPreview.style.display = "none"; crestPlaceholder.style.display = "flex"; return; } crestPreview.src = dataUrl; crestPreview.style.display = "block"; crestPlaceholder.style.display = "none"; // quando carregar, extrai cor e aplica no fundo crestPreview.onload = () => { try{ applyThemeFromImage(crestPreview); }catch(e){} }; } function readFileAsDataURL(file){ return new Promise((resolve, reject)=>{ const r = new FileReader(); r.onload = () => resolve(r.result); r.onerror = reject; r.readAsDataURL(file); }); } /* Extrai uma “cor média” e uma segunda cor mais escura para o gradiente */ function applyThemeFromImage(img){ const c = document.createElement("canvas"); const ctx = c.getContext("2d", { willReadFrequently:true }); const w = 80, h = 80; c.width = w; c.height = h; ctx.drawImage(img, 0, 0, w, h); const { data } = ctx.getImageData(0,0,w,h); // amostra simples (ignora pixels transparentes) let r=0,g=0,b=0, n=0; for(let i=0;i<data.length;i+=16){ // pula pixels pra ser leve const a = data[i+3]; if(a < 40) continue; const rr = data[i], gg = data[i+1], bb = data[i+2]; // ignora quase-branco (evita puxar fundo branco do escudo) const max = Math.max(rr,gg,bb); const min = Math.min(rr,gg,bb); if(max > 245 && (max-min) < 12) continue; r += rr; g += gg; b += bb; n++; } if(n < 20) return; r = Math.round(r/n); g = Math.round(g/n); b = Math.round(b/n); // cria uma segunda cor mais escura pro gradiente const r2 = Math.max(0, Math.round(r * 0.55)); const g2 = Math.max(0, Math.round(g * 0.55)); const b2 = Math.max(0, Math.round(b * 0.55)); document.documentElement.style.setProperty("--accent1", rgb(${r},${g},${b})); document.documentElement.style.setProperty("--accent2", rgb(${r2},${g2},${b2})); } // quando usuário escolher escudo1, salva pro visual e mostra no topo escudo1Input.addEventListener("change", async ()=>{ const f = escudo1Input.files && escudo1Input.files[0]; if(!f) return; try{ const dataUrl = await readFileAsDataURL(f); localStorage.setItem(CREST_KEY, dataUrl); setCrestUI(dataUrl); }catch(e){} }); // carrega escudo salvo (se já tiver usado antes) setCrestUI(localStorage.getItem(CREST_KEY) || ""); // ==== LÓGICA ORIGINAL (mantida) ==== function applyLocal(){ const nome = localStorage.getItem("omascote_nome_time") || ""; const plano = localStorage.getItem("omascote_plano") || ""; const usados = localStorage.getItem("omascote_usados") || ""; // agora o H1 vira o nome do time (visual como na sua referência) welcomeEl.textContent = nome || "Seu time"; planoEl.textContent = Plano: ${plano || "—"} pedidos/mês; usadosEl.textContent = Usados no mês: ${usados || "—"}; } async function refreshMe(){ try{ const r = await fetch(${API_BASE}/me, { headers: { "Authorization": "Bearer " + token } }); const data = await r.json(); if(data.ok){ localStorage.setItem("omascote_nome_time", data.nome_time || ""); localStorage.setItem("omascote_plano", data.plano || ""); localStorage.setItem("omascote_usados", data.usados_no_ciclo || ""); applyLocal(); statusEl.textContent = data.ativo ? "Status: ativo" : "Status: inativo"; } }catch{} } document.getElementById("pedidoForm").addEventListener("submit", async (e)=>{ e.preventDefault(); msgPedidoEl.textContent = "Enviando..."; const fd = new FormData(); fd.append("rodada", document.getElementById("rodada").value); fd.append("data", document.getElementById("dataJogo").value); fd.append("hora", document.getElementById("hora").value); fd.append("arena", document.getElementById("arena").value); const mascoteFile = document.getElementById("mascote").files[0]; if (mascoteFile) fd.append("mascote", mascoteFile); fd.append("escudo1", document.getElementById("escudo1").files[0]); fd.append("escudo2", document.getElementById("escudo2").files[0]); // ✅ PATROCINADORES (múltiplos) const pats = document.getElementById("patrocinadores").files; for (const file of pats) { fd.append("patrocinadores", file); } try{ const r = await fetch(${API_BASE}/pedidos, { method:"POST", headers:{ "Authorization": "Bearer " + token }, body:fd }); const out = await r.json(); if(out.ok){ msgPedidoEl.textContent = ✅ Pedido enviado! ID: ${out.pedido_id}; refreshMe(); } else { msgPedidoEl.textContent = out.error || "Erro ao enviar"; } }catch{ msgPedidoEl.textContent = "Erro de rede"; } }); applyLocal(); refreshMe(); // botões document.getElementById("btnSair").addEventListener("click", ()=>{ localStorage.removeItem("omascote_token"); window.location.href = "index.html"; }); document.getElementById("btnAtualizar").addEventListener("click", refreshMe); </script> </body> </html>
+<!doctype html>
+<html lang="pt-br">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>O Mascote — Painel</title>
+
+  <style>
+    :root{
+      --bg0:#070a12;
+      --bg1:#0b1020;
+      --card:#0f172a;
+      --card2:#0b1222;
+      --stroke:#223055;
+      --stroke2:#2b3a5e;
+      --txt:#ffffff;
+      --muted:rgba(255,255,255,.75);
+
+      --accent1:#2f5bff;
+      --accent2:#1730a8;
+      --gold:#d7b05a;
+
+      --radius:18px;
+      --radius2:14px;
+      --shadow:0 20px 60px rgba(0,0,0,.45);
+      --shadow2:0 10px 28px rgba(0,0,0,.35);
+    }
+
+    *{box-sizing:border-box}
+    body{
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, Helvetica, sans-serif;
+      color:var(--txt);
+      margin:0;
+      min-height:100vh;
+      padding:20px 14px 28px;
+      background:
+        radial-gradient(1200px 800px at 30% 10%, color-mix(in oklab, var(--accent1) 35%, transparent) 0%, transparent 55%),
+        radial-gradient(1000px 700px at 70% 20%, color-mix(in oklab, var(--accent2) 30%, transparent) 0%, transparent 55%),
+        radial-gradient(900px 600px at 50% 90%, rgba(255,255,255,.06) 0%, transparent 60%),
+        linear-gradient(180deg, var(--bg0), var(--bg1));
+    }
+
+    .wrap{max-width:520px;margin:0 auto}
+
+    .topbar{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:12px;
+      margin:6px 2px 14px;
+    }
+
+    .row{display:flex; gap:10px; flex-wrap:wrap; justify-content:flex-end; align-items:center}
+
+    button{
+      padding:10px 14px;
+      border:0;
+      border-radius:999px;
+      color:#fff;
+      font-weight:800;
+      cursor:pointer;
+      transition:transform .08s ease, filter .15s ease, opacity .15s ease;
+      box-shadow:var(--shadow2);
+      letter-spacing:.2px;
+    }
+    button:active{transform:translateY(1px)}
+    button:disabled{opacity:.55; cursor:not-allowed}
+
+    .btnBlue{
+      background:linear-gradient(135deg,
+        color-mix(in oklab, var(--accent1) 90%, #ffffff 10%),
+        color-mix(in oklab, var(--accent2) 90%, #000 10%)
+      );
+    }
+    .btnRed{background:linear-gradient(135deg, #ff4f4f, #c22d2d)}
+    .btnGreen{
+      background:linear-gradient(135deg, #2ecc71, #1b9b51);
+      border-radius:16px;
+      padding:14px 18px;
+      min-width:170px;
+      font-size:16px;
+    }
+
+    .panel{
+      border-radius:24px;
+      padding:18px 16px 18px;
+      background:
+        radial-gradient(900px 500px at 50% -10%, rgba(255,255,255,.10) 0%, transparent 55%),
+        linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.03));
+      border:1px solid rgba(255,255,255,.10);
+      box-shadow:var(--shadow);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+    }
+
+    .welcomeBox{
+      text-align:center;
+      padding:10px 8px 6px;
+    }
+    .welcomeLabel{
+      font-size:13px;
+      letter-spacing:.22em;
+      text-transform:uppercase;
+      color:rgba(255,255,255,.7);
+      margin-bottom:8px;
+    }
+    h1{
+      margin:0;
+      font-size:28px;
+      line-height:1.05;
+      letter-spacing:.2px;
+      text-shadow:0 10px 25px rgba(0,0,0,.35);
+    }
+    .sub{
+      margin:8px 0 0;
+      font-size:13px;
+      color:rgba(255,255,255,.72);
+    }
+
+    .crestWrap{display:flex;justify-content:center;margin:14px 0 12px}
+    .crestCard{
+      width:min(320px, 92vw);
+      aspect-ratio: 1 / 1;
+      border-radius:22px;
+      background:
+        radial-gradient(280px 200px at 50% 20%, rgba(255,255,255,.10) 0%, transparent 60%),
+        linear-gradient(180deg, rgba(255,255,255,.05), rgba(0,0,0,.10));
+      border:1px solid rgba(255,255,255,.10);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      overflow:hidden;
+      position:relative;
+      box-shadow:var(--shadow2);
+    }
+    .crestGlow{
+      position:absolute;
+      inset:-40%;
+      background:
+        radial-gradient(circle at 50% 50%, color-mix(in oklab, var(--accent1) 35%, transparent) 0%, transparent 55%),
+        radial-gradient(circle at 45% 55%, color-mix(in oklab, var(--accent2) 25%, transparent) 0%, transparent 65%);
+      filter: blur(18px);
+      opacity:.9;
+      pointer-events:none;
+    }
+    .crestImg{
+      width:78%;
+      height:78%;
+      object-fit:contain;
+      filter: drop-shadow(0 18px 24px rgba(0,0,0,.45));
+      position:relative;
+      z-index:2;
+    }
+    .crestPlaceholder{
+      width:86%;
+      height:86%;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      text-align:center;
+      padding:16px;
+      border-radius:18px;
+      border:1px dashed rgba(255,255,255,.20);
+      color:rgba(255,255,255,.70);
+      position:relative;
+      z-index:2;
+      background:rgba(0,0,0,.12);
+      font-weight:700;
+      font-size:13px;
+      line-height:1.35;
+    }
+
+    .card{
+      margin-top:10px;
+      background:rgba(5,10,22,.55);
+      border:1px solid rgba(255,255,255,.10);
+      border-radius:18px;
+      padding:14px;
+    }
+
+    .meta{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      justify-content:center;
+      margin-top:4px;
+    }
+    .pill{
+      background:rgba(0,0,0,.22);
+      border:1px solid rgba(255,255,255,.12);
+      border-radius:999px;
+      padding:8px 12px;
+      font-size:12px;
+      color:rgba(255,255,255,.90);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+    }
+
+    .msg{margin-top:10px;font-size:13px;color:rgba(255,255,255,.85);text-align:center}
+    .sep{
+      height:1px;
+      background:linear-gradient(90deg, transparent, rgba(255,255,255,.18), transparent);
+      margin:14px 0 14px;
+    }
+
+    h2{
+      margin:0;
+      font-size:18px;
+      text-align:center;
+      letter-spacing:.3px;
+    }
+    .hint{
+      font-size:12px;
+      color:rgba(255,255,255,.65);
+      margin-top:6px;
+      text-align:center;
+    }
+
+    /* ====== TABS (SÓ HTML/CSS) ====== */
+    .tabs{display:flex;gap:10px;justify-content:center;margin:10px 0 8px}
+    .tabRadio{position:absolute;left:-9999px;opacity:0}
+    .tabBtn{
+      user-select:none;
+      padding:10px 14px;
+      border-radius:999px;
+      font-weight:900;
+      cursor:pointer;
+      box-shadow:var(--shadow2);
+      background:rgba(0,0,0,.18);
+      border:1px solid rgba(255,255,255,.10);
+      color:#fff;
+      opacity:.7;
+      transition:opacity .15s ease, transform .08s ease;
+    }
+    .tabBtn:active{transform:translateY(1px)}
+    #tab_flyer:checked + label{opacity:1;background:linear-gradient(135deg, color-mix(in oklab, var(--accent1) 90%, #ffffff 10%), color-mix(in oklab, var(--accent2) 90%, #000 10%))}
+    #tab_mascote:checked + label{opacity:1;background:linear-gradient(135deg, color-mix(in oklab, var(--accent1) 90%, #ffffff 10%), color-mix(in oklab, var(--accent2) 90%, #000 10%))}
+    #tab_contrat:checked + label{opacity:1;background:linear-gradient(135deg, color-mix(in oklab, var(--accent1) 90%, #ffffff 10%), color-mix(in oklab, var(--accent2) 90%, #000 10%))}
+
+    /* ====== FORM LAYOUT COM GRID-AREAS (reordena SEM JS) ====== */
+    .formGrid{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:12px;
+      margin-top:14px;
+      grid-template-areas:
+        "rodada data"
+        "hora arena"
+        "mascote mascote"
+        "esc1 esc2"
+        "patro patro"
+        "submit submit"
+        "msg msg";
+    }
+    .full{grid-column:1 / -1}
+    label{
+      display:block;
+      font-size:12px;
+      color:rgba(255,255,255,.78);
+      margin:0 0 6px;
+    }
+    input, textarea{
+      width:100%;
+      padding:12px 12px;
+      border-radius:14px;
+      border:1px solid rgba(255,255,255,.12);
+      background:rgba(0,0,0,.22);
+      color:#fff;
+      outline:none;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.04);
+    }
+    input:focus, textarea:focus{
+      border-color: color-mix(in oklab, var(--accent1) 70%, #ffffff 10%);
+      box-shadow: 0 0 0 3px rgba(79,124,255,.18);
+    }
+    textarea{min-height:70px; resize:vertical}
+
+    .submitRow{display:flex;justify-content:center;margin-top:4px}
+    .msgSmall{margin-top:10px;font-size:13px;text-align:center;color:rgba(255,255,255,.85)}
+
+    .field-rodada{grid-area:rodada}
+    .field-data{grid-area:data}
+    .field-hora{grid-area:hora}
+    .field-arena{grid-area:arena}
+    .field-mascote{grid-area:mascote}
+    .field-esc1{grid-area:esc1}
+    .field-esc2{grid-area:esc2}
+    .field-patro{grid-area:patro}
+    .field-submit{grid-area:submit}
+    .field-msg{grid-area:msg}
+
+    /* ====== TEXTOS POR ABA (SÓ HTML/CSS) ====== */
+    .t-flyer{display:inline}
+    .t-mascote{display:none}
+    .t-contrat{display:none}
+
+    #tab_mascote:checked ~ .card .t-flyer{display:none}
+    #tab_mascote:checked ~ .card .t-mascote{display:inline}
+    #tab_mascote:checked ~ .card .t-contrat{display:none}
+
+    #tab_contrat:checked ~ .card .t-flyer{display:none}
+    #tab_contrat:checked ~ .card .t-mascote{display:none}
+    #tab_contrat:checked ~ .card .t-contrat{display:inline}
+
+    /* ====== REGRAS VISUAIS DA ABA MASCOTE ====== */
+    #tab_mascote:checked ~ .card #plano{display:none}
+    #tab_mascote:checked ~ .card #usados{display:none}
+
+    #tab_mascote:checked ~ .card .field-arena{display:none}
+    #tab_mascote:checked ~ .card .field-patro{display:none}
+
+    /* Reordena para: esc1 + esc2 e depois mascote */
+    #tab_mascote:checked ~ .card .formGrid{
+      grid-template-areas:
+        "rodada data"
+        "hora hora"
+        "esc1 esc2"
+        "mascote mascote"
+        "submit submit"
+        "msg msg";
+    }
+
+    /* ====== REGRAS VISUAIS DA ABA CONTRATAÇÃO (placeholder visual) ====== */
+    #tab_contrat:checked ~ .card #plano{display:none}
+    #tab_contrat:checked ~ .card #usados{display:none}
+    #tab_contrat:checked ~ .card .field-arena{display:none}
+    #tab_contrat:checked ~ .card .field-patro{display:none}
+    #tab_contrat:checked ~ .card .formGrid{
+      grid-template-areas:
+        "rodada data"
+        "hora hora"
+        "esc1 esc2"
+        "mascote mascote"
+        "submit submit"
+        "msg msg";
+    }
+
+    /* Responsivo */
+    @media (max-width:520px){
+      .formGrid{grid-template-columns:1fr}
+      h1{font-size:26px}
+      .crestCard{width:min(300px, 92vw)}
+      .formGrid{
+        grid-template-areas:
+          "rodada"
+          "data"
+          "hora"
+          "arena"
+          "mascote"
+          "esc1"
+          "esc2"
+          "patro"
+          "submit"
+          "msg";
+      }
+      #tab_mascote:checked ~ .card .formGrid,
+      #tab_contrat:checked ~ .card .formGrid{
+        grid-template-areas:
+          "rodada"
+          "data"
+          "hora"
+          "esc1"
+          "esc2"
+          "mascote"
+          "submit"
+          "msg";
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="wrap">
+
+    <div class="topbar">
+      <div style="opacity:.85; font-weight:800; letter-spacing:.14em; font-size:12px; text-transform:uppercase">
+        O Mascote
+      </div>
+      <div class="row">
+        <button class="btnBlue" id="btnAtualizar">Atualizar</button>
+        <button class="btnRed" id="btnSair">Sair</button>
+      </div>
+    </div>
+
+    <div class="panel">
+
+      <div class="welcomeBox">
+        <div class="welcomeLabel">Bem-vindo</div>
+        <h1 id="welcome">Seu time</h1>
+        <div class="sub">Seu painel de pedidos</div>
+      </div>
+
+      <!-- TABS (HTML/CSS apenas) -->
+      <div class="tabs">
+        <input class="tabRadio" type="radio" name="aba" id="tab_flyer" checked>
+        <label class="tabBtn" for="tab_flyer">Flyer</label>
+
+        <input class="tabRadio" type="radio" name="aba" id="tab_mascote">
+        <label class="tabBtn" for="tab_mascote">Mascotes</label>
+
+        <input class="tabRadio" type="radio" name="aba" id="tab_contrat">
+        <label class="tabBtn" for="tab_contrat">Contratação</label>
+      </div>
+
+      <div class="crestWrap">
+        <div class="crestCard" id="crestCard">
+          <div class="crestGlow"></div>
+          <img id="crestPreview" class="crestImg" alt="Escudo do time" style="display:none" />
+          <div id="crestPlaceholder" class="crestPlaceholder">
+            Envie o escudo do seu time<br/>para personalizar o visual do app
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="meta">
+          <div class="pill" id="plano">Plano: —</div>
+          <div class="pill" id="usados">Usados no mês: —</div>
+          <div class="pill" id="status">Status: —</div>
+        </div>
+
+        <div class="msg" id="msg"></div>
+        <div class="sep"></div>
+
+        <h2>
+          <span class="t-flyer">Criar pedido</span>
+          <span class="t-mascote">Criar mascote</span>
+          <span class="t-contrat">Contratação</span>
+        </h2>
+
+        <div class="hint">
+          <span class="t-flyer">Preencha os dados e envie. Os arquivos ficam salvos para próximos pedidos.</span>
+          <span class="t-mascote">Preencha os dados e envie. Os arquivos ficam salvos para próximos pedidos.</span>
+          <span class="t-contrat">Preencha os dados e envie. Os arquivos ficam salvos para próximos pedidos.</span>
+        </div>
+
+        <form id="pedidoForm" class="formGrid" enctype="multipart/form-data">
+
+          <div class="field-rodada">
+            <label>
+              <span class="t-flyer">Rodada / Fase *</span>
+              <span class="t-mascote">Nome do time *</span>
+              <span class="t-contrat">Nome do time *</span>
+            </label>
+            <input id="rodada" required />
+          </div>
+
+          <div class="field-data">
+            <label>
+              <span class="t-flyer">Data do jogo *</span>
+              <span class="t-mascote">Mascote ou animal que quer *</span>
+              <span class="t-contrat">Tipo de contratação *</span>
+            </label>
+            <input id="dataJogo" required />
+          </div>
+
+          <div class="field-hora">
+            <label>
+              <span class="t-flyer">Horário *</span>
+              <span class="t-mascote">Observações</span>
+              <span class="t-contrat">Observações</span>
+            </label>
+            <input id="hora" required />
+          </div>
+
+          <div class="field-arena">
+            <label>
+              <span class="t-flyer">Arena / Local *</span>
+              <span class="t-mascote">Arena / Local *</span>
+              <span class="t-contrat">Arena / Local *</span>
+            </label>
+            <input id="arena" required />
+          </div>
+
+          <div class="field-mascote full">
+            <label>Mascote (opcional)</label>
+            <input id="mascote" type="file" />
+          </div>
+
+          <div class="field-esc1">
+            <label>
+              <span class="t-flyer">Escudo 1 *</span>
+              <span class="t-mascote">Escudo / logo do time *</span>
+              <span class="t-contrat">Escudo / logo do time *</span>
+            </label>
+            <input id="escudo1" type="file" required />
+          </div>
+
+          <div class="field-esc2">
+            <label>
+              <span class="t-flyer">Escudo 2 *</span>
+              <span class="t-mascote">Camiseta *</span>
+              <span class="t-contrat">Camiseta *</span>
+            </label>
+            <input id="escudo2" type="file" required />
+          </div>
+
+          <div class="field-patro full">
+            <label>Imagens de patrocinadores (opcional) — pode enviar várias</label>
+            <input id="patrocinadores" type="file" multiple />
+            <div class="hint">Dica: segure Ctrl (Windows) para selecionar vários arquivos.</div>
+          </div>
+
+          <div class="field-submit full submitRow">
+            <button class="btnGreen" id="btnEnviar" type="submit">Criar pedido</button>
+          </div>
+
+          <div class="field-msg full msgSmall" id="msgPedido"></div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+<script>
+const API_BASE = "https://api.omascote.com.br";
+const token = localStorage.getItem("omascote_token");
+if (!token) window.location.href = "index.html";
+
+const welcomeEl = document.getElementById("welcome");
+const planoEl = document.getElementById("plano");
+const usadosEl = document.getElementById("usados");
+const statusEl = document.getElementById("status");
+const msgPedidoEl = document.getElementById("msgPedido");
+
+// ==== VISUAL: escudo salvo + preview + cores do fundo (NÃO afeta estrutura do pedido) ====
+const crestPreview = document.getElementById("crestPreview");
+const crestPlaceholder = document.getElementById("crestPlaceholder");
+const escudo1Input = document.getElementById("escudo1");
+
+// chave de storage só do visual (não interfere no backend)
+const CREST_KEY = "omascote_escudo_principal_dataurl";
+
+function setCrestUI(dataUrl){
+  if(!dataUrl){
+    crestPreview.style.display = "none";
+    crestPlaceholder.style.display = "flex";
+    return;
+  }
+  crestPreview.src = dataUrl;
+  crestPreview.style.display = "block";
+  crestPlaceholder.style.display = "none";
+  crestPreview.onload = () => {
+    try{ applyThemeFromImage(crestPreview); }catch(e){}
+  };
+}
+
+function readFileAsDataURL(file){
+  return new Promise((resolve, reject)=>{
+    const r = new FileReader();
+    r.onload = () => resolve(r.result);
+    r.onerror = reject;
+    r.readAsDataURL(file);
+  });
+}
+
+function applyThemeFromImage(img){
+  const c = document.createElement("canvas");
+  const ctx = c.getContext("2d", { willReadFrequently:true });
+  const w = 80, h = 80;
+  c.width = w; c.height = h;
+  ctx.drawImage(img, 0, 0, w, h);
+  const { data } = ctx.getImageData(0,0,w,h);
+
+  let r=0,g=0,b=0, n=0;
+  for(let i=0;i<data.length;i+=16){
+    const a = data[i+3];
+    if(a < 40) continue;
+    const rr = data[i], gg = data[i+1], bb = data[i+2];
+    const max = Math.max(rr,gg,bb);
+    const min = Math.min(rr,gg,bb);
+    if(max > 245 && (max-min) < 12) continue;
+    r += rr; g += gg; b += bb; n++;
+  }
+  if(n < 20) return;
+
+  r = Math.round(r/n); g = Math.round(g/n); b = Math.round(b/n);
+
+  const r2 = Math.max(0, Math.round(r * 0.55));
+  const g2 = Math.max(0, Math.round(g * 0.55));
+  const b2 = Math.max(0, Math.round(b * 0.55));
+
+  document.documentElement.style.setProperty("--accent1", `rgb(${r},${g},${b})`);
+  document.documentElement.style.setProperty("--accent2", `rgb(${r2},${g2},${b2})`);
+}
+
+escudo1Input.addEventListener("change", async ()=>{
+  const f = escudo1Input.files && escudo1Input.files[0];
+  if(!f) return;
+  try{
+    const dataUrl = await readFileAsDataURL(f);
+    localStorage.setItem(CREST_KEY, dataUrl);
+    setCrestUI(dataUrl);
+  }catch(e){}
+});
+
+setCrestUI(localStorage.getItem(CREST_KEY) || "");
+
+// ==== LÓGICA ORIGINAL (mantida) ====
+function applyLocal(){
+  const nome = localStorage.getItem("omascote_nome_time") || "";
+  const plano = localStorage.getItem("omascote_plano") || "";
+  const usados = localStorage.getItem("omascote_usados") || "";
+
+  welcomeEl.textContent = nome || "Seu time";
+  planoEl.textContent = `Plano: ${plano || "—"} pedidos/mês`;
+  usadosEl.textContent = `Usados no mês: ${usados || "—"}`;
+}
+
+async function refreshMe(){
+  try{
+    const r = await fetch(`${API_BASE}/me`, {
+      headers: { "Authorization": "Bearer " + token }
+    });
+    const data = await r.json();
+    if(data.ok){
+      localStorage.setItem("omascote_nome_time", data.nome_time || "");
+      localStorage.setItem("omascote_plano", data.plano || "");
+      localStorage.setItem("omascote_usados", data.usados_no_ciclo || "");
+      applyLocal();
+      statusEl.textContent = data.ativo ? "Status: ativo" : "Status: inativo";
+    }
+  }catch{}
+}
+
+document.getElementById("pedidoForm").addEventListener("submit", async (e)=>{
+  e.preventDefault();
+  msgPedidoEl.textContent = "Enviando...";
+
+  const fd = new FormData();
+  fd.append("rodada", document.getElementById("rodada").value);
+  fd.append("data", document.getElementById("dataJogo").value);
+  fd.append("hora", document.getElementById("hora").value);
+  fd.append("arena", document.getElementById("arena").value);
+
+  const mascoteFile = document.getElementById("mascote").files[0];
+  if (mascoteFile) fd.append("mascote", mascoteFile);
+
+  fd.append("escudo1", document.getElementById("escudo1").files[0]);
+  fd.append("escudo2", document.getElementById("escudo2").files[0]);
+
+  const pats = document.getElementById("patrocinadores").files;
+  for (const file of pats) {
+    fd.append("patrocinadores", file);
+  }
+
+  try{
+    const r = await fetch(`${API_BASE}/pedidos`, {
+      method:"POST",
+      headers:{ "Authorization": "Bearer " + token },
+      body:fd
+    });
+    const out = await r.json();
+    if(out.ok){
+      msgPedidoEl.textContent = `✅ Pedido enviado! ID: ${out.pedido_id}`;
+      refreshMe();
+    } else {
+      msgPedidoEl.textContent = out.error || "Erro ao enviar";
+    }
+  }catch{
+    msgPedidoEl.textContent = "Erro de rede";
+  }
+});
+
+applyLocal();
+refreshMe();
+
+document.getElementById("btnSair").addEventListener("click", ()=>{
+  localStorage.removeItem("omascote_token");
+  window.location.href = "index.html";
+});
+document.getElementById("btnAtualizar").addEventListener("click", refreshMe);
+</script>
+</body>
+</html>
