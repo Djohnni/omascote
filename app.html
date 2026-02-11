@@ -462,20 +462,19 @@
 
           <div class="field-hora">
             <label>
-              <span class="t-flyer">Horário *</span>
+              <span class="t-flyer">Horário</span>
               <span class="t-mascote">Observações</span>
               <span class="t-contrat">Observações</span>
             </label>
-            <input id="hora" required />
+            <input id="hora" />
           </div>
 
           <div class="field-arena">
             <label>
-              <span class="t-flyer">Arena / Local *</span>
+              <span class="t-flyer">Arena / Local</span>
               <span class="t-mascote">Arena / Local *</span>
               <span class="t-contrat">Arena / Local *</span>
             </label>
-            <!-- ✅ ÚNICA MUDANÇA: arena sem required -->
             <input id="arena" />
           </div>
 
@@ -628,6 +627,7 @@ async function refreshMe(){
   }catch{}
 }
 
+/* ✅ SÓ ISSO: limpar campos após enviar com sucesso (não mexe em mais nada) */
 function limparCamposAposEnviar(){
   document.getElementById("rodada").value = "";
   document.getElementById("dataJogo").value = "";
@@ -646,8 +646,12 @@ document.getElementById("pedidoForm").addEventListener("submit", async (e)=>{
   const fd = new FormData();
   fd.append("rodada", document.getElementById("rodada").value);
   fd.append("data", document.getElementById("dataJogo").value);
-  fd.append("hora", document.getElementById("hora").value);
-  fd.append("arena", document.getElementById("arena").value);
+
+  const horaVal = document.getElementById("hora").value;
+  if(horaVal) fd.append("hora", horaVal);
+
+  const arenaVal = document.getElementById("arena").value;
+  if(arenaVal) fd.append("arena", arenaVal);
 
   const mascoteFile = document.getElementById("mascote").files[0];
   if (mascoteFile) fd.append("mascote", mascoteFile);
