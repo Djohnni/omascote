@@ -15,120 +15,37 @@
 --shadow:0 20px 60px rgba(0,0,0,.45);
 --shadow2:0 10px 28px rgba(0,0,0,.35);
 }
-
 *{box-sizing:border-box}
-
 body{
-font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial;
+font-family:system-ui;
 color:var(--txt);
 margin:0;
 min-height:100vh;
-padding:20px 14px 28px;
-background:
-radial-gradient(1200px 800px at 30% 10%, color-mix(in oklab, var(--accent1) 35%, transparent) 0%, transparent 55%),
-radial-gradient(1000px 700px at 70% 20%, color-mix(in oklab, var(--accent2) 30%, transparent) 0%, transparent 55%),
-linear-gradient(180deg, var(--bg0), var(--bg1));
+padding:20px;
+background:linear-gradient(180deg,var(--bg0),var(--bg1));
 }
-
-.wrap{max-width:520px;margin:0 auto;}
-
-.topbar{
-display:flex;
-justify-content:space-between;
-align-items:center;
-margin-bottom:14px;
-}
-
-button{
-padding:10px 14px;
-border:0;
-border-radius:999px;
-color:#fff;
-font-weight:800;
-cursor:pointer;
-box-shadow:var(--shadow2);
-}
-
-.btnBlue{background:linear-gradient(135deg,var(--accent1),var(--accent2));}
-.btnRed{background:linear-gradient(135deg,#ff4f4f,#c22d2d);}
-.btnGreen{background:linear-gradient(135deg,#2ecc71,#1b9b51);border-radius:16px;padding:14px 18px;}
-
-.panel{
-border-radius:24px;
-padding:18px;
-background:rgba(255,255,255,.05);
-border:1px solid rgba(255,255,255,.08);
-box-shadow:var(--shadow);
-}
-
-.tabs{
-display:flex;
-gap:8px;
-justify-content:center;
-margin-bottom:14px;
-}
-
-.tabBtn{
-flex:1;
-opacity:.6;
-}
-
-.tabBtn.active{
-opacity:1;
-}
-
-.welcomeBox{text-align:center;margin-bottom:12px;}
-
-.crestWrap{display:flex;justify-content:center;margin-bottom:16px;}
-
-.card{
-margin-top:10px;
-background:rgba(0,0,0,.25);
-border-radius:18px;
-padding:14px;
-}
-
-.meta{display:flex;gap:10px;justify-content:center;margin-bottom:12px;}
-
-.pill{
-background:rgba(0,0,0,.3);
-border-radius:999px;
-padding:6px 12px;
-font-size:12px;
-}
-
-.formGrid{
-display:grid;
-grid-template-columns:1fr 1fr;
-gap:12px;
-}
-
-.full{grid-column:1 / -1;}
-
-label{font-size:12px;display:block;margin-bottom:6px;}
-
-input{
-width:100%;
-padding:12px;
-border-radius:14px;
-border:1px solid rgba(255,255,255,.12);
-background:rgba(0,0,0,.22);
-color:#fff;
-}
-
-.submitRow{display:flex;justify-content:center;margin-top:6px;}
-
-@media (max-width:520px){
-.formGrid{grid-template-columns:1fr}
-}
+.wrap{max-width:520px;margin:auto}
+button{padding:10px 14px;border:0;border-radius:999px;color:#fff;font-weight:700;cursor:pointer}
+.btnBlue{background:linear-gradient(135deg,var(--accent1),var(--accent2))}
+.btnRed{background:linear-gradient(135deg,#ff4f4f,#c22d2d)}
+.btnGreen{background:linear-gradient(135deg,#2ecc71,#1b9b51);border-radius:16px;padding:14px}
+.panel{background:rgba(255,255,255,.05);border-radius:20px;padding:16px;box-shadow:var(--shadow)}
+.card{margin-top:12px;background:rgba(0,0,0,.25);padding:14px;border-radius:16px}
+.meta{display:flex;gap:8px;justify-content:center;margin-bottom:12px}
+.pill{background:rgba(0,0,0,.3);padding:6px 12px;border-radius:999px;font-size:12px}
+.formGrid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.full{grid-column:1/-1}
+label{font-size:12px;display:block;margin-bottom:6px}
+input{width:100%;padding:12px;border-radius:14px;border:1px solid rgba(255,255,255,.1);background:rgba(0,0,0,.25);color:#fff}
+.submitRow{display:flex;justify-content:center;margin-top:6px}
 </style>
 </head>
 
 <body>
 <div class="wrap">
 
-<div class="topbar">
-<div style="font-weight:800;">O Mascote</div>
+<div style="display:flex;justify-content:space-between;margin-bottom:12px">
+<div style="font-weight:800">O Mascote</div>
 <div>
 <button class="btnBlue" id="btnAtualizar">Atualizar</button>
 <button class="btnRed" id="btnSair">Sair</button>
@@ -137,16 +54,7 @@ color:#fff;
 
 <div class="panel">
 
-<!-- 🔥 ABAS -->
-<div class="tabs">
-<button class="btnBlue tabBtn active" id="tabFlyer">Flyer</button>
-<button class="btnBlue tabBtn" id="tabMascote">Mascotes</button>
-<button class="btnBlue tabBtn" id="tabContratacao">Contratação</button>
-</div>
-
-<div class="welcomeBox">
-<h1 id="welcome">Seu time</h1>
-</div>
+<h1 id="welcome" style="text-align:center">Seu time</h1>
 
 <div class="card">
 <div class="meta">
@@ -155,30 +63,27 @@ color:#fff;
 <div class="pill" id="status">Status: —</div>
 </div>
 
-<h2 id="tituloForm">Criar pedido</h2>
-<div id="descricaoForm" style="text-align:center;font-size:12px;margin-bottom:12px;">
-Preencha os dados e envie.
-</div>
+<h2 style="text-align:center">Criar pedido</h2>
 
 <form id="pedidoForm" class="formGrid" enctype="multipart/form-data">
 
 <div>
-<label id="label1">Rodada / Fase *</label>
+<label>Rodada / Fase *</label>
 <input id="rodada" required />
 </div>
 
 <div>
-<label id="label2">Data do jogo *</label>
+<label>Data do jogo *</label>
 <input id="dataJogo" required />
 </div>
 
 <div>
-<label id="label3">Horário *</label>
+<label>Horário *</label>
 <input id="hora" required />
 </div>
 
-<div id="arenaWrap">
-<label id="label4">Arena / Local *</label>
+<div>
+<label>Arena / Local *</label>
 <input id="arena" required />
 </div>
 
@@ -203,7 +108,7 @@ Preencha os dados e envie.
 </div>
 
 <div class="full submitRow">
-<button class="btnGreen" id="btnEnviar" type="submit">Criar pedido</button>
+<button class="btnGreen" type="submit">Criar pedido</button>
 </div>
 
 <div class="full" id="msgPedido"></div>
@@ -214,54 +119,87 @@ Preencha os dados e envie.
 </div>
 
 <script>
-const tabFlyer = document.getElementById("tabFlyer");
-const tabMascote = document.getElementById("tabMascote");
-const tabContratacao = document.getElementById("tabContratacao");
+const API_BASE="https://api.omascote.com.br";
+const token=localStorage.getItem("omascote_token");
+if(!token) window.location.href="index.html";
 
-function ativar(tipo){
+const welcomeEl=document.getElementById("welcome");
+const planoEl=document.getElementById("plano");
+const usadosEl=document.getElementById("usados");
+const statusEl=document.getElementById("status");
+const msgPedidoEl=document.getElementById("msgPedido");
 
-document.querySelectorAll(".tabBtn").forEach(b=>b.classList.remove("active"));
-if(tipo==="flyer") tabFlyer.classList.add("active");
-if(tipo==="mascote") tabMascote.classList.add("active");
-if(tipo==="contratacao") tabContratacao.classList.add("active");
-
-const l1=document.getElementById("label1");
-const l2=document.getElementById("label2");
-const l3=document.getElementById("label3");
-const arenaWrap=document.getElementById("arenaWrap");
-const titulo=document.getElementById("tituloForm");
-
-arenaWrap.style.display="block";
-
-if(tipo==="flyer"){
-titulo.textContent="Criar pedido";
-l1.textContent="Rodada / Fase *";
-l2.textContent="Data do jogo *";
-l3.textContent="Horário *";
+function applyLocal(){
+const nome=localStorage.getItem("omascote_nome_time")||"";
+const plano=localStorage.getItem("omascote_plano")||"";
+const usados=localStorage.getItem("omascote_usados")||"";
+welcomeEl.textContent=nome||"Seu time";
+planoEl.textContent=`Plano: ${plano||"—"} pedidos/mês`;
+usadosEl.textContent=`Usados no mês: ${usados||"—"}`;
 }
 
-if(tipo==="mascote"){
-titulo.textContent="Criar Mascotes";
-l1.textContent="Nome do time *";
-l2.textContent="Mascote ou animal que quer virar mascote *";
-l3.textContent="Observações";
-arenaWrap.style.display="none";
+async function refreshMe(){
+try{
+const r=await fetch(`${API_BASE}/me`,{
+headers:{Authorization:"Bearer "+token}
+});
+const data=await r.json();
+if(data.ok){
+localStorage.setItem("omascote_nome_time",data.nome_time||"");
+localStorage.setItem("omascote_plano",data.plano||"");
+localStorage.setItem("omascote_usados",data.usados_no_ciclo||"");
+applyLocal();
+statusEl.textContent=data.ativo?"Status: ativo":"Status: inativo";
+}
+}catch{}
 }
 
-if(tipo==="contratacao"){
-titulo.textContent="Solicitar Contratação";
-l1.textContent="Nome do time *";
-l2.textContent="Tipo de contratação *";
-l3.textContent="Observações";
-arenaWrap.style.display="none";
-}
-}
+document.getElementById("pedidoForm").addEventListener("submit",async(e)=>{
+e.preventDefault();
+msgPedidoEl.textContent="Enviando...";
 
-tabFlyer.onclick=()=>ativar("flyer");
-tabMascote.onclick=()=>ativar("mascote");
-tabContratacao.onclick=()=>ativar("contratacao");
+const fd=new FormData();
+fd.append("rodada",document.getElementById("rodada").value);
+fd.append("data",document.getElementById("dataJogo").value);
+fd.append("hora",document.getElementById("hora").value);
+fd.append("arena",document.getElementById("arena").value);
 
-ativar("flyer");
+const mascoteFile=document.getElementById("mascote").files[0];
+if(mascoteFile) fd.append("mascote",mascoteFile);
+
+fd.append("escudo1",document.getElementById("escudo1").files[0]);
+fd.append("escudo2",document.getElementById("escudo2").files[0]);
+
+const pats=document.getElementById("patrocinadores").files;
+for(const file of pats){fd.append("patrocinadores",file);}
+
+try{
+const r=await fetch(`${API_BASE}/pedidos`,{
+method:"POST",
+headers:{Authorization:"Bearer "+token},
+body:fd
+});
+const out=await r.json();
+if(out.ok){
+msgPedidoEl.textContent=`Pedido enviado! ID: ${out.pedido_id}`;
+refreshMe();
+}else{
+msgPedidoEl.textContent=out.error||"Erro ao enviar";
+}
+}catch{
+msgPedidoEl.textContent="Erro de rede";
+}
+});
+
+applyLocal();
+refreshMe();
+
+document.getElementById("btnSair").addEventListener("click",()=>{
+localStorage.removeItem("omascote_token");
+window.location.href="index.html";
+});
+
+document.getElementById("btnAtualizar").addEventListener("click",refreshMe);
 </script>
 
 </body>
