@@ -342,10 +342,12 @@
             <label>Arena / Local *</label>
             <input id="arena" required />
           </div>
+
           <div class="full">
             <label>Mascote (opcional)</label>
-            <input id="mascoteImg" type="file" />
+            <input id="mascote" type="file" />
           </div>
+
           <div>
             <label>Escudo 1 *</label>
             <input id="escudo1" type="file" required />
@@ -353,6 +355,13 @@
           <div>
             <label>Escudo 2 *</label>
             <input id="escudo2" type="file" required />
+          </div>
+
+          <!-- ✅ PATROCINADORES (opcional) - múltiplos -->
+          <div class="full">
+            <label>Imagens de patrocinadores (opcional) — pode enviar várias</label>
+            <input id="patrocinadores" type="file" multiple />
+            <div class="hint">Dica: segure Ctrl (Windows) para selecionar vários arquivos.</div>
           </div>
 
           <div class="full submitRow">
@@ -495,8 +504,17 @@ document.getElementById("pedidoForm").addEventListener("submit", async (e)=>{
   fd.append("data", document.getElementById("dataJogo").value);
   fd.append("hora", document.getElementById("hora").value);
   fd.append("arena", document.getElementById("arena").value);
+  const mascoteFile = document.getElementById("mascote").files[0];
+if (mascoteFile) fd.append("mascote", mascoteFile);
+
   fd.append("escudo1", document.getElementById("escudo1").files[0]);
   fd.append("escudo2", document.getElementById("escudo2").files[0]);
+
+  // ✅ PATROCINADORES (múltiplos)
+  const pats = document.getElementById("patrocinadores").files;
+  for (const file of pats) {
+    fd.append("patrocinadores", file);
+  }
 
   try{
     const r = await fetch(`${API_BASE}/pedidos`, {
@@ -519,7 +537,7 @@ document.getElementById("pedidoForm").addEventListener("submit", async (e)=>{
 applyLocal();
 refreshMe();
 
-// botões (se você já tinha handlers em outro lugar, mantém; aqui só deixo básico)
+// botões
 document.getElementById("btnSair").addEventListener("click", ()=>{
   localStorage.removeItem("omascote_token");
   window.location.href = "index.html";
