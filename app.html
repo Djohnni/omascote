@@ -234,7 +234,6 @@
     }
     .tabBtn:active{transform:translateY(1px)}
 
-    /* ✅ ATIVO (corrigido: agora usa ~ .tabs) */
     #tab_flyer:checked ~ .tabs label[for="tab_flyer"]{
       opacity:1;
       background:linear-gradient(135deg, color-mix(in oklab, var(--accent1) 90%, #ffffff 10%), color-mix(in oklab, var(--accent2) 90%, #000 10%));
@@ -263,6 +262,7 @@
         "submit submit"
         "msg msg";
     }
+
     .full{grid-column:1 / -1}
     label{
       display:block;
@@ -284,7 +284,6 @@
       border-color: color-mix(in oklab, var(--accent1) 70%, #ffffff 10%);
       box-shadow: 0 0 0 3px rgba(79,124,255,.18);
     }
-    textarea{min-height:70px; resize:vertical}
 
     .submitRow{display:flex;justify-content:center;margin-top:4px}
     .msgSmall{margin-top:10px;font-size:13px;text-align:center;color:rgba(255,255,255,.85)}
@@ -316,11 +315,9 @@
     /* ====== REGRAS VISUAIS DA ABA MASCOTE ====== */
     #tab_mascote:checked ~ .card #plano{display:none}
     #tab_mascote:checked ~ .card #usados{display:none}
-
     #tab_mascote:checked ~ .card .field-arena{display:none}
     #tab_mascote:checked ~ .card .field-patro{display:none}
 
-    /* Reordena para: esc1 + esc2 e depois mascote */
     #tab_mascote:checked ~ .card .formGrid{
       grid-template-areas:
         "rodada data"
@@ -400,7 +397,7 @@
         <div class="sub">Seu painel de pedidos</div>
       </div>
 
-      <!-- ✅ RADIOS FORA DA .tabs (corrigido) -->
+      <!-- ✅ RADIOS FORA DA .tabs -->
       <input class="tabRadio" type="radio" name="aba" id="tab_flyer" checked>
       <input class="tabRadio" type="radio" name="aba" id="tab_mascote">
       <input class="tabRadio" type="radio" name="aba" id="tab_contrat">
@@ -421,7 +418,6 @@
         </div>
       </div>
 
-      <!-- ✅ .card agora é irmão dos radios (CSS funciona) -->
       <div class="card">
         <div class="meta">
           <div class="pill" id="plano">Plano: —</div>
@@ -532,12 +528,10 @@ const usadosEl = document.getElementById("usados");
 const statusEl = document.getElementById("status");
 const msgPedidoEl = document.getElementById("msgPedido");
 
-// ==== VISUAL: escudo salvo + preview + cores do fundo (NÃO afeta estrutura do pedido) ====
 const crestPreview = document.getElementById("crestPreview");
 const crestPlaceholder = document.getElementById("crestPlaceholder");
 const escudo1Input = document.getElementById("escudo1");
 
-// chave de storage só do visual (não interfere no backend)
 const CREST_KEY = "omascote_escudo_principal_dataurl";
 
 function setCrestUI(dataUrl){
@@ -605,7 +599,6 @@ escudo1Input.addEventListener("change", async ()=>{
 
 setCrestUI(localStorage.getItem(CREST_KEY) || "");
 
-// ==== LÓGICA ORIGINAL (mantida) ====
 function applyLocal(){
   const nome = localStorage.getItem("omascote_nome_time") || "";
   const plano = localStorage.getItem("omascote_plano") || "";
@@ -630,6 +623,19 @@ async function refreshMe(){
       statusEl.textContent = data.ativo ? "Status: ativo" : "Status: inativo";
     }
   }catch{}
+}
+
+/* ✅ LIMPA TUDO APÓS ENVIAR (menos escudo1 e a foto de perfil) */
+function clearAfterSend(){
+  document.getElementById("rodada").value = "";
+  document.getElementById("dataJogo").value = "";
+  document.getElementById("hora").value = "";
+  document.getElementById("arena").value = "";
+
+  document.getElementById("mascote").value = "";
+  document.getElementById("escudo2").value = "";
+  document.getElementById("patrocinadores").value = "";
+  // NÃO limpa o escudo1 (mantém selecionado se o navegador permitir)
 }
 
 document.getElementById("pedidoForm").addEventListener("submit", async (e)=>{
@@ -662,6 +668,7 @@ document.getElementById("pedidoForm").addEventListener("submit", async (e)=>{
     const out = await r.json();
     if(out.ok){
       msgPedidoEl.textContent = `✅ Pedido enviado! ID: ${out.pedido_id}`;
+      clearAfterSend();
       refreshMe();
     } else {
       msgPedidoEl.textContent = out.error || "Erro ao enviar";
