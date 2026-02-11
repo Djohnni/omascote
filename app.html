@@ -475,7 +475,8 @@
               <span class="t-mascote">Arena / Local *</span>
               <span class="t-contrat">Arena / Local *</span>
             </label>
-            <input id="arena" required />
+            <!-- ✅ ÚNICA MUDANÇA: arena sem required -->
+            <input id="arena" />
           </div>
 
           <div class="field-mascote full">
@@ -627,7 +628,6 @@ async function refreshMe(){
   }catch{}
 }
 
-/* ✅ SÓ ISSO: limpar campos após enviar com sucesso (não mexe em mais nada) */
 function limparCamposAposEnviar(){
   document.getElementById("rodada").value = "";
   document.getElementById("dataJogo").value = "";
