@@ -665,11 +665,21 @@ document.getElementById("pedidoForm").addEventListener("submit", async (e)=>{
   }
 
   try{
-    const r = await fetch(`${API_BASE}/pedidos`, {
+    // ✅ ÚNICA MUDANÇA: escolhe a rota pelo TAB selecionado
+    let endpoint = "/pedidos"; // Flyer (padrão)
+
+    if (document.getElementById("tab_mascote").checked) {
+      endpoint = "/mascotes";
+    } else if (document.getElementById("tab_contrat").checked) {
+      endpoint = "/contratacao";
+    }
+
+    const r = await fetch(`${API_BASE}${endpoint}`, {
       method:"POST",
       headers:{ "Authorization": "Bearer " + token },
       body:fd
     });
+
     const out = await r.json();
     if(out.ok){
       msgPedidoEl.textContent = `✅ Pedido enviado! ID: ${out.pedido_id}`;
