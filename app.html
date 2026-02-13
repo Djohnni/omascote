@@ -372,7 +372,7 @@
       flex-direction:column;
       gap:3px;
     }
-    .filePlus .name{display:none;} /* remove “Upload” */
+    .filePlus .name{display:none;}
     .filePlus .chosen{
       font-size:12px;
       color:rgba(255,255,255,.92);
@@ -404,7 +404,7 @@
       pointer-events:none;
     }
 
-    /* ====== MODAL RECORTE ====== */
+    /* ====== MODAL RECORTE (OPÇÃO 2 - MOBILE FIRST) ====== */
     .modalMask{
       position:fixed;
       inset:0;
@@ -474,34 +474,20 @@
       overflow:hidden;
       touch-action:none;
     }
-    .imgLayer{
-      position:absolute;
-      inset:0;
-      display:grid;
-      place-items:center;
-      user-select:none;
+
+    /* Canvas preview */
+    #cropCanvas{
+      width:100%;
+      height:100%;
+      display:block;
       touch-action:none;
     }
-    .imgLayer img{
-      max-width:none;
-      max-height:none;
-      will-change:transform;
-      user-drag:none;
-      -webkit-user-drag:none;
-      pointer-events:none;
-    }
 
-    /* máscara + quadrado */
+    /* Máscara do quadrado */
     .cropMask{
       position:absolute;
       inset:0;
       pointer-events:none;
-    }
-    .cropMask::before{
-      content:"";
-      position:absolute;
-      inset:0;
-      background:rgba(0,0,0,.45);
     }
     .cropBox{
       position:absolute;
@@ -515,19 +501,6 @@
       box-shadow:0 0 0 9999px rgba(0,0,0,.45);
       background:transparent;
     }
-    .cropGrid{
-      position:absolute;
-      inset:0;
-      border-radius:12px;
-      pointer-events:none;
-      background:
-        linear-gradient(to right, rgba(255,255,255,.0) 33.33%, rgba(255,255,255,.18) 33.33%, rgba(255,255,255,.18) 34.1%, rgba(255,255,255,.0) 34.1%),
-        linear-gradient(to right, rgba(255,255,255,.0) 66.66%, rgba(255,255,255,.18) 66.66%, rgba(255,255,255,.18) 67.4%, rgba(255,255,255,.0) 67.4%),
-        linear-gradient(to bottom, rgba(255,255,255,.0) 33.33%, rgba(255,255,255,.18) 33.33%, rgba(255,255,255,.18) 34.1%, rgba(255,255,255,.0) 34.1%),
-        linear-gradient(to bottom, rgba(255,255,255,.0) 66.66%, rgba(255,255,255,.18) 66.66%, rgba(255,255,255,.18) 67.4%, rgba(255,255,255,.0) 67.4%);
-      mix-blend-mode:screen;
-      opacity:.85;
-    }
 
     .cropControls{
       display:flex;
@@ -538,23 +511,35 @@
       border-top:1px solid rgba(255,255,255,.10);
       flex-wrap:wrap;
     }
-    .zoomRow{
+
+    .zoomBtns{
       display:flex;
-      align-items:center;
       gap:10px;
-      flex:1 1 240px;
+      align-items:center;
       justify-content:center;
+      flex:1 1 240px;
       min-width:240px;
     }
-    .zoomRow span{
+    .zoomBtns .zbtn{
+      background:rgba(0,0,0,.18);
+      border:1px solid rgba(255,255,255,.14);
+      box-shadow:none;
+      border-radius:14px;
+      padding:10px 14px;
+      font-weight:900;
+      min-width:52px;
+      font-size:18px;
+      line-height:1;
+    }
+    .zoomLbl{
       font-size:12px;
       color:rgba(255,255,255,.75);
-      font-weight:800;
+      font-weight:900;
+      letter-spacing:.2px;
+      min-width:68px;
+      text-align:center;
     }
-    input[type="range"]{
-      width:220px;
-      accent-color: var(--accent1);
-    }
+
     .btnGhost{
       background:rgba(0,0,0,.18);
       border:1px solid rgba(255,255,255,.14);
@@ -594,7 +579,6 @@
           "submit"
           "msg";
       }
-      input[type="range"]{width:180px}
     }
   </style>
 </head>
@@ -701,10 +685,8 @@
             <input id="arena" />
           </div>
 
-          <!-- Mascote (opcional) -->
           <div class="field-mascote full">
             <label>Mascote (opcional)</label>
-
             <input id="mascote" class="fileHidden" type="file" />
             <div class="filePlus" data-file-for="mascote" tabindex="0" role="button" aria-label="Enviar mascote (opcional)">
               <div class="left">
@@ -715,14 +697,12 @@
             </div>
           </div>
 
-          <!-- Escudo 1 -->
           <div class="field-esc1">
             <label>
               <span class="t-flyer">Escudo 1 *</span>
               <span class="t-mascote">Escudo / logo do time *</span>
               <span class="t-contrat">Escudo / logo do time *</span>
             </label>
-
             <input id="escudo1" class="fileHidden" type="file" required />
             <div class="filePlus" data-file-for="escudo1" tabindex="0" role="button" aria-label="Enviar escudo 1">
               <div class="left">
@@ -733,14 +713,12 @@
             </div>
           </div>
 
-          <!-- Escudo 2 / Camiseta -->
           <div class="field-esc2">
             <label>
               <span class="t-flyer">Escudo 2 *</span>
               <span class="t-mascote">Camiseta *</span>
               <span class="t-contrat">Camiseta *</span>
             </label>
-
             <input id="escudo2" class="fileHidden" type="file" required />
             <div class="filePlus" data-file-for="escudo2" tabindex="0" role="button" aria-label="Enviar escudo 2">
               <div class="left">
@@ -751,10 +729,8 @@
             </div>
           </div>
 
-          <!-- Patrocinadores -->
           <div class="field-patro full">
             <label>Imagens de patrocinadores (opcional) — pode enviar várias</label>
-
             <input id="patrocinadores" class="fileHidden" type="file" multiple />
             <div class="filePlus" data-file-for="patrocinadores" tabindex="0" role="button" aria-label="Enviar patrocinadores (opcional)">
               <div class="left">
@@ -763,7 +739,6 @@
               </div>
               <div class="plus">+</div>
             </div>
-
             <div class="hint">Dica: segure Ctrl (Windows) para selecionar vários arquivos.</div>
           </div>
 
@@ -777,7 +752,7 @@
     </div>
   </div>
 
-  <!-- MODAL RECORTE -->
+  <!-- MODAL RECORTE (OPÇÃO 2) -->
   <div class="modalMask" id="cropModal" aria-hidden="true">
     <div class="modalCard" role="dialog" aria-modal="true" aria-label="Recortar imagem">
       <div class="modalTop">
@@ -789,21 +764,18 @@
         <div class="cropHint" id="cropHint">recorte somente o que precisa</div>
 
         <div class="cropStage" id="cropStage">
-          <div class="imgLayer" id="imgLayer">
-            <img id="cropImg" alt="Imagem para recorte">
-          </div>
+          <canvas id="cropCanvas"></canvas>
           <div class="cropMask">
-            <div class="cropBox" id="cropBox">
-              <div class="cropGrid"></div>
-            </div>
+            <div class="cropBox" id="cropBox"></div>
           </div>
         </div>
       </div>
 
       <div class="cropControls">
-        <div class="zoomRow">
-          <span>Zoom</span>
-          <input id="cropZoom" type="range" min="1" max="4" step="0.01" value="1">
+        <div class="zoomBtns">
+          <button class="zbtn" id="zoomOutBtn" type="button">−</button>
+          <div class="zoomLbl" id="zoomLbl">1.0×</div>
+          <button class="zbtn" id="zoomInBtn" type="button">+</button>
         </div>
         <button class="btnGhost" id="cropCancelBtn" type="button">Cancelar</button>
         <button class="btnOk" id="cropOkBtn" type="button">Usar recorte</button>
@@ -825,7 +797,6 @@ const msgPedidoEl = document.getElementById("msgPedido");
 // ==== VISUAL: escudo salvo + preview + cores do fundo (NÃO afeta estrutura do pedido) ====
 const crestPreview = document.getElementById("crestPreview");
 const crestPlaceholder = document.getElementById("crestPlaceholder");
-
 const CREST_KEY = "omascote_escudo_principal_dataurl";
 
 function setCrestUI(dataUrl){
@@ -883,311 +854,7 @@ function applyThemeFromImage(img){
 
 setCrestUI(localStorage.getItem(CREST_KEY) || "");
 
-// ==== MODAL RECORTE (escudo1 e escudo2) ====
-const cropModal = document.getElementById("cropModal");
-const cropImg = document.getElementById("cropImg");
-const cropStage = document.getElementById("cropStage");
-const cropBox = document.getElementById("cropBox");
-const cropHint = document.getElementById("cropHint");
-const cropZoom = document.getElementById("cropZoom");
-const cropCloseBtn = document.getElementById("cropCloseBtn");
-const cropCancelBtn = document.getElementById("cropCancelBtn");
-const cropOkBtn = document.getElementById("cropOkBtn");
-
-const CROP_HINT_TEXT = "recorte somente o que precisa";
-
-/* ✅ QUALIDADE: NÃO REDIMENSIONA O RECORTE
-   - canvas fica no tamanho REAL do recorte (sw x sh)
-   - isso mantém a resolução “praticamente igual” ao que o cliente enviou */
-const KEEP_ORIGINAL_CROP_RESOLUTION = true;
-
-let cropState = {
-  inputId: null,
-  file: null,
-  objectUrl: null,
-
-  baseScale: 1,   // encaixe inicial no stage
-  scale: 1,       // zoom do usuário (1..4)
-
-  offX: 0,
-  offY: 0,
-  dragging: false,
-  startX: 0,
-  startY: 0,
-  baseOffX: 0,
-  baseOffY: 0,
-  bypassNextChange: { escudo1:false, escudo2:false }
-};
-
-const ZMIN = 1;
-const ZMAX = parseFloat(cropZoom.max || "4") || 4;
-
-function clampScale(){
-  cropState.scale = Math.max(ZMIN, Math.min(ZMAX, Number(cropState.scale) || 1));
-  cropZoom.value = String(cropState.scale);
-}
-
-function totalScale(){
-  return (Number(cropState.baseScale) || 1) * (Number(cropState.scale) || 1);
-}
-
-function openCropModal(inputId, file){
-  cropState.inputId = inputId;
-  cropState.file = file;
-  cropHint.textContent = CROP_HINT_TEXT;
-
-  cropState.baseScale = 1;
-  cropState.scale = 1;
-  cropState.offX = 0;
-  cropState.offY = 0;
-  cropZoom.value = "1";
-
-  if(cropState.objectUrl){
-    try{ URL.revokeObjectURL(cropState.objectUrl); }catch{}
-  }
-  cropState.objectUrl = URL.createObjectURL(file);
-  cropImg.src = cropState.objectUrl;
-
-  cropModal.classList.add("open");
-  cropModal.setAttribute("aria-hidden","false");
-
-  cropImg.onload = () => {
-    cropImg.style.transform = "translate(0px, 0px) scale(1)";
-
-    const stage = cropStage.getBoundingClientRect();
-    const box = cropBox.getBoundingClientRect();
-
-    const stageW = stage.width;
-    const stageH = stage.height;
-    const boxSize = Math.min(box.width, box.height);
-
-    const nw = cropImg.naturalWidth || 1;
-    const nh = cropImg.naturalHeight || 1;
-
-    const fitScale = Math.min(stageW / nw, stageH / nh);
-    cropState.baseScale = Math.max(0.0001, fitScale);
-
-    const coverUserScale = Math.max(
-      boxSize / (nw * cropState.baseScale),
-      boxSize / (nh * cropState.baseScale)
-    );
-
-    cropState.scale = coverUserScale;
-    clampScale();
-
-    cropState.offX = 0;
-    cropState.offY = 0;
-    clampOffsets();
-    applyCropTransform();
-  };
-}
-
-function closeCropModal(){
-  cropModal.classList.remove("open");
-  cropModal.setAttribute("aria-hidden","true");
-  if(cropState.objectUrl){
-    try{ URL.revokeObjectURL(cropState.objectUrl); }catch{}
-    cropState.objectUrl = null;
-  }
-  cropState.inputId = null;
-  cropState.file = null;
-}
-
-function applyCropTransform(){
-  clampScale();
-  const s = totalScale();
-  const x = cropState.offX;
-  const y = cropState.offY;
-  cropImg.style.transform = `translate(${x}px, ${y}px) scale(${s})`;
-}
-
-function clampOffsets(){
-  const stage = cropStage.getBoundingClientRect();
-  const box = cropBox.getBoundingClientRect();
-
-  const boxSize = Math.min(box.width, box.height);
-
-  const nw = cropImg.naturalWidth || 1;
-  const nh = cropImg.naturalHeight || 1;
-
-  clampScale();
-  const s = totalScale();
-
-  const dispW = nw * s;
-  const dispH = nh * s;
-
-  const maxX = Math.max(0, (dispW - boxSize) / 2);
-  const maxY = Math.max(0, (dispH - boxSize) / 2);
-
-  cropState.offX = Math.max(-maxX, Math.min(maxX, cropState.offX));
-  cropState.offY = Math.max(-maxY, Math.min(maxY, cropState.offY));
-}
-
-cropZoom.addEventListener("input", ()=>{
-  cropState.scale = parseFloat(cropZoom.value || "1");
-  clampOffsets();
-  applyCropTransform();
-});
-
-function onDragStart(e){
-  cropState.dragging = true;
-  cropState.startX = e.clientX;
-  cropState.startY = e.clientY;
-  cropState.baseOffX = cropState.offX;
-  cropState.baseOffY = cropState.offY;
-  cropStage.setPointerCapture(e.pointerId);
-}
-
-function onDragMove(e){
-  if(!cropState.dragging) return;
-  const dx = e.clientX - cropState.startX;
-  const dy = e.clientY - cropState.startY;
-  cropState.offX = cropState.baseOffX + dx;
-  cropState.offY = cropState.baseOffY + dy;
-  clampOffsets();
-  applyCropTransform();
-}
-
-function onDragEnd(e){
-  cropState.dragging = false;
-  try{ cropStage.releasePointerCapture(e.pointerId); }catch{}
-}
-
-cropStage.addEventListener("pointerdown", (e)=>{ onDragStart(e); });
-cropStage.addEventListener("pointermove", (e)=>{ onDragMove(e); });
-cropStage.addEventListener("pointerup", (e)=>{ onDragEnd(e); });
-cropStage.addEventListener("pointercancel", (e)=>{ onDragEnd(e); });
-
-cropStage.addEventListener("wheel", (e)=>{
-  e.preventDefault();
-  const delta = e.deltaY;
-  let s = cropState.scale;
-  s += (delta > 0 ? -0.08 : 0.08);
-  cropState.scale = s;
-  clampScale();
-  clampOffsets();
-  applyCropTransform();
-},{ passive:false });
-
-cropCloseBtn.addEventListener("click", ()=>{ cancelCrop(); });
-cropCancelBtn.addEventListener("click", ()=>{ cancelCrop(); });
-
-function cancelCrop(){
-  if(cropState.inputId){
-    const input = document.getElementById(cropState.inputId);
-    if(input) input.value = "";
-    updateChosenFromInput(cropState.inputId);
-  }
-  closeCropModal();
-}
-
-function setInputFile(inputId, file){
-  const input = document.getElementById(inputId);
-  if(!input) return;
-
-  const dt = new DataTransfer();
-  dt.items.add(file);
-  cropState.bypassNextChange[inputId] = true;
-  input.files = dt.files;
-
-  updateChosenFromInput(inputId);
-}
-
-function updateChosenFromInput(inputId){
-  const input = document.getElementById(inputId);
-  const chosen = document.getElementById(`chosen_${inputId}`);
-  if(!input || !chosen) return;
-
-  if(!input.files || input.files.length === 0){
-    chosen.textContent = "Nenhum arquivo";
-    return;
-  }
-  chosen.textContent = input.files[0].name || "Arquivo selecionado";
-}
-
-async function exportCropToFile(){
-  const stage = cropStage.getBoundingClientRect();
-  const box = cropBox.getBoundingClientRect();
-
-  const stageW = stage.width;
-  const stageH = stage.height;
-
-  const boxSize = Math.min(box.width, box.height);
-  const boxLeft = (stageW - boxSize) / 2;
-  const boxTop  = (stageH - boxSize) / 2;
-
-  const nw = cropImg.naturalWidth || 1;
-  const nh = cropImg.naturalHeight || 1;
-
-  clampScale();
-  const s = totalScale();
-  const offX = cropState.offX;
-  const offY = cropState.offY;
-
-  const x1 = (boxLeft - stageW/2 - offX) / s + nw/2;
-  const y1 = (boxTop  - stageH/2 - offY) / s + nh/2;
-  const x2 = (boxLeft + boxSize - stageW/2 - offX) / s + nw/2;
-  const y2 = (boxTop  + boxSize - stageH/2 - offY) / s + nh/2;
-
-  let sx = Math.min(x1,x2);
-  let sy = Math.min(y1,y2);
-  let sw = Math.abs(x2-x1);
-  let sh = Math.abs(y2-y1);
-
-  if(sx < 0){ sw += sx; sx = 0; }
-  if(sy < 0){ sh += sy; sy = 0; }
-  if(sx + sw > nw) sw = nw - sx;
-  if(sy + sh > nh) sh = nh - sy;
-
-  sw = Math.max(1, sw);
-  sh = Math.max(1, sh);
-
-  const canvas = document.createElement("canvas");
-  const ctx = canvas.getContext("2d");
-
-  // ✅ NÃO redimensiona (preserva resolução do recorte)
-  if(KEEP_ORIGINAL_CROP_RESOLUTION){
-    canvas.width = Math.max(1, Math.round(sw));
-    canvas.height = Math.max(1, Math.round(sh));
-    ctx.imageSmoothingEnabled = false;
-    ctx.drawImage(cropImg, sx, sy, sw, sh, 0, 0, canvas.width, canvas.height);
-  } else {
-    // fallback (se um dia quiser forçar tamanho)
-    canvas.width = 1024;
-    canvas.height = 1024;
-    ctx.imageSmoothingEnabled = true;
-    ctx.drawImage(cropImg, sx, sy, sw, sh, 0, 0, canvas.width, canvas.height);
-  }
-
-  // PNG mantém bem a nitidez; (parâmetro de qualidade não afeta PNG)
-  const blob = await new Promise(resolve => canvas.toBlob(resolve, "image/png"));
-
-  const safeName = (cropState.inputId === "escudo1") ? "escudo.png" : "camiseta.png";
-  return new File([blob], safeName, { type:"image/png" });
-}
-
-cropOkBtn.addEventListener("click", async ()=>{
-  try{
-    const outFile = await exportCropToFile();
-    if(cropState.inputId){
-      setInputFile(cropState.inputId, outFile);
-
-      if(cropState.inputId === "escudo1"){
-        const dataUrl = await readFileAsDataURL(outFile);
-        localStorage.setItem(CREST_KEY, dataUrl);
-        setCrestUI(dataUrl);
-      }
-    }
-  }catch(e){
-  }
-  closeCropModal();
-});
-
-cropModal.addEventListener("click", (e)=>{
-  if(e.target === cropModal) cancelCrop();
-});
-
-// ==== UPLOAD “+” (sem mexer no FormData) ====
+// ====== UPLOAD “+” (sem mexer no FormData) ======
 function bindPlusUpload(inputId, chosenId){
   const input = document.getElementById(inputId);
   const chosen = document.getElementById(chosenId);
@@ -1205,21 +872,10 @@ function bindPlusUpload(inputId, chosenId){
   });
 
   input.addEventListener("change", ()=>{
-    if((inputId === "escudo1" || inputId === "escudo2") && cropState.bypassNextChange[inputId]){
-      cropState.bypassNextChange[inputId] = false;
-      return;
-    }
-
     if(!input.files || input.files.length === 0){
       chosen.textContent = "Nenhum arquivo";
       return;
     }
-
-    if(inputId === "escudo1" || inputId === "escudo2"){
-      openCropModal(inputId, input.files[0]);
-      return;
-    }
-
     if(input.multiple){
       chosen.textContent = `${input.files.length} arquivo(s) selecionado(s)`;
     }else{
@@ -1232,6 +888,405 @@ bindPlusUpload("mascote", "chosen_mascote");
 bindPlusUpload("escudo1", "chosen_escudo1");
 bindPlusUpload("escudo2", "chosen_escudo2");
 bindPlusUpload("patrocinadores", "chosen_patrocinadores");
+
+// ====== RECORTE OPÇÃO 2 (mobile-first, +/−, arrastar) ======
+const cropModal = document.getElementById("cropModal");
+const cropStage = document.getElementById("cropStage");
+const cropBox = document.getElementById("cropBox");
+const cropHint = document.getElementById("cropHint");
+const cropCanvas = document.getElementById("cropCanvas");
+const zoomLbl = document.getElementById("zoomLbl");
+
+const cropCloseBtn = document.getElementById("cropCloseBtn");
+const cropCancelBtn = document.getElementById("cropCancelBtn");
+const cropOkBtn = document.getElementById("cropOkBtn");
+const zoomOutBtn = document.getElementById("zoomOutBtn");
+const zoomInBtn = document.getElementById("zoomInBtn");
+
+const CROP_HINT_TEXT = "recorte somente o que precisa";
+
+// Zoom por degraus (melhor no celular)
+const Z_STEP = 1.15;
+const Z_MIN = 1.0;   // 1.0 = cobre o quadrado (calculado)
+const Z_MAX = 6.0;
+
+// Estado do recorte (tudo em “pixels naturais” da imagem)
+const crop = {
+  inputId: null,
+  file: null,
+  img: null,            // HTMLImageElement
+  objectUrl: null,
+
+  // zoomNaturalToStage: quantos px no stage por 1px natural
+  zoom: 1.0,
+
+  // offset do centro (em px naturais)
+  offX: 0,
+  offY: 0,
+
+  dragging: false,
+  lastX: 0,
+  lastY: 0,
+
+  // pinch
+  pinch: false,
+  pinchStartDist: 0,
+  pinchStartZoom: 1.0,
+  bypassNextChange: { escudo1:false, escudo2:false }
+};
+
+function openCrop(inputId, file){
+  crop.inputId = inputId;
+  crop.file = file;
+  cropHint.textContent = CROP_HINT_TEXT;
+
+  if(crop.objectUrl){
+    try{ URL.revokeObjectURL(crop.objectUrl); }catch(e){}
+  }
+
+  crop.img = new Image();
+  crop.img.decoding = "async";
+  crop.objectUrl = URL.createObjectURL(file);
+  crop.img.src = crop.objectUrl;
+
+  cropModal.classList.add("open");
+  cropModal.setAttribute("aria-hidden","false");
+
+  crop.img.onload = () => {
+    fitCanvasToStage();
+    initZoomCoverSquare();
+    crop.offX = 0;
+    crop.offY = 0;
+    clampOffsets();
+    drawCrop();
+  };
+}
+
+function closeCrop(){
+  cropModal.classList.remove("open");
+  cropModal.setAttribute("aria-hidden","true");
+
+  if(crop.objectUrl){
+    try{ URL.revokeObjectURL(crop.objectUrl); }catch(e){}
+  }
+
+  crop.inputId = null;
+  crop.file = null;
+  crop.img = null;
+  crop.objectUrl = null;
+  crop.dragging = false;
+  crop.pinch = false;
+}
+
+function fitCanvasToStage(){
+  const rect = cropStage.getBoundingClientRect();
+  const dpr = Math.max(1, window.devicePixelRatio || 1);
+
+  cropCanvas.width = Math.round(rect.width * dpr);
+  cropCanvas.height = Math.round(rect.height * dpr);
+
+  const ctx = cropCanvas.getContext("2d");
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0); // desenhar em “px CSS”
+}
+
+function getBoxSizePx(){
+  const s = cropStage.getBoundingClientRect();
+  const b = cropBox.getBoundingClientRect();
+  return Math.min(b.width, b.height);
+}
+
+function initZoomCoverSquare(){
+  // zoom = pxStage por 1px natural
+  const boxSize = getBoxSizePx();
+  const nw = crop.img.naturalWidth || 1;
+  const nh = crop.img.naturalHeight || 1;
+
+  // precisa cobrir o quadrado: zoom >= max(box/nw, box/nh)
+  const cover = Math.max(boxSize / nw, boxSize / nh);
+
+  crop.zoom = cover;     // “1.0×” do usuário passa a ser esse cover
+  zoomLbl.textContent = "1.0×";
+}
+
+function userZoomValue(){
+  // Mostra zoom relativo (1.0× = cover)
+  // userZ = crop.zoom / cover
+  const boxSize = getBoxSizePx();
+  const nw = crop.img.naturalWidth || 1;
+  const nh = crop.img.naturalHeight || 1;
+  const cover = Math.max(boxSize / nw, boxSize / nh);
+
+  const user = crop.zoom / cover;
+  return Math.max(0.01, user);
+}
+
+function setUserZoom(userZ){
+  const boxSize = getBoxSizePx();
+  const nw = crop.img.naturalWidth || 1;
+  const nh = crop.img.naturalHeight || 1;
+  const cover = Math.max(boxSize / nw, boxSize / nh);
+
+  const clamped = Math.max(Z_MIN, Math.min(Z_MAX, userZ));
+  crop.zoom = cover * clamped;
+
+  zoomLbl.textContent = `${clamped.toFixed(1)}×`;
+}
+
+function clampOffsets(){
+  if(!crop.img) return;
+
+  const nw = crop.img.naturalWidth || 1;
+  const nh = crop.img.naturalHeight || 1;
+  const boxSize = getBoxSizePx();
+
+  // tamanho do recorte em pixels naturais
+  const cropSizeNatural = boxSize / crop.zoom;
+
+  const maxOffX = Math.max(0, (nw - cropSizeNatural) / 2);
+  const maxOffY = Math.max(0, (nh - cropSizeNatural) / 2);
+
+  crop.offX = Math.max(-maxOffX, Math.min(maxOffX, crop.offX));
+  crop.offY = Math.max(-maxOffY, Math.min(maxOffY, crop.offY));
+}
+
+function drawCrop(){
+  if(!crop.img) return;
+
+  const ctx = cropCanvas.getContext("2d");
+  const sRect = cropStage.getBoundingClientRect();
+  const w = sRect.width;
+  const h = sRect.height;
+
+  // limpa
+  ctx.clearRect(0, 0, w, h);
+
+  // imagem no stage (coordenadas CSS)
+  const nw = crop.img.naturalWidth || 1;
+  const nh = crop.img.naturalHeight || 1;
+
+  const sx = (w/2) - (nw * crop.zoom)/2 + (crop.offX * crop.zoom);
+  const sy = (h/2) - (nh * crop.zoom)/2 + (crop.offY * crop.zoom);
+
+  // desenha
+  ctx.imageSmoothingEnabled = true;
+  ctx.drawImage(crop.img, sx, sy, nw*crop.zoom, nh*crop.zoom);
+}
+
+function stagePointToDeltaNatural(dxCss, dyCss){
+  // converte movimento no stage (px CSS) para pixels naturais
+  const dnX = dxCss / crop.zoom;
+  const dnY = dyCss / crop.zoom;
+  return { dnX, dnY };
+}
+
+function getTouchDistance(t1, t2){
+  const dx = t2.clientX - t1.clientX;
+  const dy = t2.clientY - t1.clientY;
+  return Math.sqrt(dx*dx + dy*dy);
+}
+
+// drag/pan + pinch
+cropStage.addEventListener("pointerdown", (e)=>{
+  if(!crop.img) return;
+  crop.dragging = true;
+  crop.lastX = e.clientX;
+  crop.lastY = e.clientY;
+  try{ cropStage.setPointerCapture(e.pointerId); }catch{}
+});
+
+cropStage.addEventListener("pointermove", (e)=>{
+  if(!crop.img) return;
+  if(!crop.dragging) return;
+
+  const dx = e.clientX - crop.lastX;
+  const dy = e.clientY - crop.lastY;
+  crop.lastX = e.clientX;
+  crop.lastY = e.clientY;
+
+  const { dnX, dnY } = stagePointToDeltaNatural(dx, dy);
+
+  crop.offX += dnX;
+  crop.offY += dnY;
+
+  clampOffsets();
+  drawCrop();
+});
+
+cropStage.addEventListener("pointerup", (e)=>{
+  crop.dragging = false;
+  try{ cropStage.releasePointerCapture(e.pointerId); }catch{}
+});
+cropStage.addEventListener("pointercancel", ()=>{
+  crop.dragging = false;
+});
+
+// pinch-to-zoom (opcional, funciona no celular)
+cropStage.addEventListener("touchstart", (e)=>{
+  if(!crop.img) return;
+  if(e.touches.length === 2){
+    crop.pinch = true;
+    crop.pinchStartDist = getTouchDistance(e.touches[0], e.touches[1]);
+    crop.pinchStartZoom = userZoomValue();
+  }
+},{passive:true});
+
+cropStage.addEventListener("touchmove", (e)=>{
+  if(!crop.img) return;
+  if(!crop.pinch) return;
+  if(e.touches.length !== 2) return;
+
+  const dist = getTouchDistance(e.touches[0], e.touches[1]);
+  const ratio = dist / Math.max(1, crop.pinchStartDist);
+
+  setUserZoom(crop.pinchStartZoom * ratio);
+  clampOffsets();
+  drawCrop();
+},{passive:true});
+
+cropStage.addEventListener("touchend", (e)=>{
+  if(e.touches.length < 2){
+    crop.pinch = false;
+  }
+},{passive:true});
+
+zoomInBtn.addEventListener("click", ()=>{
+  if(!crop.img) return;
+  setUserZoom(userZoomValue() * Z_STEP);
+  clampOffsets();
+  drawCrop();
+});
+zoomOutBtn.addEventListener("click", ()=>{
+  if(!crop.img) return;
+  setUserZoom(userZoomValue() / Z_STEP);
+  clampOffsets();
+  drawCrop();
+});
+
+// fechar/cancelar
+cropCloseBtn.addEventListener("click", ()=> cancelCropFlow());
+cropCancelBtn.addEventListener("click", ()=> cancelCropFlow());
+cropModal.addEventListener("click", (e)=>{
+  if(e.target === cropModal) cancelCropFlow();
+});
+
+function cancelCropFlow(){
+  // cancela = limpa o input que abriu o recorte
+  if(crop.inputId){
+    const input = document.getElementById(crop.inputId);
+    if(input) input.value = "";
+    updateChosenFromInput(crop.inputId);
+  }
+  closeCrop();
+}
+
+// export “sem perder qualidade por redimensionamento”
+// -> recorte no tamanho NATURAL do pedaço (pixels originais)
+async function exportCropFile(){
+  const sRect = cropStage.getBoundingClientRect();
+  const w = sRect.width;
+  const h = sRect.height;
+
+  const boxSize = getBoxSizePx();
+  const nw = crop.img.naturalWidth || 1;
+  const nh = crop.img.naturalHeight || 1;
+
+  // tamanho do recorte em pixels naturais (quadrado)
+  const cropSize = boxSize / crop.zoom;
+
+  // centro do recorte em pixels naturais
+  const cx = (nw/2) + crop.offX;
+  const cy = (nh/2) + crop.offY;
+
+  let sx = cx - cropSize/2;
+  let sy = cy - cropSize/2;
+
+  // clamp
+  sx = Math.max(0, Math.min(nw - cropSize, sx));
+  sy = Math.max(0, Math.min(nh - cropSize, sy));
+
+  const outSize = Math.max(1, Math.round(cropSize));
+
+  const out = document.createElement("canvas");
+  out.width = outSize;
+  out.height = outSize;
+  const ctx = out.getContext("2d");
+
+  // PNG, sem resize (apenas recorte)
+  ctx.imageSmoothingEnabled = false;
+  ctx.drawImage(
+    crop.img,
+    sx, sy, cropSize, cropSize,
+    0, 0, outSize, outSize
+  );
+
+  const blob = await new Promise(resolve => out.toBlob(resolve, "image/png"));
+  const name = (crop.inputId === "escudo1") ? "escudo.png" : "camiseta.png";
+  return new File([blob], name, { type:"image/png" });
+}
+
+function setInputFile(inputId, file){
+  const input = document.getElementById(inputId);
+  if(!input) return;
+  const dt = new DataTransfer();
+  dt.items.add(file);
+  crop.bypassNextChange[inputId] = true;
+  input.files = dt.files;
+  updateChosenFromInput(inputId);
+}
+
+function updateChosenFromInput(inputId){
+  const input = document.getElementById(inputId);
+  const chosen = document.getElementById(`chosen_${inputId}`);
+  if(!input || !chosen) return;
+
+  if(!input.files || input.files.length === 0){
+    chosen.textContent = "Nenhum arquivo";
+    return;
+  }
+  chosen.textContent = input.files[0].name || "Arquivo selecionado";
+}
+
+cropOkBtn.addEventListener("click", async ()=>{
+  if(!crop.img || !crop.inputId) return;
+  try{
+    const outFile = await exportCropFile();
+    setInputFile(crop.inputId, outFile);
+
+    // se for escudo1: atualiza preview + tema + localStorage COM O RECORTE (só visual)
+    if(crop.inputId === "escudo1"){
+      const dataUrl = await readFileAsDataURL(outFile);
+      localStorage.setItem(CREST_KEY, dataUrl);
+      setCrestUI(dataUrl);
+    }
+  }catch(e){}
+  closeCrop();
+});
+
+// Intercepta escolha de arquivo em escudo1/escudo2 pra abrir recorte (sem quebrar FormData)
+function hookCropOnInputs(){
+  ["escudo1","escudo2"].forEach((id)=>{
+    const input = document.getElementById(id);
+    if(!input) return;
+
+    input.addEventListener("change", ()=>{
+      if(crop.bypassNextChange[id]){
+        crop.bypassNextChange[id] = false;
+        return;
+      }
+      if(!input.files || input.files.length === 0) return;
+      openCrop(id, input.files[0]);
+    });
+  });
+}
+hookCropOnInputs();
+
+// Se redimensionar a tela, reajusta o canvas (modal aberto)
+window.addEventListener("resize", ()=>{
+  if(!crop.img) return;
+  fitCanvasToStage();
+  // manter o mesmo zoom do usuário
+  drawCrop();
+});
 
 // ==== LÓGICA ORIGINAL (mantida) ====
 function applyLocal(){
@@ -1266,11 +1321,13 @@ function limparCamposAposEnviar(){
   document.getElementById("hora").value = "";
   document.getElementById("arena").value = "";
 
+  // arquivos
   document.getElementById("mascote").value = "";
   document.getElementById("escudo2").value = "";
   document.getElementById("patrocinadores").value = "";
   // NÃO limpa escudo1
 
+  // labels dos “+”
   const cm = document.getElementById("chosen_mascote");
   const c2 = document.getElementById("chosen_escudo2");
   const cp = document.getElementById("chosen_patrocinadores");
@@ -1305,7 +1362,7 @@ document.getElementById("pedidoForm").addEventListener("submit", async (e)=>{
   }
 
   try{
-    let endpoint = "/pedidos";
+    let endpoint = "/pedidos"; // Flyer (padrão)
 
     if (document.getElementById("tab_mascote").checked) {
       endpoint = "/mascotes";
