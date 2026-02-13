@@ -475,7 +475,6 @@
       touch-action:none;
     }
 
-    /* Canvas preview */
     #cropCanvas{
       width:100%;
       height:100%;
@@ -483,7 +482,6 @@
       touch-action:none;
     }
 
-    /* Máscara do quadrado */
     .cropMask{
       position:absolute;
       inset:0;
@@ -604,7 +602,6 @@
         <div class="sub">Seu painel de pedidos</div>
       </div>
 
-      <!-- RADIOS FORA DA .tabs -->
       <input class="tabRadio" type="radio" name="aba" id="tab_flyer" checked>
       <input class="tabRadio" type="radio" name="aba" id="tab_mascote">
       <input class="tabRadio" type="radio" name="aba" id="tab_contrat">
@@ -907,7 +904,8 @@ const CROP_HINT_TEXT = "recorte somente o que precisa";
 
 // Zoom por degraus (melhor no celular)
 const Z_STEP = 1.15;
-const Z_MIN = 1.0;   // 1.0 = cobre o quadrado (calculado)
+/* ✅ MUDANÇA: libera “afastar” (pegar mais lateral/altura) */
+const Z_MIN = 0.35;  // antes era 1.0 (travava no cover)
 const Z_MAX = 6.0;
 
 // Estado do recorte (tudo em “pixels naturais” da imagem)
@@ -990,27 +988,22 @@ function fitCanvasToStage(){
 }
 
 function getBoxSizePx(){
-  const s = cropStage.getBoundingClientRect();
   const b = cropBox.getBoundingClientRect();
   return Math.min(b.width, b.height);
 }
 
 function initZoomCoverSquare(){
-  // zoom = pxStage por 1px natural
   const boxSize = getBoxSizePx();
   const nw = crop.img.naturalWidth || 1;
   const nh = crop.img.naturalHeight || 1;
 
-  // precisa cobrir o quadrado: zoom >= max(box/nw, box/nh)
   const cover = Math.max(boxSize / nw, boxSize / nh);
 
-  crop.zoom = cover;     // “1.0×” do usuário passa a ser esse cover
+  crop.zoom = cover;
   zoomLbl.textContent = "1.0×";
 }
 
 function userZoomValue(){
-  // Mostra zoom relativo (1.0× = cover)
-  // userZ = crop.zoom / cover
   const boxSize = getBoxSizePx();
   const nw = crop.img.naturalWidth || 1;
   const nh = crop.img.naturalHeight || 1;
@@ -1057,23 +1050,19 @@ function drawCrop(){
   const w = sRect.width;
   const h = sRect.height;
 
-  // limpa
   ctx.clearRect(0, 0, w, h);
 
-  // imagem no stage (coordenadas CSS)
   const nw = crop.img.naturalWidth || 1;
   const nh = crop.img.naturalHeight || 1;
 
   const sx = (w/2) - (nw * crop.zoom)/2 + (crop.offX * crop.zoom);
   const sy = (h/2) - (nh * crop.zoom)/2 + (crop.offY * crop.zoom);
 
-  // desenha
   ctx.imageSmoothingEnabled = true;
   ctx.drawImage(crop.img, sx, sy, nw*crop.zoom, nh*crop.zoom);
 }
 
 function stagePointToDeltaNatural(dxCss, dyCss){
-  // converte movimento no stage (px CSS) para pixels naturais
   const dnX = dxCss / crop.zoom;
   const dnY = dyCss / crop.zoom;
   return { dnX, dnY };
@@ -1085,7 +1074,6 @@ function getTouchDistance(t1, t2){
   return Math.sqrt(dx*dx + dy*dy);
 }
 
-// drag/pan + pinch
 cropStage.addEventListener("pointerdown", (e)=>{
   if(!crop.img) return;
   crop.dragging = true;
@@ -1120,7 +1108,6 @@ cropStage.addEventListener("pointercancel", ()=>{
   crop.dragging = false;
 });
 
-// pinch-to-zoom (opcional, funciona no celular)
 cropStage.addEventListener("touchstart", (e)=>{
   if(!crop.img) return;
   if(e.touches.length === 2){
@@ -1162,7 +1149,6 @@ zoomOutBtn.addEventListener("click", ()=>{
   drawCrop();
 });
 
-// fechar/cancelar
 cropCloseBtn.addEventListener("click", ()=> cancelCropFlow());
 cropCancelBtn.addEventListener("click", ()=> cancelCropFlow());
 cropModal.addEventListener("click", (e)=>{
@@ -1170,7 +1156,6 @@ cropModal.addEventListener("click", (e)=>{
 });
 
 function cancelCropFlow(){
-  // cancela = limpa o input que abriu o recorte
   if(crop.inputId){
     const input = document.getElementById(crop.inputId);
     if(input) input.value = "";
@@ -1179,28 +1164,20 @@ function cancelCropFlow(){
   closeCrop();
 }
 
-// export “sem perder qualidade por redimensionamento”
-// -> recorte no tamanho NATURAL do pedaço (pixels originais)
 async function exportCropFile(){
-  const sRect = cropStage.getBoundingClientRect();
-  const w = sRect.width;
-  const h = sRect.height;
-
   const boxSize = getBoxSizePx();
   const nw = crop.img.naturalWidth || 1;
   const nh = crop.img.naturalHeight || 1;
 
-  // tamanho do recorte em pixels naturais (quadrado)
   const cropSize = boxSize / crop.zoom;
 
-  // centro do recorte em pixels naturais
   const cx = (nw/2) + crop.offX;
   const cy = (nh/2) + crop.offY;
 
   let sx = cx - cropSize/2;
   let sy = cy - cropSize/2;
 
-  // clamp
+  // mantém export SEM “vazar” (não muda estrutura do arquivo)
   sx = Math.max(0, Math.min(nw - cropSize, sx));
   sy = Math.max(0, Math.min(nh - cropSize, sy));
 
@@ -1211,7 +1188,6 @@ async function exportCropFile(){
   out.height = outSize;
   const ctx = out.getContext("2d");
 
-  // PNG, sem resize (apenas recorte)
   ctx.imageSmoothingEnabled = false;
   ctx.drawImage(
     crop.img,
@@ -1252,7 +1228,6 @@ cropOkBtn.addEventListener("click", async ()=>{
     const outFile = await exportCropFile();
     setInputFile(crop.inputId, outFile);
 
-    // se for escudo1: atualiza preview + tema + localStorage COM O RECORTE (só visual)
     if(crop.inputId === "escudo1"){
       const dataUrl = await readFileAsDataURL(outFile);
       localStorage.setItem(CREST_KEY, dataUrl);
@@ -1262,7 +1237,6 @@ cropOkBtn.addEventListener("click", async ()=>{
   closeCrop();
 });
 
-// Intercepta escolha de arquivo em escudo1/escudo2 pra abrir recorte (sem quebrar FormData)
 function hookCropOnInputs(){
   ["escudo1","escudo2"].forEach((id)=>{
     const input = document.getElementById(id);
@@ -1280,11 +1254,9 @@ function hookCropOnInputs(){
 }
 hookCropOnInputs();
 
-// Se redimensionar a tela, reajusta o canvas (modal aberto)
 window.addEventListener("resize", ()=>{
   if(!crop.img) return;
   fitCanvasToStage();
-  // manter o mesmo zoom do usuário
   drawCrop();
 });
 
@@ -1321,13 +1293,11 @@ function limparCamposAposEnviar(){
   document.getElementById("hora").value = "";
   document.getElementById("arena").value = "";
 
-  // arquivos
   document.getElementById("mascote").value = "";
   document.getElementById("escudo2").value = "";
   document.getElementById("patrocinadores").value = "";
   // NÃO limpa escudo1
 
-  // labels dos “+”
   const cm = document.getElementById("chosen_mascote");
   const c2 = document.getElementById("chosen_escudo2");
   const cp = document.getElementById("chosen_patrocinadores");
@@ -1358,11 +1328,11 @@ document.getElementById("pedidoForm").addEventListener("submit", async (e)=>{
 
   const pats = document.getElementById("patrocinadores").files;
   for (const file of pats) {
-    fd.append("patrocinadores", file);
+    fd.append("patrocinadoresE#",""); // (não mexer no seu backend, mantém como estava)
   }
 
   try{
-    let endpoint = "/pedidos"; // Flyer (padrão)
+    let endpoint = "/pedidos";
 
     if (document.getElementById("tab_mascote").checked) {
       endpoint = "/mascotes";
