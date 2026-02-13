@@ -895,13 +895,20 @@ const cropCancelBtn = document.getElementById("cropCancelBtn");
 const cropOkBtn = document.getElementById("cropOkBtn");
 
 const CROP_HINT_TEXT = "recorte somente o que precisa";
-const CROP_TARGET_SIZE = 1024;
+
+/* ✅ QUALIDADE: NÃO REDIMENSIONA O RECORTE
+   - canvas fica no tamanho REAL do recorte (sw x sh)
+   - isso mantém a resolução “praticamente igual” ao que o cliente enviou */
+const KEEP_ORIGINAL_CROP_RESOLUTION = true;
 
 let cropState = {
   inputId: null,
   file: null,
   objectUrl: null,
-  scale: 1,
+
+  baseScale: 1,   // encaixe inicial no stage
+  scale: 1,       // zoom do usuário (1..4)
+
   offX: 0,
   offY: 0,
   dragging: false,
@@ -912,12 +919,16 @@ let cropState = {
   bypassNextChange: { escudo1:false, escudo2:false }
 };
 
-/* ✅ TRAVA DEFINITIVA DO ZOOM (evita “zoom x1000”) */
 const ZMIN = 1;
 const ZMAX = parseFloat(cropZoom.max || "4") || 4;
+
 function clampScale(){
   cropState.scale = Math.max(ZMIN, Math.min(ZMAX, Number(cropState.scale) || 1));
   cropZoom.value = String(cropState.scale);
+}
+
+function totalScale(){
+  return (Number(cropState.baseScale) || 1) * (Number(cropState.scale) || 1);
 }
 
 function openCropModal(inputId, file){
@@ -925,7 +936,7 @@ function openCropModal(inputId, file){
   cropState.file = file;
   cropHint.textContent = CROP_HINT_TEXT;
 
-  // reset view
+  cropState.baseScale = 1;
   cropState.scale = 1;
   cropState.offX = 0;
   cropState.offY = 0;
@@ -940,19 +951,28 @@ function openCropModal(inputId, file){
   cropModal.classList.add("open");
   cropModal.setAttribute("aria-hidden","false");
 
-  // Centraliza e aplica transform quando a imagem carregar
   cropImg.onload = () => {
     cropImg.style.transform = "translate(0px, 0px) scale(1)";
 
+    const stage = cropStage.getBoundingClientRect();
     const box = cropBox.getBoundingClientRect();
+
+    const stageW = stage.width;
+    const stageH = stage.height;
     const boxSize = Math.min(box.width, box.height);
 
     const nw = cropImg.naturalWidth || 1;
     const nh = cropImg.naturalHeight || 1;
 
-    const coverScale = Math.max(boxSize / nw, boxSize / nh);
+    const fitScale = Math.min(stageW / nw, stageH / nh);
+    cropState.baseScale = Math.max(0.0001, fitScale);
 
-    cropState.scale = coverScale;
+    const coverUserScale = Math.max(
+      boxSize / (nw * cropState.baseScale),
+      boxSize / (nh * cropState.baseScale)
+    );
+
+    cropState.scale = coverUserScale;
     clampScale();
 
     cropState.offX = 0;
@@ -975,32 +995,27 @@ function closeCropModal(){
 
 function applyCropTransform(){
   clampScale();
-  const s = cropState.scale;
+  const s = totalScale();
   const x = cropState.offX;
   const y = cropState.offY;
   cropImg.style.transform = `translate(${x}px, ${y}px) scale(${s})`;
 }
 
 function clampOffsets(){
-  // Evita “vazar” muito para fora do quadrado
   const stage = cropStage.getBoundingClientRect();
   const box = cropBox.getBoundingClientRect();
 
-  const stageW = stage.width;
-  const stageH = stage.height;
   const boxSize = Math.min(box.width, box.height);
 
   const nw = cropImg.naturalWidth || 1;
   const nh = cropImg.naturalHeight || 1;
 
   clampScale();
-  const s = cropState.scale;
+  const s = totalScale();
 
-  // Dimensão exibida da imagem
   const dispW = nw * s;
   const dispH = nh * s;
 
-  // Precisamos cobrir o box no centro: limite de offset considerando o centro
   const maxX = Math.max(0, (dispW - boxSize) / 2);
   const maxY = Math.max(0, (dispH - boxSize) / 2);
 
@@ -1043,12 +1058,11 @@ cropStage.addEventListener("pointermove", (e)=>{ onDragMove(e); });
 cropStage.addEventListener("pointerup", (e)=>{ onDragEnd(e); });
 cropStage.addEventListener("pointercancel", (e)=>{ onDragEnd(e); });
 
-// Zoom com rodinha do mouse
 cropStage.addEventListener("wheel", (e)=>{
   e.preventDefault();
   const delta = e.deltaY;
   let s = cropState.scale;
-  s += (delta > 0 ? -0.06 : 0.06);
+  s += (delta > 0 ? -0.08 : 0.08);
   cropState.scale = s;
   clampScale();
   clampOffsets();
@@ -1059,7 +1073,6 @@ cropCloseBtn.addEventListener("click", ()=>{ cancelCrop(); });
 cropCancelBtn.addEventListener("click", ()=>{ cancelCrop(); });
 
 function cancelCrop(){
-  // Se cancelar: limpa o input que abriu o modal
   if(cropState.inputId){
     const input = document.getElementById(cropState.inputId);
     if(input) input.value = "";
@@ -1077,7 +1090,6 @@ function setInputFile(inputId, file){
   cropState.bypassNextChange[inputId] = true;
   input.files = dt.files;
 
-  // Atualiza label do “+”
   updateChosenFromInput(inputId);
 }
 
@@ -1094,7 +1106,6 @@ function updateChosenFromInput(inputId){
 }
 
 async function exportCropToFile(){
-  // mapeia quadrado central (cropBox) para coordenadas na imagem
   const stage = cropStage.getBoundingClientRect();
   const box = cropBox.getBoundingClientRect();
 
@@ -1109,14 +1120,10 @@ async function exportCropToFile(){
   const nh = cropImg.naturalHeight || 1;
 
   clampScale();
-  const s = cropState.scale;
+  const s = totalScale();
   const offX = cropState.offX;
   const offY = cropState.offY;
 
-  // Transform que aplicamos: imagem centrada no stage, com translate(offX,offY) e scale(s)
-  // Vamos converter um ponto do stage -> ponto na imagem natural:
-  // x_img = (x_stage - stageW/2 - offX)/s + nw/2
-  // y_img = (y_stage - stageH/2 - offY)/s + nh/2
   const x1 = (boxLeft - stageW/2 - offX) / s + nw/2;
   const y1 = (boxTop  - stageH/2 - offY) / s + nh/2;
   const x2 = (boxLeft + boxSize - stageW/2 - offX) / s + nw/2;
@@ -1127,23 +1134,34 @@ async function exportCropToFile(){
   let sw = Math.abs(x2-x1);
   let sh = Math.abs(y2-y1);
 
-  // clamp
   if(sx < 0){ sw += sx; sx = 0; }
   if(sy < 0){ sh += sy; sy = 0; }
   if(sx + sw > nw) sw = nw - sx;
   if(sy + sh > nh) sh = nh - sy;
+
   sw = Math.max(1, sw);
   sh = Math.max(1, sh);
 
   const canvas = document.createElement("canvas");
-  canvas.width = CROP_TARGET_SIZE;
-  canvas.height = CROP_TARGET_SIZE;
   const ctx = canvas.getContext("2d");
 
-  // desenha sempre quadrado final
-  ctx.drawImage(cropImg, sx, sy, sw, sh, 0, 0, CROP_TARGET_SIZE, CROP_TARGET_SIZE);
+  // ✅ NÃO redimensiona (preserva resolução do recorte)
+  if(KEEP_ORIGINAL_CROP_RESOLUTION){
+    canvas.width = Math.max(1, Math.round(sw));
+    canvas.height = Math.max(1, Math.round(sh));
+    ctx.imageSmoothingEnabled = false;
+    ctx.drawImage(cropImg, sx, sy, sw, sh, 0, 0, canvas.width, canvas.height);
+  } else {
+    // fallback (se um dia quiser forçar tamanho)
+    canvas.width = 1024;
+    canvas.height = 1024;
+    ctx.imageSmoothingEnabled = true;
+    ctx.drawImage(cropImg, sx, sy, sw, sh, 0, 0, canvas.width, canvas.height);
+  }
 
-  const blob = await new Promise(resolve => canvas.toBlob(resolve, "image/png", 0.92));
+  // PNG mantém bem a nitidez; (parâmetro de qualidade não afeta PNG)
+  const blob = await new Promise(resolve => canvas.toBlob(resolve, "image/png"));
+
   const safeName = (cropState.inputId === "escudo1") ? "escudo.png" : "camiseta.png";
   return new File([blob], safeName, { type:"image/png" });
 }
@@ -1154,7 +1172,6 @@ cropOkBtn.addEventListener("click", async ()=>{
     if(cropState.inputId){
       setInputFile(cropState.inputId, outFile);
 
-      // Se for escudo1: atualizar preview + tema + localStorage com o recorte (não mexe no backend)
       if(cropState.inputId === "escudo1"){
         const dataUrl = await readFileAsDataURL(outFile);
         localStorage.setItem(CREST_KEY, dataUrl);
@@ -1162,12 +1179,10 @@ cropOkBtn.addEventListener("click", async ()=>{
       }
     }
   }catch(e){
-    // se der erro, apenas cancela modal sem quebrar fluxo
   }
   closeCropModal();
 });
 
-// fecha clicando fora
 cropModal.addEventListener("click", (e)=>{
   if(e.target === cropModal) cancelCrop();
 });
@@ -1190,7 +1205,6 @@ function bindPlusUpload(inputId, chosenId){
   });
 
   input.addEventListener("change", ()=>{
-    // evita reabrir o recorte quando setamos o File programaticamente
     if((inputId === "escudo1" || inputId === "escudo2") && cropState.bypassNextChange[inputId]){
       cropState.bypassNextChange[inputId] = false;
       return;
@@ -1201,13 +1215,11 @@ function bindPlusUpload(inputId, chosenId){
       return;
     }
 
-    // Recorte somente para escudo1 e escudo2
     if(inputId === "escudo1" || inputId === "escudo2"){
       openCropModal(inputId, input.files[0]);
       return;
     }
 
-    // padrão
     if(input.multiple){
       chosen.textContent = `${input.files.length} arquivo(s) selecionado(s)`;
     }else{
@@ -1248,20 +1260,17 @@ async function refreshMe(){
   }catch{}
 }
 
-/* ✅ SÓ ISSO: limpar campos após enviar com sucesso (não mexe em mais nada) */
 function limparCamposAposEnviar(){
   document.getElementById("rodada").value = "";
   document.getElementById("dataJogo").value = "";
   document.getElementById("hora").value = "";
   document.getElementById("arena").value = "";
 
-  // arquivos
   document.getElementById("mascote").value = "";
   document.getElementById("escudo2").value = "";
   document.getElementById("patrocinadores").value = "";
   // NÃO limpa escudo1
 
-  // labels dos “+”
   const cm = document.getElementById("chosen_mascote");
   const c2 = document.getElementById("chosen_escudo2");
   const cp = document.getElementById("chosen_patrocinadores");
@@ -1296,8 +1305,7 @@ document.getElementById("pedidoForm").addEventListener("submit", async (e)=>{
   }
 
   try{
-    // ✅ ÚNICA MUDANÇA: escolhe a rota pelo TAB selecionado
-    let endpoint = "/pedidos"; // Flyer (padrão)
+    let endpoint = "/pedidos";
 
     if (document.getElementById("tab_mascote").checked) {
       endpoint = "/mascotes";
