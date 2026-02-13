@@ -343,6 +343,72 @@
         "msg msg";
     }
 
+    /* ====== UPLOAD COM “+” (custom) ====== */
+    .filePlus{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+      width:100%;
+      padding:12px 12px;
+      border-radius:14px;
+      border:1px solid rgba(255,255,255,.12);
+      background:rgba(0,0,0,.22);
+      color:#fff;
+      cursor:pointer;
+      user-select:none;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.04);
+      transition:transform .08s ease, border-color .15s ease, box-shadow .15s ease, filter .15s ease;
+    }
+    .filePlus:active{transform:translateY(1px)}
+    .filePlus:hover{filter:brightness(1.05)}
+    .filePlus:focus-within{
+      border-color: color-mix(in oklab, var(--accent1) 70%, #ffffff 10%);
+      box-shadow: 0 0 0 3px rgba(79,124,255,.18);
+    }
+    .filePlus .left{
+      min-width:0;
+      display:flex;
+      flex-direction:column;
+      gap:3px;
+    }
+    .filePlus .name{
+      font-size:12px;
+      color:rgba(255,255,255,.75);
+      font-weight:800;
+      letter-spacing:.2px;
+    }
+    .filePlus .chosen{
+      font-size:12px;
+      color:rgba(255,255,255,.92);
+      font-weight:700;
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
+      max-width:100%;
+    }
+    .filePlus .plus{
+      width:40px;
+      height:40px;
+      border-radius:12px;
+      display:grid;
+      place-items:center;
+      font-size:22px;
+      font-weight:900;
+      border:1px solid rgba(255,255,255,.14);
+      background:linear-gradient(135deg, rgba(255,255,255,.08), rgba(0,0,0,.10));
+      box-shadow:var(--shadow2);
+      flex:0 0 auto;
+    }
+    .fileHidden{
+      position:absolute;
+      left:-9999px;
+      opacity:0;
+      width:1px;
+      height:1px;
+      pointer-events:none;
+    }
+
     @media (max-width:520px){
       .formGrid{grid-template-columns:1fr}
       h1{font-size:26px}
@@ -478,32 +544,69 @@
             <input id="arena" />
           </div>
 
+          <!-- Mascote (opcional) -->
           <div class="field-mascote full">
             <label>Mascote (opcional)</label>
-            <input id="mascote" type="file" />
+
+            <input id="mascote" class="fileHidden" type="file" />
+            <div class="filePlus" data-file-for="mascote" tabindex="0" role="button" aria-label="Enviar mascote (opcional)">
+              <div class="left">
+                <div class="name">Upload</div>
+                <div class="chosen" id="chosen_mascote">Nenhum arquivo</div>
+              </div>
+              <div class="plus">+</div>
+            </div>
           </div>
 
+          <!-- Escudo 1 -->
           <div class="field-esc1">
             <label>
               <span class="t-flyer">Escudo 1 *</span>
               <span class="t-mascote">Escudo / logo do time *</span>
               <span class="t-contrat">Escudo / logo do time *</span>
             </label>
-            <input id="escudo1" type="file" required />
+
+            <input id="escudo1" class="fileHidden" type="file" required />
+            <div class="filePlus" data-file-for="escudo1" tabindex="0" role="button" aria-label="Enviar escudo 1">
+              <div class="left">
+                <div class="name">Upload</div>
+                <div class="chosen" id="chosen_escudo1">Nenhum arquivo</div>
+              </div>
+              <div class="plus">+</div>
+            </div>
           </div>
 
+          <!-- Escudo 2 / Camiseta -->
           <div class="field-esc2">
             <label>
               <span class="t-flyer">Escudo 2 *</span>
               <span class="t-mascote">Camiseta *</span>
               <span class="t-contrat">Camiseta *</span>
             </label>
-            <input id="escudo2" type="file" required />
+
+            <input id="escudo2" class="fileHidden" type="file" required />
+            <div class="filePlus" data-file-for="escudo2" tabindex="0" role="button" aria-label="Enviar escudo 2">
+              <div class="left">
+                <div class="name">Upload</div>
+                <div class="chosen" id="chosen_escudo2">Nenhum arquivo</div>
+              </div>
+              <div class="plus">+</div>
+            </div>
           </div>
 
+          <!-- Patrocinadores -->
           <div class="field-patro full">
             <label>Imagens de patrocinadores (opcional) — pode enviar várias</label>
-            <input id="patrocinadores" type="file" multiple />
+
+            <input id="patrocinadores" class="fileHidden" type="file" multiple />
+            <div class="filePlus" data-file-for="patrocinadores" tabindex="0" role="button" aria-label="Enviar patrocinadores (opcional)">
+              <div class="left">
+                <div class="name">Upload múltiplo</div>
+                <div class="chosen" id="chosen_patrocinadores">Nenhum arquivo</div>
+              </div>
+              <div class="plus">+</div>
+            </div>
+
             <div class="hint">Dica: segure Ctrl (Windows) para selecionar vários arquivos.</div>
           </div>
 
@@ -600,6 +703,41 @@ escudo1Input.addEventListener("change", async ()=>{
 
 setCrestUI(localStorage.getItem(CREST_KEY) || "");
 
+// ==== UPLOAD “+” (sem mexer no FormData) ====
+function bindPlusUpload(inputId, chosenId){
+  const input = document.getElementById(inputId);
+  const chosen = document.getElementById(chosenId);
+  const btn = document.querySelector(`.filePlus[data-file-for="${inputId}"]`);
+  if(!input || !chosen || !btn) return;
+
+  const openPicker = () => input.click();
+
+  btn.addEventListener("click", openPicker);
+  btn.addEventListener("keydown", (e)=>{
+    if(e.key === "Enter" || e.key === " "){
+      e.preventDefault();
+      openPicker();
+    }
+  });
+
+  input.addEventListener("change", ()=>{
+    if(!input.files || input.files.length === 0){
+      chosen.textContent = "Nenhum arquivo";
+      return;
+    }
+    if(input.multiple){
+      chosen.textContent = `${input.files.length} arquivo(s) selecionado(s)`;
+    }else{
+      chosen.textContent = input.files[0].name || "Arquivo selecionado";
+    }
+  });
+}
+
+bindPlusUpload("mascote", "chosen_mascote");
+bindPlusUpload("escudo1", "chosen_escudo1");
+bindPlusUpload("escudo2", "chosen_escudo2");
+bindPlusUpload("patrocinadores", "chosen_patrocinadores");
+
 // ==== LÓGICA ORIGINAL (mantida) ====
 function applyLocal(){
   const nome = localStorage.getItem("omascote_nome_time") || "";
@@ -633,10 +771,20 @@ function limparCamposAposEnviar(){
   document.getElementById("dataJogo").value = "";
   document.getElementById("hora").value = "";
   document.getElementById("arena").value = "";
+
+  // arquivos
   document.getElementById("mascote").value = "";
   document.getElementById("escudo2").value = "";
   document.getElementById("patrocinadores").value = "";
   // NÃO limpa escudo1
+
+  // labels dos “+”
+  const cm = document.getElementById("chosen_mascote");
+  const c2 = document.getElementById("chosen_escudo2");
+  const cp = document.getElementById("chosen_patrocinadores");
+  if(cm) cm.textContent = "Nenhum arquivo";
+  if(c2) c2.textContent = "Nenhum arquivo";
+  if(cp) cp.textContent = "Nenhum arquivo";
 }
 
 document.getElementById("pedidoForm").addEventListener("submit", async (e)=>{
