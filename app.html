@@ -404,7 +404,7 @@
       pointer-events:none;
     }
 
-    /* ====== MODAL RECORTE (OPÇÃO 2 - MOBILE FIRST) ====== */
+    /* ====== MODAL RECORTE (RETÂNGULO LIVRE COM ALÇAS) ====== */
     .modalMask{
       position:fixed;
       inset:0;
@@ -487,18 +487,39 @@
       inset:0;
       pointer-events:none;
     }
-    .cropBox{
+
+    /* retângulo livre */
+    #cropRect{
       position:absolute;
-      left:50%;
-      top:50%;
-      width:min(68%, 320px);
-      height:min(68%, 320px);
-      transform:translate(-50%,-50%);
       border-radius:14px;
       border:2px solid rgba(255,255,255,.92);
       box-shadow:0 0 0 9999px rgba(0,0,0,.45);
       background:transparent;
+      pointer-events:auto; /* para mover/redimensionar */
+      touch-action:none;
     }
+
+    .handle{
+      position:absolute;
+      width:18px;
+      height:18px;
+      border-radius:8px;
+      background:rgba(255,255,255,.95);
+      box-shadow:0 6px 18px rgba(0,0,0,.35);
+      border:1px solid rgba(0,0,0,.25);
+      pointer-events:auto;
+      touch-action:none;
+    }
+    /* cantos */
+    .h-nw{left:-9px; top:-9px; cursor:nwse-resize}
+    .h-ne{right:-9px; top:-9px; cursor:nesw-resize}
+    .h-sw{left:-9px; bottom:-9px; cursor:nesw-resize}
+    .h-se{right:-9px; bottom:-9px; cursor:nwse-resize}
+    /* lados (liberdade de eixo) */
+    .h-n{left:50%; top:-9px; transform:translateX(-50%); cursor:ns-resize}
+    .h-s{left:50%; bottom:-9px; transform:translateX(-50%); cursor:ns-resize}
+    .h-w{left:-9px; top:50%; transform:translateY(-50%); cursor:ew-resize}
+    .h-e{right:-9px; top:50%; transform:translateY(-50%); cursor:ew-resize}
 
     .cropControls{
       display:flex;
@@ -577,6 +598,7 @@
           "submit"
           "msg";
       }
+      .handle{width:20px;height:20px}
     }
   </style>
 </head>
@@ -749,7 +771,7 @@
     </div>
   </div>
 
-  <!-- MODAL RECORTE (OPÇÃO 2) -->
+  <!-- MODAL RECORTE (RETÂNGULO LIVRE + ALÇAS) -->
   <div class="modalMask" id="cropModal" aria-hidden="true">
     <div class="modalCard" role="dialog" aria-modal="true" aria-label="Recortar imagem">
       <div class="modalTop">
@@ -762,8 +784,20 @@
 
         <div class="cropStage" id="cropStage">
           <canvas id="cropCanvas"></canvas>
-          <div class="cropMask">
-            <div class="cropBox" id="cropBox"></div>
+
+          <div class="cropMask"></div>
+
+          <div id="cropRect" aria-label="Área de recorte">
+            <div class="handle h-nw" data-h="nw"></div>
+            <div class="handle h-n"  data-h="n"></div>
+            <div class="handle h-ne" data-h="ne"></div>
+
+            <div class="handle h-w"  data-h="w"></div>
+            <div class="handle h-e"  data-h="e"></div>
+
+            <div class="handle h-sw" data-h="sw"></div>
+            <div class="handle h-s"  data-h="s"></div>
+            <div class="handle h-se" data-h="se"></div>
           </div>
         </div>
       </div>
@@ -841,7 +875,7 @@ function applyThemeFromImage(img){
 
   r = Math.round(r/n); g = Math.round(g/n); b = Math.round(b/n);
 
-  const r2 = Math.max(0, Math.round(r * 0.55));
+  const r2 = = Math.max(0, Math.round(r * 0.55));
   const g2 = Math.max(0, Math.round(g * 0.55));
   const b2 = Math.max(0, Math.round(b * 0.55));
 
@@ -886,12 +920,12 @@ bindPlusUpload("escudo1", "chosen_escudo1");
 bindPlusUpload("escudo2", "chosen_escudo2");
 bindPlusUpload("patrocinadores", "chosen_patrocinadores");
 
-// ====== RECORTE OPÇÃO 2 (mobile-first, +/−, arrastar) ======
+// ====== RECORTE (RETÂNGULO LIVRE + ALÇAS, SEM PERDER QUALIDADE) ======
 const cropModal = document.getElementById("cropModal");
 const cropStage = document.getElementById("cropStage");
-const cropBox = document.getElementById("cropBox");
 const cropHint = document.getElementById("cropHint");
 const cropCanvas = document.getElementById("cropCanvas");
+const cropRectEl = document.getElementById("cropRect");
 const zoomLbl = document.getElementById("zoomLbl");
 
 const cropCloseBtn = document.getElementById("cropCloseBtn");
@@ -902,40 +936,39 @@ const zoomInBtn = document.getElementById("zoomInBtn");
 
 const CROP_HINT_TEXT = "recorte somente o que precisa";
 
-// Zoom por degraus (melhor no celular)
+// zoom
 const Z_STEP = 1.15;
-/* ✅ MUDANÇA: libera “afastar” (pegar mais lateral/altura) */
-const Z_MIN = 0.35;  // antes era 1.0 (travava no cover)
+const Z_MIN = 0.35;
 const Z_MAX = 6.0;
 
-// Estado do recorte (tudo em “pixels naturais” da imagem)
 const crop = {
   inputId: null,
-  file: null,
-  img: null,            // HTMLImageElement
+  img: null,
   objectUrl: null,
 
-  // zoomNaturalToStage: quantos px no stage por 1px natural
-  zoom: 1.0,
-
-  // offset do centro (em px naturais)
-  offX: 0,
+  zoom: 1.0,     // pxStage por 1px natural
+  offX: 0,       // px naturais
   offY: 0,
 
-  dragging: false,
+  draggingImg: false,
   lastX: 0,
   lastY: 0,
 
-  // pinch
   pinch: false,
   pinchStartDist: 0,
   pinchStartZoom: 1.0,
+
+  // retângulo no stage (px CSS)
+  rect: { x: 0, y: 0, w: 0, h: 0 },
+  rectMode: null, // 'move' | 'resize'
+  rectHandle: null,
+  rectStart: null,
+
   bypassNextChange: { escudo1:false, escudo2:false }
 };
 
 function openCrop(inputId, file){
   crop.inputId = inputId;
-  crop.file = file;
   cropHint.textContent = CROP_HINT_TEXT;
 
   if(crop.objectUrl){
@@ -952,11 +985,10 @@ function openCrop(inputId, file){
 
   crop.img.onload = () => {
     fitCanvasToStage();
-    initZoomCoverSquare();
-    crop.offX = 0;
-    crop.offY = 0;
-    clampOffsets();
-    drawCrop();
+    initZoomCoverStage();
+    initRectDefault();
+    syncRectEl();
+    drawStage();
   };
 }
 
@@ -969,11 +1001,13 @@ function closeCrop(){
   }
 
   crop.inputId = null;
-  crop.file = null;
   crop.img = null;
   crop.objectUrl = null;
-  crop.dragging = false;
+  crop.draggingImg = false;
   crop.pinch = false;
+  crop.rectMode = null;
+  crop.rectHandle = null;
+  crop.rectStart = null;
 }
 
 function fitCanvasToStage(){
@@ -984,129 +1018,193 @@ function fitCanvasToStage(){
   cropCanvas.height = Math.round(rect.height * dpr);
 
   const ctx = cropCanvas.getContext("2d");
-  ctx.setTransform(dpr, 0, 0, dpr, 0, 0); // desenhar em “px CSS”
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
 }
 
-function getBoxSizePx(){
-  const b = cropBox.getBoundingClientRect();
-  return Math.min(b.width, b.height);
-}
-
-function initZoomCoverSquare(){
-  const boxSize = getBoxSizePx();
+function initZoomCoverStage(){
+  // começa com zoom que encaixa “bem” no stage (sem explodir)
+  const s = cropStage.getBoundingClientRect();
   const nw = crop.img.naturalWidth || 1;
   const nh = crop.img.naturalHeight || 1;
 
-  const cover = Math.max(boxSize / nw, boxSize / nh);
+  // encaixa no stage
+  const fit = Math.min(s.width / nw, s.height / nh);
 
-  crop.zoom = cover;
+  // mas garante que não fique minúsculo demais
+  crop.zoom = Math.max(fit, 0.05);
+  crop.offX = 0;
+  crop.offY = 0;
   zoomLbl.textContent = "1.0×";
 }
 
 function userZoomValue(){
-  const boxSize = getBoxSizePx();
-  const nw = crop.img.naturalWidth || 1;
-  const nh = crop.img.naturalHeight || 1;
-  const cover = Math.max(boxSize / nw, boxSize / nh);
-
-  const user = crop.zoom / cover;
-  return Math.max(0.01, user);
+  // 1.0× = zoom atual inicial (fit)
+  // vamos usar uma referência dinâmica: refZoom
+  const refZoom = crop.refZoom || crop.zoom;
+  return crop.zoom / refZoom;
 }
 
 function setUserZoom(userZ){
-  const boxSize = getBoxSizePx();
-  const nw = crop.img.naturalWidth || 1;
-  const nh = crop.img.naturalHeight || 1;
-  const cover = Math.max(boxSize / nw, boxSize / nh);
+  const refZoom = crop.refZoom || crop.zoom;
+  crop.refZoom = refZoom;
 
   const clamped = Math.max(Z_MIN, Math.min(Z_MAX, userZ));
-  crop.zoom = cover * clamped;
-
+  crop.zoom = refZoom * clamped;
   zoomLbl.textContent = `${clamped.toFixed(1)}×`;
 }
 
-function clampOffsets(){
-  if(!crop.img) return;
-
-  const nw = crop.img.naturalWidth || 1;
-  const nh = crop.img.naturalHeight || 1;
-  const boxSize = getBoxSizePx();
-
-  // tamanho do recorte em pixels naturais
-  const cropSizeNatural = boxSize / crop.zoom;
-
-  const maxOffX = Math.max(0, (nw - cropSizeNatural) / 2);
-  const maxOffY = Math.max(0, (nh - cropSizeNatural) / 2);
-
-  crop.offX = Math.max(-maxOffX, Math.min(maxOffX, crop.offX));
-  crop.offY = Math.max(-maxOffY, Math.min(maxOffY, crop.offY));
+function initRectDefault(){
+  const s = cropStage.getBoundingClientRect();
+  // retângulo inicial “bom” (mais largo)
+  const w = s.width * 0.70;
+  const h = s.height * 0.55;
+  crop.rect.w = Math.max(140, Math.min(s.width - 24, w));
+  crop.rect.h = Math.max(140, Math.min(s.height - 24, h));
+  crop.rect.x = (s.width - crop.rect.w)/2;
+  crop.rect.y = (s.height - crop.rect.h)/2;
 }
 
-function drawCrop(){
+function syncRectEl(){
+  cropRectEl.style.left = `${crop.rect.x}px`;
+  cropRectEl.style.top = `${crop.rect.y}px`;
+  cropRectEl.style.width = `${crop.rect.w}px`;
+  cropRectEl.style.height = `${crop.rect.h}px`;
+}
+
+function clampRect(){
+  const s = cropStage.getBoundingClientRect();
+  const minW = 100, minH = 100;
+
+  crop.rect.w = Math.max(minW, Math.min(s.width - 2, crop.rect.w));
+  crop.rect.h = Math.max(minH, Math.min(s.height - 2, crop.rect.h));
+
+  crop.rect.x = Math.max(0, Math.min(s.width - crop.rect.w, crop.rect.x));
+  crop.rect.y = Math.max(0, Math.min(s.height - crop.rect.h, crop.rect.y));
+}
+
+function drawStage(){
   if(!crop.img) return;
 
   const ctx = cropCanvas.getContext("2d");
-  const sRect = cropStage.getBoundingClientRect();
-  const w = sRect.width;
-  const h = sRect.height;
+  const s = cropStage.getBoundingClientRect();
 
-  ctx.clearRect(0, 0, w, h);
+  ctx.clearRect(0,0,s.width,s.height);
 
   const nw = crop.img.naturalWidth || 1;
   const nh = crop.img.naturalHeight || 1;
 
-  const sx = (w/2) - (nw * crop.zoom)/2 + (crop.offX * crop.zoom);
-  const sy = (h/2) - (nh * crop.zoom)/2 + (crop.offY * crop.zoom);
+  const imgX = (s.width/2) - (nw*crop.zoom)/2 + (crop.offX*crop.zoom);
+  const imgY = (s.height/2) - (nh*crop.zoom)/2 + (crop.offY*crop.zoom);
 
   ctx.imageSmoothingEnabled = true;
-  ctx.drawImage(crop.img, sx, sy, nw*crop.zoom, nh*crop.zoom);
+  ctx.drawImage(crop.img, imgX, imgY, nw*crop.zoom, nh*crop.zoom);
 }
 
-function stagePointToDeltaNatural(dxCss, dyCss){
-  const dnX = dxCss / crop.zoom;
-  const dnY = dyCss / crop.zoom;
-  return { dnX, dnY };
-}
-
-function getTouchDistance(t1, t2){
-  const dx = t2.clientX - t1.clientX;
-  const dy = t2.clientY - t1.clientY;
-  return Math.sqrt(dx*dx + dy*dy);
-}
-
-cropStage.addEventListener("pointerdown", (e)=>{
+// mover imagem (pan) — só quando clica no canvas (não no retângulo)
+cropCanvas.addEventListener("pointerdown", (e)=>{
   if(!crop.img) return;
-  crop.dragging = true;
+  crop.draggingImg = true;
   crop.lastX = e.clientX;
   crop.lastY = e.clientY;
-  try{ cropStage.setPointerCapture(e.pointerId); }catch{}
+  try{ cropCanvas.setPointerCapture(e.pointerId); }catch{}
 });
 
-cropStage.addEventListener("pointermove", (e)=>{
+cropCanvas.addEventListener("pointermove", (e)=>{
   if(!crop.img) return;
-  if(!crop.dragging) return;
+  if(!crop.draggingImg) return;
 
   const dx = e.clientX - crop.lastX;
   const dy = e.clientY - crop.lastY;
   crop.lastX = e.clientX;
   crop.lastY = e.clientY;
 
-  const { dnX, dnY } = stagePointToDeltaNatural(dx, dy);
+  crop.offX += dx / crop.zoom;
+  crop.offY += dy / crop.zoom;
 
-  crop.offX += dnX;
-  crop.offY += dnY;
-
-  clampOffsets();
-  drawCrop();
+  drawStage();
 });
 
-cropStage.addEventListener("pointerup", (e)=>{
-  crop.dragging = false;
-  try{ cropStage.releasePointerCapture(e.pointerId); }catch{}
+cropCanvas.addEventListener("pointerup", (e)=>{
+  crop.draggingImg = false;
+  try{ cropCanvas.releasePointerCapture(e.pointerId); }catch{}
 });
-cropStage.addEventListener("pointercancel", ()=>{
-  crop.dragging = false;
+cropCanvas.addEventListener("pointercancel", ()=>{
+  crop.draggingImg = false;
 });
+
+// mover/redimensionar retângulo — impede propagar pro canvas
+function startRectAction(e, mode, handle=null){
+  e.preventDefault();
+  e.stopPropagation();
+  if(!crop.img) return;
+
+  crop.rectMode = mode;
+  crop.rectHandle = handle;
+  crop.rectStart = {
+    px: e.clientX,
+    py: e.clientY,
+    x: crop.rect.x,
+    y: crop.rect.y,
+    w: crop.rect.w,
+    h: crop.rect.h
+  };
+  try{ cropRectEl.setPointerCapture(e.pointerId); }catch{}
+}
+
+function onRectMove(e){
+  if(!crop.rectMode || !crop.rectStart) return;
+  const dx = e.clientX - crop.rectStart.px;
+  const dy = e.clientY - crop.rectStart.py;
+
+  if(crop.rectMode === "move"){
+    crop.rect.x = crop.rectStart.x + dx;
+    crop.rect.y = crop.rectStart.y + dy;
+  } else if(crop.rectMode === "resize"){
+    const h = crop.rectHandle;
+    let x = crop.rectStart.x, y = crop.rectStart.y, w = crop.rectStart.w, hh = crop.rectStart.h;
+
+    if(h.includes("e")) w = crop.rectStart.w + dx;
+    if(h.includes("s")) hh = crop.rectStart.h + dy;
+    if(h.includes("w")) { x = crop.rectStart.x + dx; w = crop.rectStart.w - dx; }
+    if(h.includes("n")) { y = crop.rectStart.y + dy; hh = crop.rectStart.h - dy; }
+
+    crop.rect.x = x; crop.rect.y = y; crop.rect.w = w; crop.rect.h = hh;
+  }
+
+  clampRect();
+  syncRectEl();
+}
+
+function endRectAction(e){
+  if(!crop.rectMode) return;
+  crop.rectMode = null;
+  crop.rectHandle = null;
+  crop.rectStart = null;
+  try{ cropRectEl.releasePointerCapture(e.pointerId); }catch{}
+}
+
+cropRectEl.addEventListener("pointerdown", (e)=>{
+  // se clicar no handle, o handler do handle pega; aqui é mover
+  if(e.target && e.target.classList && e.target.classList.contains("handle")) return;
+  startRectAction(e, "move", null);
+});
+cropRectEl.addEventListener("pointermove", onRectMove);
+cropRectEl.addEventListener("pointerup", endRectAction);
+cropRectEl.addEventListener("pointercancel", endRectAction);
+
+cropRectEl.querySelectorAll(".handle").forEach(h=>{
+  h.addEventListener("pointerdown", (e)=>{
+    const handle = e.target.getAttribute("data-h");
+    startRectAction(e, "resize", handle);
+  });
+});
+
+// pinch-to-zoom (mantém)
+function getTouchDistance(t1, t2){
+  const dx = t2.clientX - t1.clientX;
+  const dy = t2.clientY - t1.clientY;
+  return Math.sqrt(dx*dx + dy*dy);
+}
 
 cropStage.addEventListener("touchstart", (e)=>{
   if(!crop.img) return;
@@ -1126,29 +1224,26 @@ cropStage.addEventListener("touchmove", (e)=>{
   const ratio = dist / Math.max(1, crop.pinchStartDist);
 
   setUserZoom(crop.pinchStartZoom * ratio);
-  clampOffsets();
-  drawCrop();
+  drawStage();
 },{passive:true});
 
 cropStage.addEventListener("touchend", (e)=>{
-  if(e.touches.length < 2){
-    crop.pinch = false;
-  }
+  if(e.touches.length < 2) crop.pinch = false;
 },{passive:true});
 
+// zoom botões
 zoomInBtn.addEventListener("click", ()=>{
   if(!crop.img) return;
   setUserZoom(userZoomValue() * Z_STEP);
-  clampOffsets();
-  drawCrop();
+  drawStage();
 });
 zoomOutBtn.addEventListener("click", ()=>{
   if(!crop.img) return;
   setUserZoom(userZoomValue() / Z_STEP);
-  clampOffsets();
-  drawCrop();
+  drawStage();
 });
 
+// fechar/cancelar
 cropCloseBtn.addEventListener("click", ()=> cancelCropFlow());
 cropCancelBtn.addEventListener("click", ()=> cancelCropFlow());
 cropModal.addEventListener("click", (e)=>{
@@ -1164,36 +1259,46 @@ function cancelCropFlow(){
   closeCrop();
 }
 
+// export SEM “reduzir qualidade”: recorta no tamanho natural do trecho
 async function exportCropFile(){
-  const boxSize = getBoxSizePx();
+  const s = cropStage.getBoundingClientRect();
   const nw = crop.img.naturalWidth || 1;
   const nh = crop.img.naturalHeight || 1;
 
-  const cropSize = boxSize / crop.zoom;
+  // posição da imagem no stage (igual drawStage)
+  const imgX = (s.width/2) - (nw*crop.zoom)/2 + (crop.offX*crop.zoom);
+  const imgY = (s.height/2) - (nh*crop.zoom)/2 + (crop.offY*crop.zoom);
 
-  const cx = (nw/2) + crop.offX;
-  const cy = (nh/2) + crop.offY;
+  // retângulo no stage => retângulo na imagem natural
+  const srcX = (crop.rect.x - imgX) / crop.zoom;
+  const srcY = (crop.rect.y - imgY) / crop.zoom;
+  const srcW = crop.rect.w / crop.zoom;
+  const srcH = crop.rect.h / crop.zoom;
 
-  let sx = cx - cropSize/2;
-  let sy = cy - cropSize/2;
-
-  // mantém export SEM “vazar” (não muda estrutura do arquivo)
-  sx = Math.max(0, Math.min(nw - cropSize, sx));
-  sy = Math.max(0, Math.min(nh - cropSize, sy));
-
-  const outSize = Math.max(1, Math.round(cropSize));
+  // canvas de saída no tamanho real (pixels naturais)
+  const outW = Math.max(1, Math.round(srcW));
+  const outH = Math.max(1, Math.round(srcH));
 
   const out = document.createElement("canvas");
-  out.width = outSize;
-  out.height = outSize;
+  out.width = outW;
+  out.height = outH;
   const ctx = out.getContext("2d");
+  ctx.clearRect(0,0,outW,outH);
+
+  // Clampa dentro da imagem para não vazar (mantém comportamento “seguro”)
+  const sx = Math.max(0, Math.min(nw, srcX));
+  const sy = Math.max(0, Math.min(nh, srcY));
+  const sW = Math.max(1, Math.min(nw - sx, srcW));
+  const sH = Math.max(1, Math.min(nh - sy, srcH));
+
+  // destino proporcional
+  const dX = 0;
+  const dY = 0;
+  const dW = Math.round(sW);
+  const dH = Math.round(sH);
 
   ctx.imageSmoothingEnabled = false;
-  ctx.drawImage(
-    crop.img,
-    sx, sy, cropSize, cropSize,
-    0, 0, outSize, outSize
-  );
+  ctx.drawImage(crop.img, sx, sy, sW, sH, dX, dY, dW, dH);
 
   const blob = await new Promise(resolve => out.toBlob(resolve, "image/png"));
   const name = (crop.inputId === "escudo1") ? "escudo.png" : "camiseta.png";
@@ -1237,6 +1342,7 @@ cropOkBtn.addEventListener("click", async ()=>{
   closeCrop();
 });
 
+// abre recorte quando escolhe escudo1/escudo2
 function hookCropOnInputs(){
   ["escudo1","escudo2"].forEach((id)=>{
     const input = document.getElementById(id);
@@ -1257,7 +1363,9 @@ hookCropOnInputs();
 window.addEventListener("resize", ()=>{
   if(!crop.img) return;
   fitCanvasToStage();
-  drawCrop();
+  clampRect();
+  syncRectEl();
+  drawStage();
 });
 
 // ==== LÓGICA ORIGINAL (mantida) ====
@@ -1328,7 +1436,7 @@ document.getElementById("pedidoForm").addEventListener("submit", async (e)=>{
 
   const pats = document.getElementById("patrocinadores").files;
   for (const file of pats) {
-    fd.append("patrocinadoresE#",""); // (não mexer no seu backend, mantém como estava)
+    fd.append("patrocinadoresE#",""); // mantém exatamente como você tinha
   }
 
   try{
