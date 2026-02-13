@@ -912,6 +912,14 @@ let cropState = {
   bypassNextChange: { escudo1:false, escudo2:false }
 };
 
+/* ✅ TRAVA DEFINITIVA DO ZOOM (evita “zoom x1000”) */
+const ZMIN = 1;
+const ZMAX = parseFloat(cropZoom.max || "4") || 4;
+function clampScale(){
+  cropState.scale = Math.max(ZMIN, Math.min(ZMAX, Number(cropState.scale) || 1));
+  cropZoom.value = String(cropState.scale);
+}
+
 function openCropModal(inputId, file){
   cropState.inputId = inputId;
   cropState.file = file;
@@ -933,30 +941,25 @@ function openCropModal(inputId, file){
   cropModal.setAttribute("aria-hidden","false");
 
   // Centraliza e aplica transform quando a imagem carregar
- cropImg.onload = () => {
-  const stage = cropStage.getBoundingClientRect();
-  const box = cropBox.getBoundingClientRect();
+  cropImg.onload = () => {
+    cropImg.style.transform = "translate(0px, 0px) scale(1)";
 
-  const boxSize = Math.min(box.width, box.height);
+    const box = cropBox.getBoundingClientRect();
+    const boxSize = Math.min(box.width, box.height);
 
-  const nw = cropImg.naturalWidth || 1;
-  const nh = cropImg.naturalHeight || 1;
+    const nw = cropImg.naturalWidth || 1;
+    const nh = cropImg.naturalHeight || 1;
 
-  const coverScale = Math.max(boxSize / nw, boxSize / nh);
+    const coverScale = Math.max(boxSize / nw, boxSize / nh);
 
-  // ✅ LIMITA o zoom inicial pra não “explodir”
-  const ZMIN = 1;
-  const ZMAX = parseFloat(cropZoom.max || "4") || 4;
+    cropState.scale = coverScale;
+    clampScale();
 
-  cropState.scale = Math.min(ZMAX, Math.max(ZMIN, coverScale));
-  cropZoom.value = String(cropState.scale);
-
-  cropState.offX = 0;
-  cropState.offY = 0;
-  clampOffsets();
-  applyCropTransform();
-};
-
+    cropState.offX = 0;
+    cropState.offY = 0;
+    clampOffsets();
+    applyCropTransform();
+  };
 }
 
 function closeCropModal(){
@@ -971,6 +974,7 @@ function closeCropModal(){
 }
 
 function applyCropTransform(){
+  clampScale();
   const s = cropState.scale;
   const x = cropState.offX;
   const y = cropState.offY;
@@ -989,6 +993,7 @@ function clampOffsets(){
   const nw = cropImg.naturalWidth || 1;
   const nh = cropImg.naturalHeight || 1;
 
+  clampScale();
   const s = cropState.scale;
 
   // Dimensão exibida da imagem
@@ -1044,9 +1049,8 @@ cropStage.addEventListener("wheel", (e)=>{
   const delta = e.deltaY;
   let s = cropState.scale;
   s += (delta > 0 ? -0.06 : 0.06);
-  s = Math.max(1, Math.min(4, s));
   cropState.scale = s;
-  cropZoom.value = String(s);
+  clampScale();
   clampOffsets();
   applyCropTransform();
 },{ passive:false });
@@ -1104,6 +1108,7 @@ async function exportCropToFile(){
   const nw = cropImg.naturalWidth || 1;
   const nh = cropImg.naturalHeight || 1;
 
+  clampScale();
   const s = cropState.scale;
   const offX = cropState.offX;
   const offY = cropState.offY;
