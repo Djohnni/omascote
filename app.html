@@ -372,12 +372,7 @@
       flex-direction:column;
       gap:3px;
     }
-    .filePlus .name{
-      font-size:12px;
-      color:rgba(255,255,255,.75);
-      font-weight:800;
-      letter-spacing:.2px;
-    }
+    .filePlus .name{display:none;} /* remove “Upload” */
     .filePlus .chosen{
       font-size:12px;
       color:rgba(255,255,255,.92);
@@ -409,6 +404,167 @@
       pointer-events:none;
     }
 
+    /* ====== MODAL RECORTE ====== */
+    .modalMask{
+      position:fixed;
+      inset:0;
+      background:rgba(0,0,0,.65);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      display:none;
+      align-items:center;
+      justify-content:center;
+      padding:16px;
+      z-index:9999;
+    }
+    .modalMask.open{display:flex}
+
+    .modalCard{
+      width:min(560px, 96vw);
+      border-radius:20px;
+      border:1px solid rgba(255,255,255,.12);
+      background:rgba(10,16,30,.92);
+      box-shadow:var(--shadow);
+      overflow:hidden;
+    }
+    .modalTop{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+      padding:12px 14px;
+      border-bottom:1px solid rgba(255,255,255,.10);
+      background:linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.02));
+    }
+    .modalTitle{
+      font-weight:900;
+      font-size:13px;
+      color:rgba(255,255,255,.92);
+      letter-spacing:.2px;
+    }
+    .modalClose{
+      border:1px solid rgba(255,255,255,.14);
+      background:rgba(0,0,0,.18);
+      border-radius:999px;
+      padding:8px 10px;
+      font-weight:900;
+      cursor:pointer;
+      box-shadow:none;
+    }
+
+    .cropWrap{
+      padding:12px 14px 10px;
+    }
+    .cropHint{
+      font-size:12px;
+      color:rgba(255,255,255,.78);
+      text-align:center;
+      margin:2px 0 10px;
+      font-weight:800;
+      letter-spacing:.2px;
+    }
+
+    .cropStage{
+      width:100%;
+      aspect-ratio: 1 / 1;
+      border-radius:16px;
+      border:1px solid rgba(255,255,255,.12);
+      background:rgba(0,0,0,.22);
+      position:relative;
+      overflow:hidden;
+      touch-action:none;
+    }
+    .imgLayer{
+      position:absolute;
+      inset:0;
+      display:grid;
+      place-items:center;
+      user-select:none;
+      touch-action:none;
+    }
+    .imgLayer img{
+      max-width:none;
+      max-height:none;
+      will-change:transform;
+      user-drag:none;
+      -webkit-user-drag:none;
+      pointer-events:none;
+    }
+
+    /* máscara + quadrado */
+    .cropMask{
+      position:absolute;
+      inset:0;
+      pointer-events:none;
+    }
+    .cropMask::before{
+      content:"";
+      position:absolute;
+      inset:0;
+      background:rgba(0,0,0,.45);
+    }
+    .cropBox{
+      position:absolute;
+      left:50%;
+      top:50%;
+      width:min(68%, 320px);
+      height:min(68%, 320px);
+      transform:translate(-50%,-50%);
+      border-radius:14px;
+      border:2px solid rgba(255,255,255,.92);
+      box-shadow:0 0 0 9999px rgba(0,0,0,.45);
+      background:transparent;
+    }
+    .cropGrid{
+      position:absolute;
+      inset:0;
+      border-radius:12px;
+      pointer-events:none;
+      background:
+        linear-gradient(to right, rgba(255,255,255,.0) 33.33%, rgba(255,255,255,.18) 33.33%, rgba(255,255,255,.18) 34.1%, rgba(255,255,255,.0) 34.1%),
+        linear-gradient(to right, rgba(255,255,255,.0) 66.66%, rgba(255,255,255,.18) 66.66%, rgba(255,255,255,.18) 67.4%, rgba(255,255,255,.0) 67.4%),
+        linear-gradient(to bottom, rgba(255,255,255,.0) 33.33%, rgba(255,255,255,.18) 33.33%, rgba(255,255,255,.18) 34.1%, rgba(255,255,255,.0) 34.1%),
+        linear-gradient(to bottom, rgba(255,255,255,.0) 66.66%, rgba(255,255,255,.18) 66.66%, rgba(255,255,255,.18) 67.4%, rgba(255,255,255,.0) 67.4%);
+      mix-blend-mode:screen;
+      opacity:.85;
+    }
+
+    .cropControls{
+      display:flex;
+      gap:10px;
+      align-items:center;
+      justify-content:center;
+      padding:10px 14px 12px;
+      border-top:1px solid rgba(255,255,255,.10);
+      flex-wrap:wrap;
+    }
+    .zoomRow{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      flex:1 1 240px;
+      justify-content:center;
+      min-width:240px;
+    }
+    .zoomRow span{
+      font-size:12px;
+      color:rgba(255,255,255,.75);
+      font-weight:800;
+    }
+    input[type="range"]{
+      width:220px;
+      accent-color: var(--accent1);
+    }
+    .btnGhost{
+      background:rgba(0,0,0,.18);
+      border:1px solid rgba(255,255,255,.14);
+      box-shadow:none;
+    }
+    .btnOk{
+      background:linear-gradient(135deg, #2ecc71, #1b9b51);
+      box-shadow:none;
+    }
+
     @media (max-width:520px){
       .formGrid{grid-template-columns:1fr}
       h1{font-size:26px}
@@ -438,6 +594,7 @@
           "submit"
           "msg";
       }
+      input[type="range"]{width:180px}
     }
   </style>
 </head>
@@ -601,7 +758,7 @@
             <input id="patrocinadores" class="fileHidden" type="file" multiple />
             <div class="filePlus" data-file-for="patrocinadores" tabindex="0" role="button" aria-label="Enviar patrocinadores (opcional)">
               <div class="left">
-                <div class="name">Upload múltiplo</div>
+                <div class="name"></div>
                 <div class="chosen" id="chosen_patrocinadores">Nenhum arquivo</div>
               </div>
               <div class="plus">+</div>
@@ -620,6 +777,40 @@
     </div>
   </div>
 
+  <!-- MODAL RECORTE -->
+  <div class="modalMask" id="cropModal" aria-hidden="true">
+    <div class="modalCard" role="dialog" aria-modal="true" aria-label="Recortar imagem">
+      <div class="modalTop">
+        <div class="modalTitle">Recortar</div>
+        <button class="modalClose btnGhost" id="cropCloseBtn" type="button">✕</button>
+      </div>
+
+      <div class="cropWrap">
+        <div class="cropHint" id="cropHint">recorte somente o que precisa</div>
+
+        <div class="cropStage" id="cropStage">
+          <div class="imgLayer" id="imgLayer">
+            <img id="cropImg" alt="Imagem para recorte">
+          </div>
+          <div class="cropMask">
+            <div class="cropBox" id="cropBox">
+              <div class="cropGrid"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="cropControls">
+        <div class="zoomRow">
+          <span>Zoom</span>
+          <input id="cropZoom" type="range" min="1" max="4" step="0.01" value="1">
+        </div>
+        <button class="btnGhost" id="cropCancelBtn" type="button">Cancelar</button>
+        <button class="btnOk" id="cropOkBtn" type="button">Usar recorte</button>
+      </div>
+    </div>
+  </div>
+
 <script>
 const API_BASE = "https://api.omascote.com.br";
 const token = localStorage.getItem("omascote_token");
@@ -634,7 +825,6 @@ const msgPedidoEl = document.getElementById("msgPedido");
 // ==== VISUAL: escudo salvo + preview + cores do fundo (NÃO afeta estrutura do pedido) ====
 const crestPreview = document.getElementById("crestPreview");
 const crestPlaceholder = document.getElementById("crestPlaceholder");
-const escudo1Input = document.getElementById("escudo1");
 
 const CREST_KEY = "omascote_escudo_principal_dataurl";
 
@@ -691,17 +881,289 @@ function applyThemeFromImage(img){
   document.documentElement.style.setProperty("--accent2", `rgb(${r2},${g2},${b2})`);
 }
 
-escudo1Input.addEventListener("change", async ()=>{
-  const f = escudo1Input.files && escudo1Input.files[0];
-  if(!f) return;
-  try{
-    const dataUrl = await readFileAsDataURL(f);
-    localStorage.setItem(CREST_KEY, dataUrl);
-    setCrestUI(dataUrl);
-  }catch(e){}
+setCrestUI(localStorage.getItem(CREST_KEY) || "");
+
+// ==== MODAL RECORTE (escudo1 e escudo2) ====
+const cropModal = document.getElementById("cropModal");
+const cropImg = document.getElementById("cropImg");
+const cropStage = document.getElementById("cropStage");
+const cropBox = document.getElementById("cropBox");
+const cropHint = document.getElementById("cropHint");
+const cropZoom = document.getElementById("cropZoom");
+const cropCloseBtn = document.getElementById("cropCloseBtn");
+const cropCancelBtn = document.getElementById("cropCancelBtn");
+const cropOkBtn = document.getElementById("cropOkBtn");
+
+const CROP_HINT_TEXT = "recorte somente o que precisa";
+const CROP_TARGET_SIZE = 1024;
+
+let cropState = {
+  inputId: null,
+  file: null,
+  objectUrl: null,
+  scale: 1,
+  offX: 0,
+  offY: 0,
+  dragging: false,
+  startX: 0,
+  startY: 0,
+  baseOffX: 0,
+  baseOffY: 0,
+  bypassNextChange: { escudo1:false, escudo2:false }
+};
+
+function openCropModal(inputId, file){
+  cropState.inputId = inputId;
+  cropState.file = file;
+  cropHint.textContent = CROP_HINT_TEXT;
+
+  // reset view
+  cropState.scale = 1;
+  cropState.offX = 0;
+  cropState.offY = 0;
+  cropZoom.value = "1";
+
+  if(cropState.objectUrl){
+    try{ URL.revokeObjectURL(cropState.objectUrl); }catch{}
+  }
+  cropState.objectUrl = URL.createObjectURL(file);
+  cropImg.src = cropState.objectUrl;
+
+  cropModal.classList.add("open");
+  cropModal.setAttribute("aria-hidden","false");
+
+  // Centraliza e aplica transform quando a imagem carregar
+  cropImg.onload = () => {
+    // Fit inicial: garante que a imagem cubra o quadrado
+    const stage = cropStage.getBoundingClientRect();
+    const box = cropBox.getBoundingClientRect();
+
+    const stageW = stage.width;
+    const stageH = stage.height;
+    const boxSize = Math.min(box.width, box.height);
+
+    const nw = cropImg.naturalWidth || 1;
+    const nh = cropImg.naturalHeight || 1;
+
+    // Queremos cobrir o box: scale >= max(box/nw, box/nh) em coordenadas “imagem 1:1”
+    // Como estamos desenhando a imagem sem max constraints, a base é 1px = 1px.
+    const coverScale = Math.max(boxSize / nw, boxSize / nh);
+    cropState.scale = Math.max(1, coverScale);
+    cropZoom.value = String(cropState.scale);
+
+    cropState.offX = 0;
+    cropState.offY = 0;
+    applyCropTransform();
+  };
+}
+
+function closeCropModal(){
+  cropModal.classList.remove("open");
+  cropModal.setAttribute("aria-hidden","true");
+  if(cropState.objectUrl){
+    try{ URL.revokeObjectURL(cropState.objectUrl); }catch{}
+    cropState.objectUrl = null;
+  }
+  cropState.inputId = null;
+  cropState.file = null;
+}
+
+function applyCropTransform(){
+  const s = cropState.scale;
+  const x = cropState.offX;
+  const y = cropState.offY;
+  cropImg.style.transform = `translate(${x}px, ${y}px) scale(${s})`;
+}
+
+function clampOffsets(){
+  // Evita “vazar” muito para fora do quadrado
+  const stage = cropStage.getBoundingClientRect();
+  const box = cropBox.getBoundingClientRect();
+
+  const stageW = stage.width;
+  const stageH = stage.height;
+  const boxSize = Math.min(box.width, box.height);
+
+  const nw = cropImg.naturalWidth || 1;
+  const nh = cropImg.naturalHeight || 1;
+
+  const s = cropState.scale;
+
+  // Dimensão exibida da imagem
+  const dispW = nw * s;
+  const dispH = nh * s;
+
+  // Precisamos cobrir o box no centro: limite de offset considerando o centro
+  const maxX = Math.max(0, (dispW - boxSize) / 2);
+  const maxY = Math.max(0, (dispH - boxSize) / 2);
+
+  cropState.offX = Math.max(-maxX, Math.min(maxX, cropState.offX));
+  cropState.offY = Math.max(-maxY, Math.min(maxY, cropState.offY));
+}
+
+cropZoom.addEventListener("input", ()=>{
+  cropState.scale = parseFloat(cropZoom.value || "1");
+  clampOffsets();
+  applyCropTransform();
 });
 
-setCrestUI(localStorage.getItem(CREST_KEY) || "");
+function onDragStart(e){
+  cropState.dragging = true;
+  cropState.startX = e.clientX;
+  cropState.startY = e.clientY;
+  cropState.baseOffX = cropState.offX;
+  cropState.baseOffY = cropState.offY;
+  cropStage.setPointerCapture(e.pointerId);
+}
+
+function onDragMove(e){
+  if(!cropState.dragging) return;
+  const dx = e.clientX - cropState.startX;
+  const dy = e.clientY - cropState.startY;
+  cropState.offX = cropState.baseOffX + dx;
+  cropState.offY = cropState.baseOffY + dy;
+  clampOffsets();
+  applyCropTransform();
+}
+
+function onDragEnd(e){
+  cropState.dragging = false;
+  try{ cropStage.releasePointerCapture(e.pointerId); }catch{}
+}
+
+cropStage.addEventListener("pointerdown", (e)=>{ onDragStart(e); });
+cropStage.addEventListener("pointermove", (e)=>{ onDragMove(e); });
+cropStage.addEventListener("pointerup", (e)=>{ onDragEnd(e); });
+cropStage.addEventListener("pointercancel", (e)=>{ onDragEnd(e); });
+
+// Zoom com rodinha do mouse
+cropStage.addEventListener("wheel", (e)=>{
+  e.preventDefault();
+  const delta = e.deltaY;
+  let s = cropState.scale;
+  s += (delta > 0 ? -0.06 : 0.06);
+  s = Math.max(1, Math.min(4, s));
+  cropState.scale = s;
+  cropZoom.value = String(s);
+  clampOffsets();
+  applyCropTransform();
+},{ passive:false });
+
+cropCloseBtn.addEventListener("click", ()=>{ cancelCrop(); });
+cropCancelBtn.addEventListener("click", ()=>{ cancelCrop(); });
+
+function cancelCrop(){
+  // Se cancelar: limpa o input que abriu o modal
+  if(cropState.inputId){
+    const input = document.getElementById(cropState.inputId);
+    if(input) input.value = "";
+    updateChosenFromInput(cropState.inputId);
+  }
+  closeCropModal();
+}
+
+function setInputFile(inputId, file){
+  const input = document.getElementById(inputId);
+  if(!input) return;
+
+  const dt = new DataTransfer();
+  dt.items.add(file);
+  cropState.bypassNextChange[inputId] = true;
+  input.files = dt.files;
+
+  // Atualiza label do “+”
+  updateChosenFromInput(inputId);
+}
+
+function updateChosenFromInput(inputId){
+  const input = document.getElementById(inputId);
+  const chosen = document.getElementById(`chosen_${inputId}`);
+  if(!input || !chosen) return;
+
+  if(!input.files || input.files.length === 0){
+    chosen.textContent = "Nenhum arquivo";
+    return;
+  }
+  chosen.textContent = input.files[0].name || "Arquivo selecionado";
+}
+
+async function exportCropToFile(){
+  // mapeia quadrado central (cropBox) para coordenadas na imagem
+  const stage = cropStage.getBoundingClientRect();
+  const box = cropBox.getBoundingClientRect();
+
+  const stageW = stage.width;
+  const stageH = stage.height;
+
+  const boxSize = Math.min(box.width, box.height);
+  const boxLeft = (stageW - boxSize) / 2;
+  const boxTop  = (stageH - boxSize) / 2;
+
+  const nw = cropImg.naturalWidth || 1;
+  const nh = cropImg.naturalHeight || 1;
+
+  const s = cropState.scale;
+  const offX = cropState.offX;
+  const offY = cropState.offY;
+
+  // Transform que aplicamos: imagem centrada no stage, com translate(offX,offY) e scale(s)
+  // Vamos converter um ponto do stage -> ponto na imagem natural:
+  // x_img = (x_stage - stageW/2 - offX)/s + nw/2
+  // y_img = (y_stage - stageH/2 - offY)/s + nh/2
+  const x1 = (boxLeft - stageW/2 - offX) / s + nw/2;
+  const y1 = (boxTop  - stageH/2 - offY) / s + nh/2;
+  const x2 = (boxLeft + boxSize - stageW/2 - offX) / s + nw/2;
+  const y2 = (boxTop  + boxSize - stageH/2 - offY) / s + nh/2;
+
+  let sx = Math.min(x1,x2);
+  let sy = Math.min(y1,y2);
+  let sw = Math.abs(x2-x1);
+  let sh = Math.abs(y2-y1);
+
+  // clamp
+  if(sx < 0){ sw += sx; sx = 0; }
+  if(sy < 0){ sh += sy; sy = 0; }
+  if(sx + sw > nw) sw = nw - sx;
+  if(sy + sh > nh) sh = nh - sy;
+  sw = Math.max(1, sw);
+  sh = Math.max(1, sh);
+
+  const canvas = document.createElement("canvas");
+  canvas.width = CROP_TARGET_SIZE;
+  canvas.height = CROP_TARGET_SIZE;
+  const ctx = canvas.getContext("2d");
+
+  // desenha sempre quadrado final
+  ctx.drawImage(cropImg, sx, sy, sw, sh, 0, 0, CROP_TARGET_SIZE, CROP_TARGET_SIZE);
+
+  const blob = await new Promise(resolve => canvas.toBlob(resolve, "image/png", 0.92));
+  const safeName = (cropState.inputId === "escudo1") ? "escudo.png" : "camiseta.png";
+  return new File([blob], safeName, { type:"image/png" });
+}
+
+cropOkBtn.addEventListener("click", async ()=>{
+  try{
+    const outFile = await exportCropToFile();
+    if(cropState.inputId){
+      setInputFile(cropState.inputId, outFile);
+
+      // Se for escudo1: atualizar preview + tema + localStorage com o recorte (não mexe no backend)
+      if(cropState.inputId === "escudo1"){
+        const dataUrl = await readFileAsDataURL(outFile);
+        localStorage.setItem(CREST_KEY, dataUrl);
+        setCrestUI(dataUrl);
+      }
+    }
+  }catch(e){
+    // se der erro, apenas cancela modal sem quebrar fluxo
+  }
+  closeCropModal();
+});
+
+// fecha clicando fora
+cropModal.addEventListener("click", (e)=>{
+  if(e.target === cropModal) cancelCrop();
+});
 
 // ==== UPLOAD “+” (sem mexer no FormData) ====
 function bindPlusUpload(inputId, chosenId){
@@ -721,10 +1183,24 @@ function bindPlusUpload(inputId, chosenId){
   });
 
   input.addEventListener("change", ()=>{
+    // evita reabrir o recorte quando setamos o File programaticamente
+    if((inputId === "escudo1" || inputId === "escudo2") && cropState.bypassNextChange[inputId]){
+      cropState.bypassNextChange[inputId] = false;
+      return;
+    }
+
     if(!input.files || input.files.length === 0){
       chosen.textContent = "Nenhum arquivo";
       return;
     }
+
+    // Recorte somente para escudo1 e escudo2
+    if(inputId === "escudo1" || inputId === "escudo2"){
+      openCropModal(inputId, input.files[0]);
+      return;
+    }
+
+    // padrão
     if(input.multiple){
       chosen.textContent = `${input.files.length} arquivo(s) selecionado(s)`;
     }else{
