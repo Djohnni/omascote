@@ -933,28 +933,30 @@ function openCropModal(inputId, file){
   cropModal.setAttribute("aria-hidden","false");
 
   // Centraliza e aplica transform quando a imagem carregar
-  cropImg.onload = () => {
-    // Fit inicial: garante que a imagem cubra o quadrado
-    const stage = cropStage.getBoundingClientRect();
-    const box = cropBox.getBoundingClientRect();
+ cropImg.onload = () => {
+  const stage = cropStage.getBoundingClientRect();
+  const box = cropBox.getBoundingClientRect();
 
-    const stageW = stage.width;
-    const stageH = stage.height;
-    const boxSize = Math.min(box.width, box.height);
+  const boxSize = Math.min(box.width, box.height);
 
-    const nw = cropImg.naturalWidth || 1;
-    const nh = cropImg.naturalHeight || 1;
+  const nw = cropImg.naturalWidth || 1;
+  const nh = cropImg.naturalHeight || 1;
 
-    // Queremos cobrir o box: scale >= max(box/nw, box/nh) em coordenadas “imagem 1:1”
-    // Como estamos desenhando a imagem sem max constraints, a base é 1px = 1px.
-    const coverScale = Math.max(boxSize / nw, boxSize / nh);
-    cropState.scale = Math.max(1, coverScale);
-    cropZoom.value = String(cropState.scale);
+  const coverScale = Math.max(boxSize / nw, boxSize / nh);
 
-    cropState.offX = 0;
-    cropState.offY = 0;
-    applyCropTransform();
-  };
+  // ✅ LIMITA o zoom inicial pra não “explodir”
+  const ZMIN = 1;
+  const ZMAX = parseFloat(cropZoom.max || "4") || 4;
+
+  cropState.scale = Math.min(ZMAX, Math.max(ZMIN, coverScale));
+  cropZoom.value = String(cropState.scale);
+
+  cropState.offX = 0;
+  cropState.offY = 0;
+  clampOffsets();
+  applyCropTransform();
+};
+
 }
 
 function closeCropModal(){
