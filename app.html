@@ -247,6 +247,48 @@
       background:linear-gradient(135deg, color-mix(in oklab, var(--accent1) 90%, #ffffff 10%), color-mix(in oklab, var(--accent2) 90%, #000 10%));
     }
 
+    /* ====== ✅ PATCH UX INICIAL (SEM QUEBRAR ESTRUTURA) ======
+       - Ao abrir: mostra “3 botões grandes” e o escudo
+       - Só depois de selecionar uma aba: aparece o conteúdo (card)
+    */
+    body:not(.modeChosen) .card{display:none;}
+    body:not(.modeChosen) .tabs{
+      margin:14px 0 10px;
+      gap:12px;
+    }
+    body:not(.modeChosen) .tabBtn{
+      padding:16px 18px;
+      border-radius:18px;
+      font-size:15px;
+      font-weight:950;
+      opacity:1;
+      min-width:130px;
+      text-align:center;
+      background:linear-gradient(180deg, rgba(255,255,255,.08), rgba(0,0,0,.18));
+      border:1px solid rgba(255,255,255,.14);
+      box-shadow:var(--shadow);
+    }
+    body:not(.modeChosen) .tabBtn:active{transform:translateY(1px)}
+    body:not(.modeChosen) .startHint{
+      display:block;
+    }
+    .startHint{
+      display:none;
+      text-align:center;
+      margin:6px 0 2px;
+      font-size:13px;
+      color:rgba(255,255,255,.85);
+      font-weight:900;
+      letter-spacing:.2px;
+    }
+    .startHint small{
+      display:block;
+      margin-top:4px;
+      font-size:12px;
+      font-weight:800;
+      color:rgba(255,255,255,.72);
+    }
+
     /* ====== FORM LAYOUT COM GRID-AREAS (reordena SEM JS) ====== */
     .formGrid{
       display:grid;
@@ -488,7 +530,6 @@
       pointer-events:none;
     }
 
-    /* ====== ✅ PATCH: RECORTE RETÂNGULO LIVRE + ALÇAS (mantém id="cropBox") ====== */
     .cropBox{
       position:absolute;
       left:50%;
@@ -601,6 +642,13 @@
           "submit"
           "msg";
       }
+      body:not(.modeChosen) .tabBtn{
+        min-width:0;
+        flex:1 1 0;
+        padding:16px 10px;
+        font-size:14px;
+      }
+      body:not(.modeChosen) .tabs{gap:10px;}
     }
   </style>
 </head>
@@ -626,7 +674,8 @@
         <div class="sub">Seu painel de pedidos</div>
       </div>
 
-      <input class="tabRadio" type="radio" name="aba" id="tab_flyer" checked>
+      <!-- ✅ PATCH: tira seleção padrão para obrigar o clique -->
+      <input class="tabRadio" type="radio" name="aba" id="tab_flyer">
       <input class="tabRadio" type="radio" name="aba" id="tab_mascote">
       <input class="tabRadio" type="radio" name="aba" id="tab_contrat">
 
@@ -634,6 +683,12 @@
         <label class="tabBtn" for="tab_flyer">Flyer</label>
         <label class="tabBtn" for="tab_mascote">Mascotes</label>
         <label class="tabBtn" for="tab_contrat">Contratação</label>
+      </div>
+
+      <!-- ✅ PATCH: texto de guia (só aparece antes de escolher) -->
+      <div class="startHint" id="startHint">
+        Escolha uma opção acima para começar
+        <small>Depois disso, o formulário aparece aqui embaixo.</small>
       </div>
 
       <div class="crestWrap">
@@ -787,7 +842,6 @@
         <div class="cropStage" id="cropStage">
           <canvas id="cropCanvas"></canvas>
           <div class="cropMask">
-            <!-- ✅ mantém id="cropBox", agora é retângulo livre com alças -->
             <div class="cropBox" id="cropBox">
               <div class="handle h-nw" data-h="nw"></div>
               <div class="handle h-n"  data-h="n"></div>
@@ -885,6 +939,25 @@ function applyThemeFromImage(img){
 
 setCrestUI(localStorage.getItem(CREST_KEY) || "");
 
+// ====== ✅ PATCH: modo inicial “obrigar escolher aba” (SEM mexer em endpoints/FormData/IDs) ======
+function updateModeChosen(){
+  const anyChecked =
+    document.getElementById("tab_flyer").checked ||
+    document.getElementById("tab_mascote").checked ||
+    document.getElementById("tab_contrat").checked;
+
+  if(anyChecked){
+    document.body.classList.add("modeChosen");
+  }else{
+    document.body.classList.remove("modeChosen");
+  }
+}
+["tab_flyer","tab_mascote","tab_contrat"].forEach((id)=>{
+  const el = document.getElementById(id);
+  if(el) el.addEventListener("change", updateModeChosen);
+});
+updateModeChosen();
+
 // ====== UPLOAD “+” (sem mexer no FormData) ======
 function bindPlusUpload(inputId, chosenId){
   const input = document.getElementById(inputId);
@@ -938,21 +1011,16 @@ const CROP_HINT_TEXT = "recorte somente o que precisa";
 
 // Zoom por degraus (melhor no celular)
 const Z_STEP = 1.15;
-/* ✅ MUDANÇA: libera “afastar” (pegar mais lateral/altura) */
-const Z_MIN = 0.35;  // antes era 1.0 (travava no cover)
+const Z_MIN = 0.35;
 const Z_MAX = 6.0;
 
-// Estado do recorte (tudo em “pixels naturais” da imagem)
 const crop = {
   inputId: null,
   file: null,
-  img: null,            // HTMLImageElement
+  img: null,
   objectUrl: null,
 
-  // zoomNaturalToStage: quantos px no stage por 1px natural
   zoom: 1.0,
-
-  // offset do centro (em px naturais)
   offX: 0,
   offY: 0,
 
@@ -960,16 +1028,13 @@ const crop = {
   lastX: 0,
   lastY: 0,
 
-  // pinch
   pinch: false,
   pinchStartDist: 0,
   pinchStartZoom: 1.0,
 
-  // ✅ retângulo livre (em px CSS do stage)
   rect: { x: 0, y: 0, w: 0, h: 0 },
 
-  // drag modes
-  dragMode: null,      // "img" | "rect" | "handle"
+  dragMode: null,
   handle: null,
   start: { x:0, y:0, rx:0, ry:0, rw:0, rh:0, ox:0, oy:0, uz:1.0 },
 
@@ -1031,7 +1096,7 @@ function fitCanvasToStage(){
   cropCanvas.height = Math.round(rect.height * dpr);
 
   const ctx = cropCanvas.getContext("2d");
-  ctx.setTransform(dpr, 0, 0, dpr, 0, 0); // desenhar em “px CSS”
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
 }
 
 function initRectDefault(){
@@ -1053,7 +1118,7 @@ function syncRectEl(){
   cropBox.style.top = crop.rect.y + "px";
   cropBox.style.width = crop.rect.w + "px";
   cropBox.style.height = crop.rect.h + "px";
-  cropBox.style.transform = "none"; // ✅ agora usamos left/top reais
+  cropBox.style.transform = "none";
 }
 
 function clampRect(){
@@ -1106,7 +1171,6 @@ function clampOffsets(){
   const nw = crop.img.naturalWidth || 1;
   const nh = crop.img.naturalHeight || 1;
 
-  // tamanho do recorte em pixels naturais
   const cropWNatural = crop.rect.w / crop.zoom;
   const cropHNatural = crop.rect.h / crop.zoom;
 
@@ -1136,7 +1200,6 @@ function drawCrop(){
   ctx.imageSmoothingEnabled = true;
   ctx.drawImage(crop.img, imgX, imgY, nw*crop.zoom, nh*crop.zoom);
 
-  // mantém retângulo sincronizado (caso resize)
   syncRectEl();
 }
 
@@ -1162,7 +1225,6 @@ function isInsideRect(p){
           p.y >= crop.rect.y && p.y <= crop.rect.y + crop.rect.h);
 }
 
-/* ✅ PATCH: arrastar imagem (fora do retângulo), arrastar retângulo, redimensionar com alças */
 cropStage.addEventListener("pointerdown", (e)=>{
   if(!crop.img) return;
 
@@ -1229,14 +1291,12 @@ cropStage.addEventListener("pointermove", (e)=>{
       clampRect();
       syncRectEl();
 
-      // cover muda com tamanho -> mantém o mesmo "user zoom" relativo
       setUserZoom(crop.start.uz);
       clampOffsets();
       drawCrop();
       return;
     }
 
-    // handle
     let x = crop.start.rx, y = crop.start.ry, w = crop.start.rw, h = crop.start.rh;
     const ht = crop.handle || "";
 
@@ -1332,17 +1392,14 @@ async function exportCropFile(){
   const nw = crop.img.naturalWidth || 1;
   const nh = crop.img.naturalHeight || 1;
 
-  // posição da imagem desenhada no stage (px CSS)
   const imgX = (w/2) - (nw * crop.zoom)/2 + (crop.offX * crop.zoom);
   const imgY = (h/2) - (nh * crop.zoom)/2 + (crop.offY * crop.zoom);
 
-  // converte retângulo (stage px) -> natural px
   let sx = (crop.rect.x - imgX) / crop.zoom;
   let sy = (crop.rect.y - imgY) / crop.zoom;
   let sw = crop.rect.w / crop.zoom;
   let sh = crop.rect.h / crop.zoom;
 
-  // clampa dentro da imagem
   sx = Math.max(0, Math.min(nw, sx));
   sy = Math.max(0, Math.min(nh, sy));
   sw = Math.max(1, Math.min(nw - sx, sw));
