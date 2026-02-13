@@ -487,18 +487,42 @@
       inset:0;
       pointer-events:none;
     }
+
+    /* ====== ✅ PATCH: RECORTE RETÂNGULO LIVRE + ALÇAS (mantém id="cropBox") ====== */
     .cropBox{
       position:absolute;
       left:50%;
       top:50%;
-      width:min(68%, 320px);
-      height:min(68%, 320px);
+      width:min(72%, 360px);
+      height:min(54%, 280px);
       transform:translate(-50%,-50%);
       border-radius:14px;
       border:2px solid rgba(255,255,255,.92);
       box-shadow:0 0 0 9999px rgba(0,0,0,.45);
       background:transparent;
+      pointer-events:auto;
+      touch-action:none;
+      cursor:move;
     }
+    .cropBox .handle{
+      position:absolute;
+      width:18px;
+      height:18px;
+      border-radius:999px;
+      background:#fff;
+      box-shadow:0 10px 18px rgba(0,0,0,.45);
+      border:2px solid rgba(0,0,0,.18);
+      pointer-events:auto;
+      touch-action:none;
+    }
+    .cropBox .h-nw{left:-9px; top:-9px; cursor:nwse-resize}
+    .cropBox .h-ne{right:-9px; top:-9px; cursor:nesw-resize}
+    .cropBox .h-sw{left:-9px; bottom:-9px; cursor:nesw-resize}
+    .cropBox .h-se{right:-9px; bottom:-9px; cursor:nwse-resize}
+    .cropBox .h-n{left:50%; top:-9px; transform:translateX(-50%); cursor:ns-resize}
+    .cropBox .h-s{left:50%; bottom:-9px; transform:translateX(-50%); cursor:ns-resize}
+    .cropBox .h-w{left:-9px; top:50%; transform:translateY(-50%); cursor:ew-resize}
+    .cropBox .h-e{right:-9px; top:50%; transform:translateY(-50%); cursor:ew-resize}
 
     .cropControls{
       display:flex;
@@ -763,7 +787,17 @@
         <div class="cropStage" id="cropStage">
           <canvas id="cropCanvas"></canvas>
           <div class="cropMask">
-            <div class="cropBox" id="cropBox"></div>
+            <!-- ✅ mantém id="cropBox", agora é retângulo livre com alças -->
+            <div class="cropBox" id="cropBox">
+              <div class="handle h-nw" data-h="nw"></div>
+              <div class="handle h-n"  data-h="n"></div>
+              <div class="handle h-ne" data-h="ne"></div>
+              <div class="handle h-w"  data-h="w"></div>
+              <div class="handle h-e"  data-h="e"></div>
+              <div class="handle h-sw" data-h="sw"></div>
+              <div class="handle h-s"  data-h="s"></div>
+              <div class="handle h-se" data-h="se"></div>
+            </div>
           </div>
         </div>
       </div>
@@ -930,6 +964,15 @@ const crop = {
   pinch: false,
   pinchStartDist: 0,
   pinchStartZoom: 1.0,
+
+  // ✅ retângulo livre (em px CSS do stage)
+  rect: { x: 0, y: 0, w: 0, h: 0 },
+
+  // drag modes
+  dragMode: null,      // "img" | "rect" | "handle"
+  handle: null,
+  start: { x:0, y:0, rx:0, ry:0, rw:0, rh:0, ox:0, oy:0, uz:1.0 },
+
   bypassNextChange: { escudo1:false, escudo2:false }
 };
 
@@ -952,7 +995,8 @@ function openCrop(inputId, file){
 
   crop.img.onload = () => {
     fitCanvasToStage();
-    initZoomCoverSquare();
+    initRectDefault();
+    initZoomCoverRect();
     crop.offX = 0;
     crop.offY = 0;
     clampOffsets();
@@ -972,8 +1016,11 @@ function closeCrop(){
   crop.file = null;
   crop.img = null;
   crop.objectUrl = null;
+
   crop.dragging = false;
   crop.pinch = false;
+  crop.dragMode = null;
+  crop.handle = null;
 }
 
 function fitCanvasToStage(){
@@ -987,41 +1034,69 @@ function fitCanvasToStage(){
   ctx.setTransform(dpr, 0, 0, dpr, 0, 0); // desenhar em “px CSS”
 }
 
-function getBoxSizePx(){
-  const b = cropBox.getBoundingClientRect();
-  return Math.min(b.width, b.height);
+function initRectDefault(){
+  const s = cropStage.getBoundingClientRect();
+
+  const w = Math.min(s.width * 0.74, 380);
+  const h = Math.min(s.height * 0.56, 290);
+
+  crop.rect.w = Math.max(90, w);
+  crop.rect.h = Math.max(90, h);
+  crop.rect.x = (s.width - crop.rect.w) / 2;
+  crop.rect.y = (s.height - crop.rect.h) / 2;
+
+  syncRectEl();
 }
 
-function initZoomCoverSquare(){
-  const boxSize = getBoxSizePx();
+function syncRectEl(){
+  cropBox.style.left = crop.rect.x + "px";
+  cropBox.style.top = crop.rect.y + "px";
+  cropBox.style.width = crop.rect.w + "px";
+  cropBox.style.height = crop.rect.h + "px";
+  cropBox.style.transform = "none"; // ✅ agora usamos left/top reais
+}
+
+function clampRect(){
+  const s = cropStage.getBoundingClientRect();
+  const minW = 50, minH = 50;
+
+  crop.rect.w = Math.max(minW, crop.rect.w);
+  crop.rect.h = Math.max(minH, crop.rect.h);
+
+  if(crop.rect.x < 0){ crop.rect.w += crop.rect.x; crop.rect.x = 0; }
+  if(crop.rect.y < 0){ crop.rect.h += crop.rect.y; crop.rect.y = 0; }
+
+  if(crop.rect.x + crop.rect.w > s.width) crop.rect.w = s.width - crop.rect.x;
+  if(crop.rect.y + crop.rect.h > s.height) crop.rect.h = s.height - crop.rect.y;
+
+  crop.rect.w = Math.max(minW, crop.rect.w);
+  crop.rect.h = Math.max(minH, crop.rect.h);
+}
+
+function coverFromRect(){
   const nw = crop.img.naturalWidth || 1;
   const nh = crop.img.naturalHeight || 1;
+  const rw = Math.max(1, crop.rect.w);
+  const rh = Math.max(1, crop.rect.h);
+  return Math.max(rw / nw, rh / nh);
+}
 
-  const cover = Math.max(boxSize / nw, boxSize / nh);
-
+function initZoomCoverRect(){
+  const cover = coverFromRect();
   crop.zoom = cover;
   zoomLbl.textContent = "1.0×";
 }
 
 function userZoomValue(){
-  const boxSize = getBoxSizePx();
-  const nw = crop.img.naturalWidth || 1;
-  const nh = crop.img.naturalHeight || 1;
-  const cover = Math.max(boxSize / nw, boxSize / nh);
-
+  const cover = coverFromRect();
   const user = crop.zoom / cover;
   return Math.max(0.01, user);
 }
 
 function setUserZoom(userZ){
-  const boxSize = getBoxSizePx();
-  const nw = crop.img.naturalWidth || 1;
-  const nh = crop.img.naturalHeight || 1;
-  const cover = Math.max(boxSize / nw, boxSize / nh);
-
+  const cover = coverFromRect();
   const clamped = Math.max(Z_MIN, Math.min(Z_MAX, userZ));
   crop.zoom = cover * clamped;
-
   zoomLbl.textContent = `${clamped.toFixed(1)}×`;
 }
 
@@ -1030,13 +1105,13 @@ function clampOffsets(){
 
   const nw = crop.img.naturalWidth || 1;
   const nh = crop.img.naturalHeight || 1;
-  const boxSize = getBoxSizePx();
 
   // tamanho do recorte em pixels naturais
-  const cropSizeNatural = boxSize / crop.zoom;
+  const cropWNatural = crop.rect.w / crop.zoom;
+  const cropHNatural = crop.rect.h / crop.zoom;
 
-  const maxOffX = Math.max(0, (nw - cropSizeNatural) / 2);
-  const maxOffY = Math.max(0, (nh - cropSizeNatural) / 2);
+  const maxOffX = Math.max(0, (nw - cropWNatural) / 2);
+  const maxOffY = Math.max(0, (nh - cropHNatural) / 2);
 
   crop.offX = Math.max(-maxOffX, Math.min(maxOffX, crop.offX));
   crop.offY = Math.max(-maxOffY, Math.min(maxOffY, crop.offY));
@@ -1055,11 +1130,14 @@ function drawCrop(){
   const nw = crop.img.naturalWidth || 1;
   const nh = crop.img.naturalHeight || 1;
 
-  const sx = (w/2) - (nw * crop.zoom)/2 + (crop.offX * crop.zoom);
-  const sy = (h/2) - (nh * crop.zoom)/2 + (crop.offY * crop.zoom);
+  const imgX = (w/2) - (nw * crop.zoom)/2 + (crop.offX * crop.zoom);
+  const imgY = (h/2) - (nh * crop.zoom)/2 + (crop.offY * crop.zoom);
 
   ctx.imageSmoothingEnabled = true;
-  ctx.drawImage(crop.img, sx, sy, nw*crop.zoom, nh*crop.zoom);
+  ctx.drawImage(crop.img, imgX, imgY, nw*crop.zoom, nh*crop.zoom);
+
+  // mantém retângulo sincronizado (caso resize)
+  syncRectEl();
 }
 
 function stagePointToDeltaNatural(dxCss, dyCss){
@@ -1074,38 +1152,120 @@ function getTouchDistance(t1, t2){
   return Math.sqrt(dx*dx + dy*dy);
 }
 
+function stagePointFromEvent(e){
+  const r = cropStage.getBoundingClientRect();
+  return { x: e.clientX - r.left, y: e.clientY - r.top };
+}
+
+function isInsideRect(p){
+  return (p.x >= crop.rect.x && p.x <= crop.rect.x + crop.rect.w &&
+          p.y >= crop.rect.y && p.y <= crop.rect.y + crop.rect.h);
+}
+
+/* ✅ PATCH: arrastar imagem (fora do retângulo), arrastar retângulo, redimensionar com alças */
 cropStage.addEventListener("pointerdown", (e)=>{
   if(!crop.img) return;
+
+  const p = stagePointFromEvent(e);
+  const h = e.target && e.target.dataset && e.target.dataset.h;
+
+  crop.dragMode = null;
+  crop.handle = null;
+
+  if(h){
+    crop.dragMode = "handle";
+    crop.handle = h;
+    crop.start = { x:p.x, y:p.y, rx:crop.rect.x, ry:crop.rect.y, rw:crop.rect.w, rh:crop.rect.h, ox:crop.offX, oy:crop.offY, uz:userZoomValue() };
+    e.preventDefault();
+    try{ cropStage.setPointerCapture(e.pointerId); }catch{}
+    return;
+  }
+
+  if(isInsideRect(p)){
+    crop.dragMode = "rect";
+    crop.start = { x:p.x, y:p.y, rx:crop.rect.x, ry:crop.rect.y, rw:crop.rect.w, rh:crop.rect.h, ox:crop.offX, oy:crop.offY, uz:userZoomValue() };
+    e.preventDefault();
+    try{ cropStage.setPointerCapture(e.pointerId); }catch{}
+    return;
+  }
+
+  crop.dragMode = "img";
   crop.dragging = true;
   crop.lastX = e.clientX;
   crop.lastY = e.clientY;
+  e.preventDefault();
   try{ cropStage.setPointerCapture(e.pointerId); }catch{}
 });
 
 cropStage.addEventListener("pointermove", (e)=>{
   if(!crop.img) return;
-  if(!crop.dragging) return;
 
-  const dx = e.clientX - crop.lastX;
-  const dy = e.clientY - crop.lastY;
-  crop.lastX = e.clientX;
-  crop.lastY = e.clientY;
+  if(crop.dragMode === "img"){
+    if(!crop.dragging) return;
 
-  const { dnX, dnY } = stagePointToDeltaNatural(dx, dy);
+    const dx = e.clientX - crop.lastX;
+    const dy = e.clientY - crop.lastY;
+    crop.lastX = e.clientX;
+    crop.lastY = e.clientY;
 
-  crop.offX += dnX;
-  crop.offY += dnY;
+    const { dnX, dnY } = stagePointToDeltaNatural(dx, dy);
 
-  clampOffsets();
-  drawCrop();
+    crop.offX += dnX;
+    crop.offY += dnY;
+
+    clampOffsets();
+    drawCrop();
+    return;
+  }
+
+  if(crop.dragMode === "rect" || crop.dragMode === "handle"){
+    const p = stagePointFromEvent(e);
+    const dx = p.x - crop.start.x;
+    const dy = p.y - crop.start.y;
+
+    if(crop.dragMode === "rect"){
+      crop.rect.x = crop.start.rx + dx;
+      crop.rect.y = crop.start.ry + dy;
+      clampRect();
+      syncRectEl();
+
+      // cover muda com tamanho -> mantém o mesmo "user zoom" relativo
+      setUserZoom(crop.start.uz);
+      clampOffsets();
+      drawCrop();
+      return;
+    }
+
+    // handle
+    let x = crop.start.rx, y = crop.start.ry, w = crop.start.rw, h = crop.start.rh;
+    const ht = crop.handle || "";
+
+    if(ht.includes("w")){ x = crop.start.rx + dx; w = crop.start.rw - dx; }
+    if(ht.includes("e")){ w = crop.start.rw + dx; }
+    if(ht.includes("n")){ y = crop.start.ry + dy; h = crop.start.rh - dy; }
+    if(ht.includes("s")){ h = crop.start.rh + dy; }
+
+    crop.rect.x = x; crop.rect.y = y; crop.rect.w = w; crop.rect.h = h;
+    clampRect();
+    syncRectEl();
+
+    setUserZoom(crop.start.uz);
+    clampOffsets();
+    drawCrop();
+    return;
+  }
 });
 
 cropStage.addEventListener("pointerup", (e)=>{
   crop.dragging = false;
+  crop.dragMode = null;
+  crop.handle = null;
   try{ cropStage.releasePointerCapture(e.pointerId); }catch{}
 });
 cropStage.addEventListener("pointercancel", ()=>{
   crop.dragging = false;
+  crop.dragMode = null;
+  crop.handle = null;
 });
 
 cropStage.addEventListener("touchstart", (e)=>{
@@ -1165,34 +1325,42 @@ function cancelCropFlow(){
 }
 
 async function exportCropFile(){
-  const boxSize = getBoxSizePx();
+  const sRect = cropStage.getBoundingClientRect();
+  const w = sRect.width;
+  const h = sRect.height;
+
   const nw = crop.img.naturalWidth || 1;
   const nh = crop.img.naturalHeight || 1;
 
-  const cropSize = boxSize / crop.zoom;
+  // posição da imagem desenhada no stage (px CSS)
+  const imgX = (w/2) - (nw * crop.zoom)/2 + (crop.offX * crop.zoom);
+  const imgY = (h/2) - (nh * crop.zoom)/2 + (crop.offY * crop.zoom);
 
-  const cx = (nw/2) + crop.offX;
-  const cy = (nh/2) + crop.offY;
+  // converte retângulo (stage px) -> natural px
+  let sx = (crop.rect.x - imgX) / crop.zoom;
+  let sy = (crop.rect.y - imgY) / crop.zoom;
+  let sw = crop.rect.w / crop.zoom;
+  let sh = crop.rect.h / crop.zoom;
 
-  let sx = cx - cropSize/2;
-  let sy = cy - cropSize/2;
+  // clampa dentro da imagem
+  sx = Math.max(0, Math.min(nw, sx));
+  sy = Math.max(0, Math.min(nh, sy));
+  sw = Math.max(1, Math.min(nw - sx, sw));
+  sh = Math.max(1, Math.min(nh - sy, sh));
 
-  // mantém export SEM “vazar” (não muda estrutura do arquivo)
-  sx = Math.max(0, Math.min(nw - cropSize, sx));
-  sy = Math.max(0, Math.min(nh - cropSize, sy));
-
-  const outSize = Math.max(1, Math.round(cropSize));
+  const outW = Math.max(1, Math.round(sw));
+  const outH = Math.max(1, Math.round(sh));
 
   const out = document.createElement("canvas");
-  out.width = outSize;
-  out.height = outSize;
+  out.width = outW;
+  out.height = outH;
   const ctx = out.getContext("2d");
 
   ctx.imageSmoothingEnabled = false;
   ctx.drawImage(
     crop.img,
-    sx, sy, cropSize, cropSize,
-    0, 0, outSize, outSize
+    sx, sy, sw, sh,
+    0, 0, outW, outH
   );
 
   const blob = await new Promise(resolve => out.toBlob(resolve, "image/png"));
@@ -1257,6 +1425,9 @@ hookCropOnInputs();
 window.addEventListener("resize", ()=>{
   if(!crop.img) return;
   fitCanvasToStage();
+  clampRect();
+  syncRectEl();
+  clampOffsets();
   drawCrop();
 });
 
