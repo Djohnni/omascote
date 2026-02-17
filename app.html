@@ -752,6 +752,9 @@ body:not(.modeChosen) .flyerTypeWrap{display:none;}
       <div class="crestWrap">
         <div class="crestCard" id="crestCard">
           <div class="crestGlow"></div>
+          <input id="crestManual" class="fileHidden" type="file" accept="image/*" />
+<button id="crestAddBtn" type="button" style="position:absolute;right:10px;bottom:10px;width:46px;height:46px;border-radius:14px;border:1px solid rgba(255,255,255,.16);background:linear-gradient(135deg, rgba(255,255,255,.10), rgba(0,0,0,.18));box-shadow:var(--shadow2);color:#fff;font-weight:950;font-size:24px;line-height:1;display:grid;place-items:center;cursor:pointer;z-index:5;">+</button>
+
           <img id="crestPreview" class="crestImg" alt="Escudo do time" style="display:none" />
           <div id="crestPlaceholder" class="crestPlaceholder">
             Envie o escudo do seu time<br/>para personalizar o visual do app
@@ -1024,6 +1027,22 @@ function applyThemeFromImage(img){
 }
 
 setCrestUI(localStorage.getItem(CREST_KEY) || "");
+// ✅ Escudo do perfil manual (salva e fica)
+const crestManualInput = document.getElementById("crestManual");
+const crestAddBtn = document.getElementById("crestAddBtn");
+
+if(crestAddBtn && crestManualInput){
+  crestAddBtn.addEventListener("click", ()=> crestManualInput.click());
+  crestManualInput.addEventListener("change", async ()=>{
+    if(!crestManualInput.files || crestManualInput.files.length === 0) return;
+    try{
+      const dataUrl = await readFileAsDataURL(crestManualInput.files[0]);
+      localStorage.setItem(CREST_KEY, dataUrl);
+      setCrestUI(dataUrl);
+    }catch(e){}
+    crestManualInput.value = "";
+  });
+}
 
 // ====== ✅ PATCH: modo inicial “obrigar escolher aba” (SEM mexer em endpoints/FormData/IDs) ======
 function updateModeChosen(){
