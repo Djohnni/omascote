@@ -670,6 +670,20 @@ body:not(.modeChosen) .flyerTypeWrap{display:none;}
   grid-template-columns:1fr 1fr;
   gap:10px;
 }
+.flyerTypeGrid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:10px;
+}
+
+/* ====== Quando selecionar um tipo, vira 4 por linha ====== */
+#ft_fs:checked ~ .flyerTypeGrid,
+#ft_fm:checked ~ .flyerTypeGrid,
+#ft_ft:checked ~ .flyerTypeGrid,
+#ft_fj:checked ~ .flyerTypeGrid{
+  grid-template-columns:repeat(4, 70px);
+  justify-content:center;
+}
 
 .flyerTypeRadio{
   position:absolute;
