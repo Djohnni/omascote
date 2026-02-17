@@ -650,6 +650,56 @@
       }
       body:not(.modeChosen) .tabs{gap:10px;}
     }
+    /* ====== SELEÇÃO TIPO FLYER (NOVO - NÃO ALTERA NADA EXISTENTE) ====== */
+.flyerTypeWrap{
+  grid-column:1 / -1;
+  margin-top:4px;
+  margin-bottom:8px;
+}
+
+.flyerTypeGrid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:10px;
+}
+
+.flyerTypeRadio{
+  position:absolute;
+  left:-9999px;
+  opacity:0;
+}
+
+.flyerTypeCard{
+  border-radius:14px;
+  overflow:hidden;
+  border:1px solid rgba(255,255,255,.14);
+  background:rgba(0,0,0,.18);
+  cursor:pointer;
+  transition:transform .08s ease, border-color .15s ease, box-shadow .15s ease;
+  aspect-ratio:1/1;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+
+.flyerTypeCard img{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+}
+
+.flyerTypeCard:active{
+  transform:translateY(1px);
+}
+
+#ft_fs:checked + label,
+#ft_fm:checked + label,
+#ft_ft:checked + label,
+#ft_fj:checked + label{
+  border-color:var(--accent1);
+  box-shadow:0 0 0 3px rgba(79,124,255,.25);
+}
+
   </style>
 </head>
 
@@ -724,6 +774,34 @@
         </div>
 
         <form id="pedidoForm" class="formGrid" enctype="multipart/form-data">
+<!-- ====== NOVO: TIPO DE FLYER ====== -->
+<input type="hidden" id="flyerTipo" value="zz1fs">
+
+<div class="flyerTypeWrap">
+  <div class="flyerTypeGrid">
+
+    <input class="flyerTypeRadio" type="radio" name="flyer_tipo" id="ft_fs" checked>
+    <label class="flyerTypeCard" for="ft_fs">
+      <img src="img/fs.jpeg" alt="">
+    </label>
+
+    <input class="flyerTypeRadio" type="radio" name="flyer_tipo" id="ft_fm">
+    <label class="flyerTypeCard" for="ft_fm">
+      <img src="img/fm.jpeg" alt="">
+    </label>
+
+    <input class="flyerTypeRadio" type="radio" name="flyer_tipo" id="ft_ft">
+    <label class="flyerTypeCard" for="ft_ft">
+      <img src="img/ft.jpeg" alt="">
+    </label>
+
+    <input class="flyerTypeRadio" type="radio" name="flyer_tipo" id="ft_fj">
+    <label class="flyerTypeCard" for="ft_fj">
+      <img src="img/fj.jpeg" alt="">
+    </label>
+
+  </div>
+</div>
 
           <div class="field-rodada">
             <label>
@@ -992,6 +1070,61 @@ bindPlusUpload("mascote", "chosen_mascote");
 bindPlusUpload("escudo1", "chosen_escudo1");
 bindPlusUpload("escudo2", "chosen_escudo2");
 bindPlusUpload("patrocinadores", "chosen_patrocinadores");
+// ====== CONTROLE TIPO FLYER (SEGURO: SÓ ATUA NA ABA FLYER) ======
+const flyerTipoInput = document.getElementById("flyerTipo");
+const mascoteField = document.querySelector(".field-mascote");
+const mascoteLabel = mascoteField ? mascoteField.querySelector("label") : null;
+
+function updateFlyerTipoUI(){
+
+  // ✅ Só controla isso quando a aba Flyer está selecionada
+  const isFlyerTab = document.getElementById("tab_flyer")?.checked;
+
+  // Se não estiver no Flyer: não mexe em nada, garante padrão visível
+  if(!isFlyerTab){
+    if(mascoteField) mascoteField.style.display = "block";
+    if(mascoteLabel) mascoteLabel.textContent = "Mascote (opcional)";
+    return;
+  }
+
+  if(document.getElementById("ft_fs")?.checked){
+    if(flyerTipoInput) flyerTipoInput.value = "zz1fs";
+    if(mascoteField) mascoteField.style.display = "none";
+  }
+
+  if(document.getElementById("ft_fm")?.checked){
+    if(flyerTipoInput) flyerTipoInput.value = "zz1fm";
+    if(mascoteField) mascoteField.style.display = "block";
+    if(mascoteLabel) mascoteLabel.textContent = "Mascote (opcional)";
+  }
+
+  if(document.getElementById("ft_ft")?.checked){
+    if(flyerTipoInput) flyerTipoInput.value = "zz1ft";
+    if(mascoteField) mascoteField.style.display = "block";
+    if(mascoteLabel) mascoteLabel.textContent = "FOTO DO SEU TIME";
+  }
+
+  if(document.getElementById("ft_fj")?.checked){
+    if(flyerTipoInput) flyerTipoInput.value = "zz1fj";
+    if(mascoteField) mascoteField.style.display = "block";
+    if(mascoteLabel) mascoteLabel.textContent = "FOTO DO JOGADOR";
+  }
+}
+
+// listeners dos radios (só se existirem)
+["ft_fs","ft_fm","ft_ft","ft_fj"].forEach(id=>{
+  const el = document.getElementById(id);
+  if(el) el.addEventListener("change", updateFlyerTipoUI);
+});
+
+// quando trocar de aba, revalida (não afeta backend)
+["tab_flyer","tab_mascote","tab_contrat"].forEach((id)=>{
+  const el = document.getElementById(id);
+  if(el) el.addEventListener("change", updateFlyerTipoUI);
+});
+
+// inicia
+updateFlyerTipoUI();
 
 // ====== RECORTE OPÇÃO 2 (mobile-first, +/−, arrastar) ======
 const cropModal = document.getElementById("cropModal");
