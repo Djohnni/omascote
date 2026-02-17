@@ -353,6 +353,14 @@
     #tab_contrat:checked ~ .card .t-flyer{display:none}
     #tab_contrat:checked ~ .card .t-mascote{display:none}
     #tab_contrat:checked ~ .card .t-contrat{display:inline}
+/* ====== TIPO FLYER: só aparece na ABA FLYER ====== */
+body:not(.modeChosen) .flyerTypeWrap{display:none;}
+
+#tab_mascote:checked ~ .card .flyerTypeWrap{display:none;}
+#tab_contrat:checked ~ .card .flyerTypeWrap{display:none;}
+
+/* (opcional) se quiser garantir que no Flyer sempre apareça */
+#tab_flyer:checked ~ .card .flyerTypeWrap{display:block;}
 
     /* ====== REGRAS VISUAIS DA ABA MASCOTE ====== */
     #tab_mascote:checked ~ .card #plano{display:none}
