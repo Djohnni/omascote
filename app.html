@@ -1728,6 +1728,12 @@ document.getElementById("pedidoForm").addEventListener("submit", async (e)=>{
   msgPedidoEl.textContent = "Enviando...";
 
   const fd = new FormData();
+  if (document.getElementById("tab_flyer").checked) {
+  fd.append("flyer_tipo", document.getElementById("flyerTipo").value);
+}
+
+fd.append("rodada", document.getElementById("rodada").value);
+fd.append("data", document.getElementById("dataJogo").value);
   fd.append("rodada", document.getElementById("rodada").value);
   fd.append("data", document.getElementById("dataJogo").value);
 
