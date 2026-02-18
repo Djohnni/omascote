@@ -1154,7 +1154,19 @@ function updateFlyerTipoUI(){
   const el = document.getElementById(id);
   if(el) el.addEventListener("change", updateFlyerTipoUI);
 });
-
+// ✅ Ao escolher o tipo, desce para Rodada/Fase
+["ft_fs","ft_fm","ft_ft","ft_fj"].forEach(id=>{
+  const el = document.getElementById(id);
+  if(el){
+    el.addEventListener("change", ()=>{
+      const rodada = document.getElementById("rodada");
+      if(rodada){
+        rodada.scrollIntoView({ behavior:"smooth", block:"start" });
+        setTimeout(()=>{ try{ rodada.focus(); }catch(e){} }, 250);
+      }
+    });
+  }
+});
 // quando trocar de aba, revalida (não afeta backend)
 ["tab_flyer","tab_mascote","tab_contrat"].forEach((id)=>{
   const el = document.getElementById(id);
