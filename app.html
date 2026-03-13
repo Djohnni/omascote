@@ -1750,9 +1750,9 @@ fd.append("data", document.getElementById("dataJogo").value);
   fd.append("escudo2", document.getElementById("escudo2").files[0]);
 
   const pats = document.getElementById("patrocinadores").files;
-  for (const file of pats) {
-    fd.append("patrocinadores",""); // (não mexer no seu backend, mantém como estava)
-  }
+for (const file of pats) {
+  fd.append("patrocinadores", file);
+}
 
   try{
     let endpoint = "/pedidos";
