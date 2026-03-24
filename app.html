@@ -247,10 +247,6 @@
       background:linear-gradient(135deg, color-mix(in oklab, var(--accent1) 90%, #ffffff 10%), color-mix(in oklab, var(--accent2) 90%, #000 10%));
     }
 
-    /* ====== ✅ PATCH UX INICIAL (SEM QUEBRAR ESTRUTURA) ======
-       - Ao abrir: mostra “3 botões grandes” e o escudo
-       - Só depois de selecionar uma aba: aparece o conteúdo (card)
-    */
     body:not(.modeChosen) .card{display:none;}
     body:not(.modeChosen) .tabs{
       margin:14px 0 10px;
@@ -289,7 +285,6 @@
       color:rgba(255,255,255,.72);
     }
 
-    /* ====== FORM LAYOUT COM GRID-AREAS (reordena SEM JS) ====== */
     .formGrid{
       display:grid;
       grid-template-columns:1fr 1fr;
@@ -341,7 +336,6 @@
     .field-submit{grid-area:submit}
     .field-msg{grid-area:msg}
 
-    /* ====== TEXTOS POR ABA (SÓ HTML/CSS) ====== */
     .t-flyer{display:inline}
     .t-mascote{display:none}
     .t-contrat{display:none}
@@ -353,14 +347,12 @@
     #tab_contrat:checked ~ .card .t-flyer{display:none}
     #tab_contrat:checked ~ .card .t-mascote{display:none}
     #tab_contrat:checked ~ .card .t-contrat{display:inline}
-/* ====== TIPO FLYER: só aparece na ABA FLYER ====== */
-body:not(.modeChosen) .flyerTypeWrap{display:none;}
 
-#tab_mascote:checked ~ .card .flyerTypeWrap{display:none;}
-#tab_contrat:checked ~ .card .flyerTypeWrap{display:none;}
+    body:not(.modeChosen) .flyerTypeWrap{display:none;}
 
-/* (opcional) se quiser garantir que no Flyer sempre apareça */
-#tab_flyer:checked ~ .card .flyerTypeWrap{display:block;}
+    #tab_mascote:checked ~ .card .flyerTypeWrap{display:none;}
+    #tab_contrat:checked ~ .card .flyerTypeWrap{display:none;}
+    #tab_flyer:checked ~ .card .flyerTypeWrap{display:block;}
 
     /* ====== REGRAS VISUAIS DA ABA MASCOTE ====== */
     #tab_mascote:checked ~ .card #plano{display:none}
@@ -378,22 +370,21 @@ body:not(.modeChosen) .flyerTypeWrap{display:none;}
         "msg msg";
     }
 
-    /* ====== REGRAS VISUAIS DA ABA CONTRATAÇÃO ====== */
+    /* ====== REGRAS VISUAIS DA ABA RESULTADO (mantendo IDs internos) ====== */
     #tab_contrat:checked ~ .card #plano{display:none}
     #tab_contrat:checked ~ .card #usados{display:none}
     #tab_contrat:checked ~ .card .field-arena{display:none}
     #tab_contrat:checked ~ .card .field-patro{display:none}
+    #tab_contrat:checked ~ .card .field-mascote{display:none}
     #tab_contrat:checked ~ .card .formGrid{
       grid-template-areas:
         "rodada data"
         "hora hora"
         "esc1 esc2"
-        "mascote mascote"
         "submit submit"
         "msg msg";
     }
 
-    /* ====== UPLOAD COM “+” (custom) ====== */
     .filePlus{
       display:flex;
       align-items:center;
@@ -454,7 +445,6 @@ body:not(.modeChosen) .flyerTypeWrap{display:none;}
       pointer-events:none;
     }
 
-    /* ====== MODAL RECORTE (OPÇÃO 2 - MOBILE FIRST) ====== */
     .modalMask{
       position:fixed;
       inset:0;
@@ -638,8 +628,7 @@ body:not(.modeChosen) .flyerTypeWrap{display:none;}
           "submit"
           "msg";
       }
-      #tab_mascote:checked ~ .card .formGrid,
-      #tab_contrat:checked ~ .card .formGrid{
+      #tab_mascote:checked ~ .card .formGrid{
         grid-template-areas:
           "rodada"
           "data"
@@ -647,6 +636,16 @@ body:not(.modeChosen) .flyerTypeWrap{display:none;}
           "esc1"
           "esc2"
           "mascote"
+          "submit"
+          "msg";
+      }
+      #tab_contrat:checked ~ .card .formGrid{
+        grid-template-areas:
+          "rodada"
+          "data"
+          "hora"
+          "esc1"
+          "esc2"
           "submit"
           "msg";
       }
@@ -658,66 +657,55 @@ body:not(.modeChosen) .flyerTypeWrap{display:none;}
       }
       body:not(.modeChosen) .tabs{gap:10px;}
     }
-    /* ====== SELEÇÃO TIPO FLYER (NOVO - NÃO ALTERA NADA EXISTENTE) ====== */
-.flyerTypeWrap{
-  grid-column:1 / -1;
-  margin-top:4px;
-  margin-bottom:8px;
-}
 
-.flyerTypeGrid{
-  display:grid;
-  grid-template-columns:1fr 1fr;
-  gap:10px;
-}
-.flyerTypeGrid{
-  display:grid;
-  grid-template-columns:1fr 1fr;
-  gap:10px;
-}
+    .flyerTypeWrap{
+      grid-column:1 / -1;
+      margin-top:4px;
+      margin-bottom:8px;
+    }
 
-/* ====== Quando selecionar um tipo, vira 4 por linha ====== */
-/* ====== Quando selecionar um tipo, vira 4 por linha ====== */
+    .flyerTypeGrid{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:10px;
+    }
 
+    .flyerTypeRadio{
+      position:absolute;
+      left:-9999px;
+      opacity:0;
+    }
 
+    .flyerTypeCard{
+      border-radius:14px;
+      overflow:hidden;
+      border:1px solid rgba(255,255,255,.14);
+      background:rgba(0,0,0,.18);
+      cursor:pointer;
+      transition:transform .08s ease, border-color .15s ease, box-shadow .15s ease;
+      aspect-ratio:1/1;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+    }
 
-.flyerTypeRadio{
-  position:absolute;
-  left:-9999px;
-  opacity:0;
-}
+    .flyerTypeCard img{
+      width:100%;
+      height:100%;
+      object-fit:cover;
+    }
 
-.flyerTypeCard{
-  border-radius:14px;
-  overflow:hidden;
-  border:1px solid rgba(255,255,255,.14);
-  background:rgba(0,0,0,.18);
-  cursor:pointer;
-  transition:transform .08s ease, border-color .15s ease, box-shadow .15s ease;
-  aspect-ratio:1/1;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-}
+    .flyerTypeCard:active{
+      transform:translateY(1px);
+    }
 
-.flyerTypeCard img{
-  width:100%;
-  height:100%;
-  object-fit:cover;
-}
-
-.flyerTypeCard:active{
-  transform:translateY(1px);
-}
-
-#ft_fs:checked + label,
-#ft_fm:checked + label,
-#ft_ft:checked + label,
-#ft_fj:checked + label{
-  border-color:var(--accent1);
-  box-shadow:0 0 0 3px rgba(79,124,255,.25);
-}
-
+    #ft_fs:checked + label,
+    #ft_fm:checked + label,
+    #ft_ft:checked + label,
+    #ft_fj:checked + label{
+      border-color:var(--accent1);
+      box-shadow:0 0 0 3px rgba(79,124,255,.25);
+    }
   </style>
 </head>
 
@@ -742,7 +730,6 @@ body:not(.modeChosen) .flyerTypeWrap{display:none;}
         <div class="sub"></div>
       </div>
 
-      <!-- ✅ PATCH: tira seleção padrão para obrigar o clique -->
       <input class="tabRadio" type="radio" name="aba" id="tab_flyer">
       <input class="tabRadio" type="radio" name="aba" id="tab_mascote">
       <input class="tabRadio" type="radio" name="aba" id="tab_contrat">
@@ -750,10 +737,9 @@ body:not(.modeChosen) .flyerTypeWrap{display:none;}
       <div class="tabs">
         <label class="tabBtn" for="tab_flyer">Flyer</label>
         <label class="tabBtn" for="tab_mascote">Mascotes</label>
-        <label class="tabBtn" for="tab_contrat">Contratação</label>
+        <label class="tabBtn" for="tab_contrat">Resultado</label>
       </div>
 
-      <!-- ✅ PATCH: texto de guia (só aparece antes de escolher) -->
       <div class="startHint" id="startHint">
         Escolha uma opção
         <small></small>
@@ -763,7 +749,7 @@ body:not(.modeChosen) .flyerTypeWrap{display:none;}
         <div class="crestCard" id="crestCard">
           <div class="crestGlow"></div>
           <input id="crestManual" class="fileHidden" type="file" accept="image/*" />
-<button id="crestAddBtn" type="button" style="position:absolute;right:10px;bottom:10px;width:46px;height:46px;border-radius:14px;border:1px solid rgba(255,255,255,.16);background:linear-gradient(135deg, rgba(255,255,255,.10), rgba(0,0,0,.18));box-shadow:var(--shadow2);color:#fff;font-weight:950;font-size:24px;line-height:1;display:grid;place-items:center;cursor:pointer;z-index:5;">+</button>
+          <button id="crestAddBtn" type="button" style="position:absolute;right:10px;bottom:10px;width:46px;height:46px;border-radius:14px;border:1px solid rgba(255,255,255,.16);background:linear-gradient(135deg, rgba(255,255,255,.10), rgba(0,0,0,.18));box-shadow:var(--shadow2);color:#fff;font-weight:950;font-size:24px;line-height:1;display:grid;place-items:center;cursor:pointer;z-index:5;">+</button>
 
           <img id="crestPreview" class="crestImg" alt="Escudo do time" style="display:none" />
           <div id="crestPlaceholder" class="crestPlaceholder">
@@ -785,49 +771,50 @@ body:not(.modeChosen) .flyerTypeWrap{display:none;}
         <h2>
           <span class="t-flyer">Criar pedido</span>
           <span class="t-mascote">Criar mascote</span>
-          <span class="t-contrat">Contratação</span>
+          <span class="t-contrat">Resultado do jogo</span>
         </h2>
 
         <div class="hint">
           <span class="t-flyer">Preencha os dados e envie. Os arquivos ficam salvos para próximos pedidos.</span>
           <span class="t-mascote">Preencha os dados e envie. Os arquivos ficam salvos para próximos pedidos.</span>
-          <span class="t-contrat">Preencha os dados e envie. Os arquivos ficam salvos para próximos pedidos.</span>
+          <span class="t-contrat">Envie a imagem, o escudo, o resultado e uma frase opcional para montar a arte pós-jogo.</span>
         </div>
-<input type="hidden" id="flyerTipo" value="zz1fs">
 
-<div class="flyerTypeWrap">
-  <div class="flyerTypeGrid">
+        <input type="hidden" id="flyerTipo" value="zz1fs">
 
-    <input class="flyerTypeRadio" type="radio" name="flyer_tipo" id="ft_fs" checked>
-    <label class="flyerTypeCard" for="ft_fs">
-      <img src="fs.jpeg" alt="">
-    </label>
+        <div class="flyerTypeWrap">
+          <div class="flyerTypeGrid">
 
-    <input class="flyerTypeRadio" type="radio" name="flyer_tipo" id="ft_fm">
-    <label class="flyerTypeCard" for="ft_fm">
-      <img src="fm.jpeg" alt="">
-    </label>
+            <input class="flyerTypeRadio" type="radio" name="flyer_tipo" id="ft_fs" checked>
+            <label class="flyerTypeCard" for="ft_fs">
+              <img src="fs.jpeg" alt="">
+            </label>
 
-    <input class="flyerTypeRadio" type="radio" name="flyer_tipo" id="ft_ft">
-    <label class="flyerTypeCard" for="ft_ft">
-      <img src="ft.jpeg" alt="">
-    </label>
+            <input class="flyerTypeRadio" type="radio" name="flyer_tipo" id="ft_fm">
+            <label class="flyerTypeCard" for="ft_fm">
+              <img src="fm.jpeg" alt="">
+            </label>
 
-    <input class="flyerTypeRadio" type="radio" name="flyer_tipo" id="ft_fj">
-    <label class="flyerTypeCard" for="ft_fj">
-      <img src="fj.jpeg" alt="">
-    </label>
+            <input class="flyerTypeRadio" type="radio" name="flyer_tipo" id="ft_ft">
+            <label class="flyerTypeCard" for="ft_ft">
+              <img src="ft.jpeg" alt="">
+            </label>
 
-  </div>
-</div>
+            <input class="flyerTypeRadio" type="radio" name="flyer_tipo" id="ft_fj">
+            <label class="flyerTypeCard" for="ft_fj">
+              <img src="fj.jpeg" alt="">
+            </label>
+
+          </div>
+        </div>
+
         <form id="pedidoForm" class="formGrid" enctype="multipart/form-data">
-
 
           <div class="field-rodada">
             <label>
               <span class="t-flyer">Rodada / Fase *</span>
               <span class="t-mascote">Nome do time *</span>
-              <span class="t-contrat">Nome do time *</span>
+              <span class="t-contrat">Resultado *</span>
             </label>
             <input id="rodada" required />
           </div>
@@ -836,7 +823,7 @@ body:not(.modeChosen) .flyerTypeWrap{display:none;}
             <label>
               <span class="t-flyer">Data do jogo e hora do jogo *</span>
               <span class="t-mascote">Mascote ou animal que quer *</span>
-              <span class="t-contrat">Tipo de contratação *</span>
+              <span class="t-contrat">Frase na imagem (opcional)</span>
             </label>
             <input id="dataJogo" required />
           </div>
@@ -845,7 +832,7 @@ body:not(.modeChosen) .flyerTypeWrap{display:none;}
             <label>
               <span class="t-flyer">Observações</span>
               <span class="t-mascote">Observações</span>
-              <span class="t-contrat">Observações</span>
+              <span class="t-contrat">Observações internas</span>
             </label>
             <input id="hora" />
           </div>
@@ -875,7 +862,7 @@ body:not(.modeChosen) .flyerTypeWrap{display:none;}
             <label>
               <span class="t-flyer">Escudo 1 *</span>
               <span class="t-mascote">Escudo / logo do time *</span>
-              <span class="t-contrat">Escudo / logo do time *</span>
+              <span class="t-contrat">Imagem do jogo *</span>
             </label>
             <input id="escudo1" class="fileHidden" type="file" required />
             <div class="filePlus" data-file-for="escudo1" tabindex="0" role="button" aria-label="Enviar escudo 1">
@@ -891,7 +878,7 @@ body:not(.modeChosen) .flyerTypeWrap{display:none;}
             <label>
               <span class="t-flyer">Escudo 2 *</span>
               <span class="t-mascote">Camiseta *</span>
-              <span class="t-contrat">Camiseta *</span>
+              <span class="t-contrat">Escudo / logo do time *</span>
             </label>
             <input id="escudo2" class="fileHidden" type="file" required />
             <div class="filePlus" data-file-for="escudo2" tabindex="0" role="button" aria-label="Enviar escudo 2">
@@ -922,13 +909,10 @@ body:not(.modeChosen) .flyerTypeWrap{display:none;}
 
           <div class="field-msg full msgSmall" id="msgPedido"></div>
         </form>
-        <!-- ====== NOVO: TIPO DE FLYER ====== -->
-
       </div>
     </div>
   </div>
 
-  <!-- MODAL RECORTE (OPÇÃO 2) -->
   <div class="modalMask" id="cropModal" aria-hidden="true">
     <div class="modalCard" role="dialog" aria-modal="true" aria-label="Recortar imagem">
       <div class="modalTop">
@@ -1038,7 +1022,6 @@ function applyThemeFromImage(img){
 }
 
 setCrestUI(localStorage.getItem(CREST_KEY) || "");
-// ✅ Escudo do perfil manual (salva e fica)
 const crestManualInput = document.getElementById("crestManual");
 const crestAddBtn = document.getElementById("crestAddBtn");
 
@@ -1055,7 +1038,6 @@ if(crestAddBtn && crestManualInput){
   });
 }
 
-// ====== ✅ PATCH: modo inicial “obrigar escolher aba” (SEM mexer em endpoints/FormData/IDs) ======
 function updateModeChosen(){
   const anyChecked =
     document.getElementById("tab_flyer").checked ||
@@ -1074,7 +1056,6 @@ function updateModeChosen(){
 });
 updateModeChosen();
 
-// ====== UPLOAD “+” (sem mexer no FormData) ======
 function bindPlusUpload(inputId, chosenId){
   const input = document.getElementById(inputId);
   const chosen = document.getElementById(chosenId);
@@ -1108,17 +1089,14 @@ bindPlusUpload("mascote", "chosen_mascote");
 bindPlusUpload("escudo1", "chosen_escudo1");
 bindPlusUpload("escudo2", "chosen_escudo2");
 bindPlusUpload("patrocinadores", "chosen_patrocinadores");
-// ====== CONTROLE TIPO FLYER (SEGURO: SÓ ATUA NA ABA FLYER) ======
+
 const flyerTipoInput = document.getElementById("flyerTipo");
 const mascoteField = document.querySelector(".field-mascote");
 const mascoteLabel = mascoteField ? mascoteField.querySelector("label") : null;
 
 function updateFlyerTipoUI(){
-
-  // ✅ Só controla isso quando a aba Flyer está selecionada
   const isFlyerTab = document.getElementById("tab_flyer")?.checked;
 
-  // Se não estiver no Flyer: não mexe em nada, garante padrão visível
   if(!isFlyerTab){
     if(mascoteField) mascoteField.style.display = "block";
     if(mascoteLabel) mascoteLabel.textContent = "Mascote (opcional)";
@@ -1149,12 +1127,11 @@ function updateFlyerTipoUI(){
   }
 }
 
-// listeners dos radios (só se existirem)
 ["ft_fs","ft_fm","ft_ft","ft_fj"].forEach(id=>{
   const el = document.getElementById(id);
   if(el) el.addEventListener("change", updateFlyerTipoUI);
 });
-// ✅ SCROLL: ao clicar (mesmo se já estiver selecionado), desce para Rodada/Fase
+
 function goToRodada(){
   const rodada = document.getElementById("rodada");
   if(!rodada) return;
@@ -1166,23 +1143,17 @@ function goToRodada(){
   const el = document.getElementById(id);
   const lbl = document.querySelector(`label[for="${id}"]`);
 
-  // quando troca de opção
   if(el) el.addEventListener("change", goToRodada);
-
-  // quando clica no já selecionado (ex: FS já marcado)
   if(lbl) lbl.addEventListener("click", goToRodada);
 });
 
-// quando trocar de aba, revalida (não afeta backend)
 ["tab_flyer","tab_mascote","tab_contrat"].forEach((id)=>{
   const el = document.getElementById(id);
   if(el) el.addEventListener("change", updateFlyerTipoUI);
 });
 
-// inicia
 updateFlyerTipoUI();
 
-// ====== RECORTE OPÇÃO 2 (mobile-first, +/−, arrastar) ======
 const cropModal = document.getElementById("cropModal");
 const cropStage = document.getElementById("cropStage");
 const cropBox = document.getElementById("cropBox");
@@ -1198,7 +1169,6 @@ const zoomInBtn = document.getElementById("zoomInBtn");
 
 const CROP_HINT_TEXT = "recorte somente o que precisa";
 
-// Zoom por degraus (melhor no celular)
 const Z_STEP = 1.15;
 const Z_MIN = 0.35;
 const Z_MAX = 6.0;
@@ -1677,7 +1647,6 @@ window.addEventListener("resize", ()=>{
   drawCrop();
 });
 
-// ==== LÓGICA ORIGINAL (mantida) ====
 function applyLocal(){
   const nome = localStorage.getItem("omascote_nome_time") || "";
   const plano = localStorage.getItem("omascote_plano") || "";
@@ -1713,7 +1682,6 @@ function limparCamposAposEnviar(){
   document.getElementById("mascote").value = "";
   document.getElementById("escudo2").value = "";
   document.getElementById("patrocinadores").value = "";
-  // NÃO limpa escudo1
 
   const cm = document.getElementById("chosen_mascote");
   const c2 = document.getElementById("chosen_escudo2");
@@ -1729,8 +1697,8 @@ document.getElementById("pedidoForm").addEventListener("submit", async (e)=>{
 
   const fd = new FormData();
   if (document.getElementById("tab_flyer").checked) {
-  fd.append("flyer_tipo", document.getElementById("flyerTipo").value);
-}
+    fd.append("flyer_tipo", document.getElementById("flyerTipo").value);
+  }
 
   fd.append("rodada", document.getElementById("rodada").value);
   fd.append("data", document.getElementById("dataJogo").value);
@@ -1748,9 +1716,9 @@ document.getElementById("pedidoForm").addEventListener("submit", async (e)=>{
   fd.append("escudo2", document.getElementById("escudo2").files[0]);
 
   const pats = document.getElementById("patrocinadores").files;
-for (const file of pats) {
-  fd.append("patrocinadores", file);
-}
+  for (const file of pats) {
+    fd.append("patrocinadores", file);
+  }
 
   try{
     let endpoint = "/pedidos";
