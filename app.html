@@ -370,20 +370,19 @@
         "msg msg";
     }
 
-    /* ====== REGRAS VISUAIS DA ABA RESULTADO (mantendo IDs internos) ====== */
-    #tab_contrat:checked ~ .card #plano{display:none}
-    #tab_contrat:checked ~ .card #usados{display:none}
-    #tab_contrat:checked ~ .card .field-arena{display:none}
-    #tab_contrat:checked ~ .card .field-patro{display:none}
-    #tab_contrat:checked ~ .card .field-mascote{display:none}
-    #tab_contrat:checked ~ .card .formGrid{
-      grid-template-areas:
-        "rodada data"
-        "hora hora"
-        "esc1 esc2"
-        "submit submit"
-        "msg msg";
-    }
+   #tab_contrat:checked ~ .card #plano{display:none}
+#tab_contrat:checked ~ .card #usados{display:none}
+#tab_contrat:checked ~ .card .field-arena{display:none}
+#tab_contrat:checked ~ .card .field-patro{display:none}
+#tab_contrat:checked ~ .card .field-mascote{display:none}
+#tab_contrat:checked ~ .card .field-hora{display:none}
+#tab_contrat:checked ~ .card .formGrid{
+  grid-template-areas:
+    "rodada data"
+    "esc1 esc2"
+    "submit submit"
+    "msg msg";
+}
 
     .filePlus{
       display:flex;
@@ -640,15 +639,14 @@
           "msg";
       }
       #tab_contrat:checked ~ .card .formGrid{
-        grid-template-areas:
-          "rodada"
-          "data"
-          "hora"
-          "esc1"
-          "esc2"
-          "submit"
-          "msg";
-      }
+  grid-template-areas:
+    "rodada"
+    "data"
+    "esc1"
+    "esc2"
+    "submit"
+    "msg";
+}
       body:not(.modeChosen) .tabBtn{
         min-width:0;
         flex:1 1 0;
@@ -1096,6 +1094,19 @@ const mascoteLabel = mascoteField ? mascoteField.querySelector("label") : null;
 
 function updateFlyerTipoUI(){
   const isFlyerTab = document.getElementById("tab_flyer")?.checked;
+  const isMascoteTab = document.getElementById("tab_mascote")?.checked;
+  const isResultadoTab = document.getElementById("tab_contrat")?.checked;
+
+  if(isResultadoTab){
+    if(mascoteField) mascoteField.style.display = "none";
+    return;
+  }
+
+  if(isMascoteTab){
+    if(mascoteField) mascoteField.style.display = "block";
+    if(mascoteLabel) mascoteLabel.textContent = "Mascote (opcional)";
+    return;
+  }
 
   if(!isFlyerTab){
     if(mascoteField) mascoteField.style.display = "block";
