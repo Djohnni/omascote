@@ -442,7 +442,76 @@
       width:1px;
       height:1px;
       pointer-events:none;
+      
     }
+    /* ====== FRASES PRONTAS RESULTADO ====== */
+.phraseWrap{
+  position:relative;
+  display:flex;
+  align-items:center;
+  gap:8px;
+}
+
+.phraseWrap input{
+  flex:1 1 auto;
+  min-width:0;
+}
+
+.phraseBtn{
+  width:44px;
+  height:44px;
+  padding:0;
+  border-radius:12px;
+  border:1px solid rgba(255,255,255,.14);
+  background:linear-gradient(135deg, rgba(255,255,255,.08), rgba(0,0,0,.10));
+  box-shadow:var(--shadow2);
+  color:#fff;
+  font-size:24px;
+  font-weight:900;
+  line-height:1;
+  display:grid;
+  place-items:center;
+  flex:0 0 auto;
+}
+
+.phraseMenu{
+  position:absolute;
+  top:calc(100% + 8px);
+  left:0;
+  right:0;
+  display:none;
+  flex-direction:column;
+  gap:6px;
+  padding:8px;
+  border-radius:14px;
+  border:1px solid rgba(255,255,255,.12);
+  background:rgba(10,16,30,.98);
+  box-shadow:var(--shadow);
+  z-index:50;
+  max-height:260px;
+  overflow:auto;
+}
+
+.phraseMenu.open{
+  display:flex;
+}
+
+.phraseOption{
+  width:100%;
+  text-align:left;
+  border-radius:10px;
+  border:1px solid rgba(255,255,255,.08);
+  background:rgba(255,255,255,.04);
+  color:#fff;
+  font-size:13px;
+  font-weight:700;
+  padding:10px 12px;
+  box-shadow:none;
+}
+
+.phraseOption:hover{
+  background:rgba(255,255,255,.08);
+}
 
     .modalMask{
       position:fixed;
@@ -818,13 +887,30 @@
           </div>
 
           <div class="field-data">
-            <label>
-              <span class="t-flyer">Data do jogo e hora do jogo *</span>
-              <span class="t-mascote">Mascote ou animal que quer *</span>
-              <span class="t-contrat">Frase na imagem (opcional)</span>
-            </label>
-            <input id="dataJogo" required />
-          </div>
+  <label>
+    <span class="t-flyer">Data do jogo e hora do jogo *</span>
+    <span class="t-mascote">Mascote ou animal que quer *</span>
+    <span class="t-contrat">Frase na imagem (opcional)</span>
+  </label>
+
+  <div class="phraseWrap">
+    <input id="dataJogo" required />
+    <button type="button" class="phraseBtn" id="openPhraseBtn" aria-label="Abrir frases prontas">+</button>
+
+    <div class="phraseMenu" id="phraseMenu">
+      <button type="button" class="phraseOption">Vitória na raça, no talento e no coração.</button>
+      <button type="button" class="phraseOption">Mais 3 pontos pra conta e motivo de sobra pra comemorar.</button>
+      <button type="button" class="phraseOption">Fim de jogo com vitória e orgulho da nossa camisa.</button>
+      <button type="button" class="phraseOption">Jogamos juntos, lutamos juntos e vencemos juntos.</button>
+      <button type="button" class="phraseOption">Resultado conquistado com raça do começo ao fim.</button>
+      <button type="button" class="phraseOption">Hoje teve entrega, foco e vitória merecida.</button>
+      <button type="button" class="phraseOption">Dentro de campo, mostramos a força do nosso time.</button>
+      <button type="button" class="phraseOption">Mais uma batalha vencida com união e determinação.</button>
+      <button type="button" class="phraseOption">A vitória é nossa e a torcida faz parte disso.</button>
+      <button type="button" class="phraseOption">No apito final, a recompensa veio: vencemos.</button>
+    </div>
+  </div>
+</div>
 
           <div class="field-hora">
             <label>
@@ -1758,6 +1844,32 @@ document.getElementById("pedidoForm").addEventListener("submit", async (e)=>{
     msgPedidoEl.textContent = "Erro de rede";
   }
 });
+  // ====== FRASES PRONTAS - ABA RESULTADO ======
+const openPhraseBtn = document.getElementById("openPhraseBtn");
+const phraseMenu = document.getElementById("phraseMenu");
+const phraseInput = document.getElementById("dataJogo");
+const phraseOptions = document.querySelectorAll(".phraseOption");
+
+if(openPhraseBtn && phraseMenu && phraseInput){
+  openPhraseBtn.addEventListener("click", (e)=>{
+    e.stopPropagation();
+    phraseMenu.classList.toggle("open");
+  });
+
+  phraseOptions.forEach((btn)=>{
+    btn.addEventListener("click", ()=>{
+      phraseInput.value = btn.textContent.trim();
+      phraseMenu.classList.remove("open");
+      phraseInput.focus();
+    });
+  });
+
+  document.addEventListener("click", (e)=>{
+    if(!phraseMenu.contains(e.target) && e.target !== openPhraseBtn){
+      phraseMenu.classList.remove("open");
+    }
+  });
+}
 
 applyLocal();
 refreshMe();
