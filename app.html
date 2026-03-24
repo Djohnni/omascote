@@ -992,6 +992,28 @@
           </div>
 
           <div class="field-msg full msgSmall" id="msgPedido"></div>
+          <div id="resultadoBox" style="display:none; margin-top:16px; text-align:center;">
+  <div id="statusResultado" style="margin-bottom:10px; font-size:14px; font-weight:800; color:rgba(255,255,255,.92);">
+    Estamos montando sua imagem...
+  </div>
+
+  <img
+    id="previewResultado"
+    alt="Resultado pronto"
+    style="display:none; width:100%; max-width:420px; border-radius:16px; border:1px solid rgba(255,255,255,.12); box-shadow:var(--shadow2);"
+  />
+
+  <div style="margin-top:10px;">
+    <a
+      id="downloadResultado"
+      href="#"
+      target="_blank"
+      style="display:none; color:#fff; font-weight:900; text-decoration:none; padding:12px 16px; border-radius:14px; background:linear-gradient(135deg, #2ecc71, #1b9b51); box-shadow:var(--shadow2); display:inline-block;"
+    >
+      Baixar imagem
+    </a>
+  </div>
+</div>
         </form>
       </div>
     </div>
@@ -1834,10 +1856,14 @@ document.getElementById("pedidoForm").addEventListener("submit", async (e)=>{
 
     const out = await r.json();
     if(out.ok){
-      msgPedidoEl.textContent = `✅ Pedido enviado! ID: ${out.pedido_id}`;
-      limparCamposAposEnviar();
-      refreshMe();
-    } else {
+  msgPedidoEl.textContent = `✅ Pedido enviado! ID: ${out.pedido_id}`;
+  limparCamposAposEnviar();
+  refreshMe();
+
+  if (document.getElementById("tab_contrat").checked) {
+    acompanharResultado(out.pedido_id);
+  }
+} else {
       msgPedidoEl.textContent = out.error || "Erro ao enviar";
     }
   }catch{
@@ -1870,7 +1896,46 @@ if(openPhraseBtn && phraseMenu && phraseInput){
     }
   });
 }
+async function acompanharResultado(pedidoId){
+  const boxEl = document.getElementById("resultadoBox");
+  const statusEl = document.getElementById("statusResultado");
+  const imgEl = document.getElementById("previewResultado");
+  const downloadEl = document.getElementById("downloadResultado");
 
+  if(!boxEl || !statusEl || !imgEl || !downloadEl) return;
+
+  boxEl.style.display = "block";
+  statusEl.textContent = "Estamos montando sua imagem...";
+  imgEl.style.display = "none";
+  downloadEl.style.display = "none";
+
+  const timer = setInterval(async () => {
+    try{
+      const r = await fetch(`${API_BASE}/pedidos/${pedidoId}/info`, {
+        headers: { "Authorization": "Bearer " + token }
+      });
+
+      const data = await r.json();
+
+      if(data.ok && data.imagem_pronta){
+        clearInterval(timer);
+
+        const previewUrl = `${API_BASE}/pedidos/${pedidoId}/preview?ts=${Date.now()}`;
+
+        statusEl.textContent = "Sua imagem chegou!";
+        imgEl.src = previewUrl;
+        imgEl.style.display = "block";
+
+        downloadEl.href = previewUrl;
+        downloadEl.style.display = "inline-block";
+      } else {
+        statusEl.textContent = "Estamos montando sua imagem...";
+      }
+    } catch {
+      statusEl.textContent = "Erro ao consultar status da imagem.";
+    }
+  }, 5000);
+}
 applyLocal();
 refreshMe();
 
