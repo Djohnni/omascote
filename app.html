@@ -216,7 +216,6 @@
       text-align:center;
     }
 
-    /* ====== TABS (SÓ HTML/CSS) ====== */
     .tabs{display:flex;gap:10px;justify-content:center;margin:10px 0 8px}
     .tabRadio{position:absolute;left:-9999px;opacity:0}
     .tabBtn{
@@ -339,13 +338,14 @@
     .field-msg{grid-area:msg}
     .field-placar,
     .field-artilheiros{
-    display:none;
+      display:none;
     }
 
     #tab_contrat:checked ~ .card .field-placar,
     #tab_contrat:checked ~ .card .field-artilheiros{
-    display:block;
+      display:block;
     }
+
     .t-flyer{display:inline}
     .t-mascote{display:none}
     .t-contrat{display:none}
@@ -364,7 +364,6 @@
     #tab_contrat:checked ~ .card .flyerTypeWrap{display:none;}
     #tab_flyer:checked ~ .card .flyerTypeWrap{display:block;}
 
-    /* ====== REGRAS VISUAIS DA ABA MASCOTE ====== */
     #tab_mascote:checked ~ .card #plano{display:none}
     #tab_mascote:checked ~ .card #usados{display:none}
     #tab_mascote:checked ~ .card .field-arena{display:none}
@@ -380,24 +379,24 @@
         "msg msg";
     }
 
-   #tab_contrat:checked ~ .card #plano{display:none}
-#tab_contrat:checked ~ .card #usados{display:none}
-#tab_contrat:checked ~ .card .field-arena{display:none}
-#tab_contrat:checked ~ .card .field-patro{display:none}
-#tab_contrat:checked ~ .card .field-mascote{display:none}
-#tab_contrat:checked ~ .card .field-hora{display:none}
-#tab_contrat:checked ~ .card .formGrid{
-  grid-template-areas:
-    "placar placar"
-    "artilheiros artilheiros"
-    "data data"
-    "esc1 esc2"
-    "submit submit"
-    "msg msg";
-}
-#tab_contrat:checked ~ .card .field-rodada{
-  display:none;
-}
+    #tab_contrat:checked ~ .card #plano{display:none}
+    #tab_contrat:checked ~ .card #usados{display:none}
+    #tab_contrat:checked ~ .card .field-arena{display:none}
+    #tab_contrat:checked ~ .card .field-patro{display:none}
+    #tab_contrat:checked ~ .card .field-mascote{display:none}
+    #tab_contrat:checked ~ .card .field-hora{display:none}
+    #tab_contrat:checked ~ .card .formGrid{
+      grid-template-areas:
+        "placar placar"
+        "artilheiros artilheiros"
+        "data data"
+        "esc1 esc2"
+        "submit submit"
+        "msg msg";
+    }
+    #tab_contrat:checked ~ .card .field-rodada{
+      display:none;
+    }
 
     .filePlus{
       display:flex;
@@ -457,76 +456,75 @@
       width:1px;
       height:1px;
       pointer-events:none;
-      
     }
-    /* ====== FRASES PRONTAS RESULTADO ====== */
-.phraseWrap{
-  position:relative;
-  display:flex;
-  align-items:center;
-  gap:8px;
-}
 
-.phraseWrap input{
-  flex:1 1 auto;
-  min-width:0;
-}
+    .phraseWrap{
+      position:relative;
+      display:flex;
+      align-items:center;
+      gap:8px;
+    }
 
-.phraseBtn{
-  width:44px;
-  height:44px;
-  padding:0;
-  border-radius:12px;
-  border:1px solid rgba(255,255,255,.14);
-  background:linear-gradient(135deg, rgba(255,255,255,.08), rgba(0,0,0,.10));
-  box-shadow:var(--shadow2);
-  color:#fff;
-  font-size:24px;
-  font-weight:900;
-  line-height:1;
-  display:grid;
-  place-items:center;
-  flex:0 0 auto;
-}
+    .phraseWrap input{
+      flex:1 1 auto;
+      min-width:0;
+    }
 
-.phraseMenu{
-  position:absolute;
-  top:calc(100% + 8px);
-  left:0;
-  right:0;
-  display:none;
-  flex-direction:column;
-  gap:6px;
-  padding:8px;
-  border-radius:14px;
-  border:1px solid rgba(255,255,255,.12);
-  background:rgba(10,16,30,.98);
-  box-shadow:var(--shadow);
-  z-index:50;
-  max-height:260px;
-  overflow:auto;
-}
+    .phraseBtn{
+      width:44px;
+      height:44px;
+      padding:0;
+      border-radius:12px;
+      border:1px solid rgba(255,255,255,.14);
+      background:linear-gradient(135deg, rgba(255,255,255,.08), rgba(0,0,0,.10));
+      box-shadow:var(--shadow2);
+      color:#fff;
+      font-size:24px;
+      font-weight:900;
+      line-height:1;
+      display:grid;
+      place-items:center;
+      flex:0 0 auto;
+    }
 
-.phraseMenu.open{
-  display:flex;
-}
+    .phraseMenu{
+      position:absolute;
+      top:calc(100% + 8px);
+      left:0;
+      right:0;
+      display:none;
+      flex-direction:column;
+      gap:6px;
+      padding:8px;
+      border-radius:14px;
+      border:1px solid rgba(255,255,255,.12);
+      background:rgba(10,16,30,.98);
+      box-shadow:var(--shadow);
+      z-index:50;
+      max-height:260px;
+      overflow:auto;
+    }
 
-.phraseOption{
-  width:100%;
-  text-align:left;
-  border-radius:10px;
-  border:1px solid rgba(255,255,255,.08);
-  background:rgba(255,255,255,.04);
-  color:#fff;
-  font-size:13px;
-  font-weight:700;
-  padding:10px 12px;
-  box-shadow:none;
-}
+    .phraseMenu.open{
+      display:flex;
+    }
 
-.phraseOption:hover{
-  background:rgba(255,255,255,.08);
-}
+    .phraseOption{
+      width:100%;
+      text-align:left;
+      border-radius:10px;
+      border:1px solid rgba(255,255,255,.08);
+      background:rgba(255,255,255,.04);
+      color:#fff;
+      font-size:13px;
+      font-weight:700;
+      padding:10px 12px;
+      box-shadow:none;
+    }
+
+    .phraseOption:hover{
+      background:rgba(255,255,255,.08);
+    }
 
     .modalMask{
       position:fixed;
@@ -723,15 +721,15 @@
           "msg";
       }
       #tab_contrat:checked ~ .card .formGrid{
-  grid-template-areas:
-    "placar"
-    "artilheiros"
-    "data"
-    "esc1"
-    "esc2"
-    "submit"
-    "msg";
-}
+        grid-template-areas:
+          "placar"
+          "artilheiros"
+          "data"
+          "esc1"
+          "esc2"
+          "submit"
+          "msg";
+      }
       body:not(.modeChosen) .tabBtn{
         min-width:0;
         flex:1 1 0;
@@ -790,66 +788,62 @@
       box-shadow:0 0 0 3px rgba(79,124,255,.25);
     }
 
+    .placarRow{
+      display:flex;
+      gap:6px;
+      align-items:center;
+    }
 
-/* ===== PLACAR RESULTADO ===== */
-.placarRow{
-  display:flex;
-  gap:6px;
-  align-items:center;
-}
+    .placarRow input{
+      text-align:center;
+      font-weight:900;
+    }
 
-.placarRow input{
-  text-align:center;
-  font-weight:900;
-}
+    .placarTime{
+      flex:1;
+    }
 
-.placarTime{
-  flex:1;
-}
+    .placarGols{
+      width:60px;
+    }
 
-.placarGols{
-  width:60px;
-}
+    .placarX{
+      font-weight:900;
+      font-size:18px;
+      opacity:.8;
+    }
 
-.placarX{
-  font-weight:900;
-  font-size:18px;
-  opacity:.8;
-}
+    .artilheirosWrap{
+      display:flex;
+      flex-direction:column;
+      gap:8px;
+    }
 
-/* ===== ARTILHEIROS ===== */
-.artilheirosWrap{
-  display:flex;
-  flex-direction:column;
-  gap:8px;
-}
+    .artilheiroRow{
+      display:flex;
+      gap:6px;
+    }
 
-.artilheiroRow{
-  display:flex;
-  gap:6px;
-}
+    .artilheiroNome{
+      flex:1;
+    }
 
-.artilheiroNome{
-  flex:1;
-}
+    .artilheiroGols{
+      width:60px;
+      text-align:center;
+      font-weight:900;
+    }
 
-.artilheiroGols{
-  width:60px;
-  text-align:center;
-  font-weight:900;
-}
-
-.addArtilheiro{
-  margin-top:6px;
-  padding:10px;
-  border-radius:12px;
-  background:rgba(255,255,255,.08);
-  border:1px solid rgba(255,255,255,.12);
-  text-align:center;
-  cursor:pointer;
-  font-weight:900;
-}
-
+    .addArtilheiro{
+      margin-top:6px;
+      padding:10px;
+      border-radius:12px;
+      background:rgba(255,255,255,.08);
+      border:1px solid rgba(255,255,255,.12);
+      text-align:center;
+      cursor:pointer;
+      font-weight:900;
+    }
   </style>
 </head>
 
@@ -959,9 +953,9 @@
 
             <div class="placarRow">
               <input class="placarTime" id="timePrincipal" placeholder="Seu time">
-              <input class="placarGols" id="golsTime" type="number" placeholder="0">
+              <input class="placarGols" id="golsTime" type="number" min="0" placeholder="0">
               <div class="placarX">x</div>
-              <input class="placarGols" id="golsAdv" type="number" placeholder="0">
+              <input class="placarGols" id="golsAdv" type="number" min="0" placeholder="0">
               <input class="placarTime" id="timeAdv" placeholder="Adversário (opcional)">
             </div>
           </div>
@@ -972,7 +966,7 @@
             <div class="artilheirosWrap" id="artilheirosWrap">
               <div class="artilheiroRow">
                 <input class="artilheiroNome" placeholder="Nome do jogador">
-                <input class="artilheiroGols" type="number" placeholder="Gols">
+                <input class="artilheiroGols" type="number" min="0" placeholder="Gols">
               </div>
             </div>
 
@@ -981,42 +975,40 @@
             </div>
           </div>
 
-
           <div class="field-rodada">
             <label>
               <span class="t-flyer">Rodada / Fase *</span>
               <span class="t-mascote">Nome do time *</span>
               <span class="t-contrat">Resultado (3x1)</span>
             </label>
-            POR ISSO:
             <input id="rodada" />
           </div>
 
           <div class="field-data">
-  <label>
-    <span class="t-flyer">Data do jogo e hora do jogo *</span>
-    <span class="t-mascote">Mascote ou animal que quer *</span>
-    <span class="t-contrat">Frase na imagem (opcional)</span>
-  </label>
+            <label>
+              <span class="t-flyer">Data do jogo e hora do jogo *</span>
+              <span class="t-mascote">Mascote ou animal que quer *</span>
+              <span class="t-contrat">Frase na imagem (opcional)</span>
+            </label>
 
-  <div class="phraseWrap">
-    <input id="dataJogo" required />
-    <button type="button" class="phraseBtn" id="openPhraseBtn" aria-label="Abrir frases prontas">+</button>
+            <div class="phraseWrap">
+              <input id="dataJogo" required />
+              <button type="button" class="phraseBtn" id="openPhraseBtn" aria-label="Abrir frases prontas">+</button>
 
-    <div class="phraseMenu" id="phraseMenu">
-      <button type="button" class="phraseOption">Vitória na raça, no talento e no coração.</button>
-      <button type="button" class="phraseOption">Mais 3 pontos pra conta e motivo de sobra pra comemorar.</button>
-      <button type="button" class="phraseOption">Fim de jogo com vitória e orgulho da nossa camisa.</button>
-      <button type="button" class="phraseOption">Jogamos juntos, lutamos juntos e vencemos juntos.</button>
-      <button type="button" class="phraseOption">Resultado conquistado com raça do começo ao fim.</button>
-      <button type="button" class="phraseOption">Hoje teve entrega, foco e vitória merecida.</button>
-      <button type="button" class="phraseOption">Dentro de campo, mostramos a força do nosso time.</button>
-      <button type="button" class="phraseOption">Mais uma batalha vencida com união e determinação.</button>
-      <button type="button" class="phraseOption">A vitória é nossa e a torcida faz parte disso.</button>
-      <button type="button" class="phraseOption">No apito final, a recompensa veio: vencemos.</button>
-    </div>
-  </div>
-</div>
+              <div class="phraseMenu" id="phraseMenu">
+                <button type="button" class="phraseOption">Vitória na raça, no talento e no coração.</button>
+                <button type="button" class="phraseOption">Mais 3 pontos pra conta e motivo de sobra pra comemorar.</button>
+                <button type="button" class="phraseOption">Fim de jogo com vitória e orgulho da nossa camisa.</button>
+                <button type="button" class="phraseOption">Jogamos juntos, lutamos juntos e vencemos juntos.</button>
+                <button type="button" class="phraseOption">Resultado conquistado com raça do começo ao fim.</button>
+                <button type="button" class="phraseOption">Hoje teve entrega, foco e vitória merecida.</button>
+                <button type="button" class="phraseOption">Dentro de campo, mostramos a força do nosso time.</button>
+                <button type="button" class="phraseOption">Mais uma batalha vencida com união e determinação.</button>
+                <button type="button" class="phraseOption">A vitória é nossa e a torcida faz parte disso.</button>
+                <button type="button" class="phraseOption">No apito final, a recompensa veio: vencemos.</button>
+              </div>
+            </div>
+          </div>
 
           <div class="field-hora">
             <label>
@@ -1098,28 +1090,29 @@
           </div>
 
           <div class="field-msg full msgSmall" id="msgPedido"></div>
+
           <div id="resultadoBox" style="display:none; margin-top:16px; text-align:center;">
-  <div id="statusResultado" style="margin-bottom:10px; font-size:14px; font-weight:800; color:rgba(255,255,255,.92);">
-    Estamos montando sua imagem...
-  </div>
+            <div id="statusResultado" style="margin-bottom:10px; font-size:14px; font-weight:800; color:rgba(255,255,255,.92);">
+              Estamos montando sua imagem...
+            </div>
 
-  <img
-    id="previewResultado"
-    alt="Resultado pronto"
-    style="display:none; width:100%; max-width:420px; border-radius:16px; border:1px solid rgba(255,255,255,.12); box-shadow:var(--shadow2);"
-  />
+            <img
+              id="previewResultado"
+              alt="Resultado pronto"
+              style="display:none; width:100%; max-width:420px; border-radius:16px; border:1px solid rgba(255,255,255,.12); box-shadow:var(--shadow2);"
+            />
 
-  <div style="margin-top:10px;">
-    <a
-      id="downloadResultado"
-      href="#"
-      target="_blank"
-      style="display:none; color:#fff; font-weight:900; text-decoration:none; padding:12px 16px; border-radius:14px; background:linear-gradient(135deg, #2ecc71, #1b9b51); box-shadow:var(--shadow2); display:inline-block;"
-    >
-      Baixar imagem
-    </a>
-  </div>
-</div>
+            <div style="margin-top:10px;">
+              <a
+                id="downloadResultado"
+                href="#"
+                target="_blank"
+                style="display:none; color:#fff; font-weight:900; text-decoration:none; padding:12px 16px; border-radius:14px; background:linear-gradient(135deg, #2ecc71, #1b9b51); box-shadow:var(--shadow2); display:inline-block;"
+              >
+                Baixar imagem
+              </a>
+            </div>
+          </div>
         </form>
       </div>
     </div>
@@ -1140,12 +1133,12 @@
           <div class="cropMask">
             <div class="cropBox" id="cropBox">
               <div class="handle h-nw" data-h="nw"></div>
-              <div class="handle h-n"  data-h="n"></div>
+              <div class="handle h-n" data-h="n"></div>
               <div class="handle h-ne" data-h="ne"></div>
-              <div class="handle h-w"  data-h="w"></div>
-              <div class="handle h-e"  data-h="e"></div>
+              <div class="handle h-w" data-h="w"></div>
+              <div class="handle h-e" data-h="e"></div>
               <div class="handle h-sw" data-h="sw"></div>
-              <div class="handle h-s"  data-h="s"></div>
+              <div class="handle h-s" data-h="s"></div>
               <div class="handle h-se" data-h="se"></div>
             </div>
           </div>
@@ -1175,7 +1168,6 @@ const usadosEl = document.getElementById("usados");
 const statusEl = document.getElementById("status");
 const msgPedidoEl = document.getElementById("msgPedido");
 
-// ==== VISUAL: escudo salvo + preview + cores do fundo (NÃO afeta estrutura do pedido) ====
 const crestPreview = document.getElementById("crestPreview");
 const crestPlaceholder = document.getElementById("crestPlaceholder");
 const CREST_KEY = "omascote_escudo_principal_dataurl";
@@ -1898,11 +1890,35 @@ async function refreshMe(){
   }catch{}
 }
 
+function limparArtilheirosUI(){
+  const wrap = document.getElementById("artilheirosWrap");
+  if(!wrap) return;
+
+  wrap.innerHTML = `
+    <div class="artilheiroRow">
+      <input class="artilheiroNome" placeholder="Nome do jogador">
+      <input class="artilheiroGols" type="number" min="0" placeholder="Gols">
+    </div>
+  `;
+}
+
 function limparCamposAposEnviar(){
   document.getElementById("rodada").value = "";
   document.getElementById("dataJogo").value = "";
   document.getElementById("hora").value = "";
   document.getElementById("arena").value = "";
+
+  const timePrincipal = document.getElementById("timePrincipal");
+  const golsTime = document.getElementById("golsTime");
+  const golsAdv = document.getElementById("golsAdv");
+  const timeAdv = document.getElementById("timeAdv");
+
+  if(timePrincipal) timePrincipal.value = "";
+  if(golsTime) golsTime.value = "";
+  if(golsAdv) golsAdv.value = "";
+  if(timeAdv) timeAdv.value = "";
+
+  limparArtilheirosUI();
 
   document.getElementById("mascote").value = "";
   document.getElementById("escudo2").value = "";
@@ -1920,55 +1936,74 @@ document.getElementById("pedidoForm").addEventListener("submit", async (e)=>{
   e.preventDefault();
   msgPedidoEl.textContent = "Enviando...";
 
+  const isFlyer = document.getElementById("tab_flyer").checked;
+  const isMascote = document.getElementById("tab_mascote").checked;
+  const isResultado = document.getElementById("tab_contrat").checked;
+
   const fd = new FormData();
-  if (document.getElementById("tab_flyer").checked) {
+
+  if (isFlyer) {
     fd.append("flyer_tipo", document.getElementById("flyerTipo").value);
   }
 
-// montar resultado automaticamente
-  // ===== RESULTADO AUTOMÁTICO =====
-const t1 = document.getElementById("timePrincipal")?.value || "";
-const g1 = document.getElementById("golsTime")?.value || "";
-const g2 = document.getElementById("golsAdv")?.value || "";
-const t2 = document.getElementById("timeAdv")?.value || "";
+  const t1 = document.getElementById("timePrincipal")?.value?.trim() || "";
+  const g1 = document.getElementById("golsTime")?.value?.trim() || "";
+  const g2 = document.getElementById("golsAdv")?.value?.trim() || "";
+  const t2 = document.getElementById("timeAdv")?.value?.trim() || "";
 
-let resultadoFinal = "";
+  let resultadoFinal = "";
 
-if(g1 || g2){
-  if(t1 && t2){
-    resultadoFinal = `${t1} ${g1} x ${g2} ${t2}`;
-  }else if(t1){
-    resultadoFinal = `${t1} ${g1} x ${g2}`;
-  }else{
-    resultadoFinal = `${g1} x ${g2}`;
+  if(g1 || g2){
+    if(t1 && t2){
+      resultadoFinal = `${t1} ${g1} x ${g2} ${t2}`;
+    }else if(t1){
+      resultadoFinal = `${t1} ${g1} x ${g2}`;
+    }else{
+      resultadoFinal = `${g1} x ${g2}`;
+    }
   }
-}
 
-if(!resultadoFinal){
-  resultadoFinal = document.getElementById("rodada").value || "";
-}
-
-fd.append("rodada", resultadoFinal);
-fd.append("time_principal", t1);
-fd.append("gols_time_principal", g1);
-fd.append("gols_adversario", g2);
-fd.append("time_adversario", t2);
-// ===== ARTILHEIROS =====
-const artilheiros = [];
-
-document.querySelectorAll("#artilheirosWrap .artilheiroRow").forEach(row=>{
-  const nome = row.querySelector(".artilheiroNome")?.value?.trim();
-  const gols = row.querySelector(".artilheiroGols")?.value;
-
-  if(nome && gols && Number(gols) > 0){
-    artilheiros.push({
-      nome,
-      gols: Number(gols)
-    });
+  if(!resultadoFinal){
+    resultadoFinal = document.getElementById("rodada").value || "";
   }
-});
 
-fd.append("artilheiros", JSON.stringify(artilheiros));
+  fd.append("rodada", resultadoFinal);
+  fd.append("time_principal", t1);
+  fd.append("gols_time_principal", g1);
+  fd.append("gols_adversario", g2);
+  fd.append("time_adversario", t2);
+
+  const artilheiros = [];
+
+  document.querySelectorAll("#artilheirosWrap .artilheiroRow").forEach(row=>{
+    const nome = row.querySelector(".artilheiroNome")?.value?.trim() || "";
+    const golsRaw = row.querySelector(".artilheiroGols")?.value?.trim() || "";
+
+    if(nome && golsRaw !== "" && Number(golsRaw) >= 0){
+      artilheiros.push({
+        nome,
+        gols: Number(golsRaw)
+      });
+    }
+  });
+
+  const artilheirosJson = JSON.stringify(artilheiros);
+  const artilheirosTexto = artilheiros
+    .map(a => `${a.nome} (${a.gols} gol${a.gols === 1 ? "" : "s"})`)
+    .join("; ");
+
+  if(isResultado){
+    fd.append("artilheiros", artilheirosJson);
+    fd.append("artilheiros_json", artilheirosJson);
+    fd.append("artilheiros_texto", artilheirosTexto);
+    fd.append("artilheiros_qtd", String(artilheiros.length));
+  } else {
+    fd.append("artilheiros", "[]");
+    fd.append("artilheiros_json", "[]");
+    fd.append("artilheiros_texto", "");
+    fd.append("artilheiros_qtd", "0");
+  }
+
   fd.append("data", document.getElementById("dataJogo").value);
 
   const horaVal = document.getElementById("hora").value;
@@ -1980,8 +2015,11 @@ fd.append("artilheiros", JSON.stringify(artilheiros));
   const mascoteFile = document.getElementById("mascote").files[0];
   if (mascoteFile) fd.append("mascote", mascoteFile);
 
-  fd.append("escudo1", document.getElementById("escudo1").files[0]);
-  fd.append("escudo2", document.getElementById("escudo2").files[0]);
+  const escudo1File = document.getElementById("escudo1").files[0];
+  const escudo2File = document.getElementById("escudo2").files[0];
+
+  if (escudo1File) fd.append("escudo1", escudo1File);
+  if (escudo2File) fd.append("escudo2", escudo2File);
 
   const pats = document.getElementById("patrocinadores").files;
   for (const file of pats) {
@@ -1991,11 +2029,11 @@ fd.append("artilheiros", JSON.stringify(artilheiros));
   try{
     let endpoint = "/pedidos";
 
-    if (document.getElementById("tab_mascote").checked) {
+    if (isMascote) {
       endpoint = "/mascotes";
-  } else if (document.getElementById("tab_contrat").checked) {
-  endpoint = "/resultado_do_jogo";
-}
+    } else if (isResultado) {
+      endpoint = "/resultado_do_jogo";
+    }
 
     const r = await fetch(`${API_BASE}${endpoint}`, {
       method:"POST",
@@ -2004,22 +2042,23 @@ fd.append("artilheiros", JSON.stringify(artilheiros));
     });
 
     const out = await r.json();
-    if(out.ok){
-  msgPedidoEl.textContent = `✅ Pedido enviado! ID: ${out.pedido_id}`;
-  limparCamposAposEnviar();
-  refreshMe();
 
-  if (document.getElementById("tab_contrat").checked) {
-    acompanharResultado(out.pedido_id);
-  }
-} else {
+    if(out.ok){
+      msgPedidoEl.textContent = `✅ Pedido enviado! ID: ${out.pedido_id}`;
+      limparCamposAposEnviar();
+      refreshMe();
+
+      if (isResultado) {
+        acompanharResultado(out.pedido_id);
+      }
+    } else {
       msgPedidoEl.textContent = out.error || "Erro ao enviar";
     }
   }catch{
     msgPedidoEl.textContent = "Erro de rede";
   }
 });
-  // ====== FRASES PRONTAS - ABA RESULTADO ======
+
 const openPhraseBtn = document.getElementById("openPhraseBtn");
 const phraseMenu = document.getElementById("phraseMenu");
 const phraseInput = document.getElementById("dataJogo");
@@ -2045,16 +2084,17 @@ if(openPhraseBtn && phraseMenu && phraseInput){
     }
   });
 }
+
 async function acompanharResultado(pedidoId){
   const boxEl = document.getElementById("resultadoBox");
-  const statusEl = document.getElementById("statusResultado");
+  const statusElLocal = document.getElementById("statusResultado");
   const imgEl = document.getElementById("previewResultado");
   const downloadEl = document.getElementById("downloadResultado");
 
-  if(!boxEl || !statusEl || !imgEl || !downloadEl) return;
+  if(!boxEl || !statusElLocal || !imgEl || !downloadEl) return;
 
   boxEl.style.display = "block";
-  statusEl.textContent = "Estamos montando sua imagem...";
+  statusElLocal.textContent = "Estamos montando sua imagem...";
   imgEl.style.display = "none";
   downloadEl.style.display = "none";
 
@@ -2071,20 +2111,21 @@ async function acompanharResultado(pedidoId){
 
         const previewUrl = `${API_BASE}/pedidos/${pedidoId}/preview?ts=${Date.now()}`;
 
-        statusEl.textContent = "Sua imagem chegou!";
+        statusElLocal.textContent = "Sua imagem chegou!";
         imgEl.src = previewUrl;
         imgEl.style.display = "block";
 
         downloadEl.href = previewUrl;
         downloadEl.style.display = "inline-block";
       } else {
-        statusEl.textContent = "Estamos montando sua imagem...";
+        statusElLocal.textContent = "Estamos montando sua imagem...";
       }
     } catch {
-      statusEl.textContent = "Erro ao consultar status da imagem.";
+      statusElLocal.textContent = "Erro ao consultar status da imagem.";
     }
   }, 5000);
 }
+
 applyLocal();
 refreshMe();
 
@@ -2102,12 +2143,11 @@ document.getElementById("addArtilheiroBtn")?.addEventListener("click", ()=>{
 
   row.innerHTML = `
     <input class="artilheiroNome" placeholder="Nome do jogador">
-    <input class="artilheiroGols" type="number" placeholder="Gols">
+    <input class="artilheiroGols" type="number" min="0" placeholder="Gols">
   `;
 
   wrap.appendChild(row);
 });
-
 </script>
 </body>
 </html>
