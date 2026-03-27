@@ -325,6 +325,8 @@
     .submitRow{display:flex;justify-content:center;margin-top:4px}
     .msgSmall{margin-top:10px;font-size:13px;text-align:center;color:rgba(255,255,255,.85)}
 
+    .field-placar{grid-area:placar}
+    .field-artilheiros{grid-area:artilheiros}
     .field-rodada{grid-area:rodada}
     .field-data{grid-area:data}
     .field-hora{grid-area:hora}
@@ -378,10 +380,15 @@
 #tab_contrat:checked ~ .card .field-hora{display:none}
 #tab_contrat:checked ~ .card .formGrid{
   grid-template-areas:
-    "rodada data"
+    "placar placar"
+    "artilheiros artilheiros"
+    "data data"
     "esc1 esc2"
     "submit submit"
     "msg msg";
+}
+#tab_contrat:checked ~ .card .field-rodada{
+  display:none;
 }
 
     .filePlus{
@@ -709,7 +716,8 @@
       }
       #tab_contrat:checked ~ .card .formGrid{
   grid-template-areas:
-    "rodada"
+    "placar"
+    "artilheiros"
     "data"
     "esc1"
     "esc2"
@@ -773,6 +781,67 @@
       border-color:var(--accent1);
       box-shadow:0 0 0 3px rgba(79,124,255,.25);
     }
+
+
+/* ===== PLACAR RESULTADO ===== */
+.placarRow{
+  display:flex;
+  gap:6px;
+  align-items:center;
+}
+
+.placarRow input{
+  text-align:center;
+  font-weight:900;
+}
+
+.placarTime{
+  flex:1;
+}
+
+.placarGols{
+  width:60px;
+}
+
+.placarX{
+  font-weight:900;
+  font-size:18px;
+  opacity:.8;
+}
+
+/* ===== ARTILHEIROS ===== */
+.artilheirosWrap{
+  display:flex;
+  flex-direction:column;
+  gap:8px;
+}
+
+.artilheiroRow{
+  display:flex;
+  gap:6px;
+}
+
+.artilheiroNome{
+  flex:1;
+}
+
+.artilheiroGols{
+  width:60px;
+  text-align:center;
+  font-weight:900;
+}
+
+.addArtilheiro{
+  margin-top:6px;
+  padding:10px;
+  border-radius:12px;
+  background:rgba(255,255,255,.08);
+  border:1px solid rgba(255,255,255,.12);
+  text-align:center;
+  cursor:pointer;
+  font-weight:900;
+}
+
   </style>
 </head>
 
@@ -876,6 +945,34 @@
         </div>
 
         <form id="pedidoForm" class="formGrid" enctype="multipart/form-data">
+
+          <div class="field-placar full">
+            <label>Placar</label>
+
+            <div class="placarRow">
+              <input class="placarTime" id="timePrincipal" placeholder="Seu time">
+              <input class="placarGols" id="golsTime" type="number" placeholder="0">
+              <div class="placarX">x</div>
+              <input class="placarGols" id="golsAdv" type="number" placeholder="0">
+              <input class="placarTime" id="timeAdv" placeholder="Adversário (opcional)">
+            </div>
+          </div>
+
+          <div class="field-artilheiros full">
+            <label>Artilheiros (opcional)</label>
+
+            <div class="artilheirosWrap" id="artilheirosWrap">
+              <div class="artilheiroRow">
+                <input class="artilheiroNome" placeholder="Nome do jogador">
+                <input class="artilheiroGols" type="number" placeholder="Gols">
+              </div>
+            </div>
+
+            <div class="addArtilheiro" id="addArtilheiroBtn">
+              + Adicionar jogador
+            </div>
+          </div>
+
 
           <div class="field-rodada">
             <label>
@@ -1944,6 +2041,21 @@ document.getElementById("btnSair").addEventListener("click", ()=>{
   window.location.href = "index.html";
 });
 document.getElementById("btnAtualizar").addEventListener("click", refreshMe);
+
+document.getElementById("addArtilheiroBtn")?.addEventListener("click", ()=>{
+  const wrap = document.getElementById("artilheirosWrap");
+
+  const row = document.createElement("div");
+  row.className = "artilheiroRow";
+
+  row.innerHTML = `
+    <input class="artilheiroNome" placeholder="Nome do jogador">
+    <input class="artilheiroGols" type="number" placeholder="Gols">
+  `;
+
+  wrap.appendChild(row);
+});
+
 </script>
 </body>
 </html>
