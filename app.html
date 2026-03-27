@@ -337,7 +337,15 @@
     .field-patro{grid-area:patro}
     .field-submit{grid-area:submit}
     .field-msg{grid-area:msg}
+    .field-placar,
+    .field-artilheiros{
+    display:none;
+    }
 
+    #tab_contrat:checked ~ .card .field-placar,
+    #tab_contrat:checked ~ .card .field-artilheiros{
+    display:block;
+    }
     .t-flyer{display:inline}
     .t-mascote{display:none}
     .t-contrat{display:none}
