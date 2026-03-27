@@ -1925,13 +1925,15 @@ document.getElementById("pedidoForm").addEventListener("submit", async (e)=>{
   }
 
 // montar resultado automaticamente
-  const t1 = document.getElementById("timePrincipal")?.value || "";
-  const g1 = document.getElementById("golsTime")?.value || "0";
-  const g2 = document.getElementById("golsAdv")?.value || "0";
-  const t2 = document.getElementById("timeAdv")?.value || "";
+  // ===== RESULTADO AUTOMÁTICO =====
+const t1 = document.getElementById("timePrincipal")?.value || "";
+const g1 = document.getElementById("golsTime")?.value || "";
+const g2 = document.getElementById("golsAdv")?.value || "";
+const t2 = document.getElementById("timeAdv")?.value || "";
 
-  let resultadoFinal = "";
+let resultadoFinal = "";
 
+if(g1 || g2){
   if(t1 && t2){
     resultadoFinal = `${t1} ${g1} x ${g2} ${t2}`;
   }else if(t1){
@@ -1939,22 +1941,30 @@ document.getElementById("pedidoForm").addEventListener("submit", async (e)=>{
   }else{
     resultadoFinal = `${g1} x ${g2}`;
   }
+}
 
-  fd.append("rodada", resultadoFinal);
+if(!resultadoFinal){
+  resultadoFinal = document.getElementById("rodada").value || "";
+}
 
-  // artilheiros
-  const artilheiros = [];
-  document.querySelectorAll("#artilheirosWrap .artilheiroRow").forEach(row=>{
-  const nome = row.querySelector(".artilheiroNome")?.value;
+fd.append("rodada", resultadoFinal);
+
+// ===== ARTILHEIROS =====
+const artilheiros = [];
+
+document.querySelectorAll("#artilheirosWrap .artilheiroRow").forEach(row=>{
+  const nome = row.querySelector(".artilheiroNome")?.value?.trim();
   const gols = row.querySelector(".artilheiroGols")?.value;
 
-  if(nome && gols){
-    artilheiros.push({ nome, gols });
+  if(nome && gols && Number(gols) > 0){
+    artilheiros.push({
+      nome,
+      gols: Number(gols)
+    });
   }
 });
 
 fd.append("artilheiros", JSON.stringify(artilheiros));
-  
   fd.append("data", document.getElementById("dataJogo").value);
 
   const horaVal = document.getElementById("hora").value;
