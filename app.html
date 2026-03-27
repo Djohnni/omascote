@@ -1924,7 +1924,37 @@ document.getElementById("pedidoForm").addEventListener("submit", async (e)=>{
     fd.append("flyer_tipo", document.getElementById("flyerTipo").value);
   }
 
-  fd.append("rodada", document.getElementById("rodada").value);
+// montar resultado automaticamente
+  const t1 = document.getElementById("timePrincipal")?.value || "";
+  const g1 = document.getElementById("golsTime")?.value || "0";
+  const g2 = document.getElementById("golsAdv")?.value || "0";
+  const t2 = document.getElementById("timeAdv")?.value || "";
+
+  let resultadoFinal = "";
+
+  if(t1 && t2){
+    resultadoFinal = `${t1} ${g1} x ${g2} ${t2}`;
+  }else if(t1){
+    resultadoFinal = `${t1} ${g1} x ${g2}`;
+  }else{
+    resultadoFinal = `${g1} x ${g2}`;
+  }
+
+  fd.append("rodada", resultadoFinal);
+
+  // artilheiros
+  const artilheiros = [];
+  document.querySelectorAll("#artilheirosWrap .artilheiroRow").forEach(row=>{
+  const nome = row.querySelector(".artilheiroNome")?.value;
+  const gols = row.querySelector(".artilheiroGols")?.value;
+
+  if(nome && gols){
+    artilheiros.push({ nome, gols });
+  }
+});
+
+fd.append("artilheiros", JSON.stringify(artilheiros));
+  
   fd.append("data", document.getElementById("dataJogo").value);
 
   const horaVal = document.getElementById("hora").value;
