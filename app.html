@@ -61,7 +61,12 @@
       justify-content:flex-end;
       align-items:center;
     }
-
+    .iconImg{
+      width:65%;
+      height:65%;
+      object-fit:contain;
+      filter: drop-shadow(0 6px 12px rgba(0,0,0,.35));
+    }
     button{
       padding:10px 14px;
       border:0;
@@ -1150,35 +1155,35 @@
           <div class="optionsRow">
             <button type="button" class="optionBtn" data-product="resultado">
               <div class="circle green">
-                <div class="iconBox">⚽</div>
+                <img src="icons/resultado.png" class="iconImg">
               </div>
               <div class="optLabel">Resultado<br>do Jogo</div>
             </button>
 
             <button type="button" class="optionBtn" data-product="escalacao">
               <div class="circle orange">
-                <div class="iconBox">📋</div>
+                <img src="icons/escalacao.png" class="iconImg">
               </div>
               <div class="optLabel">Escalação</div>
             </button>
 
             <button type="button" class="optionBtn" data-product="contratacao">
               <div class="circle">
-                <div class="iconBox">🤝</div>
+                <img src="icons/contratacao.png" class="iconImg">
               </div>
               <div class="optLabel">Contratação</div>
             </button>
 
             <button type="button" class="optionBtn" data-product="proximo_jogo">
               <div class="circle orange">
-                <div class="iconBox">📅</div>
+                <img src="icons/proximo_jogo.png" class="iconImg">
               </div>
               <div class="optLabel">Próximo Jogo</div>
             </button>
 
             <button type="button" class="optionBtn" data-product="patrocinador">
               <div class="circle">
-                <div class="iconBox">📣</div>
+                <img src="icons/patrocinador.png" class="iconImg">
               </div>
               <div class="optLabel">Patrocinador<br>/ Apoio</div>
             </button>
