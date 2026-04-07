@@ -9,19 +9,10 @@
     :root{
       --bg0:#070a12;
       --bg1:#0b1020;
-      --card:#0f172a;
-      --card2:#0b1222;
-      --stroke:#223055;
-      --stroke2:#2b3a5e;
       --txt:#ffffff;
       --muted:rgba(255,255,255,.75);
-
       --accent1:#2f5bff;
       --accent2:#1730a8;
-      --gold:#d7b05a;
-
-      --radius:18px;
-      --radius2:14px;
       --shadow:0 20px 60px rgba(0,0,0,.45);
       --shadow2:0 10px 28px rgba(0,0,0,.35);
     }
@@ -33,22 +24,34 @@
       color:var(--txt);
       margin:0;
       min-height:100vh;
-      padding:20px 14px 28px;
+      padding:0;
       background:
-        radial-gradient(1200px 800px at 30% 10%, color-mix(in oklab, var(--accent1) 35%, transparent) 0%, transparent 55%),
-        radial-gradient(1000px 700px at 70% 20%, color-mix(in oklab, var(--accent2) 30%, transparent) 0%, transparent 55%),
-        radial-gradient(900px 600px at 50% 90%, rgba(255,255,255,.06) 0%, transparent 60%),
-        linear-gradient(180deg, var(--bg0), var(--bg1));
+        radial-gradient(1200px 800px at 10% 85%, rgba(80,170,255,.16) 0%, transparent 45%),
+        radial-gradient(1200px 800px at 90% 80%, rgba(255,210,80,.14) 0%, transparent 42%),
+        radial-gradient(1000px 600px at 50% 0%, rgba(255,255,255,.05) 0%, transparent 50%),
+        linear-gradient(180deg, #030814 0%, #081020 55%, #07101f 100%);
     }
 
-    .wrap{max-width:520px;margin:0 auto}
+    .wrap{
+      max-width:980px;
+      margin:0 auto;
+      padding:0 14px 28px;
+    }
 
     .topbar{
       display:flex;
       justify-content:space-between;
       align-items:center;
       gap:12px;
-      margin:6px 2px 14px;
+      padding:18px 2px 14px;
+    }
+
+    .brandTop{
+      opacity:.9;
+      font-weight:900;
+      letter-spacing:.16em;
+      font-size:13px;
+      text-transform:uppercase;
     }
 
     .row{
@@ -75,19 +78,20 @@
     button:disabled{opacity:.55; cursor:not-allowed}
 
     .btnBlue{
-      background:linear-gradient(135deg,
-        color-mix(in oklab, var(--accent1) 90%, #ffffff 10%),
-        color-mix(in oklab, var(--accent2) 90%, #000 10%)
-      );
+      background:linear-gradient(135deg, #8fb1d8, #5a6f8b);
+      color:#fff;
     }
 
-    .btnRed{background:linear-gradient(135deg, #ff4f4f, #c22d2d)}
+    .btnRed{
+      background:linear-gradient(135deg, #ff5c4d, #d73a2f);
+      color:#fff;
+    }
 
     .btnGreen{
       background:linear-gradient(135deg, #2ecc71, #1b9b51);
       border-radius:16px;
       padding:14px 18px;
-      min-width:170px;
+      min-width:190px;
       font-size:16px;
     }
 
@@ -98,49 +102,347 @@
     }
 
     .panel{
-      border-radius:24px;
-      padding:18px 16px 18px;
+      border-radius:28px;
+      padding:18px 16px 22px;
       background:
         radial-gradient(900px 500px at 50% -10%, rgba(255,255,255,.10) 0%, transparent 55%),
-        linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.03));
+        linear-gradient(180deg, rgba(255,255,255,.09), rgba(255,255,255,.03));
       border:1px solid rgba(255,255,255,.10);
       box-shadow:var(--shadow);
       backdrop-filter: blur(10px);
       -webkit-backdrop-filter: blur(10px);
+      overflow:hidden;
     }
 
     .welcomeBox{
       text-align:center;
       padding:10px 8px 6px;
+      display:none;
     }
 
     .welcomeLabel{
-      font-size:13px;
+      font-size:12px;
       letter-spacing:.22em;
       text-transform:uppercase;
       color:rgba(255,255,255,.7);
       margin-bottom:8px;
     }
 
-    h1{
+    .welcomeBox h1{
       margin:0;
-      font-size:28px;
+      font-size:32px;
       line-height:1.05;
       letter-spacing:.2px;
       text-shadow:0 10px 25px rgba(0,0,0,.35);
     }
 
-    .sub{
+    .welcomeBox .sub{
       margin:8px 0 0;
       font-size:13px;
       color:rgba(255,255,255,.72);
     }
 
-    .crestWrap{display:flex;justify-content:center;margin:14px 0 12px}
+    .hero{
+      position:relative;
+      border-radius:26px;
+      overflow:hidden;
+      padding:24px 18px 26px;
+      background:
+        radial-gradient(700px 420px at 15% 90%, rgba(102,180,255,.20) 0%, transparent 45%),
+        radial-gradient(700px 420px at 85% 85%, rgba(255,213,111,.18) 0%, transparent 45%),
+        radial-gradient(500px 220px at 50% 55%, rgba(255,255,255,.16) 0%, transparent 60%),
+        linear-gradient(180deg, #f7f8fb 0%, #eef1f7 100%);
+      color:#1f2430;
+      text-align:center;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.55);
+    }
+
+    .heroBrand{
+      font-size:28px;
+      font-weight:1000;
+      letter-spacing:-.02em;
+      line-height:1;
+      margin-bottom:18px;
+    }
+
+    .heroBrand .c1{color:#1e88ff}
+    .heroBrand .c2{color:#e53935}
+    .heroBrand .c3{color:#f4b400}
+    .heroBrand .c4{color:#34a853}
+
+    .heroTitle{
+      margin:0 auto;
+      max-width:760px;
+      font-size:clamp(28px, 3.5vw, 52px);
+      line-height:1.08;
+      font-weight:900;
+      color:#242c38;
+      letter-spacing:-.03em;
+    }
+
+    .heroSub{
+      margin:12px auto 0;
+      max-width:620px;
+      font-size:18px;
+      line-height:1.4;
+      color:#7d8896;
+      font-weight:500;
+    }
+
+    .heroSub strong{
+      color:#4f5d6c;
+      font-weight:900;
+    }
+
+    .selectorStage{
+      position:relative;
+      margin:34px auto 8px;
+      max-width:880px;
+      min-height:400px;
+    }
+
+    .centerWrap{
+      position:absolute;
+      left:50%;
+      top:58px;
+      transform:translateX(-50%);
+      z-index:4;
+    }
+
+    .centerBtn{
+      width:220px;
+      height:220px;
+      border-radius:999px;
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      justify-content:center;
+      text-align:center;
+      gap:8px;
+      border:2px solid rgba(255,255,255,.55);
+      background:
+        radial-gradient(circle at 30% 30%, rgba(255,255,255,.30) 0%, transparent 28%),
+        radial-gradient(circle at 65% 20%, rgba(255,255,255,.16) 0%, transparent 26%),
+        linear-gradient(135deg, #1f87ff 0%, #3bd2ff 20%, #69d84f 50%, #ffd443 78%, #ff9f1a 100%);
+      box-shadow:
+        0 0 0 5px rgba(255,255,255,.18),
+        0 28px 60px rgba(66,120,255,.30),
+        inset 0 3px 14px rgba(255,255,255,.34);
+      color:#fff;
+      font-size:26px;
+      font-weight:900;
+      line-height:1.05;
+      cursor:pointer;
+      user-select:none;
+      transition:transform .15s ease, box-shadow .15s ease;
+    }
+
+    .centerBtn:hover{
+      transform:scale(1.02);
+      box-shadow:
+        0 0 0 6px rgba(255,255,255,.20),
+        0 30px 70px rgba(66,120,255,.36),
+        inset 0 3px 14px rgba(255,255,255,.34);
+    }
+
+    .centerBtn small{
+      font-size:40px;
+      line-height:1;
+    }
+
+    .lines{
+      position:absolute;
+      inset:0;
+      pointer-events:none;
+      z-index:1;
+    }
+
+    .line{
+      position:absolute;
+      height:4px;
+      border-radius:999px;
+      opacity:.95;
+      filter:blur(.2px);
+      box-shadow:0 0 18px currentColor;
+      transform-origin:left center;
+    }
+
+    .l1{
+      width:210px;
+      left:163px;
+      top:229px;
+      color:#ffd3f0;
+      background:linear-gradient(90deg, #ffd3f0, #fff3b5);
+      transform:rotate(157deg);
+    }
+
+    .l2{
+      width:150px;
+      left:302px;
+      top:242px;
+      color:#b5fff8;
+      background:linear-gradient(90deg, #d7fff4, #7ef2ff);
+      transform:rotate(132deg);
+    }
+
+    .l3{
+      width:116px;
+      left:382px;
+      top:285px;
+      color:#b4fff7;
+      background:linear-gradient(90deg, #bffdf6, #b3fff0);
+      transform:rotate(90deg);
+    }
+
+    .l4{
+      width:150px;
+      left:424px;
+      top:241px;
+      color:#fef0a7;
+      background:linear-gradient(90deg, #fff4aa, #ffd95d);
+      transform:rotate(48deg);
+    }
+
+    .l5{
+      width:214px;
+      left:506px;
+      top:229px;
+      color:#a6ffff;
+      background:linear-gradient(90deg, #fff3a1, #8efaff);
+      transform:rotate(22deg);
+    }
+
+    .optionsRow{
+      position:absolute;
+      left:0;
+      right:0;
+      bottom:0;
+      display:grid;
+      grid-template-columns:repeat(5, 1fr);
+      gap:12px;
+      align-items:start;
+      z-index:3;
+    }
+
+    .optionBtn{
+      background:none;
+      box-shadow:none;
+      padding:0;
+      color:#26303d;
+      border-radius:0;
+    }
+
+    .optionBtn:hover{
+      filter:none;
+      transform:none;
+    }
+
+    .optionBtn.active .circle{
+      transform:translateY(-4px) scale(1.04);
+      box-shadow:
+        0 0 0 4px rgba(255,255,255,.55),
+        0 18px 40px rgba(53,105,198,.24);
+    }
+
+    .circle{
+      width:112px;
+      height:112px;
+      margin:0 auto 12px;
+      border-radius:999px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      border:2px solid rgba(255,255,255,.72);
+      box-shadow:
+        0 0 0 3px rgba(255,255,255,.28),
+        0 14px 30px rgba(65,110,185,.18),
+        inset 0 4px 14px rgba(255,255,255,.24);
+      position:relative;
+      overflow:hidden;
+      transition:transform .15s ease, box-shadow .15s ease;
+      background:
+        radial-gradient(circle at 28% 22%, rgba(255,255,255,.34) 0%, transparent 20%),
+        radial-gradient(circle at 70% 75%, rgba(255,255,255,.15) 0%, transparent 22%),
+        linear-gradient(135deg, #1398ff 0%, #4cd6ff 18%, #7bd444 48%, #f1d03a 76%, #f0a218 100%);
+    }
+
+    .circle.orange{
+      background:
+        radial-gradient(circle at 28% 22%, rgba(255,255,255,.34) 0%, transparent 20%),
+        radial-gradient(circle at 70% 75%, rgba(255,255,255,.15) 0%, transparent 22%),
+        linear-gradient(135deg, #ff8f1f 0%, #ffcb40 36%, #93d84f 66%, #53d3ff 100%);
+    }
+
+    .circle.green{
+      background:
+        radial-gradient(circle at 28% 22%, rgba(255,255,255,.34) 0%, transparent 20%),
+        radial-gradient(circle at 70% 75%, rgba(255,255,255,.15) 0%, transparent 22%),
+        linear-gradient(135deg, #148dff 0%, #35c9ff 25%, #70d953 58%, #f0d13c 100%);
+    }
+
+    .iconBox{
+      width:76px;
+      height:76px;
+      border-radius:18px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      font-size:44px;
+      background:rgba(255,255,255,.14);
+      color:#fff;
+      text-shadow:0 4px 10px rgba(0,0,0,.18);
+      box-shadow:inset 0 1px 8px rgba(255,255,255,.12);
+    }
+
+    .optLabel{
+      font-size:13px;
+      line-height:1.2;
+      font-weight:800;
+      color:#3d4654;
+      text-align:center;
+      max-width:120px;
+      margin:0 auto;
+    }
+
+    .examplesLink{
+      display:inline-block;
+      margin-top:12px;
+      color:#7c8794;
+      text-decoration:none;
+      font-size:16px;
+      font-weight:700;
+    }
+
+    .examplesLink:hover{color:#4b5663}
+
+    .switchModeRow{
+      display:none;
+      justify-content:center;
+      margin-top:18px;
+    }
+
+    body.modeChosen .switchModeRow{display:flex}
+
+    .hiddenTabs{
+      position:absolute;
+      left:-9999px;
+      opacity:0;
+      pointer-events:none;
+    }
+
+    body:not(.modeChosen) .builderArea{
+      display:none;
+    }
+
+    .builderArea{
+      margin-top:24px;
+    }
+
+    .crestWrap{display:flex;justify-content:center;margin:0 0 14px}
 
     .crestCard{
       width:min(320px, 92vw);
-      aspect-ratio: 1 / 1;
+      aspect-ratio:1/1;
       border-radius:22px;
       background:
         radial-gradient(280px 200px at 50% 20%, rgba(255,255,255,.10) 0%, transparent 60%),
@@ -160,7 +462,7 @@
       background:
         radial-gradient(circle at 50% 50%, color-mix(in oklab, var(--accent1) 35%, transparent) 0%, transparent 55%),
         radial-gradient(circle at 45% 55%, color-mix(in oklab, var(--accent2) 25%, transparent) 0%, transparent 65%);
-      filter: blur(18px);
+      filter:blur(18px);
       opacity:.9;
       pointer-events:none;
     }
@@ -169,7 +471,7 @@
       width:78%;
       height:78%;
       object-fit:contain;
-      filter: drop-shadow(0 18px 24px rgba(0,0,0,.45));
+      filter:drop-shadow(0 18px 24px rgba(0,0,0,.45));
       position:relative;
       z-index:2;
     }
@@ -193,82 +495,7 @@
       line-height:1.35;
     }
 
-    .chooserIntro{
-      text-align:center;
-      margin:4px 0 12px;
-    }
-
-    .chooserIntro strong{
-      display:block;
-      font-size:18px;
-      letter-spacing:.2px;
-    }
-
-    .chooserIntro span{
-      display:block;
-      margin-top:6px;
-      font-size:12px;
-      color:rgba(255,255,255,.72);
-    }
-
-    .productChooser{
-      display:grid;
-      grid-template-columns:1fr 1fr;
-      gap:12px;
-      margin:10px 0 6px;
-    }
-
-    .productCard{
-      border-radius:18px;
-      border:1px solid rgba(255,255,255,.12);
-      background:
-        linear-gradient(180deg, rgba(255,255,255,.08), rgba(0,0,0,.16));
-      padding:14px 12px;
-      min-height:110px;
-      text-align:left;
-      display:flex;
-      flex-direction:column;
-      justify-content:space-between;
-      gap:10px;
-      box-shadow:var(--shadow2);
-      position:relative;
-    }
-
-    .productCard.active{
-      border-color:color-mix(in oklab, var(--accent1) 72%, #ffffff 10%);
-      box-shadow:0 0 0 3px rgba(79,124,255,.20), var(--shadow2);
-      background:
-        linear-gradient(180deg, rgba(79,124,255,.18), rgba(0,0,0,.18));
-    }
-
-    .productCard .icon{
-      font-size:20px;
-      line-height:1;
-    }
-
-    .productCard .title{
-      font-size:15px;
-      font-weight:900;
-      line-height:1.15;
-    }
-
-    .productCard .desc{
-      font-size:11px;
-      color:rgba(255,255,255,.74);
-      line-height:1.3;
-    }
-
-    .switchModeRow{
-      display:none;
-      justify-content:center;
-      margin-top:10px;
-    }
-
-    body.modeChosen .switchModeRow{display:flex}
-    body:not(.modeChosen) .card{display:none}
-
     .card{
-      margin-top:12px;
       background:rgba(5,10,22,.55);
       border:1px solid rgba(255,255,255,.10);
       border-radius:18px;
@@ -290,15 +517,15 @@
       padding:8px 12px;
       font-size:12px;
       color:rgba(255,255,255,.90);
-      backdrop-filter: blur(8px);
-      -webkit-backdrop-filter: blur(8px);
+      backdrop-filter:blur(8px);
+      -webkit-backdrop-filter:blur(8px);
     }
 
     .msg{
       margin-top:10px;
       font-size:13px;
       color:rgba(255,255,255,.85);
-      text-align:center
+      text-align:center;
     }
 
     .sep{
@@ -309,24 +536,17 @@
 
     h2{
       margin:0;
-      font-size:18px;
+      font-size:21px;
       text-align:center;
-      letter-spacing:.3px;
+      letter-spacing:.2px;
     }
 
     .hint{
       font-size:12px;
-      color:rgba(255,255,255,.65);
+      color:rgba(255,255,255,.68);
       margin-top:6px;
       text-align:center;
       line-height:1.35;
-    }
-
-    .hiddenTabs{
-      position:absolute;
-      left:-9999px;
-      opacity:0;
-      pointer-events:none;
     }
 
     .tabRadio{
@@ -411,12 +631,12 @@
       background:rgba(0,0,0,.22);
       color:#fff;
       outline:none;
-      box-shadow: inset 0 1px 0 rgba(255,255,255,.04);
+      box-shadow:inset 0 1px 0 rgba(255,255,255,.04);
     }
 
     input:focus, textarea:focus{
-      border-color: color-mix(in oklab, var(--accent1) 70%, #ffffff 10%);
-      box-shadow: 0 0 0 3px rgba(79,124,255,.18);
+      border-color:color-mix(in oklab, var(--accent1) 70%, #ffffff 10%);
+      box-shadow:0 0 0 3px rgba(79,124,255,.18);
     }
 
     textarea{min-height:70px; resize:vertical}
@@ -447,7 +667,7 @@
       color:#fff;
       cursor:pointer;
       user-select:none;
-      box-shadow: inset 0 1px 0 rgba(255,255,255,.04);
+      box-shadow:inset 0 1px 0 rgba(255,255,255,.04);
       transition:transform .08s ease, border-color .15s ease, box-shadow .15s ease, filter .15s ease;
     }
 
@@ -455,8 +675,8 @@
     .filePlus:hover{filter:brightness(1.05)}
 
     .filePlus:focus-within{
-      border-color: color-mix(in oklab, var(--accent1) 70%, #ffffff 10%);
-      box-shadow: 0 0 0 3px rgba(79,124,255,.18);
+      border-color:color-mix(in oklab, var(--accent1) 70%, #ffffff 10%);
+      box-shadow:0 0 0 3px rgba(79,124,255,.18);
     }
 
     .filePlus .left{
@@ -466,7 +686,7 @@
       gap:3px;
     }
 
-    .filePlus .name{display:none;}
+    .filePlus .name{display:none}
 
     .filePlus .chosen{
       font-size:12px;
@@ -621,8 +841,8 @@
       position:fixed;
       inset:0;
       background:rgba(0,0,0,.65);
-      backdrop-filter: blur(10px);
-      -webkit-backdrop-filter: blur(10px);
+      backdrop-filter:blur(10px);
+      -webkit-backdrop-filter:blur(10px);
       display:none;
       align-items:center;
       justify-content:center;
@@ -681,7 +901,7 @@
 
     .cropStage{
       width:100%;
-      aspect-ratio: 1 / 1;
+      aspect-ratio:1 / 1;
       border-radius:16px;
       border:1px solid rgba(255,255,255,.12);
       background:rgba(0,0,0,.22);
@@ -785,11 +1005,75 @@
       box-shadow:none;
     }
 
-    @media (max-width:520px){
-      .formGrid{grid-template-columns:1fr}
-      h1{font-size:26px}
-      .crestCard{width:min(300px, 92vw)}
-      .productChooser{grid-template-columns:1fr}
+    @media (max-width:900px){
+      .selectorStage{
+        min-height:auto;
+        margin-top:26px;
+      }
+
+      .centerWrap{
+        position:static;
+        transform:none;
+        margin:0 auto 20px;
+      }
+
+      .centerBtn{
+        width:180px;
+        height:180px;
+        font-size:22px;
+      }
+
+      .lines{display:none}
+
+      .optionsRow{
+        position:static;
+        grid-template-columns:repeat(2, 1fr);
+        gap:16px 8px;
+      }
+
+      .optionsRow .optionBtn:last-child{
+        grid-column:1 / -1;
+      }
+    }
+
+    @media (max-width:680px){
+      .hero{
+        padding:20px 12px 22px;
+      }
+
+      .heroBrand{
+        font-size:22px;
+      }
+
+      .heroTitle{
+        font-size:clamp(22px, 7vw, 34px);
+      }
+
+      .heroSub{
+        font-size:14px;
+        max-width:420px;
+      }
+
+      .circle{
+        width:92px;
+        height:92px;
+      }
+
+      .iconBox{
+        width:62px;
+        height:62px;
+        font-size:34px;
+      }
+
+      .optLabel{
+        font-size:12px;
+        max-width:94px;
+      }
+
+      .formGrid{
+        grid-template-columns:1fr;
+      }
+
       body.mode-flyer .formGrid{
         grid-template-areas:
           "rodada"
@@ -803,6 +1087,7 @@
           "submit"
           "msg";
       }
+
       body.mode-result .formGrid{
         grid-template-areas:
           "placar"
@@ -820,9 +1105,7 @@
 <body>
   <div class="wrap">
     <div class="topbar">
-      <div style="opacity:.85; font-weight:800; letter-spacing:.14em; font-size:12px; text-transform:uppercase">
-        O Mascote
-      </div>
+      <div class="brandTop">O Mascote</div>
       <div class="row">
         <button class="btnBlue" id="btnAtualizar">Atualizar</button>
         <button class="btnRed" id="btnSair">Sair</button>
@@ -836,220 +1119,253 @@
         <div class="sub">Crie sua arte em poucos passos.</div>
       </div>
 
-      <div class="hiddenTabs">
-        <input class="tabRadio" type="radio" name="aba" id="tab_flyer">
-        <input class="tabRadio" type="radio" name="aba" id="tab_mascote">
-        <input class="tabRadio" type="radio" name="aba" id="tab_contrat">
-      </div>
+      <div class="hero">
+        <div class="heroBrand">
+          <span class="c1">i</span><span class="c2">A</span><span class="c3">4</span><span class="c4">Tube</span>
+        </div>
 
-      <div class="chooserIntro">
-        <strong>Escolha o tipo de arte</strong>
-        <span>O formulário muda sozinho conforme a opção selecionada.</span>
-      </div>
+        <h2 class="heroTitle">Crie artes esportivas prontas<br>para postar em segundos</h2>
 
-      <div class="productChooser" id="productChooser">
-        <button type="button" class="productCard" data-product="resultado">
-          <div class="icon">🟢</div>
-          <div class="title">Resultado do jogo</div>
-          <div class="desc">Placar, artilheiros, foto da partida e frase final.</div>
-        </button>
+        <div class="heroSub">
+          Envie sua foto, escolha o modelo e <strong>gere posts</strong><br>
+          profissionais sem precisar de designer.
+        </div>
 
-        <button type="button" class="productCard" data-product="escalacao">
-          <div class="icon">📋</div>
-          <div class="title">Escalação</div>
-          <div class="desc">Monte a arte com escudo, texto e imagem principal.</div>
-        </button>
+        <div class="selectorStage">
+          <div class="centerWrap">
+            <button type="button" class="centerBtn" id="mainCreateBtn">
+              <span>Criar<br>minha arte</span>
+              <small>🔥</small>
+            </button>
+          </div>
 
-        <button type="button" class="productCard" data-product="contratacao">
-          <div class="icon">🤝</div>
-          <div class="title">Contratação</div>
-          <div class="desc">Destaque jogador, escudo e arte de apresentação.</div>
-        </button>
+          <div class="lines">
+            <div class="line l1"></div>
+            <div class="line l2"></div>
+            <div class="line l3"></div>
+            <div class="line l4"></div>
+            <div class="line l5"></div>
+          </div>
 
-        <button type="button" class="productCard" data-product="proximo_jogo">
-          <div class="icon">📅</div>
-          <div class="title">Próximo jogo</div>
-          <div class="desc">Arte pré-jogo com confronto, data e informações.</div>
-        </button>
+          <div class="optionsRow">
+            <button type="button" class="optionBtn" data-product="resultado">
+              <div class="circle green">
+                <div class="iconBox">⚽</div>
+              </div>
+              <div class="optLabel">Resultado<br>do Jogo</div>
+            </button>
 
-        <button type="button" class="productCard full" data-product="patrocinador">
-          <div class="icon">📣</div>
-          <div class="title">Patrocinador</div>
-          <div class="desc">Divulgue parceiros com logo, escudo e visual pronto.</div>
-        </button>
+            <button type="button" class="optionBtn" data-product="escalacao">
+              <div class="circle orange">
+                <div class="iconBox">📋</div>
+              </div>
+              <div class="optLabel">Escalação</div>
+            </button>
+
+            <button type="button" class="optionBtn" data-product="contratacao">
+              <div class="circle">
+                <div class="iconBox">🤝</div>
+              </div>
+              <div class="optLabel">Contratação</div>
+            </button>
+
+            <button type="button" class="optionBtn" data-product="proximo_jogo">
+              <div class="circle orange">
+                <div class="iconBox">📅</div>
+              </div>
+              <div class="optLabel">Próximo Jogo</div>
+            </button>
+
+            <button type="button" class="optionBtn" data-product="patrocinador">
+              <div class="circle">
+                <div class="iconBox">📣</div>
+              </div>
+              <div class="optLabel">Patrocinador<br>/ Apoio</div>
+            </button>
+          </div>
+        </div>
+
+        <a href="#" class="examplesLink" id="verExemplosLink">Ver exemplos →</a>
       </div>
 
       <div class="switchModeRow">
         <button type="button" class="btnGhost" id="btnTrocarTipo">Trocar opção</button>
       </div>
 
-      <div class="crestWrap">
-        <div class="crestCard" id="crestCard">
-          <div class="crestGlow"></div>
-          <input id="crestManual" class="fileHidden" type="file" accept="image/*" />
-          <button id="crestAddBtn" type="button" style="position:absolute;right:10px;bottom:10px;width:46px;height:46px;border-radius:14px;border:1px solid rgba(255,255,255,.16);background:linear-gradient(135deg, rgba(255,255,255,.10), rgba(0,0,0,.18));box-shadow:var(--shadow2);color:#fff;font-weight:950;font-size:24px;line-height:1;display:grid;place-items:center;cursor:pointer;z-index:5;">+</button>
-
-          <img id="crestPreview" class="crestImg" alt="Escudo do time" style="display:none" />
-          <div id="crestPlaceholder" class="crestPlaceholder">
-            Envie o escudo do seu time<br/>para personalizar o visual do app
-          </div>
-        </div>
+      <div class="hiddenTabs">
+        <input class="tabRadio" type="radio" name="aba" id="tab_flyer">
+        <input class="tabRadio" type="radio" name="aba" id="tab_contrat">
       </div>
 
-      <div class="card">
-        <div class="meta">
-          <div class="pill" id="plano">Plano: —</div>
-          <div class="pill" id="usados">Usados no mês: —</div>
-          <div class="pill" id="status">Status: —</div>
+      <div class="builderArea" id="builderArea">
+        <div class="crestWrap">
+          <div class="crestCard" id="crestCard">
+            <div class="crestGlow"></div>
+            <input id="crestManual" class="fileHidden" type="file" accept="image/*" />
+            <button id="crestAddBtn" type="button" style="position:absolute;right:10px;bottom:10px;width:46px;height:46px;border-radius:14px;border:1px solid rgba(255,255,255,.16);background:linear-gradient(135deg, rgba(255,255,255,.10), rgba(0,0,0,.18));box-shadow:var(--shadow2);color:#fff;font-weight:950;font-size:24px;line-height:1;display:grid;place-items:center;cursor:pointer;z-index:5;">+</button>
+
+            <img id="crestPreview" class="crestImg" alt="Escudo do time" style="display:none" />
+            <div id="crestPlaceholder" class="crestPlaceholder">
+              Envie o escudo do seu time<br>para personalizar o visual do app
+            </div>
+          </div>
         </div>
 
-        <div class="msg" id="msg"></div>
-        <div class="sep"></div>
-
-        <h2 id="dynamicTitle">Criar arte</h2>
-        <div class="hint" id="dynamicHint">Preencha os dados e envie.</div>
-
-        <input type="hidden" id="flyerTipo" value="zz1escalacao">
-        <input type="hidden" id="selectedProduct" value="">
-
-        <form id="pedidoForm" class="formGrid" enctype="multipart/form-data">
-          <div class="field-placar full">
-            <label>Placar</label>
-            <div class="placarRow">
-              <input class="placarTime" id="timePrincipal" placeholder="Seu time">
-              <input class="placarGols" id="golsTime" type="number" min="0" placeholder="0">
-              <div class="placarX">x</div>
-              <input class="placarGols" id="golsAdv" type="number" min="0" placeholder="0">
-              <input class="placarTime" id="timeAdv" placeholder="Adversário (opcional)">
-            </div>
+        <div class="card">
+          <div class="meta">
+            <div class="pill" id="plano">Plano: —</div>
+            <div class="pill" id="usados">Usados no mês: —</div>
+            <div class="pill" id="status">Status: —</div>
           </div>
 
-          <div class="field-artilheiros full">
-            <label>Artilheiros (opcional)</label>
-            <div class="artilheirosWrap" id="artilheirosWrap">
-              <div class="artilheiroRow">
-                <input class="artilheiroNome" placeholder="Nome do jogador">
-                <input class="artilheiroGols" type="number" min="0" placeholder="Gols">
+          <div class="msg" id="msg"></div>
+          <div class="sep"></div>
+
+          <h2 id="dynamicTitle">Criar arte</h2>
+          <div class="hint" id="dynamicHint">Preencha os dados e envie.</div>
+
+          <input type="hidden" id="flyerTipo" value="zz1fs">
+          <input type="hidden" id="selectedProduct" value="">
+
+          <form id="pedidoForm" class="formGrid" enctype="multipart/form-data">
+            <div class="field-placar full">
+              <label>Placar</label>
+              <div class="placarRow">
+                <input class="placarTime" id="timePrincipal" placeholder="Seu time">
+                <input class="placarGols" id="golsTime" type="number" min="0" placeholder="0">
+                <div class="placarX">x</div>
+                <input class="placarGols" id="golsAdv" type="number" min="0" placeholder="0">
+                <input class="placarTime" id="timeAdv" placeholder="Adversário (opcional)">
               </div>
             </div>
-            <div class="addArtilheiro" id="addArtilheiroBtn">+ Adicionar jogador</div>
-          </div>
 
-          <div class="field-rodada">
-            <label id="labelRodada">Título da arte *</label>
-            <input id="rodada" />
-          </div>
+            <div class="field-artilheiros full">
+              <label>Artilheiros (opcional)</label>
+              <div class="artilheirosWrap" id="artilheirosWrap">
+                <div class="artilheiroRow">
+                  <input class="artilheiroNome" placeholder="Nome do jogador">
+                  <input class="artilheiroGols" type="number" min="0" placeholder="Gols">
+                </div>
+              </div>
+              <div class="addArtilheiro" id="addArtilheiroBtn">+ Adicionar jogador</div>
+            </div>
 
-          <div class="field-data">
-            <label id="labelData">Texto principal *</label>
+            <div class="field-rodada">
+              <label id="labelRodada">Título da arte *</label>
+              <input id="rodada" />
+            </div>
 
-            <div class="phraseWrap">
-              <input id="dataJogo" required />
-              <button type="button" class="phraseBtn" id="openPhraseBtn" aria-label="Abrir frases prontas">+</button>
+            <div class="field-data">
+              <label id="labelData">Texto principal *</label>
 
-              <div class="phraseMenu" id="phraseMenu">
-                <button type="button" class="phraseOption">Vitória na raça, no talento e no coração.</button>
-                <button type="button" class="phraseOption">Mais 3 pontos pra conta e motivo de sobra pra comemorar.</button>
-                <button type="button" class="phraseOption">Fim de jogo com vitória e orgulho da nossa camisa.</button>
-                <button type="button" class="phraseOption">Jogamos juntos, lutamos juntos e vencemos juntos.</button>
-                <button type="button" class="phraseOption">Resultado conquistado com raça do começo ao fim.</button>
-                <button type="button" class="phraseOption">Hoje teve entrega, foco e vitória merecida.</button>
-                <button type="button" class="phraseOption">Dentro de campo, mostramos a força do nosso time.</button>
-                <button type="button" class="phraseOption">Mais uma batalha vencida com união e determinação.</button>
-                <button type="button" class="phraseOption">A vitória é nossa e a torcida faz parte disso.</button>
-                <button type="button" class="phraseOption">No apito final, a recompensa veio: vencemos.</button>
+              <div class="phraseWrap">
+                <input id="dataJogo" required />
+                <button type="button" class="phraseBtn" id="openPhraseBtn" aria-label="Abrir frases prontas">+</button>
+
+                <div class="phraseMenu" id="phraseMenu">
+                  <button type="button" class="phraseOption">Vitória na raça, no talento e no coração.</button>
+                  <button type="button" class="phraseOption">Mais 3 pontos pra conta e motivo de sobra pra comemorar.</button>
+                  <button type="button" class="phraseOption">Fim de jogo com vitória e orgulho da nossa camisa.</button>
+                  <button type="button" class="phraseOption">Jogamos juntos, lutamos juntos e vencemos juntos.</button>
+                  <button type="button" class="phraseOption">Resultado conquistado com raça do começo ao fim.</button>
+                  <button type="button" class="phraseOption">Hoje teve entrega, foco e vitória merecida.</button>
+                  <button type="button" class="phraseOption">Dentro de campo, mostramos a força do nosso time.</button>
+                  <button type="button" class="phraseOption">Mais uma batalha vencida com união e determinação.</button>
+                  <button type="button" class="phraseOption">A vitória é nossa e a torcida faz parte disso.</button>
+                  <button type="button" class="phraseOption">No apito final, a recompensa veio: vencemos.</button>
+                </div>
               </div>
             </div>
-          </div>
 
-          <div class="field-hora">
-            <label id="labelHora">Observações</label>
-            <input id="hora" />
-          </div>
+            <div class="field-hora">
+              <label id="labelHora">Observações</label>
+              <input id="hora" />
+            </div>
 
-          <div class="field-arena">
-            <label id="labelArena">Texto secundário / local</label>
-            <input id="arena" />
-          </div>
+            <div class="field-arena">
+              <label id="labelArena">Texto secundário / local</label>
+              <input id="arena" />
+            </div>
 
-          <div class="field-mascote full">
-            <label id="labelMascote">Imagem principal (opcional)</label>
-            <input id="mascote" class="fileHidden" type="file" />
-            <div class="filePlus" data-file-for="mascote" tabindex="0" role="button" aria-label="Enviar imagem principal">
-              <div class="left">
-                <div class="name"></div>
-                <div class="chosen" id="chosen_mascote">Nenhum arquivo</div>
+            <div class="field-mascote full">
+              <label id="labelMascote">Imagem principal (opcional)</label>
+              <input id="mascote" class="fileHidden" type="file" />
+              <div class="filePlus" data-file-for="mascote" tabindex="0" role="button" aria-label="Enviar imagem principal">
+                <div class="left">
+                  <div class="name"></div>
+                  <div class="chosen" id="chosen_mascote">Nenhum arquivo</div>
+                </div>
+                <div class="plus">+</div>
               </div>
-              <div class="plus">+</div>
             </div>
-          </div>
 
-          <div class="field-esc1">
-            <label id="labelEsc1">Escudo do time *</label>
-            <input id="escudo1" class="fileHidden" type="file" required />
-            <div class="filePlus" data-file-for="escudo1" tabindex="0" role="button" aria-label="Enviar arquivo 1">
-              <div class="left">
-                <div class="name"></div>
-                <div class="chosen" id="chosen_escudo1">Nenhum arquivo</div>
+            <div class="field-esc1">
+              <label id="labelEsc1">Escudo do time *</label>
+              <input id="escudo1" class="fileHidden" type="file" required />
+              <div class="filePlus" data-file-for="escudo1" tabindex="0" role="button" aria-label="Enviar arquivo 1">
+                <div class="left">
+                  <div class="name"></div>
+                  <div class="chosen" id="chosen_escudo1">Nenhum arquivo</div>
+                </div>
+                <div class="plus">+</div>
               </div>
-              <div class="plus">+</div>
             </div>
-          </div>
 
-          <div class="field-esc2">
-            <label id="labelEsc2">Arquivo complementar</label>
-            <input id="escudo2" class="fileHidden" type="file" />
-            <div class="filePlus" data-file-for="escudo2" tabindex="0" role="button" aria-label="Enviar arquivo 2">
-              <div class="left">
-                <div class="name"></div>
-                <div class="chosen" id="chosen_escudo2">Nenhum arquivo</div>
+            <div class="field-esc2">
+              <label id="labelEsc2">Arquivo complementar</label>
+              <input id="escudo2" class="fileHidden" type="file" />
+              <div class="filePlus" data-file-for="escudo2" tabindex="0" role="button" aria-label="Enviar arquivo 2">
+                <div class="left">
+                  <div class="name"></div>
+                  <div class="chosen" id="chosen_escudo2">Nenhum arquivo</div>
+                </div>
+                <div class="plus">+</div>
               </div>
-              <div class="plus">+</div>
             </div>
-          </div>
 
-          <div class="field-patro full">
-            <label id="labelPatro">Imagens extras / patrocinadores (opcional) — pode enviar várias</label>
-            <input id="patrocinadores" class="fileHidden" type="file" multiple />
-            <div class="filePlus" data-file-for="patrocinadores" tabindex="0" role="button" aria-label="Enviar patrocinadores">
-              <div class="left">
-                <div class="name"></div>
-                <div class="chosen" id="chosen_patrocinadores">Nenhum arquivo</div>
+            <div class="field-patro full">
+              <label id="labelPatro">Imagens extras / patrocinadores (opcional) — pode enviar várias</label>
+              <input id="patrocinadores" class="fileHidden" type="file" multiple />
+              <div class="filePlus" data-file-for="patrocinadores" tabindex="0" role="button" aria-label="Enviar patrocinadores">
+                <div class="left">
+                  <div class="name"></div>
+                  <div class="chosen" id="chosen_patrocinadores">Nenhum arquivo</div>
+                </div>
+                <div class="plus">+</div>
               </div>
-              <div class="plus">+</div>
-            </div>
-            <div class="hint">Dica: segure Ctrl (Windows) para selecionar vários arquivos.</div>
-          </div>
-
-          <div class="field-submit full submitRow">
-            <button class="btnGreen" id="btnEnviar" type="submit">Criar minha arte 🚀</button>
-          </div>
-
-          <div class="field-msg full msgSmall" id="msgPedido"></div>
-
-          <div id="resultadoBox" style="display:none; margin-top:16px; text-align:center;">
-            <div id="statusResultado" style="margin-bottom:10px; font-size:14px; font-weight:800; color:rgba(255,255,255,.92);">
-              Estamos montando sua imagem...
+              <div class="hint">Dica: segure Ctrl (Windows) para selecionar vários arquivos.</div>
             </div>
 
-            <img
-              id="previewResultado"
-              alt="Resultado pronto"
-              style="display:none; width:100%; max-width:420px; border-radius:16px; border:1px solid rgba(255,255,255,.12); box-shadow:var(--shadow2);"
-            />
-
-            <div style="margin-top:10px;">
-              <a
-                id="downloadResultado"
-                href="#"
-                target="_blank"
-                style="display:none; color:#fff; font-weight:900; text-decoration:none; padding:12px 16px; border-radius:14px; background:linear-gradient(135deg, #2ecc71, #1b9b51); box-shadow:var(--shadow2); display:inline-block;"
-              >
-                Baixar imagem
-              </a>
+            <div class="field-submit full submitRow">
+              <button class="btnGreen" id="btnEnviar" type="submit">Criar minha arte 🚀</button>
             </div>
-          </div>
-        </form>
+
+            <div class="field-msg full msgSmall" id="msgPedido"></div>
+
+            <div id="resultadoBox" style="display:none; margin-top:16px; text-align:center;">
+              <div id="statusResultado" style="margin-bottom:10px; font-size:14px; font-weight:800; color:rgba(255,255,255,.92);">
+                Estamos montando sua imagem...
+              </div>
+
+              <img
+                id="previewResultado"
+                alt="Resultado pronto"
+                style="display:none; width:100%; max-width:420px; border-radius:16px; border:1px solid rgba(255,255,255,.12); box-shadow:var(--shadow2);"
+              />
+
+              <div style="margin-top:10px;">
+                <a
+                  id="downloadResultado"
+                  href="#"
+                  target="_blank"
+                  style="display:none; color:#fff; font-weight:900; text-decoration:none; padding:12px 16px; border-radius:14px; background:linear-gradient(135deg, #2ecc71, #1b9b51); box-shadow:var(--shadow2); display:inline-block;"
+                >
+                  Baixar imagem
+                </a>
+              </div>
+            </div>
+          </form>
+        </div>
       </div>
     </div>
   </div>
@@ -1110,6 +1426,8 @@ const selectedProductInput = document.getElementById("selectedProduct");
 const flyerTipoInput = document.getElementById("flyerTipo");
 const btnEnviar = document.getElementById("btnEnviar");
 const btnTrocarTipo = document.getElementById("btnTrocarTipo");
+const builderArea = document.getElementById("builderArea");
+const mainCreateBtn = document.getElementById("mainCreateBtn");
 
 const crestPreview = document.getElementById("crestPreview");
 const crestPlaceholder = document.getElementById("crestPlaceholder");
@@ -1140,7 +1458,7 @@ const PRODUCTS = {
     mode: "flyer",
     title: "Escalação",
     hint: "Monte a arte da escalação com título, subtítulo, escudo e imagem principal.",
-    flyerTipo: "zz1escalacao",
+    flyerTipo: "zz1fs",
     labels: {
       rodada: "Título da arte *",
       data: "Subtítulo / data *",
@@ -1168,7 +1486,7 @@ const PRODUCTS = {
     mode: "flyer",
     title: "Contratação",
     hint: "Crie a arte de apresentação com escudo, foto do jogador e textos do anúncio.",
-    flyerTipo: "zz1contratacao",
+    flyerTipo: "zz1fm",
     labels: {
       rodada: "Título da arte *",
       data: "Nome ou texto principal *",
@@ -1196,7 +1514,7 @@ const PRODUCTS = {
     mode: "flyer",
     title: "Próximo jogo",
     hint: "Monte a arte pré-jogo com confronto, data, informações da partida e imagens.",
-    flyerTipo: "zz1proximojogo",
+    flyerTipo: "zz1ft",
     labels: {
       rodada: "Confronto / chamada *",
       data: "Data e horário *",
@@ -1222,9 +1540,9 @@ const PRODUCTS = {
 
   patrocinador: {
     mode: "flyer",
-    title: "Patrocinador",
+    title: "Patrocinador / Apoio",
     hint: "Crie a arte do patrocinador com escudo do time, logo principal e textos promocionais.",
-    flyerTipo: "zz1patrocinador",
+    flyerTipo: "zz1fj",
     labels: {
       rodada: "Título da arte *",
       data: "Texto principal *",
@@ -1276,7 +1594,8 @@ function applyThemeFromImage(img){
   const c = document.createElement("canvas");
   const ctx = c.getContext("2d", { willReadFrequently:true });
   const w = 80, h = 80;
-  c.width = w; c.height = h;
+  c.width = w;
+  c.height = h;
   ctx.drawImage(img, 0, 0, w, h);
   const { data } = ctx.getImageData(0,0,w,h);
 
@@ -1388,12 +1707,12 @@ function setRequired(inputId, isRequired){
   input.required = !!isRequired;
 }
 
-function setValueIfExists(id, value){
+function setText(id, value){
   const el = document.getElementById(id);
   if(el) el.textContent = value;
 }
 
-function setPlaceholderIfExists(id, value){
+function setPlaceholder(id, value){
   const el = document.getElementById(id);
   if(el) el.placeholder = value || "";
 }
@@ -1401,6 +1720,10 @@ function setPlaceholderIfExists(id, value){
 function closePhraseMenu(){
   const phraseMenu = document.getElementById("phraseMenu");
   if(phraseMenu) phraseMenu.classList.remove("open");
+}
+
+function scrollToBuilder(){
+  builderArea.scrollIntoView({ behavior:"smooth", block:"start" });
 }
 
 function selectProduct(productKey){
@@ -1420,7 +1743,7 @@ function selectProduct(productKey){
     flyerTipoInput.value = product.flyerTipo || "";
   }
 
-  document.querySelectorAll(".productCard").forEach(btn=>{
+  document.querySelectorAll(".optionBtn").forEach(btn=>{
     btn.classList.toggle("active", btn.dataset.product === productKey);
   });
 
@@ -1428,19 +1751,19 @@ function selectProduct(productKey){
   dynamicHintEl.textContent = product.hint;
   btnEnviar.textContent = "Criar minha arte 🚀";
 
-  setValueIfExists("labelRodada", product.labels?.rodada || "Título da arte *");
-  setValueIfExists("labelData", product.labels?.data || "Texto principal *");
-  setValueIfExists("labelHora", product.labels?.hora || "Observações");
-  setValueIfExists("labelArena", product.labels?.arena || "Texto secundário / local");
-  setValueIfExists("labelMascote", product.labels?.mascote || "Imagem principal (opcional)");
-  setValueIfExists("labelEsc1", product.labels?.esc1 || "Arquivo 1 *");
-  setValueIfExists("labelEsc2", product.labels?.esc2 || "Arquivo 2");
-  setValueIfExists("labelPatro", product.labels?.patro || "Imagens extras / patrocinadores (opcional) — pode enviar várias");
+  setText("labelRodada", product.labels?.rodada || "Título da arte *");
+  setText("labelData", product.labels?.data || "Texto principal *");
+  setText("labelHora", product.labels?.hora || "Observações");
+  setText("labelArena", product.labels?.arena || "Texto secundário / local");
+  setText("labelMascote", product.labels?.mascote || "Imagem principal (opcional)");
+  setText("labelEsc1", product.labels?.esc1 || "Arquivo 1 *");
+  setText("labelEsc2", product.labels?.esc2 || "Arquivo 2");
+  setText("labelPatro", product.labels?.patro || "Imagens extras / patrocinadores (opcional) — pode enviar várias");
 
-  setPlaceholderIfExists("rodada", product.placeholders?.rodada || "");
-  setPlaceholderIfExists("dataJogo", product.placeholders?.data || "");
-  setPlaceholderIfExists("hora", product.placeholders?.hora || "");
-  setPlaceholderIfExists("arena", product.placeholders?.arena || "");
+  setPlaceholder("rodada", product.placeholders?.rodada || "");
+  setPlaceholder("dataJogo", product.placeholders?.data || "");
+  setPlaceholder("hora", product.placeholders?.hora || "");
+  setPlaceholder("arena", product.placeholders?.arena || "");
 
   setRequired("escudo1", product.required?.esc1);
   setRequired("escudo2", product.required?.esc2);
@@ -1449,33 +1772,38 @@ function selectProduct(productKey){
   if(openPhraseBtn){
     openPhraseBtn.style.display = product.phraseMenu ? "grid" : "none";
   }
-  if(!product.phraseMenu){
-    closePhraseMenu();
-  }
+  if(!product.phraseMenu) closePhraseMenu();
 
   const resultadoBox = document.getElementById("resultadoBox");
-  if(resultadoBox){
-    resultadoBox.style.display = "none";
-  }
+  if(resultadoBox) resultadoBox.style.display = "none";
 
-  setTimeout(()=>{
-    const card = document.querySelector(".card");
-    if(card){
-      card.scrollIntoView({ behavior:"smooth", block:"start" });
-    }
-  }, 80);
+  setTimeout(scrollToBuilder, 120);
 }
 
-document.querySelectorAll(".productCard").forEach(btn=>{
+document.querySelectorAll(".optionBtn").forEach(btn=>{
   btn.addEventListener("click", ()=> selectProduct(btn.dataset.product));
+});
+
+mainCreateBtn.addEventListener("click", ()=>{
+  const current = selectedProductInput.value;
+  if(current){
+    scrollToBuilder();
+  }else{
+    document.querySelector(".optionsRow").scrollIntoView({ behavior:"smooth", block:"center" });
+  }
 });
 
 btnTrocarTipo.addEventListener("click", ()=>{
   selectedProductInput.value = "";
   document.body.classList.remove("modeChosen", "mode-flyer", "mode-result");
-  document.querySelectorAll(".productCard").forEach(btn=> btn.classList.remove("active"));
+  document.querySelectorAll(".optionBtn").forEach(btn=> btn.classList.remove("active"));
   closePhraseMenu();
   window.scrollTo({ top: 0, behavior: "smooth" });
+});
+
+document.getElementById("verExemplosLink").addEventListener("click", (e)=>{
+  e.preventDefault();
+  document.querySelector(".optionsRow").scrollIntoView({ behavior:"smooth", block:"center" });
 });
 
 const cropModal = document.getElementById("cropModal");
@@ -1532,7 +1860,7 @@ function openCrop(inputId, file){
   crop.img.src = crop.objectUrl;
 
   cropModal.classList.add("open");
-  cropModal.setAttribute("aria-hidden", "false");
+  cropModal.setAttribute("aria-hidden","false");
 
   crop.img.onload = () => {
     fitCanvasToStage();
@@ -1547,7 +1875,7 @@ function openCrop(inputId, file){
 
 function closeCrop(){
   cropModal.classList.remove("open");
-  cropModal.setAttribute("aria-hidden", "true");
+  cropModal.setAttribute("aria-hidden","true");
 
   if(crop.objectUrl){
     try{ URL.revokeObjectURL(crop.objectUrl); }catch(e){}
@@ -1813,7 +2141,7 @@ cropStage.addEventListener("touchstart", (e)=>{
     crop.pinchStartDist = getTouchDistance(e.touches[0], e.touches[1]);
     crop.pinchStartZoom = userZoomValue();
   }
-}, { passive:true });
+},{passive:true});
 
 cropStage.addEventListener("touchmove", (e)=>{
   if(!crop.img) return;
@@ -1826,13 +2154,13 @@ cropStage.addEventListener("touchmove", (e)=>{
   setUserZoom(crop.pinchStartZoom * ratio);
   clampOffsets();
   drawCrop();
-}, { passive:true });
+},{passive:true});
 
 cropStage.addEventListener("touchend", (e)=>{
   if(e.touches.length < 2){
     crop.pinch = false;
   }
-}, { passive:true });
+},{passive:true});
 
 zoomInBtn.addEventListener("click", ()=>{
   if(!crop.img) return;
@@ -1948,7 +2276,7 @@ cropOkBtn.addEventListener("click", async ()=>{
 });
 
 function hookCropOnInputs(){
-  ["escudo1", "escudo2"].forEach((id)=>{
+  ["escudo1","escudo2"].forEach((id)=>{
     const input = document.getElementById(id);
     if(!input) return;
 
