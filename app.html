@@ -61,6 +61,7 @@
       justify-content:flex-end;
       align-items:center;
     }
+
     .iconImg{
       width:100%;
       height:100%;
@@ -70,6 +71,7 @@
       border: none;
       box-shadow: none;
     }
+
     button{
       padding:10px 14px;
       border:0;
@@ -143,6 +145,7 @@
       letter-spacing:.2px;
       text-shadow:0 10px 25px rgba(0,0,0,.35);
     }
+
     .iconCenter{
       width:45%;
       height:45%;
@@ -150,6 +153,7 @@
       margin-bottom:6px;
       filter: drop-shadow(0 8px 18px rgba(0,0,0,.35));
     }
+
     .welcomeBox .sub{
       margin:8px 0 0;
       font-size:13px;
@@ -204,8 +208,8 @@
     }
 
     .heroSub br{
-  display:none;
-}
+      display:none;
+    }
 
     .selectorStage{
       position:relative;
@@ -268,6 +272,13 @@
       inset:0;
       pointer-events:none;
       z-index:1;
+      opacity:0;
+      visibility:hidden;
+      transform:translateY(-18px);
+      transition:
+        opacity .35s ease,
+        transform .45s ease,
+        visibility 0s linear .45s;
     }
 
     .line{
@@ -335,6 +346,13 @@
       gap:12px;
       align-items:start;
       z-index:3;
+      opacity:0;
+      visibility:hidden;
+      transform:translateY(-22px);
+      transition:
+        opacity .35s ease,
+        transform .45s ease,
+        visibility 0s linear .45s;
     }
 
     .optionBtn{
@@ -343,11 +361,15 @@
       padding:0;
       color:#26303d;
       border-radius:0;
+      opacity:0;
+      transform:translateY(-18px) scale(.96);
+      transition:
+        opacity .35s ease,
+        transform .45s ease;
     }
 
     .optionBtn:hover{
       filter:none;
-      transform:none;
     }
 
     .optionBtn.active .circle{
@@ -356,6 +378,28 @@
         0 0 0 4px rgba(255,255,255,.55),
         0 18px 40px rgba(53,105,198,.24);
     }
+
+    .selectorStage.open .optionsRow,
+    .selectorStage.open .lines{
+      opacity:1;
+      visibility:visible;
+      transform:translateY(0);
+      transition:
+        opacity .35s ease,
+        transform .45s ease,
+        visibility 0s linear 0s;
+    }
+
+    .selectorStage.open .optionBtn{
+      opacity:1;
+      transform:translateY(0) scale(1);
+    }
+
+    .selectorStage.open .optionBtn:nth-child(1){ transition-delay:.05s; }
+    .selectorStage.open .optionBtn:nth-child(2){ transition-delay:.10s; }
+    .selectorStage.open .optionBtn:nth-child(3){ transition-delay:.15s; }
+    .selectorStage.open .optionBtn:nth-child(4){ transition-delay:.20s; }
+    .selectorStage.open .optionBtn:nth-child(5){ transition-delay:.25s; }
 
     .circle{
       width:108px;
@@ -1018,109 +1062,110 @@
       box-shadow:none;
     }
 
-   @media (max-width:900px){
-  .selectorStage{
-    min-height:auto;
-    margin-top:26px;
-    display:flex;
-    flex-direction:column;
-    align-items:center;
-  }
+    @media (max-width:900px){
+      .selectorStage{
+        min-height:auto;
+        margin-top:26px;
+        display:flex;
+        flex-direction:column;
+        align-items:center;
+      }
 
-  .centerWrap{
-    position:static;
-    transform:none;
-    margin:0 auto 26px;
-    width:100%;
-    display:flex;
-    justify-content:center;
-  }
+      .centerWrap{
+        position:static;
+        transform:none;
+        margin:0 auto 26px;
+        width:100%;
+        display:flex;
+        justify-content:center;
+      }
 
-  .centerBtn{
-    width:170px;
-    height:170px;
-    font-size:20px;
-    margin:0 auto;
-  }
+      .centerBtn{
+        width:170px;
+        height:170px;
+        font-size:20px;
+        margin:0 auto;
+      }
 
-  .lines{
-    display:none;
-  }
+      .lines{
+        display:none;
+      }
 
-  .optionsRow{
-    position:static;
-    width:100%;
-    max-width:360px;
-    display:grid;
-    grid-template-columns:repeat(2, minmax(0, 1fr));
-    gap:22px 18px;
-    justify-items:center;
-    align-items:start;
-  }
+      .optionsRow{
+        position:static;
+        width:100%;
+        max-width:360px;
+        display:grid;
+        grid-template-columns:repeat(2, minmax(0, 1fr));
+        gap:22px 18px;
+        justify-items:center;
+        align-items:start;
+      }
 
-  .optionsRow .optionBtn{
-    width:100%;
-    display:flex;
-    flex-direction:column;
-    align-items:center;
-    justify-content:flex-start;
-  }
+      .optionsRow .optionBtn{
+        width:100%;
+        display:flex;
+        flex-direction:column;
+        align-items:center;
+        justify-content:flex-start;
+      }
 
-  .optionsRow .optionBtn:last-child{
-    grid-column:1 / -1;
-    justify-self:center;
-    width:50%;
-  }
-}
+      .optionsRow .optionBtn:last-child{
+        grid-column:1 / -1;
+        justify-self:center;
+        width:50%;
+      }
+    }
 
-   @media (max-width:680px){
-  .hero{
-    padding:20px 12px 28px;
-  }
+    @media (max-width:680px){
+      .hero{
+        padding:20px 12px 28px;
+      }
 
-  .heroBrand{
-    font-size:22px;
-  }
+      .heroBrand{
+        font-size:22px;
+      }
 
-  .heroTitle{
-    font-size:clamp(22px, 7vw, 34px);
-  }
+      .heroTitle{
+        font-size:clamp(22px, 7vw, 34px);
+      }
 
-  .heroSub{
-    font-size:14px;
-    max-width:420px;
-  }
+      .heroSub{
+        font-size:14px;
+        max-width:420px;
+      }
 
-  .centerBtn{
-    width:155px;
-    height:155px;
-    font-size:18px;
-    line-height:1.05;
-  }
+      .centerBtn{
+        width:155px;
+        height:155px;
+        font-size:18px;
+        line-height:1.05;
+      }
 
-  .iconCenter{
-    font-size:34px;
-    margin-bottom:4px;
-  }
+      .iconCenter{
+        font-size:34px;
+        margin-bottom:4px;
+      }
 
-  .circle{
-    width:88px;
-    height:88px;
-    margin:0 auto 10px;
-  }
+      .circle{
+        width:88px;
+        height:88px;
+        margin:0 auto 10px;
+      }
 
-  .iconImg{
-    width:82%;
-    height:82%;
-    object-fit:contain;
-    display:block;
-  }
+      .iconImg{
+        width:82%;
+        height:82%;
+        object-fit:contain;
+        display:block;
+      }
 
-  .optLabel{
-    font-size:11px;
-    line-height:1.15;
-    max-width:92px;
-  }
+      .optLabel{
+        font-size:11px;
+        line-height:1.15;
+        max-width:92px;
+      }
+    }
   </style>
 </head>
 
@@ -1450,6 +1495,7 @@ const btnEnviar = document.getElementById("btnEnviar");
 const btnTrocarTipo = document.getElementById("btnTrocarTipo");
 const builderArea = document.getElementById("builderArea");
 const mainCreateBtn = document.getElementById("mainCreateBtn");
+const selectorStage = document.querySelector(".selectorStage");
 
 const crestPreview = document.getElementById("crestPreview");
 const crestPlaceholder = document.getElementById("crestPlaceholder");
@@ -1799,6 +1845,10 @@ function selectProduct(productKey){
   const resultadoBox = document.getElementById("resultadoBox");
   if(resultadoBox) resultadoBox.style.display = "none";
 
+  if(selectorStage && !selectorStage.classList.contains("open")){
+    selectorStage.classList.add("open");
+  }
+
   setTimeout(scrollToBuilder, 120);
 }
 
@@ -1808,10 +1858,25 @@ document.querySelectorAll(".optionBtn").forEach(btn=>{
 
 mainCreateBtn.addEventListener("click", ()=>{
   const current = selectedProductInput.value;
+
   if(current){
     scrollToBuilder();
+    return;
+  }
+
+  if(!selectorStage.classList.contains("open")){
+    selectorStage.classList.add("open");
+    setTimeout(()=>{
+      document.querySelector(".optionsRow")?.scrollIntoView({
+        behavior:"smooth",
+        block:"center"
+      });
+    }, 220);
   }else{
-    document.querySelector(".optionsRow").scrollIntoView({ behavior:"smooth", block:"center" });
+    document.querySelector(".optionsRow")?.scrollIntoView({
+      behavior:"smooth",
+      block:"center"
+    });
   }
 });
 
@@ -1820,12 +1885,27 @@ btnTrocarTipo.addEventListener("click", ()=>{
   document.body.classList.remove("modeChosen", "mode-flyer", "mode-result");
   document.querySelectorAll(".optionBtn").forEach(btn=> btn.classList.remove("active"));
   closePhraseMenu();
+  selectorStage?.classList.remove("open");
   window.scrollTo({ top: 0, behavior: "smooth" });
 });
 
 document.getElementById("verExemplosLink").addEventListener("click", (e)=>{
   e.preventDefault();
-  document.querySelector(".optionsRow").scrollIntoView({ behavior:"smooth", block:"center" });
+
+  if(!selectorStage.classList.contains("open")){
+    selectorStage.classList.add("open");
+    setTimeout(()=>{
+      document.querySelector(".optionsRow")?.scrollIntoView({
+        behavior:"smooth",
+        block:"center"
+      });
+    }, 220);
+  }else{
+    document.querySelector(".optionsRow")?.scrollIntoView({
+      behavior:"smooth",
+      block:"center"
+    });
+  }
 });
 
 const cropModal = document.getElementById("cropModal");
