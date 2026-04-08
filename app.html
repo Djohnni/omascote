@@ -638,7 +638,7 @@
         "msg msg";
     }
 
-    body.modeChosen .formGrid{
+    body.mode-result .formGrid{
       grid-template-areas:
         "placar placar"
         "artilheiros artilheiros"
@@ -711,11 +711,11 @@
       color:#1f2a37;
     }
 
-    body.modeChosen .meta,
-    body.modeChosen .msg,
-    body.modeChosen .sep,
-    body.modeChosen #dynamicTitle,
-    body.modeChosen #dynamicHint{
+    body.mode-result .meta,
+    body.mode-result .msg,
+    body.mode-result .sep,
+    body.mode-result #dynamicTitle,
+    body.mode-result #dynamicHint{
       display:none !important;
     }
 
@@ -733,11 +733,11 @@
       margin-top:0;
     }
 
-    body.modeChosen .field-placar,
-    body.modeChosen .field-artilheiros,
-    body.modeChosen .field-data,
-    body.modeChosen .field-esc1,
-    body.modeChosen .field-esc2{
+    body.mode-result .field-placar,
+    body.mode-result .field-artilheiros,
+    body.mode-result .field-data,
+    body.mode-result .field-esc1,
+    body.mode-result .field-esc2{
       background:transparent;
       border:none;
       border-radius:0;
@@ -2779,7 +2779,6 @@ document.getElementById("addArtilheiroBtn")?.addEventListener("click", ()=>{
 </script>
 </body>
 </html>
-
 
 
 
