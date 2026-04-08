@@ -496,10 +496,11 @@
       position:fixed;
       inset:0;
       z-index:9000;
-      padding:18px 12px;
-      background:rgba(8,16,32,.58);
-      backdrop-filter:blur(12px);
-      -webkit-backdrop-filter:blur(12px);
+      padding:0;
+      background:
+        radial-gradient(900px 520px at 12% 92%, rgba(120,190,255,.28) 0%, transparent 48%),
+        radial-gradient(900px 520px at 88% 92%, rgba(255,220,150,.22) 0%, transparent 44%),
+        linear-gradient(180deg, #f4f2fb 0%, #f1eff8 100%);
       overflow:auto;
     }
 
@@ -561,11 +562,11 @@
     }
 
     .card{
-      background: linear-gradient(180deg, rgba(255,255,255,.88), rgba(245,248,252,.92));
-      border:1px solid rgba(255,255,255,.65);
-      border-radius:22px;
-      padding:18px;
-      box-shadow:0 18px 45px rgba(120,140,180,.14);
+      background: transparent;
+      border:none;
+      border-radius:0;
+      padding:0;
+      box-shadow:none;
     }
 
     .meta{
@@ -605,9 +606,64 @@
       letter-spacing:.2px;
     }
 
+    .builderDialog{
+      width:min(980px, 100%);
+      min-height:100vh;
+      margin:0 auto;
+      position:relative;
+      padding:18px 18px 34px;
+    }
+
+    .builderClose{
+      position:fixed;
+      top:14px;
+      right:14px;
+      width:42px;
+      height:42px;
+      border-radius:999px;
+      border:1px solid rgba(255,255,255,.38);
+      background:rgba(31,41,55,.88);
+      color:#fff;
+      font-size:22px;
+      font-weight:900;
+      display:grid;
+      place-items:center;
+      box-shadow:0 10px 24px rgba(0,0,0,.16);
+      z-index:9991;
+    }
+
+    .chatTopRow{
+      display:flex;
+      justify-content:flex-end;
+      margin:86px 0 18px;
+      padding-right:10px;
+    }
+
+    .chatBubble{
+      max-width:560px;
+      background:linear-gradient(180deg, #eef8ea, #e3f1dd);
+      color:#1f2a37;
+      border-radius:34px 34px 10px 34px;
+      padding:22px 26px;
+      box-shadow:0 12px 30px rgba(162,175,194,.18);
+      font-size:18px;
+      font-weight:700;
+      line-height:1.35;
+      border:1px solid rgba(214,228,211,.95);
+    }
+
+    .chatSectionLabel{
+      display:block;
+      text-align:left;
+      font-size:17px;
+      font-weight:900;
+      color:#1f2a37;
+      margin:0 0 12px;
+    }
+
     .hint{
       font-size:12px;
-      color:#6b7686;
+      color:rgba(255,255,255,.68);
       margin-top:6px;
       text-align:center;
       line-height:1.35;
@@ -709,6 +765,120 @@
       color:#1f2a37;
     }
 
+    body.mode-result .meta,
+    body.mode-result .msg,
+    body.mode-result .sep,
+    body.mode-result #dynamicTitle,
+    body.mode-result #dynamicHint{
+      display:none !important;
+    }
+
+    body.mode-result .formGrid{
+      grid-template-columns:1fr;
+      grid-template-areas:
+        "placar"
+        "artilheiros"
+        "data"
+        "esc2"
+        "esc1"
+        "submit"
+        "msg";
+      gap:18px;
+      margin-top:0;
+    }
+
+    body.mode-result .field-placar,
+    body.mode-result .field-data,
+    body.mode-result .field-esc1,
+    body.mode-result .field-esc2{
+      background:linear-gradient(180deg, rgba(255,255,255,.88), rgba(248,248,252,.94));
+      border:1px solid #e4e6f1;
+      border-radius:34px;
+      padding:24px 26px;
+      box-shadow:0 10px 28px rgba(180,188,215,.14);
+    }
+
+    body.mode-result .field-artilheiros{
+      background:linear-gradient(180deg, #eef8ea, #e3f1dd);
+      border:1px solid #dfead8;
+      border-radius:34px;
+      padding:24px 26px;
+      box-shadow:0 10px 28px rgba(180,188,215,.14);
+      margin-left:auto;
+      width:min(640px, 100%);
+    }
+
+    body.mode-result .field-placar{
+      width:min(800px, 100%);
+    }
+
+    body.mode-result .field-data,
+    body.mode-result .field-esc1,
+    body.mode-result .field-esc2{
+      width:min(980px, 100%);
+    }
+
+    body.mode-result .field-data{
+      padding-bottom:18px;
+    }
+
+    body.mode-result .meta,
+    body.mode-result .msg,
+    body.mode-result .sep,
+    body.mode-result #dynamicTitle,
+    body.mode-result #dynamicHint{
+      display:none !important;
+    }
+
+    body.mode-result .formGrid{
+      grid-template-columns:1fr;
+      grid-template-areas:
+        "placar"
+        "artilheiros"
+        "data"
+        "esc2"
+        "esc1"
+        "submit"
+        "msg";
+      gap:18px;
+      margin-top:0;
+    }
+
+    body.mode-result .field-placar,
+    body.mode-result .field-data,
+    body.mode-result .field-esc1,
+    body.mode-result .field-esc2{
+      background:linear-gradient(180deg, rgba(255,255,255,.88), rgba(248,248,252,.94));
+      border:1px solid #e4e6f1;
+      border-radius:34px;
+      padding:24px 26px;
+      box-shadow:0 10px 28px rgba(180,188,215,.14);
+    }
+
+    body.mode-result .field-artilheiros{
+      background:linear-gradient(180deg, #eef8ea, #e3f1dd);
+      border:1px solid #dfead8;
+      border-radius:34px;
+      padding:24px 26px;
+      box-shadow:0 10px 28px rgba(180,188,215,.14);
+      margin-left:auto;
+      width:min(640px, 100%);
+    }
+
+    body.mode-result .field-placar{
+      width:min(800px, 100%);
+    }
+
+    body.mode-result .field-data,
+    body.mode-result .field-esc1,
+    body.mode-result .field-esc2{
+      width:min(980px, 100%);
+    }
+
+    body.mode-result .field-data{
+      padding-bottom:18px;
+    }
+
     .card .msg,
     .card .msgSmall,
     .card .hint,
@@ -718,9 +888,9 @@
 
     input, textarea{
       width:100%;
-      padding:12px 12px;
-      border-radius:14px;
-      border:1px solid #d8e1ec;
+      padding:14px 16px;
+      border-radius:16px;
+      border:1px solid #d9dfeb;
       background:#ffffff;
       color:#243041;
       outline:none;
@@ -753,7 +923,7 @@
       justify-content:space-between;
       gap:10px;
       width:100%;
-      padding:12px 12px;
+      padding:12px 14px;
       border-radius:16px;
       border:1px solid #d8e1ec;
       background:#ffffff;
@@ -762,6 +932,7 @@
       user-select:none;
       box-shadow:0 2px 10px rgba(140,160,190,.08);
       transition:transform .08s ease, border-color .15s ease, box-shadow .15s ease, filter .15s ease;
+      min-height:64px;
     }
 
     .filePlus:active{transform:translateY(1px)}
@@ -792,12 +963,12 @@
     }
 
     .filePlus .plus{
-      width:40px;
-      height:40px;
-      border-radius:12px;
+      width:46px;
+      height:46px;
+      border-radius:14px;
       display:grid;
       place-items:center;
-      font-size:22px;
+      font-size:28px;
       font-weight:900;
       border:1px solid #d8e1ec;
       background:linear-gradient(180deg, #ffffff, #eef3f8);
@@ -883,7 +1054,7 @@
 
     .placarRow{
       display:flex;
-      gap:6px;
+      gap:10px;
       align-items:center;
     }
 
@@ -897,8 +1068,9 @@
 
     .placarX{
       font-weight:900;
-      font-size:18px;
+      font-size:20px;
       opacity:.8;
+      color:#4b5563;
     }
 
     .artilheirosWrap{
@@ -909,26 +1081,28 @@
 
     .artilheiroRow{
       display:flex;
-      gap:6px;
+      gap:10px;
+      align-items:center;
     }
 
     .artilheiroNome{flex:1}
 
     .artilheiroGols{
-      width:60px;
+      width:84px;
       text-align:center;
       font-weight:900;
     }
 
     .addArtilheiro{
-      margin-top:6px;
-      padding:10px;
-      border-radius:12px;
-      background:rgba(255,255,255,.08);
-      border:1px solid rgba(255,255,255,.12);
+      margin-top:10px;
+      padding:10px 14px;
+      border-radius:14px;
+      background:rgba(255,255,255,.55);
+      border:1px solid rgba(214,224,210,.95);
       text-align:center;
       cursor:pointer;
       font-weight:900;
+      color:#334155;
     }
 
     .modalMask{
@@ -1154,75 +1328,6 @@
       }
     }
 
-    .builderDialog{
-      width:min(760px, 100%);
-      margin:0 auto;
-      position:relative;
-      padding-top:54px;
-    }
-
-    .builderClose{
-      position:absolute;
-      top:0;
-      right:0;
-      width:42px;
-      height:42px;
-      border-radius:999px;
-      border:1px solid rgba(255,255,255,.22);
-      background:rgba(15,23,42,.72);
-      color:#fff;
-      font-size:22px;
-      font-weight:900;
-      display:grid;
-      place-items:center;
-      box-shadow:0 10px 24px rgba(0,0,0,.18);
-      z-index:2;
-    }
-
-    .chatTopRow{
-      display:flex;
-      justify-content:flex-end;
-      margin-bottom:16px;
-    }
-
-    .chatBubble{
-      max-width:520px;
-      background:linear-gradient(180deg, #edf9eb, #dff2dd);
-      color:#1f2a37;
-      border-radius:26px 26px 8px 26px;
-      padding:18px 22px;
-      box-shadow:0 12px 28px rgba(120,140,180,.16);
-      font-size:17px;
-      font-weight:800;
-      line-height:1.35;
-      border:1px solid rgba(190,220,190,.8);
-    }
-
-    .chatCard{
-      background:linear-gradient(180deg, rgba(255,255,255,.96), rgba(244,247,252,.98));
-      border:1px solid rgba(255,255,255,.85);
-      border-radius:30px;
-      padding:20px;
-      box-shadow:0 18px 45px rgba(120,140,180,.16);
-    }
-
-    .chatSectionLabel{
-      display:block;
-      text-align:left;
-      font-size:16px;
-      font-weight:900;
-      color:#26303d;
-      margin:0 0 10px;
-    }
-
-    .chatCard h2{
-      display:none;
-    }
-
-    .chatCard #dynamicHint{
-      display:none !important;
-    }
-
     @media (max-width:680px){
       .hero{
         padding:20px 12px 28px;
@@ -1273,12 +1378,26 @@
       }
 
       .builderDialog{
-        padding-top:48px;
+        padding:12px 12px 28px;
+      }
+
+      .chatTopRow{
+        margin:78px 0 16px;
+        padding-right:0;
       }
 
       .chatBubble{
         font-size:15px;
         padding:15px 16px;
+      }
+
+      body.mode-result .field-placar,
+      body.mode-result .field-artilheiros,
+      body.mode-result .field-data,
+      body.mode-result .field-esc1,
+      body.mode-result .field-esc2{
+        padding:18px 16px;
+        border-radius:28px;
       }
     }
   </style>
@@ -1383,7 +1502,7 @@
         <div class="builderDialog">
           <button type="button" class="builderClose" id="builderCloseBtn">✕</button>
           <div class="chatTopRow">
-            <div class="chatBubble" id="chatBubbleText">Para criar sua arte, preciso dessas informações abaixo...</div>
+            <div class="chatBubble" id="chatBubbleText">Para Resultado do jogo, preciso dessas informações abaixo...</div>
           </div>
         <div class="crestWrap">
           <div class="crestCard" id="crestCard">
@@ -1398,7 +1517,7 @@
           </div>
         </div>
 
-        <div class="card chatCard">
+        <div class="card">
           <div class="meta">
             <div class="pill" id="plano">Plano: —</div>
             <div class="pill" id="usados">Usados no mês: —</div>
@@ -1942,7 +2061,7 @@ function selectProduct(productKey){
 
   dynamicTitleEl.textContent = product.title;
   dynamicHintEl.textContent = product.hint;
-  if(chatBubbleText) chatBubbleText.textContent = `Para ${product.title.toLowerCase()}, preciso dessas informações abaixo...`;
+  if(chatBubbleText) chatBubbleText.textContent = `Para ${product.title}, preciso dessas informações abaixo...`;
   btnEnviar.textContent = "Criar minha arte 🚀";
 
   setText("labelRodada", product.labels?.rodada || "Título da arte *");
@@ -2810,4 +2929,5 @@ document.getElementById("addArtilheiroBtn")?.addEventListener("click", ()=>{
 </script>
 </body>
 </html>
+
 
