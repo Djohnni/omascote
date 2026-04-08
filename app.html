@@ -638,7 +638,7 @@
         "msg msg";
     }
 
-    body.mode-result .formGrid{
+    body.modeChosen .formGrid{
       grid-template-areas:
         "placar placar"
         "artilheiros artilheiros"
@@ -711,11 +711,11 @@
       color:#1f2a37;
     }
 
-    body.mode-result .meta,
-    body.mode-result .msg,
-    body.mode-result .sep,
-    body.mode-result #dynamicTitle,
-    body.mode-result #dynamicHint{
+    body.modeChosen .meta,
+    body.modeChosen .msg,
+    body.modeChosen .sep,
+    body.modeChosen #dynamicTitle,
+    body.modeChosen #dynamicHint{
       display:none !important;
     }
 
@@ -733,11 +733,11 @@
       margin-top:0;
     }
 
-    body.mode-result .field-placar,
-    body.mode-result .field-artilheiros,
-    body.mode-result .field-data,
-    body.mode-result .field-esc1,
-    body.mode-result .field-esc2{
+    body.modeChosen .field-placar,
+    body.modeChosen .field-artilheiros,
+    body.modeChosen .field-data,
+    body.modeChosen .field-esc1,
+    body.modeChosen .field-esc2{
       background:transparent;
       border:none;
       border-radius:0;
@@ -1222,37 +1222,6 @@
     }
 
     @media (max-width:680px){
-      .wrap{
-        padding:0 8px 18px;
-      }
-
-      .topbar{
-        flex-direction:column;
-        align-items:stretch;
-        gap:10px;
-        padding:12px 0 10px;
-      }
-
-      .row{
-        width:100%;
-        justify-content:center;
-      }
-
-      .row button{
-        flex:1 1 0;
-        min-width:0;
-      }
-
-      .panel{
-        padding:12px 10px 16px;
-        border-radius:20px;
-      }
-
-      .card{
-        padding:12px;
-        border-radius:18px;
-      }
-
       .hero{
         padding:20px 12px 28px;
       }
@@ -1299,114 +1268,6 @@
         font-size:11px;
         line-height:1.15;
         max-width:92px;
-      }
-
-      .sectionTitle{
-        max-width:100%;
-        font-size:14px;
-        padding:14px 16px;
-        margin:4px 0 10px auto;
-      }
-
-      body.mode-result .field-placar,
-      body.mode-result .field-artilheiros,
-      body.mode-result .field-data,
-      body.mode-result .field-esc1,
-      body.mode-result .field-esc2{
-        align-items:stretch;
-      }
-
-      .placarRow,
-      .artilheirosWrap,
-      .addArtilheiro,
-      .phraseWrap,
-      .filePlus{
-        width:100%;
-      }
-
-      .placarRow{
-        display:grid;
-        grid-template-columns:minmax(0,1fr) 52px 18px 52px minmax(0,1fr);
-        gap:8px;
-        padding:16px 12px;
-        border-radius:22px;
-      }
-
-      .placarTime,
-      .placarGols{
-        width:100%;
-        min-width:0;
-      }
-
-      .placarGols{
-        text-align:center;
-        padding-left:8px;
-        padding-right:8px;
-      }
-
-      .placarX{
-        font-size:16px;
-        text-align:center;
-      }
-
-      .artilheiroRow{
-        display:grid;
-        grid-template-columns:minmax(0,1fr) 72px;
-        gap:8px;
-      }
-
-      .artilheiroNome,
-      .artilheiroGols{
-        width:100%;
-        min-width:0;
-      }
-
-      .artilheiroGols{
-        text-align:center;
-        padding-left:8px;
-        padding-right:8px;
-      }
-
-      .artilheirosWrap{
-        padding:16px 12px;
-        border-radius:22px;
-      }
-
-      .addArtilheiro{
-        padding:14px 12px;
-        border-radius:16px;
-      }
-
-      .phraseWrap{
-        padding:12px;
-        border-radius:22px;
-      }
-
-      .phraseWrap input{
-        min-width:0;
-      }
-
-      .phraseBtn{
-        width:40px;
-        height:40px;
-        flex:0 0 40px;
-      }
-
-      .filePlus{
-        padding:16px 12px;
-        border-radius:22px;
-      }
-
-      .filePlus .plus{
-        width:40px;
-        height:40px;
-        flex:0 0 40px;
-        font-size:24px;
-      }
-
-      .btnGreen{
-        width:100%;
-        min-width:0;
       }
     }
   </style>
