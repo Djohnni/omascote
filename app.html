@@ -714,8 +714,7 @@
     body.mode-result .meta,
     body.mode-result .msg,
     body.mode-result .sep,
-    body.mode-result #dynamicTitle,
-    body.mode-result #dynamicHint{
+    body.mode-result #dynamicTitle{
       display:none !important;
     }
 
@@ -1922,7 +1921,7 @@ function selectProduct(productKey){
   });
 
   dynamicTitleEl.textContent = product.title;
-  dynamicHintEl.textContent = product.hint;
+  dynamicHintEl.textContent = `Para ${product.title}, preciso dessas informações abaixo...`;
   btnEnviar.textContent = "Criar minha arte 🚀";
 
   setText("labelRodada", product.labels?.rodada || "Título da arte *");
@@ -2779,6 +2778,7 @@ document.getElementById("addArtilheiroBtn")?.addEventListener("click", ()=>{
 </script>
 </body>
 </html>
+
 
 
 
