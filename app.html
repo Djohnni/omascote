@@ -1922,6 +1922,7 @@ function selectProduct(productKey){
 
   dynamicTitleEl.textContent = product.title;
   dynamicHintEl.textContent = `Para ${product.title}, preciso dessas informações abaixo...`;
+  dynamicHintEl.style.display = "block";
   btnEnviar.textContent = "Criar minha arte 🚀";
 
   setText("labelRodada", product.labels?.rodada || "Título da arte *");
