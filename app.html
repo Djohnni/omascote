@@ -681,6 +681,27 @@
       margin:0 0 6px;
     }
 
+    body.mode-flyer #labelRodada,
+    body.mode-flyer #labelHora,
+    body.mode-flyer #labelArena,
+    body.mode-flyer #labelMascote,
+    body.mode-flyer #labelPatro{
+      display:block;
+      width:max-content;
+      max-width:420px;
+      margin:6px 0 14px auto;
+      padding:18px 24px;
+      text-align:left;
+      font-size:17px;
+      font-weight:900;
+      color:#24543f;
+      background:linear-gradient(180deg, #eef8ea, #e3f1dd);
+      border:1px solid #dfead8;
+      border-radius:30px 30px 10px 30px;
+      box-shadow:0 10px 26px rgba(162,175,194,.14);
+      align-self:flex-end;
+    }
+
     .sectionTitle{
       display:block;
       width:max-content;
@@ -750,6 +771,26 @@
       align-items:flex-end;
     }
 
+    body.mode-flyer .field-rodada,
+    body.mode-flyer .field-data,
+    body.mode-flyer .field-hora,
+    body.mode-flyer .field-arena,
+    body.mode-flyer .field-mascote,
+    body.mode-flyer .field-esc1,
+    body.mode-flyer .field-esc2,
+    body.mode-flyer .field-patro{
+      background:transparent;
+      border:none;
+      border-radius:0;
+      padding:0;
+      box-shadow:none;
+      width:100%;
+      margin:0;
+      display:flex;
+      flex-direction:column;
+      align-items:flex-end;
+    }
+
     .card .msg,
     .card .msgSmall,
     .card .hint,
@@ -767,6 +808,12 @@
       outline:none;
       box-shadow:0 2px 10px rgba(140,160,190,.08);
       text-align:left;
+    }
+
+    body.mode-flyer .field-rodada input,
+    body.mode-flyer .field-hora input,
+    body.mode-flyer .field-arena input{
+      width:min(700px, 100%);
     }
 
     input:focus, textarea:focus{
@@ -869,6 +916,18 @@
       border:1px solid #e4e6f1;
       border-radius:34px;
       padding:20px 20px;
+      box-shadow:0 10px 28px rgba(180,188,215,.14);
+    }
+
+    body.mode-flyer .field-rodada input,
+    body.mode-flyer .field-hora input,
+    body.mode-flyer .field-arena input,
+    body.mode-flyer .field-mascote .filePlus,
+    body.mode-flyer .field-esc1 .filePlus,
+    body.mode-flyer .field-esc2 .filePlus,
+    body.mode-flyer .field-patro .filePlus{
+      background:linear-gradient(180deg, rgba(255,255,255,.88), rgba(248,248,252,.94));
+      border:1px solid #e4e6f1;
       box-shadow:0 10px 28px rgba(180,188,215,.14);
     }
 
@@ -1301,7 +1360,12 @@
         max-width:92px;
       }
 
-      .sectionTitle{
+      .sectionTitle,
+      body.mode-flyer #labelRodada,
+      body.mode-flyer #labelHora,
+      body.mode-flyer #labelArena,
+      body.mode-flyer #labelMascote,
+      body.mode-flyer #labelPatro{
         max-width:100%;
         font-size:14px;
         padding:14px 16px;
@@ -1312,7 +1376,15 @@
       body.mode-result .field-artilheiros,
       body.mode-result .field-data,
       body.mode-result .field-esc1,
-      body.mode-result .field-esc2{
+      body.mode-result .field-esc2,
+      body.mode-flyer .field-rodada,
+      body.mode-flyer .field-data,
+      body.mode-flyer .field-hora,
+      body.mode-flyer .field-arena,
+      body.mode-flyer .field-mascote,
+      body.mode-flyer .field-esc1,
+      body.mode-flyer .field-esc2,
+      body.mode-flyer .field-patro{
         align-items:stretch;
       }
 
@@ -1320,7 +1392,10 @@
       .artilheirosWrap,
       .addArtilheiro,
       .phraseWrap,
-      .filePlus{
+      .filePlus,
+      body.mode-flyer .field-rodada input,
+      body.mode-flyer .field-hora input,
+      body.mode-flyer .field-arena input{
         width:100%;
       }
 
@@ -2918,6 +2993,7 @@ document.getElementById("addArtilheiroBtn")?.addEventListener("click", ()=>{
 </script>
 </body>
 </html>
+
 
 
 
