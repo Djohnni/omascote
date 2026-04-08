@@ -492,19 +492,10 @@
     }
 
     .builderArea{
-      display:none;
-      position:fixed;
-      inset:0;
-      z-index:9000;
-      padding:0;
-      background:
-        radial-gradient(900px 520px at 12% 92%, rgba(120,190,255,.28) 0%, transparent 48%),
-        radial-gradient(900px 520px at 88% 92%, rgba(255,220,150,.22) 0%, transparent 44%),
-        linear-gradient(180deg, #f4f2fb 0%, #f1eff8 100%);
-      overflow:auto;
+      margin-top:24px;
     }
 
-    .crestWrap{display:none}
+    .crestWrap{display:flex;justify-content:center;margin:0 0 14px}
 
     .crestCard{
       width:min(320px, 92vw);
@@ -562,11 +553,11 @@
     }
 
     .card{
-      background: transparent;
-      border:none;
-      border-radius:0;
-      padding:0;
-      box-shadow:none;
+      background: linear-gradient(180deg, rgba(255,255,255,.88), rgba(245,248,252,.92));
+      border:1px solid rgba(255,255,255,.65);
+      border-radius:22px;
+      padding:18px;
+      box-shadow:0 18px 45px rgba(120,140,180,.14);
     }
 
     .meta{
@@ -596,7 +587,9 @@
     }
 
     .sep{
-      display:none;
+      height:1px;
+      background:linear-gradient(90deg, transparent, rgba(255,255,255,.18), transparent);
+      margin:14px 0 14px;
     }
 
     h2{
@@ -604,62 +597,6 @@
       font-size:21px;
       text-align:center;
       letter-spacing:.2px;
-    }
-
-    .builderDialog{
-      width:min(980px, 100%);
-      min-height:100vh;
-      margin:0 auto;
-      position:relative;
-      padding:18px 18px 34px;
-    }
-
-    .builderClose{
-      position:fixed;
-      top:14px;
-      right:14px;
-      width:42px;
-      height:42px;
-      border-radius:999px;
-      border:1px solid rgba(255,255,255,.38);
-      background:rgba(31,41,55,.88);
-      color:#fff;
-      font-size:22px;
-      font-weight:900;
-      display:grid;
-      place-items:center;
-      box-shadow:0 10px 24px rgba(0,0,0,.16);
-      z-index:9991;
-    }
-
-    .chatTopRow{
-      display:flex;
-      justify-content:flex-start;
-      margin:86px 0 18px;
-      padding-left:10px;
-      padding-right:0;
-    }
-
-    .chatBubble{
-      max-width:560px;
-      background:linear-gradient(180deg, #eef8ea, #e3f1dd);
-      color:#1f2a37;
-      border-radius:34px 34px 34px 10px;
-      padding:22px 26px;
-      box-shadow:0 12px 30px rgba(162,175,194,.18);
-      font-size:18px;
-      font-weight:700;
-      line-height:1.35;
-      border:1px solid rgba(214,228,211,.95);
-    }
-
-    .chatSectionLabel{
-      display:block;
-      text-align:left;
-      font-size:17px;
-      font-weight:900;
-      color:#1f2a37;
-      margin:0 0 12px;
     }
 
     .hint{
@@ -766,129 +703,28 @@
       color:#1f2a37;
     }
 
-    body.mode-result .meta,
-    body.mode-result .msg,
-    body.mode-result .sep,
-    body.mode-result #dynamicTitle,
-    body.mode-result #dynamicHint{
-      display:none !important;
+    ---
+PROCURE ISSO:
+.card .msg,
+    .card .msgSmall,
+    .card .hint,
+    .card label{
+      color:#4e5b6b;
     }
 
-    body.mode-result .formGrid{
-      grid-template-columns:1fr;
-      grid-template-areas:
-        "placar"
-        "artilheiros"
-        "data"
-        "esc2"
-        "esc1"
-        "submit"
-        "msg";
-      gap:18px;
-      margin-top:0;
-    }
-
-    body.mode-result .field-placar,
-    body.mode-result .field-artilheiros,
-    body.mode-result .field-data{
-      background:linear-gradient(180deg, #eef8ea, #e3f1dd);
-      border:1px solid #dfead8;
-      border-radius:34px;
-      padding:24px 26px;
-      box-shadow:0 10px 28px rgba(180,188,215,.14);
-      margin-left:0;
-    }
-
-    body.mode-result .field-esc1,
-    body.mode-result .field-esc2{
-      background:linear-gradient(180deg, rgba(255,255,255,.88), rgba(248,248,252,.94));
-      border:1px solid #e4e6f1;
-      border-radius:34px;
-      padding:24px 26px;
-      box-shadow:0 10px 28px rgba(180,188,215,.14);
-      margin-left:0;
-    }
-
-    body.mode-result .field-placar{
-      width:min(800px, 100%);
-    }
-
-    body.mode-result .field-artilheiros{
-      width:min(640px, 100%);
-    }
-
-    body.mode-result .field-data,
-    body.mode-result .field-esc1,
-    body.mode-result .field-esc2{
-      width:min(980px, 100%);
-    }
-
-    body.mode-result .field-data{
-      padding-bottom:18px;
-    }
-
-    body.mode-result .meta,
-    body.mode-result .msg,
-    body.mode-result .sep,
-    body.mode-result #dynamicTitle,
-    body.mode-result #dynamicHint{
-      display:none !important;
-    }
-
-    body.mode-result .formGrid{
-      grid-template-columns:1fr;
-      grid-template-areas:
-        "placar"
-        "artilheiros"
-        "data"
-        "esc2"
-        "esc1"
-        "submit"
-        "msg";
-      gap:18px;
-      margin-top:0;
-    }
-
-    body.mode-result .field-placar,
-    body.mode-result .field-data,
-    body.mode-result .field-esc1,
-    body.mode-result .field-esc2{
-      background:linear-gradient(180deg, rgba(255,255,255,.88), rgba(248,248,252,.94));
-      border:1px solid #e4e6f1;
-      border-radius:34px;
-      padding:24px 26px;
-      box-shadow:0 10px 28px rgba(180,188,215,.14);
-    }
-
-    body.mode-result .field-artilheiros{
-      background:linear-gradient(180deg, #eef8ea, #e3f1dd);
-      border:1px solid #dfead8;
-      border-radius:34px;
-      padding:24px 26px;
-      box-shadow:0 10px 28px rgba(180,188,215,.14);
-      margin-left:auto;
-      width:min(640px, 100%);
-    }
-
-    body.mode-result .field-placar{
-      width:min(800px, 100%);
-    }
-
-    body.mode-result .field-data,
-    body.mode-result .field-esc1,
-    body.mode-result .field-esc2{
-      width:min(980px, 100%);
-    }
-
-    body.mode-result .field-data{
-      padding-bottom:18px;
+TROQUE POR ISSO:
+.card .msg,
+    .card .msgSmall,
+    .card .hint,
+    .card label{
+      color:#334155;
     }
 
     .card .msg,
     .card .msgSmall,
     .card .hint,
     .card label{
-      color:#334155;
+      color:#4e5b6b;
     }
 
     input, textarea{
@@ -900,6 +736,7 @@
       color:#243041;
       outline:none;
       box-shadow:0 2px 10px rgba(140,160,190,.08);
+      text-align:left;
     }
 
     input:focus, textarea:focus{
@@ -959,7 +796,7 @@
 
     .filePlus .chosen{
       font-size:12px;
-      color:rgba(255,255,255,.92);
+      color:#334155;
       font-weight:700;
       white-space:nowrap;
       overflow:hidden;
@@ -1069,7 +906,7 @@
     }
 
     .placarTime{flex:1}
-    .placarGols{width:84px}
+    .placarGols{width:96px}
 
     .placarX{
       font-weight:900;
@@ -1093,8 +930,8 @@
     .artilheiroNome{flex:1}
 
     .artilheiroGols{
-      width:84px;
-      text-align:center;
+      width:96px;
+      text-align:left;
       font-weight:900;
     }
 
@@ -1381,30 +1218,6 @@
         line-height:1.15;
         max-width:92px;
       }
-
-      .builderDialog{
-        padding:12px 12px 28px;
-      }
-
-      .chatTopRow{
-        margin:78px 0 16px;
-        padding-left:0;
-        padding-right:0;
-      }
-
-      .chatBubble{
-        font-size:15px;
-        padding:15px 16px;
-      }
-
-      body.mode-result .field-placar,
-      body.mode-result .field-artilheiros,
-      body.mode-result .field-data,
-      body.mode-result .field-esc1,
-      body.mode-result .field-esc2{
-        padding:18px 16px;
-        border-radius:28px;
-      }
     }
   </style>
 </head>
@@ -1505,11 +1318,6 @@
       </div>
 
       <div class="builderArea" id="builderArea">
-        <div class="builderDialog">
-          <button type="button" class="builderClose" id="builderCloseBtn">✕</button>
-          <div class="chatTopRow">
-            <div class="chatBubble" id="chatBubbleText">Para Resultado do jogo, preciso dessas informações abaixo...</div>
-          </div>
         <div class="crestWrap">
           <div class="crestCard" id="crestCard">
             <div class="crestGlow"></div>
@@ -1541,7 +1349,7 @@
 
           <form id="pedidoForm" class="formGrid" enctype="multipart/form-data">
             <div class="field-placar full">
-              <label class="chatSectionLabel">Qual foi o placar final?</label>
+              <label class="sectionTitle">Placar</label>
               <div class="placarRow">
                 <input class="placarTime" id="timePrincipal" placeholder="Seu time">
                 <input class="placarGols" id="golsTime" type="number" min="0" placeholder="0">
@@ -1552,7 +1360,7 @@
             </div>
 
             <div class="field-artilheiros full">
-              <label class="chatSectionLabel">Quem foi o artilheiro da partida?</label>
+              <label class="sectionTitle">Artilheiros (opcional)</label>
               <div class="artilheirosWrap" id="artilheirosWrap">
                 <div class="artilheiroRow">
                   <input class="artilheiroNome" placeholder="Nome do jogador">
@@ -1568,7 +1376,7 @@
             </div>
 
             <div class="field-data">
-              <label class="chatSectionLabel" id="labelData">Frase na imagem *</label>
+              <label class="sectionTitle" id="labelData">Frase na imagem *</label>
 
               <div class="phraseWrap">
                 <input id="dataJogo" required />
@@ -1681,7 +1489,6 @@
       </div>
     </div>
   </div>
-</div>
 
   <div class="modalMask" id="cropModal" aria-hidden="true">
     <div class="modalCard" role="dialog" aria-modal="true" aria-label="Recortar imagem">
@@ -1742,8 +1549,6 @@ const btnTrocarTipo = document.getElementById("btnTrocarTipo");
 const builderArea = document.getElementById("builderArea");
 const mainCreateBtn = document.getElementById("mainCreateBtn");
 const selectorStage = document.querySelector(".selectorStage");
-const builderCloseBtn = document.getElementById("builderCloseBtn");
-const chatBubbleText = document.getElementById("chatBubbleText");
 
 const crestPreview = document.getElementById("crestPreview");
 const crestPlaceholder = document.getElementById("crestPlaceholder");
@@ -2067,7 +1872,6 @@ function selectProduct(productKey){
 
   dynamicTitleEl.textContent = product.title;
   dynamicHintEl.textContent = product.hint;
-  if(chatBubbleText) chatBubbleText.textContent = `Para ${product.title}, preciso dessas informações abaixo...`;
   btnEnviar.textContent = "Criar minha arte 🚀";
 
   setText("labelRodada", product.labels?.rodada || "Título da arte *");
@@ -2100,7 +1904,7 @@ function selectProduct(productKey){
     selectorStage.classList.add("open");
   }
 
-  builderArea.style.display = "block";
+  setTimeout(scrollToBuilder, 120);
 }
 
 document.querySelectorAll(".optionBtn").forEach(btn=>{
@@ -2137,7 +1941,6 @@ btnTrocarTipo.addEventListener("click", ()=>{
   document.querySelectorAll(".optionBtn").forEach(btn=> btn.classList.remove("active"));
   closePhraseMenu();
   selectorStage?.classList.remove("open");
-  builderArea.style.display = "none";
   window.scrollTo({ top: 0, behavior: "smooth" });
 });
 
@@ -2159,16 +1962,6 @@ document.getElementById("verExemplosLink").addEventListener("click", (e)=>{
     });
   }
 });
-
-if(builderCloseBtn){
-  builderCloseBtn.addEventListener("click", ()=>{
-    builderArea.style.display = "none";
-    selectedProductInput.value = "";
-    document.body.classList.remove("modeChosen", "mode-flyer", "mode-result");
-    document.querySelectorAll(".optionBtn").forEach(btn=> btn.classList.remove("active"));
-    closePhraseMenu();
-  });
-}
 
 const cropModal = document.getElementById("cropModal");
 const cropStage = document.getElementById("cropStage");
