@@ -607,6 +607,23 @@
       line-height:1.35;
     }
 
+    body.mode-result #dynamicHint{
+      display:block !important;
+      width:max-content;
+      max-width:560px;
+      margin:10px 0 20px auto;
+      padding:22px 28px;
+      text-align:left;
+      font-size:18px;
+      font-weight:900;
+      line-height:1.45;
+      color:#24543f !important;
+      background:linear-gradient(180deg, #eef8ea, #e3f1dd);
+      border:1px solid #dfead8;
+      border-radius:34px 34px 10px 34px;
+      box-shadow:0 12px 30px rgba(162,175,194,.18);
+    }
+
     .tabRadio{
       position:absolute;
       left:-9999px;
@@ -714,7 +731,8 @@
     body.mode-result .meta,
     body.mode-result .msg,
     body.mode-result .sep,
-    body.mode-result #dynamicTitle{
+    body.mode-result #dynamicTitle,
+    body.mode-result #dynamicHint{
       display:none !important;
     }
 
@@ -1921,8 +1939,7 @@ function selectProduct(productKey){
   });
 
   dynamicTitleEl.textContent = product.title;
-  dynamicHintEl.textContent = `Para ${product.title}, preciso dessas informações abaixo...`;
-  dynamicHintEl.style.display = "block";
+  dynamicHintEl.textContent = product.hint;
   btnEnviar.textContent = "Criar minha arte 🚀";
 
   setText("labelRodada", product.labels?.rodada || "Título da arte *");
