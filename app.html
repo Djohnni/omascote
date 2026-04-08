@@ -553,10 +553,11 @@
     }
 
     .card{
-      background:rgba(5,10,22,.55);
-      border:1px solid rgba(255,255,255,.10);
-      border-radius:18px;
-      padding:14px;
+      background: linear-gradient(180deg, rgba(255,255,255,.88), rgba(245,248,252,.92));
+      border:1px solid rgba(255,255,255,.65);
+      border-radius:22px;
+      padding:18px;
+      box-shadow:0 18px 45px rgba(120,140,180,.14);
     }
 
     .meta{
@@ -642,7 +643,7 @@
         "placar placar"
         "artilheiros artilheiros"
         "data data"
-        "esc1 esc2"
+        "esc2 esc1"
         "submit submit"
         "msg msg";
     }
@@ -680,15 +681,44 @@
       margin:0 0 6px;
     }
 
+    .sectionTitle{
+      display:block;
+      text-align:center;
+      font-size:16px;
+      font-weight:900;
+      color:#26303d;
+      margin:6px 0 10px;
+    }
+
+    .hiddenLabel{
+      display:none;
+    }
+
+    .placeholderLike{
+      color:#6f7b8a !important;
+      font-weight:700;
+    }
+
+    .card h2{
+      color:#1f2a37;
+    }
+
+    .card .msg,
+    .card .msgSmall,
+    .card .hint,
+    .card label{
+      color:#4e5b6b;
+    }
+
     input, textarea{
       width:100%;
       padding:12px 12px;
       border-radius:14px;
-      border:1px solid rgba(255,255,255,.12);
-      background:rgba(0,0,0,.22);
-      color:#fff;
+      border:1px solid #d8e1ec;
+      background:#ffffff;
+      color:#243041;
       outline:none;
-      box-shadow:inset 0 1px 0 rgba(255,255,255,.04);
+      box-shadow:0 2px 10px rgba(140,160,190,.08);
     }
 
     input:focus, textarea:focus{
@@ -718,13 +748,13 @@
       gap:10px;
       width:100%;
       padding:12px 12px;
-      border-radius:14px;
-      border:1px solid rgba(255,255,255,.12);
-      background:rgba(0,0,0,.22);
-      color:#fff;
+      border-radius:16px;
+      border:1px solid #d8e1ec;
+      background:#ffffff;
+      color:#243041;
       cursor:pointer;
       user-select:none;
-      box-shadow:inset 0 1px 0 rgba(255,255,255,.04);
+      box-shadow:0 2px 10px rgba(140,160,190,.08);
       transition:transform .08s ease, border-color .15s ease, box-shadow .15s ease, filter .15s ease;
     }
 
@@ -763,9 +793,10 @@
       place-items:center;
       font-size:22px;
       font-weight:900;
-      border:1px solid rgba(255,255,255,.14);
-      background:linear-gradient(135deg, rgba(255,255,255,.08), rgba(0,0,0,.10));
-      box-shadow:var(--shadow2);
+      border:1px solid #d8e1ec;
+      background:linear-gradient(180deg, #ffffff, #eef3f8);
+      color:#243041;
+      box-shadow:0 4px 12px rgba(140,160,190,.12);
       flex:0 0 auto;
     }
 
@@ -1289,14 +1320,14 @@
           <div class="sep"></div>
 
           <h2 id="dynamicTitle">Criar arte</h2>
-          <div class="hint" id="dynamicHint">Preencha os dados e envie.</div>
+          <div class="hint" id="dynamicHint" style="display:none;"></div>
 
           <input type="hidden" id="flyerTipo" value="zz1fs">
           <input type="hidden" id="selectedProduct" value="">
 
           <form id="pedidoForm" class="formGrid" enctype="multipart/form-data">
             <div class="field-placar full">
-              <label>Placar</label>
+              <label class="sectionTitle">Placar</label>
               <div class="placarRow">
                 <input class="placarTime" id="timePrincipal" placeholder="Seu time">
                 <input class="placarGols" id="golsTime" type="number" min="0" placeholder="0">
@@ -1307,7 +1338,7 @@
             </div>
 
             <div class="field-artilheiros full">
-              <label>Artilheiros (opcional)</label>
+              <label class="sectionTitle">Artilheiros (opcional)</label>
               <div class="artilheirosWrap" id="artilheirosWrap">
                 <div class="artilheiroRow">
                   <input class="artilheiroNome" placeholder="Nome do jogador">
@@ -1323,7 +1354,7 @@
             </div>
 
             <div class="field-data">
-              <label id="labelData">Texto principal *</label>
+              <label class="sectionTitle" id="labelData">Frase na imagem *</label>
 
               <div class="phraseWrap">
                 <input id="dataJogo" required />
@@ -1367,24 +1398,24 @@
             </div>
 
             <div class="field-esc1">
-              <label id="labelEsc1">Escudo do time *</label>
+              <label id="labelEsc1" class="hiddenLabel">Escudo / logo do time *</label>
               <input id="escudo1" class="fileHidden" type="file" required />
               <div class="filePlus" data-file-for="escudo1" tabindex="0" role="button" aria-label="Enviar arquivo 1">
                 <div class="left">
                   <div class="name"></div>
-                  <div class="chosen" id="chosen_escudo1">Nenhum arquivo</div>
+                  <div class="chosen placeholderLike" id="chosen_escudo1">Escudo / logo do time *</div>
                 </div>
                 <div class="plus">+</div>
               </div>
             </div>
 
             <div class="field-esc2">
-              <label id="labelEsc2">Arquivo complementar</label>
+              <label id="labelEsc2" class="hiddenLabel">Imagem do jogo *</label>
               <input id="escudo2" class="fileHidden" type="file" />
               <div class="filePlus" data-file-for="escudo2" tabindex="0" role="button" aria-label="Enviar arquivo 2">
                 <div class="left">
                   <div class="name"></div>
-                  <div class="chosen" id="chosen_escudo2">Nenhum arquivo</div>
+                  <div class="chosen placeholderLike" id="chosen_escudo2">Imagem do jogo *</div>
                 </div>
                 <div class="plus">+</div>
               </div>
@@ -1727,7 +1758,9 @@ function bindPlusUpload(inputId, chosenId){
 
   input.addEventListener("change", ()=>{
     if(!input.files || input.files.length === 0){
-      chosen.textContent = "Nenhum arquivo";
+      if(inputId === "escudo1") chosen.textContent = "Escudo / logo do time *";
+      else if(inputId === "escudo2") chosen.textContent = "Imagem do jogo *";
+      else chosen.textContent = "Nenhum arquivo";
       return;
     }
     if(input.multiple){
@@ -2438,9 +2471,16 @@ function limparCamposAposEnviar(){
     if(input) input.value = "";
   });
 
-  ["chosen_mascote", "chosen_escudo1", "chosen_escudo2", "chosen_patrocinadores"].forEach(id=>{
+  const resetTexts = {
+    chosen_mascote: "Nenhum arquivo",
+    chosen_escudo1: "Escudo / logo do time *",
+    chosen_escudo2: "Imagem do jogo *",
+    chosen_patrocinadores: "Nenhum arquivo"
+  };
+
+  Object.entries(resetTexts).forEach(([id, txt])=>{
     const el = document.getElementById(id);
-    if(el) el.textContent = "Nenhum arquivo";
+    if(el) el.textContent = txt;
   });
 }
 
