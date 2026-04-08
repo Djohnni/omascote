@@ -492,10 +492,18 @@
     }
 
     .builderArea{
-      margin-top:24px;
+      display:none;
+      position:fixed;
+      inset:0;
+      z-index:9000;
+      padding:20px 12px;
+      background:rgba(8,16,32,.58);
+      backdrop-filter:blur(12px);
+      -webkit-backdrop-filter:blur(12px);
+      overflow:auto;
     }
 
-    .crestWrap{display:flex;justify-content:center;margin:0 0 14px}
+    .crestWrap{display:none}
 
     .crestCard{
       width:min(320px, 92vw);
@@ -553,9 +561,9 @@
     }
 
     .card{
-      background: linear-gradient(180deg, rgba(255,255,255,.88), rgba(245,248,252,.92));
-      border:1px solid rgba(255,255,255,.65);
-      border-radius:22px;
+      background: linear-gradient(180deg, rgba(255,255,255,.94), rgba(245,248,252,.96));
+      border:1px solid rgba(255,255,255,.75);
+      border-radius:26px;
       padding:18px;
       box-shadow:0 18px 45px rgba(120,140,180,.14);
     }
@@ -587,9 +595,7 @@
     }
 
     .sep{
-      height:1px;
-      background:linear-gradient(90deg, transparent, rgba(255,255,255,.18), transparent);
-      margin:14px 0 14px;
+      display:none;
     }
 
     h2{
@@ -601,7 +607,7 @@
 
     .hint{
       font-size:12px;
-      color:rgba(255,255,255,.68);
+      color:#6b7686;
       margin-top:6px;
       text-align:center;
       line-height:1.35;
@@ -738,7 +744,7 @@
       margin-top:10px;
       font-size:13px;
       text-align:center;
-      color:rgba(255,255,255,.85);
+      color:#4e5b6b;
     }
 
     .filePlus{
@@ -756,6 +762,7 @@
       user-select:none;
       box-shadow:0 2px 10px rgba(140,160,190,.08);
       transition:transform .08s ease, border-color .15s ease, box-shadow .15s ease, filter .15s ease;
+      min-height:58px;
     }
 
     .filePlus:active{transform:translateY(1px)}
@@ -1148,6 +1155,83 @@
       }
     }
 
+    .builderDialog{
+      width:min(760px, 100%);
+      margin:0 auto;
+      position:relative;
+      padding-top:54px;
+    }
+
+    .builderClose{
+      position:absolute;
+      top:0;
+      right:0;
+      width:42px;
+      height:42px;
+      border-radius:999px;
+      border:1px solid rgba(255,255,255,.22);
+      background:rgba(15,23,42,.72);
+      color:#fff;
+      font-size:22px;
+      font-weight:900;
+      display:grid;
+      place-items:center;
+      box-shadow:0 10px 24px rgba(0,0,0,.18);
+      z-index:2;
+    }
+
+    .chatTopRow{
+      display:flex;
+      justify-content:flex-end;
+      margin-bottom:16px;
+    }
+
+    .chatBubble{
+      max-width:520px;
+      background:linear-gradient(180deg, #edf9eb, #dff2dd);
+      color:#1f2a37;
+      border-radius:26px 26px 8px 26px;
+      padding:18px 22px;
+      box-shadow:0 12px 28px rgba(120,140,180,.16);
+      font-size:17px;
+      font-weight:800;
+      line-height:1.35;
+      border:1px solid rgba(190,220,190,.8);
+    }
+
+    .chatCard{
+      background:linear-gradient(180deg, rgba(255,255,255,.96), rgba(244,247,252,.98));
+      border:1px solid rgba(255,255,255,.85);
+      border-radius:30px;
+      padding:20px;
+      box-shadow:0 18px 45px rgba(120,140,180,.16);
+    }
+
+    .chatSectionLabel{
+      display:block;
+      text-align:left;
+      font-size:16px;
+      font-weight:900;
+      color:#26303d;
+      margin:0 0 10px;
+    }
+
+    .chatCard h2{
+      display:none;
+    }
+
+    .chatCard #dynamicHint{
+      display:none !important;
+    }
+
+    body.mode-result .chatCard{
+      background:linear-gradient(180deg, rgba(248,252,255,.98), rgba(240,246,252,.98));
+    }
+
+    body.mode-flyer .chatCard{
+      background:linear-gradient(180deg, rgba(245,252,244,.98), rgba(236,247,236,.98));
+    }
+
     @media (max-width:680px){
       .hero{
         padding:20px 12px 28px;
@@ -1195,6 +1279,15 @@
         font-size:11px;
         line-height:1.15;
         max-width:92px;
+      }
+
+      .builderDialog{
+        padding-top:48px;
+      }
+
+      .chatBubble{
+        font-size:15px;
+        padding:15px 16px;
       }
     }
   </style>
@@ -1296,6 +1389,15 @@
       </div>
 
       <div class="builderArea" id="builderArea">
+        <div class="builderDialog">
+          <button type="button" class="builderClose" id="builderCloseBtn">✕</button>
+
+          <div class="chatTopRow">
+            <div class="chatBubble" id="chatBubbleText">
+              Para criar sua arte, preciso dessas informações abaixo...
+            </div>
+          </div>
+
         <div class="crestWrap">
           <div class="crestCard" id="crestCard">
             <div class="crestGlow"></div>
@@ -1309,7 +1411,7 @@
           </div>
         </div>
 
-        <div class="card">
+        <div class="card chatCard">
           <div class="meta">
             <div class="pill" id="plano">Plano: —</div>
             <div class="pill" id="usados">Usados no mês: —</div>
@@ -1327,7 +1429,7 @@
 
           <form id="pedidoForm" class="formGrid" enctype="multipart/form-data">
             <div class="field-placar full">
-              <label class="sectionTitle">Placar</label>
+              <label class="chatSectionLabel">Qual foi o placar final?</label>
               <div class="placarRow">
                 <input class="placarTime" id="timePrincipal" placeholder="Seu time">
                 <input class="placarGols" id="golsTime" type="number" min="0" placeholder="0">
@@ -1338,7 +1440,7 @@
             </div>
 
             <div class="field-artilheiros full">
-              <label class="sectionTitle">Artilheiros (opcional)</label>
+              <label class="chatSectionLabel">Quem foi o artilheiro da partida?</label>
               <div class="artilheirosWrap" id="artilheirosWrap">
                 <div class="artilheiroRow">
                   <input class="artilheiroNome" placeholder="Nome do jogador">
@@ -1354,7 +1456,7 @@
             </div>
 
             <div class="field-data">
-              <label class="sectionTitle" id="labelData">Frase na imagem *</label>
+              <label class="chatSectionLabel" id="labelData">Qual frase quer incluir na arte?</label>
 
               <div class="phraseWrap">
                 <input id="dataJogo" required />
@@ -1465,6 +1567,7 @@
           </form>
         </div>
       </div>
+        </div>
     </div>
   </div>
 
@@ -1527,6 +1630,8 @@ const btnTrocarTipo = document.getElementById("btnTrocarTipo");
 const builderArea = document.getElementById("builderArea");
 const mainCreateBtn = document.getElementById("mainCreateBtn");
 const selectorStage = document.querySelector(".selectorStage");
+const builderCloseBtn = document.getElementById("builderCloseBtn");
+const chatBubbleText = document.getElementById("chatBubbleText");
 
 const crestPreview = document.getElementById("crestPreview");
 const crestPlaceholder = document.getElementById("crestPlaceholder");
@@ -1850,6 +1955,9 @@ function selectProduct(productKey){
 
   dynamicTitleEl.textContent = product.title;
   dynamicHintEl.textContent = product.hint;
+  if(chatBubbleText){
+    chatBubbleText.textContent = `Para ${product.title.toLowerCase()}, preciso dessas informações abaixo...`;
+  }
   btnEnviar.textContent = "Criar minha arte 🚀";
 
   setText("labelRodada", product.labels?.rodada || "Título da arte *");
@@ -1878,11 +1986,11 @@ function selectProduct(productKey){
   const resultadoBox = document.getElementById("resultadoBox");
   if(resultadoBox) resultadoBox.style.display = "none";
 
+  builderArea.style.display = "block";
+
   if(selectorStage && !selectorStage.classList.contains("open")){
     selectorStage.classList.add("open");
   }
-
-  setTimeout(scrollToBuilder, 120);
 }
 
 document.querySelectorAll(".optionBtn").forEach(btn=>{
@@ -1919,6 +2027,7 @@ btnTrocarTipo.addEventListener("click", ()=>{
   document.querySelectorAll(".optionBtn").forEach(btn=> btn.classList.remove("active"));
   closePhraseMenu();
   selectorStage?.classList.remove("open");
+  builderArea.style.display = "none";
   window.scrollTo({ top: 0, behavior: "smooth" });
 });
 
@@ -1940,6 +2049,16 @@ document.getElementById("verExemplosLink").addEventListener("click", (e)=>{
     });
   }
 });
+
+if(builderCloseBtn){
+  builderCloseBtn.addEventListener("click", ()=>{
+    selectedProductInput.value = "";
+    document.body.classList.remove("modeChosen", "mode-flyer", "mode-result");
+    document.querySelectorAll(".optionBtn").forEach(btn=> btn.classList.remove("active"));
+    closePhraseMenu();
+    builderArea.style.display = "none";
+  });
+}
 
 const cropModal = document.getElementById("cropModal");
 const cropStage = document.getElementById("cropStage");
@@ -2706,3 +2825,4 @@ document.getElementById("addArtilheiroBtn")?.addEventListener("click", ()=>{
 </script>
 </body>
 </html>
+
