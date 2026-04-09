@@ -1854,6 +1854,8 @@ const planoEl = document.getElementById("plano");
 const usadosEl = document.getElementById("usados");
 const statusEl = document.getElementById("status");
 const msgPedidoEl = document.getElementById("msgPedido");
+const historicoListaEl = document.getElementById("historicoLista");
+const historicoVazioEl = document.getElementById("historicoVazio");
 
 const dynamicTitleEl = document.getElementById("dynamicTitle");
 const dynamicHintEl = document.getElementById("dynamicHint");
@@ -2979,6 +2981,52 @@ if(openPhraseBtn && phraseMenu && phraseInput){
   });
 }
 
+function formatarDataHistorico(valor){
+  if(!valor) return "Sem data";
+  const d = new Date(valor);
+  if(!Number.isNaN(d.getTime())) return d.toLocaleString("pt-BR");
+  return String(valor);
+}
+
+async function carregarHistorico(){
+  if(!historicoListaEl || !historicoVazioEl) return;
+
+  historicoListaEl.innerHTML = "";
+  historicoVazioEl.textContent = "Carregando...";
+
+  try{
+    const r = await fetch(`${API_BASE}/meus-pedidos`, {
+      headers: { "Authorization": "Bearer " + token }
+    });
+
+    const data = await r.json();
+
+    if(!data.ok){
+      historicoVazioEl.textContent = "Erro ao carregar";
+      return;
+    }
+
+    if(data.pedidos.length === 0){
+      historicoVazioEl.textContent = "Sem pedidos ainda";
+      return;
+    }
+
+    historicoVazioEl.textContent = "";
+
+    historicoListaEl.innerHTML = data.pedidos.map(p => `
+      <div style="background:#fff;color:#000;padding:10px;border-radius:10px;">
+        <b>${p.tipo}</b><br>
+        ID: ${p.id}<br>
+        Status: ${p.status}<br>
+        ${p.imagem_url ? `<img src="${p.imagem_url}" style="width:100px;">` : ""}
+      </div>
+    `).join("");
+
+  }catch{
+    historicoVazioEl.textContent = "Erro de rede";
+  }
+}
+
 async function acompanharResultado(pedidoId){
   const boxEl = document.getElementById("resultadoBox");
   const statusElLocal = document.getElementById("statusResultado");
@@ -3022,6 +3070,7 @@ async function acompanharResultado(pedidoId){
 
 applyLocal();
 refreshMe();
+carregarHistorico();
 
 document.getElementById("btnSair").addEventListener("click", ()=>{
   localStorage.removeItem("omascote_token");
@@ -3046,6 +3095,7 @@ document.getElementById("addArtilheiroBtn")?.addEventListener("click", ()=>{
 </script>
 </body>
 </html>
+
 
 
 
