@@ -2954,6 +2954,7 @@ document.getElementById("pedidoForm").addEventListener("submit", async (e)=>{
       msgPedidoEl.textContent = `✅ Pedido enviado! ID: ${out.pedido_id}`;
       limparCamposAposEnviar();
       refreshMe();
+      carregarHistorico();
 
       if (isResultado) {
         acompanharResultado(out.pedido_id);
@@ -3043,9 +3044,32 @@ async function carregarHistorico(){
   }
 }
 
-function baixarPedido(id){
-  const url = `${API_BASE}/pedidos/${id}/zip`;
-  window.open(url, "_blank");
+async function baixarPedido(id){
+  try{
+    const r = await fetch(`${API_BASE}/pedidos/${id}/zip`, {
+      headers: { "Authorization": "Bearer " + token }
+    });
+
+    if(!r.ok){
+      alert("Erro ao baixar pedido");
+      return;
+    }
+
+    const blob = await r.blob();
+    const url = window.URL.createObjectURL(blob);
+
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = id + ".zip";
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+
+    window.URL.revokeObjectURL(url);
+
+  }catch{
+    alert("Erro de rede ao baixar");
+  }
 }
 
 async function acompanharResultado(pedidoId){
@@ -3116,6 +3140,8 @@ document.getElementById("addArtilheiroBtn")?.addEventListener("click", ()=>{
 </script>
 </body>
 </html>
+
+
 
 
 
