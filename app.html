@@ -2161,7 +2161,10 @@ function closePhraseMenu(){
 }
 
 function scrollToBuilder(){
-  builderArea.scrollIntoView({ behavior:"smooth", block:"start" });
+  const el = document.getElementById("dynamicHint");
+  if(el){
+    el.scrollIntoView({ behavior:"smooth", block:"start" });
+  }
 }
 
 function selectProduct(productKey){
@@ -3043,6 +3046,7 @@ document.getElementById("addArtilheiroBtn")?.addEventListener("click", ()=>{
 </script>
 </body>
 </html>
+
 
 
 
