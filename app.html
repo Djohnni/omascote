@@ -671,7 +671,6 @@
       grid-template-areas:
         "rodada"
         "data"
-        "artilheiros"
         "hora"
         "arena"
         "mascote"
@@ -686,25 +685,23 @@
 
     body.mode-result .formGrid{
       grid-template-areas:
-        "hora hora"
         "placar placar"
         "artilheiros artilheiros"
         "data data"
         "esc2 esc1"
-        "mascote mascote"
         "submit submit"
         "msg msg";
     }
 
     body.mode-result .field-placar,
-    body.mode-result .field-artilheiros,
-    body.mode-result .field-hora,
-    body.mode-result .field-mascote{
+    body.mode-result .field-artilheiros{
       display:block;
     }
 
     body.mode-result .field-rodada,
+    body.mode-result .field-hora,
     body.mode-result .field-arena,
+    body.mode-result .field-mascote,
     body.mode-result .field-patro{
       display:none;
     }
@@ -813,10 +810,8 @@
     body.mode-result .field-placar,
     body.mode-result .field-artilheiros,
     body.mode-result .field-data,
-    body.mode-result .field-hora,
     body.mode-result .field-esc1,
-    body.mode-result .field-esc2,
-    body.mode-result .field-mascote{
+    body.mode-result .field-esc2{
       background:transparent;
       border:none;
       border-radius:0;
@@ -1891,17 +1886,14 @@ const PRODUCTS = {
   resultado: {
     mode: "resultado",
     title: "Resultado do jogo",
-    hint: "Envie a competição, a imagem da partida, os escudos, o placar e a frase para montar a arte pós-jogo.",
+    hint: "Envie a imagem da partida, o escudo do time, o placar e uma frase opcional para montar a arte pós-jogo.",
     flyerTipo: "",
     labels: {
-      hora: "Campeonato / competição *",
       data: "Frase na imagem *",
       esc1: "Imagem do jogo *",
-      esc2: "Escudo / logo do seu time *",
-      mascote: "Escudo / logo do adversário (opcional)"
+      esc2: "Escudo / logo do time *"
     },
     placeholders: {
-      hora: "Ex: Campeonato municipal",
       data: "Ex: Vitória na raça até o fim"
     },
     required: {
@@ -1915,23 +1907,24 @@ const PRODUCTS = {
   escalacao: {
     mode: "flyer",
     title: "Escalação",
-    hint: "Adicione os jogadores, escolha o título da arte e envie os arquivos.",
+    hint: "Preencha só o essencial para montar sua arte de escalação.",
     flyerTipo: "zz1fs",
     labels: {
-      data: "Título da arte *",
-      esc1: "Escudo 1 *",
-      esc2: "Escudo 2 *"
+      rodada: "Título da arte *",
+      data: "Subtítulo / data *",
+      mascote: "Imagem principal (opcional)",
+      esc1: "Escudo do time *"
     },
     placeholders: {
-      data: "Ex: Escalação oficial do time A"
+      rodada: "Ex: Escalação oficial",
+      data: "Ex: Hoje às 15h"
     },
     required: {
       esc1: true,
       esc2: false
     },
     phraseMenu: false,
-    hiddenFields: ["rodada", "hora", "arena", "mascote", "patro"],
-    showPlayerList: true
+    hiddenFields: ["hora", "arena", "esc2", "patro"]
   },
 
   contratacao: {
@@ -1962,20 +1955,18 @@ const PRODUCTS = {
   proximo_jogo: {
     mode: "flyer",
     title: "Próximo jogo",
-    hint: "Preencha o confronto, a competição e os escudos para criar a arte.",
+    hint: "Preencha só o essencial para criar a arte do próximo confronto.",
     flyerTipo: "zz1ft",
     labels: {
       rodada: "Confronto / chamada *",
       data: "Data e horário *",
-      hora: "Campeonato / competição *",
       arena: "Local (opcional)",
-      esc1: "Escudo da esquerda 1 *",
-      esc2: "Escudo da direita 2 *"
+      esc1: "Escudo do seu time *",
+      esc2: "Escudo adversário *"
     },
     placeholders: {
       rodada: "Ex: Semifinal • Próximo jogo",
       data: "Ex: Domingo • 15h30",
-      hora: "Ex: Campeonato municipal",
       arena: "Ex: Estádio municipal"
     },
     required: {
@@ -1983,19 +1974,19 @@ const PRODUCTS = {
       esc2: true
     },
     phraseMenu: false,
-    hiddenFields: ["mascote", "patro"]
+    hiddenFields: ["hora", "mascote", "patro"]
   },
 
   patrocinador: {
     mode: "flyer",
     title: "Patrocinador / Apoio",
-    hint: "Envie o escudo do time e os patrocinadores de uma vez.",
+    hint: "Preencha só o essencial para valorizar o apoiador do time.",
     flyerTipo: "zz1fj",
     labels: {
       rodada: "Título da arte *",
       data: "Texto principal *",
       esc1: "Escudo do time *",
-      patro: "Patrocinadores / logos (pode enviar vários) *"
+      esc2: "Logo do patrocinador *"
     },
     placeholders: {
       rodada: "Ex: Nosso patrocinador",
@@ -2003,50 +1994,15 @@ const PRODUCTS = {
     },
     required: {
       esc1: true,
-      esc2: false
+      esc2: true
     },
     phraseMenu: false,
-    hiddenFields: ["hora", "arena", "mascote", "esc2"]
+    hiddenFields: ["hora", "arena", "mascote", "patro"]
   }
 };
 
-function getArtilheiroRowHtml(mode = "resultado"){
-  if(mode === "escalacao"){
-    return `
-      <div class="artilheiroRow">
-        <input class="artilheiroNome" placeholder="Nome do jogador">
-        <input class="artilheiroGols" type="text" placeholder="Posição (opcional)">
-      </div>
-    `;
-  }
-
-  return `
-    <div class="artilheiroRow">
-      <input class="artilheiroNome" placeholder="Nome do jogador">
-      <input class="artilheiroGols" type="number" min="0" placeholder="Gols">
-    </div>
-  `;
-}
-
-function setArtilheirosMode(mode = "resultado"){
-  const wrap = document.getElementById("artilheirosWrap");
-  const title = document.querySelector(".field-artilheiros .sectionTitle");
-  const addBtn = document.getElementById("addArtilheiroBtn");
-  if(!wrap || !title || !addBtn) return;
-
-  if(mode === "escalacao"){
-    title.textContent = "Jogadores *";
-    addBtn.textContent = "+ Adicionar jogador";
-  }else{
-    title.textContent = "Artilheiros (opcional)";
-    addBtn.textContent = "+ Adicionar jogador";
-  }
-
-  wrap.innerHTML = getArtilheiroRowHtml(mode);
-}
-
 function updateProductFieldVisibility(product){
-  const flyerFields = ["rodada", "data", "hora", "arena", "mascote", "esc1", "esc2", "patro", "artilheiros"];
+  const flyerFields = ["rodada", "data", "hora", "arena", "mascote", "esc1", "esc2", "patro"];
 
   flyerFields.forEach((field)=>{
     const el = document.querySelector(`.field-${field}`);
@@ -2054,19 +2010,7 @@ function updateProductFieldVisibility(product){
     el.style.display = "";
   });
 
-  const artilheirosField = document.querySelector(".field-artilheiros");
-
-  if(!product){
-    if(artilheirosField) artilheirosField.style.display = "none";
-    setArtilheirosMode("resultado");
-    return;
-  }
-
-  if(product.mode === "resultado"){
-    if(artilheirosField) artilheirosField.style.display = "block";
-    setArtilheirosMode("resultado");
-    return;
-  }
+  if(!product || product.mode !== "flyer") return;
 
   const hiddenFields = Array.isArray(product.hiddenFields) ? product.hiddenFields : [];
 
@@ -2075,14 +2019,6 @@ function updateProductFieldVisibility(product){
     if(!el) return;
     el.style.display = "none";
   });
-
-  if(product.showPlayerList){
-    if(artilheirosField) artilheirosField.style.display = "block";
-    setArtilheirosMode("escalacao");
-  }else{
-    if(artilheirosField) artilheirosField.style.display = "none";
-    setArtilheirosMode("resultado");
-  }
 }
 
 function setCrestUI(dataUrl){
@@ -2861,9 +2797,15 @@ window.addEventListener("resize", ()=>{
 });
 
 function limparArtilheirosUI(){
-  const currentProduct = PRODUCTS[selectedProductInput.value];
-  const mode = currentProduct?.showPlayerList ? "escalacao" : "resultado";
-  setArtilheirosMode(mode);
+  const wrap = document.getElementById("artilheirosWrap");
+  if(!wrap) return;
+
+  wrap.innerHTML = `
+    <div class="artilheiroRow">
+      <input class="artilheiroNome" placeholder="Nome do jogador">
+      <input class="artilheiroGols" type="number" min="0" placeholder="Gols">
+    </div>
+  `;
 }
 
 function limparCamposAposEnviar(){
@@ -2889,12 +2831,10 @@ function limparCamposAposEnviar(){
     if(input) input.value = "";
   });
 
-  const currentProduct = PRODUCTS[selectedProductInput.value];
-
   const resetTexts = {
-    chosen_mascote: currentProduct?.labels?.mascote || "Nenhum arquivo",
-    chosen_escudo1: currentProduct?.labels?.esc1 || "Escudo / logo do time *",
-    chosen_escudo2: currentProduct?.labels?.esc2 || "Imagem do jogo *",
+    chosen_mascote: "Nenhum arquivo",
+    chosen_escudo1: "Escudo / logo do time *",
+    chosen_escudo2: "Imagem do jogo *",
     chosen_patrocinadores: "Nenhum arquivo"
   };
 
@@ -2971,28 +2911,6 @@ document.getElementById("pedidoForm").addEventListener("submit", async (e)=>{
   const artilheirosTexto = artilheiros
     .map(a => `${a.nome} (${a.gols} gol${a.gols === 1 ? "" : "s"})`)
     .join("; ");
-
-  if(productKey === "escalacao"){
-    const jogadores = [];
-
-    document.querySelectorAll("#artilheirosWrap .artilheiroRow").forEach(row=>{
-      const nome = row.querySelector(".artilheiroNome")?.value?.trim() || "";
-      const posicao = row.querySelector(".artilheiroGols")?.value?.trim() || "";
-
-      if(nome){
-        jogadores.push({ nome, posicao });
-      }
-    });
-
-    fd.append("jogadores_json", JSON.stringify(jogadores));
-    fd.append(
-      "jogadores_texto",
-      jogadores.map(j => j.posicao ? `${j.nome} - ${j.posicao}` : j.nome).join("; ")
-    );
-  } else {
-    fd.append("jogadores_json", "[]");
-    fd.append("jogadores_texto", "");
-  }
 
   if(isResultado){
     fd.append("artilheiros", artilheirosJson);
@@ -3202,7 +3120,6 @@ async function acompanharResultado(pedidoId){
   }, 5000);
 }
 
-setArtilheirosMode("resultado");
 applyLocal();
 refreshMe();
 carregarHistorico();
@@ -3216,19 +3133,20 @@ document.getElementById("btnAtualizar").addEventListener("click", refreshMe);
 
 document.getElementById("addArtilheiroBtn")?.addEventListener("click", ()=>{
   const wrap = document.getElementById("artilheirosWrap");
-  const currentProduct = PRODUCTS[selectedProductInput.value];
-  const mode = currentProduct?.showPlayerList ? "escalacao" : "resultado";
 
   const row = document.createElement("div");
   row.className = "artilheiroRow";
-  row.outerHTML = "";
 
-  wrap.insertAdjacentHTML("beforeend", getArtilheiroRowHtml(mode));
+  row.innerHTML = `
+    <input class="artilheiroNome" placeholder="Nome do jogador">
+    <input class="artilheiroGols" type="number" min="0" placeholder="Gols">
+  `;
+
+  wrap.appendChild(row);
 });
 </script>
 </body>
 </html>
-
 
 
 
