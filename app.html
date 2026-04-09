@@ -615,7 +615,7 @@
     body.mode-flyer #dynamicHint{
       display:block !important;
       width:max-content;
-      max-width:420px;
+      max-width:min(420px, calc(100% - 28px));
       margin:6px 0 14px auto;
       padding:18px 24px;
       text-align:left;
@@ -627,6 +627,23 @@
       border-radius:30px 30px 10px 30px;
       box-shadow:0 10px 26px rgba(162,175,194,.14);
       align-self:flex-end;
+      position:relative;
+      overflow:visible;
+      word-break:break-word;
+    }
+
+    body.mode-result #dynamicHint::after,
+    body.mode-flyer #dynamicHint::after{
+      content:"";
+      position:absolute;
+      right:-10px;
+      bottom:12px;
+      width:18px;
+      height:18px;
+      background:linear-gradient(180deg, #eef8ea, #e3f1dd);
+      border-right:1px solid #dfead8;
+      border-bottom:1px solid #dfead8;
+      clip-path:polygon(0 0, 100% 50%, 0 100%);
     }
 
     .tabRadio{
@@ -717,7 +734,7 @@
 #labelPatro{
       display:block;
       width:max-content;
-      max-width:420px;
+      max-width:min(420px, calc(100% - 28px));
       margin:6px 0 14px auto;
       padding:18px 24px;
       text-align:left;
@@ -729,6 +746,27 @@
       border-radius:30px 30px 10px 30px;
       box-shadow:0 10px 26px rgba(162,175,194,.14);
       align-self:flex-end;
+      position:relative;
+      overflow:visible;
+      word-break:break-word;
+    }
+
+    .sectionTitle::after,
+    #labelRodada::after,
+    #labelHora::after,
+    #labelArena::after,
+    #labelMascote::after,
+    #labelPatro::after{
+      content:"";
+      position:absolute;
+      right:-10px;
+      bottom:12px;
+      width:18px;
+      height:18px;
+      background:linear-gradient(180deg, #eef8ea, #e3f1dd);
+      border-right:1px solid #dfead8;
+      border-bottom:1px solid #dfead8;
+      clip-path:polygon(0 0, 100% 50%, 0 100%);
     }
 
     .hiddenLabel{
@@ -1307,6 +1345,7 @@
       .card{
         padding:12px;
         border-radius:18px;
+        overflow:hidden;
       }
 
       .hero{
@@ -1357,11 +1396,30 @@
         max-width:92px;
       }
 
-      .sectionTitle{
-        max-width:100%;
+      #dynamicHint,
+      .sectionTitle,
+      #labelRodada,
+      #labelHora,
+      #labelArena,
+      #labelMascote,
+      #labelPatro{
+        max-width:calc(100% - 18px);
         font-size:14px;
-        padding:14px 16px;
-        margin:4px 0 10px auto;
+        padding:12px 14px;
+        margin:4px 10px 10px auto;
+      }
+
+      #dynamicHint::after,
+      .sectionTitle::after,
+      #labelRodada::after,
+      #labelHora::after,
+      #labelArena::after,
+      #labelMascote::after,
+      #labelPatro::after{
+        right:-8px;
+        bottom:10px;
+        width:14px;
+        height:14px;
       }
 
       body.mode-result .field-placar,
@@ -1378,6 +1436,7 @@
       body.mode-flyer .field-esc2,
       body.mode-flyer .field-patro{
         align-items:stretch;
+        min-width:0;
       }
 
       .placarRow,
@@ -1386,6 +1445,8 @@
       .phraseWrap,
       .filePlus{
         width:100%;
+        max-width:100%;
+        min-width:0;
       }
 
       .placarRow{
@@ -2982,6 +3043,7 @@ document.getElementById("addArtilheiroBtn")?.addEventListener("click", ()=>{
 </script>
 </body>
 </html>
+
 
 
 
