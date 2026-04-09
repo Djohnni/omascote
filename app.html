@@ -3029,13 +3029,23 @@ async function carregarHistorico(){
         <b>${p.tipo}</b><br>
         ID: ${p.id}<br>
         Status: ${p.status}<br>
-        ${p.imagem_url ? `<img src="${p.imagem_url}" style="width:100px;">` : ""}
+
+        ${p.imagem_url ? `<img src="${p.imagem_url}" style="width:100px;"><br>` : ""}
+
+        <button onclick="baixarPedido('${p.id}')" style="margin-top:8px;padding:6px 10px;border-radius:6px;border:none;background:#2ecc71;color:#fff;font-weight:700;cursor:pointer;">
+          Baixar novamente
+        </button>
       </div>
     `).join("");
 
   }catch{
     historicoVazioEl.textContent = "Erro de rede";
   }
+}
+
+function baixarPedido(id){
+  const url = `${API_BASE}/pedidos/${id}/zip`;
+  window.open(url, "_blank");
 }
 
 async function acompanharResultado(pedidoId){
@@ -3106,6 +3116,7 @@ document.getElementById("addArtilheiroBtn")?.addEventListener("click", ()=>{
 </script>
 </body>
 </html>
+
 
 
 
