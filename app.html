@@ -1100,6 +1100,46 @@
       box-shadow:0 2px 10px rgba(140,160,190,.08);
     }
 
+    .savedBadge{
+      display:inline-block;
+      margin-top:8px;
+      padding:6px 10px;
+      border-radius:999px;
+      background:#e8fff1;
+      border:1px solid #b7ebc9;
+      color:#127a43;
+      font-size:12px;
+      font-weight:900;
+    }
+
+    .escalacaoActions{
+      display:none;
+      gap:10px;
+      flex-wrap:wrap;
+      justify-content:flex-end;
+      width:min(700px, 100%);
+      margin-top:10px;
+    }
+
+    .escActionBtn{
+      padding:12px 16px;
+      border-radius:16px;
+      font-size:13px;
+      font-weight:900;
+      box-shadow:none;
+    }
+
+    .escActionSave{
+      background:linear-gradient(135deg, #2ecc71, #1b9b51);
+      color:#fff;
+    }
+
+    .escActionDelete{
+      background:#ffffff;
+      border:1px solid #d9dfeb;
+      color:#334155;
+    }
+
     .modalMask{
       position:fixed;
       inset:0;
@@ -1694,6 +1734,10 @@
                 </div>
               </div>
               <div class="addArtilheiro" id="addArtilheiroBtn">+ Adicionar jogador</div>
+              <div class="escalacaoActions" id="escalacaoActions">
+                <button type="button" class="escActionBtn escActionSave" id="btnSalvarEscalacao">Salvar atletas</button>
+                <button type="button" class="escActionBtn escActionDelete" id="btnExcluirEscalacao">Excluir atletas salvos</button>
+              </div>
             </div>
 
             <div class="field-rodada">
@@ -1892,6 +1936,8 @@ const selectorStage = document.querySelector(".selectorStage");
 const crestPreview = document.getElementById("crestPreview");
 const crestPlaceholder = document.getElementById("crestPlaceholder");
 const CREST_KEY = "omascote_escudo_principal_dataurl";
+const TEAM_ESCUDO_FORM_KEY = "omascote_escudo_form_dataurl";
+const ESCALACAO_JOGADORES_KEY = "omascote_escalacao_jogadores";
 
 const PRODUCTS = {
   resultado: {
@@ -2065,7 +2111,9 @@ function updateChosenPlaceholders(product){
     chosenMascote.textContent = product?.labels?.mascote || "Nenhum arquivo";
   }
   if(chosenEscudo1 && (!escudo1Input.files || escudo1Input.files.length === 0)){
-    chosenEscudo1.textContent = product?.labels?.esc1 || "Escudo / logo do time *";
+    chosenEscudo1.innerHTML = getSavedEscudo1Exists()
+      ? `<strong style="color:#127a43;">Escudo salvo ✓</strong>`
+      : (product?.labels?.esc1 || "Escudo / logo do time *");
   }
   if(chosenEscudo2 && (!escudo2Input.files || escudo2Input.files.length === 0)){
     chosenEscudo2.textContent = product?.labels?.esc2 || "Imagem do jogo *";
@@ -2085,6 +2133,9 @@ function updateProductFieldVisibility(product){
   });
 
   const artilheirosField = document.querySelector(".field-artilheiros");
+  const escalacaoActions = document.getElementById("escalacaoActions");
+
+  if(escalacaoActions) escalacaoActions.style.display = "none";
 
   if(!product){
     if(artilheirosField) artilheirosField.style.display = "none";
@@ -2108,7 +2159,9 @@ function updateProductFieldVisibility(product){
 
   if(product.showPlayerList){
     if(artilheirosField) artilheirosField.style.display = "flex";
+    if(escalacaoActions) escalacaoActions.style.display = "flex";
     setArtilheirosMode("escalacao");
+    fillEscalacaoPlayersUI(loadSavedEscalacaoPlayers());
   }else{
     if(artilheirosField) artilheirosField.style.display = "none";
     setArtilheirosMode("resultado");
@@ -2136,6 +2189,101 @@ function readFileAsDataURL(file){
     r.onerror = reject;
     r.readAsDataURL(file);
   });
+}
+
+function dataURLToFile(dataUrl, filename){
+  const parts = String(dataUrl || "").split(",");
+  if(parts.length < 2) return null;
+
+  const mimeMatch = parts[0].match(/data:(.*?);base64/);
+  const mime = mimeMatch ? mimeMatch[1] : "image/png";
+  const binary = atob(parts[1]);
+  const len = binary.length;
+  const bytes = new Uint8Array(len);
+
+  for(let i = 0; i < len; i++){
+    bytes[i] = binary.charCodeAt(i);
+  }
+
+  return new File([bytes], filename, { type: mime });
+}
+
+async function saveEscudo1ToLocalFromFile(file){
+  if(!file) return;
+  try{
+    const dataUrl = await readFileAsDataURL(file);
+    localStorage.setItem(TEAM_ESCUDO_FORM_KEY, dataUrl);
+  }catch(e){}
+}
+
+function getSavedEscudo1File(){
+  const dataUrl = localStorage.getItem(TEAM_ESCUDO_FORM_KEY);
+  if(!dataUrl) return null;
+  return dataURLToFile(dataUrl, "escudo_time_salvo.png");
+}
+
+function getSavedEscudo1Exists(){
+  return !!localStorage.getItem(TEAM_ESCUDO_FORM_KEY);
+}
+
+function getEscalacaoPlayersFromUI(){
+  const jogadores = [];
+
+  document.querySelectorAll("#artilheirosWrap .artilheiroRow").forEach(row=>{
+    const nome = row.querySelector(".artilheiroNome")?.value?.trim() || "";
+    const posicao = row.querySelector(".artilheiroGols")?.value?.trim() || "";
+
+    if(nome){
+      jogadores.push({ nome, posicao });
+    }
+  });
+
+  return jogadores;
+}
+
+function fillEscalacaoPlayersUI(jogadores){
+  const wrap = document.getElementById("artilheirosWrap");
+  if(!wrap) return;
+
+  const lista = Array.isArray(jogadores) ? jogadores.filter(j => j && j.nome) : [];
+  if(lista.length === 0){
+    wrap.innerHTML = getArtilheiroRowHtml("escalacao");
+    return;
+  }
+
+  wrap.innerHTML = lista.map(j => `
+    <div class="artilheiroRow">
+      <input class="artilheiroNome" placeholder="Nome do jogador" value="${String(j.nome || "").replace(/"/g, "&quot;")}">
+      <input class="artilheiroGols" type="text" placeholder="Posição (opcional)" value="${String(j.posicao || "").replace(/"/g, "&quot;")}">
+    </div>
+  `).join("");
+}
+
+function loadSavedEscalacaoPlayers(){
+  try{
+    const raw = localStorage.getItem(ESCALACAO_JOGADORES_KEY);
+    if(!raw) return [];
+    const parsed = JSON.parse(raw);
+    return Array.isArray(parsed) ? parsed : [];
+  }catch(e){
+    return [];
+  }
+}
+
+function saveEscalacaoPlayersToLocal(){
+  const jogadores = getEscalacaoPlayersFromUI();
+  if(jogadores.length === 0){
+    alert("Adicione pelo menos um atleta para salvar.");
+    return;
+  }
+  localStorage.setItem(ESCALACAO_JOGADORES_KEY, JSON.stringify(jogadores));
+  alert("Atletas salvos com sucesso.");
+}
+
+function clearEscalacaoPlayersFromLocal(){
+  localStorage.removeItem(ESCALACAO_JOGADORES_KEY);
+  fillEscalacaoPlayersUI([]);
+  alert("Atletas salvos excluídos.");
 }
 
 function applyThemeFromImage(img){
@@ -2205,10 +2353,14 @@ function bindPlusUpload(inputId, chosenId){
     }
   });
 
-  input.addEventListener("change", ()=>{
+  input.addEventListener("change", async ()=>{
     if(!input.files || input.files.length === 0){
       const currentProduct = PRODUCTS[selectedProductInput.value];
-      if(inputId === "escudo1") chosen.textContent = currentProduct?.labels?.esc1 || "Escudo / logo do time *";
+      if(inputId === "escudo1"){
+        chosen.innerHTML = getSavedEscudo1Exists()
+          ? `<strong style="color:#127a43;">Escudo salvo ✓</strong>`
+          : (currentProduct?.labels?.esc1 || "Escudo / logo do time *");
+      }
       else if(inputId === "escudo2") chosen.textContent = currentProduct?.labels?.esc2 || "Imagem do jogo *";
       else if(inputId === "mascote") chosen.textContent = currentProduct?.labels?.mascote || "Nenhum arquivo";
       else if(inputId === "patrocinadores") chosen.textContent = currentProduct?.labels?.patro || "Nenhum arquivo";
@@ -2219,6 +2371,10 @@ function bindPlusUpload(inputId, chosenId){
       chosen.textContent = `${input.files.length} arquivo(s) selecionado(s)`;
     }else{
       chosen.textContent = input.files[0].name || "Arquivo selecionado";
+    }
+
+    if(inputId === "escudo1" && input.files[0]){
+      await saveEscudo1ToLocalFromFile(input.files[0]);
     }
   });
 }
@@ -2837,7 +2993,11 @@ function updateChosenFromInput(inputId){
   if(!input || !chosen) return;
 
   if(!input.files || input.files.length === 0){
-    chosen.textContent = "Nenhum arquivo";
+    if(inputId === "escudo1" && getSavedEscudo1Exists()){
+      chosen.innerHTML = `<strong style="color:#127a43;">Escudo salvo ✓</strong>`;
+    }else{
+      chosen.textContent = "Nenhum arquivo";
+    }
     return;
   }
 
@@ -2855,6 +3015,8 @@ cropOkBtn.addEventListener("click", async ()=>{
     setInputFile(crop.inputId, outFile);
 
     if(crop.inputId === "escudo1"){
+      await saveEscudo1ToLocalFromFile(outFile);
+
       const currentProduct = PRODUCTS[selectedProductInput.value];
       const currentIsResult = currentProduct?.mode === "resultado";
 
@@ -2927,7 +3089,6 @@ function limparCamposAposEnviar(){
 
   const resetTexts = {
     chosen_mascote: currentProduct?.labels?.mascote || "Nenhum arquivo",
-    chosen_escudo1: currentProduct?.labels?.esc1 || "Escudo / logo do time *",
     chosen_escudo2: currentProduct?.labels?.esc2 || "Imagem do jogo *",
     chosen_patrocinadores: currentProduct?.labels?.patro || "Nenhum arquivo"
   };
@@ -2936,6 +3097,17 @@ function limparCamposAposEnviar(){
     const el = document.getElementById(id);
     if(el) el.textContent = txt;
   });
+
+  const escudo1Chosen = document.getElementById("chosen_escudo1");
+  if(escudo1Chosen){
+    escudo1Chosen.innerHTML = getSavedEscudo1Exists()
+      ? `<strong style="color:#127a43;">Escudo salvo ✓</strong>`
+      : (currentProduct?.labels?.esc1 || "Escudo / logo do time *");
+  }
+
+  if(currentProduct?.showPlayerList){
+    fillEscalacaoPlayersUI(loadSavedEscalacaoPlayers());
+  }
 }
 
 document.getElementById("pedidoForm").addEventListener("submit", async (e)=>{
@@ -3058,8 +3230,10 @@ document.getElementById("pedidoForm").addEventListener("submit", async (e)=>{
   const mascoteFile = document.getElementById("mascote").files[0];
   if (mascoteFile) fd.append("mascote", mascoteFile);
 
-  const escudo1File = document.getElementById("escudo1").files[0];
+  let escudo1File = document.getElementById("escudo1").files[0];
   const escudo2File = document.getElementById("escudo2").files[0];
+
+  if (!escudo1File) escudo1File = getSavedEscudo1File();
 
   if (escudo1File) fd.append("escudo1", escudo1File);
   if (escudo2File) fd.append("escudo2", escudo2File);
@@ -3247,6 +3421,7 @@ setArtilheirosMode("resultado");
 applyLocal();
 refreshMe();
 carregarHistorico();
+updateChosenPlaceholders(null);
 
 document.getElementById("btnSair").addEventListener("click", ()=>{
   localStorage.removeItem("omascote_token");
@@ -3262,9 +3437,13 @@ document.getElementById("addArtilheiroBtn")?.addEventListener("click", ()=>{
 
   wrap.insertAdjacentHTML("beforeend", getArtilheiroRowHtml(mode));
 });
+
+document.getElementById("btnSalvarEscalacao")?.addEventListener("click", saveEscalacaoPlayersToLocal);
+document.getElementById("btnExcluirEscalacao")?.addEventListener("click", clearEscalacaoPlayersFromLocal);
 </script>
 </body>
 </html>
+
 
 
 
