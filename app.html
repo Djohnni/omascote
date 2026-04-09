@@ -3046,12 +3046,12 @@ async function carregarHistorico(){
 
 async function baixarPedido(id){
   try{
-    const r = await fetch(`${API_BASE}/pedidos/${id}/zip`, {
+    const r = await fetch(`${API_BASE}/pedidos/${id}/download-resultado`, {
       headers: { "Authorization": "Bearer " + token }
     });
 
     if(!r.ok){
-      alert("Erro ao baixar pedido");
+      alert("Erro ao baixar imagem");
       return;
     }
 
@@ -3060,7 +3060,7 @@ async function baixarPedido(id){
 
     const a = document.createElement("a");
     a.href = url;
-    a.download = id + ".zip";
+    a.download = id + "_resultado.png";
     document.body.appendChild(a);
     a.click();
     a.remove();
@@ -3140,6 +3140,7 @@ document.getElementById("addArtilheiroBtn")?.addEventListener("click", ()=>{
 </script>
 </body>
 </html>
+
 
 
 
