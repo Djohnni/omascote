@@ -799,11 +799,13 @@
     body.mode-result .formGrid{
       grid-template-columns:1fr;
       grid-template-areas:
+        "hora"
         "placar"
         "artilheiros"
         "data"
         "esc2"
         "esc1"
+        "mascote"
         "submit"
         "msg";
       gap:18px;
@@ -1431,9 +1433,12 @@
       body.mode-result .field-placar,
       body.mode-result .field-artilheiros,
       body.mode-result .field-data,
+      body.mode-result .field-hora,
       body.mode-result .field-esc1,
       body.mode-result .field-esc2,
+      body.mode-result .field-mascote,
       body.mode-flyer .field-rodada,
+      body.mode-flyer .field-artilheiros,
       body.mode-flyer .field-data,
       body.mode-flyer .field-hora,
       body.mode-flyer .field-arena,
@@ -3260,6 +3265,8 @@ document.getElementById("addArtilheiroBtn")?.addEventListener("click", ()=>{
 </script>
 </body>
 </html>
+
+
 
 
 
