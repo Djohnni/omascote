@@ -607,6 +607,28 @@
       line-height:1.35;
     }
 
+    #dynamicHint{
+      display:none;
+    }
+
+    body.mode-result #dynamicHint,
+    body.mode-flyer #dynamicHint{
+      display:block !important;
+      width:max-content;
+      max-width:420px;
+      margin:6px 0 14px auto;
+      padding:18px 24px;
+      text-align:left;
+      font-size:17px;
+      font-weight:900;
+      color:#24543f !important;
+      background:linear-gradient(180deg, #eef8ea, #e3f1dd);
+      border:1px solid #dfead8;
+      border-radius:30px 30px 10px 30px;
+      box-shadow:0 10px 26px rgba(162,175,194,.14);
+      align-self:flex-end;
+    }
+
     .tabRadio{
       position:absolute;
       left:-9999px;
@@ -726,12 +748,10 @@
     body.mode-result .msg,
     body.mode-result .sep,
     body.mode-result #dynamicTitle,
-    body.mode-result #dynamicHint,
     body.mode-flyer .meta,
     body.mode-flyer .msg,
     body.mode-flyer .sep,
-    body.mode-flyer #dynamicTitle,
-    body.mode-flyer #dynamicHint{
+    body.mode-flyer #dynamicTitle{
       display:none !important;
     }
 
@@ -2105,7 +2125,7 @@ function selectProduct(productKey){
   });
 
   dynamicTitleEl.textContent = product.title;
-  dynamicHintEl.textContent = product.hint;
+  dynamicHintEl.textContent = `Para ${product.title}, preciso dessas informações abaixo...`;
   btnEnviar.textContent = "Criar minha arte 🚀";
 
   setText("labelRodada", product.labels?.rodada || "Título da arte *");
@@ -2962,6 +2982,7 @@ document.getElementById("addArtilheiroBtn")?.addEventListener("click", ()=>{
 </script>
 </body>
 </html>
+
 
 
 
