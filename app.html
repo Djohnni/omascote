@@ -669,6 +669,7 @@
     body.mode-flyer .formGrid{
       grid-template-columns:1fr;
       grid-template-areas:
+        "rodada"
         "artilheiros"
         "data"
         "hora"
@@ -685,15 +686,14 @@
 
     body.mode-result .formGrid{
       grid-template-areas:
-        "hora"
-        "placar"
-        "artilheiros"
-        "data"
-        "esc2"
-        "esc1"
-        "mascote"
-        "submit"
-        "msg";
+        "hora hora"
+        "placar placar"
+        "artilheiros artilheiros"
+        "data data"
+        "esc2 esc1"
+        "mascote mascote"
+        "submit submit"
+        "msg msg";
     }
 
     body.mode-result .field-placar,
@@ -829,6 +829,7 @@
       align-items:flex-end;
     }
 
+    body.mode-flyer .field-rodada,
     body.mode-flyer .field-artilheiros,
     body.mode-flyer .field-data,
     body.mode-flyer .field-hora,
@@ -1897,8 +1898,8 @@ const PRODUCTS = {
       hora: "Campeonato / competição *",
       data: "Frase na imagem *",
       esc1: "Imagem do jogo *",
-      esc2: "Escudo / logo do seu time *",
-      mascote: "Escudo / logo do adversário (opcional)"
+      esc2: "Escudo / logo do time *",
+      mascote: "Escudo do adversário (opcional)"
     },
     placeholders: {
       hora: "Ex: Campeonato municipal",
@@ -1915,7 +1916,7 @@ const PRODUCTS = {
   escalacao: {
     mode: "flyer",
     title: "Escalação",
-    hint: "Adicione os jogadores, defina o título da arte e envie os arquivos.",
+    hint: "Adicione os jogadores, defina o título da arte e envie os escudos.",
     flyerTipo: "zz1fs",
     labels: {
       data: "Título da arte *",
@@ -2036,12 +2037,11 @@ function setArtilheirosMode(mode = "resultado"){
 
   if(mode === "escalacao"){
     title.textContent = "Adicionar jogador";
-    addBtn.textContent = "+ Adicionar jogador";
   }else{
     title.textContent = "Artilheiros (opcional)";
-    addBtn.textContent = "+ Adicionar jogador";
   }
 
+  addBtn.textContent = "+ Adicionar jogador";
   wrap.innerHTML = getArtilheiroRowHtml(mode);
 }
 
@@ -2071,7 +2071,7 @@ function updateChosenPlaceholders(product){
 }
 
 function updateProductFieldVisibility(product){
-  const flyerFields = ["rodada", "data", "hora", "arena", "mascote", "esc1", "esc2", "patro", "artilheiros"];
+  const flyerFields = ["rodada", "artilheiros", "data", "hora", "arena", "mascote", "esc1", "esc2", "patro"];
 
   flyerFields.forEach((field)=>{
     const el = document.querySelector(`.field-${field}`);
