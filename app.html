@@ -1900,121 +1900,126 @@ const PRODUCTS = {
       esc1: true,
       esc2: true
     },
-    phraseMenu: true
+    phraseMenu: true,
+    hiddenFields: []
   },
 
   escalacao: {
     mode: "flyer",
     title: "Escalação",
-    hint: "Monte a arte da escalação com título, subtítulo, escudo e imagem principal.",
+    hint: "Preencha só o essencial para montar sua arte de escalação.",
     flyerTipo: "zz1fs",
     labels: {
       rodada: "Título da arte *",
       data: "Subtítulo / data *",
-      hora: "Observações (opcional)",
-      arena: "Texto extra (opcional)",
       mascote: "Imagem principal (opcional)",
-      esc1: "Escudo do time *",
-      esc2: "Imagem complementar (opcional)",
-      patro: "Imagens extras / patrocinadores (opcional) — pode enviar várias"
+      esc1: "Escudo do time *"
     },
     placeholders: {
       rodada: "Ex: Escalação oficial",
-      data: "Ex: Hoje às 15h",
-      hora: "Ex: Campeonato municipal",
-      arena: "Ex: Estádio central"
+      data: "Ex: Hoje às 15h"
     },
     required: {
       esc1: true,
       esc2: false
     },
-    phraseMenu: false
+    phraseMenu: false,
+    hiddenFields: ["hora", "arena", "esc2", "patro"]
   },
 
   contratacao: {
     mode: "flyer",
     title: "Contratação",
-    hint: "Crie a arte de apresentação com escudo, foto do jogador e textos do anúncio.",
+    hint: "Preencha só o essencial para anunciar o novo jogador.",
     flyerTipo: "zz1fm",
     labels: {
       rodada: "Título da arte *",
-      data: "Nome ou texto principal *",
-      hora: "Observações (opcional)",
-      arena: "Texto secundário (opcional)",
-      mascote: "Imagem extra (opcional)",
+      data: "Nome do jogador *",
+      hora: "Posição / idade (opcional)",
       esc1: "Escudo do time *",
-      esc2: "Foto do jogador *",
-      patro: "Logos extras / apoiadores (opcional) — pode enviar várias"
+      esc2: "Foto do jogador *"
     },
     placeholders: {
       rodada: "Ex: Novo reforço",
       data: "Ex: João Silva",
-      hora: "Ex: Atacante • 22 anos",
-      arena: "Ex: Bem-vindo ao clube"
+      hora: "Ex: Atacante • 22 anos"
     },
     required: {
       esc1: true,
       esc2: true
     },
-    phraseMenu: false
+    phraseMenu: false,
+    hiddenFields: ["arena", "mascote", "patro"]
   },
 
   proximo_jogo: {
     mode: "flyer",
     title: "Próximo jogo",
-    hint: "Monte a arte pré-jogo com confronto, data, informações da partida e imagens.",
+    hint: "Preencha só o essencial para criar a arte do próximo confronto.",
     flyerTipo: "zz1ft",
     labels: {
       rodada: "Confronto / chamada *",
       data: "Data e horário *",
-      hora: "Observações (opcional)",
-      arena: "Arena / local (opcional)",
-      mascote: "Imagem principal (opcional)",
+      arena: "Local (opcional)",
       esc1: "Escudo do seu time *",
-      esc2: "Escudo adversário *",
-      patro: "Patrocinadores (opcional) — pode enviar várias"
+      esc2: "Escudo adversário *"
     },
     placeholders: {
       rodada: "Ex: Semifinal • Próximo jogo",
       data: "Ex: Domingo • 15h30",
-      hora: "Ex: Valendo vaga na final",
       arena: "Ex: Estádio municipal"
     },
     required: {
       esc1: true,
       esc2: true
     },
-    phraseMenu: false
+    phraseMenu: false,
+    hiddenFields: ["hora", "mascote", "patro"]
   },
 
   patrocinador: {
     mode: "flyer",
     title: "Patrocinador / Apoio",
-    hint: "Crie a arte do patrocinador com escudo do time, logo principal e textos promocionais.",
+    hint: "Preencha só o essencial para valorizar o apoiador do time.",
     flyerTipo: "zz1fj",
     labels: {
       rodada: "Título da arte *",
       data: "Texto principal *",
-      hora: "Observações (opcional)",
-      arena: "Texto secundário (opcional)",
-      mascote: "Imagem principal (opcional)",
       esc1: "Escudo do time *",
-      esc2: "Logo do patrocinador *",
-      patro: "Outros logos / imagens extras (opcional) — pode enviar várias"
+      esc2: "Logo do patrocinador *"
     },
     placeholders: {
       rodada: "Ex: Nosso patrocinador",
-      data: "Ex: Conheça quem apoia nosso time",
-      hora: "Ex: Condição especial esta semana",
-      arena: "Ex: Rua central, 123"
+      data: "Ex: Conheça quem apoia nosso time"
     },
     required: {
       esc1: true,
       esc2: true
     },
-    phraseMenu: false
+    phraseMenu: false,
+    hiddenFields: ["hora", "arena", "mascote", "patro"]
   }
 };
+
+function updateProductFieldVisibility(product){
+  const flyerFields = ["rodada", "data", "hora", "arena", "mascote", "esc1", "esc2", "patro"];
+
+  flyerFields.forEach((field)=>{
+    const el = document.querySelector(`.field-${field}`);
+    if(!el) return;
+    el.style.display = "";
+  });
+
+  if(!product || product.mode !== "flyer") return;
+
+  const hiddenFields = Array.isArray(product.hiddenFields) ? product.hiddenFields : [];
+
+  hiddenFields.forEach((field)=>{
+    const el = document.querySelector(`.field-${field}`);
+    if(!el) return;
+    el.style.display = "none";
+  });
+}
 
 function setCrestUI(dataUrl){
   if(!dataUrl){
@@ -2221,6 +2226,7 @@ function selectProduct(productKey){
 
   setRequired("escudo1", product.required?.esc1);
   setRequired("escudo2", product.required?.esc2);
+  updateProductFieldVisibility(product);
 
   const openPhraseBtn = document.getElementById("openPhraseBtn");
   if(openPhraseBtn){
@@ -2270,6 +2276,7 @@ btnTrocarTipo.addEventListener("click", ()=>{
   selectedProductInput.value = "";
   document.body.classList.remove("modeChosen", "mode-flyer", "mode-result");
   document.querySelectorAll(".optionBtn").forEach(btn=> btn.classList.remove("active"));
+  updateProductFieldVisibility(null);
   closePhraseMenu();
   selectorStage?.classList.remove("open");
   window.scrollTo({ top: 0, behavior: "smooth" });
@@ -3140,6 +3147,7 @@ document.getElementById("addArtilheiroBtn")?.addEventListener("click", ()=>{
 </script>
 </body>
 </html>
+
 
 
 
