@@ -1156,6 +1156,20 @@
       align-items:flex-end;
     }
 
+    .optionalField.locked-open .optionalToggle{
+      cursor:default;
+    }
+
+    .optionalField.locked-open .optionalToggleIcon{
+      display:none;
+    }
+
+    .optionalField.locked-open .optionalContent{
+      display:flex;
+      flex-direction:column;
+      align-items:flex-end;
+    }
+
     .field-optional-title{
       display:none;
       width:100%;
@@ -1794,29 +1808,38 @@
               </div>
             </div>
 
-            <div class="field-rodada">
-              <label id="labelRodada">Título da arte *</label>
-              <input id="rodada" />
+            <div class="field-rodada optionalField" data-optional-field="rodada">
+              <button type="button" class="optionalToggle" data-optional-toggle="rodada">
+                <span class="optionalToggleText" id="labelRodada">Título da arte *</span>
+                <span class="optionalToggleIcon">▼</span>
+              </button>
+              <div class="optionalContent" data-optional-content="rodada">
+                <input id="rodada" />
+              </div>
             </div>
 
-            <div class="field-data">
-              <label class="sectionTitle" id="labelData">Frase na imagem *</label>
+            <div class="field-data optionalField" data-optional-field="data">
+              <button type="button" class="optionalToggle" data-optional-toggle="data">
+                <span class="optionalToggleText" id="labelData">Frase na imagem *</span>
+                <span class="optionalToggleIcon">▼</span>
+              </button>
+              <div class="optionalContent" data-optional-content="data">
+                <div class="phraseWrap">
+                  <input id="dataJogo" required />
+                  <button type="button" class="phraseBtn" id="openPhraseBtn" aria-label="Abrir frases prontas">+</button>
 
-              <div class="phraseWrap">
-                <input id="dataJogo" required />
-                <button type="button" class="phraseBtn" id="openPhraseBtn" aria-label="Abrir frases prontas">+</button>
-
-                <div class="phraseMenu" id="phraseMenu">
-                  <button type="button" class="phraseOption">Vitória na raça, no talento e no coração.</button>
-                  <button type="button" class="phraseOption">Mais 3 pontos pra conta e motivo de sobra pra comemorar.</button>
-                  <button type="button" class="phraseOption">Fim de jogo com vitória e orgulho da nossa camisa.</button>
-                  <button type="button" class="phraseOption">Jogamos juntos, lutamos juntos e vencemos juntos.</button>
-                  <button type="button" class="phraseOption">Resultado conquistado com raça do começo ao fim.</button>
-                  <button type="button" class="phraseOption">Hoje teve entrega, foco e vitória merecida.</button>
-                  <button type="button" class="phraseOption">Dentro de campo, mostramos a força do nosso time.</button>
-                  <button type="button" class="phraseOption">Mais uma batalha vencida com união e determinação.</button>
-                  <button type="button" class="phraseOption">A vitória é nossa e a torcida faz parte disso.</button>
-                  <button type="button" class="phraseOption">No apito final, a recompensa veio: vencemos.</button>
+                  <div class="phraseMenu" id="phraseMenu">
+                    <button type="button" class="phraseOption">Vitória na raça, no talento e no coração.</button>
+                    <button type="button" class="phraseOption">Mais 3 pontos pra conta e motivo de sobra pra comemorar.</button>
+                    <button type="button" class="phraseOption">Fim de jogo com vitória e orgulho da nossa camisa.</button>
+                    <button type="button" class="phraseOption">Jogamos juntos, lutamos juntos e vencemos juntos.</button>
+                    <button type="button" class="phraseOption">Resultado conquistado com raça do começo ao fim.</button>
+                    <button type="button" class="phraseOption">Hoje teve entrega, foco e vitória merecida.</button>
+                    <button type="button" class="phraseOption">Dentro de campo, mostramos a força do nosso time.</button>
+                    <button type="button" class="phraseOption">Mais uma batalha vencida com união e determinação.</button>
+                    <button type="button" class="phraseOption">A vitória é nossa e a torcida faz parte disso.</button>
+                    <button type="button" class="phraseOption">No apito final, a recompensa veio: vencemos.</button>
+                  </div>
                 </div>
               </div>
             </div>
@@ -1858,27 +1881,37 @@
               </div>
             </div>
 
-            <div class="field-esc1">
-              <label id="labelEsc1" class="hiddenLabel">Escudo / logo do time *</label>
-              <input id="escudo1" class="fileHidden" type="file" required />
-              <div class="filePlus" data-file-for="escudo1" tabindex="0" role="button" aria-label="Enviar arquivo 1">
-                <div class="left">
-                  <div class="name"></div>
-                  <div class="chosen placeholderLike" id="chosen_escudo1">Escudo / logo do time *</div>
+            <div class="field-esc1 optionalField" data-optional-field="esc1">
+              <button type="button" class="optionalToggle" data-optional-toggle="esc1">
+                <span class="optionalToggleText" id="labelEsc1">Escudo / logo do time *</span>
+                <span class="optionalToggleIcon">▼</span>
+              </button>
+              <div class="optionalContent" data-optional-content="esc1">
+                <input id="escudo1" class="fileHidden" type="file" required />
+                <div class="filePlus" data-file-for="escudo1" tabindex="0" role="button" aria-label="Enviar arquivo 1">
+                  <div class="left">
+                    <div class="name"></div>
+                    <div class="chosen placeholderLike" id="chosen_escudo1">Escudo / logo do time *</div>
+                  </div>
+                  <div class="plus">+</div>
                 </div>
-                <div class="plus">+</div>
               </div>
             </div>
 
-            <div class="field-esc2">
-              <label id="labelEsc2" class="hiddenLabel">Imagem do jogo *</label>
-              <input id="escudo2" class="fileHidden" type="file" />
-              <div class="filePlus" data-file-for="escudo2" tabindex="0" role="button" aria-label="Enviar arquivo 2">
-                <div class="left">
-                  <div class="name"></div>
-                  <div class="chosen placeholderLike" id="chosen_escudo2">Imagem do jogo *</div>
+            <div class="field-esc2 optionalField" data-optional-field="esc2">
+              <button type="button" class="optionalToggle" data-optional-toggle="esc2">
+                <span class="optionalToggleText" id="labelEsc2">Imagem do jogo *</span>
+                <span class="optionalToggleIcon">▼</span>
+              </button>
+              <div class="optionalContent" data-optional-content="esc2">
+                <input id="escudo2" class="fileHidden" type="file" />
+                <div class="filePlus" data-file-for="escudo2" tabindex="0" role="button" aria-label="Enviar arquivo 2">
+                  <div class="left">
+                    <div class="name"></div>
+                    <div class="chosen placeholderLike" id="chosen_escudo2">Imagem do jogo *</div>
+                  </div>
+                  <div class="plus">+</div>
                 </div>
-                <div class="plus">+</div>
               </div>
             </div>
 
@@ -2518,7 +2551,7 @@ function setOptionalSectionState(field, isOpen){
 function configureOptionalSections(productKey){
   const wrappers = document.querySelectorAll("[data-optional-field]");
   wrappers.forEach((wrapper)=>{
-    wrapper.classList.remove("is-open");
+    wrapper.classList.remove("is-open", "locked-open");
     const toggle = wrapper.querySelector("[data-optional-toggle]");
     if(toggle) toggle.style.display = "flex";
   });
@@ -2528,19 +2561,61 @@ function configureOptionalSections(productKey){
     optionalDivider.style.display = productKey ? "block" : "none";
   }
 
+  const lockOpen = (field)=>{
+    const wrapper = document.querySelector(`[data-optional-field="${field}"]`);
+    if(!wrapper) return;
+    wrapper.classList.add("locked-open");
+    wrapper.classList.remove("is-open");
+  };
+
+  const keepClosed = (field)=>{
+    const wrapper = document.querySelector(`[data-optional-field="${field}"]`);
+    if(!wrapper) return;
+    wrapper.classList.remove("locked-open", "is-open");
+  };
+
+  if(productKey === "resultado"){
+    lockOpen("esc2");
+    keepClosed("hora");
+    keepClosed("data");
+    keepClosed("esc1");
+    keepClosed("artilheiros");
+    keepClosed("mascote");
+    return;
+  }
+
   if(productKey === "escalacao"){
-    const artilheirosWrapper = document.querySelector('[data-optional-field="artilheiros"]');
-    const artilheirosToggle = artilheirosWrapper?.querySelector('[data-optional-toggle="artilheiros"]');
-    if(artilheirosToggle) artilheirosToggle.style.display = "none";
-    setOptionalSectionState("artilheiros", true);
+    lockOpen("data");
+    lockOpen("esc1");
+    lockOpen("artilheiros");
+    keepClosed("esc2");
+    return;
+  }
+
+  if(productKey === "contratacao"){
+    lockOpen("rodada");
+    lockOpen("data");
+    lockOpen("esc1");
+    lockOpen("esc2");
+    keepClosed("hora");
+    return;
+  }
+
+  if(productKey === "proximo_jogo"){
+    lockOpen("data");
+    lockOpen("hora");
+    lockOpen("esc1");
+    keepClosed("rodada");
+    keepClosed("esc2");
+    keepClosed("arena");
     return;
   }
 
   if(productKey === "patrocinador"){
-    const patroWrapper = document.querySelector('[data-optional-field="patro"]');
-    const patroToggle = patroWrapper?.querySelector('[data-optional-toggle="patro"]');
-    if(patroToggle) patroToggle.style.display = "none";
-    setOptionalSectionState("patro", true);
+    lockOpen("rodada");
+    lockOpen("esc1");
+    lockOpen("patro");
+    keepClosed("data");
   }
 }
 
@@ -2713,7 +2788,7 @@ document.querySelectorAll("[data-optional-toggle]").forEach((btn)=>{
   btn.addEventListener("click", ()=>{
     const field = btn.getAttribute("data-optional-toggle");
     const wrapper = document.querySelector(`[data-optional-field="${field}"]`);
-    if(!wrapper) return;
+    if(!wrapper || wrapper.classList.contains("locked-open")) return;
     wrapper.classList.toggle("is-open");
   });
 });
@@ -3606,6 +3681,7 @@ document.getElementById("btnExcluirEscalacao")?.addEventListener("click", clearE
 </script>
 </body>
 </html>
+
 
 
 
