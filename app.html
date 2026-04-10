@@ -1,10 +1,729 @@
-PROCURE ISSO:
-    .hiddenLabel{
+<!doctype html>
+<html lang="pt-br">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>O Mascote — Painel</title>
+
+  <style>
+    :root{
+      --bg0:#070a12;
+      --bg1:#0b1020;
+      --txt:#ffffff;
+      --muted:rgba(255,255,255,.75);
+      --accent1:#2f5bff;
+      --accent2:#1730a8;
+      --shadow:0 20px 60px rgba(0,0,0,.45);
+      --shadow2:0 10px 28px rgba(0,0,0,.35);
+    }
+
+    *{box-sizing:border-box}
+
+    body{
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, Helvetica, sans-serif;
+      color:var(--txt);
+      margin:0;
+      min-height:100vh;
+      padding:0;
+      background:
+        radial-gradient(1200px 800px at 10% 85%, rgba(80,170,255,.16) 0%, transparent 45%),
+        radial-gradient(1200px 800px at 90% 80%, rgba(255,210,80,.14) 0%, transparent 42%),
+        radial-gradient(1000px 600px at 50% 0%, rgba(255,255,255,.05) 0%, transparent 50%),
+        linear-gradient(180deg, #030814 0%, #081020 55%, #07101f 100%);
+    }
+
+    .wrap{
+      max-width:980px;
+      margin:0 auto;
+      padding:0 14px 28px;
+    }
+
+    .topbar{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:12px;
+      padding:18px 2px 14px;
+    }
+
+    .brandTop{
+      opacity:.9;
+      font-weight:900;
+      letter-spacing:.16em;
+      font-size:13px;
+      text-transform:uppercase;
+    }
+
+    .row{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      justify-content:flex-end;
+      align-items:center;
+    }
+
+    .iconImg{
+      width:100%;
+      height:100%;
+      object-fit:contain;
+      display:block;
+      background: transparent !important;
+      border: none;
+      box-shadow: none;
+    }
+
+    button{
+      padding:10px 14px;
+      border:0;
+      border-radius:999px;
+      color:#fff;
+      font-weight:800;
+      cursor:pointer;
+      transition:transform .08s ease, filter .15s ease, opacity .15s ease;
+      box-shadow:var(--shadow2);
+      letter-spacing:.2px;
+    }
+
+    button:active{transform:translateY(1px)}
+    button:disabled{opacity:.55; cursor:not-allowed}
+
+    .btnBlue{
+      background:linear-gradient(135deg, #8fb1d8, #5a6f8b);
+      color:#fff;
+    }
+
+    .btnRed{
+      background:linear-gradient(135deg, #ff5c4d, #d73a2f);
+      color:#fff;
+    }
+
+    .btnGreen{
+      background:linear-gradient(135deg, #2ecc71, #1b9b51);
+      border-radius:16px;
+      padding:14px 18px;
+      min-width:190px;
+      font-size:16px;
+    }
+
+    .btnGhost{
+      background:rgba(0,0,0,.18);
+      border:1px solid rgba(255,255,255,.14);
+      box-shadow:none;
+    }
+
+    .panel{
+      border-radius:28px;
+      padding:18px 16px 22px;
+      background:
+        radial-gradient(900px 500px at 50% -10%, rgba(255,255,255,.10) 0%, transparent 55%),
+        linear-gradient(180deg, rgba(255,255,255,.09), rgba(255,255,255,.03));
+      border:1px solid rgba(255,255,255,.10);
+      box-shadow:var(--shadow);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      overflow:hidden;
+    }
+
+    .welcomeBox{
+      text-align:center;
+      padding:10px 8px 6px;
       display:none;
     }
 
-TROQUE POR ISSO:
-    .hiddenLabel{
+    .welcomeLabel{
+      font-size:12px;
+      letter-spacing:.22em;
+      text-transform:uppercase;
+      color:rgba(255,255,255,.7);
+      margin-bottom:8px;
+    }
+
+    .welcomeBox h1{
+      margin:0;
+      font-size:32px;
+      line-height:1.05;
+      letter-spacing:.2px;
+      text-shadow:0 10px 25px rgba(0,0,0,.35);
+    }
+
+    .iconCenter{
+      width:45%;
+      height:45%;
+      object-fit:contain;
+      margin-bottom:6px;
+      filter: drop-shadow(0 8px 18px rgba(0,0,0,.35));
+    }
+
+    .welcomeBox .sub{
+      margin:8px 0 0;
+      font-size:13px;
+      color:rgba(255,255,255,.72);
+    }
+
+    .hero{
+      position:relative;
+      border-radius:26px;
+      overflow:hidden;
+      padding:24px 18px 26px;
+      background:
+        radial-gradient(700px 420px at 15% 90%, rgba(102,180,255,.20) 0%, transparent 45%),
+        radial-gradient(700px 420px at 85% 85%, rgba(255,213,111,.18) 0%, transparent 45%),
+        radial-gradient(500px 220px at 50% 55%, rgba(255,255,255,.16) 0%, transparent 60%),
+        linear-gradient(180deg, #f7f8fb 0%, #eef1f7 100%);
+      color:#1f2430;
+      text-align:center;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.55);
+    }
+
+    .heroBrand{
+      font-size:28px;
+      font-weight:1000;
+      letter-spacing:-.02em;
+      line-height:1;
+      margin-bottom:18px;
+    }
+
+    .heroBrand .c1{color:#1e88ff}
+    .heroBrand .c2{color:#e53935}
+    .heroBrand .c3{color:#f4b400}
+    .heroBrand .c4{color:#34a853}
+
+    .heroTitle{
+      margin:0 auto;
+      max-width:760px;
+      font-size:clamp(28px, 3.5vw, 52px);
+      line-height:1.08;
+      font-weight:900;
+      color:#242c38;
+      letter-spacing:-.03em;
+    }
+
+    .heroSub{
+      margin:12px auto 0;
+      max-width:620px;
+      font-size:18px;
+      line-height:1.4;
+      color:#7d8896;
+      font-weight:500;
+    }
+
+    .heroSub br{
+      display:none;
+    }
+
+    .selectorStage{
+      position:relative;
+      margin:34px auto 8px;
+      max-width:880px;
+      min-height:400px;
+    }
+
+    .centerWrap{
+      position:absolute;
+      left:50%;
+      top:58px;
+      transform:translateX(-50%);
+      z-index:4;
+    }
+
+    .centerBtn{
+      width:220px;
+      height:220px;
+      border-radius:999px;
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      justify-content:center;
+      text-align:center;
+      gap:8px;
+      border:2px solid rgba(255,255,255,.55);
+      background:
+        radial-gradient(circle at 30% 30%, rgba(255,255,255,.30) 0%, transparent 28%),
+        radial-gradient(circle at 65% 20%, rgba(255,255,255,.16) 0%, transparent 26%),
+        linear-gradient(135deg, #1f87ff 0%, #3bd2ff 20%, #69d84f 50%, #ffd443 78%, #ff9f1a 100%);
+      box-shadow:
+        0 0 0 5px rgba(255,255,255,.18),
+        0 28px 60px rgba(66,120,255,.30),
+        inset 0 3px 14px rgba(255,255,255,.34);
+      color:#fff;
+      font-size:26px;
+      font-weight:900;
+      line-height:1.05;
+      cursor:pointer;
+      user-select:none;
+      transition:transform .15s ease, box-shadow .15s ease;
+    }
+
+    .centerBtn:hover{
+      transform:scale(1.02);
+      box-shadow:
+        0 0 0 6px rgba(255,255,255,.20),
+        0 30px 70px rgba(66,120,255,.36),
+        inset 0 3px 14px rgba(255,255,255,.34);
+    }
+
+    .centerBtn small{
+      font-size:40px;
+      line-height:1;
+    }
+
+    .lines{
+      position:absolute;
+      inset:0;
+      pointer-events:none;
+      z-index:1;
+      opacity:0;
+      visibility:hidden;
+      transform:translateY(-18px);
+      transition:
+        opacity .35s ease,
+        transform .45s ease,
+        visibility 0s linear .45s;
+    }
+
+    .line{
+      position:absolute;
+      height:4px;
+      border-radius:999px;
+      opacity:.95;
+      filter:blur(.2px);
+      box-shadow:0 0 18px currentColor;
+      transform-origin:left center;
+    }
+
+    .l1{
+      width:210px;
+      left:163px;
+      top:229px;
+      color:#ffd3f0;
+      background:linear-gradient(90deg, #ffd3f0, #fff3b5);
+      transform:rotate(157deg);
+    }
+
+    .l2{
+      width:150px;
+      left:302px;
+      top:242px;
+      color:#b5fff8;
+      background:linear-gradient(90deg, #d7fff4, #7ef2ff);
+      transform:rotate(132deg);
+    }
+
+    .l3{
+      width:116px;
+      left:382px;
+      top:285px;
+      color:#b4fff7;
+      background:linear-gradient(90deg, #bffdf6, #b3fff0);
+      transform:rotate(90deg);
+    }
+
+    .l4{
+      width:150px;
+      left:424px;
+      top:241px;
+      color:#fef0a7;
+      background:linear-gradient(90deg, #fff4aa, #ffd95d);
+      transform:rotate(48deg);
+    }
+
+    .l5{
+      width:214px;
+      left:506px;
+      top:229px;
+      color:#a6ffff;
+      background:linear-gradient(90deg, #fff3a1, #8efaff);
+      transform:rotate(22deg);
+    }
+
+    .optionsRow{
+      position:absolute;
+      left:0;
+      right:0;
+      bottom:0;
+      display:grid;
+      grid-template-columns:repeat(5, 1fr);
+      gap:12px;
+      align-items:start;
+      z-index:3;
+      opacity:0;
+      visibility:hidden;
+      transform:translateY(-22px);
+      transition:
+        opacity .35s ease,
+        transform .45s ease,
+        visibility 0s linear .45s;
+    }
+
+    .optionBtn{
+      background:none;
+      box-shadow:none;
+      padding:0;
+      color:#26303d;
+      border-radius:0;
+      opacity:0;
+      transform:translateY(-18px) scale(.96);
+      transition:
+        opacity .35s ease,
+        transform .45s ease;
+    }
+
+    .optionBtn:hover{
+      filter:none;
+    }
+
+    .optionBtn.active .circle{
+      transform:translateY(-4px) scale(1.04);
+      box-shadow:
+        0 0 0 4px rgba(255,255,255,.55),
+        0 18px 40px rgba(53,105,198,.24);
+    }
+
+    .selectorStage.open .optionsRow,
+    .selectorStage.open .lines{
+      opacity:1;
+      visibility:visible;
+      transform:translateY(0);
+      transition:
+        opacity .35s ease,
+        transform .45s ease,
+        visibility 0s linear 0s;
+    }
+
+    .selectorStage.open .optionBtn{
+      opacity:1;
+      transform:translateY(0) scale(1);
+    }
+
+    .selectorStage.open .optionBtn:nth-child(1){ transition-delay:.05s; }
+    .selectorStage.open .optionBtn:nth-child(2){ transition-delay:.10s; }
+    .selectorStage.open .optionBtn:nth-child(3){ transition-delay:.15s; }
+    .selectorStage.open .optionBtn:nth-child(4){ transition-delay:.20s; }
+    .selectorStage.open .optionBtn:nth-child(5){ transition-delay:.25s; }
+
+    .circle{
+      width:108px;
+      height:108px;
+      margin:0 auto 12px;
+      border-radius:999px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      border:2px solid rgba(255,255,255,.72);
+      box-shadow:
+        0 0 0 3px rgba(255,255,255,.28),
+        0 14px 30px rgba(65,110,185,.18),
+        inset 0 4px 14px rgba(255,255,255,.24);
+      position:relative;
+      overflow:hidden;
+      transition:transform .15s ease, box-shadow .15s ease;
+      background:
+        radial-gradient(circle at 28% 22%, rgba(255,255,255,.34) 0%, transparent 20%),
+        radial-gradient(circle at 70% 75%, rgba(255,255,255,.15) 0%, transparent 22%),
+        linear-gradient(135deg, #1398ff 0%, #4cd6ff 18%, #7bd444 48%, #f1d03a 76%, #f0a218 100%);
+    }
+
+    .circle.orange{
+      background:
+        radial-gradient(circle at 28% 22%, rgba(255,255,255,.34) 0%, transparent 20%),
+        radial-gradient(circle at 70% 75%, rgba(255,255,255,.15) 0%, transparent 22%),
+        linear-gradient(135deg, #ff8f1f 0%, #ffcb40 36%, #93d84f 66%, #53d3ff 100%);
+    }
+
+    .circle.green{
+      background:
+        radial-gradient(circle at 28% 22%, rgba(255,255,255,.34) 0%, transparent 20%),
+        radial-gradient(circle at 70% 75%, rgba(255,255,255,.15) 0%, transparent 22%),
+        linear-gradient(135deg, #148dff 0%, #35c9ff 25%, #70d953 58%, #f0d13c 100%);
+    }
+
+    .iconBox{
+      width:76px;
+      height:76px;
+      border-radius:0px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      font-size:44px;
+      background:rgba(255,255,255,.14);
+      color:#fff;
+      text-shadow:0 4px 10px rgba(0,0,0,.18);
+      box-shadow:inset 0 1px 8px rgba(255,255,255,.12);
+    }
+
+    .optLabel{
+      font-size:13px;
+      line-height:1.2;
+      font-weight:800;
+      color:#3d4654;
+      text-align:center;
+      max-width:120px;
+      margin:0 auto;
+    }
+
+    .examplesLink{
+      display:inline-block;
+      margin-top:12px;
+      color:#7c8794;
+      text-decoration:none;
+      font-size:16px;
+      font-weight:700;
+    }
+
+    .examplesLink:hover{color:#4b5663}
+
+    .switchModeRow{
+      display:none;
+      justify-content:center;
+      margin-top:18px;
+    }
+
+    body.modeChosen .switchModeRow{display:flex}
+
+    .hiddenTabs{
+      position:absolute;
+      left:-9999px;
+      opacity:0;
+      pointer-events:none;
+    }
+
+    body:not(.modeChosen) .builderArea{
+      display:none;
+    }
+
+    .builderArea{
+      margin-top:24px;
+    }
+
+    .crestWrap{display:flex;justify-content:center;margin:0 0 14px}
+
+    .crestCard{
+      width:min(320px, 92vw);
+      aspect-ratio:1/1;
+      border-radius:22px;
+      background:
+        radial-gradient(280px 200px at 50% 20%, rgba(255,255,255,.10) 0%, transparent 60%),
+        linear-gradient(180deg, rgba(255,255,255,.05), rgba(0,0,0,.10));
+      border:1px solid rgba(255,255,255,.10);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      overflow:hidden;
+      position:relative;
+      box-shadow:var(--shadow2);
+    }
+
+    .crestGlow{
+      position:absolute;
+      inset:-40%;
+      background:
+        radial-gradient(circle at 50% 50%, color-mix(in oklab, var(--accent1) 35%, transparent) 0%, transparent 55%),
+        radial-gradient(circle at 45% 55%, color-mix(in oklab, var(--accent2) 25%, transparent) 0%, transparent 65%);
+      filter:blur(18px);
+      opacity:.9;
+      pointer-events:none;
+    }
+
+    .crestImg{
+      width:78%;
+      height:78%;
+      object-fit:contain;
+      filter:drop-shadow(0 18px 24px rgba(0,0,0,.45));
+      position:relative;
+      z-index:2;
+    }
+
+    .crestPlaceholder{
+      width:86%;
+      height:86%;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      text-align:center;
+      padding:16px;
+      border-radius:18px;
+      border:1px dashed rgba(255,255,255,.20);
+      color:rgba(255,255,255,.70);
+      position:relative;
+      z-index:2;
+      background:rgba(0,0,0,.12);
+      font-weight:700;
+      font-size:13px;
+      line-height:1.35;
+    }
+
+    .card{
+      background: linear-gradient(180deg, rgba(255,255,255,.88), rgba(245,248,252,.92));
+      border:1px solid rgba(255,255,255,.65);
+      border-radius:22px;
+      padding:18px;
+      box-shadow:0 18px 45px rgba(120,140,180,.14);
+    }
+
+    .meta{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      justify-content:center;
+      margin-top:4px;
+    }
+
+    .pill{
+      background:rgba(0,0,0,.22);
+      border:1px solid rgba(255,255,255,.12);
+      border-radius:999px;
+      padding:8px 12px;
+      font-size:12px;
+      color:rgba(255,255,255,.90);
+      backdrop-filter:blur(8px);
+      -webkit-backdrop-filter:blur(8px);
+    }
+
+    .msg{
+      margin-top:10px;
+      font-size:13px;
+      color:rgba(255,255,255,.85);
+      text-align:center;
+    }
+
+    .sep{
+      height:1px;
+      background:linear-gradient(90deg, transparent, rgba(255,255,255,.18), transparent);
+      margin:14px 0 14px;
+    }
+
+    h2{
+      margin:0;
+      font-size:21px;
+      text-align:center;
+      letter-spacing:.2px;
+    }
+
+    .hint{
+      font-size:12px;
+      color:rgba(255,255,255,.68);
+      margin-top:6px;
+      text-align:center;
+      line-height:1.35;
+    }
+
+    #dynamicHint{
+      display:none;
+    }
+
+    body.mode-result #dynamicHint,
+    body.mode-flyer #dynamicHint{
+      display:block !important;
+      width:max-content;
+      max-width:min(420px, calc(100% - 28px));
+      margin:6px 0 14px auto;
+      padding:18px 24px;
+      text-align:left;
+      font-size:17px;
+      font-weight:900;
+      color:#24543f !important;
+      background:linear-gradient(180deg, #eef8ea, #e3f1dd);
+      border:1px solid #dfead8;
+      border-radius:30px 30px 10px 30px;
+      box-shadow:0 10px 26px rgba(162,175,194,.14);
+      align-self:flex-end;
+      position:relative;
+      overflow:visible;
+      word-break:break-word;
+    }
+
+    body.mode-result #dynamicHint::after,
+    body.mode-flyer #dynamicHint::after{
+      content:"";
+      position:absolute;
+      right:-10px;
+      bottom:12px;
+      width:18px;
+      height:18px;
+      background:linear-gradient(180deg, #eef8ea, #e3f1dd);
+      border-right:1px solid #dfead8;
+      border-bottom:1px solid #dfead8;
+      clip-path:polygon(0 0, 100% 50%, 0 100%);
+    }
+
+    .tabRadio{
+      position:absolute;
+      left:-9999px;
+      opacity:0;
+    }
+
+    .formGrid{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:12px;
+      margin-top:14px;
+    }
+
+    .full{grid-column:1 / -1}
+
+    .field-placar,
+    .field-artilheiros{
+      display:none;
+    }
+
+    body.mode-flyer .formGrid{
+      display:flex;
+      flex-direction:column;
+      gap:18px;
+      margin-top:0;
+    }
+
+    body.mode-result .formGrid{
+      grid-template-areas:
+        "hora hora"
+        "placar placar"
+        "artilheiros artilheiros"
+        "data data"
+        "esc2 esc1"
+        "mascote mascote"
+        "submit submit"
+        "msg msg";
+    }
+
+    body.mode-result .field-placar,
+    body.mode-result .field-artilheiros,
+    body.mode-result .field-hora,
+    body.mode-result .field-mascote{
+      display:block;
+    }
+
+    body.mode-result .field-rodada,
+    body.mode-result .field-arena,
+    body.mode-result .field-patro{
+      display:none;
+    }
+
+    .field-placar{grid-area:placar}
+    .field-artilheiros{grid-area:artilheiros}
+    .field-rodada{grid-area:rodada}
+    .field-data{grid-area:data}
+    .field-hora{grid-area:hora}
+    .field-arena{grid-area:arena}
+    .field-mascote{grid-area:mascote}
+    .field-esc1{grid-area:esc1}
+    .field-esc2{grid-area:esc2}
+    .field-patro{grid-area:patro}
+    .field-submit{grid-area:submit}
+    .field-msg{grid-area:msg}
+
+    label{
+      display:block;
+      font-size:12px;
+      color:rgba(255,255,255,.78);
+      margin:0 0 6px;
+    }
+
+    .sectionTitle,
+#labelRodada,
+#labelHora,
+#labelArena,
+#labelMascote,
+#labelPatro{
       display:block;
       width:max-content;
       max-width:min(420px, calc(100% - 28px));
@@ -24,7 +743,12 @@ TROQUE POR ISSO:
       word-break:break-word;
     }
 
-    .hiddenLabel::after{
+    .sectionTitle::after,
+    #labelRodada::after,
+    #labelHora::after,
+    #labelArena::after,
+    #labelMascote::after,
+    #labelPatro::after{
       content:"";
       position:absolute;
       right:-10px;
@@ -37,8 +761,1760 @@ TROQUE POR ISSO:
       clip-path:polygon(0 0, 100% 50%, 0 100%);
     }
 
----
-PROCURE ISSO:
+    .hiddenLabel{
+      display:none;
+    }
+
+    .placeholderLike{
+      color:#6f7b8a !important;
+      font-weight:700;
+    }
+
+    .card h2{
+      color:#1f2a37;
+    }
+
+    body.mode-result .meta,
+    body.mode-result .msg,
+    body.mode-result .sep,
+    body.mode-result #dynamicTitle,
+    body.mode-flyer .meta,
+    body.mode-flyer .msg,
+    body.mode-flyer .sep,
+    body.mode-flyer #dynamicTitle{
+      display:none !important;
+    }
+
+    body.mode-result .formGrid{
+      display:flex;
+      flex-direction:column;
+      gap:18px;
+      margin-top:0;
+    }
+
+    body.mode-result .field-placar,
+    body.mode-result .field-artilheiros,
+    body.mode-result .field-data,
+    body.mode-result .field-hora,
+    body.mode-result .field-esc1,
+    body.mode-result .field-esc2,
+    body.mode-result .field-mascote{
+      background:transparent;
+      border:none;
+      border-radius:0;
+      padding:0;
+      box-shadow:none;
+      width:100%;
+      margin:0;
+      display:flex;
+      flex-direction:column;
+      align-items:flex-end;
+    }
+
+    body.mode-result .field-artilheiros.optionalField,
+    body.mode-result .field-hora.optionalField,
+    body.mode-result .field-arena.optionalField,
+    body.mode-result .field-mascote.optionalField,
+    body.mode-result .field-patro.optionalField{
+      align-items:flex-end;
+    }
+
+    body.mode-flyer .field-rodada,
+    body.mode-flyer .field-artilheiros,
+    body.mode-flyer .field-data,
+    body.mode-flyer .field-hora,
+    body.mode-flyer .field-arena,
+    body.mode-flyer .field-mascote,
+    body.mode-flyer .field-esc1,
+    body.mode-flyer .field-esc2,
+    body.mode-flyer .field-patro{
+      background:transparent;
+      border:none;
+      border-radius:0;
+      padding:0;
+      box-shadow:none;
+      width:100%;
+      margin:0;
+      display:flex;
+      flex-direction:column;
+      align-items:flex-end;
+    }
+
+    .card .msg,
+    .card .msgSmall,
+    .card .hint,
+    .card label{
+      color:#334155;
+    }
+
+    input, textarea{
+      width:100%;
+      padding:14px 16px;
+      border-radius:16px;
+      border:1px solid #d9dfeb;
+      background:#ffffff;
+      color:#243041;
+      outline:none;
+      box-shadow:0 2px 10px rgba(140,160,190,.08);
+      text-align:left;
+    }
+
+    input:focus, textarea:focus{
+      border-color:color-mix(in oklab, var(--accent1) 70%, #ffffff 10%);
+      box-shadow:0 0 0 3px rgba(79,124,255,.18);
+    }
+
+    textarea{min-height:70px; resize:vertical}
+
+    .submitRow{
+      display:flex;
+      justify-content:center;
+      margin-top:4px;
+    }
+
+    .msgSmall{
+      margin-top:10px;
+      font-size:13px;
+      text-align:center;
+      color:#4e5b6b;
+    }
+
+    .filePlus{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+      width:min(700px, 100%);
+      padding:30px 24px;
+      border-radius:34px;
+      border:1px solid #e4e6f1;
+      background:linear-gradient(180deg, rgba(255,255,255,.88), rgba(248,248,252,.94));
+      color:#243041;
+      cursor:pointer;
+      user-select:none;
+      box-shadow:0 10px 28px rgba(180,188,215,.14);
+      transition:transform .08s ease, border-color .15s ease, box-shadow .15s ease, filter .15s ease;
+      min-height:0;
+      text-align:left;
+    }
+
+    .filePlus:active{transform:translateY(1px)}
+    .filePlus:hover{filter:brightness(1.05)}
+
+    .filePlus:focus-within{
+      border-color:color-mix(in oklab, var(--accent1) 70%, #ffffff 10%);
+      box-shadow:0 0 0 3px rgba(79,124,255,.18);
+    }
+
+    .filePlus .left{
+      min-width:0;
+      display:flex;
+      flex-direction:column;
+      gap:3px;
+    }
+
+    .filePlus .name{display:none}
+
+    .filePlus .chosen{
+      font-size:12px;
+      color:#334155;
+      font-weight:700;
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
+      max-width:100%;
+    }
+
+    .filePlus .plus{
+      width:46px;
+      height:46px;
+      border-radius:14px;
+      display:grid;
+      place-items:center;
+      font-size:28px;
+      font-weight:900;
+      border:1px solid #d8e1ec;
+      background:linear-gradient(180deg, #ffffff, #eef3f8);
+      color:#243041;
+      box-shadow:0 4px 12px rgba(140,160,190,.12);
+      flex:0 0 auto;
+    }
+
+    .fileHidden{
+      position:absolute;
+      left:-9999px;
+      opacity:0;
+      width:1px;
+      height:1px;
+      pointer-events:none;
+    }
+
+    .phraseWrap{
+      position:relative;
+      display:flex;
+      align-items:center;
+      gap:8px;
+      width:min(700px, 100%);
+      background:linear-gradient(180deg, rgba(255,255,255,.88), rgba(248,248,252,.94));
+      border:1px solid #e4e6f1;
+      border-radius:34px;
+      padding:20px 20px;
+      box-shadow:0 10px 28px rgba(180,188,215,.14);
+    }
+
+    .phraseWrap input{
+      flex:1 1 auto;
+      min-width:0;
+    }
+
+    .phraseBtn{
+      width:44px;
+      height:44px;
+      padding:0;
+      border-radius:12px;
+      border:1px solid rgba(255,255,255,.14);
+      background:linear-gradient(135deg, rgba(255,255,255,.08), rgba(0,0,0,.10));
+      box-shadow:var(--shadow2);
+      color:#fff;
+      font-size:24px;
+      font-weight:900;
+      line-height:1;
+      display:grid;
+      place-items:center;
+      flex:0 0 auto;
+    }
+
+    .phraseMenu{
+      position:absolute;
+      top:calc(100% + 8px);
+      left:0;
+      right:0;
+      display:none;
+      flex-direction:column;
+      gap:6px;
+      padding:8px;
+      border-radius:14px;
+      border:1px solid rgba(255,255,255,.12);
+      background:rgba(10,16,30,.98);
+      box-shadow:var(--shadow);
+      z-index:50;
+      max-height:260px;
+      overflow:auto;
+    }
+
+    .phraseMenu.open{display:flex}
+
+    .phraseOption{
+      width:100%;
+      text-align:left;
+      border-radius:10px;
+      border:1px solid rgba(255,255,255,.08);
+      background:rgba(255,255,255,.04);
+      color:#fff;
+      font-size:13px;
+      font-weight:700;
+      padding:10px 12px;
+      box-shadow:none;
+    }
+
+    .phraseOption:hover{
+      background:rgba(255,255,255,.08);
+    }
+
+    .placarRow{
+      display:flex;
+      gap:10px;
+      align-items:center;
+      width:min(940px, 100%);
+      background:linear-gradient(180deg, rgba(255,255,255,.88), rgba(248,248,252,.94));
+      border:1px solid #e4e6f1;
+      border-radius:34px;
+      padding:30px 26px;
+      box-shadow:0 10px 28px rgba(180,188,215,.14);
+    }
+
+    .placarRow input{
+      text-align:left;
+      font-weight:900;
+    }
+
+    .placarTime{flex:1}
+    .placarGols{width:96px}
+
+    .placarX{
+      font-weight:900;
+      font-size:20px;
+      opacity:.8;
+      color:#4b5563;
+    }
+
+    .artilheirosWrap{
+      display:flex;
+      flex-direction:column;
+      gap:14px;
+      width:min(700px, 100%);
+      background:linear-gradient(180deg, rgba(255,255,255,.88), rgba(248,248,252,.94));
+      border:1px solid #e4e6f1;
+      border-radius:34px;
+      padding:30px 26px;
+      box-shadow:0 10px 28px rgba(180,188,215,.14);
+    }
+
+    .artilheiroRow{
+      display:flex;
+      gap:10px;
+      align-items:center;
+    }
+
+    .artilheiroNome{flex:1}
+
+    .artilheiroGols{
+      width:96px;
+      text-align:left;
+      font-weight:900;
+    }
+
+    .addArtilheiro{
+      margin-top:12px;
+      width:min(700px, 100%);
+      padding:18px 20px;
+      border-radius:20px;
+      background:#ffffff;
+      border:1px solid #d9dfeb;
+      text-align:center;
+      cursor:pointer;
+      font-weight:900;
+      color:#334155;
+      box-shadow:0 2px 10px rgba(140,160,190,.08);
+    }
+
+    .savedBadge{
+      display:inline-block;
+      margin-top:8px;
+      padding:6px 10px;
+      border-radius:999px;
+      background:#e8fff1;
+      border:1px solid #b7ebc9;
+      color:#127a43;
+      font-size:12px;
+      font-weight:900;
+    }
+
+    .optionalField{
+      width:100%;
+      display:flex;
+      flex-direction:column;
+      align-items:flex-end;
+    }
+
+    .optionalToggle{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+      width:min(700px, 100%);
+      padding:18px 20px;
+      border-radius:20px;
+      background:#ffffff;
+      border:1px solid #d9dfeb;
+      text-align:left;
+      cursor:pointer;
+      font-weight:900;
+      color:#334155;
+      box-shadow:0 2px 10px rgba(140,160,190,.08);
+    }
+
+    .optionalToggleText{
+      flex:1;
+      min-width:0;
+      color:#334155;
+      font-size:15px;
+      font-weight:900;
+    }
+
+    .optionalToggleIcon{
+      flex:0 0 auto;
+      color:#64748b;
+      font-size:16px;
+      font-weight:900;
+      transition:transform .18s ease;
+    }
+
+    .optionalField.is-open .optionalToggleIcon{
+      transform:rotate(180deg);
+    }
+
+    .optionalContent{
+      display:none;
+      width:100%;
+      margin-top:12px;
+    }
+
+    .optionalField.is-open .optionalContent{
+      display:flex;
+      flex-direction:column;
+      align-items:flex-end;
+    }
+
+    .field-optional-title{
+      display:none;
+      width:100%;
+    }
+
+    .escalacaoActions{
+      display:none;
+      gap:10px;
+      flex-wrap:wrap;
+      justify-content:flex-end;
+      width:min(700px, 100%);
+      margin-top:10px;
+    }
+
+    .escActionBtn{
+      padding:12px 16px;
+      border-radius:16px;
+      font-size:13px;
+      font-weight:900;
+      box-shadow:none;
+    }
+
+    .escActionSave{
+      background:linear-gradient(135deg, #2ecc71, #1b9b51);
+      color:#fff;
+    }
+
+    .escActionDelete{
+      background:#ffffff;
+      border:1px solid #d9dfeb;
+      color:#334155;
+    }
+
+    .modalMask{
+      position:fixed;
+      inset:0;
+      background:rgba(0,0,0,.65);
+      backdrop-filter:blur(10px);
+      -webkit-backdrop-filter:blur(10px);
+      display:none;
+      align-items:center;
+      justify-content:center;
+      padding:16px;
+      z-index:9999;
+    }
+
+    .modalMask.open{display:flex}
+
+    .modalCard{
+      width:min(560px, 96vw);
+      border-radius:20px;
+      border:1px solid rgba(255,255,255,.12);
+      background:rgba(10,16,30,.92);
+      box-shadow:var(--shadow);
+      overflow:hidden;
+    }
+
+    .modalTop{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+      padding:12px 14px;
+      border-bottom:1px solid rgba(255,255,255,.10);
+      background:linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.02));
+    }
+
+    .modalTitle{
+      font-weight:900;
+      font-size:13px;
+      color:rgba(255,255,255,.92);
+      letter-spacing:.2px;
+    }
+
+    .modalClose{
+      border:1px solid rgba(255,255,255,.14);
+      background:rgba(0,0,0,.18);
+      border-radius:999px;
+      padding:8px 10px;
+      font-weight:900;
+      cursor:pointer;
+      box-shadow:none;
+    }
+
+    .cropWrap{padding:12px 14px 10px}
+
+    .cropHint{
+      font-size:12px;
+      color:rgba(255,255,255,.78);
+      text-align:center;
+      margin:2px 0 10px;
+      font-weight:800;
+      letter-spacing:.2px;
+    }
+
+    .cropStage{
+      width:100%;
+      aspect-ratio:1 / 1;
+      border-radius:16px;
+      border:1px solid rgba(255,255,255,.12);
+      background:rgba(0,0,0,.22);
+      position:relative;
+      overflow:hidden;
+      touch-action:none;
+    }
+
+    #cropCanvas{
+      width:100%;
+      height:100%;
+      display:block;
+      touch-action:none;
+    }
+
+    .cropMask{
+      position:absolute;
+      inset:0;
+      pointer-events:none;
+    }
+
+    .cropBox{
+      position:absolute;
+      left:50%;
+      top:50%;
+      width:min(72%, 360px);
+      height:min(54%, 280px);
+      transform:translate(-50%,-50%);
+      border-radius:14px;
+      border:2px solid rgba(255,255,255,.92);
+      box-shadow:0 0 0 9999px rgba(0,0,0,.45);
+      background:transparent;
+      pointer-events:auto;
+      touch-action:none;
+      cursor:move;
+    }
+
+    .cropBox .handle{
+      position:absolute;
+      width:18px;
+      height:18px;
+      border-radius:999px;
+      background:#fff;
+      box-shadow:0 10px 18px rgba(0,0,0,.45);
+      border:2px solid rgba(0,0,0,.18);
+      pointer-events:auto;
+      touch-action:none;
+    }
+
+    .cropBox .h-nw{left:-9px; top:-9px; cursor:nwse-resize}
+    .cropBox .h-ne{right:-9px; top:-9px; cursor:nesw-resize}
+    .cropBox .h-sw{left:-9px; bottom:-9px; cursor:nesw-resize}
+    .cropBox .h-se{right:-9px; bottom:-9px; cursor:nwse-resize}
+    .cropBox .h-n{left:50%; top:-9px; transform:translateX(-50%); cursor:ns-resize}
+    .cropBox .h-s{left:50%; bottom:-9px; transform:translateX(-50%); cursor:ns-resize}
+    .cropBox .h-w{left:-9px; top:50%; transform:translateY(-50%); cursor:ew-resize}
+    .cropBox .h-e{right:-9px; top:50%; transform:translateY(-50%); cursor:ew-resize}
+
+    .cropControls{
+      display:flex;
+      gap:10px;
+      align-items:center;
+      justify-content:center;
+      padding:10px 14px 12px;
+      border-top:1px solid rgba(255,255,255,.10);
+      flex-wrap:wrap;
+    }
+
+    .zoomBtns{
+      display:flex;
+      gap:10px;
+      align-items:center;
+      justify-content:center;
+      flex:1 1 240px;
+      min-width:240px;
+    }
+
+    .zoomBtns .zbtn{
+      background:rgba(0,0,0,.18);
+      border:1px solid rgba(255,255,255,.14);
+      box-shadow:none;
+      border-radius:14px;
+      padding:10px 14px;
+      font-weight:900;
+      min-width:52px;
+      font-size:18px;
+      line-height:1;
+    }
+
+    .zoomLbl{
+      font-size:12px;
+      color:rgba(255,255,255,.75);
+      font-weight:900;
+      letter-spacing:.2px;
+      min-width:68px;
+      text-align:center;
+    }
+
+    .btnOk{
+      background:linear-gradient(135deg, #2ecc71, #1b9b51);
+      box-shadow:none;
+    }
+
+    @media (max-width:900px){
+      .selectorStage{
+        min-height:auto;
+        margin-top:26px;
+        display:flex;
+        flex-direction:column;
+        align-items:center;
+      }
+
+      .centerWrap{
+        position:static;
+        transform:none;
+        margin:0 auto 26px;
+        width:100%;
+        display:flex;
+        justify-content:center;
+      }
+
+      .centerBtn{
+        width:170px;
+        height:170px;
+        font-size:20px;
+        margin:0 auto;
+      }
+
+      .lines{
+        display:none;
+      }
+
+      .optionsRow{
+        position:static;
+        width:100%;
+        max-width:360px;
+        display:grid;
+        grid-template-columns:repeat(2, minmax(0, 1fr));
+        gap:22px 18px;
+        justify-items:center;
+        align-items:start;
+      }
+
+      .optionsRow .optionBtn{
+        width:100%;
+        display:flex;
+        flex-direction:column;
+        align-items:center;
+        justify-content:flex-start;
+      }
+
+      .optionsRow .optionBtn:last-child{
+        grid-column:1 / -1;
+        justify-self:center;
+        width:50%;
+      }
+    }
+
+    @media (max-width:680px){
+      .wrap{
+        padding:0 8px 18px;
+      }
+
+      .topbar{
+        flex-direction:column;
+        align-items:stretch;
+        gap:10px;
+        padding:12px 0 10px;
+      }
+
+      .row{
+        width:100%;
+        justify-content:center;
+      }
+
+      .row button{
+        flex:1 1 0;
+        min-width:0;
+      }
+
+      .panel{
+        padding:12px 10px 16px;
+        border-radius:20px;
+      }
+
+      .card{
+        padding:12px;
+        border-radius:18px;
+        overflow:hidden;
+      }
+
+      .hero{
+        padding:20px 12px 28px;
+      }
+
+      .heroBrand{
+        font-size:22px;
+      }
+
+      .heroTitle{
+        font-size:clamp(22px, 7vw, 34px);
+      }
+
+      .heroSub{
+        font-size:14px;
+        max-width:420px;
+      }
+
+      .centerBtn{
+        width:155px;
+        height:155px;
+        font-size:18px;
+        line-height:1.05;
+      }
+
+      .iconCenter{
+        font-size:34px;
+        margin-bottom:4px;
+      }
+
+      .circle{
+        width:88px;
+        height:88px;
+        margin:0 auto 10px;
+      }
+
+      .iconImg{
+        width:82%;
+        height:82%;
+        object-fit:contain;
+        display:block;
+      }
+
+      .optLabel{
+        font-size:11px;
+        line-height:1.15;
+        max-width:92px;
+      }
+
+      #dynamicHint,
+      .sectionTitle,
+      #labelRodada,
+      #labelHora,
+      #labelArena,
+      #labelMascote,
+      #labelPatro{
+        max-width:calc(100% - 18px);
+        font-size:14px;
+        padding:12px 14px;
+        margin:4px 10px 10px auto;
+      }
+
+      #dynamicHint::after,
+      .sectionTitle::after,
+      #labelRodada::after,
+      #labelHora::after,
+      #labelArena::after,
+      #labelMascote::after,
+      #labelPatro::after{
+        right:-8px;
+        bottom:10px;
+        width:14px;
+        height:14px;
+      }
+
+      body.mode-result .field-placar,
+      body.mode-result .field-artilheiros,
+      body.mode-result .field-data,
+      body.mode-result .field-hora,
+      body.mode-result .field-esc1,
+      body.mode-result .field-esc2,
+      body.mode-result .field-mascote,
+      body.mode-flyer .field-rodada,
+      body.mode-flyer .field-artilheiros,
+      body.mode-flyer .field-data,
+      body.mode-flyer .field-hora,
+      body.mode-flyer .field-arena,
+      body.mode-flyer .field-mascote,
+      body.mode-flyer .field-esc1,
+      body.mode-flyer .field-esc2,
+      body.mode-flyer .field-patro{
+        align-items:stretch;
+        min-width:0;
+      }
+
+      .placarRow,
+      .artilheirosWrap,
+      .addArtilheiro,
+      .phraseWrap,
+      .filePlus{
+        width:100%;
+        max-width:100%;
+        min-width:0;
+      }
+
+      .placarRow{
+        display:grid;
+        grid-template-columns:minmax(0,1fr) 52px 18px 52px minmax(0,1fr);
+        gap:8px;
+        padding:16px 12px;
+        border-radius:22px;
+      }
+
+      .placarTime,
+      .placarGols{
+        width:100%;
+        min-width:0;
+      }
+
+      .placarGols{
+        text-align:center;
+        padding-left:8px;
+        padding-right:8px;
+      }
+
+      .placarX{
+        font-size:16px;
+        text-align:center;
+      }
+
+      .artilheiroRow{
+        display:grid;
+        grid-template-columns:minmax(0,1fr) 72px;
+        gap:8px;
+      }
+
+      .artilheiroNome,
+      .artilheiroGols{
+        width:100%;
+        min-width:0;
+      }
+
+      .artilheiroGols{
+        text-align:center;
+        padding-left:8px;
+        padding-right:8px;
+      }
+
+      .artilheirosWrap{
+        padding:16px 12px;
+        border-radius:22px;
+      }
+
+      .addArtilheiro{
+        padding:14px 12px;
+        border-radius:16px;
+      }
+
+      .phraseWrap{
+        padding:12px;
+        border-radius:22px;
+      }
+
+      .phraseWrap input{
+        min-width:0;
+      }
+
+      .phraseBtn{
+        width:40px;
+        height:40px;
+        flex:0 0 40px;
+      }
+
+      .filePlus{
+        padding:16px 12px;
+        border-radius:22px;
+      }
+
+      .filePlus .plus{
+        width:40px;
+        height:40px;
+        flex:0 0 40px;
+        font-size:24px;
+      }
+
+      .btnGreen{
+        width:100%;
+        min-width:0;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="wrap">
+    <div class="topbar">
+      <div class="brandTop">O Mascote</div>
+      <div class="row">
+        <button class="btnBlue" id="btnAtualizar">Atualizar</button>
+        <button class="btnRed" id="btnSair">Sair</button>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="welcomeBox">
+        <div class="welcomeLabel">Bem-vindo</div>
+        <h1 id="welcome">Seu time</h1>
+        <div class="sub">Crie sua arte em poucos passos.</div>
+      </div>
+
+      <div class="hero">
+        <div class="heroBrand">
+          <span class="c1">i</span><span class="c2">A</span><span class="c3">4</span><span class="c4">Tube</span>
+        </div>
+
+        <h2 class="heroTitle">Crie artes esportivas prontas<br>para postar em segundos</h2>
+
+        <div class="heroSub">
+          Envie sua foto, escolha o modelo e <strong>gere posts</strong><br>
+          profissionais sem precisar de designer.
+        </div>
+
+        <div class="selectorStage">
+          <div class="centerWrap">
+            <button type="button" class="centerBtn" id="mainCreateBtn">
+              <div class="iconCenter">🔥</div>
+              <span>Criar<br>minha arte</span>
+            </button>
+          </div>
+
+          <div class="lines">
+            <div class="line l1"></div>
+            <div class="line l2"></div>
+            <div class="line l3"></div>
+            <div class="line l4"></div>
+            <div class="line l5"></div>
+          </div>
+
+          <div class="optionsRow">
+            <button type="button" class="optionBtn" data-product="resultado">
+              <div class="circle green">
+                <img src="icons/resultado.png" class="iconImg">
+              </div>
+              <div class="optLabel">Resultado<br>do Jogo</div>
+            </button>
+
+            <button type="button" class="optionBtn" data-product="escalacao">
+              <div class="circle orange">
+                <img src="icons/escalacao.png" class="iconImg">
+              </div>
+              <div class="optLabel">Escalação</div>
+            </button>
+
+            <button type="button" class="optionBtn" data-product="contratacao">
+              <div class="circle">
+                <img src="icons/contratacao.png" class="iconImg">
+              </div>
+              <div class="optLabel">Contratação</div>
+            </button>
+
+            <button type="button" class="optionBtn" data-product="proximo_jogo">
+              <div class="circle orange">
+                <img src="icons/proximo_jogo.png" class="iconImg">
+              </div>
+              <div class="optLabel">Próximo Jogo</div>
+            </button>
+
+            <button type="button" class="optionBtn" data-product="patrocinador">
+              <div class="circle">
+                <img src="icons/patrocinador.png" class="iconImg">
+              </div>
+              <div class="optLabel">Patrocinador<br>/ Apoio</div>
+            </button>
+          </div>
+        </div>
+
+        <a href="#" class="examplesLink" id="verExemplosLink">Ver exemplos →</a>
+      </div>
+
+      <div class="switchModeRow">
+        <button type="button" class="btnGhost" id="btnTrocarTipo">Trocar opção</button>
+      </div>
+
+      <div class="hiddenTabs">
+        <input class="tabRadio" type="radio" name="aba" id="tab_flyer">
+        <input class="tabRadio" type="radio" name="aba" id="tab_contrat">
+      </div>
+
+      <div class="builderArea" id="builderArea">
+        <div class="crestWrap">
+          <div class="crestCard" id="crestCard">
+            <div class="crestGlow"></div>
+            <input id="crestManual" class="fileHidden" type="file" accept="image/*" />
+            <button id="crestAddBtn" type="button" style="position:absolute;right:10px;bottom:10px;width:46px;height:46px;border-radius:14px;border:1px solid rgba(255,255,255,.16);background:linear-gradient(135deg, rgba(255,255,255,.10), rgba(0,0,0,.18));box-shadow:var(--shadow2);color:#fff;font-weight:950;font-size:24px;line-height:1;display:grid;place-items:center;cursor:pointer;z-index:5;">+</button>
+
+            <img id="crestPreview" class="crestImg" alt="Escudo do time" style="display:none" />
+            <div id="crestPlaceholder" class="crestPlaceholder">
+              Envie o escudo do seu time<br>para personalizar o visual do app
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="meta">
+            <div class="pill" id="plano">Plano: —</div>
+            <div class="pill" id="usados">Usados no mês: —</div>
+            <div class="pill" id="status">Status: —</div>
+          </div>
+
+          <div class="msg" id="msg"></div>
+          <div class="sep"></div>
+
+          <h2 id="dynamicTitle">Criar arte</h2>
+          <div class="hint" id="dynamicHint" style="display:none;"></div>
+
+          <input type="hidden" id="flyerTipo" value="zz1fs">
+          <input type="hidden" id="selectedProduct" value="">
+
+          <form id="pedidoForm" class="formGrid" enctype="multipart/form-data">
+            <div class="field-placar full">
+              <label class="sectionTitle">Placar</label>
+              <div class="placarRow">
+                <input class="placarTime" id="timePrincipal" placeholder="Seu time">
+                <input class="placarGols" id="golsTime" type="number" min="0" placeholder="0">
+                <div class="placarX">x</div>
+                <input class="placarGols" id="golsAdv" type="number" min="0" placeholder="0">
+                <input class="placarTime" id="timeAdv" placeholder="Adversário (opcional)">
+              </div>
+            </div>
+
+            <div class="field-artilheiros full optionalField" data-optional-field="artilheiros">
+              <button type="button" class="optionalToggle" data-optional-toggle="artilheiros">
+                <span class="optionalToggleText">Ver artilheiros</span>
+                <span class="optionalToggleIcon">▼</span>
+              </button>
+              <div class="optionalContent" data-optional-content="artilheiros">
+                <div class="artilheirosWrap" id="artilheirosWrap">
+                  <div class="artilheiroRow">
+                    <input class="artilheiroNome" placeholder="Nome do jogador">
+                    <input class="artilheiroGols" type="number" min="0" placeholder="Gols">
+                  </div>
+                </div>
+                <div class="addArtilheiro" id="addArtilheiroBtn">Adicionar jogador</div>
+                <div class="escalacaoActions" id="escalacaoActions">
+                  <button type="button" class="escActionBtn escActionSave" id="btnSalvarEscalacao">Salvar atletas</button>
+                  <button type="button" class="escActionBtn escActionDelete" id="btnExcluirEscalacao">Excluir atletas salvos</button>
+                </div>
+              </div>
+            </div>
+
+            <div class="field-rodada">
+              <label id="labelRodada">Título da arte *</label>
+              <input id="rodada" />
+            </div>
+
+            <div class="field-data">
+              <label class="sectionTitle" id="labelData">Frase na imagem *</label>
+
+              <div class="phraseWrap">
+                <input id="dataJogo" required />
+                <button type="button" class="phraseBtn" id="openPhraseBtn" aria-label="Abrir frases prontas">+</button>
+
+                <div class="phraseMenu" id="phraseMenu">
+                  <button type="button" class="phraseOption">Vitória na raça, no talento e no coração.</button>
+                  <button type="button" class="phraseOption">Mais 3 pontos pra conta e motivo de sobra pra comemorar.</button>
+                  <button type="button" class="phraseOption">Fim de jogo com vitória e orgulho da nossa camisa.</button>
+                  <button type="button" class="phraseOption">Jogamos juntos, lutamos juntos e vencemos juntos.</button>
+                  <button type="button" class="phraseOption">Resultado conquistado com raça do começo ao fim.</button>
+                  <button type="button" class="phraseOption">Hoje teve entrega, foco e vitória merecida.</button>
+                  <button type="button" class="phraseOption">Dentro de campo, mostramos a força do nosso time.</button>
+                  <button type="button" class="phraseOption">Mais uma batalha vencida com união e determinação.</button>
+                  <button type="button" class="phraseOption">A vitória é nossa e a torcida faz parte disso.</button>
+                  <button type="button" class="phraseOption">No apito final, a recompensa veio: vencemos.</button>
+                </div>
+              </div>
+            </div>
+
+            <div class="field-hora optionalField" data-optional-field="hora">
+              <button type="button" class="optionalToggle" data-optional-toggle="hora">
+                <span class="optionalToggleText" id="labelHora">Observações</span>
+                <span class="optionalToggleIcon">▼</span>
+              </button>
+              <div class="optionalContent" data-optional-content="hora">
+                <input id="hora" />
+              </div>
+            </div>
+
+            <div class="field-arena optionalField" data-optional-field="arena">
+              <button type="button" class="optionalToggle" data-optional-toggle="arena">
+                <span class="optionalToggleText" id="labelArena">Texto secundário / local</span>
+                <span class="optionalToggleIcon">▼</span>
+              </button>
+              <div class="optionalContent" data-optional-content="arena">
+                <input id="arena" />
+              </div>
+            </div>
+
+            <div class="field-mascote full optionalField" data-optional-field="mascote">
+              <button type="button" class="optionalToggle" data-optional-toggle="mascote">
+                <span class="optionalToggleText" id="labelMascote">Imagem principal (opcional)</span>
+                <span class="optionalToggleIcon">▼</span>
+              </button>
+              <div class="optionalContent" data-optional-content="mascote">
+                <input id="mascote" class="fileHidden" type="file" />
+                <div class="filePlus" data-file-for="mascote" tabindex="0" role="button" aria-label="Enviar imagem principal">
+                  <div class="left">
+                    <div class="name"></div>
+                    <div class="chosen" id="chosen_mascote">Nenhum arquivo</div>
+                  </div>
+                  <div class="plus">+</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="field-esc1">
+              <label id="labelEsc1" class="hiddenLabel">Escudo / logo do time *</label>
+              <input id="escudo1" class="fileHidden" type="file" required />
+              <div class="filePlus" data-file-for="escudo1" tabindex="0" role="button" aria-label="Enviar arquivo 1">
+                <div class="left">
+                  <div class="name"></div>
+                  <div class="chosen placeholderLike" id="chosen_escudo1">Escudo / logo do time *</div>
+                </div>
+                <div class="plus">+</div>
+              </div>
+            </div>
+
+            <div class="field-esc2">
+              <label id="labelEsc2" class="hiddenLabel">Imagem do jogo *</label>
+              <input id="escudo2" class="fileHidden" type="file" />
+              <div class="filePlus" data-file-for="escudo2" tabindex="0" role="button" aria-label="Enviar arquivo 2">
+                <div class="left">
+                  <div class="name"></div>
+                  <div class="chosen placeholderLike" id="chosen_escudo2">Imagem do jogo *</div>
+                </div>
+                <div class="plus">+</div>
+              </div>
+            </div>
+
+            <div class="field-patro full optionalField" data-optional-field="patro">
+              <button type="button" class="optionalToggle" data-optional-toggle="patro">
+                <span class="optionalToggleText" id="labelPatro">Imagens extras / patrocinadores (opcional) — pode enviar várias</span>
+                <span class="optionalToggleIcon">▼</span>
+              </button>
+              <div class="optionalContent" data-optional-content="patro">
+                <input id="patrocinadores" class="fileHidden" type="file" multiple />
+                <div class="filePlus" data-file-for="patrocinadores" tabindex="0" role="button" aria-label="Enviar patrocinadores">
+                  <div class="left">
+                    <div class="name"></div>
+                    <div class="chosen" id="chosen_patrocinadores">Nenhum arquivo</div>
+                  </div>
+                  <div class="plus">+</div>
+                </div>
+                <div class="hint">Dica: segure Ctrl (Windows) para selecionar vários arquivos.</div>
+              </div>
+            </div>
+
+            <div class="field-optional-title full" id="optionalDivider">
+              <label class="sectionTitle">Opcional</label>
+            </div>
+
+            <div class="field-submit full submitRow">
+              <button class="btnGreen" id="btnEnviar" type="submit">Criar minha arte 🚀</button>
+            </div>
+
+            <div class="field-msg full msgSmall" id="msgPedido"></div>
+
+            <div id="resultadoBox" style="display:none; margin-top:16px; text-align:center;">
+              <div id="statusResultado" style="margin-bottom:10px; font-size:14px; font-weight:800; color:rgba(255,255,255,.92);">
+                Estamos montando sua imagem...
+              </div>
+
+              <img
+                id="previewResultado"
+                alt="Resultado pronto"
+                style="display:none; width:100%; max-width:420px; border-radius:16px; border:1px solid rgba(255,255,255,.12); box-shadow:var(--shadow2);"
+              />
+
+              <div style="margin-top:10px;">
+                <a
+                  id="downloadResultado"
+                  href="#"
+                  target="_blank"
+                  style="display:none; color:#fff; font-weight:900; text-decoration:none; padding:12px 16px; border-radius:14px; background:linear-gradient(135deg, #2ecc71, #1b9b51); box-shadow:var(--shadow2); display:inline-block;"
+                >
+                  Baixar imagem
+                </a>
+              </div>
+            </div>
+          </form>
+        </div>
+
+        <div class="card" style="margin-top:16px;">
+          <h2 style="text-align:left; margin-bottom:8px;">Meus pedidos</h2>
+
+          <div id="historicoVazio" class="msgSmall" style="text-align:left;">
+            Carregando pedidos...
+          </div>
+
+          <div id="historicoLista" style="display:grid; gap:12px;"></div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <div class="modalMask" id="cropModal" aria-hidden="true">
+    <div class="modalCard" role="dialog" aria-modal="true" aria-label="Recortar imagem">
+      <div class="modalTop">
+        <div class="modalTitle">Recortar</div>
+        <button class="modalClose btnGhost" id="cropCloseBtn" type="button">✕</button>
+      </div>
+
+      <div class="cropWrap">
+        <div class="cropHint" id="cropHint">recorte somente o que precisa</div>
+
+        <div class="cropStage" id="cropStage">
+          <canvas id="cropCanvas"></canvas>
+          <div class="cropMask">
+            <div class="cropBox" id="cropBox">
+              <div class="handle h-nw" data-h="nw"></div>
+              <div class="handle h-n" data-h="n"></div>
+              <div class="handle h-ne" data-h="ne"></div>
+              <div class="handle h-w" data-h="w"></div>
+              <div class="handle h-e" data-h="e"></div>
+              <div class="handle h-sw" data-h="sw"></div>
+              <div class="handle h-s" data-h="s"></div>
+              <div class="handle h-se" data-h="se"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="cropControls">
+        <div class="zoomBtns">
+          <button class="zbtn" id="zoomOutBtn" type="button">−</button>
+          <div class="zoomLbl" id="zoomLbl">1.0×</div>
+          <button class="zbtn" id="zoomInBtn" type="button">+</button>
+        </div>
+        <button class="btnGhost" id="cropCancelBtn" type="button">Cancelar</button>
+        <button class="btnOk" id="cropOkBtn" type="button">Usar recorte</button>
+      </div>
+    </div>
+  </div>
+
+<script>
+const API_BASE = "https://api.omascote.com.br";
+const token = localStorage.getItem("omascote_token");
+if (!token) window.location.href = "index.html";
+
+const welcomeEl = document.getElementById("welcome");
+const planoEl = document.getElementById("plano");
+const usadosEl = document.getElementById("usados");
+const statusEl = document.getElementById("status");
+const msgPedidoEl = document.getElementById("msgPedido");
+const historicoListaEl = document.getElementById("historicoLista");
+const historicoVazioEl = document.getElementById("historicoVazio");
+
+const dynamicTitleEl = document.getElementById("dynamicTitle");
+const dynamicHintEl = document.getElementById("dynamicHint");
+const selectedProductInput = document.getElementById("selectedProduct");
+const flyerTipoInput = document.getElementById("flyerTipo");
+const btnEnviar = document.getElementById("btnEnviar");
+const btnTrocarTipo = document.getElementById("btnTrocarTipo");
+const builderArea = document.getElementById("builderArea");
+const mainCreateBtn = document.getElementById("mainCreateBtn");
+const selectorStage = document.querySelector(".selectorStage");
+
+const crestPreview = document.getElementById("crestPreview");
+const crestPlaceholder = document.getElementById("crestPlaceholder");
+const CREST_KEY = "omascote_escudo_principal_dataurl";
+const TEAM_ESCUDO_FORM_KEY = "omascote_escudo_form_dataurl";
+const ESCALACAO_JOGADORES_KEY = "omascote_escalacao_jogadores";
+
+const PRODUCTS = {
+  resultado: {
+    mode: "resultado",
+    title: "Resultado do jogo",
+    hint: "Envie a competição, a imagem da partida, os escudos, o placar e a frase para montar a arte pós-jogo.",
+    flyerTipo: "",
+    labels: {
+      hora: "Campeonato / competição *",
+      data: "Frase na imagem *",
+      esc1: "Imagem do jogo *",
+      esc2: "Escudo / logo do time *",
+      mascote: "Escudo do adversário (opcional)"
+    },
+    placeholders: {
+      hora: "Ex: Campeonato municipal",
+      data: "Ex: Vitória na raça até o fim"
+    },
+    required: {
+      esc1: true,
+      esc2: true
+    },
+    phraseMenu: true,
+    hiddenFields: []
+  },
+
+  escalacao: {
+    mode: "flyer",
+    title: "Escalação",
+    hint: "Adicione os jogadores, defina o título da arte e envie os escudos.",
+    flyerTipo: "zz1fs",
+    labels: {
+      data: "Título da arte *",
+      esc1: "Escudo 1 *",
+      esc2: "Escudo 2 *"
+    },
+    placeholders: {
+      data: "Ex: Escalação oficial do time A"
+    },
+    required: {
+      esc1: true,
+      esc2: false
+    },
+    phraseMenu: false,
+    hiddenFields: ["rodada", "hora", "arena", "mascote", "patro"],
+    showPlayerList: true
+  },
+
+  contratacao: {
+    mode: "flyer",
+    title: "Contratação",
+    hint: "Preencha só o essencial para anunciar o novo jogador.",
+    flyerTipo: "zz1fm",
+    labels: {
+      rodada: "Título da arte *",
+      data: "Nome do jogador *",
+      hora: "Posição / idade (opcional)",
+      esc1: "Escudo do time *",
+      esc2: "Foto do jogador *"
+    },
+    placeholders: {
+      rodada: "Ex: Novo reforço",
+      data: "Ex: João Silva",
+      hora: "Ex: Atacante • 22 anos"
+    },
+    required: {
+      esc1: true,
+      esc2: true
+    },
+    phraseMenu: false,
+    hiddenFields: ["arena", "mascote", "patro"]
+  },
+
+  proximo_jogo: {
+    mode: "flyer",
+    title: "Próximo jogo",
+    hint: "Preencha o confronto, a competição e os escudos para criar a arte.",
+    flyerTipo: "zz1ft",
+    labels: {
+      rodada: "Confronto / chamada *",
+      data: "Data e horário *",
+      hora: "Campeonato / competição *",
+      arena: "Local (opcional)",
+      esc1: "Escudo da esquerda 1 *",
+      esc2: "Escudo da direita 2 *"
+    },
+    placeholders: {
+      rodada: "Ex: Semifinal • Próximo jogo",
+      data: "Ex: Domingo • 15h30",
+      hora: "Ex: Campeonato municipal",
+      arena: "Ex: Estádio municipal"
+    },
+    required: {
+      esc1: true,
+      esc2: true
+    },
+    phraseMenu: false,
+    hiddenFields: ["mascote", "patro"]
+  },
+
+  patrocinador: {
+    mode: "flyer",
+    title: "Patrocinador / Apoio",
+    hint: "Envie o escudo do time e os patrocinadores de uma vez.",
+    flyerTipo: "zz1fj",
+    labels: {
+      rodada: "Título da arte *",
+      data: "Texto principal *",
+      esc1: "Escudo do time *",
+      patro: "Patrocinadores / logos (pode enviar vários)"
+    },
+    placeholders: {
+      rodada: "Ex: Nosso patrocinador",
+      data: "Ex: Conheça quem apoia nosso time"
+    },
+    required: {
+      esc1: true,
+      esc2: false
+    },
+    phraseMenu: false,
+    hiddenFields: ["hora", "arena", "mascote", "esc2"]
+  }
+};
+
+function getArtilheiroRowHtml(mode = "resultado"){
+  if(mode === "escalacao"){
+    return `
+      <div class="artilheiroRow">
+        <input class="artilheiroNome" placeholder="Nome do jogador">
+        <input class="artilheiroGols" type="text" placeholder="Posição (opcional)">
+      </div>
+    `;
+  }
+
+  return `
+    <div class="artilheiroRow">
+      <input class="artilheiroNome" placeholder="Nome do jogador">
+      <input class="artilheiroGols" type="number" min="0" placeholder="Gols">
+    </div>
+  `;
+}
+
+function setArtilheirosMode(mode = "resultado"){
+  const wrap = document.getElementById("artilheirosWrap");
+  const title = document.querySelector('.field-artilheiros [data-optional-toggle="artilheiros"] .optionalToggleText');
+  const addBtn = document.getElementById("addArtilheiroBtn");
+  if(!wrap || !title || !addBtn) return;
+
+  if(mode === "escalacao"){
+    title.textContent = "Adicionar jogador";
+  }else{
+    title.textContent = "Ver artilheiros";
+  }
+
+  addBtn.textContent = "Adicionar jogador";
+  wrap.innerHTML = getArtilheiroRowHtml(mode);
+}
+
+function updateChosenPlaceholders(product){
+  const chosenMascote = document.getElementById("chosen_mascote");
+  const chosenEscudo1 = document.getElementById("chosen_escudo1");
+  const chosenEscudo2 = document.getElementById("chosen_escudo2");
+  const chosenPatro = document.getElementById("chosen_patrocinadores");
+
+  const mascoteInput = document.getElementById("mascote");
+  const escudo1Input = document.getElementById("escudo1");
+  const escudo2Input = document.getElementById("escudo2");
+  const patroInput = document.getElementById("patrocinadores");
+
+  if(chosenMascote && (!mascoteInput.files || mascoteInput.files.length === 0)){
+    chosenMascote.textContent = product?.labels?.mascote || "Nenhum arquivo";
+  }
+  if(chosenEscudo1 && (!escudo1Input.files || escudo1Input.files.length === 0)){
+    chosenEscudo1.innerHTML = getSavedEscudo1Exists()
+      ? `<strong style="color:#127a43;">Escudo salvo ✓</strong>`
+      : (product?.labels?.esc1 || "Escudo / logo do time *");
+  }
+  if(chosenEscudo2 && (!escudo2Input.files || escudo2Input.files.length === 0)){
+    chosenEscudo2.textContent = product?.labels?.esc2 || "Imagem do jogo *";
+  }
+  if(chosenPatro && (!patroInput.files || patroInput.files.length === 0)){
+    chosenPatro.textContent = product?.labels?.patro || "Nenhum arquivo";
+  }
+}
+
+function updateProductFieldVisibility(product){
+  const flyerFields = ["rodada", "artilheiros", "data", "hora", "arena", "mascote", "esc1", "esc2", "patro"];
+
+  flyerFields.forEach((field)=>{
+    const el = document.querySelector(`.field-${field}`);
+    if(!el) return;
+    el.style.display = "";
+  });
+
+  const artilheirosField = document.querySelector(".field-artilheiros");
+  const escalacaoActions = document.getElementById("escalacaoActions");
+
+  if(escalacaoActions) escalacaoActions.style.display = "none";
+
+  if(!product){
+    if(artilheirosField) artilheirosField.style.display = "none";
+    setArtilheirosMode("resultado");
+    return;
+  }
+
+  if(product.mode === "resultado"){
+    if(artilheirosField) artilheirosField.style.display = "block";
+    setArtilheirosMode("resultado");
+    return;
+  }
+
+  const hiddenFields = Array.isArray(product.hiddenFields) ? product.hiddenFields : [];
+
+  hiddenFields.forEach((field)=>{
+    const el = document.querySelector(`.field-${field}`);
+    if(!el) return;
+    el.style.display = "none";
+  });
+
+  if(product.showPlayerList){
+    if(artilheirosField) artilheirosField.style.display = "flex";
+    if(escalacaoActions) escalacaoActions.style.display = "flex";
+    setArtilheirosMode("escalacao");
+    fillEscalacaoPlayersUI(loadSavedEscalacaoPlayers());
+  }else{
+    if(artilheirosField) artilheirosField.style.display = "none";
+    setArtilheirosMode("resultado");
+  }
+}
+
+function setCrestUI(dataUrl){
+  if(!dataUrl){
+    crestPreview.style.display = "none";
+    crestPlaceholder.style.display = "flex";
+    return;
+  }
+  crestPreview.src = dataUrl;
+  crestPreview.style.display = "block";
+  crestPlaceholder.style.display = "none";
+  crestPreview.onload = () => {
+    try{ applyThemeFromImage(crestPreview); }catch(e){}
+  };
+}
+
+function readFileAsDataURL(file){
+  return new Promise((resolve, reject)=>{
+    const r = new FileReader();
+    r.onload = () => resolve(r.result);
+    r.onerror = reject;
+    r.readAsDataURL(file);
+  });
+}
+
+function dataURLToFile(dataUrl, filename){
+  const parts = String(dataUrl || "").split(",");
+  if(parts.length < 2) return null;
+
+  const mimeMatch = parts[0].match(/data:(.*?);base64/);
+  const mime = mimeMatch ? mimeMatch[1] : "image/png";
+  const binary = atob(parts[1]);
+  const len = binary.length;
+  const bytes = new Uint8Array(len);
+
+  for(let i = 0; i < len; i++){
+    bytes[i] = binary.charCodeAt(i);
+  }
+
+  return new File([bytes], filename, { type: mime });
+}
+
+async function saveEscudo1ToLocalFromFile(file){
+  if(!file) return;
+  try{
+    const dataUrl = await readFileAsDataURL(file);
+    localStorage.setItem(TEAM_ESCUDO_FORM_KEY, dataUrl);
+  }catch(e){}
+}
+
+function getSavedEscudo1File(){
+  const dataUrl = localStorage.getItem(TEAM_ESCUDO_FORM_KEY);
+  if(!dataUrl) return null;
+  return dataURLToFile(dataUrl, "escudo_time_salvo.png");
+}
+
+function getSavedEscudo1Exists(){
+  return !!localStorage.getItem(TEAM_ESCUDO_FORM_KEY);
+}
+
+function getEscalacaoPlayersFromUI(){
+  const jogadores = [];
+
+  document.querySelectorAll("#artilheirosWrap .artilheiroRow").forEach(row=>{
+    const nome = row.querySelector(".artilheiroNome")?.value?.trim() || "";
+    const posicao = row.querySelector(".artilheiroGols")?.value?.trim() || "";
+
+    if(nome){
+      jogadores.push({ nome, posicao });
+    }
+  });
+
+  return jogadores;
+}
+
+function fillEscalacaoPlayersUI(jogadores){
+  const wrap = document.getElementById("artilheirosWrap");
+  if(!wrap) return;
+
+  const lista = Array.isArray(jogadores) ? jogadores.filter(j => j && j.nome) : [];
+  if(lista.length === 0){
+    wrap.innerHTML = getArtilheiroRowHtml("escalacao");
+    return;
+  }
+
+  wrap.innerHTML = lista.map(j => `
+    <div class="artilheiroRow">
+      <input class="artilheiroNome" placeholder="Nome do jogador" value="${String(j.nome || "").replace(/"/g, "&quot;")}">
+      <input class="artilheiroGols" type="text" placeholder="Posição (opcional)" value="${String(j.posicao || "").replace(/"/g, "&quot;")}">
+    </div>
+  `).join("");
+}
+
+function loadSavedEscalacaoPlayers(){
+  try{
+    const raw = localStorage.getItem(ESCALACAO_JOGADORES_KEY);
+    if(!raw) return [];
+    const parsed = JSON.parse(raw);
+    return Array.isArray(parsed) ? parsed : [];
+  }catch(e){
+    return [];
+  }
+}
+
+function saveEscalacaoPlayersToLocal(){
+  const jogadores = getEscalacaoPlayersFromUI();
+  if(jogadores.length === 0){
+    alert("Adicione pelo menos um atleta para salvar.");
+    return;
+  }
+  localStorage.setItem(ESCALACAO_JOGADORES_KEY, JSON.stringify(jogadores));
+  alert("Atletas salvos com sucesso.");
+}
+
+function clearEscalacaoPlayersFromLocal(){
+  localStorage.removeItem(ESCALACAO_JOGADORES_KEY);
+  fillEscalacaoPlayersUI([]);
+  alert("Atletas salvos excluídos.");
+}
+
+function applyThemeFromImage(img){
+  const c = document.createElement("canvas");
+  const ctx = c.getContext("2d", { willReadFrequently:true });
+  const w = 80, h = 80;
+  c.width = w;
+  c.height = h;
+  ctx.drawImage(img, 0, 0, w, h);
+  const { data } = ctx.getImageData(0,0,w,h);
+
+  let r=0,g=0,b=0,n=0;
+  for(let i=0;i<data.length;i+=16){
+    const a = data[i+3];
+    if(a < 40) continue;
+    const rr = data[i], gg = data[i+1], bb = data[i+2];
+    const max = Math.max(rr,gg,bb);
+    const min = Math.min(rr,gg,bb);
+    if(max > 245 && (max-min) < 12) continue;
+    r += rr; g += gg; b += bb; n++;
+  }
+  if(n < 20) return;
+
+  r = Math.round(r/n);
+  g = Math.round(g/n);
+  b = Math.round(b/n);
+
+  const r2 = Math.max(0, Math.round(r * 0.55));
+  const g2 = Math.max(0, Math.round(g * 0.55));
+  const b2 = Math.max(0, Math.round(b * 0.55));
+
+  document.documentElement.style.setProperty("--accent1", `rgb(${r},${g},${b})`);
+  document.documentElement.style.setProperty("--accent2", `rgb(${r2},${g2},${b2})`);
+}
+
+setCrestUI(localStorage.getItem(CREST_KEY) || "");
+
+const crestManualInput = document.getElementById("crestManual");
+const crestAddBtn = document.getElementById("crestAddBtn");
+
+if(crestAddBtn && crestManualInput){
+  crestAddBtn.addEventListener("click", ()=> crestManualInput.click());
+  crestManualInput.addEventListener("change", async ()=>{
+    if(!crestManualInput.files || crestManualInput.files.length === 0) return;
+    try{
+      const dataUrl = await readFileAsDataURL(crestManualInput.files[0]);
+      localStorage.setItem(CREST_KEY, dataUrl);
+      setCrestUI(dataUrl);
+    }catch(e){}
+    crestManualInput.value = "";
+  });
+}
+
+function bindPlusUpload(inputId, chosenId){
+  const input = document.getElementById(inputId);
+  const chosen = document.getElementById(chosenId);
+  const btn = document.querySelector(`.filePlus[data-file-for="${inputId}"]`);
+  if(!input || !chosen || !btn) return;
+
+  const openPicker = () => input.click();
+
+  btn.addEventListener("click", openPicker);
+  btn.addEventListener("keydown", (e)=>{
+    if(e.key === "Enter" || e.key === " "){
+      e.preventDefault();
+      openPicker();
+    }
+  });
+
+  input.addEventListener("change", async ()=>{
+    if(!input.files || input.files.length === 0){
+      const currentProduct = PRODUCTS[selectedProductInput.value];
+      if(inputId === "escudo1"){
+        chosen.innerHTML = getSavedEscudo1Exists()
+          ? `<strong style="color:#127a43;">Escudo salvo ✓</strong>`
+          : (currentProduct?.labels?.esc1 || "Escudo / logo do time *");
+      }
+      else if(inputId === "escudo2") chosen.textContent = currentProduct?.labels?.esc2 || "Imagem do jogo *";
+      else if(inputId === "mascote") chosen.textContent = currentProduct?.labels?.mascote || "Nenhum arquivo";
+      else if(inputId === "patrocinadores") chosen.textContent = currentProduct?.labels?.patro || "Nenhum arquivo";
+      else chosen.textContent = "Nenhum arquivo";
+      return;
+    }
+    if(input.multiple){
+      chosen.textContent = `${input.files.length} arquivo(s) selecionado(s)`;
+    }else{
+      chosen.textContent = input.files[0].name || "Arquivo selecionado";
+    }
+
+    if(inputId === "escudo1" && input.files[0]){
+      await saveEscudo1ToLocalFromFile(input.files[0]);
+    }
+  });
+}
+
+bindPlusUpload("mascote", "chosen_mascote");
+bindPlusUpload("escudo1", "chosen_escudo1");
+bindPlusUpload("escudo2", "chosen_escudo2");
+bindPlusUpload("patrocinadores", "chosen_patrocinadores");
+
+function applyLocal(){
+  const nome = localStorage.getItem("omascote_nome_time") || "";
+  const plano = localStorage.getItem("omascote_plano") || "";
+  const usados = localStorage.getItem("omascote_usados") || "";
+
+  welcomeEl.textContent = nome || "Seu time";
+  planoEl.textContent = `Plano: ${plano || "—"} pedidos/mês`;
+  usadosEl.textContent = `Usados no mês: ${usados || "—"}`;
+}
+
+async function refreshMe(){
+  try{
+    const r = await fetch(`${API_BASE}/me`, {
+      headers: { "Authorization": "Bearer " + token }
+    });
+    const data = await r.json();
+    if(data.ok){
+      localStorage.setItem("omascote_nome_time", data.nome_time || "");
+      localStorage.setItem("omascote_plano", data.plano || "");
+      localStorage.setItem("omascote_usados", data.usados_no_ciclo || "");
+      applyLocal();
+      statusEl.textContent = data.ativo ? "Status: ativo" : "Status: inativo";
+    }
+  }catch{}
+}
+
+function setRequired(inputId, isRequired){
+  const input = document.getElementById(inputId);
+  if(!input) return;
+  input.required = !!isRequired;
+}
+
+function setText(id, value){
+  const el = document.getElementById(id);
+  if(el) el.textContent = value;
+}
+
+function setPlaceholder(id, value){
+  const el = document.getElementById(id);
+  if(el) el.placeholder = value || "";
+}
+
+function closePhraseMenu(){
+  const phraseMenu = document.getElementById("phraseMenu");
+  if(phraseMenu) phraseMenu.classList.remove("open");
+}
+
+function setOptionalSectionState(field, isOpen){
+  const wrapper = document.querySelector(`[data-optional-field="${field}"]`);
+  if(!wrapper) return;
+  wrapper.classList.toggle("is-open", !!isOpen);
+}
+
 function configureOptionalSections(productKey){
   const wrappers = document.querySelectorAll("[data-optional-field]");
   wrappers.forEach((wrapper)=>{
@@ -68,23 +2544,26 @@ function configureOptionalSections(productKey){
   }
 }
 
-TROQUE POR ISSO:
-function configureOptionalSections(productKey){
-  const wrappers = document.querySelectorAll("[data-optional-field]");
-  wrappers.forEach((wrapper)=>{
-    wrapper.classList.remove("is-open");
-    const toggle = wrapper.querySelector("[data-optional-toggle]");
-    if(toggle) toggle.style.display = "flex";
-  });
+function arrangeFieldSequence(productKey){
+  const form = document.getElementById("pedidoForm");
+  if(!form) return;
 
-  const optionalDivider = document.getElementById("optionalDivider");
-  if(optionalDivider){
-    optionalDivider.style.display = productKey ? "block" : "none";
-  }
-}
+  const fields = {
+    placar: form.querySelector(".field-placar"),
+    artilheiros: form.querySelector(".field-artilheiros"),
+    rodada: form.querySelector(".field-rodada"),
+    data: form.querySelector(".field-data"),
+    hora: form.querySelector(".field-hora"),
+    arena: form.querySelector(".field-arena"),
+    mascote: form.querySelector(".field-mascote"),
+    esc1: form.querySelector(".field-esc1"),
+    esc2: form.querySelector(".field-esc2"),
+    patro: form.querySelector(".field-patro"),
+    optionalDivider: document.getElementById("optionalDivider"),
+    submit: form.querySelector(".field-submit"),
+    msg: form.querySelector(".field-msg")
+  };
 
----
-PROCURE ISSO:
   const sequenceMap = {
     resultado: ["placar", "esc2", "optionalDivider", "hora", "data", "esc1", "artilheiros", "mascote", "submit", "msg"],
     escalacao: ["data", "esc1", "artilheiros", "optionalDivider", "esc2", "submit", "msg"],
@@ -93,11 +2572,1060 @@ PROCURE ISSO:
     patrocinador: ["rodada", "esc1", "patro", "optionalDivider", "data", "submit", "msg"]
   };
 
-TROQUE POR ISSO:
-  const sequenceMap = {
-    resultado: ["placar", "esc2", "esc1", "optionalDivider", "hora", "data", "artilheiros", "mascote", "submit", "msg"],
-    escalacao: ["data", "esc1", "artilheiros", "optionalDivider", "esc2", "submit", "msg"],
-    contratacao: ["rodada", "data", "esc1", "esc2", "optionalDivider", "hora", "submit", "msg"],
-    proximo_jogo: ["data", "hora", "esc1", "optionalDivider", "rodada", "esc2", "arena", "submit", "msg"],
-    patrocinador: ["rodada", "esc1", "optionalDivider", "data", "patro", "submit", "msg"]
+  const sequence = sequenceMap[productKey];
+  if(!sequence) return;
+
+  sequence.forEach((key)=>{
+    const el = fields[key];
+    if(el) form.appendChild(el);
+  });
+}
+
+function scrollToBuilder(){
+  const el = document.getElementById("dynamicHint");
+  if(el){
+    el.scrollIntoView({ behavior:"smooth", block:"start" });
+  }
+}
+
+function selectProduct(productKey){
+  const product = PRODUCTS[productKey];
+  if(!product) return;
+
+  selectedProductInput.value = productKey;
+  document.body.classList.add("modeChosen");
+  document.body.classList.remove("mode-flyer", "mode-result");
+
+  if(product.mode === "resultado"){
+    document.body.classList.add("mode-result");
+    document.getElementById("tab_contrat").checked = true;
+  } else {
+    document.body.classList.add("mode-flyer");
+    document.getElementById("tab_flyer").checked = true;
+    flyerTipoInput.value = product.flyerTipo || "";
+  }
+
+  document.querySelectorAll(".optionBtn").forEach(btn=>{
+    btn.classList.toggle("active", btn.dataset.product === productKey);
+  });
+
+  dynamicTitleEl.textContent = product.title;
+  dynamicHintEl.textContent = `Para ${product.title}, preciso dessas informações abaixo...`;
+  btnEnviar.textContent = "Criar minha arte 🚀";
+
+  setText("labelRodada", product.labels?.rodada || "Título da arte *");
+  setText("labelData", product.labels?.data || "Texto principal *");
+  setText("labelHora", product.labels?.hora || "Observações");
+  setText("labelArena", product.labels?.arena || "Texto secundário / local");
+  setText("labelMascote", product.labels?.mascote || "Imagem principal (opcional)");
+  setText("labelEsc1", product.labels?.esc1 || "Arquivo 1 *");
+  setText("labelEsc2", product.labels?.esc2 || "Arquivo 2");
+  setText("labelPatro", product.labels?.patro || "Imagens extras / patrocinadores (opcional) — pode enviar várias");
+
+  setPlaceholder("rodada", product.placeholders?.rodada || "");
+  setPlaceholder("dataJogo", product.placeholders?.data || "");
+  setPlaceholder("hora", product.placeholders?.hora || "");
+  setPlaceholder("arena", product.placeholders?.arena || "");
+
+  setRequired("escudo1", product.required?.esc1);
+  setRequired("escudo2", product.required?.esc2);
+  updateProductFieldVisibility(product);
+  updateChosenPlaceholders(product);
+  configureOptionalSections(productKey);
+  arrangeFieldSequence(productKey);
+
+  const openPhraseBtn = document.getElementById("openPhraseBtn");
+  if(openPhraseBtn){
+    openPhraseBtn.style.display = product.phraseMenu ? "grid" : "none";
+  }
+  if(!product.phraseMenu) closePhraseMenu();
+
+  const resultadoBox = document.getElementById("resultadoBox");
+  if(resultadoBox) resultadoBox.style.display = "none";
+
+  if(selectorStage && !selectorStage.classList.contains("open")){
+    selectorStage.classList.add("open");
+  }
+
+  setTimeout(scrollToBuilder, 120);
+}
+
+document.querySelectorAll(".optionBtn").forEach(btn=>{
+  btn.addEventListener("click", ()=> selectProduct(btn.dataset.product));
+});
+
+mainCreateBtn.addEventListener("click", ()=>{
+  const current = selectedProductInput.value;
+
+  if(current){
+    scrollToBuilder();
+    return;
+  }
+
+  if(!selectorStage.classList.contains("open")){
+    selectorStage.classList.add("open");
+    setTimeout(()=>{
+      document.querySelector(".optionsRow")?.scrollIntoView({
+        behavior:"smooth",
+        block:"center"
+      });
+    }, 220);
+  }else{
+    document.querySelector(".optionsRow")?.scrollIntoView({
+      behavior:"smooth",
+      block:"center"
+    });
+  }
+});
+
+btnTrocarTipo.addEventListener("click", ()=>{
+  selectedProductInput.value = "";
+  document.body.classList.remove("modeChosen", "mode-flyer", "mode-result");
+  document.querySelectorAll(".optionBtn").forEach(btn=> btn.classList.remove("active"));
+  updateProductFieldVisibility(null);
+  configureOptionalSections("");
+  arrangeFieldSequence("resultado");
+  closePhraseMenu();
+  selectorStage?.classList.remove("open");
+  window.scrollTo({ top: 0, behavior: "smooth" });
+});
+
+document.getElementById("verExemplosLink").addEventListener("click", (e)=>{
+  e.preventDefault();
+
+  if(!selectorStage.classList.contains("open")){
+    selectorStage.classList.add("open");
+    setTimeout(()=>{
+      document.querySelector(".optionsRow")?.scrollIntoView({
+        behavior:"smooth",
+        block:"center"
+      });
+    }, 220);
+  }else{
+    document.querySelector(".optionsRow")?.scrollIntoView({
+      behavior:"smooth",
+      block:"center"
+    });
+  }
+});
+
+document.querySelectorAll("[data-optional-toggle]").forEach((btn)=>{
+  btn.addEventListener("click", ()=>{
+    const field = btn.getAttribute("data-optional-toggle");
+    const wrapper = document.querySelector(`[data-optional-field="${field}"]`);
+    if(!wrapper) return;
+    wrapper.classList.toggle("is-open");
+  });
+});
+
+const cropModal = document.getElementById("cropModal");
+const cropStage = document.getElementById("cropStage");
+const cropBox = document.getElementById("cropBox");
+const cropHint = document.getElementById("cropHint");
+const cropCanvas = document.getElementById("cropCanvas");
+const zoomLbl = document.getElementById("zoomLbl");
+
+const cropCloseBtn = document.getElementById("cropCloseBtn");
+const cropCancelBtn = document.getElementById("cropCancelBtn");
+const cropOkBtn = document.getElementById("cropOkBtn");
+const zoomOutBtn = document.getElementById("zoomOutBtn");
+const zoomInBtn = document.getElementById("zoomInBtn");
+
+const CROP_HINT_TEXT = "recorte somente o que precisa";
+const Z_STEP = 1.15;
+const Z_MIN = 0.35;
+const Z_MAX = 6.0;
+
+const crop = {
+  inputId: null,
+  file: null,
+  img: null,
+  objectUrl: null,
+  zoom: 1.0,
+  offX: 0,
+  offY: 0,
+  dragging: false,
+  lastX: 0,
+  lastY: 0,
+  pinch: false,
+  pinchStartDist: 0,
+  pinchStartZoom: 1.0,
+  rect: { x: 0, y: 0, w: 0, h: 0 },
+  dragMode: null,
+  handle: null,
+  start: { x:0, y:0, rx:0, ry:0, rw:0, rh:0, ox:0, oy:0, uz:1.0 },
+  bypassNextChange: { escudo1:false, escudo2:false }
+};
+
+function openCrop(inputId, file){
+  crop.inputId = inputId;
+  crop.file = file;
+  cropHint.textContent = CROP_HINT_TEXT;
+
+  if(crop.objectUrl){
+    try{ URL.revokeObjectURL(crop.objectUrl); }catch(e){}
+  }
+
+  crop.img = new Image();
+  crop.img.decoding = "async";
+  crop.objectUrl = URL.createObjectURL(file);
+  crop.img.src = crop.objectUrl;
+
+  cropModal.classList.add("open");
+  cropModal.setAttribute("aria-hidden","false");
+
+  crop.img.onload = () => {
+    fitCanvasToStage();
+    initRectDefault();
+    initZoomCoverRect();
+    crop.offX = 0;
+    crop.offY = 0;
+    clampOffsets();
+    drawCrop();
   };
+}
+
+function closeCrop(){
+  cropModal.classList.remove("open");
+  cropModal.setAttribute("aria-hidden","true");
+
+  if(crop.objectUrl){
+    try{ URL.revokeObjectURL(crop.objectUrl); }catch(e){}
+  }
+
+  crop.inputId = null;
+  crop.file = null;
+  crop.img = null;
+  crop.objectUrl = null;
+  crop.dragging = false;
+  crop.pinch = false;
+  crop.dragMode = null;
+  crop.handle = null;
+}
+
+function fitCanvasToStage(){
+  const rect = cropStage.getBoundingClientRect();
+  const dpr = Math.max(1, window.devicePixelRatio || 1);
+
+  cropCanvas.width = Math.round(rect.width * dpr);
+  cropCanvas.height = Math.round(rect.height * dpr);
+
+  const ctx = cropCanvas.getContext("2d");
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+}
+
+function initRectDefault(){
+  const s = cropStage.getBoundingClientRect();
+
+  const w = Math.min(s.width * 0.74, 380);
+  const h = Math.min(s.height * 0.56, 290);
+
+  crop.rect.w = Math.max(90, w);
+  crop.rect.h = Math.max(90, h);
+  crop.rect.x = (s.width - crop.rect.w) / 2;
+  crop.rect.y = (s.height - crop.rect.h) / 2;
+
+  syncRectEl();
+}
+
+function syncRectEl(){
+  cropBox.style.left = crop.rect.x + "px";
+  cropBox.style.top = crop.rect.y + "px";
+  cropBox.style.width = crop.rect.w + "px";
+  cropBox.style.height = crop.rect.h + "px";
+  cropBox.style.transform = "none";
+}
+
+function clampRect(){
+  const s = cropStage.getBoundingClientRect();
+  const minW = 50, minH = 50;
+
+  crop.rect.w = Math.max(minW, crop.rect.w);
+  crop.rect.h = Math.max(minH, crop.rect.h);
+
+  if(crop.rect.x < 0){ crop.rect.w += crop.rect.x; crop.rect.x = 0; }
+  if(crop.rect.y < 0){ crop.rect.h += crop.rect.y; crop.rect.y = 0; }
+
+  if(crop.rect.x + crop.rect.w > s.width) crop.rect.w = s.width - crop.rect.x;
+  if(crop.rect.y + crop.rect.h > s.height) crop.rect.h = s.height - crop.rect.y;
+
+  crop.rect.w = Math.max(minW, crop.rect.w);
+  crop.rect.h = Math.max(minH, crop.rect.h);
+}
+
+function coverFromRect(){
+  const nw = crop.img.naturalWidth || 1;
+  const nh = crop.img.naturalHeight || 1;
+  const rw = Math.max(1, crop.rect.w);
+  const rh = Math.max(1, crop.rect.h);
+  return Math.max(rw / nw, rh / nh);
+}
+
+function initZoomCoverRect(){
+  const cover = coverFromRect();
+  crop.zoom = cover;
+  zoomLbl.textContent = "1.0×";
+}
+
+function userZoomValue(){
+  const cover = coverFromRect();
+  const user = crop.zoom / cover;
+  return Math.max(0.01, user);
+}
+
+function setUserZoom(userZ){
+  const cover = coverFromRect();
+  const clamped = Math.max(Z_MIN, Math.min(Z_MAX, userZ));
+  crop.zoom = cover * clamped;
+  zoomLbl.textContent = `${clamped.toFixed(1)}×`;
+}
+
+function clampOffsets(){
+  if(!crop.img) return;
+
+  const nw = crop.img.naturalWidth || 1;
+  const nh = crop.img.naturalHeight || 1;
+
+  const cropWNatural = crop.rect.w / crop.zoom;
+  const cropHNatural = crop.rect.h / crop.zoom;
+
+  const maxOffX = Math.max(0, (nw - cropWNatural) / 2);
+  const maxOffY = Math.max(0, (nh - cropHNatural) / 2);
+
+  crop.offX = Math.max(-maxOffX, Math.min(maxOffX, crop.offX));
+  crop.offY = Math.max(-maxOffY, Math.min(maxOffY, crop.offY));
+}
+
+function drawCrop(){
+  if(!crop.img) return;
+
+  const ctx = cropCanvas.getContext("2d");
+  const sRect = cropStage.getBoundingClientRect();
+  const w = sRect.width;
+  const h = sRect.height;
+
+  ctx.clearRect(0, 0, w, h);
+
+  const nw = crop.img.naturalWidth || 1;
+  const nh = crop.img.naturalHeight || 1;
+
+  const imgX = (w/2) - (nw * crop.zoom)/2 + (crop.offX * crop.zoom);
+  const imgY = (h/2) - (nh * crop.zoom)/2 + (crop.offY * crop.zoom);
+
+  ctx.imageSmoothingEnabled = true;
+  ctx.drawImage(crop.img, imgX, imgY, nw * crop.zoom, nh * crop.zoom);
+
+  syncRectEl();
+}
+
+function stagePointToDeltaNatural(dxCss, dyCss){
+  const dnX = dxCss / crop.zoom;
+  const dnY = dyCss / crop.zoom;
+  return { dnX, dnY };
+}
+
+function getTouchDistance(t1, t2){
+  const dx = t2.clientX - t1.clientX;
+  const dy = t2.clientY - t1.clientY;
+  return Math.sqrt(dx*dx + dy*dy);
+}
+
+function stagePointFromEvent(e){
+  const r = cropStage.getBoundingClientRect();
+  return { x: e.clientX - r.left, y: e.clientY - r.top };
+}
+
+function isInsideRect(p){
+  return (p.x >= crop.rect.x && p.x <= crop.rect.x + crop.rect.w &&
+          p.y >= crop.rect.y && p.y <= crop.rect.y + crop.rect.h);
+}
+
+cropStage.addEventListener("pointerdown", (e)=>{
+  if(!crop.img) return;
+
+  const p = stagePointFromEvent(e);
+  const h = e.target && e.target.dataset && e.target.dataset.h;
+
+  crop.dragMode = null;
+  crop.handle = null;
+
+  if(h){
+    crop.dragMode = "handle";
+    crop.handle = h;
+    crop.start = { x:p.x, y:p.y, rx:crop.rect.x, ry:crop.rect.y, rw:crop.rect.w, rh:crop.rect.h, ox:crop.offX, oy:crop.offY, uz:userZoomValue() };
+    e.preventDefault();
+    try{ cropStage.setPointerCapture(e.pointerId); }catch{}
+    return;
+  }
+
+  if(isInsideRect(p)){
+    crop.dragMode = "rect";
+    crop.start = { x:p.x, y:p.y, rx:crop.rect.x, ry:crop.rect.y, rw:crop.rect.w, rh:crop.rect.h, ox:crop.offX, oy:crop.offY, uz:userZoomValue() };
+    e.preventDefault();
+    try{ cropStage.setPointerCapture(e.pointerId); }catch{}
+    return;
+  }
+
+  crop.dragMode = "img";
+  crop.dragging = true;
+  crop.lastX = e.clientX;
+  crop.lastY = e.clientY;
+  e.preventDefault();
+  try{ cropStage.setPointerCapture(e.pointerId); }catch{}
+});
+
+cropStage.addEventListener("pointermove", (e)=>{
+  if(!crop.img) return;
+
+  if(crop.dragMode === "img"){
+    if(!crop.dragging) return;
+
+    const dx = e.clientX - crop.lastX;
+    const dy = e.clientY - crop.lastY;
+    crop.lastX = e.clientX;
+    crop.lastY = e.clientY;
+
+    const { dnX, dnY } = stagePointToDeltaNatural(dx, dy);
+
+    crop.offX += dnX;
+    crop.offY += dnY;
+
+    clampOffsets();
+    drawCrop();
+    return;
+  }
+
+  if(crop.dragMode === "rect" || crop.dragMode === "handle"){
+    const p = stagePointFromEvent(e);
+    const dx = p.x - crop.start.x;
+    const dy = p.y - crop.start.y;
+
+    if(crop.dragMode === "rect"){
+      crop.rect.x = crop.start.rx + dx;
+      crop.rect.y = crop.start.ry + dy;
+      clampRect();
+      syncRectEl();
+
+      setUserZoom(crop.start.uz);
+      clampOffsets();
+      drawCrop();
+      return;
+    }
+
+    let x = crop.start.rx, y = crop.start.ry, w = crop.start.rw, h = crop.start.rh;
+    const ht = crop.handle || "";
+
+    if(ht.includes("w")){ x = crop.start.rx + dx; w = crop.start.rw - dx; }
+    if(ht.includes("e")){ w = crop.start.rw + dx; }
+    if(ht.includes("n")){ y = crop.start.ry + dy; h = crop.start.rh - dy; }
+    if(ht.includes("s")){ h = crop.start.rh + dy; }
+
+    crop.rect.x = x;
+    crop.rect.y = y;
+    crop.rect.w = w;
+    crop.rect.h = h;
+    clampRect();
+    syncRectEl();
+
+    setUserZoom(crop.start.uz);
+    clampOffsets();
+    drawCrop();
+  }
+});
+
+cropStage.addEventListener("pointerup", (e)=>{
+  crop.dragging = false;
+  crop.dragMode = null;
+  crop.handle = null;
+  try{ cropStage.releasePointerCapture(e.pointerId); }catch{}
+});
+
+cropStage.addEventListener("pointercancel", ()=>{
+  crop.dragging = false;
+  crop.dragMode = null;
+  crop.handle = null;
+});
+
+cropStage.addEventListener("touchstart", (e)=>{
+  if(!crop.img) return;
+  if(e.touches.length === 2){
+    crop.pinch = true;
+    crop.pinchStartDist = getTouchDistance(e.touches[0], e.touches[1]);
+    crop.pinchStartZoom = userZoomValue();
+  }
+},{passive:true});
+
+cropStage.addEventListener("touchmove", (e)=>{
+  if(!crop.img) return;
+  if(!crop.pinch) return;
+  if(e.touches.length !== 2) return;
+
+  const dist = getTouchDistance(e.touches[0], e.touches[1]);
+  const ratio = dist / Math.max(1, crop.pinchStartDist);
+
+  setUserZoom(crop.pinchStartZoom * ratio);
+  clampOffsets();
+  drawCrop();
+},{passive:true});
+
+cropStage.addEventListener("touchend", (e)=>{
+  if(e.touches.length < 2){
+    crop.pinch = false;
+  }
+},{passive:true});
+
+zoomInBtn.addEventListener("click", ()=>{
+  if(!crop.img) return;
+  setUserZoom(userZoomValue() * Z_STEP);
+  clampOffsets();
+  drawCrop();
+});
+
+zoomOutBtn.addEventListener("click", ()=>{
+  if(!crop.img) return;
+  setUserZoom(userZoomValue() / Z_STEP);
+  clampOffsets();
+  drawCrop();
+});
+
+cropCloseBtn.addEventListener("click", ()=> cancelCropFlow());
+cropCancelBtn.addEventListener("click", ()=> cancelCropFlow());
+cropModal.addEventListener("click", (e)=>{
+  if(e.target === cropModal) cancelCropFlow();
+});
+
+function cancelCropFlow(){
+  if(crop.inputId){
+    const input = document.getElementById(crop.inputId);
+    if(input) input.value = "";
+    updateChosenFromInput(crop.inputId);
+  }
+  closeCrop();
+}
+
+async function exportCropFile(){
+  const sRect = cropStage.getBoundingClientRect();
+  const w = sRect.width;
+  const h = sRect.height;
+
+  const nw = crop.img.naturalWidth || 1;
+  const nh = crop.img.naturalHeight || 1;
+
+  const imgX = (w/2) - (nw * crop.zoom)/2 + (crop.offX * crop.zoom);
+  const imgY = (h/2) - (nh * crop.zoom)/2 + (crop.offY * crop.zoom);
+
+  let sx = (crop.rect.x - imgX) / crop.zoom;
+  let sy = (crop.rect.y - imgY) / crop.zoom;
+  let sw = crop.rect.w / crop.zoom;
+  let sh = crop.rect.h / crop.zoom;
+
+  sx = Math.max(0, Math.min(nw, sx));
+  sy = Math.max(0, Math.min(nh, sy));
+  sw = Math.max(1, Math.min(nw - sx, sw));
+  sh = Math.max(1, Math.min(nh - sy, sh));
+
+  const outW = Math.max(1, Math.round(sw));
+  const outH = Math.max(1, Math.round(sh));
+
+  const out = document.createElement("canvas");
+  out.width = outW;
+  out.height = outH;
+  const ctx = out.getContext("2d");
+
+  ctx.imageSmoothingEnabled = false;
+  ctx.drawImage(crop.img, sx, sy, sw, sh, 0, 0, outW, outH);
+
+  const blob = await new Promise(resolve => out.toBlob(resolve, "image/png"));
+  const name = (crop.inputId === "escudo1") ? "escudo.png" : "imagem.png";
+  return new File([blob], name, { type:"image/png" });
+}
+
+function setInputFile(inputId, file){
+  const input = document.getElementById(inputId);
+  if(!input) return;
+  const dt = new DataTransfer();
+  dt.items.add(file);
+  crop.bypassNextChange[inputId] = true;
+  input.files = dt.files;
+  updateChosenFromInput(inputId);
+}
+
+function updateChosenFromInput(inputId){
+  const input = document.getElementById(inputId);
+  const chosen = document.getElementById(`chosen_${inputId}`);
+  if(!input || !chosen) return;
+
+  if(!input.files || input.files.length === 0){
+    if(inputId === "escudo1" && getSavedEscudo1Exists()){
+      chosen.innerHTML = `<strong style="color:#127a43;">Escudo salvo ✓</strong>`;
+    }else{
+      chosen.textContent = "Nenhum arquivo";
+    }
+    return;
+  }
+
+  if(input.multiple){
+    chosen.textContent = `${input.files.length} arquivo(s) selecionado(s)`;
+  }else{
+    chosen.textContent = input.files[0].name || "Arquivo selecionado";
+  }
+}
+
+cropOkBtn.addEventListener("click", async ()=>{
+  if(!crop.img || !crop.inputId) return;
+  try{
+    const outFile = await exportCropFile();
+    setInputFile(crop.inputId, outFile);
+
+    if(crop.inputId === "escudo1"){
+      await saveEscudo1ToLocalFromFile(outFile);
+
+      const currentProduct = PRODUCTS[selectedProductInput.value];
+      const currentIsResult = currentProduct?.mode === "resultado";
+
+      if(!currentIsResult){
+        const dataUrl = await readFileAsDataURL(outFile);
+        localStorage.setItem(CREST_KEY, dataUrl);
+        setCrestUI(dataUrl);
+      }
+    }
+  }catch(e){}
+  closeCrop();
+});
+
+function hookCropOnInputs(){
+  ["escudo1","escudo2"].forEach((id)=>{
+    const input = document.getElementById(id);
+    if(!input) return;
+
+    input.addEventListener("change", ()=>{
+      if(crop.bypassNextChange[id]){
+        crop.bypassNextChange[id] = false;
+        return;
+      }
+      if(!input.files || input.files.length === 0) return;
+      openCrop(id, input.files[0]);
+    });
+  });
+}
+hookCropOnInputs();
+
+window.addEventListener("resize", ()=>{
+  if(!crop.img) return;
+  fitCanvasToStage();
+  clampRect();
+  syncRectEl();
+  clampOffsets();
+  drawCrop();
+});
+
+function limparArtilheirosUI(){
+  const currentProduct = PRODUCTS[selectedProductInput.value];
+  const mode = currentProduct?.showPlayerList ? "escalacao" : "resultado";
+  setArtilheirosMode(mode);
+}
+
+function limparCamposAposEnviar(){
+  document.getElementById("rodada").value = "";
+  document.getElementById("dataJogo").value = "";
+  document.getElementById("hora").value = "";
+  document.getElementById("arena").value = "";
+
+  const timePrincipal = document.getElementById("timePrincipal");
+  const golsTime = document.getElementById("golsTime");
+  const golsAdv = document.getElementById("golsAdv");
+  const timeAdv = document.getElementById("timeAdv");
+
+  if(timePrincipal) timePrincipal.value = "";
+  if(golsTime) golsTime.value = "";
+  if(golsAdv) golsAdv.value = "";
+  if(timeAdv) timeAdv.value = "";
+
+  limparArtilheirosUI();
+
+  ["mascote", "escudo1", "escudo2", "patrocinadores"].forEach(id=>{
+    const input = document.getElementById(id);
+    if(input) input.value = "";
+  });
+
+  const currentProduct = PRODUCTS[selectedProductInput.value];
+
+  const resetTexts = {
+    chosen_mascote: currentProduct?.labels?.mascote || "Nenhum arquivo",
+    chosen_escudo2: currentProduct?.labels?.esc2 || "Imagem do jogo *",
+    chosen_patrocinadores: currentProduct?.labels?.patro || "Nenhum arquivo"
+  };
+
+  Object.entries(resetTexts).forEach(([id, txt])=>{
+    const el = document.getElementById(id);
+    if(el) el.textContent = txt;
+  });
+
+  const escudo1Chosen = document.getElementById("chosen_escudo1");
+  if(escudo1Chosen){
+    escudo1Chosen.innerHTML = getSavedEscudo1Exists()
+      ? `<strong style="color:#127a43;">Escudo salvo ✓</strong>`
+      : (currentProduct?.labels?.esc1 || "Escudo / logo do time *");
+  }
+
+  if(currentProduct?.showPlayerList){
+    fillEscalacaoPlayersUI(loadSavedEscalacaoPlayers());
+  }
+}
+
+document.getElementById("pedidoForm").addEventListener("submit", async (e)=>{
+  e.preventDefault();
+
+  const productKey = selectedProductInput.value;
+  const product = PRODUCTS[productKey];
+
+  if(!product){
+    msgPedidoEl.textContent = "Escolha primeiro o tipo de arte.";
+    return;
+  }
+
+  msgPedidoEl.textContent = "Enviando...";
+
+  const isFlyer = product.mode === "flyer";
+  const isResultado = product.mode === "resultado";
+
+  const fd = new FormData();
+
+  if (isFlyer) {
+    fd.append("flyer_tipo", flyerTipoInput.value);
+  }
+
+  const t1 = document.getElementById("timePrincipal")?.value?.trim() || "";
+  const g1 = document.getElementById("golsTime")?.value?.trim() || "";
+  const g2 = document.getElementById("golsAdv")?.value?.trim() || "";
+  const t2 = document.getElementById("timeAdv")?.value?.trim() || "";
+
+  let resultadoFinal = "";
+
+  if(g1 || g2){
+    if(t1 && t2){
+      resultadoFinal = `${t1} ${g1} x ${g2} ${t2}`;
+    }else if(t1){
+      resultadoFinal = `${t1} ${g1} x ${g2}`;
+    }else{
+      resultadoFinal = `${g1} x ${g2}`;
+    }
+  }
+
+  if(!resultadoFinal){
+    if(productKey === "escalacao"){
+      resultadoFinal = document.getElementById("dataJogo").value || "";
+    }else{
+      resultadoFinal = document.getElementById("rodada").value || "";
+    }
+  }
+
+  fd.append("rodada", resultadoFinal);
+  fd.append("time_principal", t1);
+  fd.append("gols_time_principal", g1);
+  fd.append("gols_adversario", g2);
+  fd.append("time_adversario", t2);
+
+  const artilheiros = [];
+
+  document.querySelectorAll("#artilheirosWrap .artilheiroRow").forEach(row=>{
+    const nome = row.querySelector(".artilheiroNome")?.value?.trim() || "";
+    const golsRaw = row.querySelector(".artilheiroGols")?.value?.trim() || "";
+
+    if(nome && golsRaw !== "" && Number(golsRaw) >= 0){
+      artilheiros.push({
+        nome,
+        gols: Number(golsRaw)
+      });
+    }
+  });
+
+  const artilheirosJson = JSON.stringify(artilheiros);
+  const artilheirosTexto = artilheiros
+    .map(a => `${a.nome} (${a.gols} gol${a.gols === 1 ? "" : "s"})`)
+    .join("; ");
+
+  if(productKey === "escalacao"){
+    const jogadores = [];
+
+    document.querySelectorAll("#artilheirosWrap .artilheiroRow").forEach(row=>{
+      const nome = row.querySelector(".artilheiroNome")?.value?.trim() || "";
+      const posicao = row.querySelector(".artilheiroGols")?.value?.trim() || "";
+
+      if(nome){
+        jogadores.push({
+          nome,
+          posicao
+        });
+      }
+    });
+
+    fd.append("jogadores_json", JSON.stringify(jogadores));
+    fd.append(
+      "jogadores_texto",
+      jogadores.map(j => j.posicao ? `${j.nome} - ${j.posicao}` : j.nome).join("; ")
+    );
+  } else {
+    fd.append("jogadores_json", "[]");
+    fd.append("jogadores_texto", "");
+  }
+
+  if(isResultado){
+    fd.append("artilheiros", artilheirosJson);
+    fd.append("artilheiros_json", artilheirosJson);
+    fd.append("artilheiros_texto", artilheirosTexto);
+    fd.append("artilheiros_qtd", String(artilheiros.length));
+  } else {
+    fd.append("artilheiros", "[]");
+    fd.append("artilheiros_json", "[]");
+    fd.append("artilheiros_texto", "");
+    fd.append("artilheiros_qtd", "0");
+  }
+
+  fd.append("data", document.getElementById("dataJogo").value);
+
+  const horaVal = document.getElementById("hora").value;
+  if(horaVal) fd.append("hora", horaVal);
+
+  const arenaVal = document.getElementById("arena").value;
+  if(arenaVal) fd.append("arena", arenaVal);
+
+  const mascoteFile = document.getElementById("mascote").files[0];
+  if (mascoteFile) fd.append("mascote", mascoteFile);
+
+  let escudo1File = document.getElementById("escudo1").files[0];
+  const escudo2File = document.getElementById("escudo2").files[0];
+
+  if (!escudo1File) escudo1File = getSavedEscudo1File();
+
+  if (escudo1File) fd.append("escudo1", escudo1File);
+  if (escudo2File) fd.append("escudo2", escudo2File);
+
+  const pats = document.getElementById("patrocinadores").files;
+  for (const file of pats) {
+    fd.append("patrocinadores", file);
+  }
+
+  try{
+    const endpoint = isResultado ? "/resultado_do_jogo" : "/pedidos";
+
+    const r = await fetch(`${API_BASE}${endpoint}`, {
+      method:"POST",
+      headers:{ "Authorization": "Bearer " + token },
+      body:fd
+    });
+
+    const out = await r.json();
+
+    if(out.ok){
+      msgPedidoEl.textContent = `✅ Pedido enviado! ID: ${out.pedido_id}`;
+      limparCamposAposEnviar();
+      refreshMe();
+      carregarHistorico();
+
+      if (isResultado) {
+        acompanharResultado(out.pedido_id);
+      }
+    } else {
+      msgPedidoEl.textContent = out.error || "Erro ao enviar";
+    }
+  }catch{
+    msgPedidoEl.textContent = "Erro de rede";
+  }
+});
+
+const openPhraseBtn = document.getElementById("openPhraseBtn");
+const phraseMenu = document.getElementById("phraseMenu");
+const phraseInput = document.getElementById("dataJogo");
+const phraseOptions = document.querySelectorAll(".phraseOption");
+
+if(openPhraseBtn && phraseMenu && phraseInput){
+  openPhraseBtn.addEventListener("click", (e)=>{
+    e.stopPropagation();
+    phraseMenu.classList.toggle("open");
+  });
+
+  phraseOptions.forEach((btn)=>{
+    btn.addEventListener("click", ()=>{
+      phraseInput.value = btn.textContent.trim();
+      phraseMenu.classList.remove("open");
+      phraseInput.focus();
+    });
+  });
+
+  document.addEventListener("click", (e)=>{
+    if(!phraseMenu.contains(e.target) && e.target !== openPhraseBtn){
+      phraseMenu.classList.remove("open");
+    }
+  });
+}
+
+function formatarDataHistorico(valor){
+  if(!valor) return "Sem data";
+  const d = new Date(valor);
+  if(!Number.isNaN(d.getTime())) return d.toLocaleString("pt-BR");
+  return String(valor);
+}
+
+async function carregarHistorico(){
+  if(!historicoListaEl || !historicoVazioEl) return;
+
+  historicoListaEl.innerHTML = "";
+  historicoVazioEl.textContent = "Carregando...";
+
+  try{
+    const r = await fetch(`${API_BASE}/meus-pedidos`, {
+      headers: { "Authorization": "Bearer " + token }
+    });
+
+    const data = await r.json();
+
+    if(!data.ok){
+      historicoVazioEl.textContent = "Erro ao carregar";
+      return;
+    }
+
+    if(data.pedidos.length === 0){
+      historicoVazioEl.textContent = "Sem pedidos ainda";
+      return;
+    }
+
+    historicoVazioEl.textContent = "";
+
+    historicoListaEl.innerHTML = data.pedidos.map(p => `
+      <div style="background:#fff;color:#000;padding:10px;border-radius:10px;">
+        <b>${p.tipo}</b><br>
+        ID: ${p.id}<br>
+        Status: ${p.status}<br>
+
+        ${p.imagem_url ? `<img src="${p.imagem_url}" style="width:100px;"><br>` : ""}
+
+        <button onclick="baixarPedido('${p.id}')" style="margin-top:8px;padding:6px 10px;border-radius:6px;border:none;background:#2ecc71;color:#fff;font-weight:700;cursor:pointer;">
+          Baixar novamente
+        </button>
+      </div>
+    `).join("");
+
+  }catch{
+    historicoVazioEl.textContent = "Erro de rede";
+  }
+}
+
+async function baixarPedido(id){
+  try{
+    const r = await fetch(`${API_BASE}/pedidos/${id}/download-resultado`, {
+      headers: { "Authorization": "Bearer " + token }
+    });
+
+    if(!r.ok){
+      alert("Erro ao baixar imagem");
+      return;
+    }
+
+    const blob = await r.blob();
+    const url = window.URL.createObjectURL(blob);
+
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = id + "_resultado.png";
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+
+    window.URL.revokeObjectURL(url);
+
+  }catch{
+    alert("Erro de rede ao baixar");
+  }
+}
+
+async function acompanharResultado(pedidoId){
+  const boxEl = document.getElementById("resultadoBox");
+  const statusElLocal = document.getElementById("statusResultado");
+  const imgEl = document.getElementById("previewResultado");
+  const downloadEl = document.getElementById("downloadResultado");
+
+  if(!boxEl || !statusElLocal || !imgEl || !downloadEl) return;
+
+  boxEl.style.display = "block";
+  statusElLocal.textContent = "Estamos montando sua imagem...";
+  imgEl.style.display = "none";
+  downloadEl.style.display = "none";
+
+  const timer = setInterval(async () => {
+    try{
+      const r = await fetch(`${API_BASE}/pedidos/${pedidoId}/info`, {
+        headers: { "Authorization": "Bearer " + token }
+      });
+
+      const data = await r.json();
+
+      if(data.ok && data.imagem_pronta){
+        clearInterval(timer);
+
+        const previewUrl = `${API_BASE}/pedidos/${pedidoId}/preview?ts=${Date.now()}`;
+
+        statusElLocal.textContent = "Sua imagem chegou!";
+        imgEl.src = previewUrl;
+        imgEl.style.display = "block";
+
+        downloadEl.href = previewUrl;
+        downloadEl.style.display = "inline-block";
+      } else {
+        statusElLocal.textContent = "Estamos montando sua imagem...";
+      }
+    } catch {
+      statusElLocal.textContent = "Erro ao consultar status da imagem.";
+    }
+  }, 5000);
+}
+
+setArtilheirosMode("resultado");
+applyLocal();
+refreshMe();
+carregarHistorico();
+updateChosenPlaceholders(null);
+
+document.getElementById("btnSair").addEventListener("click", ()=>{
+  localStorage.removeItem("omascote_token");
+  window.location.href = "index.html";
+});
+
+document.getElementById("btnAtualizar").addEventListener("click", refreshMe);
+
+document.getElementById("addArtilheiroBtn")?.addEventListener("click", ()=>{
+  const wrap = document.getElementById("artilheirosWrap");
+  const currentProduct = PRODUCTS[selectedProductInput.value];
+  const mode = currentProduct?.showPlayerList ? "escalacao" : "resultado";
+
+  wrap.insertAdjacentHTML("beforeend", getArtilheiroRowHtml(mode));
+});
+
+document.getElementById("btnSalvarEscalacao")?.addEventListener("click", saveEscalacaoPlayersToLocal);
+document.getElementById("btnExcluirEscalacao")?.addEventListener("click", clearEscalacaoPlayersFromLocal);
+</script>
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
