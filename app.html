@@ -28,8 +28,9 @@
       background-color:#dfe5dd;
       background-image:
         url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220' viewBox='0 0 220 220'%3E%3Cg fill='none' stroke='%23b8c3b5' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round' opacity='0.26'%3E%3Crect x='18' y='18' width='34' height='24' rx='3'/%3E%3Ccircle cx='35' cy='96' r='14'/%3E%3Cpath d='M92 24h44v26H92zM114 24v26M92 37h44'/%3E%3Cpath d='M156 78l22-10 10 22-22 10z'/%3E%3Cpath d='M79 146c12-14 33-16 47-4'/%3E%3Cpath d='M72 176l24-24m0 0 12 12m-12-12-12-12'/%3E%3Cpath d='M154 148c0-10 8-18 18-18s18 8 18 18-8 18-18 18-18-8-18-18z'/%3E%3Cpath d='M161 148h24M173 136v24'/%3E%3Cpath d='M24 168h40M44 148v40'/%3E%3Cpath d='M120 92c8 0 14 6 14 14s-6 14-14 14-14-6-14-14 6-14 14-14z'/%3E%3Cpath d='M111 98l18 16M129 98l-18 16'/%3E%3C/g%3E%3C/svg%3E");
-      background-size:220px 220px;
+      background-size:180px 180px;
       background-repeat:repeat;
+      background-attachment:fixed;
     }
 
     .wrap{
@@ -114,7 +115,11 @@
     .panel{
       border-radius:28px;
       padding:18px 16px 22px;
-      background:rgba(255,255,255,.28);
+      background-color:rgba(255,255,255,.34);
+      background-image:
+        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220' viewBox='0 0 220 220'%3E%3Cg fill='none' stroke='%23bcc8b8' stroke-width='1.4' stroke-linecap='round' stroke-linejoin='round' opacity='0.18'%3E%3Crect x='18' y='18' width='34' height='24' rx='3'/%3E%3Ccircle cx='35' cy='96' r='14'/%3E%3Cpath d='M92 24h44v26H92zM114 24v26M92 37h44'/%3E%3Cpath d='M156 78l22-10 10 22-22 10z'/%3E%3Cpath d='M79 146c12-14 33-16 47-4'/%3E%3Cpath d='M72 176l24-24m0 0 12 12m-12-12-12-12'/%3E%3Cpath d='M154 148c0-10 8-18 18-18s18 8 18 18-8 18-18 18-18-8-18-18z'/%3E%3Cpath d='M161 148h24M173 136v24'/%3E%3Cpath d='M24 168h40M44 148v40'/%3E%3Cpath d='M120 92c8 0 14 6 14 14s-6 14-14 14-14-6-14-14 6-14 14-14z'/%3E%3Cpath d='M111 98l18 16M129 98l-18 16'/%3E%3C/g%3E%3C/svg%3E");
+      background-size:180px 180px;
+      background-repeat:repeat;
       border:1px solid rgba(255,255,255,.45);
       box-shadow:0 20px 60px rgba(81,97,86,.12);
       backdrop-filter: blur(4px);
@@ -1433,6 +1438,9 @@
         gap:22px 18px;
         justify-items:center;
         align-items:start;
+        opacity:1;
+        visibility:visible;
+        transform:none;
       }
 
       .optionsRow .optionBtn{
@@ -1441,6 +1449,8 @@
         flex-direction:column;
         align-items:center;
         justify-content:flex-start;
+        opacity:1;
+        transform:none;
       }
 
       .optionsRow .optionBtn:last-child{
@@ -1475,6 +1485,7 @@
       .panel{
         padding:12px 10px 16px;
         border-radius:20px;
+        background-size:140px 140px;
       }
 
       .card{
@@ -1485,6 +1496,7 @@
 
       .hero{
         padding:20px 12px 28px;
+        overflow:visible;
       }
 
       .heroBrand{
@@ -1516,6 +1528,7 @@
         width:88px;
         height:88px;
         margin:0 auto 10px;
+        display:flex;
       }
 
       .iconImg{
@@ -3709,5 +3722,6 @@ document.getElementById("btnExcluirEscalacao")?.addEventListener("click", clearE
 </script>
 </body>
 </html>
+
 
 
