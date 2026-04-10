@@ -667,20 +667,8 @@
     }
 
     body.mode-flyer .formGrid{
-      grid-template-columns:1fr;
-      grid-template-areas:
-        "rodada"
-        "data"
-        "hora"
-        "esc1"
-        "esc2"
-        "optionaltitle"
-        "artilheiros"
-        "arena"
-        "mascote"
-        "patro"
-        "submit"
-        "msg";
+      display:flex;
+      flex-direction:column;
       gap:18px;
       margin-top:0;
     }
@@ -720,7 +708,6 @@
     .field-esc1{grid-area:esc1}
     .field-esc2{grid-area:esc2}
     .field-patro{grid-area:patro}
-    .field-optional-title{grid-area:optionaltitle}
     .field-submit{grid-area:submit}
     .field-msg{grid-area:msg}
 
@@ -799,18 +786,8 @@
     }
 
     body.mode-result .formGrid{
-      grid-template-columns:1fr;
-      grid-template-areas:
-        "hora"
-        "placar"
-        "data"
-        "esc1"
-        "esc2"
-        "optionaltitle"
-        "artilheiros"
-        "mascote"
-        "submit"
-        "msg";
+      display:flex;
+      flex-direction:column;
       gap:18px;
       margin-top:0;
     }
@@ -1130,43 +1107,58 @@
       align-items:flex-end;
     }
 
+    .optionalToggle{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+      width:min(700px, 100%);
+      padding:18px 20px;
+      border-radius:20px;
+      background:#ffffff;
+      border:1px solid #d9dfeb;
+      text-align:left;
+      cursor:pointer;
+      font-weight:900;
+      color:#334155;
+      box-shadow:0 2px 10px rgba(140,160,190,.08);
+    }
+
+    .optionalToggleText{
+      flex:1;
+      min-width:0;
+      color:#334155;
+      font-size:15px;
+      font-weight:900;
+    }
+
+    .optionalToggleIcon{
+      flex:0 0 auto;
+      color:#64748b;
+      font-size:16px;
+      font-weight:900;
+      transition:transform .18s ease;
+    }
+
+    .optionalField.is-open .optionalToggleIcon{
+      transform:rotate(180deg);
+    }
+
+    .optionalContent{
+      display:none;
+      width:100%;
+      margin-top:12px;
+    }
+
+    .optionalField.is-open .optionalContent{
+      display:flex;
+      flex-direction:column;
+      align-items:flex-end;
+    }
+
     .field-optional-title{
       display:none;
       width:100%;
-      margin:6px 0 2px;
-    }
-
-    .optionalGroupTitle{
-      display:block;
-      width:max-content;
-      max-width:min(420px, calc(100% - 28px));
-      margin:6px 0 14px auto;
-      padding:18px 24px;
-      text-align:left;
-      font-size:17px;
-      font-weight:900;
-      color:#24543f;
-      background:linear-gradient(180deg, #eef8ea, #e3f1dd);
-      border:1px solid #dfead8;
-      border-radius:30px 30px 10px 30px;
-      box-shadow:0 10px 26px rgba(162,175,194,.14);
-      align-self:flex-end;
-      position:relative;
-      overflow:visible;
-      word-break:break-word;
-    }
-
-    .optionalGroupTitle::after{
-      content:"";
-      position:absolute;
-      right:-10px;
-      bottom:12px;
-      width:18px;
-      height:18px;
-      background:linear-gradient(180deg, #eef8ea, #e3f1dd);
-      border-right:1px solid #dfead8;
-      border-bottom:1px solid #dfead8;
-      clip-path:polygon(0 0, 100% 50%, 0 100%);
     }
 
     .escalacaoActions{
@@ -1782,22 +1774,23 @@
               </div>
             </div>
 
-            <div class="field-optional-title full" id="optionalGroupTitle">
-              <div class="optionalGroupTitle">Itens opcionais</div>
-            </div>
-
-            <div class="field-artilheiros full optionalField">
-              <label class="sectionTitle">Artilheiros</label>
-              <div class="artilheirosWrap" id="artilheirosWrap">
-                <div class="artilheiroRow">
-                  <input class="artilheiroNome" placeholder="Nome do jogador">
-                  <input class="artilheiroGols" type="number" min="0" placeholder="Gols">
+            <div class="field-artilheiros full optionalField" data-optional-field="artilheiros">
+              <button type="button" class="optionalToggle" data-optional-toggle="artilheiros">
+                <span class="optionalToggleText">Ver artilheiros</span>
+                <span class="optionalToggleIcon">▼</span>
+              </button>
+              <div class="optionalContent" data-optional-content="artilheiros">
+                <div class="artilheirosWrap" id="artilheirosWrap">
+                  <div class="artilheiroRow">
+                    <input class="artilheiroNome" placeholder="Nome do jogador">
+                    <input class="artilheiroGols" type="number" min="0" placeholder="Gols">
+                  </div>
                 </div>
-              </div>
-              <div class="addArtilheiro" id="addArtilheiroBtn">Adicionar jogador</div>
-              <div class="escalacaoActions" id="escalacaoActions">
-                <button type="button" class="escActionBtn escActionSave" id="btnSalvarEscalacao">Salvar atletas</button>
-                <button type="button" class="escActionBtn escActionDelete" id="btnExcluirEscalacao">Excluir atletas salvos</button>
+                <div class="addArtilheiro" id="addArtilheiroBtn">Adicionar jogador</div>
+                <div class="escalacaoActions" id="escalacaoActions">
+                  <button type="button" class="escActionBtn escActionSave" id="btnSalvarEscalacao">Salvar atletas</button>
+                  <button type="button" class="escActionBtn escActionDelete" id="btnExcluirEscalacao">Excluir atletas salvos</button>
+                </div>
               </div>
             </div>
 
@@ -1828,25 +1821,40 @@
               </div>
             </div>
 
-            <div class="field-hora optionalField">
-              <label id="labelHora">Observações</label>
-              <input id="hora" />
+            <div class="field-hora optionalField" data-optional-field="hora">
+              <button type="button" class="optionalToggle" data-optional-toggle="hora">
+                <span class="optionalToggleText" id="labelHora">Observações</span>
+                <span class="optionalToggleIcon">▼</span>
+              </button>
+              <div class="optionalContent" data-optional-content="hora">
+                <input id="hora" />
+              </div>
             </div>
 
-            <div class="field-arena optionalField">
-              <label id="labelArena">Texto secundário / local</label>
-              <input id="arena" />
+            <div class="field-arena optionalField" data-optional-field="arena">
+              <button type="button" class="optionalToggle" data-optional-toggle="arena">
+                <span class="optionalToggleText" id="labelArena">Texto secundário / local</span>
+                <span class="optionalToggleIcon">▼</span>
+              </button>
+              <div class="optionalContent" data-optional-content="arena">
+                <input id="arena" />
+              </div>
             </div>
 
-            <div class="field-mascote full optionalField">
-              <label id="labelMascote">Imagem principal (opcional)</label>
-              <input id="mascote" class="fileHidden" type="file" />
-              <div class="filePlus" data-file-for="mascote" tabindex="0" role="button" aria-label="Enviar imagem principal">
-                <div class="left">
-                  <div class="name"></div>
-                  <div class="chosen" id="chosen_mascote">Nenhum arquivo</div>
+            <div class="field-mascote full optionalField" data-optional-field="mascote">
+              <button type="button" class="optionalToggle" data-optional-toggle="mascote">
+                <span class="optionalToggleText" id="labelMascote">Imagem principal (opcional)</span>
+                <span class="optionalToggleIcon">▼</span>
+              </button>
+              <div class="optionalContent" data-optional-content="mascote">
+                <input id="mascote" class="fileHidden" type="file" />
+                <div class="filePlus" data-file-for="mascote" tabindex="0" role="button" aria-label="Enviar imagem principal">
+                  <div class="left">
+                    <div class="name"></div>
+                    <div class="chosen" id="chosen_mascote">Nenhum arquivo</div>
+                  </div>
+                  <div class="plus">+</div>
                 </div>
-                <div class="plus">+</div>
               </div>
             </div>
 
@@ -1874,17 +1882,26 @@
               </div>
             </div>
 
-            <div class="field-patro full optionalField">
-              <label id="labelPatro">Imagens extras / patrocinadores (opcional) — pode enviar várias</label>
-              <input id="patrocinadores" class="fileHidden" type="file" multiple />
-              <div class="filePlus" data-file-for="patrocinadores" tabindex="0" role="button" aria-label="Enviar patrocinadores">
-                <div class="left">
-                  <div class="name"></div>
-                  <div class="chosen" id="chosen_patrocinadores">Nenhum arquivo</div>
+            <div class="field-patro full optionalField" data-optional-field="patro">
+              <button type="button" class="optionalToggle" data-optional-toggle="patro">
+                <span class="optionalToggleText" id="labelPatro">Imagens extras / patrocinadores (opcional) — pode enviar várias</span>
+                <span class="optionalToggleIcon">▼</span>
+              </button>
+              <div class="optionalContent" data-optional-content="patro">
+                <input id="patrocinadores" class="fileHidden" type="file" multiple />
+                <div class="filePlus" data-file-for="patrocinadores" tabindex="0" role="button" aria-label="Enviar patrocinadores">
+                  <div class="left">
+                    <div class="name"></div>
+                    <div class="chosen" id="chosen_patrocinadores">Nenhum arquivo</div>
+                  </div>
+                  <div class="plus">+</div>
                 </div>
-                <div class="plus">+</div>
+                <div class="hint">Dica: segure Ctrl (Windows) para selecionar vários arquivos.</div>
               </div>
-              <div class="hint">Dica: segure Ctrl (Windows) para selecionar vários arquivos.</div>
+            </div>
+
+            <div class="field-optional-title full" id="optionalDivider">
+              <label class="sectionTitle">Opcional</label>
             </div>
 
             <div class="field-submit full submitRow">
@@ -2143,14 +2160,14 @@ function getArtilheiroRowHtml(mode = "resultado"){
 
 function setArtilheirosMode(mode = "resultado"){
   const wrap = document.getElementById("artilheirosWrap");
-  const title = document.querySelector(".field-artilheiros .sectionTitle");
+  const title = document.querySelector('.field-artilheiros [data-optional-toggle="artilheiros"] .optionalToggleText');
   const addBtn = document.getElementById("addArtilheiroBtn");
   if(!wrap || !title || !addBtn) return;
 
   if(mode === "escalacao"){
-    title.textContent = "Jogadores";
+    title.textContent = "Adicionar jogador";
   }else{
-    title.textContent = "Artilheiros";
+    title.textContent = "Ver artilheiros";
   }
 
   addBtn.textContent = "Adicionar jogador";
@@ -2493,13 +2510,75 @@ function closePhraseMenu(){
 }
 
 function setOptionalSectionState(field, isOpen){
-  return;
+  const wrapper = document.querySelector(`[data-optional-field="${field}"]`);
+  if(!wrapper) return;
+  wrapper.classList.toggle("is-open", !!isOpen);
 }
 
 function configureOptionalSections(productKey){
-  const title = document.getElementById("optionalGroupTitle");
-  if(!title) return;
-  title.style.display = productKey ? "block" : "none";
+  const wrappers = document.querySelectorAll("[data-optional-field]");
+  wrappers.forEach((wrapper)=>{
+    wrapper.classList.remove("is-open");
+    const toggle = wrapper.querySelector("[data-optional-toggle]");
+    if(toggle) toggle.style.display = "flex";
+  });
+
+  const optionalDivider = document.getElementById("optionalDivider");
+  if(optionalDivider){
+    optionalDivider.style.display = productKey ? "block" : "none";
+  }
+
+  if(productKey === "escalacao"){
+    const artilheirosWrapper = document.querySelector('[data-optional-field="artilheiros"]');
+    const artilheirosToggle = artilheirosWrapper?.querySelector('[data-optional-toggle="artilheiros"]');
+    if(artilheirosToggle) artilheirosToggle.style.display = "none";
+    setOptionalSectionState("artilheiros", true);
+    return;
+  }
+
+  if(productKey === "patrocinador"){
+    const patroWrapper = document.querySelector('[data-optional-field="patro"]');
+    const patroToggle = patroWrapper?.querySelector('[data-optional-toggle="patro"]');
+    if(patroToggle) patroToggle.style.display = "none";
+    setOptionalSectionState("patro", true);
+  }
+}
+
+function arrangeFieldSequence(productKey){
+  const form = document.getElementById("pedidoForm");
+  if(!form) return;
+
+  const fields = {
+    placar: form.querySelector(".field-placar"),
+    artilheiros: form.querySelector(".field-artilheiros"),
+    rodada: form.querySelector(".field-rodada"),
+    data: form.querySelector(".field-data"),
+    hora: form.querySelector(".field-hora"),
+    arena: form.querySelector(".field-arena"),
+    mascote: form.querySelector(".field-mascote"),
+    esc1: form.querySelector(".field-esc1"),
+    esc2: form.querySelector(".field-esc2"),
+    patro: form.querySelector(".field-patro"),
+    optionalDivider: document.getElementById("optionalDivider"),
+    submit: form.querySelector(".field-submit"),
+    msg: form.querySelector(".field-msg")
+  };
+
+  const sequenceMap = {
+    resultado: ["placar", "esc2", "optionalDivider", "hora", "data", "esc1", "artilheiros", "mascote", "submit", "msg"],
+    escalacao: ["data", "esc1", "artilheiros", "optionalDivider", "esc2", "submit", "msg"],
+    contratacao: ["rodada", "data", "esc1", "esc2", "optionalDivider", "hora", "submit", "msg"],
+    proximo_jogo: ["data", "hora", "esc1", "optionalDivider", "rodada", "esc2", "arena", "submit", "msg"],
+    patrocinador: ["rodada", "esc1", "patro", "optionalDivider", "data", "submit", "msg"]
+  };
+
+  const sequence = sequenceMap[productKey];
+  if(!sequence) return;
+
+  sequence.forEach((key)=>{
+    const el = fields[key];
+    if(el) form.appendChild(el);
+  });
 }
 
 function scrollToBuilder(){
@@ -2553,6 +2632,7 @@ function selectProduct(productKey){
   updateProductFieldVisibility(product);
   updateChosenPlaceholders(product);
   configureOptionalSections(productKey);
+  arrangeFieldSequence(productKey);
 
   const openPhraseBtn = document.getElementById("openPhraseBtn");
   if(openPhraseBtn){
@@ -2604,6 +2684,7 @@ btnTrocarTipo.addEventListener("click", ()=>{
   document.querySelectorAll(".optionBtn").forEach(btn=> btn.classList.remove("active"));
   updateProductFieldVisibility(null);
   configureOptionalSections("");
+  arrangeFieldSequence("resultado");
   closePhraseMenu();
   selectorStage?.classList.remove("open");
   window.scrollTo({ top: 0, behavior: "smooth" });
@@ -2628,7 +2709,14 @@ document.getElementById("verExemplosLink").addEventListener("click", (e)=>{
   }
 });
 
-
+document.querySelectorAll("[data-optional-toggle]").forEach((btn)=>{
+  btn.addEventListener("click", ()=>{
+    const field = btn.getAttribute("data-optional-toggle");
+    const wrapper = document.querySelector(`[data-optional-field="${field}"]`);
+    if(!wrapper) return;
+    wrapper.classList.toggle("is-open");
+  });
+});
 
 const cropModal = document.getElementById("cropModal");
 const cropStage = document.getElementById("cropStage");
