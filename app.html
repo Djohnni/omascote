@@ -25,11 +25,11 @@
       margin:0;
       min-height:100vh;
       padding:0;
-      background:
-        radial-gradient(1200px 800px at 10% 85%, rgba(80,170,255,.16) 0%, transparent 45%),
-        radial-gradient(1200px 800px at 90% 80%, rgba(255,210,80,.14) 0%, transparent 42%),
-        radial-gradient(1000px 600px at 50% 0%, rgba(255,255,255,.05) 0%, transparent 50%),
-        linear-gradient(180deg, #030814 0%, #081020 55%, #07101f 100%);
+      background-color:#dfe5dd;
+      background-image:
+        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220' viewBox='0 0 220 220'%3E%3Cg fill='none' stroke='%23b8c3b5' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round' opacity='0.26'%3E%3Crect x='18' y='18' width='34' height='24' rx='3'/%3E%3Ccircle cx='35' cy='96' r='14'/%3E%3Cpath d='M92 24h44v26H92zM114 24v26M92 37h44'/%3E%3Cpath d='M156 78l22-10 10 22-22 10z'/%3E%3Cpath d='M79 146c12-14 33-16 47-4'/%3E%3Cpath d='M72 176l24-24m0 0 12 12m-12-12-12-12'/%3E%3Cpath d='M154 148c0-10 8-18 18-18s18 8 18 18-8 18-18 18-18-8-18-18z'/%3E%3Cpath d='M161 148h24M173 136v24'/%3E%3Cpath d='M24 168h40M44 148v40'/%3E%3Cpath d='M120 92c8 0 14 6 14 14s-6 14-14 14-14-6-14-14 6-14 14-14z'/%3E%3Cpath d='M111 98l18 16M129 98l-18 16'/%3E%3C/g%3E%3C/svg%3E");
+      background-size:220px 220px;
+      background-repeat:repeat;
     }
 
     .wrap{
@@ -114,13 +114,11 @@
     .panel{
       border-radius:28px;
       padding:18px 16px 22px;
-      background:
-        radial-gradient(900px 500px at 50% -10%, rgba(255,255,255,.10) 0%, transparent 55%),
-        linear-gradient(180deg, rgba(255,255,255,.09), rgba(255,255,255,.03));
-      border:1px solid rgba(255,255,255,.10);
-      box-shadow:var(--shadow);
-      backdrop-filter: blur(10px);
-      -webkit-backdrop-filter: blur(10px);
+      background:rgba(255,255,255,.28);
+      border:1px solid rgba(255,255,255,.45);
+      box-shadow:0 20px 60px rgba(81,97,86,.12);
+      backdrop-filter: blur(4px);
+      -webkit-backdrop-filter: blur(4px);
       overflow:hidden;
     }
 
@@ -553,11 +551,11 @@
     }
 
     .card{
-      background: linear-gradient(180deg, rgba(255,255,255,.88), rgba(245,248,252,.92));
-      border:1px solid rgba(255,255,255,.65);
+      background:transparent;
+      border:none;
       border-radius:22px;
       padding:18px;
-      box-shadow:0 18px 45px rgba(120,140,180,.14);
+      box-shadow:none;
     }
 
     .meta{
@@ -808,7 +806,7 @@
       margin:0;
       display:flex;
       flex-direction:column;
-      align-items:flex-end;
+      align-items:stretch;
     }
 
     body.mode-result .field-artilheiros.optionalField,
@@ -816,7 +814,7 @@
     body.mode-result .field-arena.optionalField,
     body.mode-result .field-mascote.optionalField,
     body.mode-result .field-patro.optionalField{
-      align-items:flex-end;
+      align-items:stretch;
     }
 
     body.mode-flyer .field-rodada,
@@ -837,7 +835,7 @@
       margin:0;
       display:flex;
       flex-direction:column;
-      align-items:flex-end;
+      align-items:stretch;
     }
 
     .card .msg,
@@ -884,18 +882,19 @@
       align-items:center;
       justify-content:space-between;
       gap:10px;
-      width:min(700px, 100%);
+      width:min(760px, 100%);
       padding:30px 24px;
-      border-radius:34px;
+      border-radius:20px;
       border:1px solid #e4e6f1;
-      background:linear-gradient(180deg, rgba(255,255,255,.88), rgba(248,248,252,.94));
+      background:#ffffff;
       color:#243041;
       cursor:pointer;
       user-select:none;
-      box-shadow:0 10px 28px rgba(180,188,215,.14);
+      box-shadow:0 2px 10px rgba(140,160,190,.08);
       transition:transform .08s ease, border-color .15s ease, box-shadow .15s ease, filter .15s ease;
       min-height:0;
       text-align:left;
+      margin-right:auto;
     }
 
     .filePlus:active{transform:translateY(1px)}
@@ -954,12 +953,13 @@
       display:flex;
       align-items:center;
       gap:8px;
-      width:min(700px, 100%);
-      background:linear-gradient(180deg, rgba(255,255,255,.88), rgba(248,248,252,.94));
+      width:min(760px, 100%);
+      background:#ffffff;
       border:1px solid #e4e6f1;
-      border-radius:34px;
+      border-radius:20px;
       padding:20px 20px;
-      box-shadow:0 10px 28px rgba(180,188,215,.14);
+      box-shadow:0 2px 10px rgba(140,160,190,.08);
+      margin-right:auto;
     }
 
     .phraseWrap input{
@@ -1026,11 +1026,12 @@
       gap:10px;
       align-items:center;
       width:min(940px, 100%);
-      background:linear-gradient(180deg, rgba(255,255,255,.88), rgba(248,248,252,.94));
+      background:#ffffff;
       border:1px solid #e4e6f1;
-      border-radius:34px;
+      border-radius:20px;
       padding:30px 26px;
-      box-shadow:0 10px 28px rgba(180,188,215,.14);
+      box-shadow:0 2px 10px rgba(140,160,190,.08);
+      margin-right:auto;
     }
 
     .placarRow input{
@@ -1052,12 +1053,13 @@
       display:flex;
       flex-direction:column;
       gap:14px;
-      width:min(700px, 100%);
-      background:linear-gradient(180deg, rgba(255,255,255,.88), rgba(248,248,252,.94));
+      width:min(760px, 100%);
+      background:#ffffff;
       border:1px solid #e4e6f1;
-      border-radius:34px;
+      border-radius:20px;
       padding:30px 26px;
-      box-shadow:0 10px 28px rgba(180,188,215,.14);
+      box-shadow:0 2px 10px rgba(140,160,190,.08);
+      margin-right:auto;
     }
 
     .artilheiroRow{
@@ -1076,9 +1078,9 @@
 
     .addArtilheiro{
       margin-top:12px;
-      width:min(700px, 100%);
+      width:min(760px, 100%);
       padding:18px 20px;
-      border-radius:20px;
+      border-radius:16px;
       background:#ffffff;
       border:1px solid #d9dfeb;
       text-align:center;
@@ -1086,6 +1088,7 @@
       font-weight:900;
       color:#334155;
       box-shadow:0 2px 10px rgba(140,160,190,.08);
+      margin-right:auto;
     }
 
     .savedBadge{
@@ -1104,7 +1107,7 @@
       width:100%;
       display:flex;
       flex-direction:column;
-      align-items:flex-end;
+      align-items:stretch;
     }
 
     .optionalToggle{
@@ -1173,7 +1176,7 @@
     .optionalField.is-open .optionalContent{
       display:flex;
       flex-direction:column;
-      align-items:flex-end;
+      align-items:flex-start;
     }
 
     .optionalField.locked-open .optionalToggle{
@@ -1188,7 +1191,7 @@
     .optionalField.locked-open .optionalContent{
       display:flex;
       flex-direction:column;
-      align-items:flex-end;
+      align-items:flex-start;
     }
 
     .field-optional-title{
@@ -3706,4 +3709,5 @@ document.getElementById("btnExcluirEscalacao")?.addEventListener("click", clearE
 </script>
 </body>
 </html>
+
 
