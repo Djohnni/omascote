@@ -2943,67 +2943,62 @@ document.querySelectorAll("[data-optional-field]").forEach((wrapper)=>{
   let touchStartY = 0;
   let touchMoved = false;
   let touchActive = false;
-  let blockInnerUntil = 0;
+  let ignoreSyntheticClick = false;
 
   const toggleOptional = (e) => {
     if(wrapper.classList.contains("locked-open")) return;
     if(content && content.contains(e.target)) return;
     e.preventDefault();
     e.stopPropagation();
-    if(e.pointerType === "touch"){
-      blockInnerUntil = Date.now() + 450;
-    }
     wrapper.classList.toggle("is-open");
   };
 
   btn.addEventListener("pointerdown", (e)=>{
-    if(e.pointerType === "touch"){
-      touchStartX = e.clientX;
-      touchStartY = e.clientY;
-      touchMoved = false;
-      touchActive = true;
-      return;
-    }
-
+    if(e.pointerType === "touch") return;
     toggleOptional(e);
   });
 
-  btn.addEventListener("pointermove", (e)=>{
-    if(e.pointerType !== "touch" || !touchActive) return;
-    if(Math.abs(e.clientX - touchStartX) > 10 || Math.abs(e.clientY - touchStartY) > 10){
+  btn.addEventListener("touchstart", (e)=>{
+    const t = e.changedTouches && e.changedTouches[0];
+    if(!t) return;
+    touchStartX = t.clientX;
+    touchStartY = t.clientY;
+    touchMoved = false;
+    touchActive = true;
+  }, { passive:true });
+
+  btn.addEventListener("touchmove", (e)=>{
+    if(!touchActive) return;
+    const t = e.changedTouches && e.changedTouches[0];
+    if(!t) return;
+    if(Math.abs(t.clientX - touchStartX) > 10 || Math.abs(t.clientY - touchStartY) > 10){
       touchMoved = true;
     }
-  });
+  }, { passive:true });
 
-  btn.addEventListener("pointerup", (e)=>{
-    if(e.pointerType !== "touch") return;
+  btn.addEventListener("touchend", (e)=>{
     if(!touchActive) return;
     touchActive = false;
     if(touchMoved) return;
+    ignoreSyntheticClick = true;
     toggleOptional(e);
+    setTimeout(()=>{ ignoreSyntheticClick = false; }, 500);
   });
 
-  btn.addEventListener("pointercancel", ()=>{
+  btn.addEventListener("touchcancel", ()=>{
     touchActive = false;
     touchMoved = false;
   });
 
   btn.addEventListener("click", (e)=>{
+    if(ignoreSyntheticClick){
+      e.preventDefault();
+      e.stopPropagation();
+      return;
+    }
     e.preventDefault();
     e.stopPropagation();
   });
-
-  if(content){
-    const blockInnerTouch = (e)=>{
-      if(Date.now() < blockInnerUntil){
-        e.preventDefault();
-        e.stopPropagation();
-      }
-    };
-
-    content.addEventListener("pointerdown", blockInnerTouch, true);
-    content.addEventListener("click", blockInnerTouch, true);
-  }
 });
 
 const cropModal = document.getElementById("cropModal");
