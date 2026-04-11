@@ -1147,16 +1147,17 @@
     }
 
     .optionalToggle{
-      display:flex;
+      display:inline-flex;
       align-items:center;
       justify-content:space-between;
       gap:12px;
-      width:max-content;
+      width:auto;
       max-width:min(420px, calc(100% - 28px));
       margin:0 auto -10px;
       padding:18px 24px;
       border-radius:30px 30px 10px 30px;
-      background:linear-gradient(180deg, #eef8ea, #e3f1dd);
+      background-color:#eaf5e4;
+      background-image:linear-gradient(180deg, #eef8ea, #e3f1dd);
       border:1px solid #dfead8;
       text-align:left;
       cursor:pointer;
@@ -1170,6 +1171,10 @@
       order:2;
       z-index:3;
       transform:translateY(-50%);
+      appearance:none;
+      -webkit-appearance:none;
+      outline:none;
+      min-height:0;
     }
 
     .optionalToggle::after{
@@ -1179,14 +1184,16 @@
       bottom:12px;
       width:18px;
       height:18px;
-      background:linear-gradient(180deg, #eef8ea, #e3f1dd);
+      background-color:#e6f2df;
+      background-image:linear-gradient(180deg, #eef8ea, #e3f1dd);
       border-right:1px solid #dfead8;
       border-bottom:1px solid #dfead8;
       clip-path:polygon(0 0, 100% 50%, 0 100%);
+      box-shadow:none;
     }
 
     .optionalToggleText{
-      flex:1;
+      flex:0 1 auto;
       min-width:0;
       color:#24543f;
       font-size:17px;
@@ -1200,6 +1207,7 @@
       font-weight:900;
       transition:transform .18s ease;
       margin-left:10px;
+      line-height:1;
     }
 
     .optionalField.is-open .optionalToggleIcon{
@@ -3797,6 +3805,7 @@ document.getElementById("btnExcluirEscalacao")?.addEventListener("click", clearE
 </script>
 </body>
 </html>
+
 
 
 
