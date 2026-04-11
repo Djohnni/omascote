@@ -624,11 +624,11 @@
       text-align:left;
       font-size:17px;
       font-weight:900;
-      color:#24543f !important;
-      background:linear-gradient(180deg, #eef8ea, #e3f1dd);
-      border:1px solid #dfead8;
+      color:#2f3e5c !important;
+      background:linear-gradient(180deg, #eef2ff, #e3e9ff);
+      border:1px solid #d6ddff;
       border-radius:30px 30px 10px 30px;
-      box-shadow:0 10px 26px rgba(162,175,194,.14);
+      box-shadow:0 10px 26px rgba(120,140,200,.18);
       align-self:flex-end;
       position:relative;
       overflow:visible;
@@ -643,9 +643,9 @@
       bottom:12px;
       width:18px;
       height:18px;
-      background:linear-gradient(180deg, #eef8ea, #e3f1dd);
-      border-right:1px solid #dfead8;
-      border-bottom:1px solid #dfead8;
+      background:linear-gradient(180deg, #eef2ff, #e3e9ff);
+      border-right:1px solid #d6ddff;
+      border-bottom:1px solid #d6ddff;
       clip-path:polygon(0 0, 100% 50%, 0 100%);
     }
 
@@ -1152,7 +1152,7 @@
       gap:12px;
       width:max-content;
       max-width:min(420px, calc(100% - 28px));
-      margin:-22px auto 0;
+      margin:-14px auto 0;
       padding:18px 24px;
       border-radius:30px 30px 10px 30px;
       background:linear-gradient(180deg, #eef8ea, #e3f1dd);
@@ -1236,6 +1236,22 @@
     .field-optional-title{
       display:none;
       width:100%;
+    }
+
+    .optionalDividerTitle{
+      display:block;
+      width:max-content;
+      max-width:min(240px, calc(100% - 28px));
+      margin:14px auto 10px;
+      padding:10px 18px;
+      text-align:center;
+      font-size:13px;
+      font-weight:900;
+      color:#4a5d7a;
+      background:linear-gradient(180deg, #eef2ff, #e3e9ff);
+      border:1px solid #d6ddff;
+      border-radius:999px;
+      box-shadow:0 6px 16px rgba(120,140,200,.15);
     }
 
     .escalacaoActions{
@@ -2013,7 +2029,7 @@
             </div>
 
             <div class="field-optional-title full" id="optionalDivider">
-              <label class="sectionTitle">Opcional</label>
+              <label class="optionalDividerTitle">Opcional</label>
             </div>
 
             <div class="field-submit full submitRow">
@@ -3760,6 +3776,7 @@ document.getElementById("btnExcluirEscalacao")?.addEventListener("click", clearE
 </script>
 </body>
 </html>
+
 
 
 
