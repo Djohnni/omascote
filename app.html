@@ -721,12 +721,7 @@
       margin:0 0 6px;
     }
 
-    .sectionTitle,
-#labelRodada,
-#labelHora,
-#labelArena,
-#labelMascote,
-#labelPatro{
+    .sectionTitle{
       display:block;
       width:max-content;
       max-width:min(420px, calc(100% - 28px));
@@ -748,12 +743,7 @@
       transform:translateY(-50%);
     }
 
-    .sectionTitle::after,
-    #labelRodada::after,
-    #labelHora::after,
-    #labelArena::after,
-    #labelMascote::after,
-    #labelPatro::after{
+    .sectionTitle::after{
       content:"";
       position:absolute;
       right:-10px;
@@ -1606,11 +1596,6 @@
 
       #dynamicHint,
       .sectionTitle,
-      #labelRodada,
-      #labelHora,
-      #labelArena,
-      #labelMascote,
-      #labelPatro,
       .optionalToggle{
         max-width:calc(100% - 18px);
         font-size:14px;
@@ -1618,21 +1603,11 @@
       }
 
       .sectionTitle,
-      #labelRodada,
-      #labelHora,
-      #labelArena,
-      #labelMascote,
-      #labelPatro,
       .optionalToggle{
         margin:0 auto -8px;
       }
 
       .sectionTitle,
-      #labelRodada,
-      #labelHora,
-      #labelArena,
-      #labelMascote,
-      #labelPatro,
       .optionalToggle{
         transform:translateY(-50%);
       }
@@ -3805,6 +3780,7 @@ document.getElementById("btnExcluirEscalacao")?.addEventListener("click", clearE
 </script>
 </body>
 </html>
+
 
 
 
