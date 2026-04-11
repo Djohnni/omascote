@@ -2939,15 +2939,42 @@ document.querySelectorAll("[data-optional-field]").forEach((wrapper)=>{
   const content = wrapper.querySelector("[data-optional-content]");
   if(!btn) return;
 
-  const toggleOptional = (e) => {
+  let startX = 0;
+  let startY = 0;
+  let moved = false;
+  let pointerActive = false;
+
+  btn.addEventListener("pointerdown", (e)=>{
     if(wrapper.classList.contains("locked-open")) return;
+    startX = e.clientX;
+    startY = e.clientY;
+    moved = false;
+    pointerActive = true;
+  });
+
+  btn.addEventListener("pointermove", (e)=>{
+    if(!pointerActive) return;
+    if(Math.abs(e.clientX - startX) > 10 || Math.abs(e.clientY - startY) > 10){
+      moved = true;
+    }
+  });
+
+  btn.addEventListener("pointerup", (e)=>{
+    if(!pointerActive) return;
+    pointerActive = false;
+    if(wrapper.classList.contains("locked-open")) return;
+    if(moved) return;
     if(content && content.contains(e.target)) return;
     e.preventDefault();
     e.stopPropagation();
     wrapper.classList.toggle("is-open");
-  };
+  });
 
-  btn.addEventListener("pointerdown", toggleOptional);
+  btn.addEventListener("pointercancel", ()=>{
+    pointerActive = false;
+    moved = false;
+  });
+
   btn.addEventListener("click", (e)=>{
     e.preventDefault();
     e.stopPropagation();
@@ -3842,3 +3869,4 @@ document.getElementById("btnExcluirEscalacao")?.addEventListener("click", clearE
 </script>
 </body>
 </html>
+
