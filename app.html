@@ -2939,19 +2939,45 @@ document.querySelectorAll("[data-optional-field]").forEach((wrapper)=>{
   const content = wrapper.querySelector("[data-optional-content]");
   if(!btn) return;
 
-  const toggleOptional = (e) => {
+  let startX = 0;
+  let startY = 0;
+  let moved = false;
+  let openedAt = 0;
+
+  btn.addEventListener("pointerdown", (e)=>{
+    startX = e.clientX;
+    startY = e.clientY;
+    moved = false;
+  });
+
+  btn.addEventListener("pointermove", (e)=>{
+    if(Math.abs(e.clientX - startX) > 10 || Math.abs(e.clientY - startY) > 10){
+      moved = true;
+    }
+  });
+
+  btn.addEventListener("pointerup", (e)=>{
     if(wrapper.classList.contains("locked-open")) return;
-    if(content && content.contains(e.target)) return;
+    if(moved) return;
     e.preventDefault();
     e.stopPropagation();
     wrapper.classList.toggle("is-open");
-  };
+    openedAt = Date.now();
+  });
 
-  btn.addEventListener("pointerdown", toggleOptional);
   btn.addEventListener("click", (e)=>{
     e.preventDefault();
     e.stopPropagation();
   });
+
+  if(content){
+    content.addEventListener("click", (e)=>{
+      if(Date.now() - openedAt < 350){
+        e.preventDefault();
+        e.stopPropagation();
+      }
+    }, true);
+  }
 });
 
 const cropModal = document.getElementById("cropModal");
@@ -3842,3 +3868,4 @@ document.getElementById("btnExcluirEscalacao")?.addEventListener("click", clearE
 </script>
 </body>
 </html>
+
