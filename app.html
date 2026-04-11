@@ -218,7 +218,7 @@
       position:relative;
       margin:34px auto 8px;
       max-width:880px;
-      min-height:400px;
+      min-height:170px;
     }
 
     .centerWrap{
@@ -227,6 +227,7 @@
       top:58px;
       transform:translateX(-50%);
       z-index:4;
+      display:none;
     }
 
     .centerBtn{
@@ -282,6 +283,7 @@
         opacity .35s ease,
         transform .45s ease,
         visibility 0s linear .45s;
+      display:none;
     }
 
     .line{
@@ -3868,6 +3870,7 @@ applyLocal();
 refreshMe();
 carregarHistorico();
 updateChosenPlaceholders(null);
+selectorStage?.classList.add("open");
 
 document.getElementById("btnSair").addEventListener("click", ()=>{
   localStorage.removeItem("omascote_token");
@@ -3889,5 +3892,6 @@ document.getElementById("btnExcluirEscalacao")?.addEventListener("click", clearE
 </script>
 </body>
 </html>
+
 
 
