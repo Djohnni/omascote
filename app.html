@@ -2942,27 +2942,37 @@ document.querySelectorAll("[data-optional-field]").forEach((wrapper)=>{
   let startX = 0;
   let startY = 0;
   let moved = false;
-  let openedAt = 0;
+  let pointerDown = false;
+  let suppressUntil = 0;
 
   btn.addEventListener("pointerdown", (e)=>{
     startX = e.clientX;
     startY = e.clientY;
     moved = false;
+    pointerDown = true;
   });
 
   btn.addEventListener("pointermove", (e)=>{
+    if(!pointerDown) return;
     if(Math.abs(e.clientX - startX) > 10 || Math.abs(e.clientY - startY) > 10){
       moved = true;
     }
   });
 
   btn.addEventListener("pointerup", (e)=>{
+    if(!pointerDown) return;
+    pointerDown = false;
     if(wrapper.classList.contains("locked-open")) return;
     if(moved) return;
     e.preventDefault();
     e.stopPropagation();
     wrapper.classList.toggle("is-open");
-    openedAt = Date.now();
+    suppressUntil = Date.now() + 450;
+  });
+
+  btn.addEventListener("pointercancel", ()=>{
+    pointerDown = false;
+    moved = false;
   });
 
   btn.addEventListener("click", (e)=>{
@@ -2971,12 +2981,15 @@ document.querySelectorAll("[data-optional-field]").forEach((wrapper)=>{
   });
 
   if(content){
-    content.addEventListener("click", (e)=>{
-      if(Date.now() - openedAt < 350){
+    const stopGhostClick = (e)=>{
+      if(Date.now() < suppressUntil){
         e.preventDefault();
         e.stopPropagation();
       }
-    }, true);
+    };
+
+    content.addEventListener("pointerdown", stopGhostClick, true);
+    content.addEventListener("click", stopGhostClick, true);
   }
 });
 
@@ -3868,4 +3881,5 @@ document.getElementById("btnExcluirEscalacao")?.addEventListener("click", clearE
 </script>
 </body>
 </html>
+
 
