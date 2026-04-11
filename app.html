@@ -1165,6 +1165,9 @@
       -webkit-appearance:none;
       outline:none;
       min-height:0;
+      user-select:none;
+      -webkit-tap-highlight-color:transparent;
+      touch-action:manipulation;
     }
 
     .optionalToggle::after{
@@ -1180,6 +1183,7 @@
       border-bottom:1px solid #dfead8;
       clip-path:polygon(0 0, 100% 50%, 0 100%);
       box-shadow:none;
+      pointer-events:none;
     }
 
     .optionalToggleText{
@@ -1188,6 +1192,7 @@
       color:#24543f;
       font-size:17px;
       font-weight:900;
+      pointer-events:none;
     }
 
     .optionalToggleIcon{
@@ -1198,6 +1203,7 @@
       transition:transform .18s ease;
       margin-left:10px;
       line-height:1;
+      pointer-events:none;
     }
 
     .optionalField.is-open .optionalToggleIcon{
@@ -2652,7 +2658,7 @@ function configureOptionalSections(productKey){
   wrappers.forEach((wrapper)=>{
     wrapper.classList.remove("is-open", "locked-open");
     const toggle = wrapper.querySelector("[data-optional-toggle]");
-    if(toggle) toggle.style.display = "flex";
+    if(toggle) toggle.style.display = "inline-flex";
   });
 
   const optionalDivider = document.getElementById("optionalDivider");
@@ -3780,6 +3786,7 @@ document.getElementById("btnExcluirEscalacao")?.addEventListener("click", clearE
 </script>
 </body>
 </html>
+
 
 
 
