@@ -1219,10 +1219,13 @@
     .field-artilheiros .optionalToggle{
       min-width:260px;
       justify-content:center;
+      padding-left:24px;
+      padding-right:24px;
     }
 
     .field-artilheiros .optionalToggleText{
       flex:0 1 auto;
+      width:100%;
       text-align:center;
     }
 
@@ -2917,15 +2920,19 @@ document.getElementById("verExemplosLink").addEventListener("click", (e)=>{
   }
 });
 
-document.querySelectorAll("[data-optional-toggle]").forEach((btn)=>{
-  btn.addEventListener("pointerup", (e)=>{
-    e.preventDefault();
-    const field = btn.getAttribute("data-optional-toggle");
-    const wrapper = document.querySelector(`[data-optional-field="${field}"]`);
-    if(!wrapper || wrapper.classList.contains("locked-open")) return;
-    wrapper.classList.toggle("is-open");
-  });
+document.querySelectorAll("[data-optional-field]").forEach((wrapper)=>{
+  const btn = wrapper.querySelector("[data-optional-toggle]");
+  const content = wrapper.querySelector("[data-optional-content]");
+  if(!btn) return;
 
+  const toggleOptional = (e) => {
+    if(wrapper.classList.contains("locked-open")) return;
+    if(content && content.contains(e.target)) return;
+    e.preventDefault();
+    wrapper.classList.toggle("is-open");
+  };
+
+  wrapper.addEventListener("click", toggleOptional);
   btn.addEventListener("click", (e)=>{
     e.preventDefault();
   });
@@ -3819,6 +3826,7 @@ document.getElementById("btnExcluirEscalacao")?.addEventListener("click", clearE
 </script>
 </body>
 </html>
+
 
 
 
