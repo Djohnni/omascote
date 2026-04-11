@@ -2943,6 +2943,7 @@ document.querySelectorAll("[data-optional-field]").forEach((wrapper)=>{
   let touchStartY = 0;
   let touchMoved = false;
   let touchActive = false;
+  let ignoreClickUntil = 0;
 
   const toggleOptional = (e) => {
     if(wrapper.classList.contains("locked-open")) return;
@@ -2976,6 +2977,7 @@ document.querySelectorAll("[data-optional-field]").forEach((wrapper)=>{
     if(!touchActive) return;
     touchActive = false;
     if(touchMoved) return;
+    ignoreClickUntil = Date.now() + 500;
     toggleOptional(e);
   });
 
@@ -2985,6 +2987,11 @@ document.querySelectorAll("[data-optional-field]").forEach((wrapper)=>{
   });
 
   btn.addEventListener("click", (e)=>{
+    if(Date.now() < ignoreClickUntil){
+      e.preventDefault();
+      e.stopPropagation();
+      return;
+    }
     e.preventDefault();
     e.stopPropagation();
   });
@@ -3878,4 +3885,5 @@ document.getElementById("btnExcluirEscalacao")?.addEventListener("click", clearE
 </script>
 </body>
 </html>
+
 
