@@ -1168,6 +1168,11 @@
       user-select:none;
       -webkit-tap-highlight-color:transparent;
       touch-action:manipulation;
+      pointer-events:auto;
+    }
+
+    .optionalToggle *{
+      pointer-events:none !important;
     }
 
     .optionalToggle::after{
@@ -1193,6 +1198,7 @@
       font-size:17px;
       font-weight:900;
       pointer-events:none;
+      text-align:left;
     }
 
     .optionalToggleIcon{
@@ -1208,6 +1214,28 @@
 
     .optionalField.is-open .optionalToggleIcon{
       transform:rotate(180deg);
+    }
+
+    .field-artilheiros .optionalToggle{
+      min-width:260px;
+      justify-content:center;
+    }
+
+    .field-artilheiros .optionalToggleText{
+      flex:0 1 auto;
+      text-align:center;
+    }
+
+    .field-artilheiros .optionalToggleIcon{
+      position:absolute;
+      right:24px;
+      top:50%;
+      transform:translateY(-50%);
+      margin-left:0;
+    }
+
+    .field-artilheiros.is-open .optionalToggleIcon{
+      transform:translateY(-50%) rotate(180deg);
     }
 
     .optionalContent{
@@ -2890,11 +2918,16 @@ document.getElementById("verExemplosLink").addEventListener("click", (e)=>{
 });
 
 document.querySelectorAll("[data-optional-toggle]").forEach((btn)=>{
-  btn.addEventListener("click", ()=>{
+  btn.addEventListener("pointerup", (e)=>{
+    e.preventDefault();
     const field = btn.getAttribute("data-optional-toggle");
     const wrapper = document.querySelector(`[data-optional-field="${field}"]`);
     if(!wrapper || wrapper.classList.contains("locked-open")) return;
     wrapper.classList.toggle("is-open");
+  });
+
+  btn.addEventListener("click", (e)=>{
+    e.preventDefault();
   });
 });
 
@@ -3786,6 +3819,7 @@ document.getElementById("btnExcluirEscalacao")?.addEventListener("click", clearE
 </script>
 </body>
 </html>
+
 
 
 
