@@ -1169,6 +1169,7 @@
       -webkit-tap-highlight-color:transparent;
       touch-action:manipulation;
       pointer-events:auto;
+      isolation:isolate;
     }
 
     .optionalToggle *{
@@ -1216,20 +1217,29 @@
       transform:rotate(180deg);
     }
 
-    .field-artilheiros .optionalToggle{
+    .field-artilheiros .optionalToggle,
+    .field-arena .optionalToggle,
+    .field-esc2 .optionalToggle,
+    .field-mascote .optionalToggle{
       min-width:260px;
       justify-content:center;
       padding-left:24px;
       padding-right:24px;
     }
 
-    .field-artilheiros .optionalToggleText{
+    .field-artilheiros .optionalToggleText,
+    .field-arena .optionalToggleText,
+    .field-esc2 .optionalToggleText,
+    .field-mascote .optionalToggleText{
       flex:0 1 auto;
       width:100%;
       text-align:center;
     }
 
-    .field-artilheiros .optionalToggleIcon{
+    .field-artilheiros .optionalToggleIcon,
+    .field-arena .optionalToggleIcon,
+    .field-esc2 .optionalToggleIcon,
+    .field-mascote .optionalToggleIcon{
       position:absolute;
       right:24px;
       top:50%;
@@ -1237,7 +1247,10 @@
       margin-left:0;
     }
 
-    .field-artilheiros.is-open .optionalToggleIcon{
+    .field-artilheiros.is-open .optionalToggleIcon,
+    .field-arena.is-open .optionalToggleIcon,
+    .field-esc2.is-open .optionalToggleIcon,
+    .field-mascote.is-open .optionalToggleIcon{
       transform:translateY(-50%) rotate(180deg);
     }
 
@@ -2929,12 +2942,14 @@ document.querySelectorAll("[data-optional-field]").forEach((wrapper)=>{
     if(wrapper.classList.contains("locked-open")) return;
     if(content && content.contains(e.target)) return;
     e.preventDefault();
+    e.stopPropagation();
     wrapper.classList.toggle("is-open");
   };
 
-  wrapper.addEventListener("click", toggleOptional);
+  btn.addEventListener("pointerdown", toggleOptional);
   btn.addEventListener("click", (e)=>{
     e.preventDefault();
+    e.stopPropagation();
   });
 });
 
@@ -3826,6 +3841,7 @@ document.getElementById("btnExcluirEscalacao")?.addEventListener("click", clearE
 </script>
 </body>
 </html>
+
 
 
 
