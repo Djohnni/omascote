@@ -2939,6 +2939,11 @@ document.querySelectorAll("[data-optional-field]").forEach((wrapper)=>{
   const content = wrapper.querySelector("[data-optional-content]");
   if(!btn) return;
 
+  let touchStartX = 0;
+  let touchStartY = 0;
+  let touchMoved = false;
+  let touchActive = false;
+
   const toggleOptional = (e) => {
     if(wrapper.classList.contains("locked-open")) return;
     if(content && content.contains(e.target)) return;
@@ -2947,7 +2952,38 @@ document.querySelectorAll("[data-optional-field]").forEach((wrapper)=>{
     wrapper.classList.toggle("is-open");
   };
 
-  btn.addEventListener("pointerdown", toggleOptional);
+  btn.addEventListener("pointerdown", (e)=>{
+    if(e.pointerType === "touch"){
+      touchStartX = e.clientX;
+      touchStartY = e.clientY;
+      touchMoved = false;
+      touchActive = true;
+      return;
+    }
+
+    toggleOptional(e);
+  });
+
+  btn.addEventListener("pointermove", (e)=>{
+    if(e.pointerType !== "touch" || !touchActive) return;
+    if(Math.abs(e.clientX - touchStartX) > 10 || Math.abs(e.clientY - touchStartY) > 10){
+      touchMoved = true;
+    }
+  });
+
+  btn.addEventListener("pointerup", (e)=>{
+    if(e.pointerType !== "touch") return;
+    if(!touchActive) return;
+    touchActive = false;
+    if(touchMoved) return;
+    toggleOptional(e);
+  });
+
+  btn.addEventListener("pointercancel", ()=>{
+    touchActive = false;
+    touchMoved = false;
+  });
+
   btn.addEventListener("click", (e)=>{
     e.preventDefault();
     e.stopPropagation();
@@ -3842,3 +3878,4 @@ document.getElementById("btnExcluirEscalacao")?.addEventListener("click", clearE
 </script>
 </body>
 </html>
+
