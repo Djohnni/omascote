@@ -2943,12 +2943,16 @@ document.querySelectorAll("[data-optional-field]").forEach((wrapper)=>{
   let touchStartY = 0;
   let touchMoved = false;
   let touchActive = false;
+  let blockInnerUntil = 0;
 
   const toggleOptional = (e) => {
     if(wrapper.classList.contains("locked-open")) return;
     if(content && content.contains(e.target)) return;
     e.preventDefault();
     e.stopPropagation();
+    if(e.pointerType === "touch"){
+      blockInnerUntil = Date.now() + 450;
+    }
     wrapper.classList.toggle("is-open");
   };
 
@@ -2988,6 +2992,18 @@ document.querySelectorAll("[data-optional-field]").forEach((wrapper)=>{
     e.preventDefault();
     e.stopPropagation();
   });
+
+  if(content){
+    const blockInnerTouch = (e)=>{
+      if(Date.now() < blockInnerUntil){
+        e.preventDefault();
+        e.stopPropagation();
+      }
+    };
+
+    content.addEventListener("pointerdown", blockInnerTouch, true);
+    content.addEventListener("click", blockInnerTouch, true);
+  }
 });
 
 const cropModal = document.getElementById("cropModal");
@@ -3878,4 +3894,5 @@ document.getElementById("btnExcluirEscalacao")?.addEventListener("click", clearE
 </script>
 </body>
 </html>
+
 
