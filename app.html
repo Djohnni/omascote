@@ -179,7 +179,7 @@
     }
 
     .heroBrand{
-      font-size:28px;
+      font-size:56px;
       font-weight:1000;
       letter-spacing:-.02em;
       line-height:1;
@@ -1601,7 +1601,7 @@
       }
 
       .heroBrand{
-        font-size:22px;
+        font-size:44px;
       }
 
       .heroTitle{
@@ -1823,11 +1823,10 @@
           <span class="c1">i</span><span class="c2">A</span><span class="c3">4</span><span class="c4">Tube</span>
         </div>
 
-        <h2 class="heroTitle">Crie artes esportivas prontas<br>para postar em segundos</h2>
+        <h2 class="heroTitle">Crie posts profissionais</h2>
 
         <div class="heroSub">
-          Envie sua foto, escolha o modelo e <strong>gere posts</strong><br>
-          profissionais sem precisar de designer.
+          Sem designer. Pronto pra postar.
         </div>
 
         <div class="selectorStage">
@@ -2186,7 +2185,6 @@ const flyerTipoInput = document.getElementById("flyerTipo");
 const btnEnviar = document.getElementById("btnEnviar");
 const btnTrocarTipo = document.getElementById("btnTrocarTipo");
 const builderArea = document.getElementById("builderArea");
-const mainCreateBtn = document.getElementById("mainCreateBtn");
 const selectorStage = document.querySelector(".selectorStage");
 
 const crestPreview = document.getElementById("crestPreview");
@@ -2874,29 +2872,13 @@ document.querySelectorAll(".optionBtn").forEach(btn=>{
   btn.addEventListener("click", ()=> selectProduct(btn.dataset.product));
 });
 
-mainCreateBtn.addEventListener("click", ()=>{
-  const current = selectedProductInput.value;
+---
+PROCURE ISSO:
+updateChosenPlaceholders(null);
 
-  if(current){
-    scrollToBuilder();
-    return;
-  }
-
-  if(!selectorStage.classList.contains("open")){
-    selectorStage.classList.add("open");
-    setTimeout(()=>{
-      document.querySelector(".optionsRow")?.scrollIntoView({
-        behavior:"smooth",
-        block:"center"
-      });
-    }, 220);
-  }else{
-    document.querySelector(".optionsRow")?.scrollIntoView({
-      behavior:"smooth",
-      block:"center"
-    });
-  }
-});
+TROQUE POR ISSO:
+updateChosenPlaceholders(null);
+selectorStage?.classList.add("open");
 
 btnTrocarTipo.addEventListener("click", ()=>{
   selectedProductInput.value = "";
@@ -3884,6 +3866,7 @@ document.getElementById("btnExcluirEscalacao")?.addEventListener("click", clearE
 </script>
 </body>
 </html>
+
 
 
 
