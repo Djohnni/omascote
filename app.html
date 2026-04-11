@@ -2943,13 +2943,16 @@ document.querySelectorAll("[data-optional-field]").forEach((wrapper)=>{
   let touchStartY = 0;
   let touchMoved = false;
   let touchActive = false;
-  let ignoreClickUntil = 0;
+  let lastToggleAt = 0;
 
   const toggleOptional = (e) => {
+    const now = Date.now();
+    if(now - lastToggleAt < 400) return;
     if(wrapper.classList.contains("locked-open")) return;
     if(content && content.contains(e.target)) return;
     e.preventDefault();
     e.stopPropagation();
+    lastToggleAt = now;
     wrapper.classList.toggle("is-open");
   };
 
@@ -2977,7 +2980,6 @@ document.querySelectorAll("[data-optional-field]").forEach((wrapper)=>{
     if(!touchActive) return;
     touchActive = false;
     if(touchMoved) return;
-    ignoreClickUntil = Date.now() + 500;
     toggleOptional(e);
   });
 
@@ -2987,11 +2989,6 @@ document.querySelectorAll("[data-optional-field]").forEach((wrapper)=>{
   });
 
   btn.addEventListener("click", (e)=>{
-    if(Date.now() < ignoreClickUntil){
-      e.preventDefault();
-      e.stopPropagation();
-      return;
-    }
     e.preventDefault();
     e.stopPropagation();
   });
