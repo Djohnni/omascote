@@ -1218,6 +1218,7 @@
       transform:rotate(180deg);
     }
 
+    .field-artilheiros .optionalToggle,
     .field-arena .optionalToggle,
     .field-esc2 .optionalToggle,
     .field-mascote .optionalToggle{
@@ -1227,6 +1228,7 @@
       padding-right:24px;
     }
 
+    .field-artilheiros .optionalToggleText,
     .field-arena .optionalToggleText,
     .field-esc2 .optionalToggleText,
     .field-mascote .optionalToggleText{
@@ -1235,6 +1237,7 @@
       text-align:center;
     }
 
+    .field-artilheiros .optionalToggleIcon,
     .field-arena .optionalToggleIcon,
     .field-esc2 .optionalToggleIcon,
     .field-mascote .optionalToggleIcon{
@@ -1245,6 +1248,7 @@
       margin-left:0;
     }
 
+    .field-artilheiros.is-open .optionalToggleIcon,
     .field-arena.is-open .optionalToggleIcon,
     .field-esc2.is-open .optionalToggleIcon,
     .field-mascote.is-open .optionalToggleIcon{
@@ -2401,7 +2405,7 @@ function updateProductFieldVisibility(product){
   }
 
   if(product.mode === "resultado"){
-    if(artilheirosField) artilheirosField.style.display = "block";
+    if(artilheirosField) artilheirosField.style.display = "flex";
     setArtilheirosMode("resultado");
     return;
   }
@@ -3838,19 +3842,3 @@ document.getElementById("btnExcluirEscalacao")?.addEventListener("click", clearE
 </script>
 </body>
 </html>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
