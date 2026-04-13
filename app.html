@@ -1197,22 +1197,25 @@
     }
 
     .optionalToggleText{
-      flex:0 1 auto;
+      flex:1;
       min-width:0;
       color:#24543f;
       font-size:17px;
       font-weight:900;
       pointer-events:none;
-      text-align:left;
+      text-align:center;
     }
 
     .optionalToggleIcon{
-      flex:0 0 auto;
+      position:absolute;
+      right:24px;
+      top:50%;
+      transform:translateY(-50%);
       color:#64748b;
       font-size:16px;
       font-weight:900;
       transition:transform .18s ease;
-      margin-left:10px;
+      margin-left:0;
       line-height:1;
       pointer-events:none;
     }
@@ -3892,6 +3895,7 @@ document.getElementById("btnExcluirEscalacao")?.addEventListener("click", clearE
 </script>
 </body>
 </html>
+
 
 
 
