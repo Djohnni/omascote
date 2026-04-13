@@ -3489,7 +3489,36 @@ function hookCropOnInputs(){
         return;
       }
       if(!input.files || input.files.length === 0) return;
-      openCrop(id, input.files[0]);
+      const file = input.files[0];
+
+      const img = new Image();
+      const url = URL.createObjectURL(file);
+      img.src = url;
+
+      img.onload = async () => {
+        const max = 1200;
+        let w = img.width;
+        let h = img.height;
+
+        if(w > max || h > max){
+          const scale = Math.min(max / w, max / h);
+          w = Math.round(w * scale);
+          h = Math.round(h * scale);
+        }
+
+        const canvas = document.createElement("canvas");
+        canvas.width = w;
+        canvas.height = h;
+
+        const ctx = canvas.getContext("2d");
+        ctx.drawImage(img, 0, 0, w, h);
+
+        const blob = await new Promise(r => canvas.toBlob(r, "image/jpeg", 0.85));
+        const compressedFile = new File([blob], "img.jpg", { type:"image/jpeg" });
+
+        openCrop(id, compressedFile);
+        URL.revokeObjectURL(url);
+      };
     });
   });
 }
@@ -3898,6 +3927,7 @@ document.getElementById("btnExcluirEscalacao")?.addEventListener("click", clearE
 </script>
 </body>
 </html>
+
 
 
 
