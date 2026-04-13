@@ -2591,7 +2591,6 @@ const crestManualInput = document.getElementById("crestManual");
 const crestAddBtn = document.getElementById("crestAddBtn");
 
 if(crestAddBtn && crestManualInput){
-  crestAddBtn.addEventListener("click", ()=> crestManualInput.click());
   crestManualInput.addEventListener("change", async ()=>{
     if(!crestManualInput.files || crestManualInput.files.length === 0) return;
     try{
@@ -3901,4 +3900,5 @@ document.getElementById("btnExcluirEscalacao")?.addEventListener("click", clearE
 </script>
 </body>
 </html>
+
 
