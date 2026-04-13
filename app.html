@@ -3466,15 +3466,6 @@ cropOkBtn.addEventListener("click", async ()=>{
 
     if(crop.inputId === "escudo1"){
       await saveEscudo1ToLocalFromFile(outFile);
-
-      const currentProduct = PRODUCTS[selectedProductInput.value];
-      const currentIsResult = currentProduct?.mode === "resultado";
-
-      if(!currentIsResult){
-        const dataUrl = await readFileAsDataURL(outFile);
-        localStorage.setItem(CREST_KEY, dataUrl);
-        setCrestUI(dataUrl);
-      }
     }
   }catch(e){}
   closeCrop();
@@ -3900,5 +3891,6 @@ document.getElementById("btnExcluirEscalacao")?.addEventListener("click", clearE
 </script>
 </body>
 </html>
+
 
 
