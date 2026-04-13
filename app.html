@@ -3608,6 +3608,12 @@ document.getElementById("pedidoForm").addEventListener("submit", async (e)=>{
     }
   }
 
+  if(!resultadoFinal){
+    resultadoFinal = product?.title || "Pedido";
+  }
+
+  const dataFinal = document.getElementById("dataJogo").value || product?.title || "Pedido";
+
   fd.append("rodada", resultadoFinal);
   fd.append("time_principal", t1);
   fd.append("gols_time_principal", g1);
@@ -3670,7 +3676,7 @@ document.getElementById("pedidoForm").addEventListener("submit", async (e)=>{
     fd.append("artilheiros_qtd", "0");
   }
 
-  fd.append("data", document.getElementById("dataJogo").value);
+  fd.append("data", dataFinal);
 
   const horaVal = document.getElementById("hora").value;
   if(horaVal) fd.append("hora", horaVal);
@@ -3895,6 +3901,7 @@ document.getElementById("btnExcluirEscalacao")?.addEventListener("click", clearE
 </script>
 </body>
 </html>
+
 
 
 
