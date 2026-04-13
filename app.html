@@ -1965,7 +1965,7 @@
 
             <div class="field-rodada optionalField" data-optional-field="rodada">
               <button type="button" class="optionalToggle" data-optional-toggle="rodada">
-                <span class="optionalToggleText" id="labelRodada">Título da arte *</span>
+                <span class="optionalToggleText" id="labelRodada">Título da arte</span>
                 <span class="optionalToggleIcon">▼</span>
               </button>
               <div class="optionalContent" data-optional-content="rodada">
@@ -1975,12 +1975,12 @@
 
             <div class="field-data optionalField" data-optional-field="data">
               <button type="button" class="optionalToggle" data-optional-toggle="data">
-                <span class="optionalToggleText" id="labelData">Frase na imagem *</span>
+                <span class="optionalToggleText" id="labelData">Frase na imagem</span>
                 <span class="optionalToggleIcon">▼</span>
               </button>
               <div class="optionalContent" data-optional-content="data">
                 <div class="phraseWrap">
-                  <input id="dataJogo" required />
+                  <input id="dataJogo" />
                   <button type="button" class="phraseBtn" id="openPhraseBtn" aria-label="Abrir frases prontas">+</button>
 
                   <div class="phraseMenu" id="phraseMenu">
@@ -2038,7 +2038,7 @@
 
             <div class="field-esc1 optionalField" data-optional-field="esc1">
               <button type="button" class="optionalToggle" data-optional-toggle="esc1">
-                <span class="optionalToggleText" id="labelEsc1">Escudo / logo do time *</span>
+                <span class="optionalToggleText" id="labelEsc1">Escudo / logo do time</span>
                 <span class="optionalToggleIcon">▼</span>
               </button>
               <div class="optionalContent" data-optional-content="esc1">
@@ -2055,7 +2055,7 @@
 
             <div class="field-esc2 optionalField" data-optional-field="esc2">
               <button type="button" class="optionalToggle" data-optional-toggle="esc2">
-                <span class="optionalToggleText" id="labelEsc2">Imagem do jogo *</span>
+                <span class="optionalToggleText" id="labelEsc2">Imagem do jogo</span>
                 <span class="optionalToggleIcon">▼</span>
               </button>
               <div class="optionalContent" data-optional-content="esc2">
@@ -2224,7 +2224,7 @@ const PRODUCTS = {
     },
     required: {
       esc1: true,
-      esc2: true
+      esc2: false
     },
     phraseMenu: true,
     hiddenFields: []
@@ -3895,6 +3895,7 @@ document.getElementById("btnExcluirEscalacao")?.addEventListener("click", clearE
 </script>
 </body>
 </html>
+
 
 
 
