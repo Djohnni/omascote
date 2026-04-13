@@ -2591,6 +2591,10 @@ const crestManualInput = document.getElementById("crestManual");
 const crestAddBtn = document.getElementById("crestAddBtn");
 
 if(crestAddBtn && crestManualInput){
+  crestAddBtn.addEventListener("click", ()=>{
+    crestManualInput.value = "";
+  });
+
   crestManualInput.addEventListener("change", async ()=>{
     if(!crestManualInput.files || crestManualInput.files.length === 0) return;
     try{
