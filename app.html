@@ -2457,6 +2457,72 @@ function readFileAsDataURL(file){
   });
 }
 
+async function normalizeImageFile(inputId, file){
+  if(!file) return file;
+
+  const isEscudo = inputId === "escudo1";
+  const outputType = isEscudo ? "image/png" : "image/jpeg";
+  const outputQuality = isEscudo ? undefined : 0.9;
+  const maxSide = isEscudo ? 1400 : 1600;
+
+  try{
+    let source;
+
+    if("createImageBitmap" in window){
+      source = await createImageBitmap(file);
+    }else{
+      source = await new Promise((resolve, reject)=>{
+        const img = new Image();
+        const url = URL.createObjectURL(file);
+        img.onload = () => {
+          URL.revokeObjectURL(url);
+          resolve(img);
+        };
+        img.onerror = () => {
+          URL.revokeObjectURL(url);
+          reject(new Error("Falha ao abrir imagem"));
+        };
+        img.src = url;
+      });
+    }
+
+    const srcW = source.width || source.naturalWidth || 1;
+    const srcH = source.height || source.naturalHeight || 1;
+
+    let outW = srcW;
+    let outH = srcH;
+
+    if(srcW > maxSide || srcH > maxSide){
+      const scale = Math.min(maxSide / srcW, maxSide / srcH);
+      outW = Math.max(1, Math.round(srcW * scale));
+      outH = Math.max(1, Math.round(srcH * scale));
+    }
+
+    const canvas = document.createElement("canvas");
+    canvas.width = outW;
+    canvas.height = outH;
+
+    const ctx = canvas.getContext("2d");
+    ctx.imageSmoothingEnabled = true;
+    ctx.imageSmoothingQuality = "high";
+    ctx.drawImage(source, 0, 0, outW, outH);
+
+    if(source.close) source.close();
+
+    const blob = await new Promise((resolve, reject)=>{
+      canvas.toBlob((b)=>{
+        if(b) resolve(b);
+        else reject(new Error("Falha ao converter imagem"));
+      }, outputType, outputQuality);
+    });
+
+    const ext = outputType === "image/png" ? "png" : "jpg";
+    return new File([blob], `upload.${ext}`, { type: outputType });
+  }catch(e){
+    return file;
+  }
+}
+
 function dataURLToFile(dataUrl, filename){
   const parts = String(dataUrl || "").split(",");
   if(parts.length < 2) return null;
@@ -2598,7 +2664,8 @@ if(crestAddBtn && crestManualInput){
   crestManualInput.addEventListener("change", async ()=>{
     if(!crestManualInput.files || crestManualInput.files.length === 0) return;
     try{
-      const dataUrl = await readFileAsDataURL(crestManualInput.files[0]);
+      const normalizedFile = await normalizeImageFile("crestManual", crestManualInput.files[0]);
+      const dataUrl = await readFileAsDataURL(normalizedFile);
       localStorage.setItem(CREST_KEY, dataUrl);
       setCrestUI(dataUrl);
     }catch(e){}
@@ -3077,6 +3144,11 @@ function openCrop(inputId, file){
     clampOffsets();
     drawCrop();
   };
+
+  crop.img.onerror = () => {
+    alert("Essa imagem não abriu no recorte. Tente outra imagem ou salve ela como JPG/PNG e envie novamente.");
+    closeCrop();
+  };
 }
 
 function closeCrop(){
@@ -3483,42 +3555,19 @@ function hookCropOnInputs(){
     const input = document.getElementById(id);
     if(!input) return;
 
-    input.addEventListener("change", ()=>{
+    input.addEventListener("change", async ()=>{
       if(crop.bypassNextChange[id]){
         crop.bypassNextChange[id] = false;
         return;
       }
       if(!input.files || input.files.length === 0) return;
-      const file = input.files[0];
 
-      const img = new Image();
-      const url = URL.createObjectURL(file);
-      img.src = url;
-
-      img.onload = async () => {
-        const max = 1200;
-        let w = img.width;
-        let h = img.height;
-
-        if(w > max || h > max){
-          const scale = Math.min(max / w, max / h);
-          w = Math.round(w * scale);
-          h = Math.round(h * scale);
-        }
-
-        const canvas = document.createElement("canvas");
-        canvas.width = w;
-        canvas.height = h;
-
-        const ctx = canvas.getContext("2d");
-        ctx.drawImage(img, 0, 0, w, h);
-
-        const blob = await new Promise(r => canvas.toBlob(r, "image/jpeg", 0.85));
-        const compressedFile = new File([blob], "img.jpg", { type:"image/jpeg" });
-
-        openCrop(id, compressedFile);
-        URL.revokeObjectURL(url);
-      };
+      try{
+        const normalizedFile = await normalizeImageFile(id, input.files[0]);
+        openCrop(id, normalizedFile);
+      }catch(e){
+        openCrop(id, input.files[0]);
+      }
     });
   });
 }
