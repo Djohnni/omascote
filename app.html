@@ -2612,7 +2612,10 @@ function bindPlusUpload(inputId, chosenId){
   const btn = document.querySelector(`.filePlus[data-file-for="${inputId}"]`);
   if(!input || !chosen || !btn) return;
 
-  const openPicker = () => input.click();
+  const openPicker = () => {
+    input.value = "";
+    input.click();
+  };
 
   btn.addEventListener("click", openPicker);
   btn.addEventListener("keydown", (e)=>{
@@ -3895,6 +3898,7 @@ document.getElementById("btnExcluirEscalacao")?.addEventListener("click", clearE
 </script>
 </body>
 </html>
+
 
 
 
