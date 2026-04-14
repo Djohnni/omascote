@@ -2214,9 +2214,9 @@ const PRODUCTS = {
     labels: {
       hora: "Campeonato / competição",
       data: "Frase na imagem",
-      esc1: "Imagem do jogo",
-      esc2: "Escudo / logo do time",
-      mascote: "Escudo do adversário (opcional)"
+      esc1: "Escudo do seu time",
+      esc2: "Escudo do adversário",
+      mascote: "Imagem do jogo (opcional)"
     },
     placeholders: {
       hora: "Ex: Campeonato municipal",
@@ -3772,7 +3772,7 @@ document.getElementById("pedidoForm").addEventListener("submit", async (e)=>{
 
   const pats = document.getElementById("patrocinadores").files;
   for (const file of pats) {
-    fd.append("patrocinadores", file);
+    fd.append("patrocinadores_raw", file);
   }
 
   try{
@@ -3976,6 +3976,7 @@ document.getElementById("btnExcluirEscalacao")?.addEventListener("click", clearE
 </script>
 </body>
 </html>
+
 
 
 
