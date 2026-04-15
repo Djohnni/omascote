@@ -2021,7 +2021,7 @@
 
             <div class="field-mascote full optionalField" data-optional-field="mascote">
               <button type="button" class="optionalToggle" data-optional-toggle="mascote">
-                <span class="optionalToggleText" id="labelMascote">Imagem principal (opcional)</span>
+                <span class="optionalToggleText" id="labelMascote">Foto do jogo / do time (opcional)</span>
                 <span class="optionalToggleIcon">▼</span>
               </button>
               <div class="optionalContent" data-optional-content="mascote">
@@ -2046,7 +2046,7 @@
                 <div class="filePlus" data-file-for="escudo1" tabindex="0" role="button" aria-label="Enviar arquivo 1">
                   <div class="left">
                     <div class="name"></div>
-                    <div class="chosen placeholderLike" id="chosen_escudo1">Escudo / logo do time *</div>
+                    <div class="chosen placeholderLike" id="chosen_escudo1">Escudo / logo do time principal *</div>
                   </div>
                   <div class="plus">+</div>
                 </div>
@@ -2055,7 +2055,7 @@
 
             <div class="field-esc2 optionalField" data-optional-field="esc2">
               <button type="button" class="optionalToggle" data-optional-toggle="esc2">
-                <span class="optionalToggleText" id="labelEsc2">Imagem do jogo</span>
+                <span class="optionalToggleText" id="labelEsc2">Escudo / logo do time adversário (opcional)</span>
                 <span class="optionalToggleIcon">▼</span>
               </button>
               <div class="optionalContent" data-optional-content="esc2">
@@ -2063,7 +2063,7 @@
                 <div class="filePlus" data-file-for="escudo2" tabindex="0" role="button" aria-label="Enviar arquivo 2">
                   <div class="left">
                     <div class="name"></div>
-                    <div class="chosen placeholderLike" id="chosen_escudo2">Imagem do jogo *</div>
+                    <div class="chosen placeholderLike" id="chosen_escudo2">Escudo / logo do time adversário</div>
                   </div>
                   <div class="plus">+</div>
                 </div>
@@ -2209,14 +2209,14 @@ const PRODUCTS = {
   resultado: {
     mode: "resultado",
     title: "Resultado do jogo",
-    hint: "Envie a competição, a imagem da partida, os escudos, o placar e a frase para montar a arte pós-jogo.",
+    hint: "Envie a competição, a foto do jogo, os escudos dos dois times, o placar e a frase para montar a arte pós-jogo.",
     flyerTipo: "",
     labels: {
       hora: "Campeonato / competição",
       data: "Frase na imagem",
-      esc1: "Imagem do jogo",
-      esc2: "Escudo / logo do time",
-      mascote: "Escudo do adversário (opcional)"
+      esc1: "Escudo / logo do time principal",
+      esc2: "Escudo / logo do time adversário (opcional)",
+      mascote: "Foto do jogo / do time (opcional)"
     },
     placeholders: {
       hora: "Ex: Campeonato municipal",
@@ -2379,10 +2379,10 @@ function updateChosenPlaceholders(product){
   if(chosenEscudo1 && (!escudo1Input.files || escudo1Input.files.length === 0)){
     chosenEscudo1.innerHTML = getSavedEscudo1Exists()
       ? `<strong style="color:#127a43;">Escudo salvo ✓</strong>`
-      : (product?.labels?.esc1 || "Escudo / logo do time");
+      : (product?.labels?.esc1 || "Escudo / logo do time principal");
   }
   if(chosenEscudo2 && (!escudo2Input.files || escudo2Input.files.length === 0)){
-    chosenEscudo2.textContent = product?.labels?.esc2 || "Imagem do jogo *";
+    chosenEscudo2.textContent = product?.labels?.esc2 || "Escudo / logo do time adversário";
   }
   if(chosenPatro && (!patroInput.files || patroInput.files.length === 0)){
     chosenPatro.textContent = product?.labels?.patro || "Nenhum arquivo";
@@ -2460,7 +2460,7 @@ function readFileAsDataURL(file){
 async function normalizeImageFile(inputId, file){
   if(!file) return file;
 
-  const isEscudo = inputId === "escudo1";
+  const isEscudo = inputId === "escudo1" || inputId === "escudo2";
   const outputType = isEscudo ? "image/png" : "image/jpeg";
   const outputQuality = isEscudo ? undefined : 0.9;
   const maxSide = isEscudo ? 1400 : 1600;
@@ -2698,9 +2698,9 @@ function bindPlusUpload(inputId, chosenId){
       if(inputId === "escudo1"){
         chosen.innerHTML = getSavedEscudo1Exists()
           ? `<strong style="color:#127a43;">Escudo salvo ✓</strong>`
-          : (currentProduct?.labels?.esc1 || "Escudo / logo do time");
+          : (currentProduct?.labels?.esc1 || "Escudo / logo do time principal");
       }
-      else if(inputId === "escudo2") chosen.textContent = currentProduct?.labels?.esc2 || "Imagem do jogo";
+      else if(inputId === "escudo2") chosen.textContent = currentProduct?.labels?.esc2 || "Escudo / logo do time adversário";
       else if(inputId === "mascote") chosen.textContent = currentProduct?.labels?.mascote || "Nenhum arquivo";
       else if(inputId === "patrocinadores") chosen.textContent = currentProduct?.labels?.patro || "Nenhum arquivo";
       else chosen.textContent = "Nenhum arquivo";
@@ -2868,7 +2868,7 @@ function arrangeFieldSequence(productKey){
   };
 
   const sequenceMap = {
-    resultado: ["placar", "esc1", "optionalDivider", "hora", "data", "esc2", "artilheiros", "mascote", "submit", "msg"],
+    resultado: ["placar", "esc1", "esc2", "mascote", "optionalDivider", "hora", "data", "artilheiros", "submit", "msg"],
     escalacao: ["data", "esc1", "artilheiros", "optionalDivider", "esc2", "submit", "msg"],
     contratacao: ["rodada", "data", "esc1", "esc2", "optionalDivider", "hora", "submit", "msg"],
     proximo_jogo: ["data", "hora", "esc1", "optionalDivider", "rodada", "esc2", "arena", "submit", "msg"],
@@ -3502,7 +3502,7 @@ async function exportCropFile(){
   ctx.drawImage(crop.img, sx, sy, sw, sh, 0, 0, outW, outH);
 
   const blob = await new Promise(resolve => out.toBlob(resolve, "image/png"));
-  const name = (crop.inputId === "escudo1") ? "escudo.png" : "imagem.png";
+  const name = (crop.inputId === "escudo1" || crop.inputId === "escudo2") ? "escudo.png" : "imagem.png";
   return new File([blob], name, { type:"image/png" });
 }
 
@@ -3614,8 +3614,8 @@ function limparCamposAposEnviar(){
   const currentProduct = PRODUCTS[selectedProductInput.value];
 
   const resetTexts = {
-    chosen_mascote: currentProduct?.labels?.mascote || "Nenhum arquivo",
-    chosen_escudo2: currentProduct?.labels?.esc2 || "Imagem do jogo",
+    chosen_mascote: currentProduct?.labels?.mascote || "Foto do jogo / do time",
+    chosen_escudo2: currentProduct?.labels?.esc2 || "Escudo / logo do time adversário",
     chosen_patrocinadores: currentProduct?.labels?.patro || "Nenhum arquivo"
   };
 
@@ -3628,7 +3628,7 @@ function limparCamposAposEnviar(){
   if(escudo1Chosen){
     escudo1Chosen.innerHTML = getSavedEscudo1Exists()
       ? `<strong style="color:#127a43;">Escudo salvo ✓</strong>`
-      : (currentProduct?.labels?.esc1 || "Escudo / logo do time *");
+      : (currentProduct?.labels?.esc1 || "Escudo / logo do time principal *");
   }
 
   if(currentProduct?.showPlayerList){
@@ -3976,6 +3976,8 @@ document.getElementById("btnExcluirEscalacao")?.addEventListener("click", clearE
 </script>
 </body>
 </html>
+
+
 
 
 
