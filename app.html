@@ -3638,6 +3638,12 @@ function limparCamposAposEnviar(){
 
 document.getElementById("pedidoForm").addEventListener("submit", async (e)=>{
   e.preventDefault();
+  if(!window.confirmStepDone){
+    window.confirmStepDone = true;
+    abrirConfirmacao();
+    return;
+  }
+  window.confirmStepDone = false;
 
   const productKey = selectedProductInput.value;
   const product = PRODUCTS[productKey];
@@ -3974,8 +3980,61 @@ document.getElementById("addArtilheiroBtn")?.addEventListener("click", ()=>{
 document.getElementById("btnSalvarEscalacao")?.addEventListener("click", saveEscalacaoPlayersToLocal);
 document.getElementById("btnExcluirEscalacao")?.addEventListener("click", clearEscalacaoPlayersFromLocal);
 </script>
+  <div id="confirmModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:9999;align-items:center;justify-content:center;">
+    <div style="background:#fff;border-radius:16px;padding:20px;max-width:400px;width:90%;text-align:center;">
+      <h3 style="margin-bottom:10px;color:#000;">Verifique antes de enviar</h3>
+      <p style="font-size:14px;color:#333;">Confira os dados e selecione qual é o seu time</p>
+
+      <div style="display:flex;justify-content:space-around;margin:15px 0;">
+        <div onclick="selectMeuTime(1)" style="cursor:pointer;">
+          <img id="miniEscudo1" style="width:60px;height:60px;object-fit:contain;"><br>
+          <button type="button">Esse é meu time</button>
+        </div>
+
+        <div onclick="selectMeuTime(2)" style="cursor:pointer;">
+          <img id="miniEscudo2" style="width:60px;height:60px;object-fit:contain;"><br>
+          <button type="button">Esse é meu time</button>
+        </div>
+      </div>
+
+      <button onclick="confirmarEnvio()" style="margin-top:10px;">Enviar</button>
+    </div>
+  </div>
+
+<script>
+let timeSelecionado = null;
+
+function abrirConfirmacao(){
+  const esc1 = document.getElementById("escudo1").files[0];
+  const esc2 = document.getElementById("escudo2").files[0];
+
+  if(esc1){
+    document.getElementById("miniEscudo1").src = URL.createObjectURL(esc1);
+  }
+  if(esc2){
+    document.getElementById("miniEscudo2").src = URL.createObjectURL(esc2);
+  }
+
+  document.getElementById("confirmModal").style.display = "flex";
+}
+
+function selectMeuTime(n){
+  timeSelecionado = n;
+}
+
+function confirmarEnvio(){
+  if(!timeSelecionado){
+    alert("Selecione seu time");
+    return;
+  }
+  document.getElementById("confirmModal").style.display = "none";
+  document.getElementById("pedidoForm").submit();
+}
+</script>
+
 </body>
 </html>
+
 
 
 
