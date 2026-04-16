@@ -718,6 +718,67 @@
     .field-submit{grid-area:submit}
     .field-msg{grid-area:msg}
 
+    .meuTimeSelector{
+      display:none;
+      width:min(760px, 100%);
+      margin:0 auto 6px;
+      padding:16px;
+      border-radius:20px;
+      border:1px solid #d9dfeb;
+      background:#ffffff;
+      box-shadow:0 2px 10px rgba(140,160,190,.08);
+    }
+
+    .meuTimeSelector.show{
+      display:block;
+    }
+
+    .meuTimeTitle{
+      text-align:center;
+      font-size:14px;
+      font-weight:900;
+      color:#24543f;
+      margin-bottom:12px;
+    }
+
+    .meuTimeOptions{
+      display:flex;
+      gap:12px;
+      justify-content:center;
+      flex-wrap:wrap;
+    }
+
+    .meuTimeCard{
+      width:140px;
+      border:1px solid #d9dfeb;
+      border-radius:16px;
+      padding:12px;
+      background:#fff;
+      cursor:pointer;
+      text-align:center;
+      box-shadow:none;
+    }
+
+    .meuTimeCard.active{
+      border-color:#1b9b51;
+      box-shadow:0 0 0 3px rgba(46,204,113,.18);
+    }
+
+    .meuTimeThumb{
+      width:64px;
+      height:64px;
+      object-fit:contain;
+      display:block;
+      margin:0 auto 8px;
+    }
+
+    .meuTimeLabel{
+      font-size:12px;
+      font-weight:800;
+      color:#334155;
+      line-height:1.25;
+    }
+
     label{
       display:block;
       font-size:12px;
@@ -2092,6 +2153,23 @@
               <label class="optionalDividerTitle">Opcional</label>
             </div>
 
+            <input type="hidden" id="escudoMeuTimeEscolhido" value="">
+
+            <div class="full meuTimeSelector" id="meuTimeSelector">
+              <div class="meuTimeTitle">Qual é o escudo do seu time?</div>
+              <div class="meuTimeOptions">
+                <button type="button" class="meuTimeCard" id="meuTimeCard1" data-escudo-meu-time="1">
+                  <img class="meuTimeThumb" id="meuTimeThumb1" alt="Escudo 1" style="display:none;">
+                  <div class="meuTimeLabel" id="meuTimeLabel1">Escudo 1</div>
+                </button>
+
+                <button type="button" class="meuTimeCard" id="meuTimeCard2" data-escudo-meu-time="2">
+                  <img class="meuTimeThumb" id="meuTimeThumb2" alt="Escudo 2" style="display:none;">
+                  <div class="meuTimeLabel" id="meuTimeLabel2">Escudo 2</div>
+                </button>
+              </div>
+            </div>
+
             <div class="field-submit full submitRow">
               <button class="btnGreen" id="btnEnviar" type="submit">Criar minha arte 🚀</button>
             </div>
@@ -2722,6 +2800,69 @@ bindPlusUpload("mascote", "chosen_mascote");
 bindPlusUpload("escudo1", "chosen_escudo1");
 bindPlusUpload("escudo2", "chosen_escudo2");
 bindPlusUpload("patrocinadores", "chosen_patrocinadores");
+
+function getEscudoFileForMeuTime(opcao){
+  let escudo1File = document.getElementById("escudo1").files[0];
+  const escudo2File = document.getElementById("escudo2").files[0];
+
+  if (!escudo1File) escudo1File = getSavedEscudo1File();
+
+  if (String(opcao) === "1") return escudo1File || null;
+  if (String(opcao) === "2") return escudo2File || null;
+  return null;
+}
+
+async function preencherPreviewMeuTime(){
+  const hidden = document.getElementById("escudoMeuTimeEscolhido");
+  const selector = document.getElementById("meuTimeSelector");
+  const thumb1 = document.getElementById("meuTimeThumb1");
+  const thumb2 = document.getElementById("meuTimeThumb2");
+  const label1 = document.getElementById("meuTimeLabel1");
+  const label2 = document.getElementById("meuTimeLabel2");
+  const time1 = document.getElementById("timePrincipal")?.value?.trim() || "Escudo 1";
+  const time2 = document.getElementById("timeAdv")?.value?.trim() || "Escudo 2";
+  const file1 = getEscudoFileForMeuTime("1");
+  const file2 = getEscudoFileForMeuTime("2");
+
+  if(!selector || !hidden) return;
+
+  if(!file1 || !file2){
+    selector.classList.remove("show");
+    hidden.value = "";
+    document.querySelectorAll("[data-escudo-meu-time]").forEach(btn => btn.classList.remove("active"));
+    return;
+  }
+
+  selector.classList.add("show");
+  label1.textContent = time1;
+  label2.textContent = time2;
+
+  if(file1){
+    thumb1.src = await readFileAsDataURL(file1);
+    thumb1.style.display = "block";
+  }
+
+  if(file2){
+    thumb2.src = await readFileAsDataURL(file2);
+    thumb2.style.display = "block";
+  }
+
+  document.querySelectorAll("[data-escudo-meu-time]").forEach(btn => {
+    btn.classList.toggle("active", btn.dataset.escudoMeuTime === hidden.value);
+  });
+}
+
+document.querySelectorAll("[data-escudo-meu-time]").forEach((btn)=>{
+  btn.addEventListener("click", ()=>{
+    const hidden = document.getElementById("escudoMeuTimeEscolhido");
+    if(!hidden) return;
+    hidden.value = btn.dataset.escudoMeuTime || "";
+    document.querySelectorAll("[data-escudo-meu-time]").forEach(el => {
+      el.classList.toggle("active", el === btn);
+    });
+    msgPedidoEl.textContent = "";
+  });
+});
 
 function applyLocal(){
   const nome = localStorage.getItem("omascote_nome_time") || "";
@@ -3634,22 +3775,33 @@ function limparCamposAposEnviar(){
   if(currentProduct?.showPlayerList){
     fillEscalacaoPlayersUI(loadSavedEscalacaoPlayers());
   }
+
+  const hiddenMeuTime = document.getElementById("escudoMeuTimeEscolhido");
+  const selectorMeuTime = document.getElementById("meuTimeSelector");
+  if(hiddenMeuTime) hiddenMeuTime.value = "";
+  if(selectorMeuTime) selectorMeuTime.classList.remove("show");
+  document.querySelectorAll("[data-escudo-meu-time]").forEach(btn => btn.classList.remove("active"));
 }
 
 document.getElementById("pedidoForm").addEventListener("submit", async (e)=>{
   e.preventDefault();
-  if(!window.confirmStepDone){
-    window.confirmStepDone = true;
-    abrirConfirmacao();
-    return;
-  }
-  window.confirmStepDone = false;
 
   const productKey = selectedProductInput.value;
   const product = PRODUCTS[productKey];
 
   if(!product){
     msgPedidoEl.textContent = "Escolha primeiro o tipo de arte.";
+    return;
+  }
+
+  const escudoMeuTimeEscolhido = document.getElementById("escudoMeuTimeEscolhido")?.value || "";
+  const escudo1Selecionado = !!getEscudoFileForMeuTime("1");
+  const escudo2Selecionado = !!getEscudoFileForMeuTime("2");
+
+  if(escudo1Selecionado && escudo2Selecionado && !escudoMeuTimeEscolhido){
+    await preencherPreviewMeuTime();
+    msgPedidoEl.textContent = "Selecione qual é o escudo do seu time para continuar.";
+    document.getElementById("meuTimeSelector")?.scrollIntoView({ behavior:"smooth", block:"center" });
     return;
   }
 
@@ -3775,6 +3927,9 @@ document.getElementById("pedidoForm").addEventListener("submit", async (e)=>{
 
   if (escudo1File) fd.append("escudo1", escudo1File);
   if (escudo2File) fd.append("escudo2", escudo2File);
+
+  const escudoMeuTimeFile = getEscudoFileForMeuTime(document.getElementById("escudoMeuTimeEscolhido")?.value || "");
+  if (escudoMeuTimeFile) fd.append("escudo_meu_time", escudoMeuTimeFile);
 
   const pats = document.getElementById("patrocinadores").files;
   for (const file of pats) {
@@ -3979,59 +4134,12 @@ document.getElementById("addArtilheiroBtn")?.addEventListener("click", ()=>{
 
 document.getElementById("btnSalvarEscalacao")?.addEventListener("click", saveEscalacaoPlayersToLocal);
 document.getElementById("btnExcluirEscalacao")?.addEventListener("click", clearEscalacaoPlayersFromLocal);
+
+document.getElementById("escudo1")?.addEventListener("change", preencherPreviewMeuTime);
+document.getElementById("escudo2")?.addEventListener("change", preencherPreviewMeuTime);
+document.getElementById("timePrincipal")?.addEventListener("input", preencherPreviewMeuTime);
+document.getElementById("timeAdv")?.addEventListener("input", preencherPreviewMeuTime);
 </script>
-  <div id="confirmModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:9999;align-items:center;justify-content:center;">
-    <div style="background:#fff;border-radius:16px;padding:20px;max-width:400px;width:90%;text-align:center;">
-      <h3 style="margin-bottom:10px;color:#000;">Verifique antes de enviar</h3>
-      <p style="font-size:14px;color:#333;">Confira os dados e selecione qual é o seu time</p>
-
-      <div style="display:flex;justify-content:space-around;margin:15px 0;">
-        <div onclick="selectMeuTime(1)" style="cursor:pointer;">
-          <img id="miniEscudo1" style="width:60px;height:60px;object-fit:contain;"><br>
-          <button type="button">Esse é meu time</button>
-        </div>
-
-        <div onclick="selectMeuTime(2)" style="cursor:pointer;">
-          <img id="miniEscudo2" style="width:60px;height:60px;object-fit:contain;"><br>
-          <button type="button">Esse é meu time</button>
-        </div>
-      </div>
-
-      <button onclick="confirmarEnvio()" style="margin-top:10px;">Enviar</button>
-    </div>
-  </div>
-
-<script>
-let timeSelecionado = null;
-
-function abrirConfirmacao(){
-  const esc1 = document.getElementById("escudo1").files[0];
-  const esc2 = document.getElementById("escudo2").files[0];
-
-  if(esc1){
-    document.getElementById("miniEscudo1").src = URL.createObjectURL(esc1);
-  }
-  if(esc2){
-    document.getElementById("miniEscudo2").src = URL.createObjectURL(esc2);
-  }
-
-  document.getElementById("confirmModal").style.display = "flex";
-}
-
-function selectMeuTime(n){
-  timeSelecionado = n;
-}
-
-function confirmarEnvio(){
-  if(!timeSelecionado){
-    alert("Selecione seu time");
-    return;
-  }
-  document.getElementById("confirmModal").style.display = "none";
-  document.getElementById("pedidoForm").submit();
-}
-</script>
-
 </body>
 </html>
 
