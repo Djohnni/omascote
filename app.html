@@ -718,67 +718,6 @@
     .field-submit{grid-area:submit}
     .field-msg{grid-area:msg}
 
-    .meuTimeSelector{
-      display:none;
-      width:min(760px, 100%);
-      margin:0 auto 6px;
-      padding:16px;
-      border-radius:20px;
-      border:1px solid #d9dfeb;
-      background:#ffffff;
-      box-shadow:0 2px 10px rgba(140,160,190,.08);
-    }
-
-    .meuTimeSelector.show{
-      display:block;
-    }
-
-    .meuTimeTitle{
-      text-align:center;
-      font-size:14px;
-      font-weight:900;
-      color:#24543f;
-      margin-bottom:12px;
-    }
-
-    .meuTimeOptions{
-      display:flex;
-      gap:12px;
-      justify-content:center;
-      flex-wrap:wrap;
-    }
-
-    .meuTimeCard{
-      width:140px;
-      border:1px solid #d9dfeb;
-      border-radius:16px;
-      padding:12px;
-      background:#fff;
-      cursor:pointer;
-      text-align:center;
-      box-shadow:none;
-    }
-
-    .meuTimeCard.active{
-      border-color:#1b9b51;
-      box-shadow:0 0 0 3px rgba(46,204,113,.18);
-    }
-
-    .meuTimeThumb{
-      width:64px;
-      height:64px;
-      object-fit:contain;
-      display:block;
-      margin:0 auto 8px;
-    }
-
-    .meuTimeLabel{
-      font-size:12px;
-      font-weight:800;
-      color:#334155;
-      line-height:1.25;
-    }
-
     label{
       display:block;
       font-size:12px;
@@ -1568,6 +1507,73 @@
       box-shadow:none;
     }
 
+    .meuTimeModalBody{
+      padding:18px 16px 20px;
+    }
+
+    .meuTimeModalTitle{
+      margin:0 0 6px;
+      text-align:center;
+      font-size:18px;
+      font-weight:900;
+      color:#fff;
+    }
+
+    .meuTimeModalSub{
+      margin:0 0 16px;
+      text-align:center;
+      font-size:13px;
+      color:rgba(255,255,255,.78);
+      font-weight:700;
+    }
+
+    .meuTimeOptions{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:12px;
+    }
+
+    .meuTimeOption{
+      border:1px solid rgba(255,255,255,.14);
+      background:rgba(255,255,255,.04);
+      border-radius:18px;
+      padding:14px 10px 12px;
+      box-shadow:none;
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      gap:10px;
+    }
+
+    .meuTimeThumb{
+      width:82px;
+      height:82px;
+      object-fit:contain;
+      display:block;
+      background:rgba(255,255,255,.04);
+      border-radius:14px;
+      padding:8px;
+    }
+
+    .meuTimeNome{
+      font-size:13px;
+      line-height:1.2;
+      font-weight:900;
+      color:#fff;
+      text-align:center;
+      word-break:break-word;
+    }
+
+    .meuTimeEscolher{
+      width:100%;
+      border-radius:14px;
+      padding:12px 10px;
+      background:linear-gradient(135deg, #2ecc71, #1b9b51);
+      color:#fff;
+      box-shadow:none;
+      font-size:13px;
+    }
+
     @media (max-width:900px){
       .selectorStage{
         min-height:auto;
@@ -2153,23 +2159,6 @@
               <label class="optionalDividerTitle">Opcional</label>
             </div>
 
-            <input type="hidden" id="escudoMeuTimeEscolhido" value="">
-
-            <div class="full meuTimeSelector" id="meuTimeSelector">
-              <div class="meuTimeTitle">Qual é o escudo do seu time?</div>
-              <div class="meuTimeOptions">
-                <button type="button" class="meuTimeCard" id="meuTimeCard1" data-escudo-meu-time="1">
-                  <img class="meuTimeThumb" id="meuTimeThumb1" alt="Escudo 1" style="display:none;">
-                  <div class="meuTimeLabel" id="meuTimeLabel1">Escudo 1</div>
-                </button>
-
-                <button type="button" class="meuTimeCard" id="meuTimeCard2" data-escudo-meu-time="2">
-                  <img class="meuTimeThumb" id="meuTimeThumb2" alt="Escudo 2" style="display:none;">
-                  <div class="meuTimeLabel" id="meuTimeLabel2">Escudo 2</div>
-                </button>
-              </div>
-            </div>
-
             <div class="field-submit full submitRow">
               <button class="btnGreen" id="btnEnviar" type="submit">Criar minha arte 🚀</button>
             </div>
@@ -2211,6 +2200,34 @@
           <div id="historicoLista" style="display:grid; gap:12px;"></div>
         </div>
 
+      </div>
+    </div>
+  </div>
+
+  <div class="modalMask" id="meuTimeModal" aria-hidden="true">
+    <div class="modalCard" role="dialog" aria-modal="true" aria-label="Selecionar meu time">
+      <div class="modalTop">
+        <div class="modalTitle">Selecionar meu time</div>
+        <button class="modalClose btnGhost" id="meuTimeModalCloseBtn" type="button">✕</button>
+      </div>
+
+      <div class="meuTimeModalBody">
+        <div class="meuTimeModalTitle">Qual dos dois é o seu time?</div>
+        <div class="meuTimeModalSub">Selecione um escudo para continuar o envio.</div>
+
+        <div class="meuTimeOptions">
+          <div class="meuTimeOption">
+            <img id="meuTimeEscudo1Img" class="meuTimeThumb" alt="Escudo 1">
+            <div class="meuTimeNome" id="meuTimeEscudo1Nome">Escudo 1</div>
+            <button type="button" class="meuTimeEscolher" onclick="selecionarEscudoMeuTime(1)">Esse é meu time</button>
+          </div>
+
+          <div class="meuTimeOption">
+            <img id="meuTimeEscudo2Img" class="meuTimeThumb" alt="Escudo 2">
+            <div class="meuTimeNome" id="meuTimeEscudo2Nome">Escudo 2</div>
+            <button type="button" class="meuTimeEscolher" onclick="selecionarEscudoMeuTime(2)">Esse é meu time</button>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -2801,68 +2818,52 @@ bindPlusUpload("escudo1", "chosen_escudo1");
 bindPlusUpload("escudo2", "chosen_escudo2");
 bindPlusUpload("patrocinadores", "chosen_patrocinadores");
 
-function getEscudoFileForMeuTime(opcao){
+let escudoMeuTimeSelecionado = "";
+
+function getEscudo1AtualFile(){
   let escudo1File = document.getElementById("escudo1").files[0];
-  const escudo2File = document.getElementById("escudo2").files[0];
-
   if (!escudo1File) escudo1File = getSavedEscudo1File();
-
-  if (String(opcao) === "1") return escudo1File || null;
-  if (String(opcao) === "2") return escudo2File || null;
-  return null;
+  return escudo1File || null;
 }
 
-async function preencherPreviewMeuTime(){
-  const hidden = document.getElementById("escudoMeuTimeEscolhido");
-  const selector = document.getElementById("meuTimeSelector");
-  const thumb1 = document.getElementById("meuTimeThumb1");
-  const thumb2 = document.getElementById("meuTimeThumb2");
-  const label1 = document.getElementById("meuTimeLabel1");
-  const label2 = document.getElementById("meuTimeLabel2");
-  const time1 = document.getElementById("timePrincipal")?.value?.trim() || "Escudo 1";
-  const time2 = document.getElementById("timeAdv")?.value?.trim() || "Escudo 2";
-  const file1 = getEscudoFileForMeuTime("1");
-  const file2 = getEscudoFileForMeuTime("2");
-
-  if(!selector || !hidden) return;
-
-  if(!file1 || !file2){
-    selector.classList.remove("show");
-    hidden.value = "";
-    document.querySelectorAll("[data-escudo-meu-time]").forEach(btn => btn.classList.remove("active"));
-    return;
-  }
-
-  selector.classList.add("show");
-  label1.textContent = time1;
-  label2.textContent = time2;
-
-  if(file1){
-    thumb1.src = await readFileAsDataURL(file1);
-    thumb1.style.display = "block";
-  }
-
-  if(file2){
-    thumb2.src = await readFileAsDataURL(file2);
-    thumb2.style.display = "block";
-  }
-
-  document.querySelectorAll("[data-escudo-meu-time]").forEach(btn => {
-    btn.classList.toggle("active", btn.dataset.escudoMeuTime === hidden.value);
-  });
+function getEscudo2AtualFile(){
+  return document.getElementById("escudo2").files[0] || null;
 }
 
-document.querySelectorAll("[data-escudo-meu-time]").forEach((btn)=>{
-  btn.addEventListener("click", ()=>{
-    const hidden = document.getElementById("escudoMeuTimeEscolhido");
-    if(!hidden) return;
-    hidden.value = btn.dataset.escudoMeuTime || "";
-    document.querySelectorAll("[data-escudo-meu-time]").forEach(el => {
-      el.classList.toggle("active", el === btn);
-    });
-    msgPedidoEl.textContent = "";
-  });
-});
+function fecharModalMeuTime(){
+  const modal = document.getElementById("meuTimeModal");
+  if(modal){
+    modal.classList.remove("open");
+    modal.setAttribute("aria-hidden", "true");
+  }
+}
+
+async function abrirModalMeuTime(){
+  const modal = document.getElementById("meuTimeModal");
+  const escudo1File = getEscudo1AtualFile();
+  const escudo2File = getEscudo2AtualFile();
+
+  if(!modal || !escudo1File || !escudo2File) return;
+
+  const img1 = document.getElementById("meuTimeEscudo1Img");
+  const img2 = document.getElementById("meuTimeEscudo2Img");
+  const nome1 = document.getElementById("meuTimeEscudo1Nome");
+  const nome2 = document.getElementById("meuTimeEscudo2Nome");
+
+  if(img1) img1.src = await readFileAsDataURL(escudo1File);
+  if(img2) img2.src = await readFileAsDataURL(escudo2File);
+  if(nome1) nome1.textContent = document.getElementById("timePrincipal")?.value?.trim() || "Escudo 1";
+  if(nome2) nome2.textContent = document.getElementById("timeAdv")?.value?.trim() || "Escudo 2";
+
+  modal.classList.add("open");
+  modal.setAttribute("aria-hidden", "false");
+}
+
+async function selecionarEscudoMeuTime(indice){
+  escudoMeuTimeSelecionado = String(indice);
+  fecharModalMeuTime();
+  document.getElementById("pedidoForm")?.requestSubmit();
+}
 
 function applyLocal(){
   const nome = localStorage.getItem("omascote_nome_time") || "";
@@ -3730,6 +3731,8 @@ function limparArtilheirosUI(){
 }
 
 function limparCamposAposEnviar(){
+  escudoMeuTimeSelecionado = "";
+  fecharModalMeuTime();
   document.getElementById("rodada").value = "";
   document.getElementById("dataJogo").value = "";
   document.getElementById("hora").value = "";
@@ -3775,12 +3778,6 @@ function limparCamposAposEnviar(){
   if(currentProduct?.showPlayerList){
     fillEscalacaoPlayersUI(loadSavedEscalacaoPlayers());
   }
-
-  const hiddenMeuTime = document.getElementById("escudoMeuTimeEscolhido");
-  const selectorMeuTime = document.getElementById("meuTimeSelector");
-  if(hiddenMeuTime) hiddenMeuTime.value = "";
-  if(selectorMeuTime) selectorMeuTime.classList.remove("show");
-  document.querySelectorAll("[data-escudo-meu-time]").forEach(btn => btn.classList.remove("active"));
 }
 
 document.getElementById("pedidoForm").addEventListener("submit", async (e)=>{
@@ -3794,14 +3791,12 @@ document.getElementById("pedidoForm").addEventListener("submit", async (e)=>{
     return;
   }
 
-  const escudoMeuTimeEscolhido = document.getElementById("escudoMeuTimeEscolhido")?.value || "";
-  const escudo1Selecionado = !!getEscudoFileForMeuTime("1");
-  const escudo2Selecionado = !!getEscudoFileForMeuTime("2");
+  const escudo1AtualFile = getEscudo1AtualFile();
+  const escudo2AtualFile = getEscudo2AtualFile();
 
-  if(escudo1Selecionado && escudo2Selecionado && !escudoMeuTimeEscolhido){
-    await preencherPreviewMeuTime();
-    msgPedidoEl.textContent = "Selecione qual é o escudo do seu time para continuar.";
-    document.getElementById("meuTimeSelector")?.scrollIntoView({ behavior:"smooth", block:"center" });
+  if(escudo1AtualFile && escudo2AtualFile && !escudoMeuTimeSelecionado){
+    msgPedidoEl.textContent = "";
+    await abrirModalMeuTime();
     return;
   }
 
@@ -3928,7 +3923,7 @@ document.getElementById("pedidoForm").addEventListener("submit", async (e)=>{
   if (escudo1File) fd.append("escudo1", escudo1File);
   if (escudo2File) fd.append("escudo2", escudo2File);
 
-  const escudoMeuTimeFile = getEscudoFileForMeuTime(document.getElementById("escudoMeuTimeEscolhido")?.value || "");
+  const escudoMeuTimeFile = escudoMeuTimeSelecionado === "2" ? escudo2File : escudo1File;
   if (escudoMeuTimeFile) fd.append("escudo_meu_time", escudoMeuTimeFile);
 
   const pats = document.getElementById("patrocinadores").files;
@@ -3948,7 +3943,7 @@ document.getElementById("pedidoForm").addEventListener("submit", async (e)=>{
     const out = await r.json();
 
     if(out.ok){
-      msgPedidoEl.textContent = `✅ Pedido enviado! ID: ${out.pedido_id}`;
+      msgPedidoEl.textContent = "✅ Enviado com sucesso, em minutos estará pronto.";
       limparCamposAposEnviar();
       refreshMe();
       carregarHistorico();
@@ -4134,11 +4129,10 @@ document.getElementById("addArtilheiroBtn")?.addEventListener("click", ()=>{
 
 document.getElementById("btnSalvarEscalacao")?.addEventListener("click", saveEscalacaoPlayersToLocal);
 document.getElementById("btnExcluirEscalacao")?.addEventListener("click", clearEscalacaoPlayersFromLocal);
-
-document.getElementById("escudo1")?.addEventListener("change", preencherPreviewMeuTime);
-document.getElementById("escudo2")?.addEventListener("change", preencherPreviewMeuTime);
-document.getElementById("timePrincipal")?.addEventListener("input", preencherPreviewMeuTime);
-document.getElementById("timeAdv")?.addEventListener("input", preencherPreviewMeuTime);
+document.getElementById("meuTimeModalCloseBtn")?.addEventListener("click", fecharModalMeuTime);
+document.getElementById("meuTimeModal")?.addEventListener("click", (e)=>{
+  if(e.target?.id === "meuTimeModal") fecharModalMeuTime();
+});
 </script>
 </body>
 </html>
