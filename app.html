@@ -2830,10 +2830,10 @@ function configureOptionalSections(productKey){
   }
 
   if(productKey === "proximo_jogo"){
+    lockOpen("rodada");
     lockOpen("data");
     lockOpen("hora");
     lockOpen("esc1");
-    keepClosed("rodada");
     keepClosed("esc2");
     keepClosed("arena");
     return;
@@ -3976,6 +3976,7 @@ document.getElementById("btnExcluirEscalacao")?.addEventListener("click", clearE
 </script>
 </body>
 </html>
+
 
 
 
