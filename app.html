@@ -699,6 +699,18 @@
       display:block;
     }
 
+    body.mode-proximo-jogo .field-placar{
+      display:flex;
+    }
+
+    body.mode-proximo-jogo .field-rodada{
+      display:none !important;
+    }
+
+    body.mode-proximo-jogo .placarGols{
+      display:none;
+    }
+
     body.mode-result .field-rodada,
     body.mode-result .field-arena,
     body.mode-result .field-patro{
@@ -2871,7 +2883,7 @@ function arrangeFieldSequence(productKey){
     resultado: ["placar", "esc1", "esc2", "mascote", "optionalDivider", "hora", "data", "artilheiros", "submit", "msg"],
     escalacao: ["data", "esc1", "artilheiros", "optionalDivider", "mascote", "submit", "msg"],
     contratacao: ["rodada", "data", "esc1", "esc2", "optionalDivider", "hora", "submit", "msg"],
-    proximo_jogo: ["data", "hora", "esc1", "optionalDivider", "rodada", "esc2", "arena", "submit", "msg"],
+    proximo_jogo: ["placar", "data", "hora", "esc1", "optionalDivider", "esc2", "arena", "submit", "msg"],
     patrocinador: ["rodada", "esc1", "patro", "optionalDivider", "data", "submit", "msg"]
   };
 
@@ -2897,13 +2909,14 @@ function selectProduct(productKey){
 
   selectedProductInput.value = productKey;
   document.body.classList.add("modeChosen");
-  document.body.classList.remove("mode-flyer", "mode-result");
+  document.body.classList.remove("mode-flyer", "mode-result", "mode-proximo-jogo");
 
   if(product.mode === "resultado"){
     document.body.classList.add("mode-result");
     document.getElementById("tab_contrat").checked = true;
   } else {
     document.body.classList.add("mode-flyer");
+    if(productKey === "proximo_jogo") document.body.classList.add("mode-proximo-jogo");
     document.getElementById("tab_flyer").checked = true;
     flyerTipoInput.value = product.flyerTipo || "";
   }
@@ -2915,6 +2928,11 @@ function selectProduct(productKey){
   dynamicTitleEl.textContent = product.title;
   dynamicHintEl.textContent = `Para ${product.title}, preciso dessas informações abaixo...`;
   btnEnviar.textContent = "Criar minha arte 🚀";
+
+  const placarTitleEl = document.querySelector(".field-placar .sectionTitle");
+  if(placarTitleEl){
+    placarTitleEl.textContent = productKey === "proximo_jogo" ? "Confronto" : "Placar";
+  }
 
   setText("labelRodada", product.labels?.rodada || "Título da arte");
   setText("labelData", product.labels?.data || "Texto principal");
@@ -2929,6 +2947,16 @@ function selectProduct(productKey){
   setPlaceholder("dataJogo", product.placeholders?.data || "");
   setPlaceholder("hora", product.placeholders?.hora || "");
   setPlaceholder("arena", product.placeholders?.arena || "");
+
+  const timePrincipalEl = document.getElementById("timePrincipal");
+  const timeAdvEl = document.getElementById("timeAdv");
+  const golsTimeEl = document.getElementById("golsTime");
+  const golsAdvEl = document.getElementById("golsAdv");
+
+  if(timePrincipalEl) timePrincipalEl.placeholder = productKey === "proximo_jogo" ? "Time da esquerda" : "Seu time";
+  if(timeAdvEl) timeAdvEl.placeholder = productKey === "proximo_jogo" ? "Time da direita" : "Adversário (opcional)";
+  if(golsTimeEl) golsTimeEl.placeholder = "0";
+  if(golsAdvEl) golsAdvEl.placeholder = "0";
 
   setRequired("escudo1", product.required?.esc1);
   setRequired("escudo2", product.required?.esc2);
@@ -2983,7 +3011,7 @@ mainCreateBtn.addEventListener("click", ()=>{
 
 btnTrocarTipo.addEventListener("click", ()=>{
   selectedProductInput.value = "";
-  document.body.classList.remove("modeChosen", "mode-flyer", "mode-result");
+  document.body.classList.remove("modeChosen", "mode-flyer", "mode-result", "mode-proximo-jogo");
   document.querySelectorAll(".optionBtn").forEach(btn=> btn.classList.remove("active"));
   updateProductFieldVisibility(null);
   configureOptionalSections("");
@@ -3678,6 +3706,16 @@ document.getElementById("pedidoForm").addEventListener("submit", async (e)=>{
   if(!resultadoFinal){
     if(productKey === "escalacao"){
       resultadoFinal = document.getElementById("dataJogo").value || "";
+    }else if(productKey === "proximo_jogo"){
+      if(t1 && t2){
+        resultadoFinal = `${t1} x ${t2}`;
+      }else if(t1){
+        resultadoFinal = t1;
+      }else if(t2){
+        resultadoFinal = t2;
+      }else{
+        resultadoFinal = document.getElementById("rodada").value || "";
+      }
     }else{
       resultadoFinal = document.getElementById("rodada").value || "";
     }
@@ -3976,6 +4014,7 @@ document.getElementById("btnExcluirEscalacao")?.addEventListener("click", clearE
 </script>
 </body>
 </html>
+
 
 
 
