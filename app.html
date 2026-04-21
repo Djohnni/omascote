@@ -701,6 +701,8 @@
 
     body.mode-proximo-jogo .field-placar{
       display:flex;
+      flex-direction:column;
+      align-items:stretch;
     }
 
     body.mode-proximo-jogo .field-rodada{
@@ -712,20 +714,11 @@
     }
 
     body.mode-proximo-jogo .field-placar .sectionTitle{
-      width:100%;
-      max-width:100%;
-      text-align:center;
-      white-space:nowrap;
-      margin:0 0 10px;
-      transform:none;
-    }
-
-    body.mode-proximo-jogo .field-placar .sectionTitle::after{
-      display:none;
+      order:2;
     }
 
     body.mode-proximo-jogo .field-placar .placarRow{
-      order:2;
+      order:1;
       margin-bottom:0;
     }
 
