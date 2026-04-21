@@ -2233,22 +2233,22 @@ const PRODUCTS = {
   escalacao: {
     mode: "flyer",
     title: "Escalação",
-    hint: "Adicione os jogadores, defina o título da arte e envie os escudos.",
+    hint: "Adicione os jogadores, defina o título da arte, envie o escudo e, se quiser, a foto da camiseta do time.",
     flyerTipo: "zz1fs",
     labels: {
       data: "Título da arte",
-      esc1: "Escudo 1",
-      esc2: "Escudo 2"
+      esc1: "Escudo / logo do time",
+      mascote: "Foto da camiseta do time (opcional)"
     },
     placeholders: {
-      data: "Ex: Escalação oficial do time A"
+      data: "Ex: Escalação oficial do Los Hermanos"
     },
     required: {
       esc1: true,
       esc2: false
     },
     phraseMenu: false,
-    hiddenFields: ["rodada", "hora", "arena", "mascote", "patro"],
+    hiddenFields: ["rodada", "hora", "arena", "esc2", "patro"],
     showPlayerList: true
   },
 
@@ -2353,12 +2353,12 @@ function setArtilheirosMode(mode = "resultado"){
   if(!wrap || !title || !addBtn) return;
 
   if(mode === "escalacao"){
-    title.textContent = "Adicionar jogador";
+    title.textContent = "Jogadores";
   }else{
     title.textContent = "Ver artilheiros";
   }
 
-  addBtn.textContent = "Adicionar jogador";
+  addBtn.textContent = mode === "escalacao" ? "Adicionar jogador" : "Adicionar jogador";
   wrap.innerHTML = getArtilheiroRowHtml(mode);
 }
 
@@ -2816,7 +2816,7 @@ function configureOptionalSections(productKey){
     lockOpen("data");
     lockOpen("esc1");
     lockOpen("artilheiros");
-    keepClosed("esc2");
+    keepClosed("mascote");
     return;
   }
 
@@ -2869,7 +2869,7 @@ function arrangeFieldSequence(productKey){
 
   const sequenceMap = {
     resultado: ["placar", "esc1", "esc2", "mascote", "optionalDivider", "hora", "data", "artilheiros", "submit", "msg"],
-    escalacao: ["data", "esc1", "artilheiros", "optionalDivider", "esc2", "submit", "msg"],
+    escalacao: ["data", "esc1", "artilheiros", "optionalDivider", "mascote", "submit", "msg"],
     contratacao: ["rodada", "data", "esc1", "esc2", "optionalDivider", "hora", "submit", "msg"],
     proximo_jogo: ["data", "hora", "esc1", "optionalDivider", "rodada", "esc2", "arena", "submit", "msg"],
     patrocinador: ["rodada", "esc1", "patro", "optionalDivider", "data", "submit", "msg"]
@@ -3976,6 +3976,7 @@ document.getElementById("btnExcluirEscalacao")?.addEventListener("click", clearE
 </script>
 </body>
 </html>
+
 
 
 
