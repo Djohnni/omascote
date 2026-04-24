@@ -157,7 +157,6 @@ const r = await fetch(`${API_BASE}${url}`, {
   ? { nome_time: document.getElementById("nome_time").value, whatsapp, senha }
   : { whatsapp, senha }
 )
----
     });
 
     const data = await r.json().catch(() => ({}));
