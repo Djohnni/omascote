@@ -1862,27 +1862,17 @@
   Saldo disponível: —
 </div>
 
-<div id="primeiraCompraBox" style="
-  margin:10px auto 0;
-  padding:8px 12px;
-  border-radius:999px;
-  background:linear-gradient(135deg,#fff8df,#ffefb5);
-  border:1px solid #f1d36b;
-  box-shadow:0 4px 12px rgba(0,0,0,.06);
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  gap:8px;
-  width:max-content;
-  max-width:100%;
-  color:#2f3e5c;
-  font-size:12px;
-  font-weight:900;
-">
-  <span style="color:#8a6d00;">🔥 Primeira arte</span>
-  <span>Escudo 3D</span>
-  <span style="color:#777;text-decoration:line-through;font-weight:700;">R$18</span>
-  <span style="color:#1fbf63;font-size:14px;">R$2</span>
+<div style="display:flex;justify-content:center;margin:18px auto 22px;">
+  <button type="button" class="optionBtn" data-product="escudo3d" style="opacity:1;transform:none;">
+    <div class="circle">
+      <img src="icons/escudo3d.png" class="iconImg">
+    </div>
+    <div class="optLabel">
+      Primeira arte<br>Escudo 3D<br>
+      <span style="font-size:11px;color:#777;text-decoration:line-through;">R$18</span>
+      <span style="color:#1fbf63;font-weight:900;"> R$2</span>
+    </div>
+  </button>
 </div>
 
         <div class="selectorStage">
@@ -1901,20 +1891,7 @@
             <div class="line l5"></div>
           </div>
 
-          <div style="display:flex;justify-content:center;margin-bottom:18px;">
-  <button type="button" class="optionBtn" data-product="escudo3d" style="opacity:1;transform:none;">
-    <div class="circle">
-      <img src="icons/escudo3d.png" class="iconImg">
-    </div>
-    <div class="optLabel">
-      Primeira arte<br>Escudo 3D<br>
-      <span style="font-size:11px;color:#777;text-decoration:line-through;">R$18</span>
-      <span style="color:#1fbf63;font-weight:900;"> R$2</span>
-    </div>
-  </button>
-</div>
-
-<div class="optionsRow">
+          <div class="optionsRow">
             <button type="button" class="optionBtn" data-product="resultado">
               <div class="circle green">
                 <img src="icons/resultado.png" class="iconImg">
@@ -4081,6 +4058,8 @@ document.getElementById("btnExcluirEscalacao")?.addEventListener("click", clearE
 </script>
 </body>
 </html>
+
+
 
 
 
