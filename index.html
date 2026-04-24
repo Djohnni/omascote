@@ -68,10 +68,14 @@ button:disabled{opacity:.6;cursor:not-allowed}
 <body>
 
 <div class="card">
-  <h1>Entrar</h1>
+  <h1 id="titulo">Entrar</h1>
+<button type="button" onclick="toggleMode()" style="margin-bottom:10px;background:#23304d">Criar conta</button>
   <p>Acesse sua conta pelo WhatsApp e senha.</p>
 
   <form id="loginForm">
+
+<label for="nome_time" id="label_nome" style="display:none">Nome do time</label>
+<input id="nome_time" placeholder="Nome do seu time" style="display:none" />
 
     <label for="whatsapp">WhatsApp (somente números)</label>
     <input id="whatsapp" inputmode="numeric" autocomplete="username" placeholder="15991120599" required />
@@ -96,6 +100,17 @@ const API_BASE = "https://api.omascote.com.br";
   const token = localStorage.getItem("omascote_token");
   if (token) window.location.href = "app.html";
 })();
+
+let modoCadastro = false;
+
+function toggleMode(){
+  modoCadastro = !modoCadastro;
+
+  document.getElementById("titulo").textContent = modoCadastro ? "Criar conta" : "Entrar";
+  document.getElementById("label_nome").style.display = modoCadastro ? "block" : "none";
+  document.getElementById("nome_time").style.display = modoCadastro ? "block" : "none";
+  document.getElementById("btn").textContent = modoCadastro ? "Criar conta" : "Entrar";
+}
 
 const form = document.getElementById("loginForm");
 const msgEl = document.getElementById("msg");
@@ -133,10 +148,16 @@ form.addEventListener("submit", async (e) => {
 
   try {
 
-    const r = await fetch(`${API_BASE}/auth/login`, {
+    const url = modoCadastro ? "/auth/register" : "/auth/login";
+
+const r = await fetch(`${API_BASE}${url}`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ whatsapp, senha })
+      body: JSON.stringify(modoCadastro
+  ? { nome_time: document.getElementById("nome_time").value, whatsapp, senha }
+  : { whatsapp, senha }
+)
+---
     });
 
     const data = await r.json().catch(() => ({}));
@@ -172,3 +193,4 @@ form.addEventListener("submit", async (e) => {
 
 </body>
 </html>
+
