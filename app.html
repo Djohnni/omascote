@@ -90,13 +90,17 @@
     button:disabled{opacity:.55; cursor:not-allowed}
 
     .btnBlue{
-      background:linear-gradient(135deg, #8fb1d8, #5a6f8b);
-      color:#fff;
+      background:rgba(255,255,255,.42);
+      color:#5f6b7a;
+      border:1px solid rgba(95,107,122,.16);
+      box-shadow:none;
     }
 
     .btnRed{
-      background:linear-gradient(135deg, #ff5c4d, #d73a2f);
-      color:#fff;
+      background:rgba(255,255,255,.42);
+      color:#d65a52;
+      border:1px solid rgba(214,90,82,.18);
+      box-shadow:none;
     }
 
     .btnGreen{
@@ -1596,20 +1600,25 @@
       }
 
       .topbar{
-        flex-direction:column;
-        align-items:stretch;
-        gap:10px;
-        padding:12px 0 10px;
+        flex-direction:row;
+        align-items:center;
+        gap:8px;
+        padding:10px 6px 8px;
       }
 
       .row{
-        width:100%;
-        justify-content:center;
+        width:auto;
+        justify-content:flex-end;
+        gap:6px;
+        margin-left:auto;
       }
 
       .row button{
-        flex:1 1 0;
+        flex:0 0 auto;
         min-width:0;
+        padding:7px 10px;
+        font-size:11px;
+        box-shadow:none;
       }
 
       .panel{
@@ -2808,13 +2817,10 @@ const escudoPromo = document.querySelector('[data-product="escudo3d"]');
 
 if(escudoPromo){
   const label = escudoPromo.querySelector(".optLabel");
-
   if(label){
-    if(jaComprou){
-      label.innerHTML = `Escudo 3D<br><span style="color:#1fbf63;font-weight:900;">R$18</span>`;
-    }else{
-      label.innerHTML = `Primeira arte<br>Escudo 3D<br><span style="font-size:11px;color:#777;text-decoration:line-through;">R$18</span> <span style="color:#1fbf63;font-weight:900;">R$4</span>`;
-    }
+    label.innerHTML = jaComprou
+      ? `Escudo 3D<br><span style="color:#1fbf63;font-weight:900;">R$18</span>`
+      : `Primeira arte<br>Escudo 3D<br><span style="font-size:11px;color:#777;text-decoration:line-through;">R$18</span> <span style="color:#1fbf63;font-weight:900;">R$4</span>`;
   }
 }
     }
