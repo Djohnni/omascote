@@ -1943,6 +1943,7 @@
             <div class="pill" id="plano">Plano: —</div>
             <div class="pill" id="usados">Usados no mês: —</div>
             <div class="pill" id="status">Status: —</div>
+<div class="pill" id="saldo">Saldo disponível: —</div>
           </div>
 
           <div class="msg" id="msg"></div>
@@ -2208,6 +2209,7 @@ const welcomeEl = document.getElementById("welcome");
 const planoEl = document.getElementById("plano");
 const usadosEl = document.getElementById("usados");
 const statusEl = document.getElementById("status");
+const saldoEl = document.getElementById("saldo");
 const msgPedidoEl = document.getElementById("msgPedido");
 const historicoListaEl = document.getElementById("historicoLista");
 const historicoVazioEl = document.getElementById("historicoVazio");
@@ -2754,6 +2756,9 @@ function applyLocal(){
   welcomeEl.textContent = nome || "Seu time";
   planoEl.textContent = `Plano: ${plano || "—"} pedidos/mês`;
   usadosEl.textContent = `Usados no mês: ${usados || "—"}`;
+  if(saldoEl){
+    saldoEl.textContent = "Saldo disponível: —";
+  }
 }
 
 async function refreshMe(){
@@ -2766,8 +2771,13 @@ async function refreshMe(){
       localStorage.setItem("omascote_nome_time", data.nome_time || "");
       localStorage.setItem("omascote_plano", data.plano || "");
       localStorage.setItem("omascote_usados", data.usados_no_ciclo || "");
+      localStorage.setItem("omascote_saldo", data.saldo ?? "");
       applyLocal();
       statusEl.textContent = data.ativo ? "Status: ativo" : "Status: inativo";
+      if(saldoEl){
+        const saldo = Number(data.saldo || 0);
+        saldoEl.textContent = `Saldo disponível: R$ ${saldo.toFixed(2).replace(".", ",")}`;
+      }
     }
   }catch{}
 }
@@ -4025,6 +4035,7 @@ document.getElementById("btnExcluirEscalacao")?.addEventListener("click", clearE
 </script>
 </body>
 </html>
+
 
 
 
