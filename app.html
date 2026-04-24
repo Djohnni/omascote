@@ -1870,7 +1870,7 @@
     <div class="optLabel">
       Primeira arte<br>Escudo 3D<br>
       <span style="font-size:11px;color:#777;text-decoration:line-through;">R$18</span>
-      <span style="color:#1fbf63;font-weight:900;"> R$2</span>
+      <span style="color:#1fbf63;font-weight:900;"> R$4</span>
     </div>
   </button>
 </div>
@@ -2800,6 +2800,18 @@ if(saldoEl){
 
 if(saldoHeroEl){
   saldoHeroEl.textContent = `Saldo disponível: R$ ${saldo.toFixed(2).replace(".", ",")}`;
+}
+
+const jaComprou = Number(data.usados_no_ciclo || 0) > 0;
+
+const escudoPromo = document.querySelector('[data-product="escudo3d"]');
+
+if(escudoPromo){
+  if(jaComprou){
+    escudoPromo.style.display = "none";
+  }else{
+    escudoPromo.style.display = "flex";
+  }
 }
     }
   }catch{}
@@ -4058,6 +4070,7 @@ document.getElementById("btnExcluirEscalacao")?.addEventListener("click", clearE
 </script>
 </body>
 </html>
+
 
 
 
