@@ -162,7 +162,14 @@ const r = await fetch(`${API_BASE}${url}`, {
     const data = await r.json().catch(() => ({}));
 
     if (!r.ok || !data.ok) {
-      setMsg(data.error || "Não foi possível entrar. Verifique seus dados.", "err");
+      setMsg(
+  data.error ||
+  (modoCadastro
+    ? "Não foi possível criar a conta. Tente outro número."
+    : "Não foi possível entrar. Verifique seus dados."
+  ),
+  "err"
+);
       btn.disabled = false;
       btn.textContent = "Entrar";
       return;
@@ -174,7 +181,7 @@ const r = await fetch(`${API_BASE}${url}`, {
     localStorage.setItem("omascote_plano", String(data.plano ?? ""));
     localStorage.setItem("omascote_usados", String(data.usados_no_ciclo ?? ""));
 
-    setMsg("Login realizado! Indo para o painel…", "ok");
+    setMsg(modoCadastro ? "Conta criada com sucesso! Entrando no sistema…" : "Login realizado! Indo para o painel…", "ok");
 
     setTimeout(() => window.location.href = "app.html", 400);
 
@@ -192,4 +199,5 @@ const r = await fetch(`${API_BASE}${url}`, {
 
 </body>
 </html>
+
 
