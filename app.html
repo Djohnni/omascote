@@ -2808,10 +2808,13 @@ const escudoPromo = document.querySelector('[data-product="escudo3d"]');
 
 if(escudoPromo){
   const label = escudoPromo.querySelector(".optLabel");
+
   if(label){
-    label.innerHTML = jaComprou
-      ? `Escudo 3D<br><span style="color:#1fbf63;font-weight:900;">R$18</span>`
-      : `Primeira arte<br>Escudo 3D<br><span style="font-size:11px;color:#777;text-decoration:line-through;">R$18</span> <span style="color:#1fbf63;font-weight:900;">R$4</span>`;
+    if(jaComprou){
+      label.innerHTML = `Escudo 3D<br><span style="color:#1fbf63;font-weight:900;">R$18</span>`;
+    }else{
+      label.innerHTML = `Primeira arte<br>Escudo 3D<br><span style="font-size:11px;color:#777;text-decoration:line-through;">R$18</span> <span style="color:#1fbf63;font-weight:900;">R$4</span>`;
+    }
   }
 }
     }
@@ -4071,6 +4074,7 @@ document.getElementById("btnExcluirEscalacao")?.addEventListener("click", clearE
 </script>
 </body>
 </html>
+
 
 
 
