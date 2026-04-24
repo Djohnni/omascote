@@ -2336,9 +2336,9 @@ const PRODUCTS = {
     labels: {
       hora: "Campeonato / competição",
       data: "Frase na imagem",
-      esc1: "Escudo / logo do time principal",
-      esc2: "Escudo / logo do time adversário (opcional)",
-      mascote: "Foto do jogo / do time (opcional)"
+      esc1: "Escudo Time A",
+      esc2: "Escudo Time B",
+      mascote: "Foto do jogo ou time"
     },
     placeholders: {
       hora: "Ex: Campeonato municipal",
@@ -2952,9 +2952,9 @@ function configureOptionalSections(productKey){
 
   if(productKey === "resultado"){
     lockOpen("esc1");
+    lockOpen("esc2");
     keepClosed("hora");
     keepClosed("data");
-    keepClosed("esc2");
     keepClosed("artilheiros");
     keepClosed("mascote");
     return;
@@ -3089,8 +3089,8 @@ function selectProduct(productKey){
   const golsTimeEl = document.getElementById("golsTime");
   const golsAdvEl = document.getElementById("golsAdv");
 
-  if(timePrincipalEl) timePrincipalEl.placeholder = productKey === "proximo_jogo" ? "Time da esquerda" : "Seu time";
-  if(timeAdvEl) timeAdvEl.placeholder = productKey === "proximo_jogo" ? "Time da direita" : "Adversário (opcional)";
+  if(timePrincipalEl) timePrincipalEl.placeholder = productKey === "proximo_jogo" ? "Time da esquerda" : "Time A";
+  if(timeAdvEl) timeAdvEl.placeholder = productKey === "proximo_jogo" ? "Time da direita" : "Time B";
   if(golsTimeEl) golsTimeEl.placeholder = "0";
   if(golsAdvEl) golsAdvEl.placeholder = "0";
 
@@ -4235,6 +4235,8 @@ document.getElementById("btnExcluirEscalacao")?.addEventListener("click", clearE
 </script>
 </body>
 </html>
+
+
 
 
 
