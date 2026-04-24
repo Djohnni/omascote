@@ -1534,6 +1534,40 @@
       box-shadow:none;
     }
 
+    .escudo3dBody{
+      padding:18px;
+      color:#243041;
+      background:#f7f8fb;
+    }
+
+    .escudo3dCard{
+      background:#fff;
+      border:1px solid #e4e6f1;
+      border-radius:18px;
+      padding:16px;
+      text-align:center;
+      box-shadow:0 8px 24px rgba(140,160,190,.16);
+    }
+
+    .escudo3dUpload{
+      margin-top:14px;
+      padding:18px;
+      border:1px dashed #b8c3d6;
+      border-radius:18px;
+      background:#f9fbff;
+      cursor:pointer;
+      font-weight:900;
+      color:#334155;
+    }
+
+    .escudo3dMsg{
+      margin-top:10px;
+      font-size:13px;
+      font-weight:800;
+      color:#334155;
+      text-align:center;
+    }
+
     @media (max-width:900px){
       .selectorStage{
         min-height:auto;
@@ -2187,6 +2221,34 @@
     </div>
   </div>
 
+  <div class="modalMask" id="escudo3dModal" aria-hidden="true">
+    <div class="modalCard" role="dialog" aria-modal="true" aria-label="Enviar escudo 3D">
+      <div class="modalTop">
+        <div class="modalTitle">Escudo 3D</div>
+        <button class="modalClose btnGhost" id="escudo3dCloseBtn" type="button">✕</button>
+      </div>
+
+      <div class="escudo3dBody">
+        <div class="escudo3dCard">
+          <div style="font-size:18px;font-weight:950;color:#1f2a37;">Envie o escudo do seu time</div>
+          <div style="margin-top:6px;font-size:13px;color:#64748b;font-weight:700;">Vamos transformar seu escudo em uma arte 3D profissional.</div>
+
+          <input id="escudo3dFile" class="fileHidden" type="file" accept="image/*" />
+
+          <div class="escudo3dUpload" id="escudo3dUploadBtn">
+            <div id="escudo3dFileName">Selecionar escudo</div>
+          </div>
+
+          <button class="btnGreen" id="escudo3dEnviarBtn" type="button" style="margin-top:14px;width:100%;">
+            Enviar escudo 🚀
+          </button>
+
+          <div class="escudo3dMsg" id="escudo3dMsg"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <div class="modalMask" id="cropModal" aria-hidden="true">
     <div class="modalCard" role="dialog" aria-modal="true" aria-label="Recortar imagem">
       <div class="modalTop">
@@ -2250,6 +2312,14 @@ const btnTrocarTipo = document.getElementById("btnTrocarTipo");
 const builderArea = document.getElementById("builderArea");
 const mainCreateBtn = document.getElementById("mainCreateBtn");
 const selectorStage = document.querySelector(".selectorStage");
+
+const escudo3dModal = document.getElementById("escudo3dModal");
+const escudo3dCloseBtn = document.getElementById("escudo3dCloseBtn");
+const escudo3dFile = document.getElementById("escudo3dFile");
+const escudo3dUploadBtn = document.getElementById("escudo3dUploadBtn");
+const escudo3dFileName = document.getElementById("escudo3dFileName");
+const escudo3dEnviarBtn = document.getElementById("escudo3dEnviarBtn");
+const escudo3dMsg = document.getElementById("escudo3dMsg");
 
 const crestPreview = document.getElementById("crestPreview");
 const crestPlaceholder = document.getElementById("crestPlaceholder");
@@ -3047,9 +3117,94 @@ function selectProduct(productKey){
   setTimeout(scrollToBuilder, 120);
 }
 
+function abrirEscudo3dModal(){
+  if(!escudo3dModal) return;
+  escudo3dMsg.textContent = "";
+  escudo3dFileName.textContent = "Selecionar escudo";
+  escudo3dFile.value = "";
+  escudo3dModal.classList.add("open");
+  escudo3dModal.setAttribute("aria-hidden","false");
+}
+
+function fecharEscudo3dModal(){
+  if(!escudo3dModal) return;
+  escudo3dModal.classList.remove("open");
+  escudo3dModal.setAttribute("aria-hidden","true");
+}
+
 document.querySelectorAll(".optionBtn").forEach(btn=>{
-  btn.addEventListener("click", ()=> selectProduct(btn.dataset.product));
+  btn.addEventListener("click", ()=>{
+    if(btn.dataset.product === "escudo3d"){
+      abrirEscudo3dModal();
+      return;
+    }
+
+    selectProduct(btn.dataset.product);
+  });
 });
+
+if(escudo3dCloseBtn){
+  escudo3dCloseBtn.addEventListener("click", fecharEscudo3dModal);
+}
+
+if(escudo3dModal){
+  escudo3dModal.addEventListener("click", (e)=>{
+    if(e.target === escudo3dModal) fecharEscudo3dModal();
+  });
+}
+
+if(escudo3dUploadBtn && escudo3dFile){
+  escudo3dUploadBtn.addEventListener("click", ()=>{
+    escudo3dFile.click();
+  });
+
+  escudo3dFile.addEventListener("change", ()=>{
+    escudo3dFileName.textContent = escudo3dFile.files && escudo3dFile.files[0]
+      ? escudo3dFile.files[0].name
+      : "Selecionar escudo";
+  });
+}
+
+if(escudo3dEnviarBtn){
+  escudo3dEnviarBtn.addEventListener("click", async ()=>{
+    if(!escudo3dFile.files || !escudo3dFile.files[0]){
+      escudo3dMsg.textContent = "Selecione o escudo primeiro.";
+      return;
+    }
+
+    escudo3dEnviarBtn.disabled = true;
+    escudo3dMsg.textContent = "Enviando...";
+
+    const fd = new FormData();
+    fd.append("flyer_tipo", "escudo3d");
+    fd.append("rodada", "Escudo 3D");
+    fd.append("data", "Escudo 3D");
+    fd.append("escudo1", escudo3dFile.files[0]);
+
+    try{
+      const r = await fetch(`${API_BASE}/pedidos`, {
+        method:"POST",
+        headers:{ "Authorization": "Bearer " + token },
+        body:fd
+      });
+
+      const out = await r.json();
+
+      if(out.ok){
+        escudo3dMsg.textContent = `✅ Pedido enviado! ID: ${out.pedido_id}`;
+        refreshMe();
+        carregarHistorico();
+        setTimeout(fecharEscudo3dModal, 900);
+      }else{
+        escudo3dMsg.textContent = out.error || "Erro ao enviar.";
+      }
+    }catch{
+      escudo3dMsg.textContent = "Erro de rede.";
+    }
+
+    escudo3dEnviarBtn.disabled = false;
+  });
+}
 
 mainCreateBtn.addEventListener("click", ()=>{
   const current = selectedProductInput.value;
@@ -4080,6 +4235,7 @@ document.getElementById("btnExcluirEscalacao")?.addEventListener("click", clearE
 </script>
 </body>
 </html>
+
 
 
 
