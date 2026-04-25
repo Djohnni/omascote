@@ -1905,6 +1905,12 @@
   Saldo disponível: —
 </div>
 
+<div style="display:flex;justify-content:center;gap:8px;flex-wrap:wrap;margin:10px auto 0;">
+  <button type="button" class="btnGreen" id="btnComprarMensal" style="min-width:0;padding:10px 14px;font-size:13px;border-radius:999px;">Plano R$19,90</button>
+  <button type="button" class="btnBlue" id="btnComprar2990" style="min-width:0;padding:10px 14px;font-size:13px;border-radius:999px;">Comprar R$29,90</button>
+  <button type="button" class="btnBlue" id="btnComprar5000" style="min-width:0;padding:10px 14px;font-size:13px;border-radius:999px;">Comprar R$50</button>
+</div>
+
 <div style="display:flex;justify-content:center;margin:18px auto 22px;">
   <button type="button" class="optionBtn" data-product="escudo3d" style="opacity:1;transform:none;">
     <div class="circle">
@@ -2895,6 +2901,31 @@ if(escudoPromo){
 }
     }
   }catch{}
+}
+
+async function comprarCreditos(pacote){
+  try{
+    const r = await fetch(`${API_BASE}/comprar-creditos`, {
+      method:"POST",
+      headers:{
+        "Authorization": "Bearer " + token,
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({ pacote })
+    });
+
+    const data = await r.json();
+
+    if(!data.ok || !data.init_point){
+      alert(data.error || "Erro ao iniciar pagamento.");
+      return;
+    }
+
+    window.location.href = data.init_point;
+
+  }catch{
+    alert("Erro de rede ao iniciar pagamento.");
+  }
 }
 
 function setRequired(inputId, isRequired){
@@ -4222,6 +4253,10 @@ document.getElementById("btnSair").addEventListener("click", ()=>{
 
 document.getElementById("btnAtualizar").addEventListener("click", refreshMe);
 
+document.getElementById("btnComprarMensal")?.addEventListener("click", ()=> comprarCreditos("mensal_1990"));
+document.getElementById("btnComprar2990")?.addEventListener("click", ()=> comprarCreditos("saldo_2990"));
+document.getElementById("btnComprar5000")?.addEventListener("click", ()=> comprarCreditos("saldo_5000"));
+
 document.getElementById("addArtilheiroBtn")?.addEventListener("click", ()=>{
   const wrap = document.getElementById("artilheirosWrap");
   const currentProduct = PRODUCTS[selectedProductInput.value];
@@ -4235,6 +4270,7 @@ document.getElementById("btnExcluirEscalacao")?.addEventListener("click", clearE
 </script>
 </body>
 </html>
+
 
 
 
