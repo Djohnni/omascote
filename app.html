@@ -2917,11 +2917,11 @@ async function comprarCreditos(pacote){
     const data = await r.json();
 
     if(!data.ok || !data.init_point){
-      alert(data.error || "Erro ao iniciar pagamento.");
-      return;
-    }
+    alert(data.error || "Erro ao iniciar pagamento.");
+    return;
+  }
 
-    window.location.href = data.init_point;
+  window.open(data.init_point, "_blank");
 
   }catch{
     alert("Erro de rede ao iniciar pagamento.");
