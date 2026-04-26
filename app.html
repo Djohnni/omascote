@@ -3934,135 +3934,217 @@ document.getElementById("pedidoForm").addEventListener("submit", async (e)=>{
 
   const fd = new FormData();
 
-  if (isFlyer) {
+  if(isFlyer){
     fd.append("flyer_tipo", flyerTipoInput.value);
   }
 
-  const t1 = document.getElementById("timePrincipal")?.value?.trim() || "";
-  const g1 = document.getElementById("golsTime")?.value?.trim() || "";
-  const g2 = document.getElementById("golsAdv")?.value?.trim() || "";
-  const t2 = document.getElementById("timeAdv")?.value?.trim() || "";
+  const val = (id) => document.getElementById(id)?.value?.trim() || "";
 
-  let resultadoFinal = "";
+  const campoAtivo = (field) => {
+    const el = document.querySelector(`[data-optional-field="${field}"]`);
+    if(!el) return false;
+    if(el.style.display === "none") return false;
+    return el.classList.contains("locked-open") || el.classList.contains("is-open");
+  };
 
-  if(g1 || g2){
-    if(t1 && t2){
-      resultadoFinal = `${t1} ${g1} x ${g2} ${t2}`;
-    }else if(t1){
-      resultadoFinal = `${t1} ${g1} x ${g2}`;
-    }else{
-      resultadoFinal = `${g1} x ${g2}`;
+  const appendTextoAtivo = (field, nome, valor) => {
+    const texto = String(valor || "").trim();
+    if(campoAtivo(field) && texto){
+      fd.append(nome, texto);
     }
-  }
+  };
 
-  if(!resultadoFinal){
-    if(productKey === "escalacao"){
-      resultadoFinal = document.getElementById("dataJogo").value || "";
-    }else if(productKey === "proximo_jogo"){
-      if(t1 && t2){
-        resultadoFinal = `${t1} x ${t2}`;
-      }else if(t1){
-        resultadoFinal = t1;
-      }else if(t2){
-        resultadoFinal = t2;
-      }else{
-        resultadoFinal = document.getElementById("rodada").value || "";
-      }
-    }else{
-      resultadoFinal = document.getElementById("rodada").value || "";
+  const appendArquivoAtivo = (field, inputId, nome) => {
+    if(!campoAtivo(field)) return null;
+    const input = document.getElementById(inputId);
+    const file = input?.files?.[0] || null;
+    if(file) fd.append(nome, file);
+    return file;
+  };
+
+  const appendEscudo1 = () => {
+    if(!campoAtivo("esc1")) return;
+    let escudo1File = document.getElementById("escudo1")?.files?.[0] || null;
+    if(!escudo1File) escudo1File = getSavedEscudo1File();
+    if(escudo1File) fd.append("escudo1", escudo1File);
+  };
+
+  const appendEscudo2 = () => {
+    appendArquivoAtivo("esc2", "escudo2", "escudo2");
+  };
+
+  const appendPatrocinadores = () => {
+    if(!campoAtivo("patro")) return;
+    const pats = document.getElementById("patrocinadores")?.files || [];
+    for(const file of pats){
+      fd.append("patrocinadores", file);
     }
-  }
+  };
 
-  if(!resultadoFinal){
-    resultadoFinal = product?.title || "Pedido";
-  }
-
-  const dataFinal = document.getElementById("dataJogo").value || product?.title || "Pedido";
-
-  fd.append("rodada", resultadoFinal);
-  fd.append("time_principal", t1);
-  fd.append("gols_time_principal", g1);
-  fd.append("gols_adversario", g2);
-  fd.append("time_adversario", t2);
-
-  const artilheiros = [];
-
-  document.querySelectorAll("#artilheirosWrap .artilheiroRow").forEach(row=>{
-    const nome = row.querySelector(".artilheiroNome")?.value?.trim() || "";
-    const golsRaw = row.querySelector(".artilheiroGols")?.value?.trim() || "";
-
-    if(nome && golsRaw !== "" && Number(golsRaw) >= 0){
-      artilheiros.push({
-        nome,
-        gols: Number(golsRaw)
-      });
-    }
-  });
-
-  const artilheirosJson = JSON.stringify(artilheiros);
-  const artilheirosTexto = artilheiros
-    .map(a => `${a.nome} (${a.gols} gol${a.gols === 1 ? "" : "s"})`)
-    .join("; ");
-
-  if(productKey === "escalacao"){
+  const coletarJogadores = () => {
     const jogadores = [];
+
+    if(!campoAtivo("artilheiros")) return jogadores;
 
     document.querySelectorAll("#artilheirosWrap .artilheiroRow").forEach(row=>{
       const nome = row.querySelector(".artilheiroNome")?.value?.trim() || "";
       const posicao = row.querySelector(".artilheiroGols")?.value?.trim() || "";
 
       if(nome){
-        jogadores.push({
+        jogadores.push({ nome, posicao });
+      }
+    });
+
+    return jogadores;
+  };
+
+  const coletarArtilheiros = () => {
+    const artilheiros = [];
+
+    if(!campoAtivo("artilheiros")) return artilheiros;
+
+    document.querySelectorAll("#artilheirosWrap .artilheiroRow").forEach(row=>{
+      const nome = row.querySelector(".artilheiroNome")?.value?.trim() || "";
+      const golsRaw = row.querySelector(".artilheiroGols")?.value?.trim() || "";
+
+      if(nome && golsRaw !== "" && Number(golsRaw) >= 0){
+        artilheiros.push({
           nome,
-          posicao
+          gols: Number(golsRaw)
         });
       }
     });
 
+    return artilheiros;
+  };
+
+  if(productKey === "resultado"){
+    const t1 = val("timePrincipal");
+    const g1 = val("golsTime");
+    const g2 = val("golsAdv");
+    const t2 = val("timeAdv");
+
+    let resultadoFinal = "";
+
+    if(t1 && t2){
+      resultadoFinal = `${t1} ${g1 || "0"} x ${g2 || "0"} ${t2}`;
+    }else if(t1){
+      resultadoFinal = `${t1} ${g1 || "0"} x ${g2 || "0"}`;
+    }else if(g1 || g2){
+      resultadoFinal = `${g1 || "0"} x ${g2 || "0"}`;
+    }
+
+    fd.append("rodada", resultadoFinal || "Resultado do jogo");
+    fd.append("data", campoAtivo("data") && val("dataJogo") ? val("dataJogo") : "Resultado do jogo");
+
+    fd.append("time_principal", t1);
+    fd.append("gols_time_principal", g1);
+    fd.append("gols_adversario", g2);
+    fd.append("time_adversario", t2);
+
+    appendTextoAtivo("hora", "hora", val("hora"));
+    appendArquivoAtivo("mascote", "mascote", "mascote");
+    appendEscudo1();
+    appendEscudo2();
+
+    const artilheiros = coletarArtilheiros();
+    const artilheirosJson = JSON.stringify(artilheiros);
+    const artilheirosTexto = artilheiros
+      .map(a => `${a.nome} (${a.gols} gol${a.gols === 1 ? "" : "s"})`)
+      .join("; ");
+
+    fd.append("artilheiros", artilheirosJson);
+    fd.append("artilheiros_json", artilheirosJson);
+    fd.append("artilheiros_texto", artilheirosTexto);
+    fd.append("artilheiros_qtd", String(artilheiros.length));
+
+    fd.append("jogadores_json", "[]");
+    fd.append("jogadores_texto", "");
+  }
+
+  else if(productKey === "escalacao"){
+    const titulo = val("dataJogo") || product.title || "Escalação";
+    const jogadores = coletarJogadores();
+
+    fd.append("rodada", titulo);
+    fd.append("data", titulo);
     fd.append("jogadores_json", JSON.stringify(jogadores));
     fd.append(
       "jogadores_texto",
       jogadores.map(j => j.posicao ? `${j.nome} - ${j.posicao}` : j.nome).join("; ")
     );
-  } else {
-    fd.append("jogadores_json", "[]");
-    fd.append("jogadores_texto", "");
-  }
 
-  if(isResultado){
-    fd.append("artilheiros", artilheirosJson);
-    fd.append("artilheiros_json", artilheirosJson);
-    fd.append("artilheiros_texto", artilheirosTexto);
-    fd.append("artilheiros_qtd", String(artilheiros.length));
-  } else {
     fd.append("artilheiros", "[]");
     fd.append("artilheiros_json", "[]");
     fd.append("artilheiros_texto", "");
     fd.append("artilheiros_qtd", "0");
+
+    appendEscudo1();
+    appendArquivoAtivo("mascote", "mascote", "mascote");
   }
 
-  fd.append("data", dataFinal);
+  else if(productKey === "contratacao"){
+    const titulo = val("rodada") || product.title || "Contratação";
+    const nomeJogador = val("dataJogo") || titulo;
 
-  const horaVal = document.getElementById("hora").value;
-  if(horaVal) fd.append("hora", horaVal);
+    fd.append("rodada", titulo);
+    fd.append("data", nomeJogador);
+    appendTextoAtivo("hora", "hora", val("hora"));
 
-  const arenaVal = document.getElementById("arena").value;
-  if(arenaVal) fd.append("arena", arenaVal);
+    fd.append("jogadores_json", "[]");
+    fd.append("jogadores_texto", "");
+    fd.append("artilheiros", "[]");
+    fd.append("artilheiros_json", "[]");
+    fd.append("artilheiros_texto", "");
+    fd.append("artilheiros_qtd", "0");
 
-  const mascoteFile = document.getElementById("mascote").files[0];
-  if (mascoteFile) fd.append("mascote", mascoteFile);
+    appendEscudo1();
+    appendEscudo2();
+  }
 
-  let escudo1File = document.getElementById("escudo1").files[0];
-  const escudo2File = document.getElementById("escudo2").files[0];
+  else if(productKey === "proximo_jogo"){
+    const t1 = val("timePrincipal");
+    const t2 = val("timeAdv");
 
-  if (!escudo1File) escudo1File = getSavedEscudo1File();
+    let confronto = "";
+    if(t1 && t2) confronto = `${t1} x ${t2}`;
+    else confronto = t1 || t2 || val("rodada") || product.title || "Próximo jogo";
 
-  if (escudo1File) fd.append("escudo1", escudo1File);
-  if (escudo2File) fd.append("escudo2", escudo2File);
+    fd.append("rodada", confronto);
+    fd.append("data", campoAtivo("data") && val("dataJogo") ? val("dataJogo") : "Próximo jogo");
+    fd.append("time_principal", t1);
+    fd.append("time_adversario", t2);
 
-  const pats = document.getElementById("patrocinadores").files;
-  for (const file of pats) {
-    fd.append("patrocinadores", file);
+    appendTextoAtivo("hora", "hora", val("hora"));
+    appendTextoAtivo("arena", "arena", val("arena"));
+
+    fd.append("jogadores_json", "[]");
+    fd.append("jogadores_texto", "");
+    fd.append("artilheiros", "[]");
+    fd.append("artilheiros_json", "[]");
+    fd.append("artilheiros_texto", "");
+    fd.append("artilheiros_qtd", "0");
+
+    appendEscudo1();
+    appendEscudo2();
+  }
+
+  else if(productKey === "patrocinador"){
+    const titulo = val("rodada") || product.title || "Patrocinador";
+    const textoPrincipal = campoAtivo("data") && val("dataJogo") ? val("dataJogo") : titulo;
+
+    fd.append("rodada", titulo);
+    fd.append("data", textoPrincipal);
+
+    fd.append("jogadores_json", "[]");
+    fd.append("jogadores_texto", "");
+    fd.append("artilheiros", "[]");
+    fd.append("artilheiros_json", "[]");
+    fd.append("artilheiros_texto", "");
+    fd.append("artilheiros_qtd", "0");
+
+    appendEscudo1();
+    appendPatrocinadores();
   }
 
   try{
@@ -4082,10 +4164,10 @@ document.getElementById("pedidoForm").addEventListener("submit", async (e)=>{
       refreshMe();
       carregarHistorico();
 
-      if (isResultado) {
+      if(isResultado){
         acompanharResultado(out.pedido_id);
       }
-    } else {
+    }else{
       msgPedidoEl.textContent = out.error || "Erro ao enviar";
     }
   }catch{
@@ -4270,6 +4352,7 @@ document.getElementById("btnExcluirEscalacao")?.addEventListener("click", clearE
 </script>
 </body>
 </html>
+
 
 
 
