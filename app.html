@@ -1881,10 +1881,6 @@
   line-height:1.4;
 }
 
-.descTexto {
-  white-space: pre-wrap;
-}
-
 .btnCopiar {
   position:absolute;
   top:6px;
@@ -1897,15 +1893,681 @@
   cursor:pointer;
 }
 
+
+
+/* =========================================================
+   UI SIMPLES IA4TUBE - teste visual sem alterar envio/API
+   ========================================================= */
+:root{
+  --ia-green:#15943b;
+  --ia-green2:#0f7a31;
+  --ia-dark:#071018;
+  --ia-text:#111827;
+  --ia-muted:#6b7280;
+  --ia-line:#e5e7eb;
+  --ia-card:#ffffff;
+}
+
+html{background:#f4f7f5;}
+body{
+  background:#f4f7f5 !important;
+  background-image:none !important;
+  color:var(--ia-text) !important;
+}
+
+.wrap{
+  max-width:560px !important;
+  margin:0 auto !important;
+  padding:0 0 28px !important;
+  background:#ffffff;
+  min-height:100vh;
+  box-shadow:0 18px 60px rgba(15,23,42,.10);
+}
+
+.topbar{
+  background:linear-gradient(135deg, #061018 0%, #101925 100%) !important;
+  color:#fff !important;
+  padding:12px 14px !important;
+  border-radius:0 !important;
+  margin:0 !important;
+}
+
+.brandTop{
+  display:flex !important;
+  align-items:center !important;
+  gap:9px !important;
+  opacity:1 !important;
+  letter-spacing:0 !important;
+  font-size:13px !important;
+}
+
+.brandShield{
+  width:32px;
+  height:32px;
+  border-radius:10px;
+  display:grid;
+  place-items:center;
+  background:rgba(22,163,74,.16);
+  border:1px solid rgba(34,197,94,.45);
+  font-size:18px;
+}
+
+.brandText{
+  display:flex;
+  flex-direction:column;
+  line-height:1.05;
+}
+
+.brandText b{
+  font-size:18px;
+  font-weight:1000;
+  letter-spacing:.02em;
+}
+
+.brandText small{
+  margin-top:3px;
+  color:#22c55e;
+  font-size:10px;
+  font-weight:900;
+  letter-spacing:.08em;
+}
+
+.topbar .row{
+  gap:7px !important;
+}
+
+.topbar button{
+  box-shadow:none !important;
+  border-radius:12px !important;
+  border:1px solid rgba(255,255,255,.15) !important;
+  background:rgba(255,255,255,.08) !important;
+  color:#fff !important;
+  padding:8px 10px !important;
+  font-size:12px !important;
+}
+
+#btnAtualizar{
+  width:34px;
+  height:34px;
+  padding:0 !important;
+  display:grid;
+  place-items:center;
+  font-size:15px !important;
+}
+
+#btnSair{
+  display:none !important;
+}
+
+.panel{
+  background:#fff !important;
+  background-image:none !important;
+  border:0 !important;
+  border-radius:0 !important;
+  box-shadow:none !important;
+  backdrop-filter:none !important;
+  -webkit-backdrop-filter:none !important;
+  padding:18px 16px 22px !important;
+  overflow:visible !important;
+}
+
+.hero{
+  background:#fff !important;
+  border-radius:0 !important;
+  box-shadow:none !important;
+  padding:18px 0 8px !important;
+  overflow:visible !important;
+}
+
+.heroBrand,
+#saldoHero,
+#btnComprarMensal,
+#btnComprar2990,
+#btnComprar5000,
+.escudo3dPromo,
+.examplesLink,
+.centerWrap,
+.lines,
+.switchModeRow,
+.crestWrap,
+.meta,
+.sep,
+#dynamicTitle,
+#dynamicHint,
+.card > .msg,
+.welcomeBox{
+  display:none !important;
+}
+
+.heroTitle{
+  font-size:21px !important;
+  line-height:1.15 !important;
+  font-weight:1000 !important;
+  color:var(--ia-text) !important;
+  letter-spacing:-.03em !important;
+  margin:0 !important;
+}
+
+.heroSub{
+  margin:6px auto 0 !important;
+  color:#7b8494 !important;
+  font-size:13px !important;
+  font-weight:600 !important;
+}
+
+.selectorStage{
+  margin:18px auto 12px !important;
+  max-width:none !important;
+  min-height:auto !important;
+  display:block !important;
+}
+
+.optionsRow{
+  position:static !important;
+  display:grid !important;
+  grid-template-columns:repeat(4, minmax(0, 1fr)) !important;
+  gap:12px !important;
+  opacity:1 !important;
+  visibility:visible !important;
+  transform:none !important;
+  width:100% !important;
+  max-width:none !important;
+}
+
+.optionBtn[data-product="patrocinador"],
+.optionBtn[data-product="escudo3d"]{
+  display:none !important;
+}
+
+.optionBtn[data-product="resultado"]{order:1;}
+.optionBtn[data-product="escalacao"]{order:2;}
+.optionBtn[data-product="proximo_jogo"]{order:3;}
+.optionBtn[data-product="contratacao"]{order:4;}
+
+.optionBtn{
+  opacity:1 !important;
+  visibility:visible !important;
+  transform:none !important;
+  background:#fff !important;
+  color:var(--ia-text) !important;
+  border:1px solid var(--ia-line) !important;
+  border-radius:16px !important;
+  min-height:104px !important;
+  padding:13px 8px !important;
+  box-shadow:0 8px 24px rgba(15,23,42,.07) !important;
+  display:flex !important;
+  flex-direction:column !important;
+  align-items:center !important;
+  justify-content:center !important;
+}
+
+.optionBtn.active{
+  border-color:var(--ia-green) !important;
+  box-shadow:0 10px 26px rgba(21,148,59,.18) !important;
+  background:linear-gradient(180deg, #f7fff9, #ffffff) !important;
+  position:relative;
+}
+
+.optionBtn.active::after{
+  content:"✓";
+  position:absolute;
+  right:-8px;
+  top:-9px;
+  width:30px;
+  height:30px;
+  border-radius:999px;
+  display:grid;
+  place-items:center;
+  background:var(--ia-green);
+  color:#fff;
+  font-size:17px;
+  font-weight:1000;
+  box-shadow:0 8px 18px rgba(21,148,59,.30);
+}
+
+.circle,
+.circle.orange,
+.circle.green{
+  width:36px !important;
+  height:36px !important;
+  margin:0 auto 9px !important;
+  border:0 !important;
+  box-shadow:none !important;
+  background:transparent !important;
+  overflow:visible !important;
+}
+
+.optionBtn.active .circle{
+  transform:none !important;
+  box-shadow:none !important;
+}
+
+.iconImg{
+  width:100% !important;
+  height:100% !important;
+  object-fit:contain !important;
+  filter:grayscale(1) brightness(.18) !important;
+}
+
+.optionBtn.active .iconImg{
+  filter:none !important;
+}
+
+.optLabel{
+  color:var(--ia-text) !important;
+  font-size:13px !important;
+  font-weight:900 !important;
+  line-height:1.15 !important;
+  max-width:88px !important;
+}
+
+.builderArea{
+  margin-top:12px !important;
+}
+
+.card{
+  padding:0 !important;
+  background:transparent !important;
+  border-radius:0 !important;
+}
+
+#pedidoForm{
+  margin-top:0 !important;
+}
+
+body.mode-result #pedidoForm{
+  display:grid !important;
+  grid-template-columns:1fr 1fr !important;
+  gap:12px !important;
+}
+
+body.mode-flyer #pedidoForm,
+body.mode-proximo-jogo #pedidoForm{
+  display:flex !important;
+  flex-direction:column !important;
+  gap:12px !important;
+}
+
+body.mode-result .field-placar,
+body.mode-result .field-artilheiros,
+body.mode-result .field-data,
+body.mode-result .field-hora,
+body.mode-result .field-esc1,
+body.mode-result .field-esc2,
+body.mode-result .field-mascote,
+body.mode-flyer .field-rodada,
+body.mode-flyer .field-artilheiros,
+body.mode-flyer .field-data,
+body.mode-flyer .field-hora,
+body.mode-flyer .field-arena,
+body.mode-flyer .field-mascote,
+body.mode-flyer .field-esc1,
+body.mode-flyer .field-esc2,
+body.mode-flyer .field-patro,
+.field-submit,
+.field-msg{
+  background:#fff !important;
+  border:1px solid var(--ia-line) !important;
+  border-radius:18px !important;
+  box-shadow:0 8px 24px rgba(15,23,42,.06) !important;
+  padding:15px !important;
+  margin:0 !important;
+  width:100% !important;
+  align-items:stretch !important;
+}
+
+body.mode-result .field-placar,
+body.mode-result .field-artilheiros,
+body.mode-result .field-data,
+body.mode-result .field-hora,
+body.mode-result .field-mascote,
+body.mode-result .field-submit,
+body.mode-result .field-msg,
+body.mode-result .field-optional-title{
+  grid-column:1 / -1 !important;
+}
+
+body.mode-result .field-esc1{grid-column:1 !important;}
+body.mode-result .field-esc2{grid-column:2 !important;}
+
+.sectionTitle{
+  width:100% !important;
+  max-width:none !important;
+  padding:0 !important;
+  margin:0 0 12px !important;
+  background:transparent !important;
+  border:0 !important;
+  box-shadow:none !important;
+  color:var(--ia-text) !important;
+  font-size:11px !important;
+  font-weight:1000 !important;
+  text-align:center !important;
+  text-transform:uppercase !important;
+  transform:none !important;
+}
+
+.sectionTitle::after,
+.optionalToggle::after{
+  display:none !important;
+}
+
+.placarRow{
+  background:transparent !important;
+  border:0 !important;
+  border-radius:0 !important;
+  box-shadow:none !important;
+  padding:0 !important;
+  width:100% !important;
+  display:grid !important;
+  grid-template-columns:minmax(0,1fr) 58px 18px 58px minmax(0,1fr) !important;
+  gap:8px !important;
+  align-items:center !important;
+}
+
+.placarRow input{
+  border-radius:14px !important;
+  border:1px solid #dfe5ee !important;
+  background:#fff !important;
+  box-shadow:0 4px 14px rgba(15,23,42,.04) !important;
+  color:var(--ia-text) !important;
+  font-weight:900 !important;
+  text-align:center !important;
+  min-width:0 !important;
+}
+
+.placarTime{
+  width:100% !important;
+  font-size:12px !important;
+  padding:13px 8px !important;
+}
+
+.placarGols{
+  width:100% !important;
+  font-size:22px !important;
+  padding:13px 6px !important;
+}
+
+.placarX{
+  color:#111827 !important;
+  opacity:1 !important;
+  font-size:18px !important;
+  text-align:center !important;
+}
+
+.optionalField{
+  display:flex !important;
+  flex-direction:column !important;
+  gap:0 !important;
+}
+
+.optionalToggle{
+  order:1 !important;
+  display:flex !important;
+  align-items:center !important;
+  justify-content:space-between !important;
+  width:100% !important;
+  margin:0 !important;
+  padding:15px 18px !important;
+  border-radius:18px !important;
+  border:1px solid var(--ia-line) !important;
+  background:#fff !important;
+  color:var(--ia-text) !important;
+  box-shadow:0 8px 24px rgba(15,23,42,.06) !important;
+  transform:none !important;
+  min-width:0 !important;
+}
+
+.optionalToggleText{
+  color:var(--ia-text) !important;
+  font-size:14px !important;
+  font-weight:900 !important;
+  text-align:left !important;
+}
+
+.optionalToggleIcon{
+  right:18px !important;
+  color:#111827 !important;
+  transform:translateY(-50%) !important;
+}
+
+.optionalField.is-open .optionalToggleIcon,
+.field-artilheiros.is-open .optionalToggleIcon,
+.field-arena.is-open .optionalToggleIcon,
+.field-esc2.is-open .optionalToggleIcon,
+.field-mascote.is-open .optionalToggleIcon{
+  transform:translateY(-50%) rotate(180deg) !important;
+}
+
+.optionalContent{
+  order:2 !important;
+  margin:10px 0 0 !important;
+  width:100% !important;
+}
+
+.optionalField.locked-open .optionalToggle{
+  pointer-events:none !important;
+  cursor:default !important;
+}
+
+.optionalField.locked-open .optionalContent,
+.optionalField.is-open .optionalContent{
+  display:flex !important;
+  flex-direction:column !important;
+  align-items:stretch !important;
+}
+
+.filePlus,
+.phraseWrap,
+.artilheirosWrap,
+.addArtilheiro{
+  width:100% !important;
+  max-width:100% !important;
+  margin:0 !important;
+  border-radius:16px !important;
+  border:1px dashed #cbd5e1 !important;
+  background:#fff !important;
+  box-shadow:none !important;
+}
+
+.filePlus{
+  min-height:104px !important;
+  padding:14px 10px !important;
+  display:flex !important;
+  flex-direction:column !important;
+  justify-content:center !important;
+  align-items:center !important;
+  text-align:center !important;
+}
+
+.filePlus .left{
+  align-items:center !important;
+}
+
+.filePlus .chosen{
+  white-space:normal !important;
+  text-align:center !important;
+  color:#64748b !important;
+  font-size:11px !important;
+  line-height:1.25 !important;
+}
+
+.filePlus .plus{
+  order:-1 !important;
+  width:38px !important;
+  height:38px !important;
+  border-radius:13px !important;
+  margin:0 0 8px !important;
+  background:#f7fff9 !important;
+  border:1px solid #bbf7d0 !important;
+  color:var(--ia-green) !important;
+  box-shadow:none !important;
+  font-size:24px !important;
+}
+
+.phraseWrap{
+  padding:10px !important;
+  border-style:solid !important;
+}
+
+.phraseWrap input,
+input,
+textarea{
+  border-radius:14px !important;
+  border:1px solid #dfe5ee !important;
+  background:#fff !important;
+  color:var(--ia-text) !important;
+  box-shadow:0 4px 14px rgba(15,23,42,.04) !important;
+}
+
+.phraseBtn{
+  background:var(--ia-green) !important;
+  border:0 !important;
+  box-shadow:none !important;
+}
+
+.artilheirosWrap{
+  padding:14px !important;
+  border-style:solid !important;
+}
+
+.addArtilheiro{
+  padding:14px !important;
+  border-style:solid !important;
+  color:var(--ia-green) !important;
+}
+
+.field-optional-title{
+  display:block !important;
+  background:transparent !important;
+  border:0 !important;
+  box-shadow:none !important;
+  padding:0 !important;
+}
+
+.optionalDividerTitle{
+  display:flex !important;
+  align-items:center !important;
+  gap:8px !important;
+  width:100% !important;
+  max-width:none !important;
+  margin:2px 0 0 !important;
+  padding:14px 18px !important;
+  text-align:left !important;
+  color:var(--ia-text) !important;
+  background:#fff !important;
+  border:1px solid var(--ia-line) !important;
+  border-radius:18px !important;
+  box-shadow:0 8px 24px rgba(15,23,42,.06) !important;
+  font-size:16px !important;
+  font-weight:1000 !important;
+}
+
+.optionalDividerTitle span{
+  color:#7b8494;
+  font-size:12px;
+  font-weight:700;
+}
+
+.field-submit{
+  background:transparent !important;
+  border:0 !important;
+  box-shadow:none !important;
+  padding:6px 0 0 !important;
+}
+
+.btnGreen,
+#btnEnviar{
+  width:100% !important;
+  min-width:0 !important;
+  border-radius:16px !important;
+  padding:18px 20px !important;
+  background:linear-gradient(135deg, #12963a, #16a34a) !important;
+  box-shadow:0 14px 34px rgba(22,163,74,.24) !important;
+  font-size:16px !important;
+  font-weight:1000 !important;
+  text-transform:uppercase;
+}
+
+.field-msg{
+  background:transparent !important;
+  border:0 !important;
+  box-shadow:none !important;
+  color:#6b7280 !important;
+  padding:0 !important;
+}
+
+#msgPedido::after{
+  content:"";
+}
+
+.card[style*="margin-top:16px"]{
+  margin-top:18px !important;
+  padding:14px !important;
+  background:#fff !important;
+  border:1px solid var(--ia-line) !important;
+  border-radius:18px !important;
+  box-shadow:0 8px 24px rgba(15,23,42,.06) !important;
+}
+
+.trustStrip{
+  display:grid;
+  grid-template-columns:repeat(3, 1fr);
+  gap:8px;
+  margin:14px 0 4px;
+  padding:12px 10px;
+  border-radius:18px;
+  border:1px solid #dcefe3;
+  background:#f6fff8;
+}
+
+.trustItem{
+  text-align:center;
+  color:#334155;
+  font-size:10px;
+  line-height:1.15;
+  font-weight:800;
+}
+
+.trustItem b{
+  display:block;
+  color:#111827;
+  font-size:11px;
+  margin-bottom:3px;
+}
+
+@media (max-width:520px){
+  .wrap{max-width:100% !important;}
+  .panel{padding:14px 12px 20px !important;}
+  .topbar{padding:10px 12px !important;}
+  .brandText b{font-size:15px;}
+  .brandText small{font-size:8px;}
+  .brandShield{width:28px;height:28px;font-size:15px;}
+  #btnMeusPedidosTop{font-size:10px !important;padding:7px 8px !important;}
+  .optionsRow{gap:8px !important;}
+  .optionBtn{min-height:88px !important;padding:10px 5px !important;border-radius:13px !important;}
+  .circle{width:30px !important;height:30px !important;margin-bottom:6px !important;}
+  .optLabel{font-size:11px !important;max-width:68px !important;}
+  body.mode-result #pedidoForm{gap:10px !important;}
+  .placarRow{grid-template-columns:minmax(0,1fr) 46px 16px 46px minmax(0,1fr) !important;gap:6px !important;}
+  .placarTime{font-size:10px !important;padding:11px 4px !important;}
+  .placarGols{font-size:20px !important;padding:10px 4px !important;}
+  .filePlus{min-height:92px !important;}
+  .trustStrip{grid-template-columns:1fr;}
+}
+
 </style>
 </head>
 
 <body>
   <div class="wrap">
-    <div class="topbar">
-      <div class="brandTop">O Mascote</div>
+    <div class="topbar simpleTopbar">
+      <div class="brandTop">
+        <span class="brandShield">⚽</span>
+        <span class="brandText"><b>IA4TUBE</b><small>ARTES ESPORTIVAS</small></span>
+      </div>
       <div class="row">
-        <button class="btnBlue" id="btnAtualizar">Atualizar</button>
+        <button class="btnBlue" id="btnAtualizar" title="Atualizar">↻</button>
+        <button class="btnBlue" id="btnMeusPedidosTop" type="button">📁 Meus pedidos</button>
         <button class="btnRed" id="btnSair">Sair</button>
       </div>
     </div>
@@ -1922,10 +2584,10 @@
           <span class="c1">i</span><span class="c2">A</span><span class="c3">4</span><span class="c4">Tube</span>
         </div>
 
-        <h2 class="heroTitle">Crie Posts Profissionais</h2>
+        <h2 class="heroTitle">Escolha o tipo de arte</h2>
 
         <div class="heroSub">
-          Sem Designer. Pronto Para Postar.
+          Crie sua arte em segundos
         </div>
 
 <div id="saldoHero" style="margin-top:12px;font-weight:900;font-size:16px;color:#2f3e5c;">
@@ -1938,7 +2600,7 @@
   <button type="button" class="btnBlue" id="btnComprar5000" style="min-width:0;padding:10px 14px;font-size:13px;border-radius:999px;">Comprar R$50</button>
 </div>
 
-<div style="display:flex;justify-content:center;margin:18px auto 22px;">
+<div class="escudo3dPromo" style="display:flex;justify-content:center;margin:18px auto 22px;">
   <button type="button" class="optionBtn" data-product="escudo3d" style="opacity:1;transform:none;">
     <div class="circle">
       <img src="icons/escudo3d.png" class="iconImg">
@@ -2206,7 +2868,7 @@
             </div>
 
             <div class="field-optional-title full" id="optionalDivider">
-              <label class="optionalDividerTitle">Opcional</label>
+              <label class="optionalDividerTitle">✨ Personalizar <span>(opcional)</span></label>
             </div>
 
             <div class="field-submit full submitRow">
@@ -2238,6 +2900,12 @@
               </div>
             </div>
           </form>
+        </div>
+
+        <div class="trustStrip">
+          <div class="trustItem">🔒<b>Dados seguros</b>Privacidade garantida</div>
+          <div class="trustItem">⚡<b>Pronto rápido</b>Automático</div>
+          <div class="trustItem">🖼️<b>Alta qualidade</b>Perfeito para postar</div>
         </div>
 
         <div class="card" style="margin-top:16px;">
@@ -3091,6 +3759,7 @@ function arrangeFieldSequence(productKey){
 }
 
 function scrollToBuilder(){
+  if(window.__disableAutoScroll) return;
   const el = document.getElementById("dynamicHint");
   if(el){
     el.scrollIntoView({ behavior:"smooth", block:"start" });
@@ -4292,7 +4961,7 @@ async function copiarDescricao(id){
   alert("Copiado!");
 }
 
-async function baixarPedido(id){
+function baixarPedido(id){
   try{
     const r = await fetch(`${API_BASE}/pedidos/${id}/download-resultado`, {
       headers: { "Authorization": "Bearer " + token }
@@ -4367,6 +5036,13 @@ refreshMe();
 carregarHistorico();
 updateChosenPlaceholders(null);
 selectorStage?.classList.add("open");
+window.__disableAutoScroll = true;
+selectProduct("resultado");
+setTimeout(()=>{ window.__disableAutoScroll = false; window.scrollTo({ top:0, behavior:"auto" }); }, 220);
+
+document.getElementById("btnMeusPedidosTop")?.addEventListener("click", ()=>{
+  document.querySelector('.card[style*="margin-top:16px"]')?.scrollIntoView({ behavior:"smooth", block:"start" });
+});
 
 document.getElementById("btnSair").addEventListener("click", ()=>{
   localStorage.removeItem("omascote_token");
@@ -4392,7 +5068,4 @@ document.getElementById("btnExcluirEscalacao")?.addEventListener("click", clearE
 </script>
 </body>
 </html>
-
-
-
 
