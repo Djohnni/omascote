@@ -3076,7 +3076,7 @@ const PRODUCTS = {
     },
     placeholders: {
       hora: "Ex: Campeonato municipal",
-      data: "Ex: Vitória na raça até o fim"
+      data: "Escolha uma frase pronta ou escreva a sua"
     },
     required: {
       esc1: true,
@@ -4900,19 +4900,76 @@ document.getElementById("pedidoForm").addEventListener("submit", async (e)=>{
 const openPhraseBtn = document.getElementById("openPhraseBtn");
 const phraseMenu = document.getElementById("phraseMenu");
 const phraseInput = document.getElementById("dataJogo");
-const phraseOptions = document.querySelectorAll(".phraseOption");
+
+const FRASES_VITORIA = [
+  "Vitória na raça, no talento e no coração.",
+  "Mais 3 pontos pra conta e motivo de sobra pra comemorar.",
+  "Fim de jogo com vitória e orgulho da nossa camisa.",
+  "Jogamos juntos, lutamos juntos e vencemos juntos.",
+  "Resultado conquistado com raça do começo ao fim.",
+  "Hoje teve entrega, foco e vitória merecida.",
+  "Dentro de campo, mostramos a força do nosso time.",
+  "Mais uma batalha vencida com união e determinação.",
+  "A vitória é nossa e a torcida faz parte disso.",
+  "No apito final, a recompensa veio: vencemos."
+];
+
+const FRASES_EMPATE = [
+  "Fim de jogo com tudo igual no placar.",
+  "Partida equilibrada do começo ao fim.",
+  "Empate conquistado com muita entrega em campo.",
+  "Jogo disputado até o último minuto.",
+  "Resultado definido na raça e na intensidade.",
+  "As equipes lutaram muito e o placar terminou igual.",
+  "Fim de jogo em uma partida muito equilibrada.",
+  "Empate com muita dedicação dentro de campo.",
+  "A partida terminou igual, mas a entrega foi gigante.",
+  "Um jogo de muita luta e equilíbrio até o apito final."
+];
+
+function isResultadoEmpate(){
+  const g1Raw = document.getElementById("golsTime")?.value ?? "";
+  const g2Raw = document.getElementById("golsAdv")?.value ?? "";
+
+  if(g1Raw === "" || g2Raw === "") return false;
+
+  return Number(g1Raw) === Number(g2Raw);
+}
+
+function atualizarFrasesResultado(){
+  if(!phraseMenu) return;
+
+  const frases = isResultadoEmpate() ? FRASES_EMPATE : FRASES_VITORIA;
+
+  phraseMenu.innerHTML = frases.map(frase => `
+    <button type="button" class="phraseOption">${frase}</button>
+  `).join("");
+}
 
 if(openPhraseBtn && phraseMenu && phraseInput){
   openPhraseBtn.addEventListener("click", (e)=>{
     e.stopPropagation();
+    atualizarFrasesResultado();
     phraseMenu.classList.toggle("open");
   });
 
-  phraseOptions.forEach((btn)=>{
-    btn.addEventListener("click", ()=>{
-      phraseInput.value = btn.textContent.trim();
-      phraseMenu.classList.remove("open");
-      phraseInput.focus();
+  phraseMenu.addEventListener("click", (e)=>{
+    const btn = e.target.closest(".phraseOption");
+    if(!btn) return;
+
+    phraseInput.value = btn.textContent.trim();
+    phraseMenu.classList.remove("open");
+    phraseInput.focus();
+  });
+
+  ["golsTime", "golsAdv"].forEach((id)=>{
+    const el = document.getElementById(id);
+    if(!el) return;
+
+    el.addEventListener("input", ()=>{
+      if(phraseMenu.classList.contains("open")){
+        atualizarFrasesResultado();
+      }
     });
   });
 
@@ -5089,6 +5146,7 @@ document.getElementById("btnExcluirEscalacao")?.addEventListener("click", clearE
 </script>
 </body>
 </html>
+
 
 
 
