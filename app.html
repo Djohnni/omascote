@@ -724,6 +724,20 @@
     body.mode-proximo-jogo .field-placar .placarRow{
       order:1;
       margin-bottom:0;
+      grid-template-columns:1fr 28px 1fr !important;
+    }
+
+    body.mode-proximo-jogo .placarRow .placarTime{
+      width:100% !important;
+      height:64px !important;
+      font-size:18px !important;
+      text-align:center !important;
+    }
+
+    body.mode-proximo-jogo .placarRow .placarX{
+      display:block !important;
+      font-size:34px !important;
+      text-align:center !important;
     }
 
     body.mode-result .field-rodada,
@@ -3159,14 +3173,14 @@ const PRODUCTS = {
       data: "Data e horário",
       hora: "Campeonato / competição",
       arena: "Local (opcional)",
-      esc1: "Escudo da esquerda 1",
-      esc2: "Escudo da direita 2"
+      esc1: "Escudo<br>Time A",
+      esc2: "Escudo<br>Time B"
     },
     placeholders: {
       rodada: "Ex: Semifinal • Próximo jogo",
-      data: "Ex: Domingo • 15h30",
-      hora: "Ex: Campeonato municipal",
-      arena: "Ex: Estádio municipal"
+      data: "Data e horário. Ex.: Domingo • 15h30",
+      hora: "Campeonato / competição. Ex.: Campeonato municipal",
+      arena: "Local. Ex.: Estádio municipal"
     },
     required: {
       esc1: true,
@@ -3782,12 +3796,24 @@ function configureOptionalSections(productKey){
   }
 
   if(productKey === "proximo_jogo"){
-    lockOpen("rodada");
     lockOpen("data");
     lockOpen("hora");
     lockOpen("esc1");
-    keepClosed("esc2");
+    lockOpen("esc2");
     keepClosed("arena");
+
+    const dataToggle = document.querySelector(`[data-optional-field="data"] [data-optional-toggle]`);
+    if(dataToggle) dataToggle.style.display = "none";
+
+    const horaToggle = document.querySelector(`[data-optional-field="hora"] [data-optional-toggle]`);
+    if(horaToggle) horaToggle.style.display = "none";
+
+    const esc1Toggle = document.querySelector(`[data-optional-field="esc1"] [data-optional-toggle]`);
+    if(esc1Toggle) esc1Toggle.style.display = "none";
+
+    const esc2Toggle = document.querySelector(`[data-optional-field="esc2"] [data-optional-toggle]`);
+    if(esc2Toggle) esc2Toggle.style.display = "none";
+
     return;
   }
 
@@ -3823,7 +3849,7 @@ function arrangeFieldSequence(productKey){
     resultado: ["placar", "esc1", "esc2", "optionalDivider", "hora", "artilheiros", "data", "mascote", "submit", "msg"],
     escalacao: ["data", "esc1", "artilheiros", "optionalDivider", "esc2", "mascote", "submit", "msg"],
     contratacao: ["rodada", "data", "esc1", "esc2", "optionalDivider", "hora", "submit", "msg"],
-    proximo_jogo: ["placar", "data", "hora", "esc1", "optionalDivider", "esc2", "arena", "submit", "msg"],
+    proximo_jogo: ["placar", "data", "hora", "esc1", "esc2", "optionalDivider", "arena", "submit", "msg"],
     patrocinador: ["rodada", "esc1", "patro", "optionalDivider", "data", "submit", "msg"]
   };
 
@@ -3893,8 +3919,8 @@ function selectProduct(productKey){
   const golsTimeEl = document.getElementById("golsTime");
   const golsAdvEl = document.getElementById("golsAdv");
 
-  if(timePrincipalEl) timePrincipalEl.placeholder = productKey === "proximo_jogo" ? "Time da esquerda" : "Time A";
-  if(timeAdvEl) timeAdvEl.placeholder = productKey === "proximo_jogo" ? "Time da direita" : "Time B";
+  if(timePrincipalEl) timePrincipalEl.placeholder = productKey === "proximo_jogo" ? "Time A" : "Time A";
+  if(timeAdvEl) timeAdvEl.placeholder = productKey === "proximo_jogo" ? "Time B" : "Time B";
   if(golsTimeEl) golsTimeEl.placeholder = "0";
   if(golsAdvEl) golsAdvEl.placeholder = "0";
 
@@ -5196,6 +5222,7 @@ document.getElementById("btnExcluirEscalacao")?.addEventListener("click", clearE
 </script>
 </body>
 </html>
+
 
 
 
