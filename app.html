@@ -1303,17 +1303,23 @@
     }
 
     .optionalContent{
-      display:none;
+      display:flex;
       width:100%;
       margin-top:0;
       margin-bottom:-6px;
       order:1;
+      flex-direction:column;
+      align-items:flex-start;
     }
 
     .optionalField.is-open .optionalContent{
       display:flex;
       flex-direction:column;
       align-items:flex-start;
+    }
+
+    .optionalField .optionalToggle{
+      display:none !important;
     }
 
     .optionalField.locked-open .optionalToggle{
@@ -4944,7 +4950,7 @@ document.getElementById("pedidoForm").addEventListener("submit", async (e)=>{
     const el = document.querySelector(`[data-optional-field="${field}"]`);
     if(!el) return false;
     if(el.style.display === "none") return false;
-    return el.classList.contains("locked-open") || el.classList.contains("is-open");
+    return true;
   };
 
   const appendTextoAtivo = (field, nome, valor) => {
@@ -5469,6 +5475,7 @@ document.getElementById("btnExcluirEscalacao")?.addEventListener("click", clearE
 </script>
 </body>
 </html>
+
 
 
 
