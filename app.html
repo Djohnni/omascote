@@ -2598,34 +2598,26 @@ body.mode-result .filePlus .chosen{
   }
 }
 
-body.mode-proximo-jogo .formGrid{
-  display:grid !important;
-  grid-template-columns:1fr 1fr !important;
-  gap:26px !important;
-}
-
-body.mode-proximo-jogo .field-placar,
-body.mode-proximo-jogo .field-data,
-body.mode-proximo-jogo .field-hora,
-body.mode-proximo-jogo .field-optional-title,
-body.mode-proximo-jogo .field-arena,
-body.mode-proximo-jogo .field-submit,
-body.mode-proximo-jogo .field-msg{
-  grid-column:1 / -1 !important;
-}
-
 body.mode-proximo-jogo .field-esc1,
 body.mode-proximo-jogo .field-esc2{
-  grid-column:auto !important;
-  display:flex !important;
-  align-items:stretch !important;
   width:100% !important;
+}
+
+body.mode-proximo-jogo .field-esc1 .optionalToggle,
+body.mode-proximo-jogo .field-esc2 .optionalToggle{
+  display:none !important;
 }
 
 body.mode-proximo-jogo .field-esc1 .optionalContent,
 body.mode-proximo-jogo .field-esc2 .optionalContent{
   display:flex !important;
   margin:0 !important;
+}
+
+body.mode-proximo-jogo .field-esc1,
+body.mode-proximo-jogo .field-esc2{
+  flex:1 1 0 !important;
+  min-width:0 !important;
 }
 
 body.mode-proximo-jogo .field-esc1 .filePlus,
@@ -2641,26 +2633,6 @@ body.mode-proximo-jogo .filePlus .chosen{
   white-space:normal !important;
   text-align:center !important;
   line-height:1.2 !important;
-}
-
-@media (max-width:680px){
-  body.mode-proximo-jogo .formGrid{
-    grid-template-columns:1fr 1fr !important;
-    gap:18px !important;
-  }
-
-  body.mode-proximo-jogo .field-esc1 .filePlus,
-  body.mode-proximo-jogo .field-esc2 .filePlus{
-    min-height:110px !important;
-    padding:14px 8px !important;
-  }
-
-  body.mode-proximo-jogo .field-esc1 .filePlus .plus,
-  body.mode-proximo-jogo .field-esc2 .filePlus .plus{
-    width:40px !important;
-    height:40px !important;
-    flex:0 0 40px !important;
-  }
 }
 
 .playersTitle{
@@ -3925,7 +3897,7 @@ function arrangeFieldSequence(productKey){
     resultado: ["placar", "esc1", "esc2", "optionalDivider", "hora", "artilheiros", "data", "mascote", "submit", "msg"],
     escalacao: ["data", "esc1", "artilheiros", "optionalDivider", "esc2", "mascote", "submit", "msg"],
     contratacao: ["rodada", "data", "esc1", "esc2", "optionalDivider", "hora", "submit", "msg"],
-    proximo_jogo: ["placar", "data", "hora", "esc1", "esc2", "optionalDivider", "arena", "submit", "msg"],
+    proximo_jogo: ["placar", "esc1", "esc2", "data", "hora", "optionalDivider", "arena", "submit", "msg"],
     patrocinador: ["rodada", "esc1", "patro", "optionalDivider", "data", "submit", "msg"]
   };
 
@@ -5298,6 +5270,7 @@ document.getElementById("btnExcluirEscalacao")?.addEventListener("click", clearE
 </script>
 </body>
 </html>
+
 
 
 
