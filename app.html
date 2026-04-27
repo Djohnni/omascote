@@ -3202,7 +3202,7 @@ const PRODUCTS = {
       patro: "Patrocinadores / logos (pode enviar vários)"
     },
     placeholders: {
-      rodada: "Ex: Nosso patrocinador",
+      rodada: "Título da arte. Ex.: Nosso patrocinador",
       data: "Ex: Conheça quem apoia nosso time"
     },
     required: {
@@ -3822,6 +3822,17 @@ function configureOptionalSections(productKey){
     lockOpen("esc1");
     lockOpen("patro");
     keepClosed("data");
+
+    const rodadaToggle = document.querySelector(`[data-optional-field="rodada"] [data-optional-toggle]`);
+    if(rodadaToggle) rodadaToggle.style.display = "none";
+
+    const esc1Toggle = document.querySelector(`[data-optional-field="esc1"] [data-optional-toggle]`);
+    if(esc1Toggle) esc1Toggle.style.display = "none";
+
+    const patroToggle = document.querySelector(`[data-optional-field="patro"] [data-optional-toggle]`);
+    if(patroToggle) patroToggle.style.display = "none";
+
+    return;
   }
 }
 
@@ -5222,6 +5233,7 @@ document.getElementById("btnExcluirEscalacao")?.addEventListener("click", clearE
 </script>
 </body>
 </html>
+
 
 
 
