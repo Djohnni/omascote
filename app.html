@@ -4288,7 +4288,7 @@ async function copiarDescricao(id){
   alert("Copiado!");
 }
 
-function baixarPedido(id){
+async function baixarPedido(id){
   try{
     const r = await fetch(`${API_BASE}/pedidos/${id}/download-resultado`, {
       headers: { "Authorization": "Bearer " + token }
@@ -4388,5 +4388,6 @@ document.getElementById("btnExcluirEscalacao")?.addEventListener("click", clearE
 </script>
 </body>
 </html>
+
 
 
