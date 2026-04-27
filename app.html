@@ -2584,6 +2584,21 @@ body.mode-result .filePlus .chosen{
   }
 }
 
+.playersTitle{
+  width:100%;
+  color:#111827;
+  font-size:22px;
+  font-weight:950;
+  margin:0 0 8px;
+  text-align:left;
+}
+
+@media (max-width:680px){
+  .playersTitle{
+    font-size:18px;
+  }
+}
+
 /* ===== FIM CORREÇÃO RESULTADO DO JOGO ===== */
 
 /* ===== FIM IA4TUBE UI SIMPLES ===== */
@@ -3089,22 +3104,23 @@ const PRODUCTS = {
   escalacao: {
     mode: "flyer",
     title: "Escalação",
-    hint: "Adicione os jogadores, defina o título da arte, envie o escudo e, se quiser, a foto da camiseta do time.",
+    hint: "Adicione os jogadores, defina o título da arte, envie o escudo e, se quiser, a foto do jogador ou do time.",
     flyerTipo: "zz1fs",
     labels: {
       data: "Título da arte",
       esc1: "Escudo / logo do time",
-      mascote: "Foto da camiseta do time (opcional)"
+      esc2: "Escudo adversário (opcional)",
+      mascote: "Foto do jogador ou do time"
     },
     placeholders: {
-      data: "Ex: Escalação oficial do Los Hermanos"
+      data: "Título da arte ex.: Escalação oficial do Time A"
     },
     required: {
       esc1: true,
       esc2: false
     },
     phraseMenu: false,
-    hiddenFields: ["rodada", "hora", "arena", "esc2", "patro"],
+    hiddenFields: ["rodada", "hora", "arena", "patro"],
     showPlayerList: true
   },
 
@@ -3187,6 +3203,7 @@ const PRODUCTS = {
 function getArtilheiroRowHtml(mode = "resultado"){
   if(mode === "escalacao"){
     return `
+      <div class="playersTitle">Nome dos jogadores aqui</div>
       <div class="artilheiroRow">
         <input class="artilheiroNome" placeholder="Nome do jogador">
         <input class="artilheiroGols" type="text" placeholder="Posição (opcional)">
@@ -3437,7 +3454,7 @@ function fillEscalacaoPlayersUI(jogadores){
     return;
   }
 
-  wrap.innerHTML = lista.map(j => `
+  wrap.innerHTML = `<div class="playersTitle">Nome dos jogadores aqui</div>` + lista.map(j => `
     <div class="artilheiroRow">
       <input class="artilheiroNome" placeholder="Nome do jogador" value="${String(j.nome || "").replace(/"/g, "&quot;")}">
       <input class="artilheiroGols" type="text" placeholder="Posição (opcional)" value="${String(j.posicao || "").replace(/"/g, "&quot;")}">
@@ -3719,7 +3736,12 @@ function configureOptionalSections(productKey){
     lockOpen("data");
     lockOpen("esc1");
     lockOpen("artilheiros");
+    keepClosed("esc2");
     keepClosed("mascote");
+
+    const dataToggle = document.querySelector(`[data-optional-field="data"] [data-optional-toggle]`);
+    if(dataToggle) dataToggle.style.display = "none";
+
     return;
   }
 
@@ -3772,7 +3794,7 @@ function arrangeFieldSequence(productKey){
 
   const sequenceMap = {
     resultado: ["placar", "esc1", "esc2", "optionalDivider", "hora", "artilheiros", "data", "mascote", "submit", "msg"],
-    escalacao: ["data", "esc1", "artilheiros", "optionalDivider", "mascote", "submit", "msg"],
+    escalacao: ["data", "esc1", "artilheiros", "optionalDivider", "esc2", "mascote", "submit", "msg"],
     contratacao: ["rodada", "data", "esc1", "esc2", "optionalDivider", "hora", "submit", "msg"],
     proximo_jogo: ["placar", "data", "hora", "esc1", "optionalDivider", "esc2", "arena", "submit", "msg"],
     patrocinador: ["rodada", "esc1", "patro", "optionalDivider", "data", "submit", "msg"]
@@ -4802,6 +4824,7 @@ document.getElementById("pedidoForm").addEventListener("submit", async (e)=>{
     fd.append("artilheiros_qtd", "0");
 
     appendEscudo1();
+    appendEscudo2();
     appendArquivoAtivo("mascote", "mascote", "mascote");
   }
 
@@ -5146,6 +5169,7 @@ document.getElementById("btnExcluirEscalacao")?.addEventListener("click", clearE
 </script>
 </body>
 </html>
+
 
 
 
