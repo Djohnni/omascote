@@ -3772,6 +3772,12 @@ function configureOptionalSections(productKey){
     const dataToggle = document.querySelector(`[data-optional-field="data"] [data-optional-toggle]`);
     if(dataToggle) dataToggle.style.display = "none";
 
+    const esc1Toggle = document.querySelector(`[data-optional-field="esc1"] [data-optional-toggle]`);
+    if(esc1Toggle) esc1Toggle.style.display = "none";
+
+    const esc2Toggle = document.querySelector(`[data-optional-field="esc2"] [data-optional-toggle]`);
+    if(esc2Toggle) esc2Toggle.style.display = "none";
+
     return;
   }
 
@@ -5190,6 +5196,7 @@ document.getElementById("btnExcluirEscalacao")?.addEventListener("click", clearE
 </script>
 </body>
 </html>
+
 
 
 
