@@ -2268,6 +2268,7 @@ body.mode-result .formGrid{
   text-align:left !important;
   color:#111827 !important;
   font-size:24px !important;
+  position:relative;
 }
 
 .optionalDividerTitle::before{
@@ -2276,7 +2277,7 @@ body.mode-result .formGrid{
 }
 
 .optionalDividerTitle::after{
-  content:" (opcional)";
+  content:" (opcional) ↓";
   color:#6b7280;
   font-size:18px;
   font-weight:700;
@@ -3232,9 +3233,7 @@ function updateChosenPlaceholders(product){
     chosenMascote.textContent = product?.labels?.mascote || "Nenhum arquivo";
   }
   if(chosenEscudo1 && (!escudo1Input.files || escudo1Input.files.length === 0)){
-    chosenEscudo1.innerHTML = getSavedEscudo1Exists()
-      ? `<strong style="color:#127a43;">Escudo salvo ✓</strong>`
-      : (product?.labels?.esc1 || "Escudo / logo do time principal");
+    chosenEscudo1.innerHTML = product?.labels?.esc1 || "Escudo<br>Time A";
   }
   if(chosenEscudo2 && (!escudo2Input.files || escudo2Input.files.length === 0)){
     chosenEscudo2.innerHTML = product?.labels?.esc2 || "Escudo<br>Time B";
@@ -3551,9 +3550,7 @@ function bindPlusUpload(inputId, chosenId){
     if(!input.files || input.files.length === 0){
       const currentProduct = PRODUCTS[selectedProductInput.value];
       if(inputId === "escudo1"){
-        chosen.innerHTML = getSavedEscudo1Exists()
-          ? `<strong style="color:#127a43;">Escudo salvo ✓</strong>`
-          : (currentProduct?.labels?.esc1 || "Escudo / logo do time principal");
+        chosen.innerHTML = currentProduct?.labels?.esc1 || "Escudo<br>Time A";
       }
       else if(inputId === "escudo2") chosen.innerHTML = currentProduct?.labels?.esc2 || "Escudo<br>Time B";
       else if(inputId === "mascote") chosen.textContent = currentProduct?.labels?.mascote || "Nenhum arquivo";
@@ -4530,7 +4527,7 @@ function updateChosenFromInput(inputId){
 
   if(!input.files || input.files.length === 0){
     if(inputId === "escudo1" && getSavedEscudo1Exists()){
-      chosen.innerHTML = `<strong style="color:#127a43;">Escudo salvo ✓</strong>`;
+      chosen.innerHTML = "Escudo<br>Time A";
     }else{
       chosen.textContent = "Nenhum arquivo";
     }
@@ -4633,9 +4630,7 @@ function limparCamposAposEnviar(){
 
   const escudo1Chosen = document.getElementById("chosen_escudo1");
   if(escudo1Chosen){
-    escudo1Chosen.innerHTML = getSavedEscudo1Exists()
-      ? `<strong style="color:#127a43;">Escudo salvo ✓</strong>`
-      : (currentProduct?.labels?.esc1 || "Escudo / logo do time principal *");
+    escudo1Chosen.innerHTML = currentProduct?.labels?.esc1 || "Escudo<br>Time A";
   }
 
   if(currentProduct?.showPlayerList){
@@ -5094,6 +5089,7 @@ document.getElementById("btnExcluirEscalacao")?.addEventListener("click", clearE
 </script>
 </body>
 </html>
+
 
 
 
