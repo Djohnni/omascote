@@ -3704,6 +3704,11 @@ function configureOptionalSections(productKey){
     if(toggle) toggle.style.display = "inline-flex";
   });
 
+  const labelEsc1 = document.getElementById("labelEsc1");
+  const labelEsc2 = document.getElementById("labelEsc2");
+  if(labelEsc1) labelEsc1.classList.add("hiddenLabel");
+  if(labelEsc2) labelEsc2.classList.add("hiddenLabel");
+
   const optionalDivider = document.getElementById("optionalDivider");
   if(optionalDivider){
     optionalDivider.style.display = productKey ? "block" : "none";
@@ -3741,6 +3746,9 @@ function configureOptionalSections(productKey){
 
     const dataToggle = document.querySelector(`[data-optional-field="data"] [data-optional-toggle]`);
     if(dataToggle) dataToggle.style.display = "none";
+
+    const labelEsc2 = document.getElementById("labelEsc2");
+    if(labelEsc2) labelEsc2.classList.remove("hiddenLabel");
 
     return;
   }
@@ -5169,6 +5177,7 @@ document.getElementById("btnExcluirEscalacao")?.addEventListener("click", clearE
 </script>
 </body>
 </html>
+
 
 
 
