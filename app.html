@@ -3750,6 +3750,9 @@ function configureOptionalSections(productKey){
     const esc1Toggle = document.querySelector(`[data-optional-field="esc1"] [data-optional-toggle]`);
     if(esc1Toggle) esc1Toggle.style.display = "none";
 
+    const artilheirosToggle = document.querySelector(`[data-optional-field="artilheiros"] [data-optional-toggle]`);
+    if(artilheirosToggle) artilheirosToggle.style.display = "none";
+
     const labelEsc2 = document.getElementById("labelEsc2");
     if(labelEsc2) labelEsc2.classList.remove("hiddenLabel");
 
@@ -5180,6 +5183,7 @@ document.getElementById("btnExcluirEscalacao")?.addEventListener("click", clearE
 </script>
 </body>
 </html>
+
 
 
 
