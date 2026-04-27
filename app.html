@@ -975,7 +975,7 @@
       font-size:12px;
       color:#334155;
       font-weight:700;
-      white-space:nowrap;
+      white-space:normal;
       overflow:hidden;
       text-overflow:ellipsis;
       max-width:100%;
@@ -2142,6 +2142,7 @@ body{
 body.mode-result .formGrid{
   display:grid !important;
   grid-template-columns:1fr 1fr !important;
+  grid-template-areas:none !important;
   gap:26px !important;
   margin-top:0 !important;
 }
@@ -2239,6 +2240,11 @@ body.mode-result .formGrid{
 .field-esc1,
 .field-esc2{
   align-items:stretch !important;
+}
+
+body.mode-result .field-esc1 .optionalToggle,
+body.mode-result .field-esc2 .optionalToggle{
+  display:none !important;
 }
 
 .filePlus{
@@ -2401,7 +2407,8 @@ body.mode-result .formGrid{
   }
 
   body.mode-result .formGrid{
-    grid-template-columns:1fr !important;
+    grid-template-columns:1fr 1fr !important;
+    grid-template-areas:none !important;
     gap:18px !important;
   }
 
@@ -2936,8 +2943,8 @@ const PRODUCTS = {
     labels: {
       hora: "Campeonato / competição",
       data: "Frase na imagem",
-      esc1: "Escudo Time A",
-      esc2: "Escudo Time B",
+      esc1: "Escudo<br>Time A",
+      esc2: "Escudo<br>Time B",
       mascote: "Foto do jogo ou time"
     },
     placeholders: {
@@ -3104,7 +3111,7 @@ function updateChosenPlaceholders(product){
       : (product?.labels?.esc1 || "Escudo / logo do time principal");
   }
   if(chosenEscudo2 && (!escudo2Input.files || escudo2Input.files.length === 0)){
-    chosenEscudo2.textContent = product?.labels?.esc2 || "Escudo / logo do time adversário";
+    chosenEscudo2.innerHTML = product?.labels?.esc2 || "Escudo<br>Time B";
   }
   if(chosenPatro && (!patroInput.files || patroInput.files.length === 0)){
     chosenPatro.textContent = product?.labels?.patro || "Nenhum arquivo";
@@ -3422,7 +3429,7 @@ function bindPlusUpload(inputId, chosenId){
           ? `<strong style="color:#127a43;">Escudo salvo ✓</strong>`
           : (currentProduct?.labels?.esc1 || "Escudo / logo do time principal");
       }
-      else if(inputId === "escudo2") chosen.textContent = currentProduct?.labels?.esc2 || "Escudo / logo do time adversário";
+      else if(inputId === "escudo2") chosen.innerHTML = currentProduct?.labels?.esc2 || "Escudo<br>Time B";
       else if(inputId === "mascote") chosen.textContent = currentProduct?.labels?.mascote || "Nenhum arquivo";
       else if(inputId === "patrocinadores") chosen.textContent = currentProduct?.labels?.patro || "Nenhum arquivo";
       else chosen.textContent = "Nenhum arquivo";
@@ -4961,6 +4968,7 @@ document.getElementById("btnExcluirEscalacao")?.addEventListener("click", clearE
 </script>
 </body>
 </html>
+
 
 
 
