@@ -3137,8 +3137,8 @@ const PRODUCTS = {
       esc2: "Foto do jogador"
     },
     placeholders: {
-      rodada: "Ex: Novo reforço",
-      data: "Ex: João Silva",
+      rodada: "Título da arte: ex.: contratado, renovado etc.",
+      data: "Nome do jogador",
       hora: "Ex: Atacante • 22 anos"
     },
     required: {
@@ -3765,6 +3765,13 @@ function configureOptionalSections(productKey){
     lockOpen("esc1");
     lockOpen("esc2");
     keepClosed("hora");
+
+    const rodadaToggle = document.querySelector(`[data-optional-field="rodada"] [data-optional-toggle]`);
+    if(rodadaToggle) rodadaToggle.style.display = "none";
+
+    const dataToggle = document.querySelector(`[data-optional-field="data"] [data-optional-toggle]`);
+    if(dataToggle) dataToggle.style.display = "none";
+
     return;
   }
 
@@ -5183,6 +5190,7 @@ document.getElementById("btnExcluirEscalacao")?.addEventListener("click", clearE
 </script>
 </body>
 </html>
+
 
 
 
