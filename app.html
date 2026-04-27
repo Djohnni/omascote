@@ -975,7 +975,7 @@
       font-size:12px;
       color:#334155;
       font-weight:700;
-      white-space:nowrap;
+      white-space:normal;
       overflow:hidden;
       text-overflow:ellipsis;
       max-width:100%;
@@ -2241,6 +2241,11 @@ body.mode-result .formGrid{
   align-items:stretch !important;
 }
 
+body.mode-result .field-esc1 .optionalToggle,
+body.mode-result .field-esc2 .optionalToggle{
+  display:none !important;
+}
+
 .filePlus{
   width:100% !important;
   min-height:120px !important;
@@ -2401,7 +2406,7 @@ body.mode-result .formGrid{
   }
 
   body.mode-result .formGrid{
-    grid-template-columns:1fr !important;
+    grid-template-columns:1fr 1fr !important;
     gap:18px !important;
   }
 
@@ -2936,8 +2941,8 @@ const PRODUCTS = {
     labels: {
       hora: "Campeonato / competição",
       data: "Frase na imagem",
-      esc1: "Escudo Time A",
-      esc2: "Escudo Time B",
+      esc1: "Escudo<br>Time A",
+      esc2: "Escudo<br>Time B",
       mascote: "Foto do jogo ou time"
     },
     placeholders: {
@@ -3104,7 +3109,7 @@ function updateChosenPlaceholders(product){
       : (product?.labels?.esc1 || "Escudo / logo do time principal");
   }
   if(chosenEscudo2 && (!escudo2Input.files || escudo2Input.files.length === 0)){
-    chosenEscudo2.textContent = product?.labels?.esc2 || "Escudo / logo do time adversário";
+    chosenEscudo2.innerHTML = product?.labels?.esc2 || "Escudo<br>Time B";
   }
   if(chosenPatro && (!patroInput.files || patroInput.files.length === 0)){
     chosenPatro.textContent = product?.labels?.patro || "Nenhum arquivo";
@@ -3422,7 +3427,7 @@ function bindPlusUpload(inputId, chosenId){
           ? `<strong style="color:#127a43;">Escudo salvo ✓</strong>`
           : (currentProduct?.labels?.esc1 || "Escudo / logo do time principal");
       }
-      else if(inputId === "escudo2") chosen.textContent = currentProduct?.labels?.esc2 || "Escudo / logo do time adversário";
+      else if(inputId === "escudo2") chosen.innerHTML = currentProduct?.labels?.esc2 || "Escudo<br>Time B";
       else if(inputId === "mascote") chosen.textContent = currentProduct?.labels?.mascote || "Nenhum arquivo";
       else if(inputId === "patrocinadores") chosen.textContent = currentProduct?.labels?.patro || "Nenhum arquivo";
       else chosen.textContent = "Nenhum arquivo";
@@ -3641,7 +3646,7 @@ function arrangeFieldSequence(productKey){
   };
 
   const sequenceMap = {
-    resultado: ["placar", "esc1", "esc2", "optionalDivider", "mascote", "hora", "data", "artilheiros", "submit", "msg"],
+    resultado: ["placar", "esc1", "esc2", "optionalDivider", "hora", "artilheiros", "data", "mascote", "submit", "msg"],
     escalacao: ["data", "esc1", "artilheiros", "optionalDivider", "mascote", "submit", "msg"],
     contratacao: ["rodada", "data", "esc1", "esc2", "optionalDivider", "hora", "submit", "msg"],
     proximo_jogo: ["placar", "data", "hora", "esc1", "optionalDivider", "esc2", "arena", "submit", "msg"],
@@ -4961,6 +4966,7 @@ document.getElementById("btnExcluirEscalacao")?.addEventListener("click", clearE
 </script>
 </body>
 </html>
+
 
 
 
