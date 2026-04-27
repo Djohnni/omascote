@@ -788,7 +788,7 @@
     }
 
     .hiddenLabel{
-      display:none;
+      display:inline !important;
     }
 
     .placeholderLike{
@@ -2265,7 +2265,7 @@ body.mode-result .formGrid{
   background:#fff !important;
   border:1px solid #e5e7eb !important;
   box-shadow:0 14px 30px rgba(15,23,42,.07) !important;
-  text-align:center !important;
+  text-align:left !important;
   color:#111827 !important;
   font-size:24px !important;
   position:relative;
@@ -2871,7 +2871,7 @@ body.mode-result .filePlus .chosen{
 
             <div class="field-esc1 optionalField" data-optional-field="esc1">
               <button type="button" class="optionalToggle" data-optional-toggle="esc1">
-                <span class="optionalToggleText hiddenLabel" id="labelEsc1">Escudo Time A</span>
+                <span class="optionalToggleText hiddenLabel" id="labelEsc1">1</span>
                 <span class="optionalToggleIcon">▼</span>
               </button>
               <div class="optionalContent" data-optional-content="esc1">
@@ -2888,7 +2888,7 @@ body.mode-result .filePlus .chosen{
 
             <div class="field-esc2 optionalField" data-optional-field="esc2">
               <button type="button" class="optionalToggle" data-optional-toggle="esc2">
-                <span class="optionalToggleText hiddenLabel" id="labelEsc2">Escudo Time B</span>
+                <span class="optionalToggleText hiddenLabel" id="labelEsc2">2</span>
                 <span class="optionalToggleIcon">▼</span>
               </button>
               <div class="optionalContent" data-optional-content="esc2">
@@ -3738,14 +3738,14 @@ function configureOptionalSections(productKey){
   }
 
   if(productKey === "escalacao"){
-    keepClosed("data");
+    lockOpen("data");
     lockOpen("esc1");
     lockOpen("artilheiros");
     keepClosed("esc2");
     keepClosed("mascote");
 
-    const dataField = document.querySelector(`.field-data`);
-    if(dataField) dataField.style.display = "none";
+    const dataToggle = document.querySelector(`[data-optional-field="data"] [data-optional-toggle]`);
+    if(dataToggle) dataToggle.style.display = "none";
 
     const labelEsc2 = document.getElementById("labelEsc2");
     if(labelEsc2) labelEsc2.classList.remove("hiddenLabel");
