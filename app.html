@@ -975,7 +975,7 @@
       font-size:12px;
       color:#334155;
       font-weight:700;
-      white-space:normal;
+      white-space:nowrap;
       overflow:hidden;
       text-overflow:ellipsis;
       max-width:100%;
@@ -2142,7 +2142,6 @@ body{
 body.mode-result .formGrid{
   display:grid !important;
   grid-template-columns:1fr 1fr !important;
-  grid-template-areas:none !important;
   gap:26px !important;
   margin-top:0 !important;
 }
@@ -2240,11 +2239,6 @@ body.mode-result .formGrid{
 .field-esc1,
 .field-esc2{
   align-items:stretch !important;
-}
-
-body.mode-result .field-esc1 .optionalToggle,
-body.mode-result .field-esc2 .optionalToggle{
-  display:none !important;
 }
 
 .filePlus{
@@ -2407,8 +2401,7 @@ body.mode-result .field-esc2 .optionalToggle{
   }
 
   body.mode-result .formGrid{
-    grid-template-columns:1fr 1fr !important;
-    grid-template-areas:none !important;
+    grid-template-columns:1fr !important;
     gap:18px !important;
   }
 
@@ -2459,6 +2452,139 @@ body.mode-result .field-esc2 .optionalToggle{
     font-size:18px !important;
   }
 }
+/* ===== CORREÇÃO RESULTADO DO JOGO ===== */
+
+body.mode-result .formGrid{
+  display:grid !important;
+  grid-template-columns:1fr 1fr !important;
+  grid-template-areas:none !important;
+  gap:26px !important;
+}
+
+body.mode-result .field-placar,
+body.mode-result .field-esc1,
+body.mode-result .field-esc2,
+body.mode-result .field-optional-title,
+body.mode-result .field-hora,
+body.mode-result .field-artilheiros,
+body.mode-result .field-data,
+body.mode-result .field-mascote,
+body.mode-result .field-submit,
+body.mode-result .field-msg{
+  grid-area:auto !important;
+}
+
+body.mode-result .field-placar{
+  grid-column:1 / -1 !important;
+  order:1 !important;
+}
+
+body.mode-result .field-esc1{
+  grid-column:auto !important;
+  order:2 !important;
+}
+
+body.mode-result .field-esc2{
+  grid-column:auto !important;
+  order:3 !important;
+}
+
+body.mode-result .field-optional-title{
+  grid-column:1 / -1 !important;
+  order:4 !important;
+}
+
+body.mode-result .field-hora{
+  grid-column:1 / -1 !important;
+  order:5 !important;
+}
+
+body.mode-result .field-artilheiros{
+  grid-column:1 / -1 !important;
+  order:6 !important;
+}
+
+body.mode-result .field-data{
+  grid-column:1 / -1 !important;
+  order:7 !important;
+}
+
+body.mode-result .field-mascote{
+  grid-column:1 / -1 !important;
+  order:8 !important;
+}
+
+body.mode-result .field-submit{
+  grid-column:1 / -1 !important;
+  order:9 !important;
+}
+
+body.mode-result .field-msg{
+  grid-column:1 / -1 !important;
+  order:10 !important;
+}
+
+body.mode-result .field-esc1 .optionalToggle,
+body.mode-result .field-esc2 .optionalToggle{
+  display:none !important;
+}
+
+body.mode-result .field-esc1 .optionalContent,
+body.mode-result .field-esc2 .optionalContent{
+  display:flex !important;
+  margin:0 !important;
+}
+
+body.mode-result .field-esc1,
+body.mode-result .field-esc2{
+  display:flex !important;
+  align-items:stretch !important;
+  width:100% !important;
+}
+
+body.mode-result .field-esc1 .filePlus,
+body.mode-result .field-esc2 .filePlus{
+  width:100% !important;
+  min-height:120px !important;
+  padding:18px 12px !important;
+  justify-content:center !important;
+  text-align:center !important;
+}
+
+body.mode-result .filePlus .chosen{
+  white-space:normal !important;
+  text-align:center !important;
+  line-height:1.2 !important;
+}
+
+@media (max-width:680px){
+  body.mode-result .formGrid{
+    display:grid !important;
+    grid-template-columns:1fr 1fr !important;
+    gap:18px !important;
+  }
+
+  body.mode-result .field-esc1,
+  body.mode-result .field-esc2{
+    grid-column:auto !important;
+  }
+
+  body.mode-result .field-esc1 .filePlus,
+  body.mode-result .field-esc2 .filePlus{
+    min-height:110px !important;
+    padding:14px 8px !important;
+  }
+
+  body.mode-result .field-esc1 .filePlus .plus,
+  body.mode-result .field-esc2 .filePlus .plus{
+    width:40px !important;
+    height:40px !important;
+    flex:0 0 40px !important;
+  }
+}
+
+/* ===== FIM CORREÇÃO RESULTADO DO JOGO ===== */
+
 /* ===== FIM IA4TUBE UI SIMPLES ===== */
 
 </style>
