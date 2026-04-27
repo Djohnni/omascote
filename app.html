@@ -2265,7 +2265,7 @@ body.mode-result .formGrid{
   background:#fff !important;
   border:1px solid #e5e7eb !important;
   box-shadow:0 14px 30px rgba(15,23,42,.07) !important;
-  text-align:left !important;
+  text-align:center !important;
   color:#111827 !important;
   font-size:24px !important;
   position:relative;
@@ -3738,14 +3738,14 @@ function configureOptionalSections(productKey){
   }
 
   if(productKey === "escalacao"){
-    lockOpen("data");
+    keepClosed("data");
     lockOpen("esc1");
     lockOpen("artilheiros");
     keepClosed("esc2");
     keepClosed("mascote");
 
-    const dataToggle = document.querySelector(`[data-optional-field="data"] [data-optional-toggle]`);
-    if(dataToggle) dataToggle.style.display = "none";
+    const dataField = document.querySelector(`.field-data`);
+    if(dataField) dataField.style.display = "none";
 
     const labelEsc2 = document.getElementById("labelEsc2");
     if(labelEsc2) labelEsc2.classList.remove("hiddenLabel");
@@ -5177,6 +5177,7 @@ document.getElementById("btnExcluirEscalacao")?.addEventListener("click", clearE
 </script>
 </body>
 </html>
+
 
 
 
