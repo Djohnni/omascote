@@ -3738,13 +3738,14 @@ function configureOptionalSections(productKey){
   }
 
   if(productKey === "escalacao"){
+    lockOpen("data");
     lockOpen("esc1");
     lockOpen("artilheiros");
     keepClosed("esc2");
     keepClosed("mascote");
 
-    const dataField = document.querySelector(`.field-data`);
-    if(dataField) dataField.style.display = "none";
+    const dataToggle = document.querySelector(`[data-optional-field="data"] [data-optional-toggle]`);
+    if(dataToggle) dataToggle.style.display = "none";
 
     const labelEsc2 = document.getElementById("labelEsc2");
     if(labelEsc2) labelEsc2.classList.remove("hiddenLabel");
@@ -5176,7 +5177,6 @@ document.getElementById("btnExcluirEscalacao")?.addEventListener("click", clearE
 </script>
 </body>
 </html>
-
 
 
 
