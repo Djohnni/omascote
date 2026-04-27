@@ -2745,6 +2745,66 @@ body.mode-proximo-jogo .filePlus .chosen{
   }
 }
 
+/* ===== TESTE FLIP CAMPOS ===== */
+
+input:not(.fileHidden):not([type="hidden"]),
+textarea,
+.filePlus{
+  transform-style:preserve-3d !important;
+  transition:
+    transform .45s ease,
+    background .25s ease,
+    color .25s ease,
+    border-color .25s ease,
+    box-shadow .25s ease !important;
+}
+
+input:not(.fileHidden):not([type="hidden"]):not(.flip-active),
+textarea:not(.flip-active),
+.filePlus:not(.flip-active){
+  background:
+    linear-gradient(135deg, rgba(255,255,255,.10), rgba(255,255,255,.02)),
+    linear-gradient(135deg, #0b6b38, #16a34a) !important;
+  color:#ffffff !important;
+  border-color:#0f8a43 !important;
+  box-shadow:0 12px 26px rgba(22,163,74,.22) !important;
+}
+
+input:not(.fileHidden):not([type="hidden"]):not(.flip-active)::placeholder,
+textarea:not(.flip-active)::placeholder{
+  color:rgba(255,255,255,.92) !important;
+  font-weight:900 !important;
+}
+
+.filePlus:not(.flip-active) .chosen{
+  color:#ffffff !important;
+  font-size:16px !important;
+  font-weight:950 !important;
+}
+
+.flip-active{
+  animation:flipCampo .45s ease both !important;
+  background:#ffffff !important;
+  color:#243041 !important;
+}
+
+@keyframes flipCampo{
+  0%{
+    transform:perspective(900px) rotateY(0deg);
+  }
+  49%{
+    transform:perspective(900px) rotateY(88deg);
+  }
+  50%{
+    transform:perspective(900px) rotateY(-88deg);
+  }
+  100%{
+    transform:perspective(900px) rotateY(0deg);
+  }
+}
+
+/* ===== FIM TESTE FLIP CAMPOS ===== */
+
 /* ===== FIM CORREÇÃO RESULTADO DO JOGO ===== */
 
 /* ===== FIM IA4TUBE UI SIMPLES ===== */
@@ -5332,6 +5392,49 @@ async function acompanharResultado(pedidoId){
   }, 5000);
 }
 
+function iniciarFlipCampos(){
+  const ativar = (el)=>{
+    if(!el) return;
+    el.classList.add("flip-active");
+  };
+
+  const atualizarTexto = (el)=>{
+    if(!el) return;
+    if(String(el.value || "").trim()){
+      el.classList.add("flip-active");
+    }else{
+      el.classList.remove("flip-active");
+    }
+  };
+
+  document.querySelectorAll('input:not(.fileHidden):not([type="hidden"]), textarea').forEach((el)=>{
+    atualizarTexto(el);
+
+    el.addEventListener("focus", ()=>ativar(el));
+    el.addEventListener("click", ()=>ativar(el));
+    el.addEventListener("input", ()=>atualizarTexto(el));
+    el.addEventListener("blur", ()=>atualizarTexto(el));
+  });
+
+  document.querySelectorAll(".filePlus").forEach((box)=>{
+    box.addEventListener("click", ()=>ativar(box));
+    box.addEventListener("keydown", ()=>ativar(box));
+  });
+
+  document.querySelectorAll(".fileHidden").forEach((input)=>{
+    input.addEventListener("change", ()=>{
+      const box = document.querySelector(`.filePlus[data-file-for="${input.id}"]`);
+      if(!box) return;
+
+      if(input.files && input.files.length > 0){
+        box.classList.add("flip-active");
+      }else{
+        box.classList.remove("flip-active");
+      }
+    });
+  });
+}
+
 setArtilheirosMode("resultado");
 applyLocal();
 refreshMe();
@@ -5339,6 +5442,7 @@ carregarHistorico();
 updateChosenPlaceholders(null);
 selectorStage?.classList.add("open");
 selectProduct("resultado");
+iniciarFlipCampos();
 setTimeout(()=>window.scrollTo({ top:0, behavior:"auto" }), 180);
 
 document.getElementById("btnSair").addEventListener("click", ()=>{
@@ -5365,6 +5469,7 @@ document.getElementById("btnExcluirEscalacao")?.addEventListener("click", clearE
 </script>
 </body>
 </html>
+
 
 
 
