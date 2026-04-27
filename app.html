@@ -1870,7 +1870,31 @@
         min-width:0;
       }
     }
-  </style>
+  .descBox {
+  margin-top:10px;
+  position:relative;
+  background:#f5f5f5;
+  border-radius:10px;
+  padding:10px;
+  max-height:120px;
+  overflow:auto;
+  font-size:12px;
+  line-height:1.4;
+}
+
+.btnCopiar {
+  position:absolute;
+  top:6px;
+  right:6px;
+  border:none;
+  background:#2ecc71;
+  color:#fff;
+  border-radius:6px;
+  padding:4px 6px;
+  cursor:pointer;
+}
+
+</style>
 </head>
 
 <body>
@@ -4241,6 +4265,11 @@ async function carregarHistorico(){
 
         ${p.imagem_url ? `<img src="${p.imagem_url}" style="width:100px;"><br>` : ""}
 
+<div class="descBox">
+  <div id="desc_${p.id}" class="descTexto">${p.descricao_instagram || ""}</div>
+  <button class="btnCopiar" onclick="copiarDescricao('${p.id}')">📋</button>
+</div>
+
         <button onclick="baixarPedido('${p.id}')" style="margin-top:8px;padding:6px 10px;border-radius:6px;border:none;background:#2ecc71;color:#fff;font-weight:700;cursor:pointer;">
           Baixar novamente
         </button>
@@ -4252,7 +4281,15 @@ async function carregarHistorico(){
   }
 }
 
-async function baixarPedido(id){
+async function copiarDescricao(id){
+  const el = document.getElementById("desc_" + id);
+  if(!el) return;
+
+  navigator.clipboard.writeText(el.innerText);
+  alert("Copiado!");
+}
+
+function baixarPedido(id){
   try{
     const r = await fetch(`${API_BASE}/pedidos/${id}/download-resultado`, {
       headers: { "Authorization": "Bearer " + token }
@@ -4352,32 +4389,5 @@ document.getElementById("btnExcluirEscalacao")?.addEventListener("click", clearE
 </script>
 </body>
 </html>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
