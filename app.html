@@ -2598,6 +2598,71 @@ body.mode-result .filePlus .chosen{
   }
 }
 
+body.mode-proximo-jogo .formGrid{
+  display:grid !important;
+  grid-template-columns:1fr 1fr !important;
+  gap:26px !important;
+}
+
+body.mode-proximo-jogo .field-placar,
+body.mode-proximo-jogo .field-data,
+body.mode-proximo-jogo .field-hora,
+body.mode-proximo-jogo .field-optional-title,
+body.mode-proximo-jogo .field-arena,
+body.mode-proximo-jogo .field-submit,
+body.mode-proximo-jogo .field-msg{
+  grid-column:1 / -1 !important;
+}
+
+body.mode-proximo-jogo .field-esc1,
+body.mode-proximo-jogo .field-esc2{
+  grid-column:auto !important;
+  display:flex !important;
+  align-items:stretch !important;
+  width:100% !important;
+}
+
+body.mode-proximo-jogo .field-esc1 .optionalContent,
+body.mode-proximo-jogo .field-esc2 .optionalContent{
+  display:flex !important;
+  margin:0 !important;
+}
+
+body.mode-proximo-jogo .field-esc1 .filePlus,
+body.mode-proximo-jogo .field-esc2 .filePlus{
+  width:100% !important;
+  min-height:120px !important;
+  padding:18px 12px !important;
+  justify-content:center !important;
+  text-align:center !important;
+}
+
+body.mode-proximo-jogo .filePlus .chosen{
+  white-space:normal !important;
+  text-align:center !important;
+  line-height:1.2 !important;
+}
+
+@media (max-width:680px){
+  body.mode-proximo-jogo .formGrid{
+    grid-template-columns:1fr 1fr !important;
+    gap:18px !important;
+  }
+
+  body.mode-proximo-jogo .field-esc1 .filePlus,
+  body.mode-proximo-jogo .field-esc2 .filePlus{
+    min-height:110px !important;
+    padding:14px 8px !important;
+  }
+
+  body.mode-proximo-jogo .field-esc1 .filePlus .plus,
+  body.mode-proximo-jogo .field-esc2 .filePlus .plus{
+    width:40px !important;
+    height:40px !important;
+    flex:0 0 40px !important;
+  }
+}
+
 .playersTitle{
   width:100%;
   color:#111827;
@@ -5233,6 +5298,7 @@ document.getElementById("btnExcluirEscalacao")?.addEventListener("click", clearE
 </script>
 </body>
 </html>
+
 
 
 
