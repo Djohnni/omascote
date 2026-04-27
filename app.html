@@ -788,7 +788,7 @@
     }
 
     .hiddenLabel{
-      display:inline !important;
+      display:none;
     }
 
     .placeholderLike{
@@ -2871,7 +2871,7 @@ body.mode-result .filePlus .chosen{
 
             <div class="field-esc1 optionalField" data-optional-field="esc1">
               <button type="button" class="optionalToggle" data-optional-toggle="esc1">
-                <span class="optionalToggleText hiddenLabel" id="labelEsc1">1</span>
+                <span class="optionalToggleText hiddenLabel" id="labelEsc1">Escudo Time A</span>
                 <span class="optionalToggleIcon">▼</span>
               </button>
               <div class="optionalContent" data-optional-content="esc1">
@@ -2888,7 +2888,7 @@ body.mode-result .filePlus .chosen{
 
             <div class="field-esc2 optionalField" data-optional-field="esc2">
               <button type="button" class="optionalToggle" data-optional-toggle="esc2">
-                <span class="optionalToggleText hiddenLabel" id="labelEsc2">2</span>
+                <span class="optionalToggleText hiddenLabel" id="labelEsc2">Escudo Time B</span>
                 <span class="optionalToggleIcon">▼</span>
               </button>
               <div class="optionalContent" data-optional-content="esc2">
@@ -3746,6 +3746,9 @@ function configureOptionalSections(productKey){
 
     const dataToggle = document.querySelector(`[data-optional-field="data"] [data-optional-toggle]`);
     if(dataToggle) dataToggle.style.display = "none";
+
+    const esc1Toggle = document.querySelector(`[data-optional-field="esc1"] [data-optional-toggle]`);
+    if(esc1Toggle) esc1Toggle.style.display = "none";
 
     const labelEsc2 = document.getElementById("labelEsc2");
     if(labelEsc2) labelEsc2.classList.remove("hiddenLabel");
