@@ -2011,16 +2011,11 @@ body{
   letter-spacing:.08em;
 }
 
-.brandShield{
-  width:44px;
-  height:44px;
-  border-radius:14px;
-  display:grid;
-  place-items:center;
-  background:linear-gradient(135deg,#0b6b38,#16a34a);
-  border:2px solid rgba(255,255,255,.25);
-  box-shadow:0 8px 18px rgba(0,0,0,.28);
-  font-size:24px;
+.logoTopo{
+  width:170px;
+  height:54px;
+  object-fit:contain;
+  display:block;
 }
 
 .topActions{
@@ -2399,10 +2394,10 @@ body.mode-result .formGrid{
     font-size:9px !important;
   }
 
-  .brandShield{
-    width:36px !important;
-    height:36px !important;
-    font-size:19px !important;
+  .logoTopo{
+    width:140px !important;
+    height:44px !important;
+    object-fit:contain !important;
   }
 
   .topHelp{
@@ -2868,11 +2863,7 @@ textarea:not(.flip-active)::placeholder{
   <div class="wrap">
     <div class="topbar">
       <div class="brandTop ia4Brand">
-        <img src="iA4TUBE.png" class="brandShield">
-        <span>
-          <strong>IA4TUBE</strong>
-          <small>ARTES ESPORTIVAS</small>
-        </span>
+        <img src="ia4tube.png" class="logoTopo">
       </div>
 
       <div class="row topActions">
@@ -5544,5 +5535,6 @@ document.getElementById("btnExcluirEscalacao")?.addEventListener("click", clearE
 </script>
 </body>
 </html>
+
 
 
