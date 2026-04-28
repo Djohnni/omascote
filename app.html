@@ -2394,8 +2394,29 @@ body.mode-result .formGrid{
     gap:8px !important;
   }
 
+  .topbar{
+    display:grid !important;
+    grid-template-columns:1fr auto !important;
+    align-items:start !important;
+  }
+
+  .topLeftArea{
+    display:flex !important;
+    flex-direction:column !important;
+    align-items:center !important;
+    gap:6px !important;
+  }
+
   .saldoTopoArea{
+    display:flex !important;
+    flex-direction:column !important;
+    align-items:flex-end !important;
+    justify-content:flex-start !important;
     gap:5px !important;
+  }
+
+  .topActions{
+    display:none !important;
   }
 
   .saldoTopoTexto{
@@ -2885,8 +2906,12 @@ textarea:not(.flip-active)::placeholder{
 <body>
   <div class="wrap">
     <div class="topbar">
-      <div class="brandTop ia4Brand">
-        <img src="iA4TUBE.png" class="logoTopo">
+      <div class="topLeftArea">
+        <div class="brandTop ia4Brand">
+          <img src="iA4TUBE.png" class="logoTopo">
+        </div>
+
+        <button class="topOrders" id="btnMeusPedidos" type="button" onclick="document.querySelector('#historicoLista')?.scrollIntoView({behavior:'smooth',block:'start'});">📁 Meus pedidos</button>
       </div>
 
       <div class="saldoTopoArea">
@@ -2908,7 +2933,6 @@ textarea:not(.flip-active)::placeholder{
 
       <div class="row topActions">
         <button class="topHelp" type="button">?</button>
-        <button class="topOrders" id="btnMeusPedidos" type="button" onclick="document.querySelector('#historicoLista')?.scrollIntoView({behavior:'smooth',block:'start'});">📁 Meus pedidos</button>
 
         <button class="btnBlue hiddenSystemBtn" id="btnAtualizar">Atualizar</button>
         <button class="btnRed hiddenSystemBtn" id="btnSair">Sair</button>
@@ -5645,6 +5669,7 @@ document.getElementById("btnExcluirEscalacao")?.addEventListener("click", clearE
 </script>
 </body>
 </html>
+
 
 
 
