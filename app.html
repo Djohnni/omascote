@@ -2874,8 +2874,15 @@ textarea:not(.flip-active)::placeholder{
       </div>
 
       <div class="row topActions">
+        <div id="saldoTopo" style="background:#16a34a;color:#fff;padding:10px 16px;border-radius:14px;font-weight:900;font-size:14px;box-shadow:0 6px 14px rgba(22,163,74,.25);">
+          Saldo: R$ 0,00
+        </div>
         <button class="topHelp" type="button">?</button>
-        <button class="topOrders" id="btnMeusPedidos" type="button" onclick="document.querySelector('#historicoLista')?.scrollIntoView({behavior:'smooth',block:'start'});">📁 Meus pedidos</button>
+        ---
+PROCURE ISSO:
+<div class="row topActions">
+TROQUE POR ISSO:
+<div class="row topActions" style="gap:10px;">
 
         <button class="btnBlue hiddenSystemBtn" id="btnAtualizar">Atualizar</button>
         <button class="btnRed hiddenSystemBtn" id="btnSair">Sair</button>
@@ -3881,6 +3888,11 @@ async function refreshMe(){
       applyLocal();
       statusEl.textContent = data.ativo ? "Status: ativo" : "Status: inativo";
       const saldo = Number(data.saldo || 0);
+
+const saldoTopoEl = document.getElementById("saldoTopo");
+if(saldoTopoEl){
+  saldoTopoEl.textContent = `Saldo: R$ ${saldo.toFixed(2).replace(".", ",")}`;
+}
 
 if(saldoEl){
   saldoEl.textContent = `Saldo disponível: R$ ${saldo.toFixed(2).replace(".", ",")}`;
@@ -5542,6 +5554,8 @@ document.getElementById("btnExcluirEscalacao")?.addEventListener("click", clearE
 </script>
 </body>
 </html>
+
+
 
 
 
