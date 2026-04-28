@@ -3889,11 +3889,6 @@ async function refreshMe(){
       statusEl.textContent = data.ativo ? "Status: ativo" : "Status: inativo";
       const saldo = Number(data.saldo || 0);
 
-const saldoTopoEl = document.getElementById("saldoTopo");
-if(saldoTopoEl){
-  saldoTopoEl.textContent = `Saldo: R$ ${saldo.toFixed(2).replace(".", ",")}`;
-}
-
 if(saldoEl){
   saldoEl.textContent = `Saldo disponível: R$ ${saldo.toFixed(2).replace(".", ",")}`;
 }
@@ -5554,7 +5549,6 @@ document.getElementById("btnExcluirEscalacao")?.addEventListener("click", clearE
 </script>
 </body>
 </html>
-
 
 
 
