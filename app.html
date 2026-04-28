@@ -2874,15 +2874,8 @@ textarea:not(.flip-active)::placeholder{
       </div>
 
       <div class="row topActions">
-        <div id="saldoTopo" style="background:#16a34a;color:#fff;padding:10px 16px;border-radius:14px;font-weight:900;font-size:14px;box-shadow:0 6px 14px rgba(22,163,74,.25);">
-          Saldo: R$ 0,00
-        </div>
         <button class="topHelp" type="button">?</button>
-        ---
-PROCURE ISSO:
-<div class="row topActions">
-TROQUE POR ISSO:
-<div class="row topActions" style="gap:10px;">
+        <button class="topOrders" id="btnMeusPedidos" type="button" onclick="document.querySelector('#historicoLista')?.scrollIntoView({behavior:'smooth',block:'start'});">📁 Meus pedidos</button>
 
         <button class="btnBlue hiddenSystemBtn" id="btnAtualizar">Atualizar</button>
         <button class="btnRed hiddenSystemBtn" id="btnSair">Sair</button>
@@ -5549,7 +5542,6 @@ document.getElementById("btnExcluirEscalacao")?.addEventListener("click", clearE
 </script>
 </body>
 </html>
-
 
 
 
