@@ -410,6 +410,7 @@
     .selectorStage.open .optionBtn:nth-child(3){ transition-delay:.15s; }
     .selectorStage.open .optionBtn:nth-child(4){ transition-delay:.20s; }
     .selectorStage.open .optionBtn:nth-child(5){ transition-delay:.25s; }
+    .selectorStage.open .optionBtn:nth-child(6){ transition-delay:.30s; }
 
     .circle{
       width:108px;
@@ -2505,7 +2506,7 @@ body.mode-result .formGrid{
   }
 
   .optionsRow{
-    grid-template-columns:repeat(4,1fr) !important;
+    grid-template-columns:repeat(3,1fr) !important;
     gap:8px !important;
   }
 
@@ -2987,7 +2988,7 @@ textarea:not(.flip-active)::placeholder{
           Sem Designer. Pronto Para Postar.
         </div>
 
-<div style="display:flex;justify-content:center;margin:18px auto 22px;">
+<div style="display:none !important;">
   <button type="button" class="optionBtn" data-product="escudo3d" style="opacity:1;transform:none;">
     <div class="circle">
       <img src="icons/escudo3d.png" class="iconImg">
@@ -3135,6 +3136,17 @@ TROQUE POR ISSO:
                 <img src="icons/patrocinador.png" class="iconImg">
               </div>
               <div class="optLabel">Patrocinador<br>/ Apoio</div>
+            </button>
+
+            <button type="button" class="optionBtn" data-product="escudo3d">
+              <div class="circle">
+                <img src="icons/escudo3d.png" class="iconImg">
+              </div>
+              <div class="optLabel">
+                Primeira arte<br>Escudo 3D<br>
+                <span style="font-size:11px;color:#777;text-decoration:line-through;">R$18</span>
+                <span style="color:#1fbf63;font-weight:900;"> R$4</span>
+              </div>
             </button>
           </div>
         </div>
@@ -5699,6 +5711,7 @@ document.getElementById("btnExcluirEscalacao")?.addEventListener("click", clearE
 </script>
 </body>
 </html>
+
 
 
 
