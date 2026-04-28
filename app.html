@@ -1933,8 +1933,9 @@
 .saldoMenu{
   position:absolute;
   top:calc(100% + 10px);
-  left:50%;
-  transform:translateX(-50%);
+  right:0;
+  left:auto;
+  transform:none;
   display:none;
   grid-template-columns:repeat(2, minmax(90px, 1fr));
   gap:10px;
@@ -1944,6 +1945,7 @@
   background:#ffffff;
   border:1px solid #e5e7eb;
   box-shadow:0 18px 40px rgba(15,23,42,.18);
+  z-index:9999;
 }
 
 .saldoMenu.open{
@@ -1985,6 +1987,9 @@ body{
   border:1px solid #e5e7eb !important;
   border-top:none !important;
   box-shadow:0 14px 34px rgba(15,23,42,.10) !important;
+  overflow:visible !important;
+  position:relative !important;
+  z-index:1000 !important;
 }
 
 .ia4Brand{
@@ -5694,6 +5699,7 @@ document.getElementById("btnExcluirEscalacao")?.addEventListener("click", clearE
 </script>
 </body>
 </html>
+
 
 
 
