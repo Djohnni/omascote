@@ -2866,28 +2866,18 @@ textarea:not(.flip-active)::placeholder{
   <button type="button" class="btnBlue" id="btnComprar5000" style="min-width:0;padding:10px 14px;font-size:13px;border-radius:999px;">Comprar R$50</button>
 </div>
 
----
-PROCURE ISSO:
-            <button type="button" class="optionBtn" data-product="patrocinador">
-              <div class="circle">
-                <img src="icons/patrocinador.png" class="iconImg">
-              </div>
-              <div class="optLabel">Patrocinador<br>/ Apoio</div>
-            </button>
-TROQUE POR ISSO:
-            <button type="button" class="optionBtn" data-product="patrocinador">
-              <div class="circle">
-                <img src="icons/patrocinador.png" class="iconImg">
-              </div>
-              <div class="optLabel">Patrocinador<br>/ Apoio</div>
-            </button>
-
-            <button type="button" class="optionBtn" data-product="escudo3d">
-              <div class="circle">
-                <img src="icons/escudo3d.png" class="iconImg">
-              </div>
-              <div class="optLabel">Escudo 3D</div>
-            </button>
+<div style="display:none;">
+  <button type="button" class="optionBtn" data-product="escudo3d" style="opacity:1;transform:none;width:100%;min-height:230px;">
+    <div class="circle">
+      <img src="icons/escudo3d.png" class="iconImg">
+    </div>
+    <div class="optLabel">
+      Primeira arte<br>Escudo 3D<br>
+      <span style="font-size:11px;color:#777;text-decoration:line-through;">R$18</span>
+      <span style="color:#1fbf63;font-weight:900;"> R$4</span>
+    </div>
+  </button>
+</div>
 
         <div class="selectorStage">
           <div class="centerWrap">
@@ -3851,17 +3841,18 @@ if(saldoHeroEl){
   saldoHeroEl.textContent = `Saldo disponível: R$ ${saldo.toFixed(2).replace(".", ",")}`;
 }
 
----
-PROCURE ISSO:
-  .optionsRow{
-    grid-template-columns:repeat(4,1fr) !important;
-    gap:8px !important;
+const jaComprou = Number(data.usados_no_ciclo || 0) > 0;
+
+const escudoPromo = document.querySelector('[data-product="escudo3d"]');
+
+if(escudoPromo){
+  const label = escudoPromo.querySelector(".optLabel");
+  if(label){
+    label.innerHTML = jaComprou
+      ? `Escudo 3D<br><span style="color:#1fbf63;font-weight:900;">R$18</span>`
+      : `Primeira arte<br>Escudo 3D<br><span style="font-size:11px;color:#777;text-decoration:line-through;">R$18</span> <span style="color:#1fbf63;font-weight:900;">R$4</span>`;
   }
-TROQUE POR ISSO:
-  .optionsRow{
-    grid-template-columns:repeat(3,1fr) !important;
-    gap:8px !important;
-  }
+}
     }
   }catch{}
 }
