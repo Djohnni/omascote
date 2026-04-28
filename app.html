@@ -2026,7 +2026,22 @@ body{
 }
 
 .topActions{
-  gap:14px !important;
+  display:none !important;
+}
+
+.saldoTopoExtra{
+  display:flex !important;
+  justify-content:flex-end !important;
+  margin-top:8px !important;
+}
+
+.ia4Brand{
+  height:100% !important;
+}
+
+.logoTopo{
+  height:90px !important;
+  width:auto !important;
 }
 
 .topHelp{
@@ -2412,7 +2427,13 @@ body.mode-result .formGrid{
     flex-direction:column !important;
     align-items:flex-end !important;
     justify-content:flex-start !important;
-    gap:5px !important;
+    gap:6px !important;
+  }
+
+  .saldoTopoExtra{
+    width:100% !important;
+    display:flex !important;
+    justify-content:flex-end !important;
   }
 
   .topActions{
@@ -2906,12 +2927,8 @@ textarea:not(.flip-active)::placeholder{
 <body>
   <div class="wrap">
     <div class="topbar">
-      <div class="topLeftArea">
-        <div class="brandTop ia4Brand">
-          <img src="iA4TUBE.png" class="logoTopo">
-        </div>
-
-        <button class="topOrders" id="btnMeusPedidos" type="button" onclick="document.querySelector('#historicoLista')?.scrollIntoView({behavior:'smooth',block:'start'});">📁 Meus pedidos</button>
+      <div class="brandTop ia4Brand">
+        <img src="iA4TUBE.png" class="logoTopo">
       </div>
 
       <div class="saldoTopoArea">
@@ -2931,11 +2948,8 @@ textarea:not(.flip-active)::placeholder{
         </div>
       </div>
 
-      <div class="row topActions">
-        <button class="topHelp" type="button">?</button>
-
-        <button class="btnBlue hiddenSystemBtn" id="btnAtualizar">Atualizar</button>
-        <button class="btnRed hiddenSystemBtn" id="btnSair">Sair</button>
+      <div class="saldoTopoExtra">
+        <button class="topOrders" id="btnMeusPedidos" type="button" onclick="document.querySelector('#historicoLista')?.scrollIntoView({behavior:'smooth',block:'start'});">📁 Meus pedidos</button>
       </div>
     </div>
 
@@ -5669,6 +5683,7 @@ document.getElementById("btnExcluirEscalacao")?.addEventListener("click", clearE
 </script>
 </body>
 </html>
+
 
 
 
