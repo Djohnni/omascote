@@ -5658,12 +5658,12 @@ selectProduct("resultado");
 iniciarFlipCampos();
 setTimeout(()=>window.scrollTo({ top:0, behavior:"auto" }), 180);
 
-document.getElementById("btnSair").addEventListener("click", ()=>{
+document.getElementById("btnSair")?.addEventListener("click", ()=>{
   localStorage.removeItem("omascote_token");
   window.location.href = "index.html";
 });
 
-document.getElementById("btnAtualizar").addEventListener("click", refreshMe);
+document.getElementById("btnAtualizar")?.addEventListener("click", refreshMe);
 
 const btnAbrirSaldo = document.getElementById("btnAbrirSaldo");
 const saldoMenu = document.getElementById("saldoMenu");
@@ -5699,6 +5699,7 @@ document.getElementById("btnExcluirEscalacao")?.addEventListener("click", clearE
 </script>
 </body>
 </html>
+
 
 
 
