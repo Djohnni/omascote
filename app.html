@@ -2027,6 +2027,42 @@ body{
 
 .topActions{
   gap:14px !important;
+  flex:0 0 auto !important;
+}
+
+.topLeftArea{
+  display:flex !important;
+  flex-direction:column !important;
+  align-items:center !important;
+  justify-content:center !important;
+  gap:14px !important;
+  flex:0 0 auto !important;
+}
+
+.saldoTopoArea{
+  display:flex !important;
+  flex-direction:column !important;
+  align-items:center !important;
+  justify-content:center !important;
+  gap:10px !important;
+  margin-left:auto !important;
+  flex:0 0 auto !important;
+}
+
+.saldoTopoTexto{
+  font-weight:850 !important;
+  font-size:18px !important;
+  color:#111827 !important;
+  line-height:1.1 !important;
+  white-space:nowrap !important;
+}
+
+.saldoBoxTopo{
+  margin:0 !important;
+}
+
+.saldoBoxTopo #btnAbrirSaldo{
+  min-width:210px !important;
 }
 
 .topHelp{
@@ -2394,8 +2430,17 @@ body.mode-result .formGrid{
     gap:8px !important;
   }
 
+  .topbar{
+    align-items:flex-start !important;
+  }
+
+  .topLeftArea{
+    gap:8px !important;
+  }
+
   .saldoTopoArea{
     gap:5px !important;
+    margin-left:auto !important;
   }
 
   .saldoTopoTexto{
@@ -2885,8 +2930,12 @@ textarea:not(.flip-active)::placeholder{
 <body>
   <div class="wrap">
     <div class="topbar">
-      <div class="brandTop ia4Brand">
-        <img src="iA4TUBE.png" class="logoTopo">
+      <div class="topLeftArea">
+        <div class="brandTop ia4Brand">
+          <img src="iA4TUBE.png" class="logoTopo">
+        </div>
+
+        <button class="topOrders" id="btnMeusPedidos" type="button" onclick="document.querySelector('#historicoLista')?.scrollIntoView({behavior:'smooth',block:'start'});">📁 Meus pedidos</button>
       </div>
 
       <div class="saldoTopoArea">
@@ -2908,7 +2957,6 @@ textarea:not(.flip-active)::placeholder{
 
       <div class="row topActions">
         <button class="topHelp" type="button">?</button>
-        <button class="topOrders" id="btnMeusPedidos" type="button" onclick="document.querySelector('#historicoLista')?.scrollIntoView({behavior:'smooth',block:'start'});">📁 Meus pedidos</button>
 
         <button class="btnBlue hiddenSystemBtn" id="btnAtualizar">Atualizar</button>
         <button class="btnRed hiddenSystemBtn" id="btnSair">Sair</button>
@@ -2933,7 +2981,46 @@ textarea:not(.flip-active)::placeholder{
           Sem Designer. Pronto Para Postar.
         </div>
 
+---
+PROCURE ISSO:
+.topActions{
+  gap:14px !important;
+}
 
+TROQUE POR ISSO:
+<!-- bloco de troca removido -->
+
+TROQUE POR ISSO:
+.topActions{
+  gap:14px !important;
+}
+
+.saldoTopoArea{
+  display:flex !important;
+  flex-direction:column !important;
+  align-items:center !important;
+  justify-content:center !important;
+  gap:8px !important;
+  flex:1 1 auto !important;
+}
+
+.saldoTopoTexto{
+  font-weight:950 !important;
+  font-size:16px !important;
+  color:#111827 !important;
+  line-height:1 !important;
+}
+
+.saldoBoxTopo{
+  margin:0 !important;
+}
+
+.saldoBoxTopo #btnAbrirSaldo{
+  min-width:170px !important;
+  padding:12px 18px !important;
+  font-size:15px !important;
+  border-radius:999px !important;
+}
 
 <div style="display:flex;justify-content:center;margin:18px auto 22px;">
   <button type="button" class="optionBtn" data-product="escudo3d" style="opacity:1;transform:none;">
