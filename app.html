@@ -2411,8 +2411,16 @@ body.mode-result .formGrid{
 
   .topbar{
     display:grid !important;
-    grid-template-columns:1fr auto !important;
+    grid-template-columns:minmax(0,1fr) auto !important;
     align-items:start !important;
+  }
+
+  .topRightArea{
+    display:flex !important;
+    flex-direction:column !important;
+    align-items:flex-end !important;
+    justify-content:flex-start !important;
+    gap:8px !important;
   }
 
   .topLeftArea{
@@ -2431,9 +2439,10 @@ body.mode-result .formGrid{
   }
 
   .saldoTopoExtra{
-    width:100% !important;
+    width:auto !important;
     display:flex !important;
     justify-content:flex-end !important;
+    align-self:flex-end !important;
   }
 
   .topActions{
@@ -2460,8 +2469,8 @@ body.mode-result .formGrid{
   }
 
   .logoTopo{
-    width:160px !important;
-    height:50px !important;
+    width:190px !important;
+    height:115px !important;
     object-fit:contain !important;
   }
 
@@ -2931,25 +2940,27 @@ textarea:not(.flip-active)::placeholder{
         <img src="iA4TUBE.png" class="logoTopo">
       </div>
 
-      <div class="saldoTopoArea">
-        <div id="saldoHero" class="saldoTopoTexto">
-          Saldo disponível: —
-        </div>
+      <div class="topRightArea">
+        <div class="saldoTopoArea">
+          <div id="saldoHero" class="saldoTopoTexto">
+            Saldo disponível: —
+          </div>
 
-        <div class="saldoBox saldoBoxTopo">
-          <button type="button" class="btnGreen" id="btnAbrirSaldo">Adicionar saldo</button>
+          <div class="saldoBox saldoBoxTopo">
+            <button type="button" class="btnGreen" id="btnAbrirSaldo">Adicionar saldo</button>
 
-          <div class="saldoMenu" id="saldoMenu">
-            <button type="button" class="saldoOpcao" data-pacote="saldo_800">R$8</button>
-            <button type="button" class="saldoOpcao" data-pacote="saldo_1800">R$18</button>
-            <button type="button" class="saldoOpcao" data-pacote="saldo_2800">R$28</button>
-            <button type="button" class="saldoOpcao" data-pacote="saldo_4800">R$48</button>
+            <div class="saldoMenu" id="saldoMenu">
+              <button type="button" class="saldoOpcao" data-pacote="saldo_800">R$8</button>
+              <button type="button" class="saldoOpcao" data-pacote="saldo_1800">R$18</button>
+              <button type="button" class="saldoOpcao" data-pacote="saldo_2800">R$28</button>
+              <button type="button" class="saldoOpcao" data-pacote="saldo_4800">R$48</button>
+            </div>
           </div>
         </div>
-      </div>
 
-      <div class="saldoTopoExtra">
-        <button class="topOrders" id="btnMeusPedidos" type="button" onclick="document.querySelector('#historicoLista')?.scrollIntoView({behavior:'smooth',block:'start'});">📁 Meus pedidos</button>
+        <div class="saldoTopoExtra">
+          <button class="topOrders" id="btnMeusPedidos" type="button" onclick="document.querySelector('#historicoLista')?.scrollIntoView({behavior:'smooth',block:'start'});">📁 Meus pedidos</button>
+        </div>
       </div>
     </div>
 
@@ -5683,6 +5694,7 @@ document.getElementById("btnExcluirEscalacao")?.addEventListener("click", clearE
 </script>
 </body>
 </html>
+
 
 
 
