@@ -2880,7 +2880,6 @@ font-weight:950 !important;
 }
 -
 
-PROCURE ISSO:
 #valorSaldoLivre{
 width:100% !important;
 }
@@ -2888,19 +2887,19 @@ width:100% !important;
 #btnComprarSaldoLivre{
 flex:0 0 auto !important;
 }
-TROQUE POR ISSO:
+
 .btnSaldoOpcao{
 flex:1 1 45% !important;
 }
 -
 
-PROCURE ISSO:
+
 if(saldoHeroEl){
 saldoHeroEl.textContent = `Saldo disponível: R$ ${saldo.toFixed(2).replace(".", ",")}`;
 }
 
 const jaComprou = Number(data.usados_no_ciclo || 0) > 0;
-TROQUE POR ISSO:
+
 if(saldoHeroEl){
 saldoHeroEl.textContent = `Saldo disponível: R$ ${saldo.toFixed(2).replace(".", ",")}`;
 }
@@ -2917,7 +2916,7 @@ btnComprarMensal.disabled = mensalUsado;
 
 ## const jaComprou = Number(data.usados_no_ciclo || 0) > 0;
 
-PROCURE ISSO:
+
 async function comprarCreditos(pacote){
 try{
 const r = await fetch(`${API_BASE}/comprar-creditos`, {
@@ -2929,13 +2928,13 @@ headers:{
 body: JSON.stringify({ pacote })
 });
 
-```
+
 const data = await r.json();
 
 if(!data.ok || !data.init_point){
 alert(data.error || "Erro ao iniciar pagamento.");
 return;
-```
+
 
 }
 
@@ -2945,7 +2944,7 @@ window.open(data.init_point, "_blank");
 alert("Erro de rede ao iniciar pagamento.");
 }
 }
-TROQUE POR ISSO:
+
 async function comprarCreditos(payload){
 try{
 const r = await fetch(`${API_BASE}/comprar-creditos`, {
@@ -2957,7 +2956,7 @@ headers:{
 body: JSON.stringify(payload)
 });
 
-```
+
 const data = await r.json();
 
 if(!data.ok || !data.init_point){
@@ -2966,7 +2965,7 @@ if(!data.ok || !data.init_point){
 }
 
 window.open(data.init_point, "_blank");
-```
+
 
 }catch{
 alert("Erro de rede ao iniciar pagamento.");
@@ -2974,11 +2973,11 @@ alert("Erro de rede ao iniciar pagamento.");
 }
 -
 
-PROCURE ISSO:
+
 document.getElementById("btnComprarMensal")?.addEventListener("click", ()=> comprarCreditos("mensal_1990"));
 document.getElementById("btnComprar2990")?.addEventListener("click", ()=> comprarCreditos("saldo_2990"));
 document.getElementById("btnComprar5000")?.addEventListener("click", ()=> comprarCreditos("saldo_5000"));
-TROQUE POR ISSO:
+
 document.getElementById("btnComprarMensal")?.addEventListener("click", ()=> comprarCreditos({
 tipo: "plano_mensal",
 valor: 18
@@ -2988,12 +2987,12 @@ document.querySelectorAll(".btnSaldoOpcao").forEach((btn)=>{
 btn.addEventListener("click", ()=>{
 const valor = Number(btn.dataset.valor || 0);
 
-```
+
 comprarCreditos({
   tipo: "saldo_livre",
   valor
 });
-```
+
 
 });
 });
@@ -3034,7 +3033,7 @@ flex:0 0 auto !important;
 }
 -
 
-PROCURE ISSO:
+
 async function comprarCreditos(pacote){
 try{
 const r = await fetch(`${API_BASE}/comprar-creditos`, {
@@ -3046,13 +3045,13 @@ headers:{
 body: JSON.stringify({ pacote })
 });
 
-```
+
 const data = await r.json();
 
 if(!data.ok || !data.init_point){
 alert(data.error || "Erro ao iniciar pagamento.");
 return;
-```
+
 
 }
 
@@ -3062,7 +3061,7 @@ window.open(data.init_point, "_blank");
 alert("Erro de rede ao iniciar pagamento.");
 }
 }
-TROQUE POR ISSO:
+
 async function comprarCreditos(payload){
 try{
 const r = await fetch(`${API_BASE}/comprar-creditos`, {
@@ -3074,7 +3073,7 @@ headers:{
 body: JSON.stringify(payload)
 });
 
-```
+
 const data = await r.json();
 
 if(!data.ok || !data.init_point){
@@ -3083,7 +3082,7 @@ if(!data.ok || !data.init_point){
 }
 
 window.open(data.init_point, "_blank");
-```
+
 
 }catch{
 alert("Erro de rede ao iniciar pagamento.");
@@ -3091,13 +3090,13 @@ alert("Erro de rede ao iniciar pagamento.");
 }
 -
 
-PROCURE ISSO:
+
 if(saldoHeroEl){
 saldoHeroEl.textContent = `Saldo disponível: R$ ${saldo.toFixed(2).replace(".", ",")}`;
 }
 
 const jaComprou = Number(data.usados_no_ciclo || 0) > 0;
-TROQUE POR ISSO:
+
 if(saldoHeroEl){
 saldoHeroEl.textContent = `Saldo disponível: R$ ${saldo.toFixed(2).replace(".", ",")}`;
 }
@@ -3114,11 +3113,11 @@ btnComprarMensal.disabled = mensalUsado;
 
 ## const jaComprou = Number(data.usados_no_ciclo || 0) > 0;
 
-PROCURE ISSO:
+
 document.getElementById("btnComprarMensal")?.addEventListener("click", ()=> comprarCreditos("mensal_1990"));
 document.getElementById("btnComprar2990")?.addEventListener("click", ()=> comprarCreditos("saldo_2990"));
 document.getElementById("btnComprar5000")?.addEventListener("click", ()=> comprarCreditos("saldo_5000"));
-TROQUE POR ISSO:
+
 document.getElementById("btnComprarMensal")?.addEventListener("click", ()=> comprarCreditos({
 tipo: "plano_mensal",
 valor: 18
@@ -3203,14 +3202,14 @@ valor
       <span>Escolha um valor para recarregar</span>
     </div>
 
-```
+
 <div class="saldoLivreRow">
   <button type="button" class="btnBlue btnSaldoOpcao" data-valor="8">R$8</button>
   <button type="button" class="btnBlue btnSaldoOpcao" data-valor="18">R$18</button>
   <button type="button" class="btnBlue btnSaldoOpcao" data-valor="28">R$28</button>
   <button type="button" class="btnBlue btnSaldoOpcao" data-valor="48">R$48</button>
 </div>
-```
+
 
   </div>
 </div>
