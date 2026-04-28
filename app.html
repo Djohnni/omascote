@@ -2796,16 +2796,16 @@ textarea:not(.flip-active)::placeholder{
 
 @keyframes flipCampo{
   0%{
-    transform:perspective(900px) rotateY(0deg);
+    transform:perspective(900px) rotateX(0deg);
   }
   49%{
-    transform:perspective(900px) rotateY(88deg);
+    transform:perspective(900px) rotateX(-88deg);
   }
   50%{
-    transform:perspective(900px) rotateY(-88deg);
+    transform:perspective(900px) rotateX(88deg);
   }
   100%{
-    transform:perspective(900px) rotateY(0deg);
+    transform:perspective(900px) rotateX(0deg);
   }
 }
 
@@ -5476,30 +5476,3 @@ document.getElementById("btnExcluirEscalacao")?.addEventListener("click", clearE
 </script>
 </body>
 </html>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
