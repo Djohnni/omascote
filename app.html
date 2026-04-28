@@ -1915,6 +1915,56 @@
   cursor:pointer;
 }
 
+.saldoBox{
+  position:relative;
+  display:flex;
+  justify-content:center;
+  margin:12px auto 0;
+  z-index:20;
+}
+
+.saldoBox #btnAbrirSaldo{
+  min-width:180px;
+  padding:12px 18px;
+  font-size:15px;
+  border-radius:999px;
+}
+
+.saldoMenu{
+  position:absolute;
+  top:calc(100% + 10px);
+  left:50%;
+  transform:translateX(-50%);
+  display:none;
+  grid-template-columns:repeat(2, minmax(90px, 1fr));
+  gap:10px;
+  width:min(260px, calc(100vw - 28px));
+  padding:12px;
+  border-radius:18px;
+  background:#ffffff;
+  border:1px solid #e5e7eb;
+  box-shadow:0 18px 40px rgba(15,23,42,.18);
+}
+
+.saldoMenu.open{
+  display:grid;
+}
+
+.saldoOpcao{
+  background:#f8fff9;
+  color:#159947;
+  border:1px solid #dcfce7;
+  border-radius:14px;
+  padding:14px 10px;
+  font-size:20px;
+  font-weight:950;
+  box-shadow:none;
+}
+
+.saldoOpcao:hover{
+  background:#ecfdf3;
+}
+
 /* ===== IA4TUBE UI SIMPLES - TESTE VISUAL ===== */
 
 body{
@@ -2856,10 +2906,15 @@ textarea:not(.flip-active)::placeholder{
   Saldo disponível: —
 </div>
 
-<div style="display:flex;justify-content:center;gap:8px;flex-wrap:wrap;margin:10px auto 0;">
-  <button type="button" class="btnGreen" id="btnComprarMensal" style="min-width:0;padding:10px 14px;font-size:13px;border-radius:999px;">Plano R$19,90</button>
-  <button type="button" class="btnBlue" id="btnComprar2990" style="min-width:0;padding:10px 14px;font-size:13px;border-radius:999px;">Comprar R$29,90</button>
-  <button type="button" class="btnBlue" id="btnComprar5000" style="min-width:0;padding:10px 14px;font-size:13px;border-radius:999px;">Comprar R$50</button>
+<div class="saldoBox">
+  <button type="button" class="btnGreen" id="btnAbrirSaldo">Adicionar saldo</button>
+
+  <div class="saldoMenu" id="saldoMenu">
+    <button type="button" class="saldoOpcao" data-pacote="saldo_800">R$8</button>
+    <button type="button" class="saldoOpcao" data-pacote="saldo_1800">R$18</button>
+    <button type="button" class="saldoOpcao" data-pacote="saldo_2800">R$28</button>
+    <button type="button" class="saldoOpcao" data-pacote="saldo_4800">R$48</button>
+  </div>
 </div>
 
 <div style="display:flex;justify-content:center;margin:18px auto 22px;">
@@ -5455,9 +5510,26 @@ document.getElementById("btnSair").addEventListener("click", ()=>{
 
 document.getElementById("btnAtualizar").addEventListener("click", refreshMe);
 
-document.getElementById("btnComprarMensal")?.addEventListener("click", ()=> comprarCreditos("mensal_1990"));
-document.getElementById("btnComprar2990")?.addEventListener("click", ()=> comprarCreditos("saldo_2990"));
-document.getElementById("btnComprar5000")?.addEventListener("click", ()=> comprarCreditos("saldo_5000"));
+const btnAbrirSaldo = document.getElementById("btnAbrirSaldo");
+const saldoMenu = document.getElementById("saldoMenu");
+
+btnAbrirSaldo?.addEventListener("click", (e)=>{
+  e.stopPropagation();
+  saldoMenu?.classList.toggle("open");
+});
+
+document.querySelectorAll(".saldoOpcao").forEach((btn)=>{
+  btn.addEventListener("click", ()=>{
+    saldoMenu?.classList.remove("open");
+    comprarCreditos(btn.dataset.pacote);
+  });
+});
+
+document.addEventListener("click", (e)=>{
+  if(saldoMenu && btnAbrirSaldo && !saldoMenu.contains(e.target) && e.target !== btnAbrirSaldo){
+    saldoMenu.classList.remove("open");
+  }
+});
 
 document.getElementById("addArtilheiroBtn")?.addEventListener("click", ()=>{
   const wrap = document.getElementById("artilheirosWrap");
@@ -5472,4 +5544,5 @@ document.getElementById("btnExcluirEscalacao")?.addEventListener("click", clearE
 </script>
 </body>
 </html>
+
 
