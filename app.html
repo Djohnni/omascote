@@ -2391,6 +2391,22 @@ body.mode-result .formGrid{
 @media (max-width:680px){
   .topbar{
     padding:14px 16px !important;
+    gap:8px !important;
+  }
+
+  .saldoTopoArea{
+    gap:5px !important;
+  }
+
+  .saldoTopoTexto{
+    font-size:11px !important;
+    white-space:nowrap !important;
+  }
+
+  .saldoBoxTopo #btnAbrirSaldo{
+    min-width:110px !important;
+    padding:8px 10px !important;
+    font-size:11px !important;
   }
 
   .ia4Brand strong{
@@ -2873,6 +2889,23 @@ textarea:not(.flip-active)::placeholder{
         <img src="iA4TUBE.png" class="logoTopo">
       </div>
 
+      <div class="saldoTopoArea">
+        <div id="saldoHero" class="saldoTopoTexto">
+          Saldo disponível: —
+        </div>
+
+        <div class="saldoBox saldoBoxTopo">
+          <button type="button" class="btnGreen" id="btnAbrirSaldo">Adicionar saldo</button>
+
+          <div class="saldoMenu" id="saldoMenu">
+            <button type="button" class="saldoOpcao" data-pacote="saldo_800">R$8</button>
+            <button type="button" class="saldoOpcao" data-pacote="saldo_1800">R$18</button>
+            <button type="button" class="saldoOpcao" data-pacote="saldo_2800">R$28</button>
+            <button type="button" class="saldoOpcao" data-pacote="saldo_4800">R$48</button>
+          </div>
+        </div>
+      </div>
+
       <div class="row topActions">
         <button class="topHelp" type="button">?</button>
         <button class="topOrders" id="btnMeusPedidos" type="button" onclick="document.querySelector('#historicoLista')?.scrollIntoView({behavior:'smooth',block:'start'});">📁 Meus pedidos</button>
@@ -2900,20 +2933,43 @@ textarea:not(.flip-active)::placeholder{
           Sem Designer. Pronto Para Postar.
         </div>
 
-<div id="saldoHero" style="margin-top:12px;font-weight:900;font-size:16px;color:#2f3e5c;">
-  Saldo disponível: —
-</div>
+---
+PROCURE ISSO:
+.topActions{
+  gap:14px !important;
+}
 
-<div class="saldoBox">
-  <button type="button" class="btnGreen" id="btnAbrirSaldo">Adicionar saldo</button>
+TROQUE POR ISSO:
+.topActions{
+  gap:14px !important;
+}
 
-  <div class="saldoMenu" id="saldoMenu">
-    <button type="button" class="saldoOpcao" data-pacote="saldo_800">R$8</button>
-    <button type="button" class="saldoOpcao" data-pacote="saldo_1800">R$18</button>
-    <button type="button" class="saldoOpcao" data-pacote="saldo_2800">R$28</button>
-    <button type="button" class="saldoOpcao" data-pacote="saldo_4800">R$48</button>
-  </div>
-</div>
+.saldoTopoArea{
+  display:flex !important;
+  flex-direction:column !important;
+  align-items:center !important;
+  justify-content:center !important;
+  gap:8px !important;
+  flex:1 1 auto !important;
+}
+
+.saldoTopoTexto{
+  font-weight:950 !important;
+  font-size:16px !important;
+  color:#111827 !important;
+  line-height:1 !important;
+}
+
+.saldoBoxTopo{
+  margin:0 !important;
+}
+
+.saldoBoxTopo #btnAbrirSaldo{
+  min-width:170px !important;
+  padding:12px 18px !important;
+  font-size:15px !important;
+  border-radius:999px !important;
+}
 
 <div style="display:flex;justify-content:center;margin:18px auto 22px;">
   <button type="button" class="optionBtn" data-product="escudo3d" style="opacity:1;transform:none;">
@@ -5542,6 +5598,7 @@ document.getElementById("btnExcluirEscalacao")?.addEventListener("click", clearE
 </script>
 </body>
 </html>
+
 
 
 
