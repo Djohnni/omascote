@@ -3810,9 +3810,18 @@ TROQUE POR ISSO:
       <label for="authSenha">Senha</label>
       <input id="authSenha" type="password" placeholder="Crie uma senha simples">
 
-      <button class="btnGreen" id="authCriarContaBtn" type="button" style="width:100%;margin-top:14px;">
-        Criar conta e continuar 🚀
-      </button>
+      <div style="display:flex;gap:8px;margin-top:14px;" id="authBtnsRow">
+  <button class="btnGreen" id="authEntrarBtn" type="button" style="flex:1;">
+    Entrar 🚀
+  </button>
+  <button id="authCriarContaToggle" type="button" style="flex:1;background:#e5e7eb;color:#111827;font-weight:900;border-radius:10px;">
+    Criar conta
+  </button>
+</div>
+
+<button class="btnGreen" id="authCriarContaBtn" type="button" style="width:100%;margin-top:10px;display:none;">
+  Criar conta e continuar 🚀
+</button>
 
       <div class="authVisitanteMsg" id="authVisitanteMsg"></div>
     </div>
@@ -4542,7 +4551,13 @@ function onlyDigits(s){
 const authVisitanteModal = document.getElementById("authVisitanteModal");
 const authVisitanteCloseBtn = document.getElementById("authVisitanteCloseBtn");
 const authCriarContaBtn = document.getElementById("authCriarContaBtn");
+const authEntrarBtn = document.getElementById("authEntrarBtn");
+const authCriarContaToggle = document.getElementById("authCriarContaToggle");
+const authBtnsRow = document.getElementById("authBtnsRow");
+const labelNomeTime = document.getElementById("labelNomeTime");
 const authVisitanteMsg = document.getElementById("authVisitanteMsg");
+
+let modoCadastro = false;
 
 function abrirCadastroVisitanteModal(){
   if(!authVisitanteModal) return;
@@ -4572,7 +4587,7 @@ async function finalizarCadastroVisitante(){
   const whatsapp = onlyDigits(document.getElementById("authWhatsapp")?.value || "");
   const senha = document.getElementById("authSenha")?.value || "";
 
-  if(!nome_time){
+  if(modoCadastro && !nome_time){
     setAuthVisitanteMsg("Digite o nome do time.", "err");
     return;
   }
@@ -4591,11 +4606,21 @@ async function finalizarCadastroVisitante(){
   authCriarContaBtn.textContent = "Criando conta...";
 
   try{
-    let r = await fetch(`${API_BASE}/auth/register`, {
-      method:"POST",
-      headers:{ "Content-Type":"application/json" },
-      body:JSON.stringify({ nome_time, whatsapp, senha })
-    });
+    let r;
+
+if(modoCadastro){
+  r = await fetch(`${API_BASE}/auth/register`, {
+    method:"POST",
+    headers:{ "Content-Type":"application/json" },
+    body:JSON.stringify({ nome_time, whatsapp, senha })
+  });
+}else{
+  r = await fetch(`${API_BASE}/auth/login`, {
+    method:"POST",
+    headers:{ "Content-Type":"application/json" },
+    body:JSON.stringify({ whatsapp, senha })
+  });
+}
 
     let data = await r.json().catch(()=>({}));
 
@@ -4649,7 +4674,25 @@ async function finalizarCadastroVisitante(){
   authCriarContaBtn.textContent = "Criar conta e continuar 🚀";
 }
 
-authCriarContaBtn?.addEventListener("click", finalizarCadastroVisitante);
+authEntrarBtn?.addEventListener("click", ()=>{
+  modoCadastro = false;
+  finalizarCadastroVisitante();
+});
+
+authCriarContaToggle?.addEventListener("click", ()=>{
+  modoCadastro = true;
+
+  labelNomeTime.style.display = "block";
+  document.getElementById("authNomeTime").style.display = "block";
+
+  authBtnsRow.style.display = "none";
+  authCriarContaBtn.style.display = "block";
+});
+
+authCriarContaBtn?.addEventListener("click", ()=>{
+  modoCadastro = true;
+  finalizarCadastroVisitante();
+});
 authVisitanteCloseBtn?.addEventListener("click", fecharCadastroVisitanteModal);
 authVisitanteModal?.addEventListener("click", (e)=>{
   if(e.target === authVisitanteModal) fecharCadastroVisitanteModal();
@@ -6444,6 +6487,8 @@ ia4ChatInput?.addEventListener("keydown", (e)=>{
 </script>
 </body>
 </html>
+
+
 
 
 
