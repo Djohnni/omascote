@@ -3170,6 +3170,84 @@ textarea:not(.flip-active)::placeholder{
   }
 }
 
+.authVisitanteBody{
+  padding:18px;
+  background:#f8fafc;
+  color:#111827;
+}
+
+.authPromoBox{
+  background:linear-gradient(180deg,#ecfdf3,#ffffff);
+  border:1px solid #bbf7d0;
+  border-radius:18px;
+  padding:16px;
+  text-align:center;
+  margin-bottom:14px;
+}
+
+.authPromoBox h2{
+  margin:0;
+  font-size:24px;
+  font-weight:950;
+  color:#14532d;
+}
+
+.authPromoBox p{
+  margin:8px 0 0;
+  color:#334155;
+  font-weight:800;
+  font-size:14px;
+}
+
+.authPreco{
+  margin-top:10px;
+  font-size:18px;
+  font-weight:950;
+}
+
+.authPreco .old{
+  color:#64748b;
+  text-decoration:line-through;
+  margin-right:8px;
+}
+
+.authPreco .new{
+  color:#16a34a;
+  font-size:28px;
+}
+
+.authVisitanteBody label{
+  color:#334155 !important;
+  font-weight:900;
+  font-size:13px;
+  margin-top:10px;
+}
+
+.authVisitanteBody input{
+  width:100%;
+  margin-top:6px;
+  background:#fff !important;
+  color:#111827 !important;
+  border:1px solid #d1d5db !important;
+  box-shadow:none !important;
+}
+
+.authVisitanteMsg{
+  margin-top:10px;
+  font-size:13px;
+  font-weight:800;
+  color:#64748b;
+  text-align:center;
+}
+
+.authVisitanteMsg.err{
+  color:#dc2626;
+}
+
+.authVisitanteMsg.ok{
+  color:#16a34a;
+}
+
 </style>
 </head>
 
@@ -3706,6 +3784,41 @@ TROQUE POR ISSO:
     </div>
   </div>
 
+<div class="modalMask" id="authVisitanteModal" aria-hidden="true">
+  <div class="modalCard" role="dialog" aria-modal="true" aria-label="Criar conta">
+    <div class="modalTop">
+      <div class="modalTitle">Finalizar arte</div>
+      <button class="modalClose btnGhost" id="authVisitanteCloseBtn" type="button">✕</button>
+    </div>
+
+    <div class="authVisitanteBody">
+      <div class="authPromoBox">
+        <h2>🔥 Primeira arte com desconto</h2>
+        <p>Crie sua conta para finalizar seu pedido.</p>
+        <div class="authPreco">
+          <span class="old">R$18</span>
+          <span class="new">R$4</span>
+        </div>
+      </div>
+
+      <label for="authNomeTime">Nome do time</label>
+      <input id="authNomeTime" placeholder="Ex: Los Hermanos">
+
+      <label for="authWhatsapp">WhatsApp</label>
+      <input id="authWhatsapp" inputmode="numeric" placeholder="Somente números">
+
+      <label for="authSenha">Senha</label>
+      <input id="authSenha" type="password" placeholder="Crie uma senha simples">
+
+      <button class="btnGreen" id="authCriarContaBtn" type="button" style="width:100%;margin-top:14px;">
+        Criar conta e continuar 🚀
+      </button>
+
+      <div class="authVisitanteMsg" id="authVisitanteMsg"></div>
+    </div>
+  </div>
+</div>
+
 <div class="ia4SupportBtn" id="ia4SupportBtn" title="Suporte IA4Tube">
   <div class="ia4SupportIcon">🎬</div>
   <div class="ia4SupportText">
@@ -3747,8 +3860,7 @@ TROQUE POR ISSO:
 
 <script>
 const API_BASE = "https://api.omascote.com.br";
-const token = localStorage.getItem("omascote_token");
-if (!token) window.location.href = "index.html";
+let token = localStorage.getItem("omascote_token");
 
 const welcomeEl = document.getElementById("welcome");
 const planoEl = document.getElementById("plano");
@@ -4391,6 +4503,11 @@ async function carregarTempoEstimado(){
 }
 
 async function comprarCreditos(pacote){
+  if(!token){
+    abrirCadastroVisitanteModal();
+    return;
+  }
+
   try{
     const r = await fetch(`${API_BASE}/comprar-creditos`, {
       method:"POST",
@@ -4414,6 +4531,119 @@ async function comprarCreditos(pacote){
     alert("Erro de rede ao iniciar pagamento.");
   }
 }
+
+function onlyDigits(s){
+  return String(s || "").replace(/\D+/g, "");
+}
+
+const authVisitanteModal = document.getElementById("authVisitanteModal");
+const authVisitanteCloseBtn = document.getElementById("authVisitanteCloseBtn");
+const authCriarContaBtn = document.getElementById("authCriarContaBtn");
+const authVisitanteMsg = document.getElementById("authVisitanteMsg");
+
+function abrirCadastroVisitanteModal(){
+  if(!authVisitanteModal) return;
+  if(authVisitanteMsg){
+    authVisitanteMsg.textContent = "";
+    authVisitanteMsg.className = "authVisitanteMsg";
+  }
+  authVisitanteModal.classList.add("open");
+  authVisitanteModal.setAttribute("aria-hidden", "false");
+  setTimeout(()=>document.getElementById("authNomeTime")?.focus(), 120);
+}
+
+function fecharCadastroVisitanteModal(){
+  if(!authVisitanteModal) return;
+  authVisitanteModal.classList.remove("open");
+  authVisitanteModal.setAttribute("aria-hidden", "true");
+}
+
+function setAuthVisitanteMsg(texto, tipo){
+  if(!authVisitanteMsg) return;
+  authVisitanteMsg.textContent = texto || "";
+  authVisitanteMsg.className = "authVisitanteMsg " + (tipo || "");
+}
+
+async function finalizarCadastroVisitante(){
+  const nome_time = document.getElementById("authNomeTime")?.value?.trim() || "";
+  const whatsapp = onlyDigits(document.getElementById("authWhatsapp")?.value || "");
+  const senha = document.getElementById("authSenha")?.value || "";
+
+  if(!nome_time){
+    setAuthVisitanteMsg("Digite o nome do time.", "err");
+    return;
+  }
+
+  if(!whatsapp || whatsapp.length < 10){
+    setAuthVisitanteMsg("Digite um WhatsApp válido.", "err");
+    return;
+  }
+
+  if(!senha || senha.length < 3){
+    setAuthVisitanteMsg("Digite uma senha com pelo menos 3 caracteres.", "err");
+    return;
+  }
+
+  authCriarContaBtn.disabled = true;
+  authCriarContaBtn.textContent = "Criando conta...";
+
+  try{
+    let r = await fetch(`${API_BASE}/auth/register`, {
+      method:"POST",
+      headers:{ "Content-Type":"application/json" },
+      body:JSON.stringify({ nome_time, whatsapp, senha })
+    });
+
+    let data = await r.json().catch(()=>({}));
+
+    if(!r.ok || !data.ok){
+      r = await fetch(`${API_BASE}/auth/login`, {
+        method:"POST",
+        headers:{ "Content-Type":"application/json" },
+        body:JSON.stringify({ whatsapp, senha })
+      });
+
+      data = await r.json().catch(()=>({}));
+    }
+
+    if(!r.ok || !data.ok || !data.token){
+      setAuthVisitanteMsg(data.error || "Não foi possível entrar. Confira os dados.", "err");
+      authCriarContaBtn.disabled = false;
+      authCriarContaBtn.textContent = "Criar conta e continuar 🚀";
+      return;
+    }
+
+    token = data.token;
+
+    localStorage.setItem("omascote_token", data.token);
+    localStorage.setItem("omascote_nome_time", data.nome_time || nome_time || "");
+    localStorage.setItem("omascote_plano", String(data.plano ?? ""));
+    localStorage.setItem("omascote_usados", String(data.usados_no_ciclo ?? ""));
+
+    setAuthVisitanteMsg("Conta criada! Continuando seu pedido...", "ok");
+
+    fecharCadastroVisitanteModal();
+    applyLocal();
+    refreshMe();
+    carregarHistorico();
+
+    setTimeout(()=>{
+      document.getElementById("pedidoForm")?.requestSubmit();
+    }, 250);
+
+  }catch(e){
+    setAuthVisitanteMsg("Erro de rede. Tente novamente.", "err");
+  }
+
+  authCriarContaBtn.disabled = false;
+  authCriarContaBtn.textContent = "Criar conta e continuar 🚀";
+}
+
+authCriarContaBtn?.addEventListener("click", finalizarCadastroVisitante);
+authVisitanteCloseBtn?.addEventListener("click", fecharCadastroVisitanteModal);
+authVisitanteModal?.addEventListener("click", (e)=>{
+  if(e.target === authVisitanteModal) fecharCadastroVisitanteModal();
+});
 
 function setRequired(inputId, isRequired){
   const input = document.getElementById(inputId);
@@ -5467,6 +5697,11 @@ document.getElementById("pedidoForm").addEventListener("submit", async (e)=>{
     return;
   }
 
+  if(!token){
+    abrirCadastroVisitanteModal();
+    return;
+  }
+
   msgPedidoEl.textContent = "Enviando...";
 
   const isFlyer = product.mode === "flyer";
@@ -5980,8 +6215,14 @@ function iniciarFlipCampos(){
 
 setArtilheirosMode("resultado");
 applyLocal();
-refreshMe();
-carregarHistorico();
+
+if(token){
+  refreshMe();
+  carregarHistorico();
+}else{
+  if(saldoHeroEl) saldoHeroEl.textContent = "Primeira arte com desconto: R$4";
+  if(historicoVazioEl) historicoVazioEl.textContent = "Crie sua conta para ver seus pedidos.";
+}
 carregarTempoEstimado();
 setInterval(carregarTempoEstimado, 30000);
 updateChosenPlaceholders(null);
@@ -5990,9 +6231,22 @@ selectProduct("resultado");
 iniciarFlipCampos();
 setTimeout(()=>window.scrollTo({ top:0, behavior:"auto" }), 180);
 
+if(!token){
+  const btnSairEl = document.getElementById("btnSair");
+  if(btnSairEl){
+    btnSairEl.textContent = "Entrar";
+    btnSairEl.style.background = "#111827";
+  }
+}
+
 document.getElementById("btnSair")?.addEventListener("click", ()=>{
+  if(!token){
+    abrirCadastroVisitanteModal();
+    return;
+  }
+
   localStorage.removeItem("omascote_token");
-  window.location.href = "index.html";
+  window.location.href = "app.html";
 });
 
 document.getElementById("btnAtualizar")?.addEventListener("click", refreshMe);
@@ -6173,6 +6427,7 @@ ia4ChatInput?.addEventListener("keydown", (e)=>{
 </script>
 </body>
 </html>
+
 
 
 
