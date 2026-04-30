@@ -4502,8 +4502,11 @@ async function carregarTempoEstimado(){
   }
 }
 
+let acaoDepoisDoCadastro = null;
+
 async function comprarCreditos(pacote){
   if(!token){
+    acaoDepoisDoCadastro = () => comprarCreditos(pacote);
     abrirCadastroVisitanteModal();
     return;
   }
@@ -4627,8 +4630,15 @@ async function finalizarCadastroVisitante(){
     refreshMe();
     carregarHistorico();
 
+    const acao = acaoDepoisDoCadastro;
+    acaoDepoisDoCadastro = null;
+
     setTimeout(()=>{
-      document.getElementById("pedidoForm")?.requestSubmit();
+      if(typeof acao === "function"){
+        acao();
+      }else{
+        document.getElementById("pedidoForm")?.requestSubmit();
+      }
     }, 250);
 
   }catch(e){
@@ -4970,6 +4980,12 @@ if(escudo3dUploadBtn && escudo3dFile){
 
 if(escudo3dEnviarBtn){
   escudo3dEnviarBtn.addEventListener("click", async ()=>{
+    if(!token){
+      acaoDepoisDoCadastro = () => escudo3dEnviarBtn.click();
+      abrirCadastroVisitanteModal();
+      return;
+    }
+
     if(!escudo3dFile.files || !escudo3dFile.files[0]){
       escudo3dMsg.textContent = "Selecione o escudo primeiro.";
       return;
@@ -5698,6 +5714,7 @@ document.getElementById("pedidoForm").addEventListener("submit", async (e)=>{
   }
 
   if(!token){
+    acaoDepoisDoCadastro = () => document.getElementById("pedidoForm")?.requestSubmit();
     abrirCadastroVisitanteModal();
     return;
   }
@@ -6427,6 +6444,7 @@ ia4ChatInput?.addEventListener("keydown", (e)=>{
 </script>
 </body>
 </html>
+
 
 
 
