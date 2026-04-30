@@ -3697,8 +3697,10 @@ TROQUE POR ISSO:
 
     <div class="ia4QuickOptions">
       <button type="button" class="ia4QuickBtn" onclick="ia4MostrarProdutosSuporte()">📘 Dúvida sobre produto</button>
-      <button type="button" class="ia4QuickBtn" onclick="ia4EnviarTextoSuporte('Não consigo enviar pedido')">📤 Não consigo enviar pedido</button>
-      <button type="button" class="ia4QuickBtn" onclick="ia4EnviarTextoSuporte('Meu pedido deu erro')">⚠️ Meu pedido deu erro</button>
+      <button type="button" class="ia4QuickBtn" onclick="ia4MostrarEnvioSuporte()">📤 Não consigo enviar pedido</button>
+      <button type="button" class="ia4QuickBtn" onclick="ia4MostrarErroSuporte()">⚠️ Meu pedido deu erro / alteração</button>
+      <button type="button" class="ia4QuickBtn" onclick="ia4MostrarPedidoSuporte()">📥 Pedido pronto / download</button>
+      <button type="button" class="ia4QuickBtn" onclick="ia4MostrarPagamentoSuporte()">💰 Pagamento / saldo</button>
       <button type="button" class="ia4QuickBtn" onclick="ia4EnviarTextoSuporte('Quero falar com suporte')">👨‍💻 Falar com suporte</button>
     </div>
   </div>
@@ -5969,21 +5971,64 @@ function ia4AddMsg(texto, tipo){
   ia4ChatMessages.scrollTop = ia4ChatMessages.scrollHeight;
 }
 
-function ia4MostrarProdutosSuporte(){
-  ia4AddMsg("Qual produto você quer entender?", "bot");
+function ia4MostrarOpcoes(titulo, html){
+  ia4AddMsg(titulo, "bot");
 
   const box = document.createElement("div");
   box.className = "ia4QuickOptions";
-  box.innerHTML = `
+  box.innerHTML = html;
+
+  ia4ChatMessages.appendChild(box);
+  ia4ChatMessages.scrollTop = ia4ChatMessages.scrollHeight;
+}
+
+function ia4MostrarProdutosSuporte(){
+  ia4MostrarOpcoes("Qual produto você quer entender?", `
     <button type="button" class="ia4QuickBtn" onclick="ia4EnviarTextoSuporte('Quero entender Resultado do jogo')">1) Resultado do jogo</button>
     <button type="button" class="ia4QuickBtn" onclick="ia4EnviarTextoSuporte('Quero entender Escalação')">2) Escalação</button>
     <button type="button" class="ia4QuickBtn" onclick="ia4EnviarTextoSuporte('Quero entender Contratação')">3) Contratação</button>
     <button type="button" class="ia4QuickBtn" onclick="ia4EnviarTextoSuporte('Quero entender Próximo jogo')">4) Próximo jogo</button>
     <button type="button" class="ia4QuickBtn" onclick="ia4EnviarTextoSuporte('Quero entender Patrocinador')">5) Patrocinador</button>
-  `;
+    <button type="button" class="ia4QuickBtn" onclick="ia4EnviarTextoSuporte('Quero entender Escudo 3D')">6) Escudo 3D</button>
+  `);
+}
 
-  ia4ChatMessages.appendChild(box);
-  ia4ChatMessages.scrollTop = ia4ChatMessages.scrollHeight;
+function ia4MostrarEnvioSuporte(){
+  ia4MostrarOpcoes("O que aconteceu no envio?", `
+    <button type="button" class="ia4QuickBtn" onclick="ia4EnviarTextoSuporte('Não sei o que preencher')">Não sei o que preencher</button>
+    <button type="button" class="ia4QuickBtn" onclick="ia4EnviarTextoSuporte('Não consigo enviar imagem')">Não consigo enviar imagem</button>
+    <button type="button" class="ia4QuickBtn" onclick="ia4EnviarTextoSuporte('Botão criar minha arte não funciona')">Botão criar minha arte não funciona</button>
+    <button type="button" class="ia4QuickBtn" onclick="ia4EnviarTextoSuporte('Apareceu erro ao enviar pedido')">Apareceu erro ao enviar pedido</button>
+    <button type="button" class="ia4QuickBtn" onclick="ia4MostrarProdutosSuporte()">Quero ver campos obrigatórios por produto</button>
+  `);
+}
+
+function ia4MostrarErroSuporte(){
+  ia4MostrarOpcoes("Qual problema aconteceu?", `
+    <button type="button" class="ia4QuickBtn" onclick="ia4EnviarTextoSuporte('Minha imagem saiu com nome errado')">Nome/texto saiu errado</button>
+    <button type="button" class="ia4QuickBtn" onclick="ia4EnviarTextoSuporte('O escudo saiu errado')">Escudo saiu errado</button>
+    <button type="button" class="ia4QuickBtn" onclick="ia4EnviarTextoSuporte('A imagem ficou estranha')">Imagem ficou estranha</button>
+    <button type="button" class="ia4QuickBtn" onclick="ia4EnviarTextoSuporte('Quero pedir alteração no pedido')">Quero pedir alteração</button>
+    <button type="button" class="ia4QuickBtn" onclick="ia4EnviarTextoSuporte('Meu pedido não chegou')">Meu pedido não chegou</button>
+  `);
+}
+
+function ia4MostrarPedidoSuporte(){
+  ia4MostrarOpcoes("Sobre pedido pronto/download:", `
+    <button type="button" class="ia4QuickBtn" onclick="ia4EnviarTextoSuporte('Como baixar minha imagem pronta')">Como baixar minha imagem?</button>
+    <button type="button" class="ia4QuickBtn" onclick="ia4EnviarTextoSuporte('Não apareceu meu pedido pronto')">Não apareceu pedido pronto</button>
+    <button type="button" class="ia4QuickBtn" onclick="ia4EnviarTextoSuporte('Quero baixar novamente')">Quero baixar novamente</button>
+    <button type="button" class="ia4QuickBtn" onclick="ia4EnviarTextoSuporte('Meu pedido está demorando')">Meu pedido está demorando</button>
+  `);
+}
+
+function ia4MostrarPagamentoSuporte(){
+  ia4MostrarOpcoes("Sobre pagamento/saldo:", `
+    <button type="button" class="ia4QuickBtn" onclick="ia4EnviarTextoSuporte('Como adicionar saldo')">Como adicionar saldo?</button>
+    <button type="button" class="ia4QuickBtn" onclick="ia4EnviarTextoSuporte('Paguei e meu saldo não apareceu')">Paguei e saldo não apareceu</button>
+    <button type="button" class="ia4QuickBtn" onclick="ia4EnviarTextoSuporte('Saldo insuficiente')">Saldo insuficiente</button>
+    <button type="button" class="ia4QuickBtn" onclick="ia4EnviarTextoSuporte('Quais valores de saldo tem')">Quais valores posso colocar?</button>
+  `);
 }
 
 async function ia4EnviarTextoSuporte(mensagem){
@@ -6052,5 +6097,6 @@ ia4ChatInput?.addEventListener("keydown", (e)=>{
 </script>
 </body>
 </html>
+
 
 
