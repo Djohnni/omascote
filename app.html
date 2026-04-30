@@ -4355,7 +4355,7 @@ if(escudoPromo){
 }
 
 function formatarTempoEstimado(segundos){
-  segundos = Math.max(1, Number(segundos || 135));
+  segundos = Math.max(1, Number(segundos || 0));
 
   const min = Math.floor(segundos / 60);
   const sec = Math.round(segundos % 60);
@@ -4378,15 +4378,15 @@ async function carregarTempoEstimado(){
     const r = await fetch(`${API_BASE}/tempo-estimado`);
     const data = await r.json();
 
-    if(!data.ok){
-      tempoEstimadoEl.textContent = "⏱ Tempo estimado: cerca de 2 minutos";
+    if(!data.ok || data.aprendendo || Number(data.tempo_estimado_segundos || 0) <= 0){
+      tempoEstimadoEl.textContent = "⏱ Estamos calculando o tempo real dos pedidos...";
       return;
     }
 
     const textoTempo = formatarTempoEstimado(data.tempo_estimado_segundos);
     tempoEstimadoEl.textContent = `⏱ No momento, o tempo estimado para criar sua arte é de ${textoTempo}`;
   }catch{
-    tempoEstimadoEl.textContent = "⏱ Tempo estimado: cerca de 2 minutos";
+    tempoEstimadoEl.textContent = "⏱ Estamos calculando o tempo real dos pedidos...";
   }
 }
 
@@ -6173,6 +6173,7 @@ ia4ChatInput?.addEventListener("keydown", (e)=>{
 </script>
 </body>
 </html>
+
 
 
 
