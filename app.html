@@ -3801,8 +3801,8 @@ TROQUE POR ISSO:
         </div>
       </div>
 
-      <label for="authNomeTime">Nome do time</label>
-      <input id="authNomeTime" placeholder="Ex: Los Hermanos">
+      <label for="authNomeTime" id="labelNomeTime" style="display:none;">Nome do time</label>
+      <input id="authNomeTime" placeholder="Ex: Los Hermanos" style="display:none;">
 
       <label for="authWhatsapp">WhatsApp</label>
       <input id="authWhatsapp" inputmode="numeric" placeholder="Somente números">
@@ -6291,11 +6291,17 @@ selectProduct("resultado");
 iniciarFlipCampos();
 setTimeout(()=>window.scrollTo({ top:0, behavior:"auto" }), 180);
 
+const btnSairEl = document.getElementById("btnSair");
+
 if(!token){
-  const btnSairEl = document.getElementById("btnSair");
   if(btnSairEl){
     btnSairEl.textContent = "Entrar";
     btnSairEl.style.background = "#111827";
+  }
+}else{
+  if(btnSairEl){
+    btnSairEl.textContent = "Sair";
+    btnSairEl.style.background = "#dc2626";
   }
 }
 
@@ -6487,6 +6493,7 @@ ia4ChatInput?.addEventListener("keydown", (e)=>{
 </script>
 </body>
 </html>
+
 
 
 
