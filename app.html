@@ -2936,6 +2936,190 @@ textarea:not(.flip-active)::placeholder{
 
 /* ===== FIM IA4TUBE UI SIMPLES ===== */
 
+.ia4SupportBtn{
+  position:fixed;
+  right:18px;
+  bottom:18px;
+  z-index:9998;
+  display:flex;
+  align-items:center;
+  gap:10px;
+  padding:10px 14px 10px 10px;
+  border-radius:999px;
+  background:#111827;
+  color:#ffffff;
+  box-shadow:0 14px 34px rgba(15,23,42,.28);
+  cursor:pointer;
+  border:1px solid rgba(255,255,255,.18);
+  user-select:none;
+}
+
+.ia4SupportIcon{
+  width:42px;
+  height:42px;
+  border-radius:999px;
+  display:grid;
+  place-items:center;
+  background:linear-gradient(135deg,#f59e0b,#111827);
+  color:#fff;
+  font-size:22px;
+  font-weight:950;
+}
+
+.ia4SupportText{
+  display:flex;
+  flex-direction:column;
+  line-height:1.05;
+}
+
+.ia4SupportText strong{
+  font-size:14px;
+  font-weight:950;
+}
+
+.ia4SupportText span{
+  font-size:11px;
+  font-weight:800;
+  color:#d1d5db;
+}
+
+.ia4ChatBox{
+  position:fixed;
+  right:18px;
+  bottom:82px;
+  width:min(340px, calc(100vw - 28px));
+  height:440px;
+  z-index:9999;
+  background:#ffffff;
+  border-radius:22px;
+  overflow:hidden;
+  display:none;
+  flex-direction:column;
+  box-shadow:0 20px 50px rgba(15,23,42,.32);
+  border:1px solid #e5e7eb;
+}
+
+.ia4ChatBox.open{
+  display:flex;
+}
+
+.ia4ChatTop{
+  background:#111827;
+  color:#fff;
+  padding:14px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+}
+
+.ia4ChatTopTitle{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  font-weight:950;
+}
+
+.ia4ChatMiniIcon{
+  width:34px;
+  height:34px;
+  border-radius:999px;
+  display:grid;
+  place-items:center;
+  background:linear-gradient(135deg,#f59e0b,#374151);
+  font-size:18px;
+}
+
+.ia4ChatClose{
+  width:32px;
+  height:32px;
+  border-radius:999px;
+  padding:0 !important;
+  background:rgba(255,255,255,.12) !important;
+  color:#fff !important;
+  box-shadow:none !important;
+}
+
+.ia4ChatMessages{
+  flex:1;
+  padding:14px;
+  overflow:auto;
+  background:#f8fafc;
+  color:#111827;
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+}
+
+.ia4Msg{
+  max-width:86%;
+  padding:10px 12px;
+  border-radius:16px;
+  font-size:13px;
+  line-height:1.35;
+  font-weight:700;
+  white-space:pre-wrap;
+}
+
+.ia4MsgBot{
+  align-self:flex-start;
+  background:#ffffff;
+  color:#111827;
+  border:1px solid #e5e7eb;
+}
+
+.ia4MsgUser{
+  align-self:flex-end;
+  background:#16a34a;
+  color:#ffffff;
+}
+
+.ia4ChatInputArea{
+  display:flex;
+  gap:8px;
+  padding:10px;
+  background:#ffffff;
+  border-top:1px solid #e5e7eb;
+}
+
+.ia4ChatInputArea input{
+  flex:1;
+  border-radius:14px !important;
+  border:1px solid #d1d5db !important;
+  padding:12px !important;
+  box-shadow:none !important;
+  background:#fff !important;
+  color:#111827 !important;
+}
+
+.ia4ChatInputArea button{
+  border-radius:14px !important;
+  background:#16a34a !important;
+  color:#fff !important;
+  box-shadow:none !important;
+  padding:0 14px !important;
+}
+
+@media (max-width:680px){
+  .ia4SupportBtn{
+    right:12px;
+    bottom:12px;
+    padding:8px 12px 8px 8px;
+  }
+
+  .ia4SupportIcon{
+    width:38px;
+    height:38px;
+    font-size:20px;
+  }
+
+  .ia4ChatBox{
+    right:10px;
+    bottom:72px;
+    height:420px;
+  }
+}
+
 </style>
 </head>
 
@@ -3466,6 +3650,36 @@ TROQUE POR ISSO:
       </div>
     </div>
   </div>
+
+<div class="ia4SupportBtn" id="ia4SupportBtn" title="Suporte IA4Tube">
+  <div class="ia4SupportIcon">🎬</div>
+  <div class="ia4SupportText">
+    <strong>Suporte</strong>
+    <span>IA4Tube</span>
+  </div>
+</div>
+
+<div class="ia4ChatBox" id="ia4ChatBox">
+  <div class="ia4ChatTop">
+    <div class="ia4ChatTopTitle">
+      <div class="ia4ChatMiniIcon">🎬</div>
+      <div>
+        <div>Suporte IA4Tube</div>
+        <div style="font-size:11px;color:#d1d5db;font-weight:800;">Atendimento automático</div>
+      </div>
+    </div>
+    <button type="button" class="ia4ChatClose" id="ia4ChatClose">×</button>
+  </div>
+
+  <div class="ia4ChatMessages" id="ia4ChatMessages">
+    <div class="ia4Msg ia4MsgBot">Olá! Sou o suporte da IA4Tube. Me diga o que aconteceu com seu pedido.</div>
+  </div>
+
+  <div class="ia4ChatInputArea">
+    <input id="ia4ChatInput" type="text" placeholder="Digite sua dúvida...">
+    <button id="ia4ChatSend" type="button">Enviar</button>
+  </div>
+</div>
 
 <script>
 const API_BASE = "https://api.omascote.com.br";
@@ -5708,20 +5922,82 @@ document.getElementById("addArtilheiroBtn")?.addEventListener("click", ()=>{
 
 document.getElementById("btnSalvarEscalacao")?.addEventListener("click", saveEscalacaoPlayersToLocal);
 document.getElementById("btnExcluirEscalacao")?.addEventListener("click", clearEscalacaoPlayersFromLocal);
+
+const ia4SupportBtn = document.getElementById("ia4SupportBtn");
+const ia4ChatBox = document.getElementById("ia4ChatBox");
+const ia4ChatClose = document.getElementById("ia4ChatClose");
+const ia4ChatMessages = document.getElementById("ia4ChatMessages");
+const ia4ChatInput = document.getElementById("ia4ChatInput");
+const ia4ChatSend = document.getElementById("ia4ChatSend");
+
+function ia4AddMsg(texto, tipo){
+  if(!ia4ChatMessages) return;
+
+  const div = document.createElement("div");
+  div.className = tipo === "user" ? "ia4Msg ia4MsgUser" : "ia4Msg ia4MsgBot";
+  div.textContent = texto;
+
+  ia4ChatMessages.appendChild(div);
+  ia4ChatMessages.scrollTop = ia4ChatMessages.scrollHeight;
+}
+
+async function ia4EnviarSuporte(){
+  const mensagem = ia4ChatInput?.value?.trim() || "";
+  if(!mensagem) return;
+
+  ia4ChatInput.value = "";
+  ia4AddMsg(mensagem, "user");
+  ia4AddMsg("Analisando seu pedido...", "bot");
+
+  try{
+    const r = await fetch(`${API_BASE}/suporte/chat`, {
+      method:"POST",
+      headers:{
+        "Authorization":"Bearer " + token,
+        "Content-Type":"application/json"
+      },
+      body:JSON.stringify({ mensagem })
+    });
+
+    const data = await r.json();
+
+    const ultima = ia4ChatMessages.querySelector(".ia4MsgBot:last-child");
+    if(ultima && ultima.textContent === "Analisando seu pedido..."){
+      ultima.remove();
+    }
+
+    if(data.ok){
+      ia4AddMsg(data.resposta || "Não consegui responder agora. Vou encaminhar para o suporte.", "bot");
+    }else{
+      ia4AddMsg(data.error || "Não consegui responder agora. Vou encaminhar para o suporte.", "bot");
+    }
+  }catch(e){
+    const ultima = ia4ChatMessages.querySelector(".ia4MsgBot:last-child");
+    if(ultima && ultima.textContent === "Analisando seu pedido..."){
+      ultima.remove();
+    }
+    ia4AddMsg("Erro de conexão. Tente novamente em alguns segundos.", "bot");
+  }
+}
+
+ia4SupportBtn?.addEventListener("click", ()=>{
+  ia4ChatBox?.classList.toggle("open");
+  setTimeout(()=>ia4ChatInput?.focus(), 120);
+});
+
+ia4ChatClose?.addEventListener("click", ()=>{
+  ia4ChatBox?.classList.remove("open");
+});
+
+ia4ChatSend?.addEventListener("click", ia4EnviarSuporte);
+
+ia4ChatInput?.addEventListener("keydown", (e)=>{
+  if(e.key === "Enter"){
+    e.preventDefault();
+    ia4EnviarSuporte();
+  }
+});
 </script>
 </body>
 </html>
-
-
-
-
-
-
-
-
-
-
-
-
-
 
