@@ -3672,7 +3672,18 @@ TROQUE POR ISSO:
   </div>
 
   <div class="ia4ChatMessages" id="ia4ChatMessages">
-    <div class="ia4Msg ia4MsgBot">Olá! Sou o suporte da IA4Tube. Me diga o que aconteceu com seu pedido.</div>
+    <div class="ia4Msg ia4MsgBot">
+Olá! Sou o suporte da IA4Tube.
+
+Escolha uma opção:
+</div>
+
+<div style="display:flex;flex-direction:column;gap:6px;padding:8px;">
+  <button onclick="ia4Opcao('duvida')" style="padding:8px;border-radius:10px;">📘 Dúvida sobre produto</button>
+  <button onclick="ia4Opcao('envio')" style="padding:8px;border-radius:10px;">📤 Não consigo enviar</button>
+  <button onclick="ia4Opcao('erro')" style="padding:8px;border-radius:10px;">⚠️ Meu pedido deu erro</button>
+  <button onclick="ia4Opcao('suporte')" style="padding:8px;border-radius:10px;">👨‍💻 Falar com suporte</button>
+</div>
   </div>
 
   <div class="ia4ChatInputArea">
@@ -6000,4 +6011,5 @@ ia4ChatInput?.addEventListener("keydown", (e)=>{
 </script>
 </body>
 </html>
+
 
