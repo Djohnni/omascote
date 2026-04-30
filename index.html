@@ -62,6 +62,84 @@ button:disabled{opacity:.6;cursor:not-allowed}
 .ok{color:#86ffb1}
 .row{display:flex;gap:10px}
 .hint{font-size:12px;opacity:.75;margin-top:6px}
+.authVisitanteBody{
+  padding:18px;
+  background:#f8fafc;
+  color:#111827;
+}
+
+.authPromoBox{
+  background:linear-gradient(180deg,#ecfdf3,#ffffff);
+  border:1px solid #bbf7d0;
+  border-radius:18px;
+  padding:16px;
+  text-align:center;
+  margin-bottom:14px;
+}
+
+.authPromoBox h2{
+  margin:0;
+  font-size:24px;
+  font-weight:950;
+  color:#14532d;
+}
+
+.authPromoBox p{
+  margin:8px 0 0;
+  color:#334155;
+  font-weight:800;
+  font-size:14px;
+}
+
+.authPreco{
+  margin-top:10px;
+  font-size:18px;
+  font-weight:950;
+}
+
+.authPreco .old{
+  color:#64748b;
+  text-decoration:line-through;
+  margin-right:8px;
+}
+
+.authPreco .new{
+  color:#16a34a;
+  font-size:28px;
+}
+
+.authVisitanteBody label{
+  color:#334155 !important;
+  font-weight:900;
+  font-size:13px;
+  margin-top:10px;
+}
+
+.authVisitanteBody input{
+  width:100%;
+  margin-top:6px;
+  background:#fff !important;
+  color:#111827 !important;
+  border:1px solid #d1d5db !important;
+  box-shadow:none !important;
+}
+
+.authVisitanteMsg{
+  margin-top:10px;
+  font-size:13px;
+  font-weight:800;
+  color:#64748b;
+  text-align:center;
+}
+
+.authVisitanteMsg.err{
+  color:#dc2626;
+}
+
+.authVisitanteMsg.ok{
+  color:#16a34a;
+}
+
 </style>
 
 </head>
@@ -95,11 +173,8 @@ button:disabled{opacity:.6;cursor:not-allowed}
 
 const API_BASE = "https://api.omascote.com.br";
 
-// Se já estiver logado, vai direto pro app
-(function(){
-  const token = localStorage.getItem("omascote_token");
-  if (token) window.location.href = "app.html";
-})();
+// Agora a página principal sempre abre o app
+window.location.replace("app.html");
 
 let modoCadastro = false;
 
@@ -199,5 +274,6 @@ const r = await fetch(`${API_BASE}${url}`, {
 
 </body>
 </html>
+
 
 
