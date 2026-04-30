@@ -1900,6 +1900,25 @@
   line-height:1.4;
 }
 
+.copyHint{
+  position:absolute;
+  top:8px;
+  right:42px;
+  display:flex;
+  align-items:center;
+  gap:4px;
+  color:#159947;
+  font-size:12px;
+  font-weight:950;
+  pointer-events:none;
+}
+
+.copyHint::before{
+  content:"➜";
+  font-size:18px;
+  line-height:1;
+}
+
 .descTexto {
   white-space: pre-wrap;
 }
@@ -5768,14 +5787,17 @@ async function carregarHistorico(){
 
         ${p.imagem_url ? `<img src="${p.imagem_url}" style="width:100px;"><br>` : ""}
 
+${p.status === "pronto" ? `
 <div class="descBox">
   <div id="desc_${p.id}" class="descTexto">${p.descricao_instagram || ""}</div>
+  <div class="copyHint">copiar</div>
   <button class="btnCopiar" onclick="copiarDescricao('${p.id}')">📋</button>
 </div>
 
         <button onclick="baixarPedido('${p.id}')" style="margin-top:8px;padding:6px 10px;border-radius:6px;border:none;background:#2ecc71;color:#fff;font-weight:700;cursor:pointer;">
-          Baixar novamente
+          Baixar
         </button>
+` : ""}
       </div>
     `).join("");
 
@@ -6097,6 +6119,7 @@ ia4ChatInput?.addEventListener("keydown", (e)=>{
 </script>
 </body>
 </html>
+
 
 
 
