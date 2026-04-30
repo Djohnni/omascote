@@ -5780,7 +5780,7 @@ async function carregarHistorico(){
     historicoVazioEl.textContent = "";
 
     historicoListaEl.innerHTML = data.pedidos.map(p => `
-      <div style="background:#fff;color:#000;padding:10px;border-radius:10px;">
+      <div style="background:#fff;color:#000;padding:10px;border-radius:10px;border:1px solid #e5e7eb;">
         <b>${p.tipo}</b><br>
         ID: ${p.id}<br>
         Status: ${p.status}<br>
@@ -6119,6 +6119,7 @@ ia4ChatInput?.addEventListener("keydown", (e)=>{
 </script>
 </body>
 </html>
+
 
 
 
