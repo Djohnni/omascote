@@ -3679,10 +3679,10 @@ Escolha uma opção:
 </div>
 
 <div style="display:flex;flex-direction:column;gap:6px;padding:8px;">
-  <button onclick="ia4Opcao('duvida')" style="padding:8px;border-radius:10px;">📘 Dúvida sobre produto</button>
-  <button onclick="ia4Opcao('envio')" style="padding:8px;border-radius:10px;">📤 Não consigo enviar</button>
-  <button onclick="ia4Opcao('erro')" style="padding:8px;border-radius:10px;">⚠️ Meu pedido deu erro</button>
-  <button onclick="ia4Opcao('suporte')" style="padding:8px;border-radius:10px;">👨‍💻 Falar com suporte</button>
+  <button onclick="ia4EnviarOpcao('duvida')" style="padding:10px;border-radius:10px;width:100%;">📘 Dúvida sobre produto</button>
+  <button onclick="ia4EnviarOpcao('envio')" style="padding:10px;border-radius:10px;width:100%;">📤 Não consigo enviar</button>
+  <button onclick="ia4EnviarOpcao('erro')" style="padding:10px;border-radius:10px;width:100%;">⚠️ Meu pedido deu erro</button>
+  <button onclick="ia4EnviarOpcao('suporte')" style="padding:10px;border-radius:10px;width:100%;">👨‍💻 Falar com suporte</button>
 </div>
   </div>
 
@@ -5952,7 +5952,37 @@ function ia4AddMsg(texto, tipo){
   ia4ChatMessages.scrollTop = ia4ChatMessages.scrollHeight;
 }
 
-async function ia4EnviarSuporte(){
+async function ia4EnviarOpcao(tipo){
+
+  let mensagem = "";
+
+  if(tipo === "duvida") mensagem = "1";
+  if(tipo === "envio") mensagem = "2";
+  if(tipo === "erro") mensagem = "3";
+  if(tipo === "download") mensagem = "4";
+  if(tipo === "pagamento") mensagem = "5";
+  if(tipo === "suporte") mensagem = "6";
+
+  ia4AddMsg(mensagem, "user");
+
+  fetch(`${API_BASE}/suporte/chat`, {
+    method:"POST",
+    headers:{
+      "Authorization":"Bearer " + token,
+      "Content-Type":"application/json"
+    },
+    body:JSON.stringify({ mensagem })
+  })
+  .then(r=>r.json())
+  .then(data=>{
+    ia4AddMsg(data.resposta || "Erro ao responder", "bot");
+  })
+  .catch(()=>{
+    ia4AddMsg("Erro de conexão.", "bot");
+  });
+}
+
+function ia4EnviarSuporte(){
   const mensagem = ia4ChatInput?.value?.trim() || "";
   if(!mensagem) return;
 
@@ -6011,5 +6041,6 @@ ia4ChatInput?.addEventListener("keydown", (e)=>{
 </script>
 </body>
 </html>
+
 
 
