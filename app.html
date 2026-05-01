@@ -4204,7 +4204,7 @@ const PRODUCTS = {
       mascote: true
     },
     phraseMenu: true,
-    hiddenFields: ["artilheiros"]
+    hiddenFields: []
   },
 
   jogador_escudo: {
@@ -4963,27 +4963,13 @@ function configureOptionalSections(productKey){
     wrapper.classList.remove("locked-open", "is-open");
   };
 
-  if(productKey === "resultado"){
+  if(productKey === "resultado" || productKey === "resultado_jogo_jogador"){
     lockOpen("esc1");
     lockOpen("esc2");
     keepClosed("hora");
     keepClosed("data");
     keepClosed("artilheiros");
     keepClosed("mascote");
-    return;
-  }
-
-  if(productKey === "resultado_jogo_jogador"){
-    lockOpen("esc1");
-    lockOpen("esc2");
-    lockOpen("mascote");
-    keepClosed("hora");
-    keepClosed("data");
-    keepClosed("artilheiros");
-
-    const mascoteToggle = document.querySelector(`[data-optional-field="mascote"] [data-optional-toggle]`);
-    if(mascoteToggle) mascoteToggle.style.display = "none";
-
     return;
   }
 
@@ -5053,11 +5039,19 @@ function configureOptionalSections(productKey){
     return;
   }
 
----
-PROCURE ISSO:
-    resultado_jogo_jogador: ["placar", "esc1", "esc2", "optionalDivider", "hora", "artilheiros", "data", "mascote", "submit", "msg"],
-TROQUE POR ISSO:
-    resultado_jogo_jogador: ["placar", "esc1", "esc2", "mascote", "optionalDivider", "hora", "data", "submit", "msg"],
+  if(productKey === "resultado_jogo_jogador"){
+    lockOpen("esc1");
+    lockOpen("esc2");
+    lockOpen("mascote");
+    keepClosed("hora");
+    keepClosed("data");
+    keepClosed("artilheiros");
+
+    const mascoteToggle = document.querySelector(`[data-optional-field="mascote"] [data-optional-toggle]`);
+    if(mascoteToggle) mascoteToggle.style.display = "none";
+
+    return;
+  }
 
   if(productKey === "jogador_escudo"){
     lockOpen("data");
@@ -5122,7 +5116,7 @@ function arrangeFieldSequence(productKey){
     proximo_jogo: ["placar", "esc1", "esc2", "data", "hora", "optionalDivider", "arena", "submit", "msg"],
     patrocinador: ["rodada", "esc1", "patro", "optionalDivider", "data", "submit", "msg"],
     proximo_jogo_jogador: ["placar", "esc1", "esc2", "data", "hora", "optionalDivider", "arena", "submit", "msg"],
-    resultado_jogo_jogador: ["placar", "esc1", "esc2", "optionalDivider", "hora", "artilheiros", "data", "mascote", "submit", "msg"],
+    resultado_jogo_jogador: ["placar", "esc1", "esc2", "mascote", "optionalDivider", "hora", "data", "submit", "msg"],
     jogador_escudo: ["data", "esc1", "mascote", "submit", "msg"]
   };
 
