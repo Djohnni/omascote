@@ -2970,6 +2970,8 @@ textarea:not(.flip-active)::placeholder{
   grid-template-columns:repeat(2, minmax(0, 1fr)) !important;
   gap:30px !important;
   margin:0 auto 20px !important;
+  position:relative !important;
+  z-index:10 !important;
 }
 
 .categoryBtn{
@@ -2998,8 +3000,28 @@ textarea:not(.flip-active)::placeholder{
   text-align:center !important;
 }
 
-.productGroup{
+.categoryMiniRow{
   display:none !important;
+  justify-content:center !important;
+  gap:10px !important;
+  margin:0 auto 22px !important;
+}
+
+.categoryMiniBtn{
+  background:#111827 !important;
+  color:#ffffff !important;
+  border-radius:999px !important;
+  padding:10px 16px !important;
+  font-weight:950 !important;
+  box-shadow:0 8px 18px rgba(15,23,42,.12) !important;
+}
+
+.productGroup,
+.optionsRow.productGroup{
+  display:none !important;
+  opacity:0 !important;
+  visibility:hidden !important;
+  pointer-events:none !important;
 }
 
 .selectorStage.category-time .categoryChoiceRow,
@@ -3007,17 +3029,22 @@ textarea:not(.flip-active)::placeholder{
   display:none !important;
 }
 
-.selectorStage.category-time .productGroupTime,
-.selectorStage.category-jogador .productGroupJogador{
-  display:grid !important;
-}
-
-body:not(.modeChosen) .switchModeRow{
+.selectorStage.category-time .categoryMiniRow,
+.selectorStage.category-jogador .categoryMiniRow{
   display:flex !important;
 }
 
-body:not(.modeChosen) #btnTrocarTipo{
-  display:none !important;
+.selectorStage.category-time .productGroupTime,
+.selectorStage.category-jogador .productGroupJogador{
+  display:grid !important;
+  opacity:1 !important;
+  visibility:visible !important;
+  pointer-events:auto !important;
+}
+
+.selectorStage.category-time .categoryMiniBtn[data-category="time"],
+.selectorStage.category-jogador .categoryMiniBtn[data-category="jogador"]{
+  background:#16a34a !important;
 }
 
 .selectorStage.category-time + .examplesLink,
@@ -3046,35 +3073,18 @@ body:not(.modeChosen) #btnTrocarTipo{
     font-size:18px !important;
   }
 
+  .categoryMiniRow{
+    gap:8px !important;
+    margin-bottom:16px !important;
+  }
+
+  .categoryMiniBtn{
+    font-size:12px !important;
+    padding:8px 12px !important;
+  }
+
   .selectorStage.category-jogador .productGroupJogador{
     grid-template-columns:repeat(3,1fr) !important;
-  }
-}
-
-body.modeChosen .switchModeRow{
-  display:flex !important;
-  gap:8px !important;
-  flex-wrap:wrap !important;
-  justify-content:center !important;
-  margin:14px auto 22px !important;
-}
-
-.categorySwitchBtn{
-  background:#111827 !important;
-  color:#ffffff !important;
-  border:1px solid #e5e7eb !important;
-  box-shadow:0 8px 18px rgba(15,23,42,.12) !important;
-}
-
-@media (max-width:680px){
-  body.modeChosen .switchModeRow{
-    gap:6px !important;
-  }
-
-  .categorySwitchBtn,
-  #btnTrocarTipo{
-    font-size:12px !important;
-    padding:9px 11px !important;
   }
 }
 
@@ -3548,6 +3558,11 @@ TROQUE POR ISSO:
             </button>
           </div>
 
+          <div class="categoryMiniRow">
+            <button type="button" class="categoryMiniBtn" data-category="time">🏆 Time</button>
+            <button type="button" class="categoryMiniBtn" data-category="jogador">⚽ Jogador</button>
+          </div>
+
           <div class="optionsRow productGroup productGroupTime">
             <button type="button" class="optionBtn" data-product="resultado">
               <div class="circle green">
@@ -3625,14 +3640,6 @@ TROQUE POR ISSO:
 
       <div class="switchModeRow">
         <button type="button" class="btnGhost" id="btnTrocarTipo">Trocar opção</button>
-
-        <button type="button" class="btnGhost categorySwitchBtn" id="btnIrTime">
-          🏆 Time
-        </button>
-
-        <button type="button" class="btnGhost categorySwitchBtn" id="btnIrJogador">
-          ⚽ Jogador
-        </button>
       </div>
 
       <div class="hiddenTabs">
@@ -5194,8 +5201,15 @@ function resetProductCategory(){
   selectorStage.classList.remove("category-time", "category-jogador");
 }
 
-document.querySelectorAll(".categoryBtn").forEach(btn=>{
+document.querySelectorAll(".categoryBtn, .categoryMiniBtn").forEach(btn=>{
   btn.addEventListener("click", ()=>{
+    selectedProductInput.value = "";
+    document.body.classList.remove("modeChosen", "mode-flyer", "mode-result", "mode-proximo-jogo");
+    document.querySelectorAll(".optionBtn").forEach(opt=> opt.classList.remove("active"));
+    updateProductFieldVisibility(null);
+    configureOptionalSections("");
+    arrangeFieldSequence("resultado");
+    closePhraseMenu();
     showProductCategory(btn.dataset.category);
   });
 });
