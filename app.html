@@ -4185,14 +4185,14 @@ const PRODUCTS = {
   resultado_jogo_jogador: {
     mode: "resultado",
     title: "Resultado jogador",
-    hint: "Crie uma arte de resultado com foco em um jogador.",
+    hint: "Crie uma arte de resultado com foco no jogador.",
     flyerTipo: "jog_resultado",
     labels: {
       hora: "Campeonato / competição",
       data: "Frase na imagem",
       esc1: "Escudo<br>Time A",
       esc2: "Escudo<br>Time B",
-      mascote: "Foto do jogador"
+      mascote: "Foto do jogador *"
     },
     placeholders: {
       hora: "Ex: Campeonato municipal",
@@ -4200,10 +4200,11 @@ const PRODUCTS = {
     },
     required: {
       esc1: true,
-      esc2: false
+      esc2: false,
+      mascote: true
     },
     phraseMenu: true,
-    hiddenFields: []
+    hiddenFields: ["artilheiros"]
   },
 
   jogador_escudo: {
@@ -4310,7 +4311,9 @@ function updateProductFieldVisibility(product){
   }
 
   if(product.mode === "resultado"){
-    if(artilheirosField) artilheirosField.style.display = "flex";
+    if(artilheirosField){
+      artilheirosField.style.display = selectedProductInput.value === "resultado_jogo_jogador" ? "none" : "flex";
+    }
     setArtilheirosMode("resultado");
     return;
   }
@@ -4960,13 +4963,27 @@ function configureOptionalSections(productKey){
     wrapper.classList.remove("locked-open", "is-open");
   };
 
-  if(productKey === "resultado" || productKey === "resultado_jogo_jogador"){
+  if(productKey === "resultado"){
     lockOpen("esc1");
     lockOpen("esc2");
     keepClosed("hora");
     keepClosed("data");
     keepClosed("artilheiros");
     keepClosed("mascote");
+    return;
+  }
+
+  if(productKey === "resultado_jogo_jogador"){
+    lockOpen("esc1");
+    lockOpen("esc2");
+    lockOpen("mascote");
+    keepClosed("hora");
+    keepClosed("data");
+    keepClosed("artilheiros");
+
+    const mascoteToggle = document.querySelector(`[data-optional-field="mascote"] [data-optional-toggle]`);
+    if(mascoteToggle) mascoteToggle.style.display = "none";
+
     return;
   }
 
@@ -5036,15 +5053,11 @@ function configureOptionalSections(productKey){
     return;
   }
 
-  if(productKey === "resultado_jogo_jogador"){
-    lockOpen("esc1");
-    lockOpen("esc2");
-    keepClosed("hora");
-    keepClosed("data");
-    keepClosed("artilheiros");
-    keepClosed("mascote");
-    return;
-  }
+---
+PROCURE ISSO:
+    resultado_jogo_jogador: ["placar", "esc1", "esc2", "optionalDivider", "hora", "artilheiros", "data", "mascote", "submit", "msg"],
+TROQUE POR ISSO:
+    resultado_jogo_jogador: ["placar", "esc1", "esc2", "mascote", "optionalDivider", "hora", "data", "submit", "msg"],
 
   if(productKey === "jogador_escudo"){
     lockOpen("data");
@@ -5215,6 +5228,7 @@ function selectProduct(productKey){
 
   setRequired("escudo1", product.required?.esc1);
   setRequired("escudo2", product.required?.esc2);
+  setRequired("mascote", product.required?.mascote);
   updateProductFieldVisibility(product);
   updateChosenPlaceholders(product);
   configureOptionalSections(productKey);
@@ -6146,19 +6160,28 @@ document.getElementById("pedidoForm").addEventListener("submit", async (e)=>{
     appendEscudo1();
     appendEscudo2();
 
-    const artilheiros = coletarArtilheiros();
-    const artilheirosJson = JSON.stringify(artilheiros);
-    const artilheirosTexto = artilheiros
-      .map(a => `${a.nome} (${a.gols} gol${a.gols === 1 ? "" : "s"})`)
-      .join("; ");
+    if(productKey === "resultado_jogo_jogador"){
+      fd.append("artilheiros", "[]");
+      fd.append("artilheiros_json", "[]");
+      fd.append("artilheiros_texto", "");
+      fd.append("artilheiros_qtd", "0");
+      fd.append("jogadores_json", "[]");
+      fd.append("jogadores_texto", "");
+    }else{
+      const artilheiros = coletarArtilheiros();
+      const artilheirosJson = JSON.stringify(artilheiros);
+      const artilheirosTexto = artilheiros
+        .map(a => `${a.nome} (${a.gols} gol${a.gols === 1 ? "" : "s"})`)
+        .join("; ");
 
-    fd.append("artilheiros", artilheirosJson);
-    fd.append("artilheiros_json", artilheirosJson);
-    fd.append("artilheiros_texto", artilheirosTexto);
-    fd.append("artilheiros_qtd", String(artilheiros.length));
+      fd.append("artilheiros", artilheirosJson);
+      fd.append("artilheiros_json", artilheirosJson);
+      fd.append("artilheiros_texto", artilheirosTexto);
+      fd.append("artilheiros_qtd", String(artilheiros.length));
 
-    fd.append("jogadores_json", "[]");
-    fd.append("jogadores_texto", "");
+      fd.append("jogadores_json", "[]");
+      fd.append("jogadores_texto", "");
+    }
   }
 
   else if(productKey === "escalacao"){
@@ -6322,6 +6345,18 @@ const FRASES_EMPATE = [
   "Um jogo de muita luta e equilíbrio até o apito final."
 ];
 
+const FRASES_RESULTADO_JOGADOR = [
+  "Mais 3 pontos pra conta.",
+  "Mais 1 gol.",
+  "Mais 2 gols.",
+  "Mais 3 gols.",
+  "Mais 4 gols.",
+  "Mais 5 gols.",
+  "Rumo às quartas de final.",
+  "Rumo à semi.",
+  "Rumo à final."
+];
+
 function isResultadoEmpate(){
   const g1Raw = document.getElementById("golsTime")?.value ?? "";
   const g2Raw = document.getElementById("golsAdv")?.value ?? "";
@@ -6334,7 +6369,9 @@ function isResultadoEmpate(){
 function atualizarFrasesResultado(){
   if(!phraseMenu) return;
 
-  const frases = isResultadoEmpate() ? FRASES_EMPATE : FRASES_VITORIA;
+  const frases = selectedProductInput.value === "resultado_jogo_jogador"
+    ? FRASES_RESULTADO_JOGADOR
+    : (isResultadoEmpate() ? FRASES_EMPATE : FRASES_VITORIA);
 
   phraseMenu.innerHTML = frases.map(frase => `
     <button type="button" class="phraseOption">${frase}</button>
@@ -6774,6 +6811,7 @@ ia4ChatInput?.addEventListener("keydown", (e)=>{
 </script>
 </body>
 </html>
+
 
 
 
