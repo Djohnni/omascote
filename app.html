@@ -4655,6 +4655,12 @@ if(modoCadastro){
     refreshMe();
     carregarHistorico();
 
+    const btnSairEl = document.getElementById("btnSair");
+    if(btnSairEl){
+           btnSairEl.textContent = "Sair";
+           btnSairEl.style.background = "#dc2626";
+           }
+
     const acao = acaoDepoisDoCadastro;
     acaoDepoisDoCadastro = null;
 
