@@ -2963,6 +2963,96 @@ textarea:not(.flip-active)::placeholder{
 
 /* ===== FIM CORREÇÃO RESULTADO DO JOGO ===== */
 
+/* ===== CATEGORIA TIME / JOGADOR ===== */
+
+.categoryChoiceRow{
+  display:grid !important;
+  grid-template-columns:repeat(2, minmax(0, 1fr)) !important;
+  gap:30px !important;
+  margin:0 auto 20px !important;
+}
+
+.categoryBtn{
+  width:100% !important;
+  min-height:230px !important;
+  background:#fff !important;
+  border:1px solid #e5e7eb !important;
+  border-radius:22px !important;
+  box-shadow:0 14px 30px rgba(15,23,42,.08) !important;
+  display:flex !important;
+  flex-direction:column !important;
+  align-items:center !important;
+  justify-content:center !important;
+  color:#111827 !important;
+}
+
+.categoryIcon{
+  font-size:52px !important;
+  margin-bottom:18px !important;
+}
+
+.categoryTitle{
+  font-size:28px !important;
+  line-height:1.12 !important;
+  font-weight:950 !important;
+  text-align:center !important;
+}
+
+.productGroup{
+  display:none !important;
+}
+
+.selectorStage.category-time .categoryChoiceRow,
+.selectorStage.category-jogador .categoryChoiceRow{
+  display:none !important;
+}
+
+.selectorStage.category-time .productGroupTime,
+.selectorStage.category-jogador .productGroupJogador{
+  display:grid !important;
+}
+
+body:not(.modeChosen) .switchModeRow{
+  display:flex !important;
+}
+
+body:not(.modeChosen) #btnTrocarTipo{
+  display:none !important;
+}
+
+.selectorStage.category-time + .examplesLink,
+.selectorStage.category-jogador + .examplesLink{
+  display:none !important;
+}
+
+@media (max-width:680px){
+  .categoryChoiceRow{
+    grid-template-columns:repeat(2,1fr) !important;
+    gap:10px !important;
+  }
+
+  .categoryBtn{
+    min-height:140px !important;
+    border-radius:16px !important;
+    padding:14px 8px !important;
+  }
+
+  .categoryIcon{
+    font-size:34px !important;
+    margin-bottom:10px !important;
+  }
+
+  .categoryTitle{
+    font-size:18px !important;
+  }
+
+  .selectorStage.category-jogador .productGroupJogador{
+    grid-template-columns:repeat(3,1fr) !important;
+  }
+}
+
+/* ===== FIM CATEGORIA TIME / JOGADOR ===== */
+
 /* ===== FIM IA4TUBE UI SIMPLES ===== */
 
 .ia4SupportBtn{
@@ -3419,7 +3509,19 @@ TROQUE POR ISSO:
             <div class="line l5"></div>
           </div>
 
-          <div class="optionsRow">
+          <div class="categoryChoiceRow">
+            <button type="button" class="categoryBtn" data-category="time">
+              <div class="categoryIcon">🏆</div>
+              <div class="categoryTitle">Arte para<br>Time</div>
+            </button>
+
+            <button type="button" class="categoryBtn" data-category="jogador">
+              <div class="categoryIcon">⚽</div>
+              <div class="categoryTitle">Arte para<br>Jogador</div>
+            </button>
+          </div>
+
+          <div class="optionsRow productGroup productGroupTime">
             <button type="button" class="optionBtn" data-product="resultado">
               <div class="circle green">
                 <img src="icons/resultado.png" class="iconImg">
@@ -3464,6 +3566,29 @@ TROQUE POR ISSO:
                 <span style="font-size:11px;color:#777;text-decoration:line-through;">R$18</span>
                 <span style="color:#1fbf63;font-weight:900;"> R$4</span>
               </div>
+            </button>
+          </div>
+
+          <div class="optionsRow productGroup productGroupJogador">
+            <button type="button" class="optionBtn" data-product="proximo_jogo_jogador">
+              <div class="circle orange">
+                <img src="icons/proximo_jogo.png" class="iconImg">
+              </div>
+              <div class="optLabel">Próximo Jogo<br>Jogador</div>
+            </button>
+
+            <button type="button" class="optionBtn" data-product="resultado_jogo_jogador">
+              <div class="circle green">
+                <img src="icons/resultado.png" class="iconImg">
+              </div>
+              <div class="optLabel">Resultado<br>Jogador</div>
+            </button>
+
+            <button type="button" class="optionBtn" data-product="jogador_escudo">
+              <div class="circle">
+                <img src="icons/contratacao.png" class="iconImg">
+              </div>
+              <div class="optLabel">Jogador<br>+ Escudo</div>
             </button>
           </div>
         </div>
@@ -3891,6 +4016,7 @@ const btnTrocarTipo = document.getElementById("btnTrocarTipo");
 const builderArea = document.getElementById("builderArea");
 const mainCreateBtn = document.getElementById("mainCreateBtn");
 const selectorStage = document.querySelector(".selectorStage");
+let categoriaSelecionada = "";
 
 const escudo3dModal = document.getElementById("escudo3dModal");
 const escudo3dCloseBtn = document.getElementById("escudo3dCloseBtn");
@@ -4027,6 +4153,78 @@ const PRODUCTS = {
     },
     phraseMenu: false,
     hiddenFields: ["hora", "arena", "mascote", "esc2"]
+  },
+
+  proximo_jogo_jogador: {
+    mode: "flyer",
+    title: "Próximo jogo jogador",
+    hint: "Crie uma arte focada em um jogador para divulgar o próximo jogo.",
+    flyerTipo: "jog_proximo",
+    labels: {
+      rodada: "Chamada da arte",
+      data: "Data e horário",
+      hora: "Campeonato / competição",
+      arena: "Local (opcional)",
+      esc1: "Escudo do time",
+      esc2: "Foto do jogador"
+    },
+    placeholders: {
+      rodada: "Ex: Próximo desafio",
+      data: "Ex: Domingo • 15h30",
+      hora: "Ex: Campeonato municipal",
+      arena: "Ex: Estádio municipal"
+    },
+    required: {
+      esc1: true,
+      esc2: false
+    },
+    phraseMenu: false,
+    hiddenFields: ["mascote", "patro"]
+  },
+
+  resultado_jogo_jogador: {
+    mode: "resultado",
+    title: "Resultado jogador",
+    hint: "Crie uma arte de resultado com foco em um jogador.",
+    flyerTipo: "jog_resultado",
+    labels: {
+      hora: "Campeonato / competição",
+      data: "Frase na imagem",
+      esc1: "Escudo<br>Time A",
+      esc2: "Escudo<br>Time B",
+      mascote: "Foto do jogador"
+    },
+    placeholders: {
+      hora: "Ex: Campeonato municipal",
+      data: "Escolha uma frase pronta ou escreva a sua"
+    },
+    required: {
+      esc1: true,
+      esc2: false
+    },
+    phraseMenu: true,
+    hiddenFields: []
+  },
+
+  jogador_escudo: {
+    mode: "flyer",
+    title: "Jogador + escudo",
+    hint: "Envie a foto do jogador e o escudo do time para criar uma arte simples e forte.",
+    flyerTipo: "jog_escudo",
+    labels: {
+      data: "Nome do jogador",
+      esc1: "Escudo do time",
+      mascote: "Foto do jogador"
+    },
+    placeholders: {
+      data: "Nome do jogador"
+    },
+    required: {
+      esc1: true,
+      esc2: false
+    },
+    phraseMenu: false,
+    hiddenFields: ["rodada", "hora", "arena", "esc2", "patro"]
   }
 };
 
@@ -4762,7 +4960,7 @@ function configureOptionalSections(productKey){
     wrapper.classList.remove("locked-open", "is-open");
   };
 
-  if(productKey === "resultado"){
+  if(productKey === "resultado" || productKey === "resultado_jogo_jogador"){
     lockOpen("esc1");
     lockOpen("esc2");
     keepClosed("hora");
@@ -4816,7 +5014,7 @@ function configureOptionalSections(productKey){
     return;
   }
 
-  if(productKey === "proximo_jogo"){
+  if(productKey === "proximo_jogo" || productKey === "proximo_jogo_jogador"){
     lockOpen("data");
     lockOpen("hora");
     lockOpen("esc1");
@@ -4834,6 +5032,33 @@ function configureOptionalSections(productKey){
 
     const esc2Toggle = document.querySelector(`[data-optional-field="esc2"] [data-optional-toggle]`);
     if(esc2Toggle) esc2Toggle.style.display = "none";
+
+    return;
+  }
+
+  if(productKey === "resultado_jogo_jogador"){
+    lockOpen("esc1");
+    lockOpen("esc2");
+    keepClosed("hora");
+    keepClosed("data");
+    keepClosed("artilheiros");
+    keepClosed("mascote");
+    return;
+  }
+
+  if(productKey === "jogador_escudo"){
+    lockOpen("data");
+    lockOpen("esc1");
+    lockOpen("mascote");
+
+    const dataToggle = document.querySelector(`[data-optional-field="data"] [data-optional-toggle]`);
+    if(dataToggle) dataToggle.style.display = "none";
+
+    const esc1Toggle = document.querySelector(`[data-optional-field="esc1"] [data-optional-toggle]`);
+    if(esc1Toggle) esc1Toggle.style.display = "none";
+
+    const mascoteToggle = document.querySelector(`[data-optional-field="mascote"] [data-optional-toggle]`);
+    if(mascoteToggle) mascoteToggle.style.display = "none";
 
     return;
   }
@@ -4882,7 +5107,10 @@ function arrangeFieldSequence(productKey){
     escalacao: ["data", "esc1", "artilheiros", "optionalDivider", "esc2", "mascote", "submit", "msg"],
     contratacao: ["rodada", "data", "esc1", "esc2", "optionalDivider", "hora", "submit", "msg"],
     proximo_jogo: ["placar", "esc1", "esc2", "data", "hora", "optionalDivider", "arena", "submit", "msg"],
-    patrocinador: ["rodada", "esc1", "patro", "optionalDivider", "data", "submit", "msg"]
+    patrocinador: ["rodada", "esc1", "patro", "optionalDivider", "data", "submit", "msg"],
+    proximo_jogo_jogador: ["placar", "esc1", "esc2", "data", "hora", "optionalDivider", "arena", "submit", "msg"],
+    resultado_jogo_jogador: ["placar", "esc1", "esc2", "optionalDivider", "hora", "artilheiros", "data", "mascote", "submit", "msg"],
+    jogador_escudo: ["data", "esc1", "mascote", "submit", "msg"]
   };
 
   const sequence = sequenceMap[productKey];
@@ -4901,6 +5129,35 @@ function scrollToBuilder(){
   }
 }
 
+function showProductCategory(category){
+  categoriaSelecionada = category || "";
+  if(!selectorStage) return;
+
+  selectorStage.classList.remove("category-time", "category-jogador");
+
+  if(category === "time"){
+    selectorStage.classList.add("category-time");
+  }
+
+  if(category === "jogador"){
+    selectorStage.classList.add("category-jogador");
+  }
+
+  selectorStage.classList.add("open");
+}
+
+function resetProductCategory(){
+  categoriaSelecionada = "";
+  if(!selectorStage) return;
+  selectorStage.classList.remove("category-time", "category-jogador");
+}
+
+document.querySelectorAll(".categoryBtn").forEach(btn=>{
+  btn.addEventListener("click", ()=>{
+    showProductCategory(btn.dataset.category);
+  });
+});
+
 function selectProduct(productKey){
   const product = PRODUCTS[productKey];
   if(!product) return;
@@ -4914,7 +5171,7 @@ function selectProduct(productKey){
     document.getElementById("tab_contrat").checked = true;
   } else {
     document.body.classList.add("mode-flyer");
-    if(productKey === "proximo_jogo") document.body.classList.add("mode-proximo-jogo");
+    if(productKey === "proximo_jogo" || productKey === "proximo_jogo_jogador") document.body.classList.add("mode-proximo-jogo");
     document.getElementById("tab_flyer").checked = true;
     flyerTipoInput.value = product.flyerTipo || "";
   }
@@ -5106,7 +5363,8 @@ btnTrocarTipo.addEventListener("click", ()=>{
   configureOptionalSections("");
   arrangeFieldSequence("resultado");
   closePhraseMenu();
-  selectorStage?.classList.remove("open");
+  resetProductCategory();
+  selectorStage?.classList.add("open");
   window.scrollTo({ top: 0, behavior: "smooth" });
 });
 
@@ -5770,8 +6028,8 @@ document.getElementById("pedidoForm").addEventListener("submit", async (e)=>{
 
   msgPedidoEl.textContent = "Enviando...";
 
-  const isFlyer = product.mode === "flyer";
-  const isResultado = product.mode === "resultado";
+  const isFlyer = product.mode === "flyer" || !!product.flyerTipo;
+  const isResultado = product.mode === "resultado" && productKey === "resultado";
 
   const fd = new FormData();
 
@@ -5944,7 +6202,7 @@ document.getElementById("pedidoForm").addEventListener("submit", async (e)=>{
     appendEscudo2();
   }
 
-  else if(productKey === "proximo_jogo"){
+  else if(productKey === "proximo_jogo" || productKey === "proximo_jogo_jogador"){
     const t1 = val("timePrincipal");
     const t2 = val("timeAdv");
 
@@ -5987,6 +6245,23 @@ document.getElementById("pedidoForm").addEventListener("submit", async (e)=>{
 
     appendEscudo1();
     appendPatrocinadores();
+  }
+
+  else if(productKey === "jogador_escudo"){
+    const nomeJogador = val("dataJogo") || product.title || "Jogador";
+
+    fd.append("rodada", "Jogador + escudo");
+    fd.append("data", nomeJogador);
+
+    fd.append("jogadores_json", JSON.stringify([{ nome: nomeJogador, posicao: "" }]));
+    fd.append("jogadores_texto", nomeJogador);
+    fd.append("artilheiros", "[]");
+    fd.append("artilheiros_json", "[]");
+    fd.append("artilheiros_texto", "");
+    fd.append("artilheiros_qtd", "0");
+
+    appendEscudo1();
+    appendArquivoAtivo("mascote", "mascote", "mascote");
   }
 
   try{
@@ -6293,7 +6568,7 @@ carregarTempoEstimado();
 setInterval(carregarTempoEstimado, 30000);
 updateChosenPlaceholders(null);
 selectorStage?.classList.add("open");
-selectProduct("resultado");
+resetProductCategory();
 iniciarFlipCampos();
 setTimeout(()=>window.scrollTo({ top:0, behavior:"auto" }), 180);
 
@@ -6499,6 +6774,7 @@ ia4ChatInput?.addEventListener("keydown", (e)=>{
 </script>
 </body>
 </html>
+
 
 
 
