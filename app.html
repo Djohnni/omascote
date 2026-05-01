@@ -3051,6 +3051,33 @@ body:not(.modeChosen) #btnTrocarTipo{
   }
 }
 
+body.modeChosen .switchModeRow{
+  display:flex !important;
+  gap:8px !important;
+  flex-wrap:wrap !important;
+  justify-content:center !important;
+  margin:14px auto 22px !important;
+}
+
+.categorySwitchBtn{
+  background:#111827 !important;
+  color:#ffffff !important;
+  border:1px solid #e5e7eb !important;
+  box-shadow:0 8px 18px rgba(15,23,42,.12) !important;
+}
+
+@media (max-width:680px){
+  body.modeChosen .switchModeRow{
+    gap:6px !important;
+  }
+
+  .categorySwitchBtn,
+  #btnTrocarTipo{
+    font-size:12px !important;
+    padding:9px 11px !important;
+  }
+}
+
 /* ===== FIM CATEGORIA TIME / JOGADOR ===== */
 
 /* ===== FIM IA4TUBE UI SIMPLES ===== */
@@ -3598,6 +3625,14 @@ TROQUE POR ISSO:
 
       <div class="switchModeRow">
         <button type="button" class="btnGhost" id="btnTrocarTipo">Trocar opção</button>
+
+        <button type="button" class="btnGhost categorySwitchBtn" id="btnIrTime">
+          🏆 Time
+        </button>
+
+        <button type="button" class="btnGhost categorySwitchBtn" id="btnIrJogador">
+          ⚽ Jogador
+        </button>
       </div>
 
       <div class="hiddenTabs">
@@ -6805,6 +6840,7 @@ ia4ChatInput?.addEventListener("keydown", (e)=>{
 </script>
 </body>
 </html>
+
 
 
 
