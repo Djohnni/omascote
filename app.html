@@ -3574,7 +3574,11 @@ TROQUE POR ISSO:
             <div class="line l5"></div>
           </div>
 
-          <div class="categoryChoiceRow">
+          <div id="imagemIntro" style="text-align:center;margin:10px auto 20px;">
+  <img src="SUA_IMAGEM_AQUI.png" style="width:100%;max-width:420px;border-radius:16px;box-shadow:0 10px 25px rgba(0,0,0,.15);">
+</div>
+
+<div class="categoryChoiceRow">
             <button type="button" class="categoryBtn" data-category="time">
               <div class="categoryIcon">🏆</div>
               <div class="categoryTitle">Arte para<br>Time</div>
@@ -5207,8 +5211,26 @@ function scrollToBuilder(){
 }
 
 function showProductCategory(category){
-  categoriaSelecionada = category || "";
-  if(!selectorStage) return;
+categoriaSelecionada = category || "";
+if(!selectorStage) return;
+
+const imgIntro = document.getElementById("imagemIntro");
+if(imgIntro) imgIntro.style.display = "none";
+---------------------------------------------
+
+PROCURE ISSO:
+function selectProduct(productKey){
+const product = PRODUCTS[productKey];
+if(!product) return;
+
+TROQUE POR ISSO:
+function selectProduct(productKey){
+const product = PRODUCTS[productKey];
+if(!product) return;
+
+const imgIntro = document.getElementById("imagemIntro");
+if(imgIntro) imgIntro.style.display = "none";
+
 
   selectorStage.classList.remove("category-time", "category-jogador");
 
@@ -6929,5 +6951,6 @@ ia4ChatInput?.addEventListener("keydown", (e)=>{
 </script>
 </body>
 </html>
+
 
 
