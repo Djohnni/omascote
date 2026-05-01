@@ -5219,6 +5219,7 @@ function selectProduct(productKey){
   if(!product) return;
 
   selectedProductInput.value = productKey;
+  flyerTipoInput.value = product.flyerTipo || "";
   document.body.classList.add("modeChosen");
   document.body.classList.remove("mode-flyer", "mode-result", "mode-proximo-jogo");
 
@@ -6174,7 +6175,7 @@ document.getElementById("pedidoForm").addEventListener("submit", async (e)=>{
     return artilheiros;
   };
 
-  if(productKey === "resultado"){
+  if(productKey === "resultado" || productKey === "resultado_jogo_jogador"){
     const t1 = val("timePrincipal");
     const g1 = val("golsTime");
     const g2 = val("golsAdv");
@@ -6854,6 +6855,7 @@ ia4ChatInput?.addEventListener("keydown", (e)=>{
 </script>
 </body>
 </html>
+
 
 
 
