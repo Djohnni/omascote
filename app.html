@@ -2067,6 +2067,87 @@ body{
   display:flex !important;
   justify-content:flex-end !important;
   margin-top:8px !important;
+  position:relative !important;
+}
+
+.menuPedidosTopo{
+  position:absolute;
+  top:calc(100% + 10px);
+  right:0;
+  width:min(360px, calc(100vw - 24px));
+  max-height:440px;
+  overflow:auto;
+  background:#ffffff;
+  border:1px solid #e5e7eb;
+  border-radius:18px;
+  box-shadow:0 22px 50px rgba(15,23,42,.24);
+  z-index:9999;
+  padding:12px;
+  display:none;
+}
+
+.menuPedidosTopo.open{
+  display:block;
+}
+
+.menuPedidosTopoVazio{
+  color:#64748b;
+  font-size:13px;
+  font-weight:900;
+  text-align:center;
+  padding:16px 10px;
+}
+
+.menuPedidoItem{
+  display:grid;
+  grid-template-columns:74px 1fr;
+  gap:10px;
+  padding:10px;
+  border-radius:14px;
+  border:1px solid #e5e7eb;
+  background:#f8fafc;
+  margin-bottom:10px;
+}
+
+.menuPedidoThumb{
+  width:74px;
+  height:96px;
+  object-fit:cover;
+  border-radius:10px;
+  background:#e5e7eb;
+  border:1px solid #e5e7eb;
+}
+
+.menuPedidoInfo{
+  min-width:0;
+  color:#111827;
+}
+
+.menuPedidoTipo{
+  font-size:13px;
+  font-weight:950;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+
+.menuPedidoStatus{
+  margin-top:3px;
+  font-size:12px;
+  font-weight:800;
+  color:#16a34a;
+}
+
+.menuPedidoBtn{
+  margin-top:8px;
+  width:100%;
+  padding:9px 10px !important;
+  border-radius:10px !important;
+  background:#16a34a !important;
+  color:#fff !important;
+  font-size:13px !important;
+  font-weight:950 !important;
+  box-shadow:none !important;
 }
 
 .ia4Brand{
@@ -3455,7 +3536,10 @@ textarea:not(.flip-active)::placeholder{
         </div>
 
         <div class="saldoTopoExtra">
-            <button class="topOrders" id="btnMeusPedidos" type="button" onclick="document.querySelector('#historicoLista')?.scrollIntoView({behavior:'smooth',block:'start'});">📁 Meus pedidos <span class="pedidosBadge" id="pedidosBadge">0</span></button>
+            <button class="topOrders" id="btnMeusPedidos" type="button" onclick="togglePedidosTopo(event)">📁 Meus pedidos <span class="pedidosBadge" id="pedidosBadge">0</span></button>
+            <div id="menuPedidosTopo" class="menuPedidosTopo">
+              <div class="menuPedidosTopoVazio">Carregando pedidos...</div>
+            </div>
             <button class="topOrders" id="btnSair" type="button" style="background:#dc2626;margin-left:8px;">Sair</button>
         </div>
       </div>
@@ -6562,6 +6646,39 @@ function atualizarBadgePedidos(pedidos){
   }
 }
 
+function togglePedidosTopo(event){
+  if(event) event.stopPropagation();
+
+  const menu = document.getElementById("menuPedidosTopo");
+  if(!menu) return;
+
+  menu.classList.toggle("open");
+}
+
+function atualizarMenuPedidosTopo(pedidos){
+  const menu = document.getElementById("menuPedidosTopo");
+  if(!menu) return;
+
+  const prontos = (pedidos || []).filter(p => p.status === "pronto");
+
+  if(prontos.length === 0){
+    menu.innerHTML = `<div class="menuPedidosTopoVazio">Nenhuma arte pronta ainda.</div>`;
+    return;
+  }
+
+  menu.innerHTML = prontos.slice(0, 8).map(p => `
+    <div class="menuPedidoItem">
+      ${p.imagem_url ? `<img class="menuPedidoThumb" src="${p.imagem_url}" alt="Arte pronta">` : `<div class="menuPedidoThumb"></div>`}
+
+      <div class="menuPedidoInfo">
+        <div class="menuPedidoTipo">${p.tipo || "Arte pronta"}</div>
+        <div class="menuPedidoStatus">✅ Pronto para baixar</div>
+        <button type="button" class="menuPedidoBtn" onclick="baixarPedido('${p.id}')">Baixar arte</button>
+      </div>
+    </div>
+  `).join("");
+}
+
 async function carregarHistorico(){
   if(!historicoListaEl || !historicoVazioEl) return;
 
@@ -6582,11 +6699,13 @@ async function carregarHistorico(){
 
     if(data.pedidos.length === 0){
       atualizarBadgePedidos([]);
+      atualizarMenuPedidosTopo([]);
       historicoVazioEl.textContent = "Sem pedidos ainda";
       return;
     }
 
     atualizarBadgePedidos(data.pedidos);
+    atualizarMenuPedidosTopo(data.pedidos);
 
     historicoVazioEl.textContent = "";
 
@@ -6804,6 +6923,13 @@ document.addEventListener("click", (e)=>{
   if(saldoMenu && btnAbrirSaldo && !saldoMenu.contains(e.target) && e.target !== btnAbrirSaldo){
     saldoMenu.classList.remove("open");
   }
+
+  const menuPedidosTopo = document.getElementById("menuPedidosTopo");
+  const btnMeusPedidos = document.getElementById("btnMeusPedidos");
+
+  if(menuPedidosTopo && btnMeusPedidos && !menuPedidosTopo.contains(e.target) && e.target !== btnMeusPedidos && !btnMeusPedidos.contains(e.target)){
+    menuPedidosTopo.classList.remove("open");
+  }
 });
 
 document.getElementById("addArtilheiroBtn")?.addEventListener("click", ()=>{
@@ -6965,6 +7091,7 @@ ia4ChatInput?.addEventListener("keydown", (e)=>{
 </script>
 </body>
 </html>
+
 
 
 
