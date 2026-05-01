@@ -2100,6 +2100,25 @@ body{
   font-size:17px !important;
   font-weight:900 !important;
   box-shadow:0 6px 14px rgba(0,0,0,.12) !important;
+  position:relative !important;
+}
+
+.pedidosBadge{
+  display:none;
+  position:absolute;
+  top:-9px;
+  right:-9px;
+  min-width:26px;
+  height:26px;
+  padding:0 8px;
+  border-radius:999px;
+  background:#dc2626;
+  color:#fff;
+  font-size:14px;
+  font-weight:950;
+  line-height:26px;
+  text-align:center;
+  box-shadow:0 8px 18px rgba(220,38,38,.35);
 }
 
 .hiddenSystemBtn{
@@ -3413,7 +3432,7 @@ textarea:not(.flip-active)::placeholder{
         </div>
 
         <div class="saldoTopoExtra">
-            <button class="topOrders" id="btnMeusPedidos" type="button" onclick="document.querySelector('#historicoLista')?.scrollIntoView({behavior:'smooth',block:'start'});">📁 Meus pedidos</button>
+            <button class="topOrders" id="btnMeusPedidos" type="button" onclick="document.querySelector('#historicoLista')?.scrollIntoView({behavior:'smooth',block:'start'});">📁 Meus pedidos <span class="pedidosBadge" id="pedidosBadge">0</span></button>
             <button class="topOrders" id="btnSair" type="button" style="background:#dc2626;margin-left:8px;">Sair</button>
         </div>
       </div>
@@ -6472,6 +6491,41 @@ function formatarDataHistorico(valor){
   return String(valor);
 }
 
+function getPedidosBaixados(){
+  try{
+    return JSON.parse(localStorage.getItem("ia4tube_pedidos_baixados") || "[]");
+  }catch{
+    return [];
+  }
+}
+
+function marcarPedidoBaixado(id){
+  const baixados = getPedidosBaixados();
+  if(!baixados.includes(id)){
+    baixados.push(id);
+    localStorage.setItem("ia4tube_pedidos_baixados", JSON.stringify(baixados));
+  }
+}
+
+function atualizarBadgePedidos(pedidos){
+  const badge = document.getElementById("pedidosBadge");
+  if(!badge) return;
+
+  const baixados = getPedidosBaixados();
+
+  const prontosNaoBaixados = (pedidos || []).filter(p =>
+    p.status === "pronto" && !baixados.includes(p.id)
+  ).length;
+
+  if(prontosNaoBaixados > 0){
+    badge.textContent = String(prontosNaoBaixados);
+    badge.style.display = "inline-block";
+  }else{
+    badge.textContent = "0";
+    badge.style.display = "none";
+  }
+}
+
 async function carregarHistorico(){
   if(!historicoListaEl || !historicoVazioEl) return;
 
@@ -6491,9 +6545,12 @@ async function carregarHistorico(){
     }
 
     if(data.pedidos.length === 0){
+      atualizarBadgePedidos([]);
       historicoVazioEl.textContent = "Sem pedidos ainda";
       return;
     }
+
+    atualizarBadgePedidos(data.pedidos);
 
     historicoVazioEl.textContent = "";
 
@@ -6533,6 +6590,9 @@ async function copiarDescricao(id){
 }
 
 async function baixarPedido(id){
+  marcarPedidoBaixado(id);
+  carregarHistorico();
+
   try{
     const r = await fetch(`${API_BASE}/pedidos/${id}/download-resultado`, {
       headers: { "Authorization": "Bearer " + token }
@@ -6650,6 +6710,7 @@ applyLocal();
 if(token){
   refreshMe();
   carregarHistorico();
+  setInterval(carregarHistorico, 10000);
 }else{
   if(saldoHeroEl) saldoHeroEl.textContent = "Primeira arte com desconto: R$4";
   if(historicoVazioEl) historicoVazioEl.textContent = "Crie sua conta para ver seus pedidos.";
@@ -6868,22 +6929,5 @@ ia4ChatInput?.addEventListener("keydown", (e)=>{
 </script>
 </body>
 </html>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
