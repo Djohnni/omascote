@@ -3044,6 +3044,29 @@ textarea:not(.flip-active)::placeholder{
   box-shadow:0 8px 18px rgba(15,23,42,.12) !important;
 }
 
+.homeExamples{
+  display:grid !important;
+  grid-template-columns:repeat(4, minmax(0, 1fr)) !important;
+  gap:12px !important;
+  margin:22px auto 0 !important;
+  max-width:760px !important;
+}
+
+.homeExamples img{
+  width:100% !important;
+  aspect-ratio:9/16 !important;
+  object-fit:cover !important;
+  border-radius:16px !important;
+  border:1px solid #e5e7eb !important;
+  box-shadow:0 12px 26px rgba(15,23,42,.10) !important;
+  display:block !important;
+}
+
+.selectorStage.category-time .homeExamples,
+.selectorStage.category-jogador .homeExamples{
+  display:none !important;
+}
+
 .productGroup,
 .optionsRow.productGroup{
   display:none !important;
@@ -3584,6 +3607,13 @@ TROQUE POR ISSO:
               <div class="categoryIcon">⚽</div>
               <div class="categoryTitle">Arte para<br>Jogador</div>
             </button>
+          </div>
+
+          <div class="homeExamples" id="homeExamples">
+            <img src="exemplos/exemplo1.jpg" alt="Exemplo de arte 1">
+            <img src="exemplos/exemplo2.jpg" alt="Exemplo de arte 2">
+            <img src="exemplos/exemplo3.jpg" alt="Exemplo de arte 3">
+            <img src="exemplos/exemplo4.jpg" alt="Exemplo de arte 4">
           </div>
 
           <div class="categoryMiniRow">
@@ -6929,5 +6959,6 @@ ia4ChatInput?.addEventListener("keydown", (e)=>{
 </script>
 </body>
 </html>
+
 
 
