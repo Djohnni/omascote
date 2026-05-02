@@ -4186,6 +4186,13 @@ TROQUE POR ISSO:
 const API_BASE = "https://api.omascote.com.br";
 let token = localStorage.getItem("omascote_token");
 
+function ia4Track(eventName, params = {}){
+  try{
+    if(typeof gtag !== "function") return;
+    gtag("event", eventName, params);
+  }catch(e){}
+}
+
 const welcomeEl = document.getElementById("welcome");
 const planoEl = document.getElementById("plano");
 const usadosEl = document.getElementById("usados");
@@ -4928,6 +4935,10 @@ async function comprarCreditos(pacote){
     return;
   }
 
+  ia4Track("iniciou_pagamento", {
+    pacote: pacote || "desconhecido"
+  });
+
   window.open(data.init_point, "_blank");
 
   }catch{
@@ -4951,6 +4962,10 @@ const authVisitanteMsg = document.getElementById("authVisitanteMsg");
 let modoCadastro = false;
 
 function abrirCadastroVisitanteModal(){
+  ia4Track("iniciou_cadastro", {
+    origem: selectedProductInput?.value || "sem_produto"
+  });
+
   if(!authVisitanteModal) return;
   if(authVisitanteMsg){
     authVisitanteMsg.textContent = "";
@@ -5033,6 +5048,10 @@ if(modoCadastro){
     }
 
     token = data.token;
+
+    ia4Track(modoCadastro ? "cadastro_concluido" : "login_concluido", {
+      metodo: modoCadastro ? "cadastro" : "login"
+    });
 
     localStorage.setItem("omascote_token", data.token);
     localStorage.setItem("omascote_nome_time", data.nome_time || nome_time || "");
@@ -5358,6 +5377,10 @@ document.querySelectorAll(".categoryBtn, .categoryMiniBtn").forEach(btn=>{
     configureOptionalSections("");
     arrangeFieldSequence("resultado");
     closePhraseMenu();
+    ia4Track("selecionou_categoria", {
+      categoria: btn.dataset.category || "desconhecida"
+    });
+
     showProductCategory(btn.dataset.category);
   });
 });
@@ -5367,6 +5390,11 @@ function selectProduct(productKey){
   if(!product) return;
 
   selectedProductInput.value = productKey;
+
+  ia4Track("selecionou_produto", {
+    produto: productKey || "desconhecido",
+    categoria: categoriaSelecionada || "desconhecida"
+  });
   flyerTipoInput.value = product.flyerTipo || "";
   document.body.classList.add("modeChosen");
   document.body.classList.remove("mode-flyer", "mode-result", "mode-proximo-jogo");
@@ -5523,13 +5551,29 @@ if(escudo3dEnviarBtn){
 
       if(out.ok){
         escudo3dMsg.textContent = `✅ Pedido enviado! ID: ${out.pedido_id}`;
+
+        ia4Track("pedido_concluido", {
+          produto: "escudo3d",
+          pedido_id: out.pedido_id || ""
+        });
+
         refreshMe();
         carregarHistorico();
         setTimeout(fecharEscudo3dModal, 900);
       }else{
+        ia4Track("erro_envio_pedido", {
+          produto: "escudo3d",
+          erro: out.error || "Erro ao enviar"
+        });
+
         escudo3dMsg.textContent = out.error || "Erro ao enviar.";
       }
     }catch{
+      ia4Track("erro_envio_pedido", {
+        produto: "escudo3d",
+        erro: "Erro de rede"
+      });
+
       escudo3dMsg.textContent = "Erro de rede.";
     }
 
@@ -6492,6 +6536,13 @@ document.getElementById("pedidoForm").addEventListener("submit", async (e)=>{
 
     if(out.ok){
       msgPedidoEl.textContent = `✅ Pedido enviado! ID: ${out.pedido_id}`;
+
+      ia4Track("pedido_concluido", {
+        produto: productKey || "desconhecido",
+        categoria: categoriaSelecionada || "desconhecida",
+        pedido_id: out.pedido_id || ""
+      });
+
       limparCamposAposEnviar();
       refreshMe();
       carregarHistorico();
@@ -6500,9 +6551,21 @@ document.getElementById("pedidoForm").addEventListener("submit", async (e)=>{
         acompanharResultado(out.pedido_id);
       }
     }else{
+      ia4Track("erro_envio_pedido", {
+        produto: productKey || "desconhecido",
+        categoria: categoriaSelecionada || "desconhecida",
+        erro: out.error || "Erro ao enviar"
+      });
+
       msgPedidoEl.textContent = out.error || "Erro ao enviar";
     }
   }catch{
+    ia4Track("erro_envio_pedido", {
+      produto: productKey || "desconhecido",
+      categoria: categoriaSelecionada || "desconhecida",
+      erro: "Erro de rede"
+    });
+
     msgPedidoEl.textContent = "Erro de rede";
   }
 });
@@ -6909,6 +6972,11 @@ const saldoMenu = document.getElementById("saldoMenu");
 
 btnAbrirSaldo?.addEventListener("click", (e)=>{
   e.stopPropagation();
+
+  ia4Track("clicou_adicionar_saldo", {
+    logado: !!token
+  });
+
   saldoMenu?.classList.toggle("open");
 });
 
@@ -7091,6 +7159,7 @@ ia4ChatInput?.addEventListener("keydown", (e)=>{
 </script>
 </body>
 </html>
+
 
 
 
