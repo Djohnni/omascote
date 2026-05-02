@@ -3220,6 +3220,123 @@ textarea:not(.flip-active)::placeholder{
   }
 }
 
+/* ===== IA4TUBE PRODUTOS DIRETO NA HOME ===== */
+
+.selectorStage{
+  display:flex !important;
+  flex-direction:column !important;
+}
+
+.categoryChoiceRow{
+  order:1 !important;
+}
+
+.homeExamples{
+  display:none !important;
+}
+
+.categoryMiniRow{
+  display:none !important;
+}
+
+.selectorStage.category-time .categoryChoiceRow,
+.selectorStage.category-jogador .categoryChoiceRow{
+  display:grid !important;
+}
+
+.productGroup,
+.optionsRow.productGroup{
+  display:grid !important;
+  opacity:1 !important;
+  visibility:visible !important;
+  pointer-events:auto !important;
+  position:static !important;
+  transform:none !important;
+  width:100% !important;
+  grid-template-columns:repeat(3,1fr) !important;
+  gap:30px !important;
+}
+
+.productGroupJogador{
+  order:2 !important;
+  margin:22px auto 34px !important;
+}
+
+.productGroupTime{
+  order:3 !important;
+  margin:0 auto 0 !important;
+}
+
+.productGroup::before{
+  grid-column:1 / -1;
+  display:block;
+  text-align:left;
+  color:#111827;
+  font-size:26px;
+  font-weight:950;
+  margin:0 0 -10px;
+}
+
+.productGroupJogador::before{
+  content:"Arte para Jogador";
+}
+
+.productGroupTime::before{
+  content:"Arte para Time";
+}
+
+.productGroup .optionBtn{
+  justify-content:flex-start !important;
+  padding:22px 10px 16px !important;
+}
+
+.productGroup .optLabel{
+  order:1 !important;
+  margin:0 0 14px !important;
+  max-width:100% !important;
+}
+
+.productGroup .circle,
+.productGroup .circle.green,
+.productGroup .circle.orange{
+  order:2 !important;
+  width:96px !important;
+  height:96px !important;
+  margin:0 auto !important;
+}
+
+.productGroup .iconImg{
+  width:96px !important;
+  height:96px !important;
+}
+
+@media (max-width:680px){
+  .productGroup,
+  .optionsRow.productGroup{
+    grid-template-columns:repeat(3,1fr) !important;
+    gap:8px !important;
+  }
+
+  .productGroup::before{
+    font-size:20px !important;
+    margin:4px 0 0 !important;
+  }
+
+  .productGroup .circle,
+  .productGroup .circle.green,
+  .productGroup .circle.orange{
+    width:42px !important;
+    height:42px !important;
+  }
+
+  .productGroup .iconImg{
+    width:42px !important;
+    height:42px !important;
+  }
+}
+
+/* ===== FIM IA4TUBE PRODUTOS DIRETO NA HOME ===== */
+
 /* ===== FIM CATEGORIA TIME / JOGADOR ===== */
 
 /* ===== FIM IA4TUBE UI SIMPLES ===== */
@@ -5360,6 +5477,19 @@ function showProductCategory(category){
   }
 
   selectorStage.classList.add("open");
+
+  const alvo = category === "jogador"
+    ? document.querySelector(".productGroupJogador")
+    : document.querySelector(".productGroupTime");
+
+  if(alvo){
+    setTimeout(()=>{
+      alvo.scrollIntoView({
+        behavior:"smooth",
+        block:"start"
+      });
+    }, 80);
+  }
 }
 
 function resetProductCategory(){
@@ -5391,9 +5521,17 @@ function selectProduct(productKey){
 
   selectedProductInput.value = productKey;
 
+  const categoriaInferida = ["proximo_jogo_jogador", "resultado_jogo_jogador", "jogador_escudo"].includes(productKey)
+    ? "jogador"
+    : "time";
+
+  if(!categoriaSelecionada){
+    categoriaSelecionada = categoriaInferida;
+  }
+
   ia4Track("selecionou_produto", {
     produto: productKey || "desconhecido",
-    categoria: categoriaSelecionada || "desconhecida"
+    categoria: categoriaSelecionada || categoriaInferida || "desconhecida"
   });
   flyerTipoInput.value = product.flyerTipo || "";
   document.body.classList.add("modeChosen");
@@ -7159,6 +7297,7 @@ ia4ChatInput?.addEventListener("keydown", (e)=>{
 </script>
 </body>
 </html>
+
 
 
 
