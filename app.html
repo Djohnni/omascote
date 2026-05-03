@@ -3296,18 +3296,15 @@ textarea:not(.flip-active)::placeholder{
   max-width:100% !important;
 }
 
-.productGroup .circle,
-.productGroup .circle.green,
-.productGroup .circle.orange{
+.productGroup .imgProduto{
   order:2 !important;
-  width:96px !important;
-  height:96px !important;
+  width:100% !important;
+  aspect-ratio:9/16 !important;
+  object-fit:cover !important;
+  border-radius:16px !important;
   margin:0 auto !important;
-}
-
-.productGroup .iconImg{
-  width:96px !important;
-  height:96px !important;
+  box-shadow:0 12px 26px rgba(15,23,42,.12) !important;
+  display:block !important;
 }
 
 @media (max-width:680px){
@@ -3322,16 +3319,10 @@ textarea:not(.flip-active)::placeholder{
     margin:4px 0 0 !important;
   }
 
-  .productGroup .circle,
-  .productGroup .circle.green,
-  .productGroup .circle.orange{
-    width:42px !important;
-    height:42px !important;
-  }
-
-  .productGroup .iconImg{
-    width:42px !important;
-    height:42px !important;
+  .productGroup .imgProduto{
+    width:100% !important;
+    aspect-ratio:9/16 !important;
+    border-radius:10px !important;
   }
 }
 
@@ -3830,44 +3821,32 @@ TROQUE POR ISSO:
 
           <div class="optionsRow productGroup productGroupTime">
             <button type="button" class="optionBtn" data-product="resultado">
-              <div class="circle green">
-                <img src="icons/resultado.png" class="iconImg">
-              </div>
+              <img src="produtos/resultado.jpg" class="imgProduto">
               <div class="optLabel">Resultado<br>do Jogo<br><span style="color:#1fbf63;font-weight:900;">R$8,00</span></div>
             </button>
 
             <button type="button" class="optionBtn" data-product="escalacao">
-              <div class="circle orange">
-                <img src="icons/escalacao.png" class="iconImg">
-              </div>
+              <img src="produtos/escalacao.jpg" class="imgProduto">
               <div class="optLabel">Escalação<br><span style="color:#1fbf63;font-weight:900;">R$8,00</span></div>
             </button>
 
             <button type="button" class="optionBtn" data-product="contratacao">
-              <div class="circle">
-                <img src="icons/contratacao.png" class="iconImg">
-              </div>
+              <img src="produtos/contratacao.jpg" class="imgProduto">
               <div class="optLabel">Contratação<br><span style="color:#1fbf63;font-weight:900;">R$7,00</span></div>
             </button>
 
             <button type="button" class="optionBtn" data-product="proximo_jogo">
-              <div class="circle orange">
-                <img src="icons/proximo_jogo.png" class="iconImg">
-              </div>
+              <img src="produtos/proximo_jogo.jpg" class="imgProduto">
               <div class="optLabel">Próximo Jogo<br><span style="color:#1fbf63;font-weight:900;">R$7,00</span></div>
             </button>
 
             <button type="button" class="optionBtn" data-product="patrocinador">
-              <div class="circle">
-                <img src="icons/patrocinador.png" class="iconImg">
-              </div>
+              <img src="produtos/patrocinador.jpg" class="imgProduto">
               <div class="optLabel">Patrocinador<br>/ Apoio<br><span style="color:#1fbf63;font-weight:900;">R$8,00</span></div>
             </button>
 
             <button type="button" class="optionBtn" data-product="escudo3d">
-              <div class="circle">
-                <img src="icons/escudo3d.png" class="iconImg">
-              </div>
+              <img src="produtos/escudo3d.jpg" class="imgProduto">
               <div class="optLabel">
                 Primeira arte<br>Escudo 3D<br>
                 <span style="font-size:11px;color:#777;text-decoration:line-through;">R$18</span>
@@ -3878,24 +3857,18 @@ TROQUE POR ISSO:
 
           <div class="optionsRow productGroup productGroupJogador">
             <button type="button" class="optionBtn" data-product="proximo_jogo_jogador">
-              <div class="circle orange">
-                <img src="icons/proximo_jogo.png" class="iconImg">
-              </div>
               <div class="optLabel">Próximo Jogo<br>Jogador<br><span style="color:#1fbf63;font-weight:900;">R$7,00</span></div>
+              <img src="produtos/proximo_jogo_jogador.jpg" class="imgProduto">
             </button>
 
             <button type="button" class="optionBtn" data-product="resultado_jogo_jogador">
-              <div class="circle green">
-                <img src="icons/resultado.png" class="iconImg">
-              </div>
               <div class="optLabel">Resultado<br>Jogador<br><span style="color:#1fbf63;font-weight:900;">R$8,00</span></div>
+              <img src="produtos/resultado_jogador.jpg" class="imgProduto">
             </button>
 
             <button type="button" class="optionBtn" data-product="jogador_escudo">
-              <div class="circle">
-                <img src="icons/contratacao.png" class="iconImg">
-              </div>
               <div class="optLabel">Jogador<br>+ Escudo<br><span style="color:#1fbf63;font-weight:900;">R$6,00</span></div>
+              <img src="produtos/jogador_escudo.jpg" class="imgProduto">
             </button>
           </div>
         </div>
@@ -7297,6 +7270,7 @@ ia4ChatInput?.addEventListener("keydown", (e)=>{
 </script>
 </body>
 </html>
+
 
 
 
