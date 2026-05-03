@@ -5427,7 +5427,7 @@ if(modoCadastro){
     localStorage.setItem("omascote_plano", String(data.plano ?? ""));
     localStorage.setItem("omascote_usados", String(data.usados_no_ciclo ?? ""));
 
-    setAuthVisitanteMsg("Conta criada! Continuando seu pedido...", "ok");
+    setAuthVisitanteMsg(modoCadastro ? "Conta criada! Continuando..." : "Login realizado!", "ok");
 
     fecharCadastroVisitanteModal();
 
@@ -5435,12 +5435,6 @@ if(modoCadastro){
 
     document.body.classList.remove("visitanteNaoLogado");
     document.querySelector(".topRightArea")?.style.setProperty("display", "flex", "important");
-
-    const badge = document.getElementById("pedidosBadge");
-    if(badge){
-      badge.textContent = "1";
-      badge.style.display = "inline-block";
-    }
 
     applyLocal();
     refreshMe();
@@ -5464,8 +5458,6 @@ if(modoCadastro){
 
       if(typeof acao === "function"){
         acao();
-      }else{
-        document.getElementById("pedidoForm")?.requestSubmit();
       }
     }, 250);
 
@@ -7987,6 +7979,7 @@ ia4ChatInput?.addEventListener("keydown", (e)=>{
 </script>
 </body>
 </html>
+
 
 
 
