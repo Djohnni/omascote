@@ -3732,16 +3732,18 @@ textarea.campoObrigatorioErro,
           Crie seu time no IA4Tube
         </div>
 
-        <div style="text-align:center;margin-top:6px;font-size:14px;font-weight:850;color:#334155;">
-          Envie o escudo do seu time e ganhe ele em 3D profissional.
+        <div style="text-align:center;margin-top:10px;font-size:15px;font-weight:950;color:#16a34a;line-height:1.25;">
+          Envie seu escudo e ganhe um escudo 3D como presente de boas-vindas
         </div>
 
-        <div style="text-align:center;margin-top:10px;font-size:13px;font-weight:900;color:#16a34a;">
-          Presente de boas-vindas para novos times
-        </div>
+        <label style="display:block;margin-top:14px;color:#334155;font-size:13px;font-weight:900;">Nome do time</label>
+        <input id="homeAuthNomeTime" placeholder="Ex: Los Hermanos" style="width:100%;margin-top:6px;background:#fff !important;color:#111827 !important;border:1px solid #d1d5db !important;box-shadow:none !important;">
 
-        <label style="display:block;margin-top:14px;color:#334155;font-size:13px;font-weight:900;">WhatsApp</label>
+        <label style="display:block;margin-top:10px;color:#334155;font-size:13px;font-weight:900;">WhatsApp</label>
         <input id="homeAuthWhatsapp" inputmode="numeric" placeholder="Somente números" style="width:100%;margin-top:6px;background:#fff !important;color:#111827 !important;border:1px solid #d1d5db !important;box-shadow:none !important;">
+
+        <label style="display:block;margin-top:10px;color:#334155;font-size:13px;font-weight:900;">Senha</label>
+        <input id="homeAuthSenha" type="password" placeholder="Crie uma senha simples" style="width:100%;margin-top:6px;background:#fff !important;color:#111827 !important;border:1px solid #d1d5db !important;box-shadow:none !important;">
 
         <input id="homeAuthEscudo3dFile" class="fileHidden" type="file" accept="image/*">
         <div id="homeAuthEscudo3dUploadBtn" style="margin-top:12px;padding:18px;border:1px dashed #86efac;border-radius:16px;background:#f8fff9;cursor:pointer;text-align:center;font-weight:950;color:#166534;">
@@ -3749,12 +3751,8 @@ textarea.campoObrigatorioErro,
         </div>
 
         <button class="btnGreen" id="homeAuthEscudo3dContinuarBtn" type="button" style="width:100%;margin-top:14px;">
-          Gerar meu escudo 3D 🚀
+          Criar meu time e gerar escudo 3D 🚀
         </button>
-
-        <div style="margin-top:10px;text-align:center;font-size:12px;font-weight:800;color:#64748b;">
-          Depois de enviar, salve seu time para receber a arte pronta e liberar artes automáticas toda semana.
-        </div>
       </div>
     </div>
 
@@ -5201,7 +5199,9 @@ const authEscudo3dUploadBtn = document.getElementById("authEscudo3dUploadBtn");
 const authEscudo3dFileName = document.getElementById("authEscudo3dFileName");
 const authEscudo3dContinuarBtn = document.getElementById("authEscudo3dContinuarBtn");
 const onboardingEscudo3d = document.getElementById("onboardingEscudo3d");
+const homeAuthNomeTime = document.getElementById("homeAuthNomeTime");
 const homeAuthWhatsapp = document.getElementById("homeAuthWhatsapp");
+const homeAuthSenha = document.getElementById("homeAuthSenha");
 const homeAuthEscudo3dFile = document.getElementById("homeAuthEscudo3dFile");
 const homeAuthEscudo3dUploadBtn = document.getElementById("homeAuthEscudo3dUploadBtn");
 const homeAuthEscudo3dFileName = document.getElementById("homeAuthEscudo3dFileName");
@@ -5454,13 +5454,27 @@ homeAuthEscudo3dFile?.addEventListener("change", ()=>{
   }
 });
 
-homeAuthEscudo3dContinuarBtn?.addEventListener("click", ()=>{
+homeAuthEscudo3dContinuarBtn?.addEventListener("click", async ()=>{
+  const nome_time = homeAuthNomeTime?.value?.trim() || "";
   const whatsapp = onlyDigits(homeAuthWhatsapp?.value || "");
+  const senha = homeAuthSenha?.value || "";
   const file = homeAuthEscudo3dFile?.files && homeAuthEscudo3dFile.files[0] ? homeAuthEscudo3dFile.files[0] : null;
+
+  if(!nome_time){
+    alert("Digite o nome do time.");
+    homeAuthNomeTime?.focus();
+    return;
+  }
 
   if(!whatsapp || whatsapp.length < 10){
     alert("Digite seu WhatsApp.");
     homeAuthWhatsapp?.focus();
+    return;
+  }
+
+  if(!senha || senha.length < 3){
+    alert("Digite uma senha com pelo menos 3 caracteres.");
+    homeAuthSenha?.focus();
     return;
   }
 
@@ -5470,27 +5484,63 @@ homeAuthEscudo3dContinuarBtn?.addEventListener("click", ()=>{
     return;
   }
 
-  abrirCadastroEscudo3dModal();
-
-  const authWhatsappEl = document.getElementById("authWhatsapp");
-  if(authWhatsappEl) authWhatsappEl.value = whatsapp;
-
   escudo3dCadastroFile = file;
-  if(authEscudo3dFileName) authEscudo3dFileName.textContent = file.name || "Escudo selecionado";
-
+  fluxoEscudo3dCadastro = true;
   modoCadastro = true;
 
-  if(labelNomeTime) labelNomeTime.style.display = "block";
-  if(document.getElementById("authNomeTime")) document.getElementById("authNomeTime").style.display = "block";
-  if(labelSenha) labelSenha.style.display = "block";
-  if(document.getElementById("authSenha")) document.getElementById("authSenha").style.display = "block";
-  if(authEscudo3dArea) authEscudo3dArea.style.display = "none";
-  if(authBtnsRow) authBtnsRow.style.display = "none";
-  if(authCriarContaBtn) authCriarContaBtn.style.display = "block";
+  homeAuthEscudo3dContinuarBtn.disabled = true;
+  homeAuthEscudo3dContinuarBtn.textContent = "Criando seu time...";
 
-  iniciarProgressoCadastroEscudo3d();
-  setAuthVisitanteMsg("Aproveite a espera: salve seu time e vamos enviar artes novas toda semana.", "ok");
-  setTimeout(()=>document.getElementById("authNomeTime")?.focus(), 120);
+  try{
+    let r = await fetch(`${API_BASE}/auth/register`, {
+      method:"POST",
+      headers:{ "Content-Type":"application/json" },
+      body:JSON.stringify({ nome_time, whatsapp, senha })
+    });
+
+    let data = await r.json().catch(()=>({}));
+
+    if(!r.ok || !data.ok){
+      r = await fetch(`${API_BASE}/auth/login`, {
+        method:"POST",
+        headers:{ "Content-Type":"application/json" },
+        body:JSON.stringify({ whatsapp, senha })
+      });
+
+      data = await r.json().catch(()=>({}));
+    }
+
+    if(!r.ok || !data.ok || !data.token){
+      alert(data.error || "Não foi possível criar ou entrar na conta.");
+      return;
+    }
+
+    token = data.token;
+
+    localStorage.setItem("omascote_token", data.token);
+    localStorage.setItem("omascote_nome_time", data.nome_time || nome_time || "");
+    localStorage.setItem("omascote_plano", String(data.plano ?? ""));
+    localStorage.setItem("omascote_usados", String(data.usados_no_ciclo ?? ""));
+
+    if(onboardingEscudo3d) onboardingEscudo3d.style.display = "none";
+
+    applyLocal();
+    refreshMe();
+
+    const btnSairEl = document.getElementById("btnSair");
+    if(btnSairEl){
+      btnSairEl.textContent = "Sair";
+      btnSairEl.style.background = "#dc2626";
+    }
+
+    enviarPedidoEscudo3dComArquivo(file);
+
+  }catch(e){
+    alert("Erro de rede. Tente novamente.");
+  }
+
+  homeAuthEscudo3dContinuarBtn.disabled = false;
+  homeAuthEscudo3dContinuarBtn.textContent = "Criar meu time e gerar escudo 3D 🚀";
 });
 
 authEscudo3dContinuarBtn?.addEventListener("click", ()=>{
@@ -7472,7 +7522,16 @@ async function carregarHistorico(){
       atualizarBadgePedidos([]);
       atualizarMenuPedidosTopo([]);
       historicoVazioEl.textContent = "Sem pedidos ainda";
+
+      if(token && onboardingEscudo3d){
+        onboardingEscudo3d.style.display = "block";
+      }
+
       return;
+    }
+
+    if(onboardingEscudo3d){
+      onboardingEscudo3d.style.display = "none";
     }
 
     atualizarBadgePedidos(data.pedidos);
@@ -7640,8 +7699,10 @@ if(token){
   carregarHistorico();
   setInterval(carregarHistorico, 10000);
 }else{
-  if(saldoHeroEl) saldoHeroEl.textContent = "Primeira arte com desconto: R$4";
+  if(onboardingEscudo3d) onboardingEscudo3d.style.display = "block";
   if(historicoVazioEl) historicoVazioEl.textContent = "Crie sua conta para ver seus pedidos.";
+
+  document.querySelector(".topRightArea")?.style.setProperty("display", "none", "important");
 }
 carregarTempoEstimado();
 setInterval(carregarTempoEstimado, 30000);
@@ -7870,6 +7931,7 @@ ia4ChatInput?.addEventListener("keydown", (e)=>{
 </script>
 </body>
 </html>
+
 
 
 
