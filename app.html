@@ -5390,6 +5390,15 @@ if(modoCadastro){
     setAuthVisitanteMsg("Conta criada! Continuando seu pedido...", "ok");
 
     fecharCadastroVisitanteModal();
+
+    if(onboardingEscudo3d) onboardingEscudo3d.style.display = "none";
+
+    const badge = document.getElementById("pedidosBadge");
+    if(badge){
+      badge.textContent = "1";
+      badge.style.display = "inline-block";
+    }
+
     applyLocal();
     refreshMe();
     carregarHistorico();
@@ -6170,6 +6179,14 @@ async function enviarPedidoEscudo3dComArquivo(file){
         produto: "escudo3d",
         pedido_id: out.pedido_id || ""
       });
+
+      if(onboardingEscudo3d) onboardingEscudo3d.style.display = "none";
+
+      const badge = document.getElementById("pedidosBadge");
+      if(badge){
+        badge.textContent = "1";
+        badge.style.display = "inline-block";
+      }
 
       mostrarAvisoPedido();
       refreshMe();
@@ -7836,6 +7853,7 @@ ia4ChatInput?.addEventListener("keydown", (e)=>{
 </script>
 </body>
 </html>
+
 
 
 
