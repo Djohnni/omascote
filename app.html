@@ -4285,7 +4285,19 @@ TROQUE POR ISSO:
       <label for="authWhatsapp">WhatsApp</label>
       <input id="authWhatsapp" inputmode="numeric" placeholder="Somente números">
 
-      <label for="authSenha">Senha</label>
+      <div id="authEscudo3dArea" style="display:none;margin-top:12px;">
+        <label for="authEscudo3dFile">Escudo do time</label>
+        <input id="authEscudo3dFile" class="fileHidden" type="file" accept="image/*">
+        <div class="escudo3dUpload" id="authEscudo3dUploadBtn">
+          <div id="authEscudo3dFileName">Enviar escudo do time</div>
+        </div>
+
+        <button class="btnGreen" id="authEscudo3dContinuarBtn" type="button" style="width:100%;margin-top:12px;">
+          Continuar 🚀
+        </button>
+      </div>
+
+      <label for="authSenha" id="labelSenha">Senha</label>
       <input id="authSenha" type="password" placeholder="Crie uma senha simples">
 
       <div style="display:flex;gap:8px;margin-top:14px;" id="authBtnsRow">
@@ -4298,7 +4310,7 @@ TROQUE POR ISSO:
 </div>
 
 <button class="btnGreen" id="authCriarContaBtn" type="button" style="width:100%;margin-top:10px;display:none;">
-  Criar conta e continuar 🚀
+  Criar meu time e gerar escudo 3D 🚀
 </button>
 
       <div class="authVisitanteMsg" id="authVisitanteMsg"></div>
@@ -5080,6 +5092,8 @@ async function carregarTempoEstimado(){
 }
 
 let acaoDepoisDoCadastro = null;
+let fluxoEscudo3dCadastro = false;
+let escudo3dCadastroFile = null;
 
 async function comprarCreditos(pacote){
   if(!token){
@@ -5149,23 +5163,71 @@ const authEntrarBtn = document.getElementById("authEntrarBtn");
 const authCriarContaToggle = document.getElementById("authCriarContaToggle");
 const authBtnsRow = document.getElementById("authBtnsRow");
 const labelNomeTime = document.getElementById("labelNomeTime");
+const labelSenha = document.getElementById("labelSenha");
 const authVisitanteMsg = document.getElementById("authVisitanteMsg");
+const authEscudo3dArea = document.getElementById("authEscudo3dArea");
+const authEscudo3dFile = document.getElementById("authEscudo3dFile");
+const authEscudo3dUploadBtn = document.getElementById("authEscudo3dUploadBtn");
+const authEscudo3dFileName = document.getElementById("authEscudo3dFileName");
+const authEscudo3dContinuarBtn = document.getElementById("authEscudo3dContinuarBtn");
 
 let modoCadastro = false;
 
 function abrirCadastroVisitanteModal(){
+  fluxoEscudo3dCadastro = false;
+  escudo3dCadastroFile = null;
+
   ia4Track("iniciou_cadastro", {
     origem: selectedProductInput?.value || "sem_produto"
   });
 
   if(!authVisitanteModal) return;
+
+  modoCadastro = false;
+
+  if(labelNomeTime) labelNomeTime.style.display = "none";
+  if(document.getElementById("authNomeTime")) document.getElementById("authNomeTime").style.display = "none";
+  if(labelSenha) labelSenha.style.display = "block";
+  if(document.getElementById("authSenha")) document.getElementById("authSenha").style.display = "block";
+  if(authEscudo3dArea) authEscudo3dArea.style.display = "none";
+  if(authBtnsRow) authBtnsRow.style.display = "flex";
+  if(authCriarContaBtn) authCriarContaBtn.style.display = "none";
+
   if(authVisitanteMsg){
     authVisitanteMsg.textContent = "";
     authVisitanteMsg.className = "authVisitanteMsg";
   }
+
   authVisitanteModal.classList.add("open");
   authVisitanteModal.setAttribute("aria-hidden", "false");
-  setTimeout(()=>document.getElementById("authNomeTime")?.focus(), 120);
+  setTimeout(()=>document.getElementById("authWhatsapp")?.focus(), 120);
+}
+
+function abrirCadastroEscudo3dModal(){
+  fluxoEscudo3dCadastro = true;
+  escudo3dCadastroFile = null;
+  modoCadastro = false;
+
+  if(!authVisitanteModal) return;
+
+  document.querySelector(".authPromoBox h2").textContent = "Crie seu time no IA4Tube";
+  document.querySelector(".authPromoBox p").textContent = "Envie o escudo do seu time e receba ele em uma versão 3D profissional.";
+
+  if(labelNomeTime) labelNomeTime.style.display = "none";
+  if(document.getElementById("authNomeTime")) document.getElementById("authNomeTime").style.display = "none";
+  if(labelSenha) labelSenha.style.display = "none";
+  if(document.getElementById("authSenha")) document.getElementById("authSenha").style.display = "none";
+  if(authEscudo3dArea) authEscudo3dArea.style.display = "block";
+  if(authBtnsRow) authBtnsRow.style.display = "none";
+  if(authCriarContaBtn) authCriarContaBtn.style.display = "none";
+  if(authEscudo3dFileName) authEscudo3dFileName.textContent = "Enviar escudo do time";
+  if(authEscudo3dFile) authEscudo3dFile.value = "";
+
+  setAuthVisitanteMsg("", "");
+
+  authVisitanteModal.classList.add("open");
+  authVisitanteModal.setAttribute("aria-hidden", "false");
+  setTimeout(()=>document.getElementById("authWhatsapp")?.focus(), 120);
 }
 
 function fecharCadastroVisitanteModal(){
@@ -5201,7 +5263,7 @@ async function finalizarCadastroVisitante(){
   }
 
   authCriarContaBtn.disabled = true;
-  authCriarContaBtn.textContent = "Criando conta...";
+  authCriarContaBtn.textContent = fluxoEscudo3dCadastro ? "Criando seu time..." : "Criando conta...";
 
   try{
     let r;
@@ -5235,7 +5297,7 @@ if(modoCadastro){
     if(!r.ok || !data.ok || !data.token){
       setAuthVisitanteMsg(data.error || "Não foi possível entrar. Confira os dados.", "err");
       authCriarContaBtn.disabled = false;
-      authCriarContaBtn.textContent = "Criar conta e continuar 🚀";
+      authCriarContaBtn.textContent = fluxoEscudo3dCadastro ? "Criar meu time e gerar escudo 3D 🚀" : "Criar conta e continuar 🚀";
       return;
     }
 
@@ -5267,6 +5329,12 @@ if(modoCadastro){
     acaoDepoisDoCadastro = null;
 
     setTimeout(()=>{
+      if(fluxoEscudo3dCadastro && escudo3dCadastroFile){
+        enviarPedidoEscudo3dComArquivo(escudo3dCadastroFile);
+        fluxoEscudo3dCadastro = false;
+        return;
+      }
+
       if(typeof acao === "function"){
         acao();
       }else{
@@ -5279,8 +5347,44 @@ if(modoCadastro){
   }
 
   authCriarContaBtn.disabled = false;
-  authCriarContaBtn.textContent = "Criar conta e continuar 🚀";
+  authCriarContaBtn.textContent = fluxoEscudo3dCadastro ? "Criar meu time e gerar escudo 3D 🚀" : "Criar conta e continuar 🚀";
 }
+
+authEscudo3dUploadBtn?.addEventListener("click", ()=>{
+  authEscudo3dFile?.click();
+});
+
+authEscudo3dFile?.addEventListener("change", ()=>{
+  escudo3dCadastroFile = authEscudo3dFile.files && authEscudo3dFile.files[0] ? authEscudo3dFile.files[0] : null;
+  authEscudo3dFileName.textContent = escudo3dCadastroFile ? escudo3dCadastroFile.name : "Enviar escudo do time";
+});
+
+authEscudo3dContinuarBtn?.addEventListener("click", ()=>{
+  const whatsapp = onlyDigits(document.getElementById("authWhatsapp")?.value || "");
+
+  if(!whatsapp || whatsapp.length < 10){
+    setAuthVisitanteMsg("Digite seu WhatsApp para receber seu escudo.", "err");
+    return;
+  }
+
+  if(!escudo3dCadastroFile){
+    setAuthVisitanteMsg("Envie o escudo do seu time.", "err");
+    return;
+  }
+
+  modoCadastro = true;
+
+  if(labelNomeTime) labelNomeTime.style.display = "block";
+  if(document.getElementById("authNomeTime")) document.getElementById("authNomeTime").style.display = "block";
+  if(labelSenha) labelSenha.style.display = "block";
+  if(document.getElementById("authSenha")) document.getElementById("authSenha").style.display = "block";
+  if(authEscudo3dArea) authEscudo3dArea.style.display = "none";
+  if(authBtnsRow) authBtnsRow.style.display = "none";
+  if(authCriarContaBtn) authCriarContaBtn.style.display = "block";
+
+  setAuthVisitanteMsg("Agora salve seu time para receber o escudo 3D.", "ok");
+  setTimeout(()=>document.getElementById("authNomeTime")?.focus(), 120);
+});
 
 authEntrarBtn?.addEventListener("click", ()=>{
   modoCadastro = false;
@@ -5862,6 +5966,11 @@ function fecharEscudo3dModal(){
 document.querySelectorAll(".optionBtn").forEach(btn=>{
   btn.addEventListener("click", ()=>{
     if(btn.dataset.product === "escudo3d"){
+      if(!token){
+        abrirCadastroEscudo3dModal();
+        return;
+      }
+
       abrirEscudo3dModal();
       return;
     }
@@ -5892,66 +6001,73 @@ if(escudo3dUploadBtn && escudo3dFile){
   });
 }
 
-if(escudo3dEnviarBtn){
-  escudo3dEnviarBtn.addEventListener("click", async ()=>{
-    if(!token){
-      acaoDepoisDoCadastro = () => escudo3dEnviarBtn.click();
-      abrirCadastroVisitanteModal();
-      return;
-    }
+async function enviarPedidoEscudo3dComArquivo(file){
+  if(!token){
+    escudo3dCadastroFile = file || null;
+    abrirCadastroEscudo3dModal();
+    return;
+  }
 
-    if(!escudo3dFile.files || !escudo3dFile.files[0]){
-      escudo3dMsg.textContent = "Selecione o escudo primeiro.";
-      return;
-    }
+  if(!file){
+    if(escudo3dMsg) escudo3dMsg.textContent = "Selecione o escudo primeiro.";
+    return;
+  }
 
-    escudo3dEnviarBtn.disabled = true;
-    escudo3dMsg.textContent = "Enviando...";
+  if(escudo3dEnviarBtn) escudo3dEnviarBtn.disabled = true;
+  if(escudo3dMsg) escudo3dMsg.textContent = "Enviando...";
 
-    const fd = new FormData();
-    fd.append("flyer_tipo", "escudo3d");
-    fd.append("rodada", "Escudo 3D");
-    fd.append("data", "Escudo 3D");
-    fd.append("escudo1", escudo3dFile.files[0]);
+  const fd = new FormData();
+  fd.append("flyer_tipo", "escudo3d");
+  fd.append("rodada", "Escudo 3D");
+  fd.append("data", "Escudo 3D");
+  fd.append("escudo1", file);
 
-    try{
-      const r = await fetch(`${API_BASE}/pedidos`, {
-        method:"POST",
-        headers:{ "Authorization": "Bearer " + token },
-        body:fd
+  try{
+    const r = await fetch(`${API_BASE}/pedidos`, {
+      method:"POST",
+      headers:{ "Authorization": "Bearer " + token },
+      body:fd
+    });
+
+    const out = await r.json();
+
+    if(out.ok){
+      if(escudo3dMsg) escudo3dMsg.textContent = `✅ Pedido enviado! ID: ${out.pedido_id}`;
+
+      ia4Track("pedido_concluido", {
+        produto: "escudo3d",
+        pedido_id: out.pedido_id || ""
       });
 
-      const out = await r.json();
-
-      if(out.ok){
-        escudo3dMsg.textContent = `✅ Pedido enviado! ID: ${out.pedido_id}`;
-
-        ia4Track("pedido_concluido", {
-          produto: "escudo3d",
-          pedido_id: out.pedido_id || ""
-        });
-
-        refreshMe();
-        carregarHistorico();
-        setTimeout(fecharEscudo3dModal, 900);
-      }else{
-        ia4Track("erro_envio_pedido", {
-          produto: "escudo3d",
-          erro: out.error || "Erro ao enviar"
-        });
-
-        escudo3dMsg.textContent = out.error || "Erro ao enviar.";
-      }
-    }catch{
+      mostrarAvisoPedido();
+      refreshMe();
+      carregarHistorico();
+      setTimeout(fecharEscudo3dModal, 900);
+    }else{
       ia4Track("erro_envio_pedido", {
         produto: "escudo3d",
-        erro: "Erro de rede"
+        erro: out.error || "Erro ao enviar"
       });
 
-      escudo3dMsg.textContent = "Erro de rede.";
+      if(escudo3dMsg) escudo3dMsg.textContent = out.error || "Erro ao enviar.";
+      alert(out.error || "Erro ao enviar.");
     }
+  }catch{
+    ia4Track("erro_envio_pedido", {
+      produto: "escudo3d",
+      erro: "Erro de rede"
+    });
 
-    escudo3dEnviarBtn.disabled = false;
+    if(escudo3dMsg) escudo3dMsg.textContent = "Erro de rede.";
+    alert("Erro de rede.");
+  }
+
+  if(escudo3dEnviarBtn) escudo3dEnviarBtn.disabled = false;
+}
+
+if(escudo3dEnviarBtn){
+  escudo3dEnviarBtn.addEventListener("click", async ()=>{
+    await enviarPedidoEscudo3dComArquivo(escudo3dFile.files && escudo3dFile.files[0] ? escudo3dFile.files[0] : null);
   });
 }
 
@@ -7598,6 +7714,7 @@ ia4ChatInput?.addEventListener("keydown", (e)=>{
 </script>
 </body>
 </html>
+
 
 
 
