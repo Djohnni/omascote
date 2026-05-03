@@ -3771,11 +3771,6 @@ textarea.campoObrigatorioErro,
 
 ---
 PROCURE ISSO:
-.topActions{
-  gap:14px !important;
-}
-
-TROQUE POR ISSO:
 <!-- bloco de troca removido -->
 
 TROQUE POR ISSO:
@@ -7160,6 +7155,3846 @@ function barraProducaoPedido(p){
       <div style="height:100%;width:${pct}%;background:#16a34a;border-radius:999px;transition:width .4s ease;"></div>
     </div>
     <div style="margin-top:3px;font-size:11px;font-weight:900;color:#64748b;white-space:pre-line;">
+      ${texto}
+    </div>
+  `;
+}
+
+function atualizarMenuPedidosTopo(pedidos){
+  const menu = document.getElementById("menuPedidosTopo");
+  if(!menu) return;
+
+  const lista = (pedidos || []).slice(0, 8);
+
+  if(lista.length === 0){
+    menu.innerHTML = `<div class="menuPedidosTopoVazio">Nenhum pedido ainda.</div>`;
+    return;
+  }
+
+  menu.innerHTML = lista.map(p => `
+    <div class="menuPedidoItem">
+      ${p.imagem_url ? `<img class="menuPedidoThumb" src="${p.imagem_url}" alt="Arte pronta">` : `<div class="menuPedidoThumb"></div>`}
+
+      <div class="menuPedidoInfo">
+        <div class="menuPedidoTipo">${p.tipo || "Arte"}</div>
+        <div class="menuPedidoStatus">${textoStatusPedido(p.status)}</div>
+        ${barraProducaoPedido(p)}
+        ${p.status === "pronto" ? `<button type="button" class="menuPedidoBtn" onclick="baixarPedido('${p.id}')">Baixar arte</button>` : ``}
+      </div>
+    </div>
+  `).join("");
+}
+
+async function carregarHistorico(){
+  if(!historicoListaEl || !historicoVazioEl) return;
+
+  historicoListaEl.innerHTML = "";
+  historicoVazioEl.textContent = "Carregando...";
+
+  try{
+    const r = await fetch(`${API_BASE}/meus-pedidos`, {
+      headers: { "Authorization": "Bearer " + token }
+    });
+
+    const data = await r.json();
+
+    if(!data.ok){
+      historicoVazioEl.textContent = "Erro ao carregar";
+      return;
+    }
+
+    if(data.pedidos.length === 0){
+      atualizarBadgePedidos([]);
+      atualizarMenuPedidosTopo([]);
+      historicoVazioEl.textContent = "Sem pedidos ainda";
+      return;
+    }
+
+    atualizarBadgePedidos(data.pedidos);
+    atualizarMenuPedidosTopo(data.pedidos);
+
+    historicoVazioEl.textContent = "";
+
+    historicoListaEl.innerHTML = data.pedidos.map(p => `
+      <div style="background:#fff;color:#000;padding:10px;border-radius:10px;border:1px solid #e5e7eb;">
+        <b>${p.tipo}</b><br>
+        ID: ${p.id}<br>
+        Status: ${textoStatusPedido(p.status)}<br>
+        ${barraProducaoPedido(p)}
+
+        ${p.imagem_url ? `<img src="${p.imagem_url}" style="width:100px;"><br>` : ""}
+
+${p.status === "pronto" ? `
+<div class="descBox">
+  <div id="desc_${p.id}" class="descTexto">${p.descricao_instagram || ""}</div>
+  <div class="copyHint">copiar</div>
+  <button class="btnCopiar" onclick="copiarDescricao('${p.id}')">📋</button>
+</div>
+
+        <button onclick="baixarPedido('${p.id}')" style="margin-top:8px;padding:6px 10px;border-radius:6px;border:none;background:#2ecc71;color:#fff;font-weight:700;cursor:pointer;">
+          Baixar
+        </button>
+` : ""}
+      </div>
+    `).join("");
+
+  }catch{
+    historicoVazioEl.textContent = "Erro de rede";
+  }
+}
+
+async function copiarDescricao(id){
+  const el = document.getElementById("desc_" + id);
+  if(!el) return;
+
+  navigator.clipboard.writeText(el.innerText);
+  alert("Copiado!");
+}
+
+async function baixarPedido(id){
+  marcarPedidoBaixado(id);
+  carregarHistorico();
+
+  try{
+    const r = await fetch(`${API_BASE}/pedidos/${id}/download-resultado`, {
+      headers: { "Authorization": "Bearer " + token }
+    });
+
+    if(!r.ok){
+      alert("Erro ao baixar imagem");
+      return;
+    }
+
+    const blob = await r.blob();
+    const url = window.URL.createObjectURL(blob);
+
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = id + "_resultado.png";
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+
+    window.URL.revokeObjectURL(url);
+
+  }catch{
+    alert("Erro de rede ao baixar");
+  }
+}
+
+async function acompanharResultado(pedidoId){
+  const boxEl = document.getElementById("resultadoBox");
+  const statusElLocal = document.getElementById("statusResultado");
+  const imgEl = document.getElementById("previewResultado");
+  const downloadEl = document.getElementById("downloadResultado");
+
+  if(!boxEl || !statusElLocal || !imgEl || !downloadEl) return;
+
+  boxEl.style.display = "block";
+  statusElLocal.textContent = "Estamos montando sua imagem...";
+  imgEl.style.display = "none";
+  downloadEl.style.display = "none";
+
+  const timer = setInterval(async () => {
+    try{
+      const r = await fetch(`${API_BASE}/pedidos/${pedidoId}/info`, {
+        headers: { "Authorization": "Bearer " + token }
+      });
+
+      const data = await r.json();
+
+      if(data.ok && data.imagem_pronta){
+        clearInterval(timer);
+
+        const previewUrl = `${API_BASE}/pedidos/${pedidoId}/preview?ts=${Date.now()}`;
+
+        statusElLocal.textContent = "Sua imagem chegou!";
+        imgEl.src = previewUrl;
+        imgEl.style.display = "block";
+
+        downloadEl.href = previewUrl;
+        downloadEl.style.display = "inline-block";
+      } else {
+        statusElLocal.textContent = "Estamos montando sua imagem...";
+      }
+    } catch {
+      statusElLocal.textContent = "Erro ao consultar status da imagem.";
+    }
+  }, 5000);
+}
+
+function iniciarFlipCampos(){
+  const ativar = (el)=>{
+    if(!el) return;
+    el.classList.add("flip-active");
+  };
+
+  const atualizarTexto = (el)=>{
+    if(!el) return;
+    if(String(el.value || "").trim()){
+      el.classList.add("flip-active");
+    }else{
+      el.classList.remove("flip-active");
+    }
+  };
+
+  document.querySelectorAll('input:not(.fileHidden):not([type="hidden"]), textarea').forEach((el)=>{
+    atualizarTexto(el);
+
+    el.addEventListener("focus", ()=>ativar(el));
+    el.addEventListener("click", ()=>ativar(el));
+    el.addEventListener("input", ()=>atualizarTexto(el));
+    el.addEventListener("blur", ()=>atualizarTexto(el));
+  });
+
+  document.querySelectorAll(".filePlus").forEach((box)=>{
+    box.addEventListener("click", ()=>ativar(box));
+    box.addEventListener("keydown", ()=>ativar(box));
+  });
+
+  document.querySelectorAll(".fileHidden").forEach((input)=>{
+    input.addEventListener("change", ()=>{
+      const box = document.querySelector(`.filePlus[data-file-for="${input.id}"]`);
+      if(!box) return;
+
+      if(input.files && input.files.length > 0){
+        box.classList.add("flip-active");
+      }else{
+        box.classList.remove("flip-active");
+      }
+    });
+  });
+}
+
+setArtilheirosMode("resultado");
+applyLocal();
+
+if(token){
+  refreshMe();
+  carregarHistorico();
+  setInterval(carregarHistorico, 10000);
+}else{
+  if(saldoHeroEl) saldoHeroEl.textContent = "Primeira arte com desconto: R$4";
+  if(historicoVazioEl) historicoVazioEl.textContent = "Crie sua conta para ver seus pedidos.";
+}
+carregarTempoEstimado();
+setInterval(carregarTempoEstimado, 30000);
+updateChosenPlaceholders(null);
+selectorStage?.classList.add("open");
+resetProductCategory();
+iniciarFlipCampos();
+setTimeout(()=>window.scrollTo({ top:0, behavior:"auto" }), 180);
+
+const btnSairEl = document.getElementById("btnSair");
+
+if(!token){
+  if(btnSairEl){
+    btnSairEl.textContent = "Entrar";
+    btnSairEl.style.background = "#111827";
+  }
+}else{
+  if(btnSairEl){
+    btnSairEl.textContent = "Sair";
+    btnSairEl.style.background = "#dc2626";
+  }
+}
+
+document.getElementById("btnSair")?.addEventListener("click", ()=>{
+  if(!token){
+    abrirCadastroVisitanteModal();
+    return;
+  }
+
+  localStorage.removeItem("omascote_token");
+  window.location.href = "app.html";
+});
+
+document.getElementById("btnAtualizar")?.addEventListener("click", refreshMe);
+
+const btnAbrirSaldo = document.getElementById("btnAbrirSaldo");
+const saldoMenu = document.getElementById("saldoMenu");
+
+btnAbrirSaldo?.addEventListener("click", (e)=>{
+  e.stopPropagation();
+
+  ia4Track("clicou_adicionar_saldo", {
+    logado: !!token
+  });
+
+  saldoMenu?.classList.toggle("open");
+});
+
+document.querySelectorAll(".saldoOpcao").forEach((btn)=>{
+  btn.addEventListener("click", ()=>{
+    saldoMenu?.classList.remove("open");
+    comprarCreditos(btn.dataset.pacote);
+  });
+});
+
+document.addEventListener("click", (e)=>{
+  if(saldoMenu && btnAbrirSaldo && !saldoMenu.contains(e.target) && e.target !== btnAbrirSaldo){
+    saldoMenu.classList.remove("open");
+  }
+
+  const menuPedidosTopo = document.getElementById("menuPedidosTopo");
+  const btnMeusPedidos = document.getElementById("btnMeusPedidos");
+
+  if(menuPedidosTopo && btnMeusPedidos && !menuPedidosTopo.contains(e.target) && e.target !== btnMeusPedidos && !btnMeusPedidos.contains(e.target)){
+    menuPedidosTopo.classList.remove("open");
+  }
+});
+
+document.getElementById("addArtilheiroBtn")?.addEventListener("click", ()=>{
+  const wrap = document.getElementById("artilheirosWrap");
+  const currentProduct = PRODUCTS[selectedProductInput.value];
+  const mode = currentProduct?.showPlayerList ? "escalacao" : "resultado";
+
+  wrap.insertAdjacentHTML("beforeend", getArtilheiroRowHtml(mode));
+});
+
+document.getElementById("btnSalvarEscalacao")?.addEventListener("click", saveEscalacaoPlayersToLocal);
+document.getElementById("btnExcluirEscalacao")?.addEventListener("click", clearEscalacaoPlayersFromLocal);
+
+const ia4SupportBtn = document.getElementById("ia4SupportBtn");
+const ia4ChatBox = document.getElementById("ia4ChatBox");
+const ia4ChatClose = document.getElementById("ia4ChatClose");
+const ia4ChatMessages = document.getElementById("ia4ChatMessages");
+const ia4ChatInput = document.getElementById("ia4ChatInput");
+const ia4ChatSend = document.getElementById("ia4ChatSend");
+
+function ia4AddMsg(texto, tipo){
+  if(!ia4ChatMessages) return;
+
+  const div = document.createElement("div");
+  div.className = tipo === "user" ? "ia4Msg ia4MsgUser" : "ia4Msg ia4MsgBot";
+  div.textContent = texto;
+
+  ia4ChatMessages.appendChild(div);
+  ia4ChatMessages.scrollTop = ia4ChatMessages.scrollHeight;
+}
+
+function ia4MostrarOpcoes(titulo, html){
+  ia4AddMsg(titulo, "bot");
+
+  const box = document.createElement("div");
+  box.className = "ia4QuickOptions";
+  box.innerHTML = html;
+
+  ia4ChatMessages.appendChild(box);
+  ia4ChatMessages.scrollTop = ia4ChatMessages.scrollHeight;
+}
+
+function ia4MostrarProdutosSuporte(){
+  ia4MostrarOpcoes("Qual produto você quer entender?", `
+    <button type="button" class="ia4QuickBtn" onclick="ia4EnviarTextoSuporte('Quero entender Resultado do jogo')">1) Resultado do jogo</button>
+    <button type="button" class="ia4QuickBtn" onclick="ia4EnviarTextoSuporte('Quero entender Escalação')">2) Escalação</button>
+    <button type="button" class="ia4QuickBtn" onclick="ia4EnviarTextoSuporte('Quero entender Contratação')">3) Contratação</button>
+    <button type="button" class="ia4QuickBtn" onclick="ia4EnviarTextoSuporte('Quero entender Próximo jogo')">4) Próximo jogo</button>
+    <button type="button" class="ia4QuickBtn" onclick="ia4EnviarTextoSuporte('Quero entender Patrocinador')">5) Patrocinador</button>
+    <button type="button" class="ia4QuickBtn" onclick="ia4EnviarTextoSuporte('Quero entender Escudo 3D')">6) Escudo 3D</button>
+
+    <button type="button" class="ia4QuickBtn" onclick="ia4EnviarTextoSuporte('Quero entender Próximo jogo jogador')">7) Próximo jogo jogador</button>
+    <button type="button" class="ia4QuickBtn" onclick="ia4EnviarTextoSuporte('Quero entender Resultado jogador')">8) Resultado jogador</button>
+    <button type="button" class="ia4QuickBtn" onclick="ia4EnviarTextoSuporte('Quero entender Jogador + escudo')">9) Jogador + escudo</button>
+  `);
+}
+
+function ia4MostrarEnvioSuporte(){
+  ia4MostrarOpcoes("O que aconteceu no envio?", `
+    <button type="button" class="ia4QuickBtn" onclick="ia4EnviarTextoSuporte('Não sei o que preencher')">Não sei o que preencher</button>
+    <button type="button" class="ia4QuickBtn" onclick="ia4EnviarTextoSuporte('Não consigo enviar imagem')">Não consigo enviar imagem</button>
+    <button type="button" class="ia4QuickBtn" onclick="ia4EnviarTextoSuporte('Botão criar minha arte não funciona')">Botão criar minha arte não funciona</button>
+    <button type="button" class="ia4QuickBtn" onclick="ia4EnviarTextoSuporte('Apareceu erro ao enviar pedido')">Apareceu erro ao enviar pedido</button>
+    <button type="button" class="ia4QuickBtn" onclick="ia4MostrarProdutosSuporte()">Quero ver campos obrigatórios por produto</button>
+  `);
+}
+
+function ia4MostrarErroSuporte(){
+  ia4MostrarOpcoes("Qual problema aconteceu?", `
+    <button type="button" class="ia4QuickBtn" onclick="ia4EnviarTextoSuporte('Minha imagem saiu com nome errado')">Nome/texto saiu errado</button>
+    <button type="button" class="ia4QuickBtn" onclick="ia4EnviarTextoSuporte('O escudo saiu errado')">Escudo saiu errado</button>
+    <button type="button" class="ia4QuickBtn" onclick="ia4EnviarTextoSuporte('A imagem ficou estranha')">Imagem ficou estranha</button>
+    <button type="button" class="ia4QuickBtn" onclick="ia4EnviarTextoSuporte('Quero pedir alteração no pedido')">Quero pedir alteração</button>
+    <button type="button" class="ia4QuickBtn" onclick="ia4EnviarTextoSuporte('Meu pedido não chegou')">Meu pedido não chegou</button>
+  `);
+}
+
+function ia4MostrarPedidoSuporte(){
+  ia4MostrarOpcoes("Sobre pedido pronto/download:", `
+    <button type="button" class="ia4QuickBtn" onclick="ia4EnviarTextoSuporte('Como baixar minha imagem pronta')">Como baixar minha imagem?</button>
+    <button type="button" class="ia4QuickBtn" onclick="ia4EnviarTextoSuporte('Não apareceu meu pedido pronto')">Não apareceu pedido pronto</button>
+    <button type="button" class="ia4QuickBtn" onclick="ia4EnviarTextoSuporte('Quero baixar novamente')">Quero baixar novamente</button>
+    <button type="button" class="ia4QuickBtn" onclick="ia4EnviarTextoSuporte('Meu pedido está demorando')">Meu pedido está demorando</button>
+  `);
+}
+
+function ia4MostrarPagamentoSuporte(){
+  ia4MostrarOpcoes("Sobre pagamento/saldo:", `
+    <button type="button" class="ia4QuickBtn" onclick="ia4EnviarTextoSuporte('Como adicionar saldo')">Como adicionar saldo?</button>
+    <button type="button" class="ia4QuickBtn" onclick="ia4EnviarTextoSuporte('Paguei e meu saldo não apareceu')">Paguei e saldo não apareceu</button>
+    <button type="button" class="ia4QuickBtn" onclick="ia4EnviarTextoSuporte('Saldo insuficiente')">Saldo insuficiente</button>
+    <button type="button" class="ia4QuickBtn" onclick="ia4EnviarTextoSuporte('Quais valores de saldo tem')">Quais valores posso colocar?</button>
+  `);
+}
+
+async function ia4EnviarTextoSuporte(mensagem){
+  mensagem = String(mensagem || "").trim();
+  if(!mensagem) return;
+
+  ia4AddMsg(mensagem, "user");
+  ia4AddMsg("Analisando seu pedido...", "bot");
+
+  try{
+    const r = await fetch(`${API_BASE}/suporte/chat`, {
+      method:"POST",
+      headers:{
+        "Authorization":"Bearer " + token,
+        "Content-Type":"application/json"
+      },
+      body:JSON.stringify({ mensagem })
+    });
+
+    const data = await r.json();
+
+    const ultima = ia4ChatMessages.querySelector(".ia4MsgBot:last-child");
+    if(ultima && ultima.textContent === "Analisando seu pedido..."){
+      ultima.remove();
+    }
+
+    if(data.ok){
+      ia4AddMsg(data.resposta || "Não consegui responder agora. Vou encaminhar para o suporte.", "bot");
+    }else{
+      ia4AddMsg(data.error || "Não consegui responder agora. Vou encaminhar para o suporte.", "bot");
+    }
+  }catch(e){
+    const ultima = ia4ChatMessages.querySelector(".ia4MsgBot:last-child");
+    if(ultima && ultima.textContent === "Analisando seu pedido..."){
+      ultima.remove();
+    }
+    ia4AddMsg("Erro de conexão. Tente novamente em alguns segundos.", "bot");
+  }
+}
+
+async function ia4EnviarSuporte(){
+  const mensagem = ia4ChatInput?.value?.trim() || "";
+  if(!mensagem) return;
+
+  ia4ChatInput.value = "";
+  ia4EnviarTextoSuporte(mensagem);
+}
+
+ia4SupportBtn?.addEventListener("click", ()=>{
+  ia4ChatBox?.classList.toggle("open");
+  setTimeout(()=>ia4ChatInput?.focus(), 120);
+});
+
+ia4ChatClose?.addEventListener("click", ()=>{
+  ia4ChatBox?.classList.remove("open");
+});
+
+ia4ChatSend?.addEventListener("click", ia4EnviarSuporte);
+
+ia4ChatInput?.addEventListener("keydown", (e)=>{
+  if(e.key === "Enter"){
+    e.preventDefault();
+    ia4EnviarSuporte();
+  }
+});
+</script>
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+TROQUE POR ISSO:
+<!-- bloco de troca removido -->
+
+TROQUE POR ISSO:
+.topActions{
+  gap:14px !important;
+}
+
+.saldoTopoArea{
+  display:flex !important;
+  flex-direction:column !important;
+  align-items:center !important;
+  justify-content:center !important;
+  gap:8px !important;
+  flex:1 1 auto !important;
+}
+
+.saldoTopoTexto{
+  font-weight:950 !important;
+  font-size:16px !important;
+  color:#111827 !important;
+  line-height:1 !important;
+}
+
+.saldoBoxTopo{
+  margin:0 !important;
+}
+
+.saldoBoxTopo #btnAbrirSaldo{
+  min-width:170px !important;
+  padding:12px 18px !important;
+  font-size:15px !important;
+  border-radius:999px !important;
+}
+
+<div style="display:flex;justify-content:center;margin:18px auto 22px;">
+  <button type="button" class="optionBtn" data-product="escudo3d" style="opacity:1;transform:none;">
+    <div class="circle">
+      <img src="icons/escudo3d.png" class="iconImg">
+    </div>
+    <div class="optLabel">
+      Primeira arte<br>Escudo 3D<br>
+      <span style="font-size:11px;color:#777;text-decoration:line-through;">R$18</span>
+      <span style="color:#1fbf63;font-weight:900;"> R$4</span>
+    </div>
+  </button>
+</div>
+
+TROQUE POR ISSO:
+<div style="display:flex;justify-content:center;margin:18px auto 22px;">
+  <button type="button" class="optionBtn" data-product="escudo3d" style="opacity:1;transform:none;">
+    <div class="circle">
+      <img src="icons/escudo3d.png" class="iconImg">
+    </div>
+    <div class="optLabel">
+      Primeira arte<br>Escudo 3D<br>
+      <span style="font-size:11px;color:#777;text-decoration:line-through;">R$18</span>
+      <span style="color:#1fbf63;font-weight:900;"> R$4</span>
+    </div>
+  </button>
+</div>
+
+<div style="display:flex;justify-content:center;margin:18px auto 22px;">
+  <button type="button" class="optionBtn" data-product="escudo3d" style="opacity:1;transform:none;">
+    <div class="circle">
+      <img src="icons/escudo3d.png" class="iconImg">
+    </div>
+    <div class="optLabel">
+      Primeira arte<br>Escudo 3D<br>
+      <span style="font-size:11px;color:#777;text-decoration:line-through;">R$18</span>
+      <span style="color:#1fbf63;font-weight:900;"> R$4</span>
+    </div>
+  </button>
+</div>
+
+</div>
+
+        <div class="selectorStage">
+          <div class="centerWrap">
+            <button type="button" class="centerBtn" id="mainCreateBtn">
+              <div class="iconCenter">🔥</div>
+              <span>Criar<br>minha arte</span>
+            </button>
+          </div>
+
+          <div class="lines">
+            <div class="line l1"></div>
+            <div class="line l2"></div>
+            <div class="line l3"></div>
+            <div class="line l4"></div>
+            <div class="line l5"></div>
+          </div>
+
+          <div class="categoryChoiceRow">
+            <button type="button" class="categoryBtn" data-category="time">
+              <div class="categoryIcon">🏆</div>
+              <div class="categoryTitle">Arte para<br>Time</div>
+            </button>
+
+            <button type="button" class="categoryBtn" data-category="jogador">
+              <div class="categoryIcon">⚽</div>
+              <div class="categoryTitle">Arte para<br>Jogador</div>
+            </button>
+          </div>
+
+          <div class="homeExamples" id="homeExamples">
+            <img src="exemplo5.jpg" alt="Exemplo de arte 1">
+            <img src="exemplo2.jpg" alt="Exemplo de arte 2">
+            <img src="exemplo3.jpg" alt="Exemplo de arte 3">
+            <img src="exemplo4.jpg" alt="Exemplo de arte 4">
+          </div>
+
+          <div class="categoryMiniRow">
+            <button type="button" class="categoryMiniBtn" data-category="time">🏆 Time</button>
+            <button type="button" class="categoryMiniBtn" data-category="jogador">⚽ Jogador</button>
+          </div>
+
+          <div class="optionsRow productGroup productGroupTime">
+            <button type="button" class="optionBtn" data-product="resultado">
+              <img src="produtos/resultado.jpg" class="imgProduto">
+              <div class="optLabel">Resultado<br>do Jogo<br><span style="color:#1fbf63;font-weight:900;">R$8,00</span></div>
+            </button>
+
+            <button type="button" class="optionBtn" data-product="escalacao">
+              <img src="produtos/escalacao.jpg" class="imgProduto">
+              <div class="optLabel">Escalação<br><span style="color:#1fbf63;font-weight:900;">R$8,00</span></div>
+            </button>
+
+            <button type="button" class="optionBtn" data-product="contratacao">
+              <img src="produtos/contratacao.jpg" class="imgProduto">
+              <div class="optLabel">Contratação<br><span style="color:#1fbf63;font-weight:900;">R$7,00</span></div>
+            </button>
+
+            <button type="button" class="optionBtn" data-product="proximo_jogo">
+              <img src="produtos/proximo_jogo.jpg" class="imgProduto">
+              <div class="optLabel">Próximo Jogo<br><span style="color:#1fbf63;font-weight:900;">R$7,00</span></div>
+            </button>
+
+            <button type="button" class="optionBtn" data-product="patrocinador">
+              <img src="produtos/patrocinador.jpg" class="imgProduto">
+              <div class="optLabel">Patrocinador<br>/ Apoio<br><span style="color:#1fbf63;font-weight:900;">R$8,00</span></div>
+            </button>
+
+            <button type="button" class="optionBtn" data-product="escudo3d">
+              <img src="produtos/escudo3d.jpg" class="imgProduto">
+              <div class="optLabel">
+                Primeira arte<br>Escudo 3D<br>
+                <span style="font-size:11px;color:#777;text-decoration:line-through;">R$18</span>
+                <span style="color:#1fbf63;font-weight:900;"> R$4</span>
+              </div>
+            </button>
+          </div>
+
+          <div class="optionsRow productGroup productGroupJogador">
+            <button type="button" class="optionBtn" data-product="proximo_jogo_jogador">
+              <div class="optLabel">Próximo Jogo<br>Jogador<br><span style="color:#1fbf63;font-weight:900;">R$7,00</span></div>
+              <img src="produtos/proximo_jogo_jogador.jpg" class="imgProduto">
+            </button>
+
+            <button type="button" class="optionBtn" data-product="resultado_jogo_jogador">
+              <div class="optLabel">Resultado<br>Jogador<br><span style="color:#1fbf63;font-weight:900;">R$8,00</span></div>
+              <img src="produtos/resultado_jogador.jpg" class="imgProduto">
+            </button>
+
+            <button type="button" class="optionBtn" data-product="jogador_escudo">
+              <div class="optLabel">Jogador<br>+ Escudo<br><span style="color:#1fbf63;font-weight:900;">R$6,00</span></div>
+              <img src="produtos/jogador_escudo.jpg" class="imgProduto">
+            </button>
+          </div>
+        </div>
+
+        <a href="#" class="examplesLink" id="verExemplosLink">Ver exemplos →</a>
+      </div>
+
+      <div class="switchModeRow">
+        <button type="button" class="btnGhost" id="btnTrocarTipo">Trocar opção</button>
+      </div>
+
+      <div class="hiddenTabs">
+        <input class="tabRadio" type="radio" name="aba" id="tab_flyer">
+        <input class="tabRadio" type="radio" name="aba" id="tab_contrat">
+      </div>
+
+      <div class="builderArea" id="builderArea">
+        <div class="crestWrap">
+          <div class="crestCard" id="crestCard">
+            <div class="crestGlow"></div>
+            <input id="crestManual" class="fileHidden" type="file" accept="image/*" />
+            <label for="crestManual" id="crestAddBtn" style="position:absolute;right:10px;bottom:10px;width:46px;height:46px;border-radius:14px;border:1px solid rgba(255,255,255,.16);background:linear-gradient(135deg, rgba(255,255,255,.10), rgba(0,0,0,.18));box-shadow:var(--shadow2);color:#fff;font-weight:950;font-size:24px;line-height:1;display:grid;place-items:center;cursor:pointer;z-index:5;">+</label>
+
+            <img id="crestPreview" class="crestImg" alt="Escudo do time" style="display:none" />
+            <div id="crestPlaceholder" class="crestPlaceholder">
+              Envie o escudo do seu time<br>para personalizar o visual do app
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="meta">
+            <div class="pill" id="plano">Plano: —</div>
+            <div class="pill" id="usados">Usados no mês: —</div>
+            <div class="pill" id="status">Status: —</div>
+<div class="pill" id="saldo">Saldo disponível: —</div>
+          </div>
+
+          <div class="msg" id="msg"></div>
+          <div class="sep"></div>
+
+          <h2 id="dynamicTitle">Criar arte</h2>
+          <div class="hint" id="dynamicHint" style="display:none;"></div>
+
+          <input type="hidden" id="flyerTipo" value="zz1fs">
+          <input type="hidden" id="selectedProduct" value="">
+
+          <form id="pedidoForm" class="formGrid" enctype="multipart/form-data" novalidate>
+            <div class="field-placar full">
+              <label class="sectionTitle">Placar</label>
+              <div class="placarRow">
+                <input class="placarTime" id="timePrincipal" placeholder="Time A">
+                <input class="placarGols" id="golsTime" type="number" min="0" placeholder="0">
+                <div class="placarX">x</div>
+                <input class="placarGols" id="golsAdv" type="number" min="0" placeholder="0">
+                <input class="placarTime" id="timeAdv" placeholder="Time B">
+              </div>
+            </div>
+
+            <div class="field-artilheiros full optionalField" data-optional-field="artilheiros">
+              <button type="button" class="optionalToggle" data-optional-toggle="artilheiros">
+                <span class="optionalToggleText">Ver artilheiros</span>
+                <span class="optionalToggleIcon">▼</span>
+              </button>
+              <div class="optionalContent" data-optional-content="artilheiros">
+                <div class="artilheirosWrap" id="artilheirosWrap">
+                  <div class="artilheiroRow">
+                    <input class="artilheiroNome" placeholder="Nome do jogador">
+                    <input class="artilheiroGols" type="number" min="0" placeholder="Gols">
+                  </div>
+                </div>
+                <div class="addArtilheiro" id="addArtilheiroBtn">Adicionar jogador</div>
+                <div class="escalacaoActions" id="escalacaoActions">
+                  <button type="button" class="escActionBtn escActionSave" id="btnSalvarEscalacao">Salvar atletas</button>
+                  <button type="button" class="escActionBtn escActionDelete" id="btnExcluirEscalacao">Excluir atletas salvos</button>
+                </div>
+              </div>
+            </div>
+
+            <div class="field-rodada optionalField" data-optional-field="rodada">
+              <button type="button" class="optionalToggle" data-optional-toggle="rodada">
+                <span class="optionalToggleText" id="labelRodada">Título da arte</span>
+                <span class="optionalToggleIcon">▼</span>
+              </button>
+              <div class="optionalContent" data-optional-content="rodada">
+                <input id="rodada" />
+              </div>
+            </div>
+
+            <div class="field-data optionalField" data-optional-field="data">
+              <button type="button" class="optionalToggle" data-optional-toggle="data">
+                <span class="optionalToggleText" id="labelData">Frase na imagem</span>
+                <span class="optionalToggleIcon">▼</span>
+              </button>
+              <div class="optionalContent" data-optional-content="data">
+                <div class="phraseWrap">
+                  <input id="dataJogo" />
+                  <button type="button" class="phraseBtn" id="openPhraseBtn" aria-label="Abrir frases prontas">+</button>
+
+                  <div class="phraseMenu" id="phraseMenu">
+                    <button type="button" class="phraseOption">Vitória na raça, no talento e no coração.</button>
+                    <button type="button" class="phraseOption">Mais 3 pontos pra conta e motivo de sobra pra comemorar.</button>
+                    <button type="button" class="phraseOption">Fim de jogo com vitória e orgulho da nossa camisa.</button>
+                    <button type="button" class="phraseOption">Jogamos juntos, lutamos juntos e vencemos juntos.</button>
+                    <button type="button" class="phraseOption">Resultado conquistado com raça do começo ao fim.</button>
+                    <button type="button" class="phraseOption">Hoje teve entrega, foco e vitória merecida.</button>
+                    <button type="button" class="phraseOption">Dentro de campo, mostramos a força do nosso time.</button>
+                    <button type="button" class="phraseOption">Mais uma batalha vencida com união e determinação.</button>
+                    <button type="button" class="phraseOption">A vitória é nossa e a torcida faz parte disso.</button>
+                    <button type="button" class="phraseOption">No apito final, a recompensa veio: vencemos.</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="field-hora optionalField" data-optional-field="hora">
+              <button type="button" class="optionalToggle" data-optional-toggle="hora">
+                <span class="optionalToggleText" id="labelHora">Observações</span>
+                <span class="optionalToggleIcon">▼</span>
+              </button>
+              <div class="optionalContent" data-optional-content="hora">
+                <input id="hora" />
+              </div>
+            </div>
+
+            <div class="field-arena optionalField" data-optional-field="arena">
+              <button type="button" class="optionalToggle" data-optional-toggle="arena">
+                <span class="optionalToggleText" id="labelArena">Texto secundário / local</span>
+                <span class="optionalToggleIcon">▼</span>
+              </button>
+              <div class="optionalContent" data-optional-content="arena">
+                <input id="arena" />
+              </div>
+            </div>
+
+            <div class="field-mascote full optionalField" data-optional-field="mascote">
+              <button type="button" class="optionalToggle" data-optional-toggle="mascote">
+                <span class="optionalToggleText" id="labelMascote">Foto do jogo ou time</span>
+                <span class="optionalToggleIcon">▼</span>
+              </button>
+              <div class="optionalContent" data-optional-content="mascote">
+                <input id="mascote" class="fileHidden" type="file" />
+                <div class="filePlus" data-file-for="mascote" tabindex="0" role="button" aria-label="Enviar imagem principal">
+                  <div class="left">
+                    <div class="name"></div>
+                    <div class="chosen" id="chosen_mascote">Nenhum arquivo</div>
+                  </div>
+                  <div class="plus">+</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="field-esc1 optionalField" data-optional-field="esc1">
+              <button type="button" class="optionalToggle" data-optional-toggle="esc1">
+                <span class="optionalToggleText hiddenLabel" id="labelEsc1">Escudo Time A</span>
+                <span class="optionalToggleIcon">▼</span>
+              </button>
+              <div class="optionalContent" data-optional-content="esc1">
+                <input id="escudo1" class="fileHidden" type="file" />
+                <div class="filePlus" data-file-for="escudo1" tabindex="0" role="button" aria-label="Enviar arquivo 1">
+                  <div class="left">
+                    <div class="name"></div>
+                    <div class="chosen placeholderLike" id="chosen_escudo1">Escudo<br>Time A *</div>
+                  </div>
+                  <div class="plus">+</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="field-esc2 optionalField" data-optional-field="esc2">
+              <button type="button" class="optionalToggle" data-optional-toggle="esc2">
+                <span class="optionalToggleText hiddenLabel" id="labelEsc2">Escudo Time B</span>
+                <span class="optionalToggleIcon">▼</span>
+              </button>
+              <div class="optionalContent" data-optional-content="esc2">
+                <input id="escudo2" class="fileHidden" type="file" />
+                <div class="filePlus" data-file-for="escudo2" tabindex="0" role="button" aria-label="Enviar arquivo 2">
+                  <div class="left">
+                    <div class="name"></div>
+                    <div class="chosen placeholderLike" id="chosen_escudo2">Escudo<br>Time B</div>
+                  </div>
+                  <div class="plus">+</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="field-patro full optionalField" data-optional-field="patro">
+              <button type="button" class="optionalToggle" data-optional-toggle="patro">
+                <span class="optionalToggleText" id="labelPatro">Imagens extras / patrocinadores (opcional) — pode enviar várias</span>
+                <span class="optionalToggleIcon">▼</span>
+              </button>
+              <div class="optionalContent" data-optional-content="patro">
+                <input id="patrocinadores" class="fileHidden" type="file" multiple />
+                <div class="filePlus" data-file-for="patrocinadores" tabindex="0" role="button" aria-label="Enviar patrocinadores">
+                  <div class="left">
+                    <div class="name"></div>
+                    <div class="chosen" id="chosen_patrocinadores">Nenhum arquivo</div>
+                  </div>
+                  <div class="plus">+</div>
+                </div>
+                <div class="hint">Dica: segure Ctrl (Windows) para selecionar vários arquivos.</div>
+              </div>
+            </div>
+
+            <div class="field-optional-title full" id="optionalDivider">
+              <label class="optionalDividerTitle">Opcional</label>
+            </div>
+
+            <div class="field-submit full submitRow">
+              <button class="btnGreen" id="btnEnviar" type="submit">Criar minha arte 🚀</button>
+            </div>
+
+            <div class="field-msg full msgSmall" id="msgPedido"></div>
+
+            <div id="resultadoBox" style="display:none; margin-top:16px; text-align:center;">
+              <div id="statusResultado" style="margin-bottom:10px; font-size:14px; font-weight:800; color:rgba(255,255,255,.92);">
+                Estamos montando sua imagem...
+              </div>
+
+              <img
+                id="previewResultado"
+                alt="Resultado pronto"
+                style="display:none; width:100%; max-width:420px; border-radius:16px; border:1px solid rgba(255,255,255,.12); box-shadow:var(--shadow2);"
+              />
+
+              <div style="margin-top:10px;">
+                <a
+                  id="downloadResultado"
+                  href="#"
+                  target="_blank"
+                  style="display:none; color:#fff; font-weight:900; text-decoration:none; padding:12px 16px; border-radius:14px; background:linear-gradient(135deg, #2ecc71, #1b9b51); box-shadow:var(--shadow2); display:inline-block;"
+                >
+                  Baixar imagem
+                </a>
+              </div>
+            </div>
+          </form>
+        </div>
+
+        <div class="card" style="margin-top:16px;">
+          <h2 style="text-align:left; margin-bottom:8px;">Meus pedidos</h2>
+
+          <div id="historicoVazio" class="msgSmall" style="text-align:left;">
+            Carregando pedidos...
+          </div>
+
+          <div id="historicoLista" style="display:grid; gap:12px;"></div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <div class="modalMask" id="escudo3dModal" aria-hidden="true">
+    <div class="modalCard" role="dialog" aria-modal="true" aria-label="Enviar escudo 3D">
+      <div class="modalTop">
+        <div class="modalTitle">Escudo 3D</div>
+        <button class="modalClose btnGhost" id="escudo3dCloseBtn" type="button">✕</button>
+      </div>
+
+      <div class="escudo3dBody">
+        <div class="escudo3dCard">
+          <div style="font-size:18px;font-weight:950;color:#1f2a37;">Envie o escudo do seu time</div>
+          <div style="margin-top:6px;font-size:13px;color:#64748b;font-weight:700;">Vamos transformar seu escudo em uma arte 3D profissional.</div>
+
+          <input id="escudo3dFile" class="fileHidden" type="file" accept="image/*" />
+
+          <div class="escudo3dUpload" id="escudo3dUploadBtn">
+            <div id="escudo3dFileName">Selecionar escudo</div>
+          </div>
+
+          <button class="btnGreen" id="escudo3dEnviarBtn" type="button" style="margin-top:14px;width:100%;">
+            Enviar escudo 🚀
+          </button>
+
+          <div class="escudo3dMsg" id="escudo3dMsg"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modalMask" id="cropModal" aria-hidden="true">
+    <div class="modalCard" role="dialog" aria-modal="true" aria-label="Recortar imagem">
+      <div class="modalTop">
+        <div class="modalTitle">Recortar</div>
+        <button class="modalClose btnGhost" id="cropCloseBtn" type="button">✕</button>
+      </div>
+
+      <div class="cropWrap">
+        <div class="cropHint" id="cropHint">recorte somente o que precisa</div>
+
+        <div class="cropStage" id="cropStage">
+          <canvas id="cropCanvas"></canvas>
+          <div class="cropMask">
+            <div class="cropBox" id="cropBox">
+              <div class="handle h-nw" data-h="nw"></div>
+              <div class="handle h-n" data-h="n"></div>
+              <div class="handle h-ne" data-h="ne"></div>
+              <div class="handle h-w" data-h="w"></div>
+              <div class="handle h-e" data-h="e"></div>
+              <div class="handle h-sw" data-h="sw"></div>
+              <div class="handle h-s" data-h="s"></div>
+              <div class="handle h-se" data-h="se"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="cropControls">
+        <div class="zoomBtns">
+          <button class="zbtn" id="zoomOutBtn" type="button">−</button>
+          <div class="zoomLbl" id="zoomLbl">1.0×</div>
+          <button class="zbtn" id="zoomInBtn" type="button">+</button>
+        </div>
+        <button class="btnGhost" id="cropCancelBtn" type="button">Cancelar</button>
+        <button class="btnOk" id="cropOkBtn" type="button">Usar recorte</button>
+      </div>
+    </div>
+  </div>
+
+<div class="modalMask" id="authVisitanteModal" aria-hidden="true">
+  <div class="modalCard" role="dialog" aria-modal="true" aria-label="Criar conta">
+    <div class="modalTop">
+      <div class="modalTitle">Finalizar arte</div>
+      <button class="modalClose btnGhost" id="authVisitanteCloseBtn" type="button">✕</button>
+    </div>
+
+    <div class="authVisitanteBody">
+      <div class="authPromoBox">
+        <h2>🔥 Oferta de boas-vindas</h2>
+        <p>Seu escudo 3D com desconto exclusivo para novos clientes.</p>
+        <div class="authPreco">
+          <span class="old">R$18</span>
+          <span class="new">R$4</span>
+        </div>
+      </div>
+
+      <label for="authNomeTime" id="labelNomeTime" style="display:none;">Nome do time</label>
+      <input id="authNomeTime" placeholder="Ex: Los Hermanos" style="display:none;">
+
+      <label for="authWhatsapp">WhatsApp</label>
+      <input id="authWhatsapp" inputmode="numeric" placeholder="Somente números">
+
+      <label for="authSenha">Senha</label>
+      <input id="authSenha" type="password" placeholder="Crie uma senha simples">
+
+      <div style="display:flex;gap:8px;margin-top:14px;" id="authBtnsRow">
+  <button class="btnGreen" id="authEntrarBtn" type="button" style="flex:1;">
+    Entrar 🚀
+  </button>
+  <button id="authCriarContaToggle" type="button" style="flex:1;background:#e5e7eb;color:#111827;font-weight:900;border-radius:10px;">
+    Criar conta
+  </button>
+</div>
+
+<button class="btnGreen" id="authCriarContaBtn" type="button" style="width:100%;margin-top:10px;display:none;">
+  Criar conta e continuar 🚀
+</button>
+
+      <div class="authVisitanteMsg" id="authVisitanteMsg"></div>
+    </div>
+  </div>
+</div>
+
+<div class="ia4ToastPedido" id="ia4ToastPedido" onclick="fecharAvisoPedido()">
+  <div class="ia4ToastPedidoBox">
+    <strong>✅ Pedido recebido!</strong>
+    <span>Sua arte já entrou em produção. Acompanhe em Meus pedidos — quando ficar pronta, ela aparecerá lá para baixar.</span>
+  </div>
+</div>
+
+<div class="ia4SupportBtn" id="ia4SupportBtn" title="Suporte IA4Tube">
+  <div class="ia4SupportIcon">🎬</div>
+  <div class="ia4SupportText">
+    <strong>Suporte</strong>
+    <span>IA4Tube</span>
+  </div>
+</div>
+
+<div class="ia4ChatBox" id="ia4ChatBox">
+  <div class="ia4ChatTop">
+    <div class="ia4ChatTopTitle">
+      <div class="ia4ChatMiniIcon">🎬</div>
+      <div>
+        <div>Suporte IA4Tube</div>
+        <div style="font-size:11px;color:#d1d5db;font-weight:800;">Atendimento automático</div>
+      </div>
+    </div>
+    <button type="button" class="ia4ChatClose" id="ia4ChatClose">×</button>
+  </div>
+
+  <div class="ia4ChatMessages" id="ia4ChatMessages">
+    <div class="ia4Msg ia4MsgBot">Olá! Sou o suporte da IA4Tube. Escolha uma opção:</div>
+
+    <div class="ia4QuickOptions">
+      <button type="button" class="ia4QuickBtn" onclick="ia4MostrarProdutosSuporte()">📘 Dúvida sobre produto</button>
+      <button type="button" class="ia4QuickBtn" onclick="ia4MostrarEnvioSuporte()">📤 Não consigo enviar pedido</button>
+      <button type="button" class="ia4QuickBtn" onclick="ia4MostrarErroSuporte()">⚠️ Meu pedido deu erro / alteração</button>
+      <button type="button" class="ia4QuickBtn" onclick="ia4MostrarPedidoSuporte()">📥 Pedido pronto / download</button>
+      <button type="button" class="ia4QuickBtn" onclick="ia4MostrarPagamentoSuporte()">💰 Pagamento / saldo</button>
+      <button type="button" class="ia4QuickBtn" onclick="ia4EnviarTextoSuporte('Quero falar com suporte')">👨‍💻 Falar com suporte</button>
+    </div>
+  </div>
+
+  <div class="ia4ChatInputArea">
+    <input id="ia4ChatInput" type="text" placeholder="Digite sua dúvida...">
+    <button id="ia4ChatSend" type="button">Enviar</button>
+  </div>
+</div>
+
+<script>
+const API_BASE = "https://api.omascote.com.br";
+let token = localStorage.getItem("omascote_token");
+
+function ia4Track(eventName, params = {}){
+  try{
+    if(typeof gtag !== "function") return;
+    gtag("event", eventName, params);
+  }catch(e){}
+}
+
+const welcomeEl = document.getElementById("welcome");
+const planoEl = document.getElementById("plano");
+const usadosEl = document.getElementById("usados");
+const statusEl = document.getElementById("status");
+const saldoEl = document.getElementById("saldo");
+const saldoHeroEl = document.getElementById("saldoHero");
+const msgPedidoEl = document.getElementById("msgPedido");
+const historicoListaEl = document.getElementById("historicoLista");
+const historicoVazioEl = document.getElementById("historicoVazio");
+const tempoEstimadoEl = document.getElementById("tempoEstimadoBox");
+
+const dynamicTitleEl = document.getElementById("dynamicTitle");
+const dynamicHintEl = document.getElementById("dynamicHint");
+const selectedProductInput = document.getElementById("selectedProduct");
+const flyerTipoInput = document.getElementById("flyerTipo");
+const btnEnviar = document.getElementById("btnEnviar");
+const btnTrocarTipo = document.getElementById("btnTrocarTipo");
+const builderArea = document.getElementById("builderArea");
+const mainCreateBtn = document.getElementById("mainCreateBtn");
+const selectorStage = document.querySelector(".selectorStage");
+let categoriaSelecionada = "";
+
+const escudo3dModal = document.getElementById("escudo3dModal");
+const escudo3dCloseBtn = document.getElementById("escudo3dCloseBtn");
+const escudo3dFile = document.getElementById("escudo3dFile");
+const escudo3dUploadBtn = document.getElementById("escudo3dUploadBtn");
+const escudo3dFileName = document.getElementById("escudo3dFileName");
+const escudo3dEnviarBtn = document.getElementById("escudo3dEnviarBtn");
+const escudo3dMsg = document.getElementById("escudo3dMsg");
+
+const crestPreview = document.getElementById("crestPreview");
+const crestPlaceholder = document.getElementById("crestPlaceholder");
+const CREST_KEY = "omascote_escudo_principal_dataurl";
+const TEAM_ESCUDO_FORM_KEY = "omascote_escudo_form_dataurl";
+const ESCALACAO_JOGADORES_KEY = "omascote_escalacao_jogadores";
+
+const PRODUCTS = {
+  resultado: {
+    mode: "resultado",
+    title: "Resultado do jogo",
+    hint: "Envie a competição, a foto do jogo, os escudos dos dois times, o placar e a frase para montar a arte pós-jogo.",
+    flyerTipo: "",
+    labels: {
+      hora: "Campeonato / competição",
+      data: "Frase na imagem",
+      esc1: "Escudo<br>Time A",
+      esc2: "Escudo<br>Time B",
+      mascote: "Foto do jogo ou time"
+    },
+    placeholders: {
+      hora: "Ex: Campeonato municipal",
+      data: "Escolha uma frase pronta ou escreva a sua"
+    },
+    required: {
+      esc1: true,
+      esc2: false
+    },
+    phraseMenu: true,
+    hiddenFields: []
+  },
+
+  escalacao: {
+    mode: "flyer",
+    title: "Escalação",
+    hint: "Adicione os jogadores, defina o título da arte, envie o escudo e, se quiser, a foto do jogador ou do time.",
+    flyerTipo: "zz1fs",
+    labels: {
+      data: "Título da arte",
+      esc1: "Escudo / logo do time",
+      esc2: "Escudo adversário (opcional)",
+      mascote: "Foto do jogador ou do time"
+    },
+    placeholders: {
+      data: "Título da arte ex.: Escalação oficial do Time A"
+    },
+    required: {
+      esc1: true,
+      esc2: false
+    },
+    phraseMenu: false,
+    hiddenFields: ["rodada", "hora", "arena", "patro"],
+    showPlayerList: true
+  },
+
+  contratacao: {
+    mode: "flyer",
+    title: "Contratação",
+    hint: "Preencha só o essencial para anunciar o novo jogador.",
+    flyerTipo: "zz1fm",
+    labels: {
+      rodada: "Título da arte",
+      data: "Nome do jogador",
+      hora: "Posição / idade (opcional)",
+      esc1: "Escudo do time",
+      esc2: "Foto do jogador"
+    },
+    placeholders: {
+      rodada: "Título da arte: ex.: contratado, renovado etc.",
+      data: "Nome do jogador",
+      hora: "Ex: Atacante • 22 anos"
+    },
+    required: {
+      esc1: true,
+      esc2: false
+    },
+    phraseMenu: false,
+    hiddenFields: ["arena", "mascote", "patro"]
+  },
+
+  proximo_jogo: {
+    mode: "flyer",
+    title: "Próximo jogo",
+    hint: "Preencha o confronto, a competição e os escudos para criar a arte.",
+    flyerTipo: "zz1ft",
+    labels: {
+      rodada: "Confronto / chamada",
+      data: "Data e horário",
+      hora: "Campeonato / competição",
+      arena: "Local (opcional)",
+      esc1: "Escudo<br>Time A",
+      esc2: "Escudo<br>Time B"
+    },
+    placeholders: {
+      rodada: "Ex: Semifinal • Próximo jogo",
+      data: "Data e horário. Ex.: Domingo • 15h30",
+      hora: "Campeonato / competição. Ex.: Campeonato municipal",
+      arena: "Local. Ex.: Estádio municipal"
+    },
+    required: {
+      esc1: true,
+      esc2: false
+    },
+    phraseMenu: false,
+    hiddenFields: ["mascote", "patro"]
+  },
+
+  patrocinador: {
+    mode: "flyer",
+    title: "Patrocinador / Apoio",
+    hint: "Envie o escudo do time e os patrocinadores de uma vez.",
+    flyerTipo: "zz1fj",
+    labels: {
+      rodada: "Título da arte",
+      data: "Texto principal",
+      esc1: "Escudo do time",
+      patro: "Patrocinadores / logos (pode enviar vários)"
+    },
+    placeholders: {
+      rodada: "Título da arte. Ex.: Nosso patrocinador",
+      data: "Ex: Conheça quem apoia nosso time"
+    },
+    required: {
+      esc1: true,
+      esc2: false
+    },
+    phraseMenu: false,
+    hiddenFields: ["hora", "arena", "mascote", "esc2"]
+  },
+
+  proximo_jogo_jogador: {
+    mode: "flyer",
+    title: "Próximo jogo jogador",
+    hint: "Crie uma arte focada em um jogador para divulgar o próximo jogo.",
+    flyerTipo: "jog_proximo",
+    labels: {
+      rodada: "Chamada da arte",
+      data: "Data e horário",
+      hora: "Campeonato / competição",
+      arena: "Local (opcional)",
+      esc1: "Escudo do time",
+      esc2: "Foto do jogador"
+    },
+    placeholders: {
+      rodada: "Ex: Próximo desafio",
+      data: "Ex: Domingo • 15h30",
+      hora: "Ex: Campeonato municipal",
+      arena: "Ex: Estádio municipal"
+    },
+    required: {
+      esc1: true,
+      esc2: false
+    },
+    phraseMenu: false,
+    hiddenFields: ["mascote", "patro"]
+  },
+
+  resultado_jogo_jogador: {
+    mode: "resultado",
+    title: "Resultado jogador",
+    hint: "Crie uma arte de resultado com foco no jogador.",
+    flyerTipo: "jog_resultado",
+    labels: {
+      hora: "Campeonato / competição",
+      data: "Frase na imagem",
+      esc1: "Escudo<br>Time A",
+      esc2: "Escudo<br>Time B",
+      mascote: "Foto do jogador *"
+    },
+    placeholders: {
+      hora: "Ex: Campeonato municipal",
+      data: "Escolha uma frase pronta ou escreva a sua"
+    },
+    required: {
+      esc1: true,
+      esc2: false,
+      mascote: true
+    },
+    phraseMenu: true,
+    hiddenFields: []
+  },
+
+  jogador_escudo: {
+    mode: "flyer",
+    title: "Jogador + escudo",
+    hint: "Envie a foto do jogador e o escudo do time para criar uma arte simples e forte.",
+    flyerTipo: "jog_escudo",
+    labels: {
+      data: "Nome do jogador",
+      esc1: "Escudo do time",
+      mascote: "Foto do jogador"
+    },
+    placeholders: {
+      data: "Nome do jogador"
+    },
+    required: {
+      esc1: true,
+      esc2: false
+    },
+    phraseMenu: false,
+    hiddenFields: ["rodada", "hora", "arena", "esc2", "patro"]
+  }
+};
+
+function getArtilheiroRowHtml(mode = "resultado"){
+  if(mode === "escalacao"){
+    return `
+      <div class="playersTitle">Nome dos jogadores aqui</div>
+      <div class="artilheiroRow">
+        <input class="artilheiroNome" placeholder="Nome do jogador">
+        <input class="artilheiroGols" type="text" placeholder="Posição (opcional)">
+      </div>
+    `;
+  }
+
+  return `
+    <div class="playersTitle">Quem fez os gols?</div>
+    <div class="artilheiroRow">
+      <input class="artilheiroNome" placeholder="Nome do jogador">
+      <input class="artilheiroGols" type="number" min="0" placeholder="Gols">
+    </div>
+  `;
+}
+
+function setArtilheirosMode(mode = "resultado"){
+  const wrap = document.getElementById("artilheirosWrap");
+  const title = document.querySelector('.field-artilheiros [data-optional-toggle="artilheiros"] .optionalToggleText');
+  const addBtn = document.getElementById("addArtilheiroBtn");
+  if(!wrap || !title || !addBtn) return;
+
+  if(mode === "escalacao"){
+    title.textContent = "";
+  }else{
+    title.textContent = "Ver artilheiros";
+  }
+
+  addBtn.textContent = mode === "escalacao" ? "Adicionar jogador" : "Adicionar jogador";
+  wrap.innerHTML = getArtilheiroRowHtml(mode);
+}
+
+function updateChosenPlaceholders(product){
+  const chosenMascote = document.getElementById("chosen_mascote");
+  const chosenEscudo1 = document.getElementById("chosen_escudo1");
+  const chosenEscudo2 = document.getElementById("chosen_escudo2");
+  const chosenPatro = document.getElementById("chosen_patrocinadores");
+
+  const mascoteInput = document.getElementById("mascote");
+  const escudo1Input = document.getElementById("escudo1");
+  const escudo2Input = document.getElementById("escudo2");
+  const patroInput = document.getElementById("patrocinadores");
+
+  if(chosenMascote && (!mascoteInput.files || mascoteInput.files.length === 0)){
+    chosenMascote.textContent = product?.labels?.mascote || "Nenhum arquivo";
+  }
+  if(chosenEscudo1 && (!escudo1Input.files || escudo1Input.files.length === 0)){
+    chosenEscudo1.innerHTML = product?.labels?.esc1 || "Escudo<br>Time A";
+  }
+  if(chosenEscudo2 && (!escudo2Input.files || escudo2Input.files.length === 0)){
+    chosenEscudo2.innerHTML = product?.labels?.esc2 || "Escudo<br>Time B";
+  }
+  if(chosenPatro && (!patroInput.files || patroInput.files.length === 0)){
+    chosenPatro.textContent = product?.labels?.patro || "Nenhum arquivo";
+  }
+}
+
+function updateProductFieldVisibility(product){
+  const flyerFields = ["rodada", "artilheiros", "data", "hora", "arena", "mascote", "esc1", "esc2", "patro"];
+
+  flyerFields.forEach((field)=>{
+    const el = document.querySelector(`.field-${field}`);
+    if(!el) return;
+    el.style.display = "";
+  });
+
+  const artilheirosField = document.querySelector(".field-artilheiros");
+  const escalacaoActions = document.getElementById("escalacaoActions");
+
+  if(escalacaoActions) escalacaoActions.style.display = "none";
+
+  if(!product){
+    if(artilheirosField) artilheirosField.style.display = "none";
+    setArtilheirosMode("resultado");
+    return;
+  }
+
+  if(product.mode === "resultado"){
+    if(artilheirosField){
+      artilheirosField.style.display = selectedProductInput.value === "resultado_jogo_jogador" ? "none" : "flex";
+    }
+    setArtilheirosMode("resultado");
+    return;
+  }
+
+  const hiddenFields = Array.isArray(product.hiddenFields) ? product.hiddenFields : [];
+
+  hiddenFields.forEach((field)=>{
+    const el = document.querySelector(`.field-${field}`);
+    if(!el) return;
+    el.style.display = "none";
+  });
+
+  if(product.showPlayerList){
+    if(artilheirosField) artilheirosField.style.display = "flex";
+    if(escalacaoActions) escalacaoActions.style.display = "flex";
+    setArtilheirosMode("escalacao");
+    fillEscalacaoPlayersUI(loadSavedEscalacaoPlayers());
+  }else{
+    if(artilheirosField) artilheirosField.style.display = "none";
+    setArtilheirosMode("resultado");
+  }
+}
+
+function setCrestUI(dataUrl){
+  if(!dataUrl){
+    crestPreview.style.display = "none";
+    crestPlaceholder.style.display = "flex";
+    return;
+  }
+  crestPreview.src = dataUrl;
+  crestPreview.style.display = "block";
+  crestPlaceholder.style.display = "none";
+  crestPreview.onload = () => {
+    try{ applyThemeFromImage(crestPreview); }catch(e){}
+  };
+}
+
+function readFileAsDataURL(file){
+  return new Promise((resolve, reject)=>{
+    const r = new FileReader();
+    r.onload = () => resolve(r.result);
+    r.onerror = reject;
+    r.readAsDataURL(file);
+  });
+}
+
+async function normalizeImageFile(inputId, file){
+  if(!file) return file;
+
+  const isEscudo = inputId === "escudo1" || inputId === "escudo2";
+  const outputType = isEscudo ? "image/png" : "image/jpeg";
+  const outputQuality = isEscudo ? undefined : 0.9;
+  const maxSide = isEscudo ? 1400 : 1600;
+
+  try{
+    let source;
+
+    if("createImageBitmap" in window){
+      source = await createImageBitmap(file);
+    }else{
+      source = await new Promise((resolve, reject)=>{
+        const img = new Image();
+        const url = URL.createObjectURL(file);
+        img.onload = () => {
+          URL.revokeObjectURL(url);
+          resolve(img);
+        };
+        img.onerror = () => {
+          URL.revokeObjectURL(url);
+          reject(new Error("Falha ao abrir imagem"));
+        };
+        img.src = url;
+      });
+    }
+
+    const srcW = source.width || source.naturalWidth || 1;
+    const srcH = source.height || source.naturalHeight || 1;
+
+    let outW = srcW;
+    let outH = srcH;
+
+    if(srcW > maxSide || srcH > maxSide){
+      const scale = Math.min(maxSide / srcW, maxSide / srcH);
+      outW = Math.max(1, Math.round(srcW * scale));
+      outH = Math.max(1, Math.round(srcH * scale));
+    }
+
+    const canvas = document.createElement("canvas");
+    canvas.width = outW;
+    canvas.height = outH;
+
+    const ctx = canvas.getContext("2d");
+    ctx.imageSmoothingEnabled = true;
+    ctx.imageSmoothingQuality = "high";
+    ctx.drawImage(source, 0, 0, outW, outH);
+
+    if(source.close) source.close();
+
+    const blob = await new Promise((resolve, reject)=>{
+      canvas.toBlob((b)=>{
+        if(b) resolve(b);
+        else reject(new Error("Falha ao converter imagem"));
+      }, outputType, outputQuality);
+    });
+
+    const ext = outputType === "image/png" ? "png" : "jpg";
+    return new File([blob], `upload.${ext}`, { type: outputType });
+  }catch(e){
+    return file;
+  }
+}
+
+function dataURLToFile(dataUrl, filename){
+  const parts = String(dataUrl || "").split(",");
+  if(parts.length < 2) return null;
+
+  const mimeMatch = parts[0].match(/data:(.*?);base64/);
+  const mime = mimeMatch ? mimeMatch[1] : "image/png";
+  const binary = atob(parts[1]);
+  const len = binary.length;
+  const bytes = new Uint8Array(len);
+
+  for(let i = 0; i < len; i++){
+    bytes[i] = binary.charCodeAt(i);
+  }
+
+  return new File([bytes], filename, { type: mime });
+}
+
+async function saveEscudo1ToLocalFromFile(file){
+  if(!file) return;
+  try{
+    const dataUrl = await readFileAsDataURL(file);
+    localStorage.setItem(TEAM_ESCUDO_FORM_KEY, dataUrl);
+  }catch(e){}
+}
+
+function getSavedEscudo1File(){
+  const dataUrl = localStorage.getItem(TEAM_ESCUDO_FORM_KEY);
+  if(!dataUrl) return null;
+  return dataURLToFile(dataUrl, "escudo_time_salvo.png");
+}
+
+function getSavedEscudo1Exists(){
+  return !!localStorage.getItem(TEAM_ESCUDO_FORM_KEY);
+}
+
+function getEscalacaoPlayersFromUI(){
+  const jogadores = [];
+
+  document.querySelectorAll("#artilheirosWrap .artilheiroRow").forEach(row=>{
+    const nome = row.querySelector(".artilheiroNome")?.value?.trim() || "";
+    const posicao = row.querySelector(".artilheiroGols")?.value?.trim() || "";
+
+    if(nome){
+      jogadores.push({ nome, posicao });
+    }
+  });
+
+  return jogadores;
+}
+
+function fillEscalacaoPlayersUI(jogadores){
+  const wrap = document.getElementById("artilheirosWrap");
+  if(!wrap) return;
+
+  const lista = Array.isArray(jogadores) ? jogadores.filter(j => j && j.nome) : [];
+  if(lista.length === 0){
+    wrap.innerHTML = getArtilheiroRowHtml("escalacao");
+    return;
+  }
+
+  wrap.innerHTML = `<div class="playersTitle">Nome dos jogadores aqui</div>` + lista.map(j => `
+    <div class="artilheiroRow">
+      <input class="artilheiroNome" placeholder="Nome do jogador" value="${String(j.nome || "").replace(/"/g, "&quot;")}">
+      <input class="artilheiroGols" type="text" placeholder="Posição (opcional)" value="${String(j.posicao || "").replace(/"/g, "&quot;")}">
+    </div>
+  `).join("");
+}
+
+function loadSavedEscalacaoPlayers(){
+  try{
+    const raw = localStorage.getItem(ESCALACAO_JOGADORES_KEY);
+    if(!raw) return [];
+    const parsed = JSON.parse(raw);
+    return Array.isArray(parsed) ? parsed : [];
+  }catch(e){
+    return [];
+  }
+}
+
+function saveEscalacaoPlayersToLocal(){
+  const jogadores = getEscalacaoPlayersFromUI();
+  if(jogadores.length === 0){
+    alert("Adicione pelo menos um atleta para salvar.");
+    return;
+  }
+  localStorage.setItem(ESCALACAO_JOGADORES_KEY, JSON.stringify(jogadores));
+  alert("Atletas salvos com sucesso.");
+}
+
+function clearEscalacaoPlayersFromLocal(){
+  localStorage.removeItem(ESCALACAO_JOGADORES_KEY);
+  fillEscalacaoPlayersUI([]);
+  alert("Atletas salvos excluídos.");
+}
+
+function applyThemeFromImage(img){
+  const c = document.createElement("canvas");
+  const ctx = c.getContext("2d", { willReadFrequently:true });
+  const w = 80, h = 80;
+  c.width = w;
+  c.height = h;
+  ctx.drawImage(img, 0, 0, w, h);
+  const { data } = ctx.getImageData(0,0,w,h);
+
+  let r=0,g=0,b=0,n=0;
+  for(let i=0;i<data.length;i+=16){
+    const a = data[i+3];
+    if(a < 40) continue;
+    const rr = data[i], gg = data[i+1], bb = data[i+2];
+    const max = Math.max(rr,gg,bb);
+    const min = Math.min(rr,gg,bb);
+    if(max > 245 && (max-min) < 12) continue;
+    r += rr; g += gg; b += bb; n++;
+  }
+  if(n < 20) return;
+
+  r = Math.round(r/n);
+  g = Math.round(g/n);
+  b = Math.round(b/n);
+
+  const r2 = Math.max(0, Math.round(r * 0.55));
+  const g2 = Math.max(0, Math.round(g * 0.55));
+  const b2 = Math.max(0, Math.round(b * 0.55));
+
+  document.documentElement.style.setProperty("--accent1", `rgb(${r},${g},${b})`);
+  document.documentElement.style.setProperty("--accent2", `rgb(${r2},${g2},${b2})`);
+}
+
+setCrestUI(localStorage.getItem(CREST_KEY) || "");
+
+const crestManualInput = document.getElementById("crestManual");
+const crestAddBtn = document.getElementById("crestAddBtn");
+
+if(crestAddBtn && crestManualInput){
+  crestAddBtn.addEventListener("click", ()=>{
+    crestManualInput.value = "";
+  });
+
+  crestManualInput.addEventListener("change", async ()=>{
+    if(!crestManualInput.files || crestManualInput.files.length === 0) return;
+    try{
+      const normalizedFile = await normalizeImageFile("crestManual", crestManualInput.files[0]);
+      const dataUrl = await readFileAsDataURL(normalizedFile);
+      localStorage.setItem(CREST_KEY, dataUrl);
+      setCrestUI(dataUrl);
+    }catch(e){}
+    crestManualInput.value = "";
+  });
+}
+
+function bindPlusUpload(inputId, chosenId){
+  const input = document.getElementById(inputId);
+  const chosen = document.getElementById(chosenId);
+  const btn = document.querySelector(`.filePlus[data-file-for="${inputId}"]`);
+  if(!input || !chosen || !btn) return;
+
+  const openPicker = () => {
+    input.value = "";
+    input.click();
+  };
+
+  btn.addEventListener("click", openPicker);
+  btn.addEventListener("keydown", (e)=>{
+    if(e.key === "Enter" || e.key === " "){
+      e.preventDefault();
+      openPicker();
+    }
+  });
+
+  input.addEventListener("change", async ()=>{
+    if(!input.files || input.files.length === 0){
+      const currentProduct = PRODUCTS[selectedProductInput.value];
+      if(inputId === "escudo1"){
+        chosen.innerHTML = currentProduct?.labels?.esc1 || "Escudo<br>Time A";
+      }
+      else if(inputId === "escudo2") chosen.innerHTML = currentProduct?.labels?.esc2 || "Escudo<br>Time B";
+      else if(inputId === "mascote") chosen.textContent = currentProduct?.labels?.mascote || "Nenhum arquivo";
+      else if(inputId === "patrocinadores") chosen.textContent = currentProduct?.labels?.patro || "Nenhum arquivo";
+      else chosen.textContent = "Nenhum arquivo";
+      return;
+    }
+    if(input.multiple){
+      chosen.textContent = `${input.files.length} arquivo(s) selecionado(s)`;
+    }else{
+      chosen.textContent = input.files[0].name || "Arquivo selecionado";
+    }
+
+    if(inputId === "escudo1" && input.files[0]){
+      await saveEscudo1ToLocalFromFile(input.files[0]);
+    }
+  });
+}
+
+bindPlusUpload("mascote", "chosen_mascote");
+bindPlusUpload("escudo1", "chosen_escudo1");
+bindPlusUpload("escudo2", "chosen_escudo2");
+bindPlusUpload("patrocinadores", "chosen_patrocinadores");
+
+function applyLocal(){
+  const nome = localStorage.getItem("omascote_nome_time") || "";
+  const plano = localStorage.getItem("omascote_plano") || "";
+  const usados = localStorage.getItem("omascote_usados") || "";
+
+  welcomeEl.textContent = nome || "Seu time";
+  planoEl.textContent = `Plano: ${plano || "—"} pedidos/mês`;
+  usadosEl.textContent = `Usados no mês: ${usados || "—"}`;
+  if(saldoEl){
+    saldoEl.textContent = "Saldo disponível: —";
+  }
+}
+
+async function refreshMe(){
+  try{
+    const r = await fetch(`${API_BASE}/me`, {
+      headers: { "Authorization": "Bearer " + token }
+    });
+    const data = await r.json();
+    if(data.ok){
+      localStorage.setItem("omascote_nome_time", data.nome_time || "");
+      localStorage.setItem("omascote_plano", data.plano || "");
+      localStorage.setItem("omascote_usados", data.usados_no_ciclo || "");
+      localStorage.setItem("omascote_saldo", data.saldo ?? "");
+      applyLocal();
+      statusEl.textContent = data.ativo ? "Status: ativo" : "Status: inativo";
+      const saldo = Number(data.saldo || 0);
+
+if(saldoEl){
+  saldoEl.textContent = `Saldo disponível: R$ ${saldo.toFixed(2).replace(".", ",")}`;
+}
+
+if(saldoHeroEl){
+  saldoHeroEl.textContent = `Saldo disponível: R$ ${saldo.toFixed(2).replace(".", ",")}`;
+}
+
+const jaComprou = Number(data.usados_no_ciclo || 0) > 0;
+
+const escudoPromo = document.querySelector('[data-product="escudo3d"]');
+
+if(escudoPromo){
+  const label = escudoPromo.querySelector(".optLabel");
+  if(label){
+    label.innerHTML = jaComprou
+      ? `Escudo 3D<br><span style="color:#1fbf63;font-weight:900;">R$18</span>`
+      : `Primeira arte<br>Escudo 3D<br><span style="font-size:11px;color:#777;text-decoration:line-through;">R$18</span> <span style="color:#1fbf63;font-weight:900;">R$4</span>`;
+  }
+}
+    }
+  }catch{}
+}
+
+function formatarTempoEstimado(segundos){
+  segundos = Math.max(1, Number(segundos || 0));
+
+  const min = Math.floor(segundos / 60);
+  const sec = Math.round(segundos % 60);
+
+  if(min <= 0){
+    return `${sec} segundos`;
+  }
+
+  if(sec <= 0){
+    return `${min} minuto${min === 1 ? "" : "s"}`;
+  }
+
+  return `${min} minuto${min === 1 ? "" : "s"} e ${sec} segundos`;
+}
+
+async function carregarTempoEstimado(){
+  if(!tempoEstimadoEl) return;
+
+  try{
+    const r = await fetch(`${API_BASE}/tempo-estimado`);
+    const data = await r.json();
+
+    if(!data.ok || data.aprendendo || Number(data.tempo_estimado_segundos || 0) <= 0){
+      tempoEstimadoEl.textContent = "⏱ Estamos calculando o tempo real dos pedidos...";
+      return;
+    }
+
+    const textoTempo = formatarTempoEstimado(data.tempo_estimado_segundos);
+    tempoEstimadoEl.textContent = `⏱ No momento, o tempo estimado para criar sua arte é de ${textoTempo}`;
+  }catch{
+    tempoEstimadoEl.textContent = "⏱ Estamos calculando o tempo real dos pedidos...";
+  }
+}
+
+let acaoDepoisDoCadastro = null;
+
+async function comprarCreditos(pacote){
+  if(!token){
+    acaoDepoisDoCadastro = () => comprarCreditos(pacote);
+    abrirCadastroVisitanteModal();
+    return;
+  }
+
+  try{
+    const r = await fetch(`${API_BASE}/comprar-creditos`, {
+      method:"POST",
+      headers:{
+        "Authorization": "Bearer " + token,
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({ pacote })
+    });
+
+    const data = await r.json();
+
+    if(!data.ok || !data.init_point){
+    alert(data.error || "Erro ao iniciar pagamento.");
+    return;
+  }
+
+  ia4Track("iniciou_pagamento", {
+    pacote: pacote || "desconhecido"
+  });
+
+  window.open(data.init_point, "_blank");
+
+  }catch{
+    alert("Erro de rede ao iniciar pagamento.");
+  }
+}
+
+let timerAvisoPedido = null;
+
+function mostrarAvisoPedido(){
+  const aviso = document.getElementById("ia4ToastPedido");
+  if(!aviso) return;
+
+  aviso.classList.add("show");
+
+  clearTimeout(timerAvisoPedido);
+  timerAvisoPedido = setTimeout(()=>{
+    fecharAvisoPedido();
+  }, 5000);
+}
+
+function fecharAvisoPedido(){
+  const aviso = document.getElementById("ia4ToastPedido");
+  if(!aviso) return;
+
+  aviso.classList.remove("show");
+  clearTimeout(timerAvisoPedido);
+}
+
+function onlyDigits(s){
+  return String(s || "").replace(/\D+/g, "");
+}
+
+const authVisitanteModal = document.getElementById("authVisitanteModal");
+const authVisitanteCloseBtn = document.getElementById("authVisitanteCloseBtn");
+const authCriarContaBtn = document.getElementById("authCriarContaBtn");
+const authEntrarBtn = document.getElementById("authEntrarBtn");
+const authCriarContaToggle = document.getElementById("authCriarContaToggle");
+const authBtnsRow = document.getElementById("authBtnsRow");
+const labelNomeTime = document.getElementById("labelNomeTime");
+const authVisitanteMsg = document.getElementById("authVisitanteMsg");
+
+let modoCadastro = false;
+
+function abrirCadastroVisitanteModal(){
+  ia4Track("iniciou_cadastro", {
+    origem: selectedProductInput?.value || "sem_produto"
+  });
+
+  if(!authVisitanteModal) return;
+  if(authVisitanteMsg){
+    authVisitanteMsg.textContent = "";
+    authVisitanteMsg.className = "authVisitanteMsg";
+  }
+  authVisitanteModal.classList.add("open");
+  authVisitanteModal.setAttribute("aria-hidden", "false");
+  setTimeout(()=>document.getElementById("authNomeTime")?.focus(), 120);
+}
+
+function fecharCadastroVisitanteModal(){
+  if(!authVisitanteModal) return;
+  authVisitanteModal.classList.remove("open");
+  authVisitanteModal.setAttribute("aria-hidden", "true");
+}
+
+function setAuthVisitanteMsg(texto, tipo){
+  if(!authVisitanteMsg) return;
+  authVisitanteMsg.textContent = texto || "";
+  authVisitanteMsg.className = "authVisitanteMsg " + (tipo || "");
+}
+
+async function finalizarCadastroVisitante(){
+  const nome_time = document.getElementById("authNomeTime")?.value?.trim() || "";
+  const whatsapp = onlyDigits(document.getElementById("authWhatsapp")?.value || "");
+  const senha = document.getElementById("authSenha")?.value || "";
+
+  if(modoCadastro && !nome_time){
+    setAuthVisitanteMsg("Digite o nome do time.", "err");
+    return;
+  }
+
+  if(!whatsapp || whatsapp.length < 10){
+    setAuthVisitanteMsg("Digite um WhatsApp válido.", "err");
+    return;
+  }
+
+  if(!senha || senha.length < 3){
+    setAuthVisitanteMsg("Digite uma senha com pelo menos 3 caracteres.", "err");
+    return;
+  }
+
+  authCriarContaBtn.disabled = true;
+  authCriarContaBtn.textContent = "Criando conta...";
+
+  try{
+    let r;
+
+if(modoCadastro){
+  r = await fetch(`${API_BASE}/auth/register`, {
+    method:"POST",
+    headers:{ "Content-Type":"application/json" },
+    body:JSON.stringify({ nome_time, whatsapp, senha })
+  });
+}else{
+  r = await fetch(`${API_BASE}/auth/login`, {
+    method:"POST",
+    headers:{ "Content-Type":"application/json" },
+    body:JSON.stringify({ whatsapp, senha })
+  });
+}
+
+    let data = await r.json().catch(()=>({}));
+
+    if(!r.ok || !data.ok){
+      r = await fetch(`${API_BASE}/auth/login`, {
+        method:"POST",
+        headers:{ "Content-Type":"application/json" },
+        body:JSON.stringify({ whatsapp, senha })
+      });
+
+      data = await r.json().catch(()=>({}));
+    }
+
+    if(!r.ok || !data.ok || !data.token){
+      setAuthVisitanteMsg(data.error || "Não foi possível entrar. Confira os dados.", "err");
+      authCriarContaBtn.disabled = false;
+      authCriarContaBtn.textContent = "Criar conta e continuar 🚀";
+      return;
+    }
+
+    token = data.token;
+
+    ia4Track(modoCadastro ? "cadastro_concluido" : "login_concluido", {
+      metodo: modoCadastro ? "cadastro" : "login"
+    });
+
+    localStorage.setItem("omascote_token", data.token);
+    localStorage.setItem("omascote_nome_time", data.nome_time || nome_time || "");
+    localStorage.setItem("omascote_plano", String(data.plano ?? ""));
+    localStorage.setItem("omascote_usados", String(data.usados_no_ciclo ?? ""));
+
+    setAuthVisitanteMsg("Conta criada! Continuando seu pedido...", "ok");
+
+    fecharCadastroVisitanteModal();
+    applyLocal();
+    refreshMe();
+    carregarHistorico();
+
+    const btnSairEl = document.getElementById("btnSair");
+    if(btnSairEl){
+           btnSairEl.textContent = "Sair";
+           btnSairEl.style.background = "#dc2626";
+           }
+
+    const acao = acaoDepoisDoCadastro;
+    acaoDepoisDoCadastro = null;
+
+    setTimeout(()=>{
+      if(typeof acao === "function"){
+        acao();
+      }else{
+        document.getElementById("pedidoForm")?.requestSubmit();
+      }
+    }, 250);
+
+  }catch(e){
+    setAuthVisitanteMsg("Erro de rede. Tente novamente.", "err");
+  }
+
+  authCriarContaBtn.disabled = false;
+  authCriarContaBtn.textContent = "Criar conta e continuar 🚀";
+}
+
+authEntrarBtn?.addEventListener("click", ()=>{
+  modoCadastro = false;
+  finalizarCadastroVisitante();
+});
+
+authCriarContaToggle?.addEventListener("click", ()=>{
+  modoCadastro = true;
+
+  labelNomeTime.style.display = "block";
+  document.getElementById("authNomeTime").style.display = "block";
+
+  authBtnsRow.style.display = "none";
+  authCriarContaBtn.style.display = "block";
+});
+
+authCriarContaBtn?.addEventListener("click", ()=>{
+  modoCadastro = true;
+  finalizarCadastroVisitante();
+});
+authVisitanteCloseBtn?.addEventListener("click", fecharCadastroVisitanteModal);
+authVisitanteModal?.addEventListener("click", (e)=>{
+  if(e.target === authVisitanteModal) fecharCadastroVisitanteModal();
+});
+
+function setRequired(inputId, isRequired){
+  const input = document.getElementById(inputId);
+  if(!input) return;
+  input.required = false;
+}
+
+function limparErrosObrigatorios(){
+  document.querySelectorAll(".campoObrigatorioErro").forEach(el=>{
+    el.classList.remove("campoObrigatorioErro");
+  });
+}
+
+function marcarCampoObrigatorio(el){
+  if(!el) return;
+  el.classList.add("campoObrigatorioErro");
+}
+
+function focarCampoObrigatorio(el){
+  if(!el) return;
+
+  el.scrollIntoView({
+    behavior:"smooth",
+    block:"center"
+  });
+
+  setTimeout(()=>{
+    if(typeof el.focus === "function"){
+      el.focus({ preventScroll:true });
+    }
+  }, 350);
+}
+
+function campoVisivel(field){
+  const el = document.querySelector(`[data-optional-field="${field}"]`);
+  if(!el) return false;
+  if(el.style.display === "none") return false;
+  return true;
+}
+
+function valorObrigatorio(id){
+  return !!String(document.getElementById(id)?.value || "").trim();
+}
+
+function arquivoObrigatorio(inputId){
+  const input = document.getElementById(inputId);
+  return !!(input && input.files && input.files.length > 0);
+}
+
+function escudo1ObrigatorioOk(){
+  return arquivoObrigatorio("escudo1");
+}
+
+function validarPedidoAntesDeEnviar(productKey){
+  limparErrosObrigatorios();
+
+  const erros = [];
+
+  const addInput = (id, msg)=>{
+    const el = document.getElementById(id);
+    if(el && !valorObrigatorio(id)){
+      erros.push({ el, msg });
+      marcarCampoObrigatorio(el);
+    }
+  };
+
+  const addFile = (inputId, msg)=>{
+    const input = document.getElementById(inputId);
+    const box = document.querySelector(`.filePlus[data-file-for="${inputId}"]`);
+    const ok = inputId === "escudo1" ? escudo1ObrigatorioOk() : arquivoObrigatorio(inputId);
+
+    if(input && !ok){
+      erros.push({ el: box || input, msg });
+      marcarCampoObrigatorio(box || input);
+    }
+  };
+
+  const addJogadores = ()=>{
+    const jogadores = getEscalacaoPlayersFromUI();
+    const wrap = document.getElementById("artilheirosWrap");
+
+    if(jogadores.length === 0){
+      erros.push({ el: wrap, msg:"Adicione pelo menos um jogador." });
+      marcarCampoObrigatorio(wrap);
+    }
+  };
+
+  const addPatrocinadores = ()=>{
+    const input = document.getElementById("patrocinadores");
+    const box = document.querySelector(`.filePlus[data-file-for="patrocinadores"]`);
+
+    if(!input || !input.files || input.files.length === 0){
+      erros.push({ el: box || input, msg:"Envie pelo menos um patrocinador." });
+      marcarCampoObrigatorio(box || input);
+    }
+  };
+
+  if(productKey === "resultado"){
+    addInput("timePrincipal", "Preencha o Time A.");
+    addInput("golsTime", "Preencha os gols do Time A.");
+    addInput("golsAdv", "Preencha os gols do Time B.");
+    addInput("timeAdv", "Preencha o Time B.");
+    addFile("escudo1", "Envie o escudo do Time A.");
+    addFile("escudo2", "Envie o escudo do Time B.");
+  }
+
+  if(productKey === "resultado_jogo_jogador"){
+    addInput("timePrincipal", "Preencha o Time A.");
+    addInput("golsTime", "Preencha os gols do Time A.");
+    addInput("golsAdv", "Preencha os gols do Time B.");
+    addInput("timeAdv", "Preencha o Time B.");
+    addFile("escudo1", "Envie o escudo do Time A.");
+    addFile("escudo2", "Envie o escudo do Time B.");
+    addFile("mascote", "Envie a foto do jogador.");
+  }
+
+  if(productKey === "escalacao"){
+    addInput("dataJogo", "Preencha o título da arte.");
+    addFile("escudo1", "Envie o escudo do time.");
+    addJogadores();
+  }
+
+  if(productKey === "contratacao"){
+    addInput("rodada", "Preencha o título da arte.");
+    addInput("dataJogo", "Preencha o nome do jogador.");
+    addFile("escudo1", "Envie o escudo do time.");
+    addFile("escudo2", "Envie a foto do jogador.");
+  }
+
+  if(productKey === "proximo_jogo"){
+    addInput("timePrincipal", "Preencha o Time A.");
+    addInput("timeAdv", "Preencha o Time B.");
+    addInput("dataJogo", "Preencha a data e horário.");
+    addInput("hora", "Preencha o campeonato/competição.");
+    addFile("escudo1", "Envie o escudo do Time A.");
+    addFile("escudo2", "Envie o escudo do Time B.");
+  }
+
+  if(productKey === "proximo_jogo_jogador"){
+    addInput("timePrincipal", "Preencha o Time A.");
+    addInput("timeAdv", "Preencha o adversário.");
+    addInput("dataJogo", "Preencha a data e horário.");
+    addInput("hora", "Preencha o campeonato/competição.");
+    addFile("escudo1", "Envie o escudo do time.");
+    addFile("escudo2", "Envie a foto do jogador.");
+  }
+
+  if(productKey === "patrocinador"){
+    addInput("rodada", "Preencha o título da arte.");
+    addFile("escudo1", "Envie o escudo do time.");
+    addPatrocinadores();
+  }
+
+  if(productKey === "jogador_escudo"){
+    addInput("dataJogo", "Preencha o nome do jogador.");
+    addFile("escudo1", "Envie o escudo do time.");
+    addFile("mascote", "Envie a foto do jogador.");
+  }
+
+  if(erros.length > 0){
+    msgPedidoEl.textContent = erros[0].msg;
+    focarCampoObrigatorio(erros[0].el);
+    return false;
+  }
+
+  return true;
+}
+
+function setText(id, value){
+  const el = document.getElementById(id);
+  if(el) el.textContent = value;
+}
+
+function setPlaceholder(id, value){
+  const el = document.getElementById(id);
+  if(el) el.placeholder = value || "";
+}
+
+function closePhraseMenu(){
+  const phraseMenu = document.getElementById("phraseMenu");
+  if(phraseMenu) phraseMenu.classList.remove("open");
+}
+
+function setOptionalSectionState(field, isOpen){
+  const wrapper = document.querySelector(`[data-optional-field="${field}"]`);
+  if(!wrapper) return;
+  wrapper.classList.toggle("is-open", !!isOpen);
+}
+
+function configureOptionalSections(productKey){
+  const wrappers = document.querySelectorAll("[data-optional-field]");
+  wrappers.forEach((wrapper)=>{
+    wrapper.classList.remove("is-open", "locked-open");
+    const toggle = wrapper.querySelector("[data-optional-toggle]");
+    if(toggle) toggle.style.display = "inline-flex";
+  });
+
+  const labelEsc1 = document.getElementById("labelEsc1");
+  const labelEsc2 = document.getElementById("labelEsc2");
+  if(labelEsc1) labelEsc1.classList.add("hiddenLabel");
+  if(labelEsc2) labelEsc2.classList.add("hiddenLabel");
+
+  const optionalDivider = document.getElementById("optionalDivider");
+  if(optionalDivider){
+    optionalDivider.style.display = productKey ? "block" : "none";
+  }
+
+  const lockOpen = (field)=>{
+    const wrapper = document.querySelector(`[data-optional-field="${field}"]`);
+    if(!wrapper) return;
+    wrapper.classList.add("locked-open");
+    wrapper.classList.remove("is-open");
+  };
+
+  const keepClosed = (field)=>{
+    const wrapper = document.querySelector(`[data-optional-field="${field}"]`);
+    if(!wrapper) return;
+    wrapper.classList.remove("locked-open", "is-open");
+  };
+
+  if(productKey === "resultado" || productKey === "resultado_jogo_jogador"){
+    lockOpen("esc1");
+    lockOpen("esc2");
+    keepClosed("hora");
+    keepClosed("data");
+    keepClosed("artilheiros");
+    keepClosed("mascote");
+    return;
+  }
+
+  if(productKey === "escalacao"){
+    lockOpen("data");
+    lockOpen("esc1");
+    lockOpen("artilheiros");
+    keepClosed("esc2");
+    keepClosed("mascote");
+
+    const dataToggle = document.querySelector(`[data-optional-field="data"] [data-optional-toggle]`);
+    if(dataToggle) dataToggle.style.display = "none";
+
+    const esc1Toggle = document.querySelector(`[data-optional-field="esc1"] [data-optional-toggle]`);
+    if(esc1Toggle) esc1Toggle.style.display = "none";
+
+    const artilheirosToggle = document.querySelector(`[data-optional-field="artilheiros"] [data-optional-toggle]`);
+    if(artilheirosToggle) artilheirosToggle.style.display = "none";
+
+    const labelEsc2 = document.getElementById("labelEsc2");
+    if(labelEsc2) labelEsc2.classList.remove("hiddenLabel");
+
+    return;
+  }
+
+  if(productKey === "contratacao"){
+    lockOpen("rodada");
+    lockOpen("data");
+    lockOpen("esc1");
+    lockOpen("esc2");
+    keepClosed("hora");
+
+    const rodadaToggle = document.querySelector(`[data-optional-field="rodada"] [data-optional-toggle]`);
+    if(rodadaToggle) rodadaToggle.style.display = "none";
+
+    const dataToggle = document.querySelector(`[data-optional-field="data"] [data-optional-toggle]`);
+    if(dataToggle) dataToggle.style.display = "none";
+
+    const esc1Toggle = document.querySelector(`[data-optional-field="esc1"] [data-optional-toggle]`);
+    if(esc1Toggle) esc1Toggle.style.display = "none";
+
+    const esc2Toggle = document.querySelector(`[data-optional-field="esc2"] [data-optional-toggle]`);
+    if(esc2Toggle) esc2Toggle.style.display = "none";
+
+    return;
+  }
+
+  if(productKey === "proximo_jogo" || productKey === "proximo_jogo_jogador"){
+    lockOpen("data");
+    lockOpen("hora");
+    lockOpen("esc1");
+    lockOpen("esc2");
+    keepClosed("arena");
+
+    const dataToggle = document.querySelector(`[data-optional-field="data"] [data-optional-toggle]`);
+    if(dataToggle) dataToggle.style.display = "none";
+
+    const horaToggle = document.querySelector(`[data-optional-field="hora"] [data-optional-toggle]`);
+    if(horaToggle) horaToggle.style.display = "none";
+
+    const esc1Toggle = document.querySelector(`[data-optional-field="esc1"] [data-optional-toggle]`);
+    if(esc1Toggle) esc1Toggle.style.display = "none";
+
+    const esc2Toggle = document.querySelector(`[data-optional-field="esc2"] [data-optional-toggle]`);
+    if(esc2Toggle) esc2Toggle.style.display = "none";
+
+    return;
+  }
+
+  if(productKey === "resultado_jogo_jogador"){
+    lockOpen("esc1");
+    lockOpen("esc2");
+    lockOpen("mascote");
+    keepClosed("hora");
+    keepClosed("data");
+    keepClosed("artilheiros");
+
+    const mascoteToggle = document.querySelector(`[data-optional-field="mascote"] [data-optional-toggle]`);
+    if(mascoteToggle) mascoteToggle.style.display = "none";
+
+    return;
+  }
+
+  if(productKey === "jogador_escudo"){
+    lockOpen("data");
+    lockOpen("esc1");
+    lockOpen("mascote");
+
+    const dataToggle = document.querySelector(`[data-optional-field="data"] [data-optional-toggle]`);
+    if(dataToggle) dataToggle.style.display = "none";
+
+    const esc1Toggle = document.querySelector(`[data-optional-field="esc1"] [data-optional-toggle]`);
+    if(esc1Toggle) esc1Toggle.style.display = "none";
+
+    const mascoteToggle = document.querySelector(`[data-optional-field="mascote"] [data-optional-toggle]`);
+    if(mascoteToggle) mascoteToggle.style.display = "none";
+
+    return;
+  }
+
+  if(productKey === "patrocinador"){
+    lockOpen("rodada");
+    lockOpen("esc1");
+    lockOpen("patro");
+    keepClosed("data");
+
+    const rodadaToggle = document.querySelector(`[data-optional-field="rodada"] [data-optional-toggle]`);
+    if(rodadaToggle) rodadaToggle.style.display = "none";
+
+    const esc1Toggle = document.querySelector(`[data-optional-field="esc1"] [data-optional-toggle]`);
+    if(esc1Toggle) esc1Toggle.style.display = "none";
+
+    const patroToggle = document.querySelector(`[data-optional-field="patro"] [data-optional-toggle]`);
+    if(patroToggle) patroToggle.style.display = "none";
+
+    return;
+  }
+}
+
+function arrangeFieldSequence(productKey){
+  const form = document.getElementById("pedidoForm");
+  if(!form) return;
+
+  const fields = {
+    placar: form.querySelector(".field-placar"),
+    artilheiros: form.querySelector(".field-artilheiros"),
+    rodada: form.querySelector(".field-rodada"),
+    data: form.querySelector(".field-data"),
+    hora: form.querySelector(".field-hora"),
+    arena: form.querySelector(".field-arena"),
+    mascote: form.querySelector(".field-mascote"),
+    esc1: form.querySelector(".field-esc1"),
+    esc2: form.querySelector(".field-esc2"),
+    patro: form.querySelector(".field-patro"),
+    optionalDivider: document.getElementById("optionalDivider"),
+    submit: form.querySelector(".field-submit"),
+    msg: form.querySelector(".field-msg")
+  };
+
+  const sequenceMap = {
+    resultado: ["placar", "esc1", "esc2", "optionalDivider", "hora", "artilheiros", "data", "mascote", "submit", "msg"],
+    escalacao: ["data", "esc1", "artilheiros", "optionalDivider", "esc2", "mascote", "submit", "msg"],
+    contratacao: ["rodada", "data", "esc1", "esc2", "optionalDivider", "hora", "submit", "msg"],
+    proximo_jogo: ["placar", "esc1", "esc2", "data", "hora", "optionalDivider", "arena", "submit", "msg"],
+    patrocinador: ["rodada", "esc1", "patro", "optionalDivider", "data", "submit", "msg"],
+    proximo_jogo_jogador: ["placar", "esc1", "esc2", "data", "hora", "optionalDivider", "arena", "submit", "msg"],
+    resultado_jogo_jogador: ["placar", "esc1", "esc2", "mascote", "optionalDivider", "hora", "data", "submit", "msg"],
+    jogador_escudo: ["data", "esc1", "mascote", "submit", "msg"]
+  };
+
+  const sequence = sequenceMap[productKey];
+  if(!sequence) return;
+
+  sequence.forEach((key)=>{
+    const el = fields[key];
+    if(el) form.appendChild(el);
+  });
+}
+
+function scrollToBuilder(){
+  const el = document.getElementById("dynamicHint");
+  if(el){
+    el.scrollIntoView({ behavior:"smooth", block:"start" });
+  }
+}
+
+function showProductCategory(category){
+  categoriaSelecionada = category || "";
+  if(!selectorStage) return;
+
+  selectorStage.classList.remove("category-time", "category-jogador");
+
+  if(category === "time"){
+    selectorStage.classList.add("category-time");
+  }
+
+  if(category === "jogador"){
+    selectorStage.classList.add("category-jogador");
+  }
+
+  selectorStage.classList.add("open");
+
+  const alvo = category === "jogador"
+    ? document.querySelector(".productGroupJogador")
+    : document.querySelector(".productGroupTime");
+
+  if(alvo){
+    setTimeout(()=>{
+      alvo.scrollIntoView({
+        behavior:"smooth",
+        block:"start"
+      });
+    }, 80);
+  }
+}
+
+function resetProductCategory(){
+  categoriaSelecionada = "";
+  if(!selectorStage) return;
+  selectorStage.classList.remove("category-time", "category-jogador");
+}
+
+document.querySelectorAll(".categoryBtn, .categoryMiniBtn").forEach(btn=>{
+  btn.addEventListener("click", ()=>{
+    selectedProductInput.value = "";
+    document.body.classList.remove("modeChosen", "mode-flyer", "mode-result", "mode-proximo-jogo");
+    document.querySelectorAll(".optionBtn").forEach(opt=> opt.classList.remove("active"));
+    updateProductFieldVisibility(null);
+    configureOptionalSections("");
+    arrangeFieldSequence("resultado");
+    closePhraseMenu();
+    ia4Track("selecionou_categoria", {
+      categoria: btn.dataset.category || "desconhecida"
+    });
+
+    showProductCategory(btn.dataset.category);
+  });
+});
+
+function selectProduct(productKey){
+  const product = PRODUCTS[productKey];
+  if(!product) return;
+
+  selectedProductInput.value = productKey;
+
+  const categoriaInferida = ["proximo_jogo_jogador", "resultado_jogo_jogador", "jogador_escudo"].includes(productKey)
+    ? "jogador"
+    : "time";
+
+  if(!categoriaSelecionada){
+    categoriaSelecionada = categoriaInferida;
+  }
+
+  ia4Track("selecionou_produto", {
+    produto: productKey || "desconhecido",
+    categoria: categoriaSelecionada || categoriaInferida || "desconhecida"
+  });
+  flyerTipoInput.value = product.flyerTipo || "";
+  document.body.classList.add("modeChosen");
+  document.body.classList.remove("mode-flyer", "mode-result", "mode-proximo-jogo");
+
+  if(product.mode === "resultado"){
+    document.body.classList.add("mode-result");
+    document.getElementById("tab_contrat").checked = true;
+  } else {
+    document.body.classList.add("mode-flyer");
+    if(productKey === "proximo_jogo" || productKey === "proximo_jogo_jogador") document.body.classList.add("mode-proximo-jogo");
+    document.getElementById("tab_flyer").checked = true;
+    flyerTipoInput.value = product.flyerTipo || "";
+  }
+
+  document.querySelectorAll(".optionBtn").forEach(btn=>{
+    btn.classList.toggle("active", btn.dataset.product === productKey);
+  });
+
+  dynamicTitleEl.textContent = product.title;
+  dynamicHintEl.textContent = `Para ${product.title}, preciso dessas informações abaixo...`;
+  btnEnviar.textContent = "Criar minha arte 🚀";
+
+  const placarTitleEl = document.querySelector(".field-placar .sectionTitle");
+  if(placarTitleEl){
+    placarTitleEl.textContent = productKey === "proximo_jogo" ? "Confronto" : "Placar";
+  }
+
+  setText("labelRodada", product.labels?.rodada || "Título da arte");
+  setText("labelData", product.labels?.data || "Texto principal");
+  setText("labelHora", product.labels?.hora || "Observações");
+  setText("labelArena", product.labels?.arena || "Texto secundário / local");
+  setText("labelMascote", product.labels?.mascote || "Imagem principal (opcional)");
+  setText("labelEsc1", product.labels?.esc1 || "Arquivo 1");
+  setText("labelEsc2", product.labels?.esc2 || "Arquivo 2");
+  setText("labelPatro", product.labels?.patro || "Imagens extras / patrocinadores (opcional) — pode enviar várias");
+
+  setPlaceholder("rodada", product.placeholders?.rodada || "");
+  setPlaceholder("dataJogo", product.placeholders?.data || "");
+  setPlaceholder("hora", product.placeholders?.hora || "");
+  setPlaceholder("arena", product.placeholders?.arena || "");
+
+  const timePrincipalEl = document.getElementById("timePrincipal");
+  const timeAdvEl = document.getElementById("timeAdv");
+  const golsTimeEl = document.getElementById("golsTime");
+  const golsAdvEl = document.getElementById("golsAdv");
+
+  if(timePrincipalEl) timePrincipalEl.placeholder = productKey === "proximo_jogo" ? "Time A" : "Time A";
+  if(timeAdvEl) timeAdvEl.placeholder = productKey === "proximo_jogo" ? "Time B" : "Time B";
+  if(golsTimeEl) golsTimeEl.placeholder = "0";
+  if(golsAdvEl) golsAdvEl.placeholder = "0";
+
+  setRequired("escudo1", product.required?.esc1);
+  setRequired("escudo2", product.required?.esc2);
+  setRequired("mascote", product.required?.mascote);
+  updateProductFieldVisibility(product);
+  updateChosenPlaceholders(product);
+  configureOptionalSections(productKey);
+  arrangeFieldSequence(productKey);
+
+  const openPhraseBtn = document.getElementById("openPhraseBtn");
+  if(openPhraseBtn){
+    openPhraseBtn.style.display = product.phraseMenu ? "grid" : "none";
+  }
+  if(!product.phraseMenu) closePhraseMenu();
+
+  const resultadoBox = document.getElementById("resultadoBox");
+  if(resultadoBox) resultadoBox.style.display = "none";
+
+  if(selectorStage && !selectorStage.classList.contains("open")){
+    selectorStage.classList.add("open");
+  }
+
+  setTimeout(scrollToBuilder, 120);
+}
+
+function abrirEscudo3dModal(){
+  if(!escudo3dModal) return;
+  escudo3dMsg.textContent = "";
+  escudo3dFileName.textContent = "Selecionar escudo";
+  escudo3dFile.value = "";
+  escudo3dModal.classList.add("open");
+  escudo3dModal.setAttribute("aria-hidden","false");
+}
+
+function fecharEscudo3dModal(){
+  if(!escudo3dModal) return;
+  escudo3dModal.classList.remove("open");
+  escudo3dModal.setAttribute("aria-hidden","true");
+}
+
+document.querySelectorAll(".optionBtn").forEach(btn=>{
+  btn.addEventListener("click", ()=>{
+    if(btn.dataset.product === "escudo3d"){
+      abrirEscudo3dModal();
+      return;
+    }
+
+    selectProduct(btn.dataset.product);
+  });
+});
+
+if(escudo3dCloseBtn){
+  escudo3dCloseBtn.addEventListener("click", fecharEscudo3dModal);
+}
+
+if(escudo3dModal){
+  escudo3dModal.addEventListener("click", (e)=>{
+    if(e.target === escudo3dModal) fecharEscudo3dModal();
+  });
+}
+
+if(escudo3dUploadBtn && escudo3dFile){
+  escudo3dUploadBtn.addEventListener("click", ()=>{
+    escudo3dFile.click();
+  });
+
+  escudo3dFile.addEventListener("change", ()=>{
+    escudo3dFileName.textContent = escudo3dFile.files && escudo3dFile.files[0]
+      ? escudo3dFile.files[0].name
+      : "Selecionar escudo";
+  });
+}
+
+if(escudo3dEnviarBtn){
+  escudo3dEnviarBtn.addEventListener("click", async ()=>{
+    if(!token){
+      acaoDepoisDoCadastro = () => escudo3dEnviarBtn.click();
+      abrirCadastroVisitanteModal();
+      return;
+    }
+
+    if(!escudo3dFile.files || !escudo3dFile.files[0]){
+      escudo3dMsg.textContent = "Selecione o escudo primeiro.";
+      return;
+    }
+
+    escudo3dEnviarBtn.disabled = true;
+    escudo3dMsg.textContent = "Enviando...";
+
+    const fd = new FormData();
+    fd.append("flyer_tipo", "escudo3d");
+    fd.append("rodada", "Escudo 3D");
+    fd.append("data", "Escudo 3D");
+    fd.append("escudo1", escudo3dFile.files[0]);
+
+    try{
+      const r = await fetch(`${API_BASE}/pedidos`, {
+        method:"POST",
+        headers:{ "Authorization": "Bearer " + token },
+        body:fd
+      });
+
+      const out = await r.json();
+
+      if(out.ok){
+        escudo3dMsg.textContent = `✅ Pedido enviado! ID: ${out.pedido_id}`;
+
+        ia4Track("pedido_concluido", {
+          produto: "escudo3d",
+          pedido_id: out.pedido_id || ""
+        });
+
+        refreshMe();
+        carregarHistorico();
+        setTimeout(fecharEscudo3dModal, 900);
+      }else{
+        ia4Track("erro_envio_pedido", {
+          produto: "escudo3d",
+          erro: out.error || "Erro ao enviar"
+        });
+
+        escudo3dMsg.textContent = out.error || "Erro ao enviar.";
+      }
+    }catch{
+      ia4Track("erro_envio_pedido", {
+        produto: "escudo3d",
+        erro: "Erro de rede"
+      });
+
+      escudo3dMsg.textContent = "Erro de rede.";
+    }
+
+    escudo3dEnviarBtn.disabled = false;
+  });
+}
+
+mainCreateBtn.addEventListener("click", ()=>{
+  const current = selectedProductInput.value;
+
+  if(current){
+    scrollToBuilder();
+    return;
+  }
+
+  if(!selectorStage.classList.contains("open")){
+    selectorStage.classList.add("open");
+    setTimeout(()=>{
+      document.querySelector(".optionsRow")?.scrollIntoView({
+        behavior:"smooth",
+        block:"center"
+      });
+    }, 220);
+  }else{
+    document.querySelector(".optionsRow")?.scrollIntoView({
+      behavior:"smooth",
+      block:"center"
+    });
+  }
+});
+
+btnTrocarTipo.addEventListener("click", ()=>{
+  selectedProductInput.value = "";
+  document.body.classList.remove("modeChosen", "mode-flyer", "mode-result", "mode-proximo-jogo");
+  document.querySelectorAll(".optionBtn").forEach(btn=> btn.classList.remove("active"));
+  updateProductFieldVisibility(null);
+  configureOptionalSections("");
+  arrangeFieldSequence("resultado");
+  closePhraseMenu();
+  resetProductCategory();
+  selectorStage?.classList.add("open");
+  window.scrollTo({ top: 0, behavior: "smooth" });
+});
+
+document.getElementById("verExemplosLink").addEventListener("click", (e)=>{
+  e.preventDefault();
+
+  if(!selectorStage.classList.contains("open")){
+    selectorStage.classList.add("open");
+    setTimeout(()=>{
+      document.querySelector(".optionsRow")?.scrollIntoView({
+        behavior:"smooth",
+        block:"center"
+      });
+    }, 220);
+  }else{
+    document.querySelector(".optionsRow")?.scrollIntoView({
+      behavior:"smooth",
+      block:"center"
+    });
+  }
+});
+
+document.querySelectorAll("[data-optional-field]").forEach((wrapper)=>{
+  const btn = wrapper.querySelector("[data-optional-toggle]");
+  const content = wrapper.querySelector("[data-optional-content]");
+  if(!btn) return;
+
+  let touchStartX = 0;
+  let touchStartY = 0;
+  let touchMoved = false;
+  let touchActive = false;
+  let ignoreSyntheticClick = false;
+
+  const toggleOptional = (e) => {
+    if(wrapper.classList.contains("locked-open")) return;
+    if(content && content.contains(e.target)) return;
+    e.preventDefault();
+    e.stopPropagation();
+    wrapper.classList.toggle("is-open");
+  };
+
+  btn.addEventListener("pointerdown", (e)=>{
+    if(e.pointerType === "touch") return;
+    toggleOptional(e);
+  });
+
+  btn.addEventListener("touchstart", (e)=>{
+    const t = e.changedTouches && e.changedTouches[0];
+    if(!t) return;
+    touchStartX = t.clientX;
+    touchStartY = t.clientY;
+    touchMoved = false;
+    touchActive = true;
+  }, { passive:true });
+
+  btn.addEventListener("touchmove", (e)=>{
+    if(!touchActive) return;
+    const t = e.changedTouches && e.changedTouches[0];
+    if(!t) return;
+    if(Math.abs(t.clientX - touchStartX) > 10 || Math.abs(t.clientY - touchStartY) > 10){
+      touchMoved = true;
+    }
+  }, { passive:true });
+
+  btn.addEventListener("touchend", (e)=>{
+    if(!touchActive) return;
+    touchActive = false;
+    if(touchMoved) return;
+    ignoreSyntheticClick = true;
+    toggleOptional(e);
+    setTimeout(()=>{ ignoreSyntheticClick = false; }, 500);
+  });
+
+  btn.addEventListener("touchcancel", ()=>{
+    touchActive = false;
+    touchMoved = false;
+  });
+
+  btn.addEventListener("click", (e)=>{
+    if(ignoreSyntheticClick){
+      e.preventDefault();
+      e.stopPropagation();
+      return;
+    }
+    e.preventDefault();
+    e.stopPropagation();
+  });
+});
+
+const cropModal = document.getElementById("cropModal");
+const cropStage = document.getElementById("cropStage");
+const cropBox = document.getElementById("cropBox");
+const cropHint = document.getElementById("cropHint");
+const cropCanvas = document.getElementById("cropCanvas");
+const zoomLbl = document.getElementById("zoomLbl");
+
+const cropCloseBtn = document.getElementById("cropCloseBtn");
+const cropCancelBtn = document.getElementById("cropCancelBtn");
+const cropOkBtn = document.getElementById("cropOkBtn");
+const zoomOutBtn = document.getElementById("zoomOutBtn");
+const zoomInBtn = document.getElementById("zoomInBtn");
+
+const CROP_HINT_TEXT = "recorte somente o que precisa";
+const Z_STEP = 1.15;
+const Z_MIN = 0.35;
+const Z_MAX = 6.0;
+
+const crop = {
+  inputId: null,
+  file: null,
+  img: null,
+  objectUrl: null,
+  zoom: 1.0,
+  offX: 0,
+  offY: 0,
+  dragging: false,
+  lastX: 0,
+  lastY: 0,
+  pinch: false,
+  pinchStartDist: 0,
+  pinchStartZoom: 1.0,
+  rect: { x: 0, y: 0, w: 0, h: 0 },
+  dragMode: null,
+  handle: null,
+  start: { x:0, y:0, rx:0, ry:0, rw:0, rh:0, ox:0, oy:0, uz:1.0 },
+  bypassNextChange: { escudo1:false, escudo2:false }
+};
+
+function openCrop(inputId, file){
+  crop.inputId = inputId;
+  crop.file = file;
+  cropHint.textContent = CROP_HINT_TEXT;
+
+  if(crop.objectUrl){
+    try{ URL.revokeObjectURL(crop.objectUrl); }catch(e){}
+  }
+
+  crop.img = new Image();
+  crop.img.decoding = "async";
+  crop.objectUrl = URL.createObjectURL(file);
+  crop.img.src = crop.objectUrl;
+
+  cropModal.classList.add("open");
+  cropModal.setAttribute("aria-hidden","false");
+
+  crop.img.onload = () => {
+    fitCanvasToStage();
+    initRectDefault();
+    initZoomCoverRect();
+    crop.offX = 0;
+    crop.offY = 0;
+    clampOffsets();
+    drawCrop();
+  };
+
+  crop.img.onerror = () => {
+    alert("Essa imagem não abriu no recorte. Tente outra imagem ou salve ela como JPG/PNG e envie novamente.");
+    closeCrop();
+  };
+}
+
+function closeCrop(){
+  cropModal.classList.remove("open");
+  cropModal.setAttribute("aria-hidden","true");
+
+  if(crop.objectUrl){
+    try{ URL.revokeObjectURL(crop.objectUrl); }catch(e){}
+  }
+
+  crop.inputId = null;
+  crop.file = null;
+  crop.img = null;
+  crop.objectUrl = null;
+  crop.dragging = false;
+  crop.pinch = false;
+  crop.dragMode = null;
+  crop.handle = null;
+}
+
+function fitCanvasToStage(){
+  const rect = cropStage.getBoundingClientRect();
+  const dpr = Math.max(1, window.devicePixelRatio || 1);
+
+  cropCanvas.width = Math.round(rect.width * dpr);
+  cropCanvas.height = Math.round(rect.height * dpr);
+
+  const ctx = cropCanvas.getContext("2d");
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+}
+
+function initRectDefault(){
+  const s = cropStage.getBoundingClientRect();
+
+  const w = Math.min(s.width * 0.74, 380);
+  const h = Math.min(s.height * 0.56, 290);
+
+  crop.rect.w = Math.max(90, w);
+  crop.rect.h = Math.max(90, h);
+  crop.rect.x = (s.width - crop.rect.w) / 2;
+  crop.rect.y = (s.height - crop.rect.h) / 2;
+
+  syncRectEl();
+}
+
+function syncRectEl(){
+  cropBox.style.left = crop.rect.x + "px";
+  cropBox.style.top = crop.rect.y + "px";
+  cropBox.style.width = crop.rect.w + "px";
+  cropBox.style.height = crop.rect.h + "px";
+  cropBox.style.transform = "none";
+}
+
+function clampRect(){
+  const s = cropStage.getBoundingClientRect();
+  const minW = 50, minH = 50;
+
+  crop.rect.w = Math.max(minW, crop.rect.w);
+  crop.rect.h = Math.max(minH, crop.rect.h);
+
+  if(crop.rect.x < 0){ crop.rect.w += crop.rect.x; crop.rect.x = 0; }
+  if(crop.rect.y < 0){ crop.rect.h += crop.rect.y; crop.rect.y = 0; }
+
+  if(crop.rect.x + crop.rect.w > s.width) crop.rect.w = s.width - crop.rect.x;
+  if(crop.rect.y + crop.rect.h > s.height) crop.rect.h = s.height - crop.rect.y;
+
+  crop.rect.w = Math.max(minW, crop.rect.w);
+  crop.rect.h = Math.max(minH, crop.rect.h);
+}
+
+function coverFromRect(){
+  const nw = crop.img.naturalWidth || 1;
+  const nh = crop.img.naturalHeight || 1;
+  const rw = Math.max(1, crop.rect.w);
+  const rh = Math.max(1, crop.rect.h);
+  return Math.max(rw / nw, rh / nh);
+}
+
+function initZoomCoverRect(){
+  const cover = coverFromRect();
+  crop.zoom = cover;
+  zoomLbl.textContent = "1.0×";
+}
+
+function userZoomValue(){
+  const cover = coverFromRect();
+  const user = crop.zoom / cover;
+  return Math.max(0.01, user);
+}
+
+function setUserZoom(userZ){
+  const cover = coverFromRect();
+  const clamped = Math.max(Z_MIN, Math.min(Z_MAX, userZ));
+  crop.zoom = cover * clamped;
+  zoomLbl.textContent = `${clamped.toFixed(1)}×`;
+}
+
+function clampOffsets(){
+  if(!crop.img) return;
+
+  const nw = crop.img.naturalWidth || 1;
+  const nh = crop.img.naturalHeight || 1;
+
+  const cropWNatural = crop.rect.w / crop.zoom;
+  const cropHNatural = crop.rect.h / crop.zoom;
+
+  const maxOffX = Math.max(0, (nw - cropWNatural) / 2);
+  const maxOffY = Math.max(0, (nh - cropHNatural) / 2);
+
+  crop.offX = Math.max(-maxOffX, Math.min(maxOffX, crop.offX));
+  crop.offY = Math.max(-maxOffY, Math.min(maxOffY, crop.offY));
+}
+
+function drawCrop(){
+  if(!crop.img) return;
+
+  const ctx = cropCanvas.getContext("2d");
+  const sRect = cropStage.getBoundingClientRect();
+  const w = sRect.width;
+  const h = sRect.height;
+
+  ctx.clearRect(0, 0, w, h);
+
+  const nw = crop.img.naturalWidth || 1;
+  const nh = crop.img.naturalHeight || 1;
+
+  const imgX = (w/2) - (nw * crop.zoom)/2 + (crop.offX * crop.zoom);
+  const imgY = (h/2) - (nh * crop.zoom)/2 + (crop.offY * crop.zoom);
+
+  ctx.imageSmoothingEnabled = true;
+  ctx.drawImage(crop.img, imgX, imgY, nw * crop.zoom, nh * crop.zoom);
+
+  syncRectEl();
+}
+
+function stagePointToDeltaNatural(dxCss, dyCss){
+  const dnX = dxCss / crop.zoom;
+  const dnY = dyCss / crop.zoom;
+  return { dnX, dnY };
+}
+
+function getTouchDistance(t1, t2){
+  const dx = t2.clientX - t1.clientX;
+  const dy = t2.clientY - t1.clientY;
+  return Math.sqrt(dx*dx + dy*dy);
+}
+
+function stagePointFromEvent(e){
+  const r = cropStage.getBoundingClientRect();
+  return { x: e.clientX - r.left, y: e.clientY - r.top };
+}
+
+function isInsideRect(p){
+  return (p.x >= crop.rect.x && p.x <= crop.rect.x + crop.rect.w &&
+          p.y >= crop.rect.y && p.y <= crop.rect.y + crop.rect.h);
+}
+
+cropStage.addEventListener("pointerdown", (e)=>{
+  if(!crop.img) return;
+
+  const p = stagePointFromEvent(e);
+  const h = e.target && e.target.dataset && e.target.dataset.h;
+
+  crop.dragMode = null;
+  crop.handle = null;
+
+  if(h){
+    crop.dragMode = "handle";
+    crop.handle = h;
+    crop.start = { x:p.x, y:p.y, rx:crop.rect.x, ry:crop.rect.y, rw:crop.rect.w, rh:crop.rect.h, ox:crop.offX, oy:crop.offY, uz:userZoomValue() };
+    e.preventDefault();
+    try{ cropStage.setPointerCapture(e.pointerId); }catch{}
+    return;
+  }
+
+  if(isInsideRect(p)){
+    crop.dragMode = "rect";
+    crop.start = { x:p.x, y:p.y, rx:crop.rect.x, ry:crop.rect.y, rw:crop.rect.w, rh:crop.rect.h, ox:crop.offX, oy:crop.offY, uz:userZoomValue() };
+    e.preventDefault();
+    try{ cropStage.setPointerCapture(e.pointerId); }catch{}
+    return;
+  }
+
+  crop.dragMode = "img";
+  crop.dragging = true;
+  crop.lastX = e.clientX;
+  crop.lastY = e.clientY;
+  e.preventDefault();
+  try{ cropStage.setPointerCapture(e.pointerId); }catch{}
+});
+
+cropStage.addEventListener("pointermove", (e)=>{
+  if(!crop.img) return;
+
+  if(crop.dragMode === "img"){
+    if(!crop.dragging) return;
+
+    const dx = e.clientX - crop.lastX;
+    const dy = e.clientY - crop.lastY;
+    crop.lastX = e.clientX;
+    crop.lastY = e.clientY;
+
+    const { dnX, dnY } = stagePointToDeltaNatural(dx, dy);
+
+    crop.offX += dnX;
+    crop.offY += dnY;
+
+    clampOffsets();
+    drawCrop();
+    return;
+  }
+
+  if(crop.dragMode === "rect" || crop.dragMode === "handle"){
+    const p = stagePointFromEvent(e);
+    const dx = p.x - crop.start.x;
+    const dy = p.y - crop.start.y;
+
+    if(crop.dragMode === "rect"){
+      crop.rect.x = crop.start.rx + dx;
+      crop.rect.y = crop.start.ry + dy;
+      clampRect();
+      syncRectEl();
+
+      setUserZoom(crop.start.uz);
+      clampOffsets();
+      drawCrop();
+      return;
+    }
+
+    let x = crop.start.rx, y = crop.start.ry, w = crop.start.rw, h = crop.start.rh;
+    const ht = crop.handle || "";
+
+    if(ht.includes("w")){ x = crop.start.rx + dx; w = crop.start.rw - dx; }
+    if(ht.includes("e")){ w = crop.start.rw + dx; }
+    if(ht.includes("n")){ y = crop.start.ry + dy; h = crop.start.rh - dy; }
+    if(ht.includes("s")){ h = crop.start.rh + dy; }
+
+    crop.rect.x = x;
+    crop.rect.y = y;
+    crop.rect.w = w;
+    crop.rect.h = h;
+    clampRect();
+    syncRectEl();
+
+    setUserZoom(crop.start.uz);
+    clampOffsets();
+    drawCrop();
+  }
+});
+
+cropStage.addEventListener("pointerup", (e)=>{
+  crop.dragging = false;
+  crop.dragMode = null;
+  crop.handle = null;
+  try{ cropStage.releasePointerCapture(e.pointerId); }catch{}
+});
+
+cropStage.addEventListener("pointercancel", ()=>{
+  crop.dragging = false;
+  crop.dragMode = null;
+  crop.handle = null;
+});
+
+cropStage.addEventListener("touchstart", (e)=>{
+  if(!crop.img) return;
+  if(e.touches.length === 2){
+    crop.pinch = true;
+    crop.pinchStartDist = getTouchDistance(e.touches[0], e.touches[1]);
+    crop.pinchStartZoom = userZoomValue();
+  }
+},{passive:true});
+
+cropStage.addEventListener("touchmove", (e)=>{
+  if(!crop.img) return;
+  if(!crop.pinch) return;
+  if(e.touches.length !== 2) return;
+
+  const dist = getTouchDistance(e.touches[0], e.touches[1]);
+  const ratio = dist / Math.max(1, crop.pinchStartDist);
+
+  setUserZoom(crop.pinchStartZoom * ratio);
+  clampOffsets();
+  drawCrop();
+},{passive:true});
+
+cropStage.addEventListener("touchend", (e)=>{
+  if(e.touches.length < 2){
+    crop.pinch = false;
+  }
+},{passive:true});
+
+zoomInBtn.addEventListener("click", ()=>{
+  if(!crop.img) return;
+  setUserZoom(userZoomValue() * Z_STEP);
+  clampOffsets();
+  drawCrop();
+});
+
+zoomOutBtn.addEventListener("click", ()=>{
+  if(!crop.img) return;
+  setUserZoom(userZoomValue() / Z_STEP);
+  clampOffsets();
+  drawCrop();
+});
+
+cropCloseBtn.addEventListener("click", ()=> cancelCropFlow());
+cropCancelBtn.addEventListener("click", ()=> cancelCropFlow());
+cropModal.addEventListener("click", (e)=>{
+  if(e.target === cropModal) cancelCropFlow();
+});
+
+function cancelCropFlow(){
+  if(crop.inputId){
+    const input = document.getElementById(crop.inputId);
+    if(input) input.value = "";
+    updateChosenFromInput(crop.inputId);
+  }
+  closeCrop();
+}
+
+async function exportCropFile(){
+  const sRect = cropStage.getBoundingClientRect();
+  const w = sRect.width;
+  const h = sRect.height;
+
+  const nw = crop.img.naturalWidth || 1;
+  const nh = crop.img.naturalHeight || 1;
+
+  const imgX = (w/2) - (nw * crop.zoom)/2 + (crop.offX * crop.zoom);
+  const imgY = (h/2) - (nh * crop.zoom)/2 + (crop.offY * crop.zoom);
+
+  let sx = (crop.rect.x - imgX) / crop.zoom;
+  let sy = (crop.rect.y - imgY) / crop.zoom;
+  let sw = crop.rect.w / crop.zoom;
+  let sh = crop.rect.h / crop.zoom;
+
+  sx = Math.max(0, Math.min(nw, sx));
+  sy = Math.max(0, Math.min(nh, sy));
+  sw = Math.max(1, Math.min(nw - sx, sw));
+  sh = Math.max(1, Math.min(nh - sy, sh));
+
+  const outW = Math.max(1, Math.round(sw));
+  const outH = Math.max(1, Math.round(sh));
+
+  const out = document.createElement("canvas");
+  out.width = outW;
+  out.height = outH;
+  const ctx = out.getContext("2d");
+
+  ctx.imageSmoothingEnabled = false;
+  ctx.drawImage(crop.img, sx, sy, sw, sh, 0, 0, outW, outH);
+
+  const blob = await new Promise(resolve => out.toBlob(resolve, "image/png"));
+  const name = (crop.inputId === "escudo1" || crop.inputId === "escudo2") ? "escudo.png" : "imagem.png";
+  return new File([blob], name, { type:"image/png" });
+}
+
+function setInputFile(inputId, file){
+  const input = document.getElementById(inputId);
+  if(!input) return;
+  const dt = new DataTransfer();
+  dt.items.add(file);
+  crop.bypassNextChange[inputId] = true;
+  input.files = dt.files;
+  updateChosenFromInput(inputId);
+}
+
+function updateChosenFromInput(inputId){
+  const input = document.getElementById(inputId);
+  const chosen = document.getElementById(`chosen_${inputId}`);
+  if(!input || !chosen) return;
+
+  if(!input.files || input.files.length === 0){
+    if(inputId === "escudo1" && getSavedEscudo1Exists()){
+      chosen.innerHTML = "Escudo<br>Time A";
+    }else{
+      chosen.textContent = "Nenhum arquivo";
+    }
+    return;
+  }
+
+  if(input.multiple){
+    chosen.textContent = `${input.files.length} arquivo(s) selecionado(s)`;
+  }else{
+    chosen.textContent = input.files[0].name || "Arquivo selecionado";
+  }
+}
+
+cropOkBtn.addEventListener("click", async ()=>{
+  if(!crop.img || !crop.inputId) return;
+  try{
+    const outFile = await exportCropFile();
+    setInputFile(crop.inputId, outFile);
+
+    if(crop.inputId === "escudo1"){
+      await saveEscudo1ToLocalFromFile(outFile);
+    }
+  }catch(e){}
+  closeCrop();
+});
+
+function hookCropOnInputs(){
+  ["escudo1","escudo2"].forEach((id)=>{
+    const input = document.getElementById(id);
+    if(!input) return;
+
+    input.addEventListener("change", async ()=>{
+      if(crop.bypassNextChange[id]){
+        crop.bypassNextChange[id] = false;
+        return;
+      }
+      if(!input.files || input.files.length === 0) return;
+
+      try{
+        const normalizedFile = await normalizeImageFile(id, input.files[0]);
+        openCrop(id, normalizedFile);
+      }catch(e){
+        openCrop(id, input.files[0]);
+      }
+    });
+  });
+}
+hookCropOnInputs();
+
+window.addEventListener("resize", ()=>{
+  if(!crop.img) return;
+  fitCanvasToStage();
+  clampRect();
+  syncRectEl();
+  clampOffsets();
+  drawCrop();
+});
+
+function limparArtilheirosUI(){
+  const currentProduct = PRODUCTS[selectedProductInput.value];
+  const mode = currentProduct?.showPlayerList ? "escalacao" : "resultado";
+  setArtilheirosMode(mode);
+}
+
+function limparCamposAposEnviar(){
+  document.getElementById("rodada").value = "";
+  document.getElementById("dataJogo").value = "";
+  document.getElementById("hora").value = "";
+  document.getElementById("arena").value = "";
+
+  const timePrincipal = document.getElementById("timePrincipal");
+  const golsTime = document.getElementById("golsTime");
+  const golsAdv = document.getElementById("golsAdv");
+  const timeAdv = document.getElementById("timeAdv");
+
+  if(timePrincipal) timePrincipal.value = "";
+  if(golsTime) golsTime.value = "";
+  if(golsAdv) golsAdv.value = "";
+  if(timeAdv) timeAdv.value = "";
+
+  limparArtilheirosUI();
+
+  ["mascote", "escudo1", "escudo2", "patrocinadores"].forEach(id=>{
+    const input = document.getElementById(id);
+    if(input) input.value = "";
+  });
+
+  const currentProduct = PRODUCTS[selectedProductInput.value];
+
+  const resetTexts = {
+    chosen_mascote: currentProduct?.labels?.mascote || "Foto do jogo / do time",
+    chosen_escudo2: currentProduct?.labels?.esc2 || "Escudo / logo do time adversário",
+    chosen_patrocinadores: currentProduct?.labels?.patro || "Nenhum arquivo"
+  };
+
+  Object.entries(resetTexts).forEach(([id, txt])=>{
+    const el = document.getElementById(id);
+    if(el) el.textContent = txt;
+  });
+
+  const escudo1Chosen = document.getElementById("chosen_escudo1");
+  if(escudo1Chosen){
+    escudo1Chosen.innerHTML = currentProduct?.labels?.esc1 || "Escudo<br>Time A";
+  }
+
+  if(currentProduct?.showPlayerList){
+    fillEscalacaoPlayersUI(loadSavedEscalacaoPlayers());
+  }
+}
+
+document.getElementById("pedidoForm").addEventListener("submit", async (e)=>{
+  e.preventDefault();
+
+  const productKey = selectedProductInput.value;
+  const product = PRODUCTS[productKey];
+
+  if(!product){
+    msgPedidoEl.textContent = "Escolha primeiro o tipo de arte.";
+    return;
+  }
+
+  if(!validarPedidoAntesDeEnviar(productKey)){
+    return;
+  }
+
+  if(!token){
+    acaoDepoisDoCadastro = () => document.getElementById("pedidoForm")?.requestSubmit();
+    abrirCadastroVisitanteModal();
+    return;
+  }
+
+  msgPedidoEl.textContent = "Enviando...";
+
+  const isFlyer = product.mode === "flyer" || !!product.flyerTipo;
+  const isResultado = product.mode === "resultado" && productKey === "resultado";
+
+  const fd = new FormData();
+
+  if(isFlyer){
+    fd.append("flyer_tipo", flyerTipoInput.value);
+  }
+
+  const val = (id) => document.getElementById(id)?.value?.trim() || "";
+
+  const campoAtivo = (field) => {
+    const el = document.querySelector(`[data-optional-field="${field}"]`);
+    if(!el) return false;
+    if(el.style.display === "none") return false;
+    return true;
+  };
+
+  const appendTextoAtivo = (field, nome, valor) => {
+    const texto = String(valor || "").trim();
+    if(campoAtivo(field) && texto){
+      fd.append(nome, texto);
+    }
+  };
+
+  const appendArquivoAtivo = (field, inputId, nome) => {
+    if(!campoAtivo(field)) return null;
+    const input = document.getElementById(inputId);
+    const file = input?.files?.[0] || null;
+    if(file) fd.append(nome, file);
+    return file;
+  };
+
+  const appendEscudo1 = () => {
+    if(!campoAtivo("esc1")) return;
+    let escudo1File = document.getElementById("escudo1")?.files?.[0] || null;
+    if(!escudo1File) escudo1File = getSavedEscudo1File();
+    if(escudo1File) fd.append("escudo1", escudo1File);
+  };
+
+  const appendEscudo2 = () => {
+    appendArquivoAtivo("esc2", "escudo2", "escudo2");
+  };
+
+  const appendPatrocinadores = () => {
+    if(!campoAtivo("patro")) return;
+    const pats = document.getElementById("patrocinadores")?.files || [];
+    for(const file of pats){
+      fd.append("patrocinadores", file);
+    }
+  };
+
+  const coletarJogadores = () => {
+    const jogadores = [];
+
+    if(!campoAtivo("artilheiros")) return jogadores;
+
+    document.querySelectorAll("#artilheirosWrap .artilheiroRow").forEach(row=>{
+      const nome = row.querySelector(".artilheiroNome")?.value?.trim() || "";
+      const posicao = row.querySelector(".artilheiroGols")?.value?.trim() || "";
+
+      if(nome){
+        jogadores.push({ nome, posicao });
+      }
+    });
+
+    return jogadores;
+  };
+
+  const coletarArtilheiros = () => {
+    const artilheiros = [];
+
+    if(!campoAtivo("artilheiros")) return artilheiros;
+
+    document.querySelectorAll("#artilheirosWrap .artilheiroRow").forEach(row=>{
+      const nome = row.querySelector(".artilheiroNome")?.value?.trim() || "";
+      const golsRaw = row.querySelector(".artilheiroGols")?.value?.trim() || "";
+
+      if(nome && golsRaw !== "" && Number(golsRaw) >= 0){
+        artilheiros.push({
+          nome,
+          gols: Number(golsRaw)
+        });
+      }
+    });
+
+    return artilheiros;
+  };
+
+  if(productKey === "resultado" || productKey === "resultado_jogo_jogador"){
+    const t1 = val("timePrincipal");
+    const g1 = val("golsTime");
+    const g2 = val("golsAdv");
+    const t2 = val("timeAdv");
+
+    let resultadoFinal = "";
+
+    if(t1 && t2){
+      resultadoFinal = `${t1} ${g1 || "0"} x ${g2 || "0"} ${t2}`;
+    }else if(t1){
+      resultadoFinal = `${t1} ${g1 || "0"} x ${g2 || "0"}`;
+    }else if(g1 || g2){
+      resultadoFinal = `${g1 || "0"} x ${g2 || "0"}`;
+    }
+
+    fd.append("rodada", resultadoFinal || "Resultado do jogo");
+    fd.append("data", campoAtivo("data") && val("dataJogo") ? val("dataJogo") : "Resultado do jogo");
+
+    fd.append("time_principal", t1);
+    fd.append("gols_time_principal", g1);
+    fd.append("gols_adversario", g2);
+    fd.append("time_adversario", t2);
+
+    appendTextoAtivo("hora", "hora", val("hora"));
+    appendArquivoAtivo("mascote", "mascote", "mascote");
+    appendEscudo1();
+    appendEscudo2();
+
+    if(productKey === "resultado_jogo_jogador"){
+      fd.append("artilheiros", "[]");
+      fd.append("artilheiros_json", "[]");
+      fd.append("artilheiros_texto", "");
+      fd.append("artilheiros_qtd", "0");
+      fd.append("jogadores_json", "[]");
+      fd.append("jogadores_texto", "");
+    }else{
+      const artilheiros = coletarArtilheiros();
+      const artilheirosJson = JSON.stringify(artilheiros);
+      const artilheirosTexto = artilheiros
+        .map(a => `${a.nome} (${a.gols} gol${a.gols === 1 ? "" : "s"})`)
+        .join("; ");
+
+      fd.append("artilheiros", artilheirosJson);
+      fd.append("artilheiros_json", artilheirosJson);
+      fd.append("artilheiros_texto", artilheirosTexto);
+      fd.append("artilheiros_qtd", String(artilheiros.length));
+
+      fd.append("jogadores_json", "[]");
+      fd.append("jogadores_texto", "");
+    }
+  }
+
+  else if(productKey === "escalacao"){
+    const titulo = val("dataJogo") || product.title || "Escalação";
+    const jogadores = coletarJogadores();
+
+    fd.append("rodada", titulo);
+    fd.append("data", titulo);
+    fd.append("jogadores_json", JSON.stringify(jogadores));
+    fd.append(
+      "jogadores_texto",
+      jogadores.map(j => j.posicao ? `${j.nome} - ${j.posicao}` : j.nome).join("; ")
+    );
+
+    fd.append("artilheiros", "[]");
+    fd.append("artilheiros_json", "[]");
+    fd.append("artilheiros_texto", "");
+    fd.append("artilheiros_qtd", "0");
+
+    appendEscudo1();
+    appendEscudo2();
+    appendArquivoAtivo("mascote", "mascote", "mascote");
+  }
+
+  else if(productKey === "contratacao"){
+    const titulo = val("rodada") || product.title || "Contratação";
+    const nomeJogador = val("dataJogo") || titulo;
+
+    fd.append("rodada", titulo);
+    fd.append("data", nomeJogador);
+    appendTextoAtivo("hora", "hora", val("hora"));
+
+    fd.append("jogadores_json", "[]");
+    fd.append("jogadores_texto", "");
+    fd.append("artilheiros", "[]");
+    fd.append("artilheiros_json", "[]");
+    fd.append("artilheiros_texto", "");
+    fd.append("artilheiros_qtd", "0");
+
+    appendEscudo1();
+    appendEscudo2();
+  }
+
+  else if(productKey === "proximo_jogo" || productKey === "proximo_jogo_jogador"){
+    const t1 = val("timePrincipal");
+    const t2 = val("timeAdv");
+
+    let confronto = "";
+    if(t1 && t2) confronto = `${t1} x ${t2}`;
+    else confronto = t1 || t2 || val("rodada") || product.title || "Próximo jogo";
+
+    fd.append("rodada", confronto);
+    fd.append("data", campoAtivo("data") && val("dataJogo") ? val("dataJogo") : "Próximo jogo");
+    fd.append("time_principal", t1);
+    fd.append("time_adversario", t2);
+
+    appendTextoAtivo("hora", "hora", val("hora"));
+    appendTextoAtivo("arena", "arena", val("arena"));
+
+    fd.append("jogadores_json", "[]");
+    fd.append("jogadores_texto", "");
+    fd.append("artilheiros", "[]");
+    fd.append("artilheiros_json", "[]");
+    fd.append("artilheiros_texto", "");
+    fd.append("artilheiros_qtd", "0");
+
+    appendEscudo1();
+    appendEscudo2();
+  }
+
+  else if(productKey === "patrocinador"){
+    const titulo = val("rodada") || product.title || "Patrocinador";
+    const textoPrincipal = campoAtivo("data") && val("dataJogo") ? val("dataJogo") : titulo;
+
+    fd.append("rodada", titulo);
+    fd.append("data", textoPrincipal);
+
+    fd.append("jogadores_json", "[]");
+    fd.append("jogadores_texto", "");
+    fd.append("artilheiros", "[]");
+    fd.append("artilheiros_json", "[]");
+    fd.append("artilheiros_texto", "");
+    fd.append("artilheiros_qtd", "0");
+
+    appendEscudo1();
+    appendPatrocinadores();
+  }
+
+  else if(productKey === "jogador_escudo"){
+    const nomeJogador = val("dataJogo") || product.title || "Jogador";
+
+    fd.append("rodada", "Jogador + escudo");
+    fd.append("data", nomeJogador);
+
+    fd.append("jogadores_json", JSON.stringify([{ nome: nomeJogador, posicao: "" }]));
+    fd.append("jogadores_texto", nomeJogador);
+    fd.append("artilheiros", "[]");
+    fd.append("artilheiros_json", "[]");
+    fd.append("artilheiros_texto", "");
+    fd.append("artilheiros_qtd", "0");
+
+    appendEscudo1();
+    appendArquivoAtivo("mascote", "mascote", "mascote");
+  }
+
+  try{
+    const endpoint = isResultado ? "/resultado_do_jogo" : "/pedidos";
+
+    const r = await fetch(`${API_BASE}${endpoint}`, {
+      method:"POST",
+      headers:{ "Authorization": "Bearer " + token },
+      body:fd
+    });
+
+    const out = await r.json();
+
+    if(out.ok){
+      msgPedidoEl.textContent = "";
+      mostrarAvisoPedido();
+
+      ia4Track("pedido_concluido", {
+        produto: productKey || "desconhecido",
+        categoria: categoriaSelecionada || "desconhecida",
+        pedido_id: out.pedido_id || ""
+      });
+
+      limparCamposAposEnviar();
+      refreshMe();
+      carregarHistorico();
+
+      if(isResultado){
+        acompanharResultado(out.pedido_id);
+      }
+    }else{
+      ia4Track("erro_envio_pedido", {
+        produto: productKey || "desconhecido",
+        categoria: categoriaSelecionada || "desconhecida",
+        erro: out.error || "Erro ao enviar"
+      });
+
+      msgPedidoEl.textContent = out.error || "Erro ao enviar";
+    }
+  }catch{
+    ia4Track("erro_envio_pedido", {
+      produto: productKey || "desconhecido",
+      categoria: categoriaSelecionada || "desconhecida",
+      erro: "Erro de rede"
+    });
+
+    msgPedidoEl.textContent = "Erro de rede";
+  }
+});
+
+const openPhraseBtn = document.getElementById("openPhraseBtn");
+const phraseMenu = document.getElementById("phraseMenu");
+const phraseInput = document.getElementById("dataJogo");
+
+const FRASES_VITORIA = [
+  "Vitória na raça, no talento e no coração.",
+  "Mais 3 pontos pra conta e motivo de sobra pra comemorar.",
+  "Fim de jogo com vitória e orgulho da nossa camisa.",
+  "Jogamos juntos, lutamos juntos e vencemos juntos.",
+  "Resultado conquistado com raça do começo ao fim.",
+  "Hoje teve entrega, foco e vitória merecida.",
+  "Dentro de campo, mostramos a força do nosso time.",
+  "Mais uma batalha vencida com união e determinação.",
+  "A vitória é nossa e a torcida faz parte disso.",
+  "No apito final, a recompensa veio: vencemos."
+];
+
+const FRASES_EMPATE = [
+  "Fim de jogo com tudo igual no placar.",
+  "Partida equilibrada do começo ao fim.",
+  "Empate conquistado com muita entrega em campo.",
+  "Jogo disputado até o último minuto.",
+  "Resultado definido na raça e na intensidade.",
+  "As equipes lutaram muito e o placar terminou igual.",
+  "Fim de jogo em uma partida muito equilibrada.",
+  "Empate com muita dedicação dentro de campo.",
+  "A partida terminou igual, mas a entrega foi gigante.",
+  "Um jogo de muita luta e equilíbrio até o apito final."
+];
+
+const FRASES_RESULTADO_JOGADOR = [
+  "Mais 3 pontos pra conta.",
+  "Mais 1 gol.",
+  "Mais 2 gols.",
+  "Mais 3 gols.",
+  "Mais 4 gols.",
+  "Mais 5 gols.",
+  "Rumo às quartas de final.",
+  "Rumo à semi.",
+  "Rumo à final."
+];
+
+function isResultadoEmpate(){
+  const g1Raw = document.getElementById("golsTime")?.value ?? "";
+  const g2Raw = document.getElementById("golsAdv")?.value ?? "";
+
+  if(g1Raw === "" || g2Raw === "") return false;
+
+  return Number(g1Raw) === Number(g2Raw);
+}
+
+function atualizarFrasesResultado(){
+  if(!phraseMenu) return;
+
+  const frases = selectedProductInput.value === "resultado_jogo_jogador"
+    ? FRASES_RESULTADO_JOGADOR
+    : (isResultadoEmpate() ? FRASES_EMPATE : FRASES_VITORIA);
+
+  phraseMenu.innerHTML = frases.map(frase => `
+    <button type="button" class="phraseOption">${frase}</button>
+  `).join("");
+}
+
+if(openPhraseBtn && phraseMenu && phraseInput){
+  openPhraseBtn.addEventListener("click", (e)=>{
+    e.stopPropagation();
+    atualizarFrasesResultado();
+    phraseMenu.classList.toggle("open");
+  });
+
+  phraseMenu.addEventListener("click", (e)=>{
+    const btn = e.target.closest(".phraseOption");
+    if(!btn) return;
+
+    phraseInput.value = btn.textContent.trim();
+    phraseMenu.classList.remove("open");
+    phraseInput.focus();
+  });
+
+  ["golsTime", "golsAdv"].forEach((id)=>{
+    const el = document.getElementById(id);
+    if(!el) return;
+
+    el.addEventListener("input", ()=>{
+      if(phraseMenu.classList.contains("open")){
+        atualizarFrasesResultado();
+      }
+    });
+  });
+
+  document.addEventListener("click", (e)=>{
+    if(!phraseMenu.contains(e.target) && e.target !== openPhraseBtn){
+      phraseMenu.classList.remove("open");
+    }
+  });
+}
+
+function formatarDataHistorico(valor){
+  if(!valor) return "Sem data";
+  const d = new Date(valor);
+  if(!Number.isNaN(d.getTime())) return d.toLocaleString("pt-BR");
+  return String(valor);
+}
+
+function getPedidosBaixados(){
+  try{
+    return JSON.parse(localStorage.getItem("ia4tube_pedidos_baixados") || "[]");
+  }catch{
+    return [];
+  }
+}
+
+function marcarPedidoBaixado(id){
+  const baixados = getPedidosBaixados();
+  if(!baixados.includes(id)){
+    baixados.push(id);
+    localStorage.setItem("ia4tube_pedidos_baixados", JSON.stringify(baixados));
+  }
+}
+
+function atualizarBadgePedidos(pedidos){
+  const badge = document.getElementById("pedidosBadge");
+  if(!badge) return;
+
+  const baixados = getPedidosBaixados();
+
+  const prontosNaoBaixados = (pedidos || []).filter(p =>
+    p.status === "pronto" && !baixados.includes(p.id)
+  ).length;
+
+  if(prontosNaoBaixados > 0){
+    badge.textContent = String(prontosNaoBaixados);
+    badge.style.display = "inline-block";
+  }else{
+    badge.textContent = "0";
+    badge.style.display = "none";
+  }
+}
+
+function togglePedidosTopo(event){
+  if(event) event.stopPropagation();
+
+  const menu = document.getElementById("menuPedidosTopo");
+  if(!menu) return;
+
+  menu.classList.toggle("open");
+}
+
+function textoStatusPedido(status){
+  const s = String(status || "").toLowerCase();
+
+  if(s === "pronto"){
+    return "✅ Pronto para baixar";
+  }
+
+  if(s === "erro" || s.includes("erro")){
+    return "⚠️ Pedido com erro";
+  }
+
+  return "Em produção";
+}
+
+function progressoFakePedido(id){
+  const inicioKey = "ia4tube_pedido_inicio_" + id;
+  let inicio = localStorage.getItem(inicioKey);
+
+  if(!inicio){
+    inicio = String(Date.now());
+    localStorage.setItem(inicioKey, inicio);
+  }
+
+  const segundos = Math.floor((Date.now() - Number(inicio)) / 1000);
+
+  // 🔥 curva mais lenta (90s até ~90%)
+  let progresso = Math.floor((segundos / 90) * 90);
+
+  // mínimo inicial
+  if(progresso < 8) progresso = 8;
+
+  // trava no 92%
+  progresso = Math.min(92, progresso);
+
+  return progresso;
+}
+
+function barraProducaoPedido(p){
+  if(String(p.status || "").toLowerCase() === "pronto"){
+    return "";
+  }
+
+  const pct = progressoFakePedido(p.id);
+
+  const texto = pct >= 90
+    ? "Estamos finalizando..."
+    : `Produzindo arte... ${pct}%`;
+
+  return `
+    <div style="margin-top:6px;width:100%;height:8px;background:#e5e7eb;border-radius:999px;overflow:hidden;">
+      <div style="height:100%;width:${pct}%;background:#16a34a;border-radius:999px;transition:width .4s ease;"></div>
+    </div>
+    <div style="margin-top:3px;font-size:11px;font-weight:900;color:#64748b;">
       ${texto}
     </div>
   `;
