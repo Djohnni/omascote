@@ -6827,7 +6827,7 @@ document.getElementById("pedidoForm").addEventListener("submit", async (e)=>{
     const out = await r.json();
 
     if(out.ok){
-      msgPedidoEl.textContent = `✅ Pedido enviado! ID: ${out.pedido_id}`;
+      msgPedidoEl.textContent = `✅ Pedido recebido! Acompanhe em Meus pedidos — sua arte aparecerá lá assim que ficar pronta.`;
 
       ia4Track("pedido_concluido", {
         produto: productKey || "desconhecido",
@@ -7010,25 +7010,39 @@ function togglePedidosTopo(event){
   menu.classList.toggle("open");
 }
 
+function textoStatusPedido(status){
+  const s = String(status || "").toLowerCase();
+
+  if(s === "pronto"){
+    return "✅ Pronto para baixar";
+  }
+
+  if(s === "erro" || s.includes("erro")){
+    return "⚠️ Pedido com erro";
+  }
+
+  return "⏳ Em produção";
+}
+
 function atualizarMenuPedidosTopo(pedidos){
   const menu = document.getElementById("menuPedidosTopo");
   if(!menu) return;
 
-  const prontos = (pedidos || []).filter(p => p.status === "pronto");
+  const lista = (pedidos || []).slice(0, 8);
 
-  if(prontos.length === 0){
-    menu.innerHTML = `<div class="menuPedidosTopoVazio">Nenhuma arte pronta ainda.</div>`;
+  if(lista.length === 0){
+    menu.innerHTML = `<div class="menuPedidosTopoVazio">Nenhum pedido ainda.</div>`;
     return;
   }
 
-  menu.innerHTML = prontos.slice(0, 8).map(p => `
+  menu.innerHTML = lista.map(p => `
     <div class="menuPedidoItem">
       ${p.imagem_url ? `<img class="menuPedidoThumb" src="${p.imagem_url}" alt="Arte pronta">` : `<div class="menuPedidoThumb"></div>`}
 
       <div class="menuPedidoInfo">
-        <div class="menuPedidoTipo">${p.tipo || "Arte pronta"}</div>
-        <div class="menuPedidoStatus">✅ Pronto para baixar</div>
-        <button type="button" class="menuPedidoBtn" onclick="baixarPedido('${p.id}')">Baixar arte</button>
+        <div class="menuPedidoTipo">${p.tipo || "Arte"}</div>
+        <div class="menuPedidoStatus">${textoStatusPedido(p.status)}</div>
+        ${p.status === "pronto" ? `<button type="button" class="menuPedidoBtn" onclick="baixarPedido('${p.id}')">Baixar arte</button>` : ``}
       </div>
     </div>
   `).join("");
@@ -7068,7 +7082,7 @@ async function carregarHistorico(){
       <div style="background:#fff;color:#000;padding:10px;border-radius:10px;border:1px solid #e5e7eb;">
         <b>${p.tipo}</b><br>
         ID: ${p.id}<br>
-        Status: ${p.status}<br>
+        Status: ${textoStatusPedido(p.status)}<br>
 
         ${p.imagem_url ? `<img src="${p.imagem_url}" style="width:100px;"><br>` : ""}
 
@@ -7451,6 +7465,7 @@ ia4ChatInput?.addEventListener("keydown", (e)=>{
 </script>
 </body>
 </html>
+
 
 
 
