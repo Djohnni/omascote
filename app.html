@@ -3726,10 +3726,37 @@ textarea.campoObrigatorioErro,
       </div>
     </div>
 
-    <div style="display:flex;justify-content:center;padding:0 14px;">
-    <div onclick="abrirCadastroVisitanteModal()" style="display:flex;align-items:center;gap:10px;background:#ecfdf3;color:#166534;padding:12px 16px;border-radius:12px;margin:12px auto 18px;max-width:760px;width:100%;font-weight:900;font-size:14px;box-shadow:0 10px 20px rgba(0,0,0,.15);cursor:pointer;">
-      <span style="font-size:18px;">👉</span>Cadastre-se agora e receba <span style="color:#22c55e;">R$18</span> para criar artes profissionais do seu time em segundos
-    </div>
+    <div id="onboardingEscudo3d" style="padding:0 14px;">
+      <div style="max-width:760px;margin:14px auto 24px;background:linear-gradient(180deg,#ecfdf3,#ffffff);border:1px solid #bbf7d0;border-radius:18px;padding:18px;box-shadow:0 14px 34px rgba(15,23,42,.12);color:#111827;">
+        <div style="text-align:center;font-size:24px;font-weight:950;color:#14532d;line-height:1.1;">
+          Crie seu time no IA4Tube
+        </div>
+
+        <div style="text-align:center;margin-top:6px;font-size:14px;font-weight:850;color:#334155;">
+          Envie seu escudo e receba ele em 3D profissional.
+        </div>
+
+        <div style="text-align:center;margin-top:10px;font-weight:950;">
+          <span style="color:#64748b;text-decoration:line-through;margin-right:8px;">R$18</span>
+          <span style="color:#16a34a;font-size:30px;">R$4</span>
+        </div>
+
+        <label style="display:block;margin-top:14px;color:#334155;font-size:13px;font-weight:900;">WhatsApp</label>
+        <input id="homeAuthWhatsapp" inputmode="numeric" placeholder="Somente números" style="width:100%;margin-top:6px;background:#fff !important;color:#111827 !important;border:1px solid #d1d5db !important;box-shadow:none !important;">
+
+        <input id="homeAuthEscudo3dFile" class="fileHidden" type="file" accept="image/*">
+        <div id="homeAuthEscudo3dUploadBtn" style="margin-top:12px;padding:18px;border:1px dashed #86efac;border-radius:16px;background:#f8fff9;cursor:pointer;text-align:center;font-weight:950;color:#166534;">
+          <div id="homeAuthEscudo3dFileName">Enviar escudo do time</div>
+        </div>
+
+        <button class="btnGreen" id="homeAuthEscudo3dContinuarBtn" type="button" style="width:100%;margin-top:14px;">
+          Gerar meu escudo 3D 🚀
+        </button>
+
+        <div style="margin-top:10px;text-align:center;font-size:12px;font-weight:800;color:#64748b;">
+          Depois você salva o nome do time e a senha para acompanhar o pedido.
+        </div>
+      </div>
     </div>
 
       <div class="panel">
@@ -5170,6 +5197,12 @@ const authEscudo3dFile = document.getElementById("authEscudo3dFile");
 const authEscudo3dUploadBtn = document.getElementById("authEscudo3dUploadBtn");
 const authEscudo3dFileName = document.getElementById("authEscudo3dFileName");
 const authEscudo3dContinuarBtn = document.getElementById("authEscudo3dContinuarBtn");
+const onboardingEscudo3d = document.getElementById("onboardingEscudo3d");
+const homeAuthWhatsapp = document.getElementById("homeAuthWhatsapp");
+const homeAuthEscudo3dFile = document.getElementById("homeAuthEscudo3dFile");
+const homeAuthEscudo3dUploadBtn = document.getElementById("homeAuthEscudo3dUploadBtn");
+const homeAuthEscudo3dFileName = document.getElementById("homeAuthEscudo3dFileName");
+const homeAuthEscudo3dContinuarBtn = document.getElementById("homeAuthEscudo3dContinuarBtn");
 
 let modoCadastro = false;
 
@@ -5357,6 +5390,55 @@ authEscudo3dUploadBtn?.addEventListener("click", ()=>{
 authEscudo3dFile?.addEventListener("change", ()=>{
   escudo3dCadastroFile = authEscudo3dFile.files && authEscudo3dFile.files[0] ? authEscudo3dFile.files[0] : null;
   authEscudo3dFileName.textContent = escudo3dCadastroFile ? escudo3dCadastroFile.name : "Enviar escudo do time";
+});
+
+homeAuthEscudo3dUploadBtn?.addEventListener("click", ()=>{
+  homeAuthEscudo3dFile?.click();
+});
+
+homeAuthEscudo3dFile?.addEventListener("change", ()=>{
+  const file = homeAuthEscudo3dFile.files && homeAuthEscudo3dFile.files[0] ? homeAuthEscudo3dFile.files[0] : null;
+  if(homeAuthEscudo3dFileName){
+    homeAuthEscudo3dFileName.textContent = file ? file.name : "Enviar escudo do time";
+  }
+});
+
+homeAuthEscudo3dContinuarBtn?.addEventListener("click", ()=>{
+  const whatsapp = onlyDigits(homeAuthWhatsapp?.value || "");
+  const file = homeAuthEscudo3dFile?.files && homeAuthEscudo3dFile.files[0] ? homeAuthEscudo3dFile.files[0] : null;
+
+  if(!whatsapp || whatsapp.length < 10){
+    alert("Digite seu WhatsApp.");
+    homeAuthWhatsapp?.focus();
+    return;
+  }
+
+  if(!file){
+    alert("Envie o escudo do seu time.");
+    homeAuthEscudo3dUploadBtn?.click();
+    return;
+  }
+
+  abrirCadastroEscudo3dModal();
+
+  const authWhatsappEl = document.getElementById("authWhatsapp");
+  if(authWhatsappEl) authWhatsappEl.value = whatsapp;
+
+  escudo3dCadastroFile = file;
+  if(authEscudo3dFileName) authEscudo3dFileName.textContent = file.name || "Escudo selecionado";
+
+  modoCadastro = true;
+
+  if(labelNomeTime) labelNomeTime.style.display = "block";
+  if(document.getElementById("authNomeTime")) document.getElementById("authNomeTime").style.display = "block";
+  if(labelSenha) labelSenha.style.display = "block";
+  if(document.getElementById("authSenha")) document.getElementById("authSenha").style.display = "block";
+  if(authEscudo3dArea) authEscudo3dArea.style.display = "none";
+  if(authBtnsRow) authBtnsRow.style.display = "none";
+  if(authCriarContaBtn) authCriarContaBtn.style.display = "block";
+
+  setAuthVisitanteMsg("Agora salve seu time para receber o escudo 3D.", "ok");
+  setTimeout(()=>document.getElementById("authNomeTime")?.focus(), 120);
 });
 
 authEscudo3dContinuarBtn?.addEventListener("click", ()=>{
@@ -7481,6 +7563,7 @@ setArtilheirosMode("resultado");
 applyLocal();
 
 if(token){
+  if(onboardingEscudo3d) onboardingEscudo3d.style.display = "none";
   refreshMe();
   carregarHistorico();
   setInterval(carregarHistorico, 10000);
@@ -7714,6 +7797,7 @@ ia4ChatInput?.addEventListener("keydown", (e)=>{
 </script>
 </body>
 </html>
+
 
 
 
