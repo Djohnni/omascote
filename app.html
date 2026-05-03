@@ -3688,6 +3688,31 @@ textarea.campoObrigatorioErro,
   color:#334155;
 }
 
+body.visitanteNaoLogado .saldoTopoArea,
+body.visitanteNaoLogado #btnMeusPedidos,
+body.visitanteNaoLogado #menuPedidosTopo{
+  display:none !important;
+}
+
+body.visitanteNaoLogado .topRightArea{
+  display:flex !important;
+}
+
+body.visitanteNaoLogado .saldoTopoExtra{
+  display:flex !important;
+  justify-content:flex-end !important;
+}
+
+body.visitanteNaoLogado .hero .tempoEstimadoBox{
+  display:none !important;
+}
+
+#tempoEstimadoOnboardingBox{
+  margin:12px auto 4px !important;
+  white-space:normal !important;
+  line-height:1.25 !important;
+}
+
 </style>
 </head>
 
@@ -3732,8 +3757,8 @@ textarea.campoObrigatorioErro,
           Crie seu time no IA4Tube
         </div>
 
-        <div style="text-align:center;margin-top:10px;font-size:15px;font-weight:950;color:#16a34a;line-height:1.25;">
-          Envie seu escudo e ganhe um escudo 3D como presente de boas-vindas
+        <div id="tempoEstimadoOnboardingBox" class="tempoEstimadoBox">
+          ⏱ Calculando tempo estimado...
         </div>
 
         <label style="display:block;margin-top:14px;color:#334155;font-size:13px;font-weight:900;">Nome do time</label>
@@ -5101,21 +5126,26 @@ function formatarTempoEstimado(segundos){
 }
 
 async function carregarTempoEstimado(){
-  if(!tempoEstimadoEl) return;
+  const tempoOnboardingEl = document.getElementById("tempoEstimadoOnboardingBox");
+
+  const aplicarTextoTempo = (texto)=>{
+    if(tempoEstimadoEl) tempoEstimadoEl.textContent = texto;
+    if(tempoOnboardingEl) tempoOnboardingEl.textContent = texto;
+  };
 
   try{
     const r = await fetch(`${API_BASE}/tempo-estimado`);
     const data = await r.json();
 
     if(!data.ok || data.aprendendo || Number(data.tempo_estimado_segundos || 0) <= 0){
-      tempoEstimadoEl.textContent = "⏱ Estamos calculando o tempo real dos pedidos...";
+      aplicarTextoTempo("⏱ Estamos calculando o tempo real dos pedidos...");
       return;
     }
 
     const textoTempo = formatarTempoEstimado(data.tempo_estimado_segundos);
-    tempoEstimadoEl.textContent = `⏱ No momento, o tempo estimado para criar sua arte é de ${textoTempo}`;
+    aplicarTextoTempo(`⏱ No momento, o tempo estimado para criar sua arte é de ${textoTempo}`);
   }catch{
-    tempoEstimadoEl.textContent = "⏱ Estamos calculando o tempo real dos pedidos...";
+    aplicarTextoTempo("⏱ Estamos calculando o tempo real dos pedidos...");
   }
 }
 
@@ -5393,6 +5423,7 @@ if(modoCadastro){
 
     if(onboardingEscudo3d) onboardingEscudo3d.style.display = "none";
 
+    document.body.classList.remove("visitanteNaoLogado");
     document.querySelector(".topRightArea")?.style.setProperty("display", "flex", "important");
 
     const badge = document.getElementById("pedidosBadge");
@@ -7698,6 +7729,7 @@ setArtilheirosMode("resultado");
 applyLocal();
 
 if(token){
+  document.body.classList.remove("visitanteNaoLogado");
   document.querySelector(".topRightArea")?.style.setProperty("display", "flex", "important");
 
   if(onboardingEscudo3d) onboardingEscudo3d.style.display = "none";
@@ -7705,10 +7737,12 @@ if(token){
   carregarHistorico();
   setInterval(carregarHistorico, 10000);
 }else{
+  document.body.classList.add("visitanteNaoLogado");
+
   if(onboardingEscudo3d) onboardingEscudo3d.style.display = "block";
   if(historicoVazioEl) historicoVazioEl.textContent = "Crie sua conta para ver seus pedidos.";
 
-  document.querySelector(".topRightArea")?.style.setProperty("display", "none", "important");
+  document.querySelector(".topRightArea")?.style.setProperty("display", "flex", "important");
 }
 carregarTempoEstimado();
 setInterval(carregarTempoEstimado, 30000);
@@ -7937,6 +7971,7 @@ ia4ChatInput?.addEventListener("keydown", (e)=>{
 </script>
 </body>
 </html>
+
 
 
 
