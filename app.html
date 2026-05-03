@@ -7121,7 +7121,15 @@ function progressoFakePedido(id){
   }
 
   const segundos = Math.floor((Date.now() - Number(inicio)) / 1000);
-  const progresso = Math.min(92, 8 + Math.floor(segundos * 1.7));
+
+  // 🔥 curva mais lenta (90s até ~90%)
+  let progresso = Math.floor((segundos / 90) * 90);
+
+  // mínimo inicial
+  if(progresso < 8) progresso = 8;
+
+  // trava no 92%
+  progresso = Math.min(92, progresso);
 
   return progresso;
 }
@@ -7133,12 +7141,16 @@ function barraProducaoPedido(p){
 
   const pct = progressoFakePedido(p.id);
 
+  const texto = pct >= 90
+    ? "Estamos finalizando..."
+    : `Produzindo arte... ${pct}%`;
+
   return `
     <div style="margin-top:6px;width:100%;height:8px;background:#e5e7eb;border-radius:999px;overflow:hidden;">
       <div style="height:100%;width:${pct}%;background:#16a34a;border-radius:999px;transition:width .4s ease;"></div>
     </div>
     <div style="margin-top:3px;font-size:11px;font-weight:900;color:#64748b;">
-      Produzindo arte... ${pct}%
+      ${texto}
     </div>
   `;
 }
@@ -7586,6 +7598,7 @@ ia4ChatInput?.addEventListener("keydown", (e)=>{
 </script>
 </body>
 </html>
+
 
 
 
