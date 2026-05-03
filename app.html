@@ -3631,6 +3631,49 @@ textarea:not(.flip-active)::placeholder{
   color:#16a34a;
 }
 
+.ia4ToastPedido{
+  position:fixed;
+  inset:0;
+  z-index:100000;
+  display:none;
+  align-items:center;
+  justify-content:center;
+  padding:18px;
+  background:rgba(15,23,42,.35);
+}
+
+.ia4ToastPedido.show{
+  display:flex;
+}
+
+.ia4ToastPedidoBox{
+  width:min(520px, 94vw);
+  background:#ffffff;
+  color:#111827;
+  border-radius:22px;
+  padding:26px 22px;
+  text-align:center;
+  box-shadow:0 24px 70px rgba(15,23,42,.35);
+  border:1px solid #dcfce7;
+  cursor:pointer;
+}
+
+.ia4ToastPedidoBox strong{
+  display:block;
+  font-size:26px;
+  font-weight:950;
+  color:#16a34a;
+  margin-bottom:8px;
+}
+
+.ia4ToastPedidoBox span{
+  display:block;
+  font-size:17px;
+  font-weight:850;
+  line-height:1.35;
+  color:#334155;
+}
+
 </style>
 </head>
 
@@ -4246,6 +4289,13 @@ TROQUE POR ISSO:
 
       <div class="authVisitanteMsg" id="authVisitanteMsg"></div>
     </div>
+  </div>
+</div>
+
+<div class="ia4ToastPedido" id="ia4ToastPedido" onclick="fecharAvisoPedido()">
+  <div class="ia4ToastPedidoBox">
+    <strong>✅ Pedido recebido!</strong>
+    <span>Sua arte já entrou em produção. Acompanhe em Meus pedidos — quando ficar pronta, ela aparecerá lá para baixar.</span>
   </div>
 </div>
 
@@ -5050,6 +5100,28 @@ async function comprarCreditos(pacote){
   }catch{
     alert("Erro de rede ao iniciar pagamento.");
   }
+}
+
+let timerAvisoPedido = null;
+
+function mostrarAvisoPedido(){
+  const aviso = document.getElementById("ia4ToastPedido");
+  if(!aviso) return;
+
+  aviso.classList.add("show");
+
+  clearTimeout(timerAvisoPedido);
+  timerAvisoPedido = setTimeout(()=>{
+    fecharAvisoPedido();
+  }, 5000);
+}
+
+function fecharAvisoPedido(){
+  const aviso = document.getElementById("ia4ToastPedido");
+  if(!aviso) return;
+
+  aviso.classList.remove("show");
+  clearTimeout(timerAvisoPedido);
 }
 
 function onlyDigits(s){
@@ -6827,7 +6899,8 @@ document.getElementById("pedidoForm").addEventListener("submit", async (e)=>{
     const out = await r.json();
 
     if(out.ok){
-      msgPedidoEl.textContent = `✅ Pedido recebido! Acompanhe em Meus pedidos — sua arte aparecerá lá assim que ficar pronta.`;
+      msgPedidoEl.textContent = "";
+      mostrarAvisoPedido();
 
       ia4Track("pedido_concluido", {
         produto: productKey || "desconhecido",
@@ -7465,6 +7538,7 @@ ia4ChatInput?.addEventListener("keydown", (e)=>{
 </script>
 </body>
 </html>
+
 
 
 
