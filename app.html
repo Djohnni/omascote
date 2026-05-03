@@ -4323,7 +4323,7 @@ TROQUE POR ISSO:
         <h2>🔥 Seu escudo está sendo criado</h2>
         <p>Em até 2 minutos ele aparece em Meus pedidos.</p>
 
-        <div style="margin-top:14px;width:100%;height:10px;background:#dcfce7;border-radius:999px;overflow:hidden;">
+        <div id="authProgressWrap" style="margin-top:14px;width:100%;height:10px;background:#dcfce7;border-radius:999px;overflow:hidden;">
           <div id="authProgressBar" style="height:100%;width:8%;background:#16a34a;border-radius:999px;transition:width .4s ease;"></div>
         </div>
 
@@ -5242,6 +5242,12 @@ let modoCadastro = false;
 function abrirCadastroVisitanteModal(){
   fluxoEscudo3dCadastro = false;
   escudo3dCadastroFile = null;
+  clearInterval(authProgressTimer);
+
+  document.querySelector(".authPromoBox h2").textContent = "Entrar na sua conta";
+  document.querySelector(".authPromoBox p").textContent = "Digite seu WhatsApp e senha para acessar seus pedidos.";
+  document.getElementById("authProgressWrap")?.style.setProperty("display", "none", "important");
+  document.getElementById("authProgressText")?.style.setProperty("display", "none", "important");
 
   ia4Track("iniciou_cadastro", {
     origem: selectedProductInput?.value || "sem_produto"
@@ -5278,6 +5284,8 @@ function abrirCadastroEscudo3dModal(){
 
   document.querySelector(".authPromoBox h2").textContent = "🔥 Seu escudo está sendo criado";
   document.querySelector(".authPromoBox p").textContent = "Enquanto a IA prepara sua arte, salve seu time para receber o resultado.";
+  document.getElementById("authProgressWrap")?.style.setProperty("display", "block", "important");
+  document.getElementById("authProgressText")?.style.setProperty("display", "block", "important");
 
   if(labelNomeTime) labelNomeTime.style.display = "none";
   if(document.getElementById("authNomeTime")) document.getElementById("authNomeTime").style.display = "none";
@@ -7977,6 +7985,7 @@ ia4ChatInput?.addEventListener("keydown", (e)=>{
 </script>
 </body>
 </html>
+
 
 
 
