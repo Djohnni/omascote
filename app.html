@@ -2225,6 +2225,11 @@ body{
 }
 
 .hero::before{
+  content:"";
+  display:none;
+}
+
+.hero::after{
   content:"Escolha o tipo de arte";
   display:block;
   color:#111827;
@@ -2232,7 +2237,7 @@ body{
   font-size:32px;
   line-height:1.1;
   font-weight:950;
-  margin:0 0 12px;
+  margin:12px 0 0;
 }
 
 .hero::after{
@@ -7270,6 +7275,7 @@ ia4ChatInput?.addEventListener("keydown", (e)=>{
 </script>
 </body>
 </html>
+
 
 
 
