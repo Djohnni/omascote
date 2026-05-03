@@ -2189,6 +2189,21 @@ body{
   background:#111827 !important;
   border:none !important;
   color:#ffffff !important;
+  transition: all 0.25s ease;
+}
+
+.topOrders.highlightPedidos{
+  animation: piscarPedidos 1.2s ease;
+}
+
+@keyframes piscarPedidos{
+  0%{ background:#111827; color:#fff; }
+  20%{ background:#dc2626; color:#fff; }
+  40%{ background:#111827; color:#fff; }
+  60%{ background:#dc2626; color:#fff; }
+  80%{ background:#111827; color:#fff; }
+  100%{ background:#111827; color:#fff; }
+}
   font-size:17px !important;
   font-weight:900 !important;
   box-shadow:0 6px 14px rgba(0,0,0,.12) !important;
@@ -7979,6 +7994,7 @@ ia4ChatInput?.addEventListener("keydown", (e)=>{
 </script>
 </body>
 </html>
+
 
 
 
