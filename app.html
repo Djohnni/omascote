@@ -3040,9 +3040,9 @@ textarea,
     box-shadow .25s ease !important;
 }
 
-input:not(.fileHidden):not([type="hidden"]):not(.flip-active),
-textarea:not(.flip-active),
-.filePlus:not(.flip-active){
+input:not(.fileHidden):not([type="hidden"]):not(.flip-active):not(.campoObrigatorioErro),
+textarea:not(.flip-active):not(.campoObrigatorioErro),
+.filePlus:not(.flip-active):not(.campoObrigatorioErro){
   background:
     linear-gradient(135deg, rgba(255,255,255,.10), rgba(255,255,255,.02)),
     linear-gradient(135deg, #0b6b38, #16a34a) !important;
@@ -3082,6 +3082,20 @@ textarea:not(.flip-active)::placeholder{
   100%{
     transform:perspective(900px) rotateX(0deg);
   }
+}
+
+.campoObrigatorioErro,
+input.campoObrigatorioErro,
+textarea.campoObrigatorioErro,
+.filePlus.campoObrigatorioErro{
+  border-color:#dc2626 !important;
+  box-shadow:0 0 0 4px rgba(220,38,38,.22) !important;
+  background:#fff7f7 !important;
+  color:#111827 !important;
+}
+
+.filePlus.campoObrigatorioErro .chosen{
+  color:#dc2626 !important;
 }
 
 /* ===== FIM TESTE FLIP CAMPOS ===== */
@@ -7538,6 +7552,7 @@ ia4ChatInput?.addEventListener("keydown", (e)=>{
 </script>
 </body>
 </html>
+
 
 
 
