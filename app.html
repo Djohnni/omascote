@@ -2193,7 +2193,7 @@ body{
 }
 
 .topOrders.highlightPedidos{
-  animation: piscarPedidos 1.2s ease;
+  animation: piscarPedidos 7s ease;
 }
 
 @keyframes piscarPedidos{
@@ -7770,6 +7770,18 @@ if(token){
 carregarTempoEstimado();
 setInterval(carregarTempoEstimado, 30000);
 setInterval(atualizarBarrasPedidosNaTela, 1000);
+
+// 🔥 DESTACAR MEUS PEDIDOS AO ENTRAR
+setTimeout(()=>{
+  const btn = document.getElementById("btnMeusPedidos");
+  if(btn){
+    btn.classList.add("highlightPedidos");
+
+    setTimeout(()=>{
+      btn.classList.remove("highlightPedidos");
+    }, 7000);
+  }
+}, 500);
 updateChosenPlaceholders(null);
 selectorStage?.classList.add("open");
 resetProductCategory();
@@ -7994,6 +8006,7 @@ ia4ChatInput?.addEventListener("keydown", (e)=>{
 </script>
 </body>
 </html>
+
 
 
 
