@@ -5393,6 +5393,8 @@ if(modoCadastro){
 
     if(onboardingEscudo3d) onboardingEscudo3d.style.display = "none";
 
+    document.querySelector(".topRightArea")?.style.setProperty("display", "flex", "important");
+
     const badge = document.getElementById("pedidosBadge");
     if(badge){
       badge.textContent = "1";
@@ -5523,6 +5525,8 @@ homeAuthEscudo3dContinuarBtn?.addEventListener("click", async ()=>{
     localStorage.setItem("omascote_usados", String(data.usados_no_ciclo ?? ""));
 
     if(onboardingEscudo3d) onboardingEscudo3d.style.display = "none";
+
+    document.querySelector(".topRightArea")?.style.setProperty("display", "flex", "important");
 
     applyLocal();
     refreshMe();
@@ -7694,6 +7698,8 @@ setArtilheirosMode("resultado");
 applyLocal();
 
 if(token){
+  document.querySelector(".topRightArea")?.style.setProperty("display", "flex", "important");
+
   if(onboardingEscudo3d) onboardingEscudo3d.style.display = "none";
   refreshMe();
   carregarHistorico();
@@ -7931,6 +7937,7 @@ ia4ChatInput?.addEventListener("keydown", (e)=>{
 </script>
 </body>
 </html>
+
 
 
 
