@@ -5555,9 +5555,15 @@ homeAuthEscudo3dContinuarBtn?.addEventListener("click", async ()=>{
     localStorage.setItem("omascote_plano", String(data.plano ?? ""));
     localStorage.setItem("omascote_usados", String(data.usados_no_ciclo ?? ""));
 
-    if(onboardingEscudo3d) onboardingEscudo3d.style.display = "none";
+    // 🔥 ATIVA ESTADO LOGADO IMEDIATO
+    document.body.classList.remove("visitanteNaoLogado");
 
-    document.querySelector(".topRightArea")?.style.setProperty("display", "flex", "important");
+    // 🔥 FORÇA ELEMENTOS APARECEREM
+    document.querySelector(".saldoTopoArea")?.style.setProperty("display","flex","important");
+    document.querySelector("#btnMeusPedidos")?.style.setProperty("display","inline-flex","important");
+    document.querySelector(".saldoTopoExtra")?.style.setProperty("display","flex","important");
+
+    if(onboardingEscudo3d) onboardingEscudo3d.style.display = "none";
 
     applyLocal();
     refreshMe();
@@ -7971,6 +7977,7 @@ ia4ChatInput?.addEventListener("keydown", (e)=>{
 </script>
 </body>
 </html>
+
 
 
 
