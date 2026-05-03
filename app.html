@@ -7138,12 +7138,18 @@ function barraProducaoPedido(p){
 
   let frase = "";
 
-  if(pct < 30){
-    frase = "Sistema criando sua arte";
-  }else if(pct < 60){
-    frase = "Aplicando identidade do seu time";
+  if(pct < 10){
+    frase = "Sistema 100% automático";
+  }else if(pct < 25){
+    frase = "Times já usam isso todo dia";
+  }else if(pct < 50){
+    frase = "Você não precisa mais de designer";
+  }else if(pct < 65){
+    frase = "Resultado, escalação e mais aqui";
+  }else if(pct < 80){
+    frase = "Crie outras artes em segundos";
   }else if(pct < 90){
-    frase = "Ajustando os detalhes finais";
+    frase = "Tudo pronto para postar";
   }else{
     frase = "Estamos finalizando...";
   }
@@ -11443,6 +11449,7 @@ ia4ChatInput?.addEventListener("keydown", (e)=>{
 </script>
 </body>
 </html>
+
 
 
 
