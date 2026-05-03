@@ -7141,15 +7141,25 @@ function barraProducaoPedido(p){
 
   const pct = progressoFakePedido(p.id);
 
-  const texto = pct >= 90
-    ? "Estamos finalizando..."
-    : `Produzindo arte... ${pct}%`;
+  let frase = "";
+
+  if(pct < 30){
+    frase = "Sistema criando sua arte";
+  }else if(pct < 60){
+    frase = "Aplicando identidade do seu time";
+  }else if(pct < 90){
+    frase = "Ajustando os detalhes finais";
+  }else{
+    frase = "Estamos finalizando...";
+  }
+
+  const texto = `Produzindo arte... ${pct}%\n${frase}`;
 
   return `
     <div style="margin-top:6px;width:100%;height:8px;background:#e5e7eb;border-radius:999px;overflow:hidden;">
       <div style="height:100%;width:${pct}%;background:#16a34a;border-radius:999px;transition:width .4s ease;"></div>
     </div>
-    <div style="margin-top:3px;font-size:11px;font-weight:900;color:#64748b;">
+    <div style="margin-top:3px;font-size:11px;font-weight:900;color:#64748b;white-space:pre-line;">
       ${texto}
     </div>
   `;
@@ -7598,6 +7608,7 @@ ia4ChatInput?.addEventListener("keydown", (e)=>{
 </script>
 </body>
 </html>
+
 
 
 
