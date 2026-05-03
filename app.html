@@ -7401,12 +7401,28 @@ function barraProducaoPedido(p){
 
   return `
     <div style="margin-top:6px;width:100%;height:8px;background:#e5e7eb;border-radius:999px;overflow:hidden;">
-      <div style="height:100%;width:${pct}%;background:#16a34a;border-radius:999px;transition:width .4s ease;"></div>
+      <div class="pedidoProgressBar" data-pedido-id="${p.id}" style="height:100%;width:${pct}%;background:#16a34a;border-radius:999px;transition:width .4s ease;"></div>
     </div>
-    <div style="margin-top:3px;font-size:11px;font-weight:900;color:#64748b;">
+    <div class="pedidoProgressText" data-pedido-id="${p.id}" style="margin-top:3px;font-size:11px;font-weight:900;color:#64748b;">
       ${texto}
     </div>
   `;
+}
+
+function atualizarBarrasPedidosNaTela(){
+  document.querySelectorAll(".pedidoProgressBar[data-pedido-id]").forEach(bar=>{
+    const id = bar.dataset.pedidoId;
+    const pct = progressoFakePedido(id);
+
+    bar.style.width = pct + "%";
+
+    const text = document.querySelector(`.pedidoProgressText[data-pedido-id="${id}"]`);
+    if(text){
+      text.textContent = pct >= 90
+        ? "Estamos finalizando..."
+        : `Produzindo arte... ${pct}%`;
+    }
+  });
 }
 
 function atualizarMenuPedidosTopo(pedidos){
@@ -7629,6 +7645,7 @@ if(token){
 }
 carregarTempoEstimado();
 setInterval(carregarTempoEstimado, 30000);
+setInterval(atualizarBarrasPedidosNaTela, 1000);
 updateChosenPlaceholders(null);
 selectorStage?.classList.add("open");
 resetProductCategory();
@@ -7853,6 +7870,7 @@ ia4ChatInput?.addEventListener("keydown", (e)=>{
 </script>
 </body>
 </html>
+
 
 
 
