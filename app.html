@@ -6299,6 +6299,7 @@ async function enviarPedidoEscudo3dComArquivo(file){
       mostrarAvisoPedido();
       refreshMe();
       carregarHistorico();
+      destacarMeusPedidos();
       setTimeout(fecharEscudo3dModal, 900);
     }else{
       ia4Track("erro_envio_pedido", {
@@ -7298,6 +7299,7 @@ document.getElementById("pedidoForm").addEventListener("submit", async (e)=>{
       limparCamposAposEnviar();
       refreshMe();
       carregarHistorico();
+      destacarMeusPedidos();
 
       if(isResultado){
         acompanharResultado(out.pedido_id);
@@ -7758,6 +7760,7 @@ if(token){
   if(onboardingEscudo3d) onboardingEscudo3d.style.display = "none";
   refreshMe();
   carregarHistorico();
+  destacarMeusPedidos();
   setInterval(carregarHistorico, 10000);
 }else{
   document.body.classList.add("visitanteNaoLogado");
@@ -7787,6 +7790,19 @@ selectorStage?.classList.add("open");
 resetProductCategory();
 iniciarFlipCampos();
 setTimeout(()=>window.scrollTo({ top:0, behavior:"auto" }), 180);
+
+function destacarMeusPedidos(){
+  const btn = document.getElementById("btnMeusPedidos");
+  if(!btn) return;
+
+  btn.classList.remove("highlightPedidos");
+  void btn.offsetWidth;
+  btn.classList.add("highlightPedidos");
+
+  setTimeout(()=>{
+    btn.classList.remove("highlightPedidos");
+  }, 7000);
+}
 
 const btnSairEl = document.getElementById("btnSair");
 
@@ -8006,6 +8022,8 @@ ia4ChatInput?.addEventListener("keydown", (e)=>{
 </script>
 </body>
 </html>
+
+
 
 
 
