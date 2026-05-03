@@ -5248,6 +5248,7 @@ function abrirCadastroVisitanteModal(){
   document.querySelector(".authPromoBox p").textContent = "Digite seu WhatsApp e senha para acessar seus pedidos.";
   document.getElementById("authProgressWrap")?.style.setProperty("display", "none", "important");
   document.getElementById("authProgressText")?.style.setProperty("display", "none", "important");
+  document.getElementById("authSenha")?.setAttribute("placeholder", "Digite sua senha");
 
   ia4Track("iniciou_cadastro", {
     origem: selectedProductInput?.value || "sem_produto"
@@ -5284,6 +5285,7 @@ function abrirCadastroEscudo3dModal(){
 
   document.querySelector(".authPromoBox h2").textContent = "🔥 Seu escudo está sendo criado";
   document.querySelector(".authPromoBox p").textContent = "Enquanto a IA prepara sua arte, salve seu time para receber o resultado.";
+  document.getElementById("authSenha")?.setAttribute("placeholder", "Crie uma senha simples");
   document.getElementById("authProgressWrap")?.style.setProperty("display", "block", "important");
   document.getElementById("authProgressText")?.style.setProperty("display", "block", "important");
 
@@ -7985,6 +7987,7 @@ ia4ChatInput?.addEventListener("keydown", (e)=>{
 </script>
 </body>
 </html>
+
 
 
 
