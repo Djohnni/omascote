@@ -941,6 +941,17 @@
       box-shadow:0 0 0 3px rgba(79,124,255,.18);
     }
 
+    .campoObrigatorioErro{
+      border-color:#dc2626 !important;
+      box-shadow:0 0 0 4px rgba(220,38,38,.18) !important;
+      background:#fff7f7 !important;
+      color:#111827 !important;
+    }
+
+    .campoObrigatorioErro .chosen{
+      color:#dc2626 !important;
+    }
+
     textarea{min-height:70px; resize:vertical}
 
     .submitRow{
@@ -5212,7 +5223,168 @@ authVisitanteModal?.addEventListener("click", (e)=>{
 function setRequired(inputId, isRequired){
   const input = document.getElementById(inputId);
   if(!input) return;
-  input.required = !!isRequired;
+  input.required = false;
+}
+
+function limparErrosObrigatorios(){
+  document.querySelectorAll(".campoObrigatorioErro").forEach(el=>{
+    el.classList.remove("campoObrigatorioErro");
+  });
+}
+
+function marcarCampoObrigatorio(el){
+  if(!el) return;
+  el.classList.add("campoObrigatorioErro");
+}
+
+function focarCampoObrigatorio(el){
+  if(!el) return;
+
+  el.scrollIntoView({
+    behavior:"smooth",
+    block:"center"
+  });
+
+  setTimeout(()=>{
+    if(typeof el.focus === "function"){
+      el.focus({ preventScroll:true });
+    }
+  }, 350);
+}
+
+function campoVisivel(field){
+  const el = document.querySelector(`[data-optional-field="${field}"]`);
+  if(!el) return false;
+  if(el.style.display === "none") return false;
+  return true;
+}
+
+function valorObrigatorio(id){
+  return !!String(document.getElementById(id)?.value || "").trim();
+}
+
+function arquivoObrigatorio(inputId){
+  const input = document.getElementById(inputId);
+  return !!(input && input.files && input.files.length > 0);
+}
+
+function escudo1ObrigatorioOk(){
+  return arquivoObrigatorio("escudo1") || getSavedEscudo1Exists();
+}
+
+function validarPedidoAntesDeEnviar(productKey){
+  limparErrosObrigatorios();
+
+  const erros = [];
+
+  const addInput = (id, msg)=>{
+    const el = document.getElementById(id);
+    if(el && !valorObrigatorio(id)){
+      erros.push({ el, msg });
+      marcarCampoObrigatorio(el);
+    }
+  };
+
+  const addFile = (inputId, msg)=>{
+    const input = document.getElementById(inputId);
+    const box = document.querySelector(`.filePlus[data-file-for="${inputId}"]`);
+    const ok = inputId === "escudo1" ? escudo1ObrigatorioOk() : arquivoObrigatorio(inputId);
+
+    if(input && !ok){
+      erros.push({ el: box || input, msg });
+      marcarCampoObrigatorio(box || input);
+    }
+  };
+
+  const addJogadores = ()=>{
+    const jogadores = getEscalacaoPlayersFromUI();
+    const wrap = document.getElementById("artilheirosWrap");
+
+    if(jogadores.length === 0){
+      erros.push({ el: wrap, msg:"Adicione pelo menos um jogador." });
+      marcarCampoObrigatorio(wrap);
+    }
+  };
+
+  const addPatrocinadores = ()=>{
+    const input = document.getElementById("patrocinadores");
+    const box = document.querySelector(`.filePlus[data-file-for="patrocinadores"]`);
+
+    if(!input || !input.files || input.files.length === 0){
+      erros.push({ el: box || input, msg:"Envie pelo menos um patrocinador." });
+      marcarCampoObrigatorio(box || input);
+    }
+  };
+
+  if(productKey === "resultado"){
+    addInput("timePrincipal", "Preencha o Time A.");
+    addInput("golsTime", "Preencha os gols do Time A.");
+    addInput("golsAdv", "Preencha os gols do Time B.");
+    addInput("timeAdv", "Preencha o Time B.");
+    addFile("escudo1", "Envie o escudo do Time A.");
+    addFile("escudo2", "Envie o escudo do Time B.");
+  }
+
+  if(productKey === "resultado_jogo_jogador"){
+    addInput("timePrincipal", "Preencha o Time A.");
+    addInput("golsTime", "Preencha os gols do Time A.");
+    addInput("golsAdv", "Preencha os gols do Time B.");
+    addInput("timeAdv", "Preencha o Time B.");
+    addFile("escudo1", "Envie o escudo do Time A.");
+    addFile("escudo2", "Envie o escudo do Time B.");
+    addFile("mascote", "Envie a foto do jogador.");
+  }
+
+  if(productKey === "escalacao"){
+    addInput("dataJogo", "Preencha o título da arte.");
+    addFile("escudo1", "Envie o escudo do time.");
+    addJogadores();
+  }
+
+  if(productKey === "contratacao"){
+    addInput("rodada", "Preencha o título da arte.");
+    addInput("dataJogo", "Preencha o nome do jogador.");
+    addFile("escudo1", "Envie o escudo do time.");
+    addFile("escudo2", "Envie a foto do jogador.");
+  }
+
+  if(productKey === "proximo_jogo"){
+    addInput("timePrincipal", "Preencha o Time A.");
+    addInput("timeAdv", "Preencha o Time B.");
+    addInput("dataJogo", "Preencha a data e horário.");
+    addInput("hora", "Preencha o campeonato/competição.");
+    addFile("escudo1", "Envie o escudo do Time A.");
+    addFile("escudo2", "Envie o escudo do Time B.");
+  }
+
+  if(productKey === "proximo_jogo_jogador"){
+    addInput("timePrincipal", "Preencha o Time A.");
+    addInput("timeAdv", "Preencha o adversário.");
+    addInput("dataJogo", "Preencha a data e horário.");
+    addInput("hora", "Preencha o campeonato/competição.");
+    addFile("escudo1", "Envie o escudo do time.");
+    addFile("escudo2", "Envie a foto do jogador.");
+  }
+
+  if(productKey === "patrocinador"){
+    addInput("rodada", "Preencha o título da arte.");
+    addFile("escudo1", "Envie o escudo do time.");
+    addPatrocinadores();
+  }
+
+  if(productKey === "jogador_escudo"){
+    addInput("dataJogo", "Preencha o nome do jogador.");
+    addFile("escudo1", "Envie o escudo do time.");
+    addFile("mascote", "Envie a foto do jogador.");
+  }
+
+  if(erros.length > 0){
+    msgPedidoEl.textContent = erros[0].msg;
+    focarCampoObrigatorio(erros[0].el);
+    return false;
+  }
+
+  return true;
 }
 
 function setText(id, value){
@@ -6386,6 +6558,10 @@ document.getElementById("pedidoForm").addEventListener("submit", async (e)=>{
     return;
   }
 
+  if(!validarPedidoAntesDeEnviar(productKey)){
+    return;
+  }
+
   if(!token){
     acaoDepoisDoCadastro = () => document.getElementById("pedidoForm")?.requestSubmit();
     abrirCadastroVisitanteModal();
@@ -7275,6 +7451,7 @@ ia4ChatInput?.addEventListener("keydown", (e)=>{
 </script>
 </body>
 </html>
+
 
 
 
