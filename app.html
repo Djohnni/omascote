@@ -5279,6 +5279,14 @@ function setAuthVisitanteMsg(texto, tipo){
 }
 
 let authProgressTimer = null;
+const PRIMEIRO_ESCUDO_INICIO_KEY = "ia4tube_primeiro_escudo_inicio";
+
+function calcularProgressoPorInicio(inicio){
+  const segundos = Math.floor((Date.now() - Number(inicio || Date.now())) / 1000);
+  let progresso = Math.floor((segundos / 90) * 90);
+  if(progresso < 8) progresso = 8;
+  return Math.min(92, progresso);
+}
 
 function iniciarProgressoCadastroEscudo3d(){
   const bar = document.getElementById("authProgressBar");
@@ -5287,23 +5295,26 @@ function iniciarProgressoCadastroEscudo3d(){
 
   clearInterval(authProgressTimer);
 
-  let pct = 8;
-  bar.style.width = "8%";
-  text.textContent = "Preparando seu escudo... 8%";
+  let inicio = localStorage.getItem(PRIMEIRO_ESCUDO_INICIO_KEY);
+  if(!inicio){
+    inicio = String(Date.now());
+    localStorage.setItem(PRIMEIRO_ESCUDO_INICIO_KEY, inicio);
+  }
 
-  authProgressTimer = setInterval(()=>{
-    pct += 4;
+  const atualizar = ()=>{
+    const pct = calcularProgressoPorInicio(inicio);
+
+    bar.style.width = pct + "%";
 
     if(pct >= 90){
-      pct = 90;
-      clearInterval(authProgressTimer);
       text.textContent = "Estamos finalizando seu escudo...";
     }else{
       text.textContent = `Criando seu escudo 3D... ${pct}%`;
     }
+  };
 
-    bar.style.width = pct + "%";
-  }, 4000);
+  atualizar();
+  authProgressTimer = setInterval(atualizar, 1000);
 }
 
 async function finalizarCadastroVisitante(){
@@ -6146,6 +6157,13 @@ async function enviarPedidoEscudo3dComArquivo(file){
     const out = await r.json();
 
     if(out.ok){
+      const inicioPrimeiroEscudo = localStorage.getItem(PRIMEIRO_ESCUDO_INICIO_KEY);
+
+      if(inicioPrimeiroEscudo && out.pedido_id){
+        localStorage.setItem("ia4tube_pedido_inicio_" + out.pedido_id, inicioPrimeiroEscudo);
+        localStorage.removeItem(PRIMEIRO_ESCUDO_INICIO_KEY);
+      }
+
       if(escudo3dMsg) escudo3dMsg.textContent = `✅ Pedido enviado! ID: ${out.pedido_id}`;
 
       ia4Track("pedido_concluido", {
@@ -7350,18 +7368,7 @@ function progressoFakePedido(id){
     localStorage.setItem(inicioKey, inicio);
   }
 
-  const segundos = Math.floor((Date.now() - Number(inicio)) / 1000);
-
-  // 🔥 curva mais lenta (90s até ~90%)
-  let progresso = Math.floor((segundos / 90) * 90);
-
-  // mínimo inicial
-  if(progresso < 8) progresso = 8;
-
-  // trava no 92%
-  progresso = Math.min(92, progresso);
-
-  return progresso;
+  return calcularProgressoPorInicio(inicio);
 }
 
 function barraProducaoPedido(p){
@@ -7829,6 +7836,7 @@ ia4ChatInput?.addEventListener("keydown", (e)=>{
 </script>
 </body>
 </html>
+
 
 
 
