@@ -7108,7 +7108,39 @@ function textoStatusPedido(status){
     return "⚠️ Pedido com erro";
   }
 
-  return "⏳ Em produção";
+  return "Em produção";
+}
+
+function progressoFakePedido(id){
+  const inicioKey = "ia4tube_pedido_inicio_" + id;
+  let inicio = localStorage.getItem(inicioKey);
+
+  if(!inicio){
+    inicio = String(Date.now());
+    localStorage.setItem(inicioKey, inicio);
+  }
+
+  const segundos = Math.floor((Date.now() - Number(inicio)) / 1000);
+  const progresso = Math.min(92, 8 + Math.floor(segundos * 1.7));
+
+  return progresso;
+}
+
+function barraProducaoPedido(p){
+  if(String(p.status || "").toLowerCase() === "pronto"){
+    return "";
+  }
+
+  const pct = progressoFakePedido(p.id);
+
+  return `
+    <div style="margin-top:6px;width:100%;height:8px;background:#e5e7eb;border-radius:999px;overflow:hidden;">
+      <div style="height:100%;width:${pct}%;background:#16a34a;border-radius:999px;transition:width .4s ease;"></div>
+    </div>
+    <div style="margin-top:3px;font-size:11px;font-weight:900;color:#64748b;">
+      Produzindo arte... ${pct}%
+    </div>
+  `;
 }
 
 function atualizarMenuPedidosTopo(pedidos){
@@ -7129,6 +7161,7 @@ function atualizarMenuPedidosTopo(pedidos){
       <div class="menuPedidoInfo">
         <div class="menuPedidoTipo">${p.tipo || "Arte"}</div>
         <div class="menuPedidoStatus">${textoStatusPedido(p.status)}</div>
+        ${barraProducaoPedido(p)}
         ${p.status === "pronto" ? `<button type="button" class="menuPedidoBtn" onclick="baixarPedido('${p.id}')">Baixar arte</button>` : ``}
       </div>
     </div>
@@ -7170,6 +7203,7 @@ async function carregarHistorico(){
         <b>${p.tipo}</b><br>
         ID: ${p.id}<br>
         Status: ${textoStatusPedido(p.status)}<br>
+        ${barraProducaoPedido(p)}
 
         ${p.imagem_url ? `<img src="${p.imagem_url}" style="width:100px;"><br>` : ""}
 
@@ -7552,6 +7586,7 @@ ia4ChatInput?.addEventListener("keydown", (e)=>{
 </script>
 </body>
 </html>
+
 
 
 
