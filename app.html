@@ -3756,37 +3756,29 @@ body.visitanteNaoLogado .hero .tempoEstimadoBox{
 
 .instalarAppImagem{
   position:relative;
-  background:#ffffff;
-  border:1px solid #e5e7eb;
-  border-radius:18px;
-  padding:18px;
-  box-shadow:0 14px 34px rgba(15,23,42,.12);
-}
-
-.instalarAppTopoFake{
-  height:42px;
-  border-radius:14px;
-  background:#f1f5f9;
-  display:flex;
-  align-items:center;
-  justify-content:flex-end;
-  padding:0 14px;
-  color:#111827;
-  font-size:28px;
-  font-weight:950;
+  background:transparent;
+  border:none;
+  border-radius:0;
+  padding:10px 14px 14px;
+  box-shadow:none;
+  min-height:250px;
 }
 
 .instalarSeta{
-  position:absolute;
-  top:20px;
-  right:48px;
-  font-size:42px;
+  position:fixed;
+  top:10px;
+  right:10px;
+  z-index:100001;
+  font-size:58px;
   color:#16a34a;
-  transform:rotate(-25deg);
+  transform:rotate(-8deg);
+  line-height:1;
+  text-shadow:0 4px 14px rgba(15,23,42,.20);
+  pointer-events:none;
 }
 
 .instalarPasso{
-  margin-top:16px;
+  margin-top:12px;
   padding:14px;
   border-radius:14px;
   background:#ecfdf3;
@@ -3795,6 +3787,10 @@ body.visitanteNaoLogado .hero .tempoEstimadoBox{
   font-size:16px;
   font-weight:950;
   line-height:1.25;
+}
+
+.instalarPasso:first-of-type{
+  margin-top:70px;
 }
 
 @media (max-width:680px){
@@ -4419,7 +4415,6 @@ TROQUE POR ISSO:
 
     <div class="instalarAppModalBody">
       <div class="instalarAppImagem">
-        <div class="instalarAppTopoFake">⋮</div>
         <div class="instalarSeta">↗</div>
 
         <div class="instalarPasso">
@@ -8222,6 +8217,7 @@ ia4ChatInput?.addEventListener("keydown", (e)=>{
 </script>
 </body>
 </html>
+
 
 
 
