@@ -7583,6 +7583,8 @@ function atualizarMenuPedidosTopo(pedidos){
 }
 
 let historicoTimer = null;
+let historicoAssinaturaAtual = "";
+let historicoCarregadoUmaVez = false;
 
 function iniciarAtualizacaoHistorico(){
   carregarHistorico();
@@ -7599,8 +7601,9 @@ function iniciarAtualizacaoHistorico(){
 async function carregarHistorico(){
   if(!historicoListaEl || !historicoVazioEl) return;
 
-  historicoListaEl.innerHTML = "";
-  historicoVazioEl.textContent = "Carregando...";
+  if(!historicoCarregadoUmaVez){
+    historicoVazioEl.textContent = "Carregando...";
+  }
 
   try{
     const r = await fetch(`${API_BASE}/meus-pedidos?ts=${Date.now()}`, {
@@ -7614,19 +7617,37 @@ async function carregarHistorico(){
     const data = await r.json();
 
     if(!data.ok){
-      historicoVazioEl.textContent = "Erro ao carregar";
+      if(!historicoCarregadoUmaVez){
+        historicoVazioEl.textContent = "Erro ao carregar";
+      }
       return;
     }
 
-    if(data.pedidos.length === 0){
-      atualizarBadgePedidos([]);
-      atualizarMenuPedidosTopo([]);
-      historicoVazioEl.textContent = "Sem pedidos ainda";
+    const pedidos = data.pedidos || [];
+
+    atualizarBadgePedidos(pedidos);
+
+    const novaAssinatura = JSON.stringify(pedidos.map(p => ({
+      id: p.id,
+      tipo: p.tipo,
+      status: p.status,
+      imagem_url: p.imagem_url,
+      descricao_instagram: p.descricao_instagram
+    })));
+
+    if(pedidos.length === 0){
+      if(historicoAssinaturaAtual !== novaAssinatura){
+        atualizarMenuPedidosTopo([]);
+        historicoListaEl.innerHTML = "";
+        historicoVazioEl.textContent = "Sem pedidos ainda";
+        historicoAssinaturaAtual = novaAssinatura;
+      }
 
       if(token && onboardingEscudo3d){
         onboardingEscudo3d.style.display = "block";
       }
 
+      historicoCarregadoUmaVez = true;
       return;
     }
 
@@ -7634,12 +7655,18 @@ async function carregarHistorico(){
       onboardingEscudo3d.style.display = "none";
     }
 
-    atualizarBadgePedidos(data.pedidos);
-    atualizarMenuPedidosTopo(data.pedidos);
+    if(historicoAssinaturaAtual === novaAssinatura){
+      historicoCarregadoUmaVez = true;
+      return;
+    }
 
+    historicoAssinaturaAtual = novaAssinatura;
+    historicoCarregadoUmaVez = true;
+
+    atualizarMenuPedidosTopo(pedidos);
     historicoVazioEl.textContent = "";
 
-    historicoListaEl.innerHTML = data.pedidos.map(p => `
+    historicoListaEl.innerHTML = pedidos.map(p => `
       <div style="background:#fff;color:#000;padding:10px;border-radius:10px;border:1px solid #e5e7eb;">
         <b>${p.tipo}</b><br>
         ID: ${p.id}<br>
@@ -7664,7 +7691,9 @@ ${p.status === "pronto" ? `
     `).join("");
 
   }catch{
-    historicoVazioEl.textContent = "Erro de rede";
+    if(!historicoCarregadoUmaVez){
+      historicoVazioEl.textContent = "Erro de rede";
+    }
   }
 }
 
@@ -8070,6 +8099,7 @@ ia4ChatInput?.addEventListener("keydown", (e)=>{
 </script>
 </body>
 </html>
+
 
 
 
