@@ -6431,6 +6431,11 @@ async function enviarPedidoEscudo3dComArquivo(file){
       refreshMe();
       carregarHistorico();
       destacarMeusPedidos();
+
+      setTimeout(()=>{
+        window.scrollTo({ top:0, behavior:"smooth" });
+      }, 300);
+
       setTimeout(fecharEscudo3dModal, 900);
     }else{
       ia4Track("erro_envio_pedido", {
@@ -7432,6 +7437,10 @@ document.getElementById("pedidoForm").addEventListener("submit", async (e)=>{
       carregarHistorico();
       destacarMeusPedidos();
 
+      setTimeout(()=>{
+        window.scrollTo({ top:0, behavior:"smooth" });
+      }, 300);
+
       if(isResultado){
         acompanharResultado(out.pedido_id);
       }
@@ -8217,6 +8226,7 @@ ia4ChatInput?.addEventListener("keydown", (e)=>{
 </script>
 </body>
 </html>
+
 
 
 
