@@ -2024,31 +2024,22 @@ body{
   padding:0 0 34px !important;
 }
 
-.logoutBar{
-  width:100% !important;
-  display:flex !important;
-  justify-content:flex-end !important;
-  align-items:center !important;
-  background:#ffffff !important;
-  margin:0 !important;
-  padding:2px 14px 0 !important;
-  box-shadow:none !important;
-  border:none !important;
+.logoutTopBar{
+  width:100%;
+  display:flex;
+  justify-content:flex-end;
+  padding:6px 12px 0;
+  background:#ffffff;
 }
 
-.logoutMiniBtn{
-  background:#ffffff !important;
-  color:#111827 !important;
-  border:none !important;
-  box-shadow:none !important;
-  padding:4px 6px !important;
-  margin:0 !important;
-  border-radius:0 !important;
-  font-size:13px !important;
-  font-weight:900 !important;
-  line-height:1 !important;
-  height:auto !important;
-  min-width:0 !important;
+.logoutTopBar button{
+  background:#ffffff;
+  color:#111827;
+  border:none;
+  font-weight:900;
+  font-size:13px;
+  padding:4px 6px;
+  box-shadow:none;
 }
 
 .topbar{
@@ -3841,18 +3832,14 @@ body.visitanteNaoLogado .hero .tempoEstimadoBox{
 
 <body>
   <div class="wrap">
+    <div class="logoutTopBar">
+      <button id="btnSair" type="button">Sair</button>
+    </div>
+
     <div class="topbar">
       <div class="brandTop ia4Brand">
         <img src="iA4TUBE.png" class="logoTopo">
       </div>
-
-    </div>
-
-    <div class="logoutBar">
-      <button class="logoutMiniBtn" id="btnSair" type="button">Sair</button>
-    </div>
-
-    <div class="topbar">
 
       <div class="topRightArea">
         <div class="saldoTopoArea">
@@ -8260,6 +8247,7 @@ ia4ChatInput?.addEventListener("keydown", (e)=>{
 </script>
 </body>
 </html>
+
 
 
 
