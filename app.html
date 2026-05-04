@@ -3819,30 +3819,23 @@ body.visitanteNaoLogado .hero .tempoEstimadoBox{
         <img src="iA4TUBE.png" class="logoTopo">
       </div>
 
+      <button class="topOrders" id="btnSair" type="button" style="position:absolute;right:20px;top:20px;background:#dc2626;">Sair</button>
+
       <div class="topRightArea">
         <div class="saldoTopoArea">
           <div id="saldoHero" class="saldoTopoTexto">
             Saldo disponível: —
           </div>
-
-          <div class="saldoBox saldoBoxTopo">
-            <button type="button" class="btnGreen" id="btnAbrirSaldo">Adicionar saldo</button>
-
-            <div class="saldoMenu" id="saldoMenu">
-              <button type="button" class="saldoOpcao" data-pacote="saldo_800">R$8</button>
-              <button type="button" class="saldoOpcao" data-pacote="saldo_1800">R$18</button>
-              <button type="button" class="saldoOpcao" data-pacote="saldo_2800">R$28</button>
-              <button type="button" class="saldoOpcao" data-pacote="saldo_4800">R$48</button>
-            </div>
-          </div>
         </div>
 
         <div class="saldoTopoExtra">
+            <button class="btnGreen" id="btnAbrirSaldo">Adicionar saldo</button>
+
             <button class="topOrders" id="btnMeusPedidos" type="button" onclick="togglePedidosTopo(event)" style="white-space:nowrap;">📁 Pedidos <span class="pedidosBadge" id="pedidosBadge">0</span></button>
+
             <div id="menuPedidosTopo" class="menuPedidosTopo">
               <div class="menuPedidosTopoVazio">Carregando pedidos...</div>
             </div>
-            <button class="topOrders" id="btnSair" type="button" style="background:#dc2626;margin-left:8px;">Sair</button>
         </div>
       </div>
     </div>
@@ -8234,6 +8227,7 @@ ia4ChatInput?.addEventListener("keydown", (e)=>{
 </script>
 </body>
 </html>
+
 
 
 
