@@ -2118,23 +2118,27 @@ body{
 }
 
 .menuPedidosTopo{
-  position:absolute;
-  top:calc(100% + 10px);
-  right:0;
-  width:min(360px, calc(100vw - 24px));
-  max-height:440px;
-  overflow:auto;
+  position:fixed;
+  bottom:0;
+  left:0;
+  width:100%;
+  height:75vh;
   background:#ffffff;
-  border:1px solid #e5e7eb;
-  border-radius:18px;
-  box-shadow:0 22px 50px rgba(15,23,42,.24);
-  z-index:9999;
-  padding:12px;
+  border-radius:20px 20px 0 0;
+  box-shadow:0 -20px 60px rgba(15,23,42,.25);
+  z-index:99999;
+  padding:16px;
+  overflow:auto;
   display:none;
+  animation: subirPedidos .25s ease;
 }
 
 .menuPedidosTopo.open{
   display:block;
+}
+@keyframes subirPedidos{
+  from{ transform:translateY(100%); }
+  to{ transform:translateY(0); }
 }
 
 .menuPedidosTopoVazio{
@@ -8256,6 +8260,7 @@ ia4ChatInput?.addEventListener("keydown", (e)=>{
 </script>
 </body>
 </html>
+
 
 
 
