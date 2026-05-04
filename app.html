@@ -2039,8 +2039,9 @@ body{
 
 .ia4Brand{
   display:flex !important;
+  justify-content:center !important;
   align-items:center !important;
-  gap:12px !important;
+  width:100% !important;
   color:#111827 !important;
   opacity:1 !important;
   letter-spacing:0 !important;
@@ -2081,7 +2082,11 @@ body{
 
 .saldoTopoExtra{
   display:flex !important;
-  justify-content:flex-end !important;
+  justify-content:center !important;
+  align-items:center !important;
+  gap:8px !important;
+  width:100% !important;
+  flex-wrap:nowrap !important;
   margin-top:8px !important;
   position:relative !important;
 }
@@ -3833,7 +3838,7 @@ body.visitanteNaoLogado .hero .tempoEstimadoBox{
         </div>
 
         <div class="saldoTopoExtra">
-            <button class="topOrders" id="btnMeusPedidos" type="button" onclick="togglePedidosTopo(event)">📁 Meus pedidos <span class="pedidosBadge" id="pedidosBadge">0</span></button>
+            <button class="topOrders" id="btnMeusPedidos" type="button" onclick="togglePedidosTopo(event)" style="white-space:nowrap;">📁 Pedidos <span class="pedidosBadge" id="pedidosBadge">0</span></button>
             <div id="menuPedidosTopo" class="menuPedidosTopo">
               <div class="menuPedidosTopoVazio">Carregando pedidos...</div>
             </div>
@@ -8229,6 +8234,8 @@ ia4ChatInput?.addEventListener("keydown", (e)=>{
 </script>
 </body>
 </html>
+
+
 
 
 
