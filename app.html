@@ -5460,7 +5460,8 @@ if(modoCadastro){
 
     applyLocal();
     refreshMe();
-    carregarHistorico();
+    iniciarAtualizacaoHistorico();
+    iniciarAtualizacaoHistorico();
 
     const btnSairEl = document.getElementById("btnSair");
     if(btnSairEl){
@@ -7634,6 +7635,20 @@ ${p.status === "pronto" ? `
   }
 }
 
+let ia4HistoricoTimer = null;
+
+function iniciarAtualizacaoHistorico(){
+  if(ia4HistoricoTimer) clearInterval(ia4HistoricoTimer);
+
+  carregarHistorico();
+
+  ia4HistoricoTimer = setInterval(()=>{
+    if(token){
+      carregarHistorico();
+    }
+  }, 5000);
+}
+
 async function copiarDescricao(id){
   const el = document.getElementById("desc_" + id);
   if(!el) return;
@@ -7766,9 +7781,8 @@ if(token){
 
   if(onboardingEscudo3d) onboardingEscudo3d.style.display = "none";
   refreshMe();
-  carregarHistorico();
+  iniciarAtualizacaoHistorico();
   destacarMeusPedidos();
-  setInterval(carregarHistorico, 10000);
 }else{
   document.body.classList.add("visitanteNaoLogado");
 
@@ -8029,6 +8043,7 @@ ia4ChatInput?.addEventListener("keydown", (e)=>{
 </script>
 </body>
 </html>
+
 
 
 
