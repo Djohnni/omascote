@@ -3734,6 +3734,77 @@ body.visitanteNaoLogado .hero .tempoEstimadoBox{
   line-height:1.25 !important;
 }
 
+.instalarAppBtn{
+  display:block;
+  width:max-content;
+  max-width:calc(100% - 28px);
+  margin:2px auto 10px;
+  padding:12px 18px !important;
+  border-radius:999px !important;
+  background:#111827 !important;
+  color:#ffffff !important;
+  font-size:15px !important;
+  font-weight:950 !important;
+  box-shadow:0 10px 24px rgba(15,23,42,.14) !important;
+}
+
+.instalarAppModalBody{
+  padding:18px;
+  background:#f8fafc;
+  color:#111827;
+}
+
+.instalarAppImagem{
+  position:relative;
+  background:#ffffff;
+  border:1px solid #e5e7eb;
+  border-radius:18px;
+  padding:18px;
+  box-shadow:0 14px 34px rgba(15,23,42,.12);
+}
+
+.instalarAppTopoFake{
+  height:42px;
+  border-radius:14px;
+  background:#f1f5f9;
+  display:flex;
+  align-items:center;
+  justify-content:flex-end;
+  padding:0 14px;
+  color:#111827;
+  font-size:28px;
+  font-weight:950;
+}
+
+.instalarSeta{
+  position:absolute;
+  top:20px;
+  right:48px;
+  font-size:42px;
+  color:#16a34a;
+  transform:rotate(-25deg);
+}
+
+.instalarPasso{
+  margin-top:16px;
+  padding:14px;
+  border-radius:14px;
+  background:#ecfdf3;
+  border:1px solid #bbf7d0;
+  color:#14532d;
+  font-size:16px;
+  font-weight:950;
+  line-height:1.25;
+}
+
+@media (max-width:680px){
+  .instalarAppBtn{
+    margin:0 auto 8px !important;
+    padding:10px 14px !important;
+    font-size:13px !important;
+  }
+}
+
 </style>
 </head>
 
@@ -3822,6 +3893,10 @@ body.visitanteNaoLogado .hero .tempoEstimadoBox{
         <div class="heroSub">
           Sem Designer. Pronto Para Postar.
         </div>
+
+        <button type="button" id="btnInstalarApp" class="instalarAppBtn">
+          📲 Adicione esse app à sua tela inicial
+        </button>
 
         <div id="tempoEstimadoBox" class="tempoEstimadoBox">
           ⏱ Calculando tempo estimado...
@@ -4335,6 +4410,34 @@ TROQUE POR ISSO:
     </div>
   </div>
 
+<div class="modalMask" id="instalarAppModal" aria-hidden="true">
+  <div class="modalCard" role="dialog" aria-modal="true" aria-label="Adicionar app à tela inicial">
+    <div class="modalTop">
+      <div class="modalTitle">Adicionar à tela inicial</div>
+      <button class="modalClose btnGhost" id="instalarAppCloseBtn" type="button">✕</button>
+    </div>
+
+    <div class="instalarAppModalBody">
+      <div class="instalarAppImagem">
+        <div class="instalarAppTopoFake">⋮</div>
+        <div class="instalarSeta">↗</div>
+
+        <div class="instalarPasso">
+          1º Clique nos três pontinhos aqui em cima.
+        </div>
+
+        <div class="instalarPasso">
+          2º Clique em “Adicionar à tela inicial”.
+        </div>
+
+        <div class="instalarPasso">
+          Pronto. Depois é só abrir como aplicativo.
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
 <div class="modalMask" id="authVisitanteModal" aria-hidden="true">
   <div class="modalCard" role="dialog" aria-modal="true" aria-label="Criar conta">
     <div class="modalTop">
@@ -4446,6 +4549,26 @@ TROQUE POR ISSO:
 
 <script>
 const API_BASE = "https://api.omascote.com.br";
+
+const btnInstalarApp = document.getElementById("btnInstalarApp");
+const instalarAppModal = document.getElementById("instalarAppModal");
+const instalarAppCloseBtn = document.getElementById("instalarAppCloseBtn");
+
+btnInstalarApp?.addEventListener("click", ()=>{
+  instalarAppModal?.classList.add("open");
+  instalarAppModal?.setAttribute("aria-hidden", "false");
+});
+
+function fecharInstalarAppModal(){
+  instalarAppModal?.classList.remove("open");
+  instalarAppModal?.setAttribute("aria-hidden", "true");
+}
+
+instalarAppCloseBtn?.addEventListener("click", fecharInstalarAppModal);
+
+instalarAppModal?.addEventListener("click", (e)=>{
+  if(e.target === instalarAppModal) fecharInstalarAppModal();
+});
 let token = localStorage.getItem("omascote_token");
 
 function ia4Track(eventName, params = {}){
@@ -8099,6 +8222,7 @@ ia4ChatInput?.addEventListener("keydown", (e)=>{
 </script>
 </body>
 </html>
+
 
 
 
