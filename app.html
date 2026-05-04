@@ -2590,39 +2590,38 @@ body.mode-result .formGrid{
   }
 
   .topbar{
-    display:grid !important;
-    grid-template-columns:minmax(0,1fr) auto !important;
-    align-items:start !important;
-  }
-
-  .topRightArea{
-    display:flex !important;
-    flex-direction:column !important;
-    align-items:flex-end !important;
-    justify-content:flex-start !important;
-    gap:8px !important;
-  }
-
-  .topLeftArea{
     display:flex !important;
     flex-direction:column !important;
     align-items:center !important;
-    gap:6px !important;
+    justify-content:center !important;
+    gap:10px !important;
+  }
+
+  .topRightArea{
+    width:100% !important;
+    display:flex !important;
+    flex-direction:row !important;
+    align-items:center !important;
+    justify-content:center !important;
+    gap:8px !important;
+    flex-wrap:wrap !important;
   }
 
   .saldoTopoArea{
     display:flex !important;
-    flex-direction:column !important;
-    align-items:flex-end !important;
-    justify-content:flex-start !important;
-    gap:6px !important;
+    flex-direction:row !important;
+    align-items:center !important;
+    justify-content:center !important;
+    gap:8px !important;
   }
 
   .saldoTopoExtra{
     width:auto !important;
     display:flex !important;
-    justify-content:flex-end !important;
-    align-self:flex-end !important;
+    justify-content:center !important;
+    align-items:center !important;
+    align-self:center !important;
+    gap:8px !important;
   }
 
   .topActions{
@@ -2632,11 +2631,12 @@ body.mode-result .formGrid{
   .saldoTopoTexto{
     font-size:11px !important;
     white-space:nowrap !important;
+    font-weight:950 !important;
   }
 
   .saldoBoxTopo #btnAbrirSaldo{
-    min-width:110px !important;
-    padding:8px 10px !important;
+    min-width:auto !important;
+    padding:8px 11px !important;
     font-size:11px !important;
   }
 
@@ -2649,8 +2649,8 @@ body.mode-result .formGrid{
   }
 
   .logoTopo{
-    width:190px !important;
-    height:115px !important;
+    width:170px !important;
+    height:82px !important;
     object-fit:contain !important;
   }
 
@@ -2661,9 +2661,12 @@ body.mode-result .formGrid{
   }
 
   .topOrders{
-    height:40px !important;
-    padding:0 12px !important;
+    height:38px !important;
+    padding:0 13px !important;
     font-size:12px !important;
+    display:inline-flex !important;
+    align-items:center !important;
+    justify-content:center !important;
   }
 
   .panel{
@@ -8226,6 +8229,7 @@ ia4ChatInput?.addEventListener("keydown", (e)=>{
 </script>
 </body>
 </html>
+
 
 
 
