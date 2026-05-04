@@ -2024,9 +2024,36 @@ body{
   padding:0 0 34px !important;
 }
 
+.logoutBar{
+  width:100% !important;
+  display:flex !important;
+  justify-content:flex-end !important;
+  align-items:center !important;
+  background:#ffffff !important;
+  margin:0 !important;
+  padding:2px 14px 0 !important;
+  box-shadow:none !important;
+  border:none !important;
+}
+
+.logoutMiniBtn{
+  background:#ffffff !important;
+  color:#111827 !important;
+  border:none !important;
+  box-shadow:none !important;
+  padding:4px 6px !important;
+  margin:0 !important;
+  border-radius:0 !important;
+  font-size:13px !important;
+  font-weight:900 !important;
+  line-height:1 !important;
+  height:auto !important;
+  min-width:0 !important;
+}
+
 .topbar{
   background:linear-gradient(180deg,#ffffff 0%,#f8fafc 100%) !important;
-  padding:18px 32px 60px !important;
+  padding:18px 32px !important;
   margin:0 !important;
   border-radius:0 0 26px 26px !important;
   border:1px solid #e5e7eb !important;
@@ -3819,7 +3846,13 @@ body.visitanteNaoLogado .hero .tempoEstimadoBox{
         <img src="iA4TUBE.png" class="logoTopo">
       </div>
 
-      <button class="topOrders" id="btnSair" type="button" style="position:absolute;top:12px;right:16px;background:#dc2626;z-index:2000;">Sair</button>
+    </div>
+
+    <div class="logoutBar">
+      <button class="logoutMiniBtn" id="btnSair" type="button">Sair</button>
+    </div>
+
+    <div class="topbar">
 
       <div class="topRightArea">
         <div class="saldoTopoArea">
