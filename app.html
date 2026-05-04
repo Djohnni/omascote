@@ -7562,7 +7562,15 @@ function atualizarMenuPedidosTopo(pedidos){
         <div class="menuPedidoTipo">${p.tipo || "Arte"}</div>
         <div class="menuPedidoStatus">${textoStatusPedido(p.status)}</div>
         ${barraProducaoPedido(p)}
-        ${p.status === "pronto" ? `<button type="button" class="menuPedidoBtn" onclick="baixarPedido('${p.id}')">Baixar arte</button>` : ``}
+        ${p.status === "pronto" ? `
+<div class="descBox">
+  <div id="desc_topo_${p.id}" class="descTexto">${p.descricao_instagram || ""}</div>
+  <div class="copyHint">copiar</div>
+  <button class="btnCopiar" onclick="copiarDescricaoTopo('${p.id}')">📋</button>
+</div>
+
+<button type="button" class="menuPedidoBtn" onclick="baixarPedido('${p.id}')">Baixar arte</button>
+` : ``}
       </div>
     </div>
   `).join("");
@@ -7655,6 +7663,14 @@ ${p.status === "pronto" ? `
 
 async function copiarDescricao(id){
   const el = document.getElementById("desc_" + id);
+  if(!el) return;
+
+  navigator.clipboard.writeText(el.innerText);
+  alert("Copiado!");
+}
+
+async function copiarDescricaoTopo(id){
+  const el = document.getElementById("desc_topo_" + id);
   if(!el) return;
 
   navigator.clipboard.writeText(el.innerText);
@@ -8047,6 +8063,7 @@ ia4ChatInput?.addEventListener("keydown", (e)=>{
 </script>
 </body>
 </html>
+
 
 
 
