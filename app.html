@@ -3902,6 +3902,11 @@ body.visitanteNaoLogado .hero .tempoEstimadoBox{
   height:100%;
   object-fit:cover;
   display:block;
+  user-select:none;
+  -webkit-user-select:none;
+  -webkit-user-drag:none;
+  -webkit-touch-callout:none;
+  touch-action:none;
 }
 
 .storyClose{
@@ -4709,7 +4714,7 @@ TROQUE POR ISSO:
     <div class="storyProgress" id="storyProgress"></div>
     <button type="button" class="storyClose" onclick="fecharStory()">×</button>
     <button type="button" class="storyArrow storyPrev" onclick="storyAnterior(event)">‹</button>
-    <img id="storyImagemAtual" src="stories/1.jpg" alt="Story IA4Tube">
+    <img id="storyImagemAtual" src="stories/1.jpg" alt="Story IA4Tube" oncontextmenu="return false;" onpointerdown="pausarStory(event)" onpointerup="continuarStory(event)" onpointercancel="continuarStory(event)" onpointerleave="continuarStory(event)">
     <button type="button" class="storyArrow storyNext" onclick="proximoStory(event)">›</button>
   </div>
 </div>
@@ -4765,6 +4770,9 @@ const storyImagens = [
 
 let storyAtual = 0;
 let storyTimer = null;
+let storyPausado = false;
+let storyInicioTempo = 0;
+let storyTempoRestante = 5000;
 
 function renderStoryProgress(){
   const progress = document.getElementById("storyProgress");
@@ -4779,9 +4787,53 @@ function renderStoryProgress(){
 
 function reiniciarStoryTimer(){
   clearTimeout(storyTimer);
+  storyPausado = false;
+  storyTempoRestante = 5000;
+  storyInicioTempo = Date.now();
+
   storyTimer = setTimeout(()=>{
     proximoStory();
-  }, 5000);
+  }, storyTempoRestante);
+}
+
+function pausarStory(event){
+  if(event) event.preventDefault();
+  if(storyPausado) return;
+
+  storyPausado = true;
+  clearTimeout(storyTimer);
+
+  const passado = Date.now() - storyInicioTempo;
+  storyTempoRestante = Math.max(300, storyTempoRestante - passado);
+
+  const ativo = document.querySelector(".storyProgressItem.active .storyProgressFill");
+  if(ativo){
+    const largura = ativo.getBoundingClientRect().width;
+    const pai = ativo.parentElement.getBoundingClientRect().width;
+    const pct = pai ? (largura / pai) * 100 : 0;
+    ativo.style.animationPlayState = "paused";
+    ativo.style.width = pct + "%";
+  }
+}
+
+function continuarStory(event){
+  if(event) event.preventDefault();
+  if(!storyPausado) return;
+
+  storyPausado = false;
+  storyInicioTempo = Date.now();
+
+  const ativo = document.querySelector(".storyProgressItem.active .storyProgressFill");
+  if(ativo){
+    ativo.style.animation = "none";
+    ativo.offsetHeight;
+    ativo.style.animation = `storyTempo ${storyTempoRestante}ms linear forwards`;
+  }
+
+  clearTimeout(storyTimer);
+  storyTimer = setTimeout(()=>{
+    proximoStory();
+  }, storyTempoRestante);
 }
 
 function abrirStory(index){
@@ -8526,5 +8578,6 @@ ia4ChatInput?.addEventListener("keydown", (e)=>{
 </script>
 </body>
 </html>
+
 
 
