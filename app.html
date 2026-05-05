@@ -5095,7 +5095,8 @@ const PRODUCTS = {
       hora: "Campeonato / competição",
       arena: "Local (opcional)",
       esc1: "Escudo do time",
-      esc2: "Foto do jogador"
+      esc2: "Escudo adversário (opcional)",
+      mascote: "Foto do jogador *"
     },
     placeholders: {
       rodada: "Ex: Próximo desafio",
@@ -5105,10 +5106,11 @@ const PRODUCTS = {
     },
     required: {
       esc1: true,
-      esc2: false
+      esc2: false,
+      mascote: true
     },
     phraseMenu: false,
-    hiddenFields: ["mascote", "patro"]
+    hiddenFields: ["patro"]
   },
 
   resultado_jogo_jogador: {
@@ -6278,7 +6280,7 @@ function validarPedidoAntesDeEnviar(productKey){
     addInput("dataJogo", "Preencha a data e horário.");
     addInput("hora", "Preencha o campeonato/competição.");
     addFile("escudo1", "Envie o escudo do time.");
-    addFile("escudo2", "Envie a foto do jogador.");
+    addFile("mascote", "Envie a foto do jogador.");
   }
 
   if(productKey === "patrocinador"){
@@ -6408,7 +6410,7 @@ function configureOptionalSections(productKey){
     return;
   }
 
-  if(productKey === "proximo_jogo" || productKey === "proximo_jogo_jogador"){
+  if(productKey === "proximo_jogo"){
     lockOpen("data");
     lockOpen("hora");
     lockOpen("esc1");
@@ -6426,6 +6428,32 @@ function configureOptionalSections(productKey){
 
     const esc2Toggle = document.querySelector(`[data-optional-field="esc2"] [data-optional-toggle]`);
     if(esc2Toggle) esc2Toggle.style.display = "none";
+
+    return;
+  }
+
+  if(productKey === "proximo_jogo_jogador"){
+    lockOpen("data");
+    lockOpen("hora");
+    lockOpen("esc1");
+    lockOpen("mascote");
+    keepClosed("esc2");
+    keepClosed("arena");
+
+    const dataToggle = document.querySelector(`[data-optional-field="data"] [data-optional-toggle]`);
+    if(dataToggle) dataToggle.style.display = "none";
+
+    const horaToggle = document.querySelector(`[data-optional-field="hora"] [data-optional-toggle]`);
+    if(horaToggle) horaToggle.style.display = "none";
+
+    const esc1Toggle = document.querySelector(`[data-optional-field="esc1"] [data-optional-toggle]`);
+    if(esc1Toggle) esc1Toggle.style.display = "none";
+
+    const mascoteToggle = document.querySelector(`[data-optional-field="mascote"] [data-optional-toggle]`);
+    if(mascoteToggle) mascoteToggle.style.display = "none";
+
+    const labelEsc2 = document.getElementById("labelEsc2");
+    if(labelEsc2) labelEsc2.classList.remove("hiddenLabel");
 
     return;
   }
@@ -6506,7 +6534,7 @@ function arrangeFieldSequence(productKey){
     contratacao: ["rodada", "data", "esc1", "esc2", "optionalDivider", "hora", "submit", "msg"],
     proximo_jogo: ["placar", "esc1", "esc2", "data", "hora", "optionalDivider", "arena", "submit", "msg"],
     patrocinador: ["rodada", "esc1", "patro", "optionalDivider", "data", "submit", "msg"],
-    proximo_jogo_jogador: ["placar", "esc1", "esc2", "data", "hora", "optionalDivider", "arena", "submit", "msg"],
+    proximo_jogo_jogador: ["placar", "esc1", "mascote", "data", "hora", "optionalDivider", "esc2", "arena", "submit", "msg"],
     resultado_jogo_jogador: ["placar", "esc1", "esc2", "mascote", "optionalDivider", "hora", "data", "submit", "msg"],
     jogador_escudo: ["data", "esc1", "mascote", "submit", "msg"]
   };
@@ -7698,7 +7726,13 @@ document.getElementById("pedidoForm").addEventListener("submit", async (e)=>{
     fd.append("artilheiros_qtd", "0");
 
     appendEscudo1();
-    appendEscudo2();
+
+    if(productKey === "proximo_jogo_jogador"){
+      appendArquivoAtivo("mascote", "mascote", "mascote");
+      appendEscudo2();
+    }else{
+      appendEscudo2();
+    }
   }
 
   else if(productKey === "proximo_jogo" || productKey === "proximo_jogo_jogador"){
@@ -8578,6 +8612,7 @@ ia4ChatInput?.addEventListener("keydown", (e)=>{
 </script>
 </body>
 </html>
+
 
 
 
