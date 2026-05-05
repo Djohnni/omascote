@@ -4897,25 +4897,7 @@ function storyAnterior(event){
   reiniciarStoryTimer();
 }
 
-const btnInstalarApp = document.getElementById("btnInstalarApp");
-const instalarAppModal = document.getElementById("instalarAppModal");
-const instalarAppCloseBtn = document.getElementById("instalarAppCloseBtn");
 
-btnInstalarApp?.addEventListener("click", ()=>{
-  instalarAppModal?.classList.add("open");
-  instalarAppModal?.setAttribute("aria-hidden", "false");
-});
-
-function fecharInstalarAppModal(){
-  instalarAppModal?.classList.remove("open");
-  instalarAppModal?.setAttribute("aria-hidden", "true");
-}
-
-instalarAppCloseBtn?.addEventListener("click", fecharInstalarAppModal);
-
-instalarAppModal?.addEventListener("click", (e)=>{
-  if(e.target === instalarAppModal) fecharInstalarAppModal();
-});
 let token = localStorage.getItem("omascote_token");
 
 function ia4Track(eventName, params = {}){
@@ -6436,8 +6418,8 @@ function configureOptionalSections(productKey){
     lockOpen("data");
     lockOpen("hora");
     lockOpen("esc1");
+    lockOpen("esc2");
     lockOpen("mascote");
-    keepClosed("esc2");
     keepClosed("arena");
 
     const dataToggle = document.querySelector(`[data-optional-field="data"] [data-optional-toggle]`);
@@ -6534,7 +6516,7 @@ function arrangeFieldSequence(productKey){
     contratacao: ["rodada", "data", "esc1", "esc2", "optionalDivider", "hora", "submit", "msg"],
     proximo_jogo: ["placar", "esc1", "esc2", "data", "hora", "optionalDivider", "arena", "submit", "msg"],
     patrocinador: ["rodada", "esc1", "patro", "optionalDivider", "data", "submit", "msg"],
-    proximo_jogo_jogador: ["placar", "esc1", "mascote", "data", "hora", "optionalDivider", "esc2", "arena", "submit", "msg"],
+    proximo_jogo_jogador: ["placar", "esc1", "esc2", "mascote", "data", "hora", "optionalDivider", "arena", "submit", "msg"],
     resultado_jogo_jogador: ["placar", "esc1", "esc2", "mascote", "optionalDivider", "hora", "data", "submit", "msg"],
     jogador_escudo: ["data", "esc1", "mascote", "submit", "msg"]
   };
@@ -7760,6 +7742,10 @@ document.getElementById("pedidoForm").addEventListener("submit", async (e)=>{
 
     appendEscudo1();
     appendEscudo2();
+
+    if(productKey === "proximo_jogo_jogador"){
+      appendArquivoAtivo("mascote", "mascote", "mascote");
+    }
   }
 
   else if(productKey === "patrocinador"){
@@ -8612,6 +8598,8 @@ ia4ChatInput?.addEventListener("keydown", (e)=>{
 </script>
 </body>
 </html>
+
+
 
 
 
