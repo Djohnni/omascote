@@ -7554,10 +7554,13 @@ document.getElementById("pedidoForm").addEventListener("submit", async (e)=>{
   };
 
   const appendArquivoAtivo = (field, inputId, nome) => {
-    if(!campoAtivo(field)) return null;
     const input = document.getElementById(inputId);
     const file = input?.files?.[0] || null;
-    if(file) fd.append(nome, file);
+
+    if(file){
+      fd.append(nome, file);
+    }
+
     return file;
   };
 
@@ -8598,6 +8601,7 @@ ia4ChatInput?.addEventListener("keydown", (e)=>{
 </script>
 </body>
 </html>
+
 
 
 
