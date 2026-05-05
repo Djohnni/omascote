@@ -3871,6 +3871,123 @@ body.visitanteNaoLogado .hero .tempoEstimadoBox{
   object-fit:cover;
   border-radius:50%;
 }
+
+.storyModal{
+  position:fixed;
+  inset:0;
+  z-index:100002;
+  display:none;
+  align-items:center;
+  justify-content:center;
+  background:rgba(0,0,0,.72);
+  padding:18px;
+}
+
+.storyModal.open{
+  display:flex;
+}
+
+.storyViewer{
+  position:relative;
+  width:min(80vw, 430px);
+  height:min(80vh, 760px);
+  border-radius:22px;
+  overflow:hidden;
+  background:#000;
+  box-shadow:0 24px 70px rgba(0,0,0,.45);
+}
+
+.storyViewer img{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  display:block;
+}
+
+.storyClose{
+  position:absolute;
+  top:10px;
+  right:10px;
+  z-index:3;
+  width:38px;
+  height:38px;
+  padding:0 !important;
+  border-radius:999px !important;
+  background:rgba(0,0,0,.55) !important;
+  color:#fff !important;
+  font-size:24px !important;
+  box-shadow:none !important;
+}
+
+.storyArrow{
+  position:absolute;
+  top:50%;
+  transform:translateY(-50%);
+  z-index:3;
+  width:42px;
+  height:42px;
+  padding:0 !important;
+  border-radius:999px !important;
+  background:rgba(0,0,0,.45) !important;
+  color:#fff !important;
+  font-size:28px !important;
+  box-shadow:none !important;
+}
+
+.storyPrev{
+  left:10px;
+}
+
+.storyNext{
+  right:10px;
+}
+
+.storyProgress{
+  position:absolute;
+  top:0;
+  left:0;
+  right:0;
+  z-index:4;
+  display:flex;
+  gap:4px;
+  padding:8px;
+}
+
+.storyProgressItem{
+  flex:1;
+  height:4px;
+  border-radius:999px;
+  background:rgba(255,255,255,.35);
+  overflow:hidden;
+}
+
+.storyProgressFill{
+  width:0%;
+  height:100%;
+  background:#fff;
+  border-radius:999px;
+}
+
+.storyProgressItem.done .storyProgressFill{
+  width:100%;
+}
+
+.storyProgressItem.active .storyProgressFill{
+  animation:storyTempo 5s linear forwards;
+}
+
+@keyframes storyTempo{
+  from{ width:0%; }
+  to{ width:100%; }
+}
+
+@media (max-width:680px){
+  .storyViewer{
+    width:86vw;
+    height:80vh;
+    border-radius:18px;
+  }
+}
 </style>
 </head>
 
@@ -4587,6 +4704,16 @@ TROQUE POR ISSO:
   </div>
 </div>
 
+<div class="storyModal" id="storyModal" onclick="fecharStoryPorFora(event)">
+  <div class="storyViewer">
+    <div class="storyProgress" id="storyProgress"></div>
+    <button type="button" class="storyClose" onclick="fecharStory()">×</button>
+    <button type="button" class="storyArrow storyPrev" onclick="storyAnterior(event)">‹</button>
+    <img id="storyImagemAtual" src="stories/1.jpg" alt="Story IA4Tube">
+    <button type="button" class="storyArrow storyNext" onclick="proximoStory(event)">›</button>
+  </div>
+</div>
+
 <div class="ia4SupportBtn" id="ia4SupportBtn" title="Suporte IA4Tube">
   <div class="ia4SupportIcon">🎬</div>
   <div class="ia4SupportText">
@@ -4628,6 +4755,95 @@ TROQUE POR ISSO:
 
 <script>
 const API_BASE = "https://api.omascote.com.br";
+
+const storyImagens = [
+  "stories/1.jpg",
+  "stories/2.jpg",
+  "stories/3.jpg",
+  "stories/4.jpg"
+];
+
+let storyAtual = 0;
+let storyTimer = null;
+
+function renderStoryProgress(){
+  const progress = document.getElementById("storyProgress");
+  if(!progress) return;
+
+  progress.innerHTML = storyImagens.map((_, i)=>`
+    <div class="storyProgressItem ${i < storyAtual ? "done" : ""} ${i === storyAtual ? "active" : ""}">
+      <div class="storyProgressFill"></div>
+    </div>
+  `).join("");
+}
+
+function reiniciarStoryTimer(){
+  clearTimeout(storyTimer);
+  storyTimer = setTimeout(()=>{
+    proximoStory();
+  }, 5000);
+}
+
+function abrirStory(index){
+  storyAtual = Number(index || 0);
+
+  const modal = document.getElementById("storyModal");
+  const img = document.getElementById("storyImagemAtual");
+
+  if(!modal || !img) return;
+
+  img.src = storyImagens[storyAtual] || storyImagens[0];
+  modal.classList.add("open");
+  renderStoryProgress();
+  reiniciarStoryTimer();
+}
+
+function fecharStory(){
+  const modal = document.getElementById("storyModal");
+  if(!modal) return;
+
+  modal.classList.remove("open");
+  clearTimeout(storyTimer);
+}
+
+function fecharStoryPorFora(event){
+  if(event.target && event.target.id === "storyModal"){
+    fecharStory();
+  }
+}
+
+function proximoStory(event){
+  if(event) event.stopPropagation();
+
+  storyAtual++;
+
+  if(storyAtual >= storyImagens.length){
+    fecharStory();
+    return;
+  }
+
+  const img = document.getElementById("storyImagemAtual");
+  if(img) img.src = storyImagens[storyAtual];
+
+  renderStoryProgress();
+  reiniciarStoryTimer();
+}
+
+function storyAnterior(event){
+  if(event) event.stopPropagation();
+
+  storyAtual--;
+
+  if(storyAtual < 0){
+    storyAtual = 0;
+  }
+
+  const img = document.getElementById("storyImagemAtual");
+  if(img) img.src = storyImagens[storyAtual];
+
+  renderStoryProgress();
+  reiniciarStoryTimer();
+}
 
 const btnInstalarApp = document.getElementById("btnInstalarApp");
 const instalarAppModal = document.getElementById("instalarAppModal");
@@ -8310,4 +8526,5 @@ ia4ChatInput?.addEventListener("keydown", (e)=>{
 </script>
 </body>
 </html>
+
 
