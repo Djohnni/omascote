@@ -3695,6 +3695,30 @@ textarea.campoObrigatorioErro,
   justify-content:center;
 }
 
+.googleLoginBoxGrande{
+  margin-top:14px;
+  display:flex;
+  justify-content:center;
+}
+
+.googleLoginBoxGrande > div{
+  transform:scale(1.08);
+  transform-origin:center;
+}
+
+.authCadastrarBtn{
+  width:100%;
+  margin-top:16px;
+  background:#ffffff !important;
+  color:#111827 !important;
+  border:1px solid #d1d5db !important;
+  box-shadow:none !important;
+  border-radius:16px !important;
+  font-weight:950 !important;
+  font-size:16px !important;
+  padding:14px 18px !important;
+}
+
 .authVisitanteMsg{
   margin-top:10px;
   font-size:13px;
@@ -4080,6 +4104,14 @@ body.visitanteNaoLogado .hero .tempoEstimadoBox{
           ⏱ Calculando tempo estimado...
         </div>
 
+        <div class="googleLoginBoxGrande">
+          <div id="googleLoginHome"></div>
+        </div>
+
+        <button type="button" class="authCadastrarBtn" id="abrirCadastroHomeCamposBtn">
+          Cadastrar
+        </button>
+
         <div id="cadastroHomeCampos" style="display:none;">
         <label style="display:block;margin-top:14px;color:#334155;font-size:13px;font-weight:900;">Nome do time</label>
         <input id="homeAuthNomeTime" placeholder="Ex: Los Hermanos" style="width:100%;margin-top:6px;background:#fff !important;color:#111827 !important;border:1px solid #d1d5db !important;box-shadow:none !important;">
@@ -4096,10 +4128,6 @@ body.visitanteNaoLogado .hero .tempoEstimadoBox{
             <span style="font-size:28px;display:block;margin-bottom:6px;">+</span>
             Enviar escudo do time
           </div>
-        </div>
-
-        <div class="googleLoginBox">
-          <div id="googleLoginHome"></div>
         </div>
 
         <button class="btnGreen" id="homeAuthEscudo3dContinuarBtn" type="button" style="width:100%;margin-top:14px;">
@@ -5854,17 +5882,28 @@ const homeAuthEscudo3dUploadBtn = document.getElementById("homeAuthEscudo3dUploa
 const homeAuthEscudo3dFileName = document.getElementById("homeAuthEscudo3dFileName");
 const homeAuthEscudo3dContinuarBtn = document.getElementById("homeAuthEscudo3dContinuarBtn");
 const abrirCadastroHomeBtn = document.getElementById("abrirCadastroHomeBtn");
+const abrirCadastroHomeCamposBtn = document.getElementById("abrirCadastroHomeCamposBtn");
 const cadastroHomeCampos = document.getElementById("cadastroHomeCampos");
 
-abrirCadastroHomeBtn?.addEventListener("click", ()=>{
+function mostrarCadastroHomeCampos(){
   if(cadastroHomeCampos){
     cadastroHomeCampos.style.display = "block";
+  }
+
+  if(abrirCadastroHomeCamposBtn){
+    abrirCadastroHomeCamposBtn.style.display = "none";
   }
 
   setTimeout(()=>{
     homeAuthNomeTime?.focus();
   }, 100);
+}
+
+abrirCadastroHomeBtn?.addEventListener("click", ()=>{
+  window.scrollTo({ top:0, behavior:"smooth" });
 });
+
+abrirCadastroHomeCamposBtn?.addEventListener("click", mostrarCadastroHomeCampos);
 
 let modoCadastro = false;
 
@@ -8750,6 +8789,7 @@ ia4ChatInput?.addEventListener("keydown", (e)=>{
 </script>
 </body>
 </html>
+
 
 
 
