@@ -4052,14 +4052,15 @@ body.visitanteNaoLogado .hero .tempoEstimadoBox{
 
     <div id="onboardingEscudo3d" style="padding:0 14px;">
       <div style="max-width:760px;margin:14px auto 24px;background:linear-gradient(180deg,#ecfdf3,#ffffff);border:1px solid #bbf7d0;border-radius:18px;padding:18px;box-shadow:0 14px 34px rgba(15,23,42,.12);color:#111827;">
-        <div style="text-align:center;font-size:24px;font-weight:950;color:#14532d;line-height:1.1;">
-          Crie seu time no iA4Tube e ganhe agora um escudo em 3d
+        <div id="abrirCadastroHomeBtn" style="text-align:center;font-size:24px;font-weight:950;color:#14532d;line-height:1.1;cursor:pointer;">
+          Clique aqui e crie seu time no iA4Tube e ganhe agora um escudo em 3D
         </div>
 
         <div id="tempoEstimadoOnboardingBox" class="tempoEstimadoBox">
           ⏱ Calculando tempo estimado...
         </div>
 
+        <div id="cadastroHomeCampos" style="display:none;">
         <label style="display:block;margin-top:14px;color:#334155;font-size:13px;font-weight:900;">Nome do time</label>
         <input id="homeAuthNomeTime" placeholder="Ex: Los Hermanos" style="width:100%;margin-top:6px;background:#fff !important;color:#111827 !important;border:1px solid #d1d5db !important;box-shadow:none !important;">
 
@@ -4080,6 +4081,7 @@ body.visitanteNaoLogado .hero .tempoEstimadoBox{
         <button class="btnGreen" id="homeAuthEscudo3dContinuarBtn" type="button" style="width:100%;margin-top:14px;">
           Criar meu time e gerar escudo 3D 🚀
         </button>
+        </div>
       </div>
     </div>
 
@@ -5718,6 +5720,18 @@ const homeAuthEscudo3dFile = document.getElementById("homeAuthEscudo3dFile");
 const homeAuthEscudo3dUploadBtn = document.getElementById("homeAuthEscudo3dUploadBtn");
 const homeAuthEscudo3dFileName = document.getElementById("homeAuthEscudo3dFileName");
 const homeAuthEscudo3dContinuarBtn = document.getElementById("homeAuthEscudo3dContinuarBtn");
+const abrirCadastroHomeBtn = document.getElementById("abrirCadastroHomeBtn");
+const cadastroHomeCampos = document.getElementById("cadastroHomeCampos");
+
+abrirCadastroHomeBtn?.addEventListener("click", ()=>{
+  if(cadastroHomeCampos){
+    cadastroHomeCampos.style.display = "block";
+  }
+
+  setTimeout(()=>{
+    homeAuthNomeTime?.focus();
+  }, 100);
+});
 
 let modoCadastro = false;
 
@@ -8602,6 +8616,7 @@ ia4ChatInput?.addEventListener("keydown", (e)=>{
 </script>
 </body>
 </html>
+
 
 
 
