@@ -13,6 +13,7 @@
   <meta name="google" content="notranslate">
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
+<script src="https://accounts.google.com/gsi/client" async defer></script>
   <title>O Mascote — Painel</title>
 
   <style>
@@ -3688,6 +3689,12 @@ textarea.campoObrigatorioErro,
   box-shadow:none !important;
 }
 
+.googleLoginBox{
+  margin-top:12px;
+  display:flex;
+  justify-content:center;
+}
+
 .authVisitanteMsg{
   margin-top:10px;
   font-size:13px;
@@ -4089,6 +4096,10 @@ body.visitanteNaoLogado .hero .tempoEstimadoBox{
             <span style="font-size:28px;display:block;margin-bottom:6px;">+</span>
             Enviar escudo do time
           </div>
+        </div>
+
+        <div class="googleLoginBox">
+          <div id="googleLoginHome"></div>
         </div>
 
         <button class="btnGreen" id="homeAuthEscudo3dContinuarBtn" type="button" style="width:100%;margin-top:14px;">
@@ -4713,6 +4724,10 @@ TROQUE POR ISSO:
   Criar meu time e gerar escudo 3D 🚀
 </button>
 
+      <div class="googleLoginBox">
+        <div id="googleLoginModal"></div>
+      </div>
+
       <div class="authVisitanteMsg" id="authVisitanteMsg"></div>
     </div>
   </div>
@@ -4915,6 +4930,111 @@ function storyAnterior(event){
 
 
 let token = localStorage.getItem("omascote_token");
+
+let googleClientId = "";
+let googleLoginInicializado = false;
+
+async function inicializarLoginGoogle(){
+  try{
+    const r = await fetch(`${API_BASE}/auth/google-config`);
+    const data = await r.json();
+
+    if(!data.ok || !data.client_id){
+      return;
+    }
+
+    googleClientId = data.client_id;
+
+    const esperarGoogle = setInterval(()=>{
+      if(!window.google || !google.accounts || !google.accounts.id) return;
+
+      clearInterval(esperarGoogle);
+
+      google.accounts.id.initialize({
+        client_id: googleClientId,
+        callback: entrarComGoogle
+      });
+
+      ["googleLoginHome", "googleLoginModal"].forEach((id)=>{
+        const el = document.getElementById(id);
+        if(!el) return;
+
+        google.accounts.id.renderButton(el, {
+          theme: "outline",
+          size: "large",
+          text: "continue_with",
+          shape: "pill",
+          width: 280
+        });
+      });
+
+      googleLoginInicializado = true;
+    }, 300);
+
+  }catch(e){}
+}
+
+async function entrarComGoogle(response){
+  const id_token = response?.credential || "";
+
+  if(!id_token){
+    alert("Não foi possível entrar com Google.");
+    return;
+  }
+
+  try{
+    const r = await fetch(`${API_BASE}/auth/google`, {
+      method:"POST",
+      headers:{ "Content-Type":"application/json" },
+      body:JSON.stringify({ id_token })
+    });
+
+    const data = await r.json();
+
+    if(!r.ok || !data.ok || !data.token){
+      alert(data.error || "Não foi possível entrar com Google.");
+      return;
+    }
+
+    token = data.token;
+
+    localStorage.setItem("omascote_token", data.token);
+    localStorage.setItem("omascote_nome_time", data.nome_time || "");
+    localStorage.setItem("omascote_plano", String(data.plano ?? ""));
+    localStorage.setItem("omascote_usados", String(data.usados_no_ciclo ?? ""));
+    localStorage.setItem("omascote_saldo", String(data.saldo ?? ""));
+
+    document.body.classList.remove("visitanteNaoLogado");
+
+    document.querySelector(".saldoTopoArea")?.style.setProperty("display","flex","important");
+    document.querySelector("#btnMeusPedidos")?.style.setProperty("display","inline-flex","important");
+    document.querySelector(".saldoTopoExtra")?.style.setProperty("display","flex","important");
+
+    if(onboardingEscudo3d) onboardingEscudo3d.style.display = "none";
+
+    fecharCadastroVisitanteModal();
+
+    applyLocal();
+    refreshMe();
+    iniciarAtualizacaoHistorico();
+
+    const btnSairEl = document.getElementById("btnSair");
+    if(btnSairEl){
+      btnSairEl.textContent = "Sair";
+      btnSairEl.style.background = "#ffffff";
+    }
+
+    const acao = acaoDepoisDoCadastro;
+    acaoDepoisDoCadastro = null;
+
+    if(typeof acao === "function"){
+      setTimeout(()=>acao(), 250);
+    }
+
+  }catch(e){
+    alert("Erro de rede ao entrar com Google.");
+  }
+}
 
 function ia4Track(eventName, params = {}){
   try{
@@ -8395,6 +8515,7 @@ setTimeout(()=>{
 updateChosenPlaceholders(null);
 selectorStage?.classList.add("open");
 resetProductCategory();
+inicializarLoginGoogle();
 iniciarFlipCampos();
 setTimeout(()=>window.scrollTo({ top:0, behavior:"auto" }), 180);
 
@@ -8629,6 +8750,7 @@ ia4ChatInput?.addEventListener("keydown", (e)=>{
 </script>
 </body>
 </html>
+
 
 
 
