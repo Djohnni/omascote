@@ -4164,6 +4164,10 @@ body.visitanteNaoLogado .hero .tempoEstimadoBox{
           <div id="googleLoginHome"></div>
         </div>
 
+        <div style="text-align:center;margin:12px 0;font-size:15px;font-weight:900;color:#64748b;">
+          ou
+        </div>
+
         <button type="button" class="authCadastrarBtn" id="abrirCadastroHomeCamposBtn">
           Cadastrar
         </button>
@@ -4178,16 +4182,8 @@ body.visitanteNaoLogado .hero .tempoEstimadoBox{
         <label style="display:block;margin-top:10px;color:#334155;font-size:13px;font-weight:900;">Crie Sua Senha</label>
         <input id="homeAuthSenha" type="password" placeholder="Crie uma senha simples" style="width:100%;margin-top:6px;background:#fff !important;color:#111827 !important;border:1px solid #d1d5db !important;box-shadow:none !important;">
 
-        <input id="homeAuthEscudo3dFile" class="fileHidden" type="file" accept="image/*">
-        <div id="homeAuthEscudo3dUploadBtn" style="margin-top:12px;padding:22px;border:2px dashed #16a34a;border-radius:16px;background:#ecfdf5;cursor:pointer;text-align:center;font-weight:950;color:#065f46;font-size:16px;">
-          <div id="homeAuthEscudo3dFileName">
-            <span style="font-size:28px;display:block;margin-bottom:6px;">+</span>
-            Enviar escudo do time
-          </div>
-        </div>
-
         <button class="btnGreen" id="homeAuthEscudo3dContinuarBtn" type="button" style="width:100%;margin-top:14px;">
-          Criar meu time e gerar escudo 3D 🚀
+          Criar meu time 🚀
         </button>
         </div>
       </div>
@@ -6134,7 +6130,7 @@ homeAuthEscudo3dContinuarBtn?.addEventListener("click", async ()=>{
   const nome_time = homeAuthNomeTime?.value?.trim() || "";
   const whatsapp = onlyDigits(homeAuthWhatsapp?.value || "");
   const senha = homeAuthSenha?.value || "";
-  const file = homeAuthEscudo3dFile?.files && homeAuthEscudo3dFile.files[0] ? homeAuthEscudo3dFile.files[0] : null;
+  const file = null;
 
   if(!nome_time){
     alert("Digite o nome do time.");
@@ -6154,14 +6150,10 @@ homeAuthEscudo3dContinuarBtn?.addEventListener("click", async ()=>{
     return;
   }
 
-  if(!file){
-    alert("Envie o escudo do seu time.");
-    homeAuthEscudo3dUploadBtn?.click();
-    return;
-  }
+  // Cadastro sem envio de escudo nesta etapa.
 
-  escudo3dCadastroFile = file;
-  fluxoEscudo3dCadastro = true;
+  escudo3dCadastroFile = null;
+  fluxoEscudo3dCadastro = false;
   modoCadastro = true;
 
   homeAuthEscudo3dContinuarBtn.disabled = true;
@@ -6218,14 +6210,14 @@ homeAuthEscudo3dContinuarBtn?.addEventListener("click", async ()=>{
       btnSairEl.style.background = "#ffffff";
     }
 
-    enviarPedidoEscudo3dComArquivo(file);
+    // Não gerar escudo 3D automaticamente no cadastro.
 
   }catch(e){
     alert("Erro de rede. Tente novamente.");
   }
 
   homeAuthEscudo3dContinuarBtn.disabled = false;
-  homeAuthEscudo3dContinuarBtn.textContent = "Criar meu time e gerar escudo 3D 🚀";
+  homeAuthEscudo3dContinuarBtn.textContent = "Criar meu time 🚀";
 });
 
 authEscudo3dContinuarBtn?.addEventListener("click", ()=>{
@@ -8762,6 +8754,7 @@ ia4ChatInput?.addEventListener("keydown", (e)=>{
 </script>
 </body>
 </html>
+
 
 
 
