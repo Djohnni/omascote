@@ -5137,7 +5137,13 @@ function ia4RegistrarCampoAtual(el){
       el.className ||
       "campo_desconhecido";
 
-    ia4CampoAtual = String(id).slice(0, 120);
+    const novoCampo = String(id).slice(0, 120);
+
+    if(novoCampo === ia4CampoAtual){
+      return;
+    }
+
+    ia4CampoAtual = novoCampo;
 
     ia4Evento("campo_foco", {
       campo: ia4CampoAtual
@@ -5233,14 +5239,34 @@ function ia4IniciarEventos(){
     ia4UltimaAtividade = Date.now();
   });
 
+  let ia4UltimaFaixaInatividade = "";
+
   setInterval(()=>{
     const inativoMs = Date.now() - ia4UltimaAtividade;
 
-    if(inativoMs >= 60000){
-      ia4Evento("usuario_inativo", {
-        tempo_ms: inativoMs
-      });
+    let faixa = "";
+
+    if(inativoMs >= 900000){
+      faixa = "15m";
+    }else if(inativoMs >= 300000){
+      faixa = "5m";
+    }else if(inativoMs >= 60000){
+      faixa = "1m";
     }
+
+    if(!faixa) return;
+
+    if(faixa === ia4UltimaFaixaInatividade){
+      return;
+    }
+
+    ia4UltimaFaixaInatividade = faixa;
+
+    ia4Evento("usuario_inativo", {
+      tempo_ms: inativoMs,
+      faixa
+    });
+
   }, 30000);
 
   ia4EventosTimer = setInterval(ia4EnviarEventos, 15000);
@@ -9122,6 +9148,7 @@ ia4ChatInput?.addEventListener("keydown", (e)=>{
 </script>
 </body>
 </html>
+
 
 
 
