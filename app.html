@@ -3117,62 +3117,105 @@ body.mode-proximo-jogo .filePlus .chosen{
   }
 }
 
-/* ===== TESTE FLIP CAMPOS ===== */
+/* ===== VISUAL LIMPO CAMPOS IA4TUBE ===== */
 
 input:not(.fileHidden):not([type="hidden"]),
 textarea,
 .filePlus{
-  transform-style:preserve-3d !important;
   transition:
-    transform .45s ease,
-    background .25s ease,
-    color .25s ease,
-    border-color .25s ease,
-    box-shadow .25s ease !important;
+    background .22s ease,
+    color .22s ease,
+    border-color .22s ease,
+    box-shadow .22s ease,
+    transform .12s ease !important;
 }
 
-input:not(.fileHidden):not([type="hidden"]):not(.flip-active):not(.campoObrigatorioErro),
-textarea:not(.flip-active):not(.campoObrigatorioErro),
-.filePlus:not(.flip-active):not(.campoObrigatorioErro){
-  background:
-    linear-gradient(135deg, rgba(255,255,255,.10), rgba(255,255,255,.02)),
-    linear-gradient(135deg, #0b6b38, #16a34a) !important;
-  color:#ffffff !important;
-  border-color:#0f8a43 !important;
-  box-shadow:0 12px 26px rgba(22,163,74,.22) !important;
-}
-
-input:not(.fileHidden):not([type="hidden"]):not(.flip-active)::placeholder,
-textarea:not(.flip-active)::placeholder{
-  color:rgba(255,255,255,.92) !important;
+input:not(.fileHidden):not([type="hidden"]),
+textarea{
+  background:#f8fbff !important;
+  color:#0f172a !important;
+  border:1px solid #dbe7ff !important;
+  box-shadow:0 10px 24px rgba(37,99,235,.08) !important;
   font-weight:900 !important;
 }
 
-.filePlus:not(.flip-active) .chosen{
+input:not(.fileHidden):not([type="hidden"])::placeholder,
+textarea::placeholder{
+  color:#0f2f6f !important;
+  font-weight:950 !important;
+  opacity:.82 !important;
+}
+
+input:not(.fileHidden):not([type="hidden"]):focus,
+textarea:focus,
+.flip-active{
+  background:#ffffff !important;
+  color:#0f172a !important;
+  border-color:#2563eb !important;
+  box-shadow:0 0 0 4px rgba(37,99,235,.14), 0 12px 28px rgba(37,99,235,.10) !important;
+  transform:translateY(-1px) !important;
+}
+
+.filePlus{
+  background:linear-gradient(135deg,#0f62fe,#0047c7) !important;
   color:#ffffff !important;
+  border:1px solid #1d4ed8 !important;
+  box-shadow:0 14px 30px rgba(37,99,235,.22) !important;
+}
+
+.filePlus:hover,
+.filePlus.flip-active{
+  background:linear-gradient(135deg,#ffffff,#f8fbff) !important;
+  color:#0f172a !important;
+  border:1px solid #dbe7ff !important;
+  box-shadow:0 12px 28px rgba(37,99,235,.12) !important;
+}
+
+.filePlus .chosen{
+  color:inherit !important;
   font-size:16px !important;
   font-weight:950 !important;
 }
 
-.flip-active{
-  animation:flipCampo .45s ease both !important;
+.filePlus .plus{
   background:#ffffff !important;
-  color:#243041 !important;
+  color:#2563eb !important;
+  border:1px solid #dbe7ff !important;
+  box-shadow:0 8px 18px rgba(15,23,42,.10) !important;
 }
 
-@keyframes flipCampo{
-  0%{
-    transform:perspective(900px) rotateX(0deg);
-  }
-  49%{
-    transform:perspective(900px) rotateX(-88deg);
-  }
-  50%{
-    transform:perspective(900px) rotateX(88deg);
-  }
-  100%{
-    transform:perspective(900px) rotateX(0deg);
-  }
+.filePlus.flip-active .plus{
+  background:#fff7ed !important;
+  color:#f97316 !important;
+  border-color:#fed7aa !important;
+}
+
+.placarRow{
+  background:#ffffff !important;
+  border:1px solid #e5edff !important;
+  box-shadow:0 14px 34px rgba(37,99,235,.08) !important;
+}
+
+.placarX{
+  color:#334155 !important;
+}
+
+.optionalDividerTitle,
+.optionalToggle{
+  background:linear-gradient(180deg,#ffffff,#f8fbff) !important;
+  border:1px solid #e5edff !important;
+  color:#0f172a !important;
+  box-shadow:0 12px 28px rgba(37,99,235,.08) !important;
+}
+
+.optionalDividerTitle::before{
+  color:#f97316 !important;
+}
+
+#btnEnviar,
+.btnGreen{
+  background:linear-gradient(135deg,#0f62fe,#0047c7) !important;
+  box-shadow:0 16px 32px rgba(37,99,235,.26) !important;
 }
 
 .campoObrigatorioErro,
@@ -3180,7 +3223,7 @@ input.campoObrigatorioErro,
 textarea.campoObrigatorioErro,
 .filePlus.campoObrigatorioErro{
   border-color:#dc2626 !important;
-  box-shadow:0 0 0 4px rgba(220,38,38,.22) !important;
+  box-shadow:0 0 0 4px rgba(220,38,38,.20) !important;
   background:#fff7f7 !important;
   color:#111827 !important;
 }
@@ -3189,7 +3232,7 @@ textarea.campoObrigatorioErro,
   color:#dc2626 !important;
 }
 
-/* ===== FIM TESTE FLIP CAMPOS ===== */
+/* ===== FIM VISUAL LIMPO CAMPOS IA4TUBE ===== */
 
 /* ===== FIM CORREÇÃO RESULTADO DO JOGO ===== */
 
@@ -5109,7 +5152,7 @@ const PRODUCTS = {
     labels: {
       data: "Título da arte",
       esc1: "Escudo / logo do time",
-      esc2: "Escudo adversário (opcional)",
+      esc2: "Escudo adversário",
       mascote: "Foto do jogador ou do time"
     },
     placeholders: {
@@ -5210,7 +5253,7 @@ const PRODUCTS = {
       hora: "Campeonato / competição",
       arena: "Local (opcional)",
       esc1: "Escudo do time",
-      esc2: "Escudo adversário (opcional)",
+      esc2: "Escudo adversário",
       mascote: "Foto do jogador *"
     },
     placeholders: {
@@ -8754,22 +8797,6 @@ ia4ChatInput?.addEventListener("keydown", (e)=>{
 </script>
 </body>
 </html>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
