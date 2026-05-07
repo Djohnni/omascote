@@ -5093,9 +5093,83 @@ async function entrarComGoogle(response){
 
 function ia4Track(eventName, params = {}){
   try{
-    if(typeof gtag !== "function") return;
-    gtag("event", eventName, params);
+    if(typeof gtag === "function"){
+      gtag("event", eventName, params);
+    }
   }catch(e){}
+
+  ia4Evento(eventName, params);
+}
+
+const IA4_EVENTOS_KEY = "ia4tube_eventos_fila";
+let ia4EventosFila = [];
+let ia4EventosTimer = null;
+
+function ia4GetSessaoId(){
+  let id = sessionStorage.getItem("ia4tube_sessao_id");
+  if(!id){
+    id = "sess_" + Date.now() + "_" + Math.random().toString(16).slice(2);
+    sessionStorage.setItem("ia4tube_sessao_id", id);
+  }
+  return id;
+}
+
+function ia4Evento(eventName, params = {}){
+  try{
+    ia4EventosFila.push({
+      e:eventName,
+      p:params || {},
+      t:Date.now(),
+      url:location.pathname,
+      produto:selectedProductInput?.value || "",
+      categoria:categoriaSelecionada || "",
+      logado:!!token,
+      sessao:ia4GetSessaoId()
+    });
+
+    if(ia4EventosFila.length >= 20){
+      ia4EnviarEventos();
+    }
+  }catch(e){}
+}
+
+async function ia4EnviarEventos(){
+  try{
+    if(!ia4EventosFila.length) return;
+
+    const eventos = ia4EventosFila.splice(0, 50);
+
+    await fetch(`${API_BASE}/evento`, {
+      method:"POST",
+      headers:{
+        "Content-Type":"application/json",
+        "Authorization": token ? "Bearer " + token : ""
+      },
+      body:JSON.stringify({
+        sessao:ia4GetSessaoId(),
+        eventos
+      }),
+      keepalive:true
+    });
+  }catch(e){}
+}
+
+function ia4IniciarEventos(){
+  if(ia4EventosTimer) clearInterval(ia4EventosTimer);
+
+  ia4Evento("pagina_aberta", {
+    largura:window.innerWidth,
+    altura:window.innerHeight
+  });
+
+  ia4EventosTimer = setInterval(ia4EnviarEventos, 15000);
+
+  window.addEventListener("beforeunload", ()=>{
+    ia4Evento("pagina_fechada", {
+      tempo_ms:performance.now ? Math.round(performance.now()) : 0
+    });
+    ia4EnviarEventos();
+  });
 }
 
 const welcomeEl = document.getElementById("welcome");
@@ -8586,6 +8660,7 @@ selectorStage?.classList.add("open");
 resetProductCategory();
 inicializarLoginGoogle();
 iniciarFlipCampos();
+ia4IniciarEventos();
 setTimeout(()=>window.scrollTo({ top:0, behavior:"auto" }), 180);
 
 function destacarMeusPedidos(){
@@ -8903,6 +8978,7 @@ ia4ChatInput?.addEventListener("keydown", (e)=>{
 </script>
 </body>
 </html>
+
 
 
 
