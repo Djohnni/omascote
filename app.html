@@ -2002,11 +2002,43 @@
   background:#f8fff9;
   color:#159947;
   border:1px solid #dcfce7;
-  border-radius:14px;
-  padding:14px 10px;
+  border-radius:16px;
+  padding:16px 12px;
   font-size:20px;
   font-weight:950;
   box-shadow:none;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap:6px;
+  text-align:center;
+  min-height:118px;
+}
+
+.saldoValor{
+  font-size:34px;
+  line-height:1;
+  font-weight:950;
+  color:#16a34a;
+}
+
+.saldoTexto{
+  font-size:12px;
+  line-height:1.2;
+  font-weight:900;
+  color:#334155;
+}
+
+.saldoTextoBonus{
+  font-size:12px;
+  line-height:1.2;
+  font-weight:950;
+  color:#16a34a;
+}
+
+.saldoOpcaoPrimeira{
+  background:linear-gradient(180deg,#ffffff,#f8fafc);
 }
 
 .saldoOpcao:hover{
@@ -4087,10 +4119,25 @@ body.visitanteNaoLogado .hero .tempoEstimadoBox{
               <button class="btnGreen" id="btnAbrirSaldo">Adicionar saldo</button>
 
               <div class="saldoMenu" id="saldoMenu">
-                <button type="button" class="saldoOpcao" data-pacote="saldo_800">R$8</button>
-                <button type="button" class="saldoOpcao" data-pacote="saldo_1800">R$18</button>
-                <button type="button" class="saldoOpcao" data-pacote="saldo_2800">R$28</button>
-                <button type="button" class="saldoOpcao" data-pacote="saldo_4800">R$48</button>
+                <button type="button" class="saldoOpcao saldoOpcaoPrimeira" data-pacote="saldo_800">
+                  <span class="saldoValor">8</span>
+                  <span class="saldoTexto">Pague no Pix<br>ou cartão</span>
+                </button>
+
+                <button type="button" class="saldoOpcao" data-pacote="saldo_1800">
+                  <span class="saldoValor">18</span>
+                  <span class="saldoTextoBonus">+ Ganhe 1 arte grátis<br>à sua escolha</span>
+                </button>
+
+                <button type="button" class="saldoOpcao" data-pacote="saldo_2800">
+                  <span class="saldoValor">28</span>
+                  <span class="saldoTextoBonus">+ Ganhe 1 arte grátis<br>à sua escolha</span>
+                </button>
+
+                <button type="button" class="saldoOpcao" data-pacote="saldo_4800">
+                  <span class="saldoValor">48</span>
+                  <span class="saldoTextoBonus">+ Ganhe 1 arte grátis<br>à sua escolha</span>
+                </button>
               </div>
             </div>
 
@@ -8798,6 +8845,7 @@ ia4ChatInput?.addEventListener("keydown", (e)=>{
 </script>
 </body>
 </html>
+
 
 
 
