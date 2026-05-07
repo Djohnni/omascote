@@ -4164,11 +4164,7 @@ body.visitanteNaoLogado .hero .tempoEstimadoBox{
           <div id="googleLoginHome"></div>
         </div>
 
-        <div style="text-align:center;margin:12px 0;font-size:16px;font-weight:900;color:#64748b;">
-  ou
-</div>
-
-<button type="button" class="authCadastrarBtn" id="abrirCadastroHomeCamposBtn">
+        <button type="button" class="authCadastrarBtn" id="abrirCadastroHomeCamposBtn">
           Cadastrar
         </button>
 
@@ -4182,12 +4178,7 @@ body.visitanteNaoLogado .hero .tempoEstimadoBox{
         <label style="display:block;margin-top:10px;color:#334155;font-size:13px;font-weight:900;">Crie Sua Senha</label>
         <input id="homeAuthSenha" type="password" placeholder="Crie uma senha simples" style="width:100%;margin-top:6px;background:#fff !important;color:#111827 !important;border:1px solid #d1d5db !important;box-shadow:none !important;">
 
----
-PROCURE ISSO:
-        <div id="homeAuthEscudo3dUploadBtn" style="margin-top:12px;padding:22px;border:2px dashed #16a34a;border-radius:16px;background:#ecfdf5;cursor:pointer;text-align:center;font-weight:950;color:#065f46;font-size:16px;">
-
-TROQUE POR ISSO:
-        <div id="homeAuthEscudo3dUploadBtn" style="display:none !important;">
+        <input id="homeAuthEscudo3dFile" class="fileHidden" type="file" accept="image/*">
         <div id="homeAuthEscudo3dUploadBtn" style="margin-top:12px;padding:22px;border:2px dashed #16a34a;border-radius:16px;background:#ecfdf5;cursor:pointer;text-align:center;font-weight:950;color:#065f46;font-size:16px;">
           <div id="homeAuthEscudo3dFileName">
             <span style="font-size:28px;display:block;margin-bottom:6px;">+</span>
@@ -4196,7 +4187,7 @@ TROQUE POR ISSO:
         </div>
 
         <button class="btnGreen" id="homeAuthEscudo3dContinuarBtn" type="button" style="width:100%;margin-top:14px;">
-          Criar meu time 🚀
+          Criar meu time e gerar escudo 3D 🚀
         </button>
         </div>
       </div>
@@ -4237,90 +4228,7 @@ TROQUE POR ISSO:
   </button>
 </div>
 
-<div style="display:none !important;">
 
----
-PROCURE ISSO:
-.topActions{
-  gap:14px !important;
-}
-
-TROQUE POR ISSO:
-<!-- bloco de troca removido -->
-
-TROQUE POR ISSO:
-.topActions{
-  gap:14px !important;
-}
-
-.saldoTopoArea{
-  display:flex !important;
-  flex-direction:column !important;
-  align-items:center !important;
-  justify-content:center !important;
-  gap:8px !important;
-  flex:1 1 auto !important;
-}
-
-.saldoTopoTexto{
-  font-weight:950 !important;
-  font-size:16px !important;
-  color:#111827 !important;
-  line-height:1 !important;
-}
-
-.saldoBoxTopo{
-  margin:0 !important;
-}
-
-.saldoBoxTopo #btnAbrirSaldo{
-  min-width:170px !important;
-  padding:12px 18px !important;
-  font-size:15px !important;
-  border-radius:999px !important;
-}
-
-<div style="display:flex;justify-content:center;margin:18px auto 22px;">
-  <button type="button" class="optionBtn" data-product="escudo3d" style="opacity:1;transform:none;">
-    <div class="circle">
-      <img src="icons/escudo3d.png" class="iconImg">
-    </div>
-    <div class="optLabel">
-      Primeira arte<br>Escudo 3D<br>
-      <span style="font-size:11px;color:#777;text-decoration:line-through;">R$18</span>
-      <span style="color:#1fbf63;font-weight:900;"> R$4</span>
-    </div>
-  </button>
-</div>
-
-TROQUE POR ISSO:
-<div style="display:flex;justify-content:center;margin:18px auto 22px;">
-  <button type="button" class="optionBtn" data-product="escudo3d" style="opacity:1;transform:none;">
-    <div class="circle">
-      <img src="icons/escudo3d.png" class="iconImg">
-    </div>
-    <div class="optLabel">
-      Primeira arte<br>Escudo 3D<br>
-      <span style="font-size:11px;color:#777;text-decoration:line-through;">R$18</span>
-      <span style="color:#1fbf63;font-weight:900;"> R$4</span>
-    </div>
-  </button>
-</div>
-
-<div style="display:flex;justify-content:center;margin:18px auto 22px;">
-  <button type="button" class="optionBtn" data-product="escudo3d" style="opacity:1;transform:none;">
-    <div class="circle">
-      <img src="icons/escudo3d.png" class="iconImg">
-    </div>
-    <div class="optLabel">
-      Primeira arte<br>Escudo 3D<br>
-      <span style="font-size:11px;color:#777;text-decoration:line-through;">R$18</span>
-      <span style="color:#1fbf63;font-weight:900;"> R$4</span>
-    </div>
-  </button>
-</div>
-
-</div>
 
         <div class="selectorStage">
           <div class="centerWrap">
@@ -6226,7 +6134,7 @@ homeAuthEscudo3dContinuarBtn?.addEventListener("click", async ()=>{
   const nome_time = homeAuthNomeTime?.value?.trim() || "";
   const whatsapp = onlyDigits(homeAuthWhatsapp?.value || "");
   const senha = homeAuthSenha?.value || "";
-  const file = null;
+  const file = homeAuthEscudo3dFile?.files && homeAuthEscudo3dFile.files[0] ? homeAuthEscudo3dFile.files[0] : null;
 
   if(!nome_time){
     alert("Digite o nome do time.");
@@ -6246,14 +6154,11 @@ homeAuthEscudo3dContinuarBtn?.addEventListener("click", async ()=>{
     return;
   }
 
----
-PROCURE ISSO:
-  escudo3dCadastroFile = file;
-  fluxoEscudo3dCadastro = true;
-
-TROQUE POR ISSO:
-  escudo3dCadastroFile = null;
-  fluxoEscudo3dCadastro = false;
+  if(!file){
+    alert("Envie o escudo do seu time.");
+    homeAuthEscudo3dUploadBtn?.click();
+    return;
+  }
 
   escudo3dCadastroFile = file;
   fluxoEscudo3dCadastro = true;
@@ -6313,12 +6218,7 @@ TROQUE POR ISSO:
       btnSairEl.style.background = "#ffffff";
     }
 
----
-PROCURE ISSO:
-  homeAuthEscudo3dContinuarBtn.textContent = "Criar meu time e gerar escudo 3D 🚀";
-
-TROQUE POR ISSO:
-  homeAuthEscudo3dContinuarBtn.textContent = "Criar meu time 🚀";
+    enviarPedidoEscudo3dComArquivo(file);
 
   }catch(e){
     alert("Erro de rede. Tente novamente.");
@@ -8862,5 +8762,21 @@ ia4ChatInput?.addEventListener("keydown", (e)=>{
 </script>
 </body>
 </html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
