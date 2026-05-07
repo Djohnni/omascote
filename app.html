@@ -4925,6 +4925,10 @@ function continuarStory(event){
 function abrirStory(index){
   storyAtual = Number(index || 0);
 
+  ia4RegistrarAcao("abriu_story", {
+    story: storyAtual
+  });
+
   const modal = document.getElementById("storyModal");
   const img = document.getElementById("storyImagemAtual");
 
@@ -5114,11 +5118,46 @@ function ia4GetSessaoId(){
   return id;
 }
 
+let ia4CampoAtual = "";
+let ia4UltimaAcao = "";
+let ia4UltimaAtividade = Date.now();
+
+function ia4RegistrarCampoAtual(el){
+  try{
+    if(!el) return;
+
+    const id =
+      el.id ||
+      el.name ||
+      el.placeholder ||
+      el.className ||
+      "campo_desconhecido";
+
+    ia4CampoAtual = String(id).slice(0, 120);
+
+    ia4Evento("campo_foco", {
+      campo: ia4CampoAtual
+    });
+  }catch(e){}
+}
+
+function ia4RegistrarAcao(nome, extra = {}){
+  ia4UltimaAcao = nome || "";
+  ia4UltimaAtividade = Date.now();
+
+  ia4Evento(nome, extra || {});
+}
+
 function ia4Evento(eventName, params = {}){
   try{
     ia4EventosFila.push({
       e:eventName,
-      p:params || {},
+      p:{
+        ...(params || {}),
+        campo_atual: ia4CampoAtual || "",
+        ultima_acao: ia4UltimaAcao || "",
+        tempo_inativo_ms: Date.now() - ia4UltimaAtividade
+      },
       t:Date.now(),
       url:location.pathname,
       produto:selectedProductInput?.value || "",
@@ -5161,6 +5200,44 @@ function ia4IniciarEventos(){
     largura:window.innerWidth,
     altura:window.innerHeight
   });
+
+  document.querySelectorAll("input, textarea, button, select").forEach(el=>{
+    el.addEventListener("focus", ()=>{
+      ia4RegistrarCampoAtual(el);
+    });
+
+    el.addEventListener("click", ()=>{
+      ia4RegistrarAcao("click_interface", {
+        alvo:
+          el.id ||
+          el.name ||
+          el.textContent?.trim()?.slice(0,60) ||
+          "sem_nome"
+      });
+    });
+
+    el.addEventListener("input", ()=>{
+      ia4UltimaAtividade = Date.now();
+    });
+  });
+
+  document.addEventListener("mousemove", ()=>{
+    ia4UltimaAtividade = Date.now();
+  });
+
+  document.addEventListener("touchstart", ()=>{
+    ia4UltimaAtividade = Date.now();
+  });
+
+  setInterval(()=>{
+    const inativoMs = Date.now() - ia4UltimaAtividade;
+
+    if(inativoMs >= 60000){
+      ia4Evento("usuario_inativo", {
+        tempo_ms: inativoMs
+      });
+    }
+  }, 30000);
 
   ia4EventosTimer = setInterval(ia4EnviarEventos, 15000);
 
@@ -8265,6 +8342,8 @@ function atualizarBadgePedidos(pedidos){
 function togglePedidosTopo(event){
   if(event) event.stopPropagation();
 
+  ia4RegistrarAcao("abriu_pedidos");
+
   const menu = document.getElementById("menuPedidosTopo");
   if(!menu) return;
 
@@ -8708,6 +8787,10 @@ const saldoMenu = document.getElementById("saldoMenu");
 btnAbrirSaldo?.addEventListener("click", (e)=>{
   e.stopPropagation();
 
+  ia4RegistrarAcao("clicou_saldo", {
+    logado: !!token
+  });
+
   ia4Track("clicou_adicionar_saldo", {
     logado: !!token
   });
@@ -8978,6 +9061,7 @@ ia4ChatInput?.addEventListener("keydown", (e)=>{
 </script>
 </body>
 </html>
+
 
 
 
