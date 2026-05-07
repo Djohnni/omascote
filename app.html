@@ -8313,6 +8313,9 @@ function iniciarAtualizacaoHistorico(){
 async function carregarHistorico(){
   if(!historicoListaEl || !historicoVazioEl) return;
 
+  const produtoAtualOnline = selectedProductInput?.value || "";
+  const chatAbertoOnline = ia4ChatBox?.classList?.contains("open") ? "true" : "false";
+
   if(!historicoCarregadoUmaVez){
     historicoVazioEl.textContent = "Carregando...";
   }
@@ -8322,7 +8325,11 @@ async function carregarHistorico(){
       cache: "no-store",
       headers: {
         "Authorization": "Bearer " + token,
-        "Cache-Control": "no-cache"
+        "Cache-Control": "no-cache",
+        "X-IA4-Page": "app",
+        "X-IA4-Product": produtoAtualOnline,
+        "X-IA4-Chat": chatAbertoOnline,
+        "X-IA4-Action": "historico"
       }
     });
 
@@ -8746,6 +8753,71 @@ function ia4MostrarPagamentoSuporte(){
   `);
 }
 
+let ia4SuporteUltimaAssinatura = "";
+let ia4SuporteTimer = null;
+
+function ia4RenderMensagensSuporte(mensagens){
+  if(!ia4ChatMessages || !Array.isArray(mensagens)) return;
+
+  const assinatura = JSON.stringify(mensagens.map(m => ({
+    id:m.id,
+    autor:m.autor,
+    texto:m.texto,
+    data:m.data
+  })));
+
+  if(assinatura === ia4SuporteUltimaAssinatura) return;
+  ia4SuporteUltimaAssinatura = assinatura;
+
+  ia4ChatMessages.innerHTML = "";
+
+  mensagens.forEach(m=>{
+    const autor = String(m.autor || "").toLowerCase();
+    const tipo = autor === "cliente" ? "user" : "bot";
+    ia4AddMsg(m.texto || "", tipo);
+  });
+
+  if(mensagens.length === 0){
+    ia4AddMsg("Olá! Sou o suporte da IA4Tube. Escolha uma opção:", "bot");
+  }
+}
+
+async function ia4BuscarMensagensSuporte(){
+  if(!token) return;
+
+  try{
+    const r = await fetch(`${API_BASE}/suporte/minhas-mensagens?ts=${Date.now()}`, {
+      cache:"no-store",
+      headers:{
+        "Authorization":"Bearer " + token,
+        "Cache-Control":"no-cache",
+        "X-IA4-Page":"app",
+        "X-IA4-Product": selectedProductInput?.value || "",
+        "X-IA4-Chat": ia4ChatBox?.classList?.contains("open") ? "true" : "false",
+        "X-IA4-Action":"suporte_poll"
+      }
+    });
+
+    const data = await r.json();
+
+    if(data.ok && data.mensagens && data.mensagens.length > 0){
+      ia4RenderMensagensSuporte(data.mensagens);
+    }
+  }catch(e){}
+}
+
+function ia4IniciarPollingSuporte(){
+  if(ia4SuporteTimer) clearInterval(ia4SuporteTimer);
+
+  ia4BuscarMensagensSuporte();
+
+  ia4SuporteTimer = setInterval(()=>{
+    if(ia4ChatBox?.classList?.contains("open")){
+      ia4BuscarMensagensSuporte();
+    }
+  }, 5000);
+}
+
 async function ia4EnviarTextoSuporte(mensagem){
   mensagem = String(mensagem || "").trim();
   if(!mensagem) return;
@@ -8758,9 +8830,17 @@ async function ia4EnviarTextoSuporte(mensagem){
       method:"POST",
       headers:{
         "Authorization":"Bearer " + token,
-        "Content-Type":"application/json"
+        "Content-Type":"application/json",
+        "X-IA4-Page":"app",
+        "X-IA4-Product": selectedProductInput?.value || "",
+        "X-IA4-Chat": ia4ChatBox?.classList?.contains("open") ? "true" : "false",
+        "X-IA4-Action":"suporte_mensagem"
       },
-      body:JSON.stringify({ mensagem })
+      body:JSON.stringify({
+        mensagem,
+        produto_atual:selectedProductInput?.value || "",
+        chat_aberto:ia4ChatBox?.classList?.contains("open") ? true : false
+      })
     });
 
     const data = await r.json();
@@ -8772,6 +8852,12 @@ async function ia4EnviarTextoSuporte(mensagem){
 
     if(data.ok){
       ia4AddMsg(data.resposta || "Não consegui responder agora. Vou encaminhar para o suporte.", "bot");
+
+      if(data.modo_humano){
+        ia4AddMsg("Pode deixar essa conversa aberta. Se o suporte responder, a mensagem aparece aqui.", "bot");
+      }
+
+      ia4IniciarPollingSuporte();
     }else{
       ia4AddMsg(data.error || "Não consegui responder agora. Vou encaminhar para o suporte.", "bot");
     }
@@ -8794,6 +8880,11 @@ async function ia4EnviarSuporte(){
 
 ia4SupportBtn?.addEventListener("click", ()=>{
   ia4ChatBox?.classList.toggle("open");
+
+  if(ia4ChatBox?.classList?.contains("open")){
+    ia4IniciarPollingSuporte();
+  }
+
   setTimeout(()=>ia4ChatInput?.focus(), 120);
 });
 
@@ -8812,6 +8903,7 @@ ia4ChatInput?.addEventListener("keydown", (e)=>{
 </script>
 </body>
 </html>
+
 
 
 
