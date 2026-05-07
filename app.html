@@ -7872,12 +7872,22 @@ document.getElementById("pedidoForm").addEventListener("submit", async (e)=>{
   const productKey = selectedProductInput.value;
   const product = PRODUCTS[productKey];
 
+  ia4RegistrarAcao("tentou_enviar_pedido", {
+    produto: productKey || "",
+    categoria: categoriaSelecionada || ""
+  });
+
   if(!product){
     msgPedidoEl.textContent = "Escolha primeiro o tipo de arte.";
     return;
   }
 
   if(!validarPedidoAntesDeEnviar(productKey)){
+    ia4RegistrarAcao("erro_validacao_pedido", {
+      produto: productKey || "",
+      categoria: categoriaSelecionada || "",
+      campo_atual: ia4CampoAtual || ""
+    });
     return;
   }
 
@@ -8586,6 +8596,10 @@ async function copiarDescricaoTopo(id){
 }
 
 async function baixarPedido(id){
+  ia4RegistrarAcao("baixou_imagem", {
+    pedido_id: id || ""
+  });
+
   marcarPedidoBaixado(id);
   carregarHistorico();
 
@@ -8788,7 +8802,9 @@ btnAbrirSaldo?.addEventListener("click", (e)=>{
   e.stopPropagation();
 
   ia4RegistrarAcao("clicou_saldo", {
-    logado: !!token
+    logado: !!token,
+    produto: selectedProductInput?.value || "",
+    categoria: categoriaSelecionada || ""
   });
 
   ia4Track("clicou_adicionar_saldo", {
@@ -8980,6 +8996,11 @@ async function ia4EnviarTextoSuporte(mensagem){
   mensagem = String(mensagem || "").trim();
   if(!mensagem) return;
 
+  ia4RegistrarAcao("enviou_mensagem_suporte", {
+    produto: selectedProductInput?.value || "",
+    categoria: categoriaSelecionada || ""
+  });
+
   ia4AddMsg(mensagem, "user");
   ia4AddMsg("Analisando seu pedido...", "bot");
 
@@ -9053,6 +9074,11 @@ async function ia4EnviarSuporte(){
 }
 
 ia4SupportBtn?.addEventListener("click", ()=>{
+  ia4RegistrarAcao("abriu_suporte", {
+    produto: selectedProductInput?.value || "",
+    categoria: categoriaSelecionada || ""
+  });
+
   ia4ChatBox?.classList.toggle("open");
 
   if(ia4ChatBox?.classList?.contains("open")){
@@ -9092,6 +9118,7 @@ ia4ChatInput?.addEventListener("keydown", (e)=>{
 </script>
 </body>
 </html>
+
 
 
 
