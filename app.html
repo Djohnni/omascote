@@ -2580,6 +2580,14 @@ body.mode-result .formGrid{
   box-shadow:none !important;
   justify-content:center !important;
   text-align:center !important;
+  background:linear-gradient(180deg,#ffffff,#f8fafc) !important;
+  transition:all .18s ease !important;
+}
+
+.filePlus:hover{
+  border-color:#16a34a !important;
+  background:#f0fdf4 !important;
+  transform:translateY(-1px);
 }
 
 .field-optional-title{
@@ -2932,8 +2940,8 @@ body.mode-result .field-esc2{
 body.mode-result .field-esc1 .filePlus,
 body.mode-result .field-esc2 .filePlus{
   width:100% !important;
-  min-height:120px !important;
-  padding:18px 12px !important;
+  min-height:64px !important;
+  padding:10px 14px !important;
   justify-content:center !important;
   text-align:center !important;
 }
@@ -3055,8 +3063,8 @@ body.mode-proximo-jogo .field-esc2{
 body.mode-proximo-jogo .field-esc1 .filePlus,
 body.mode-proximo-jogo .field-esc2 .filePlus{
   width:100% !important;
-  min-height:120px !important;
-  padding:18px 12px !important;
+  min-height:64px !important;
+  padding:10px 14px !important;
   justify-content:center !important;
   text-align:center !important;
 }
@@ -3178,10 +3186,11 @@ textarea:focus,
 }
 
 .filePlus .plus{
-  background:#ffffff !important;
-  color:#64748b !important;
-  border:1px solid #dbe3ee !important;
-  box-shadow:0 6px 14px rgba(15,23,42,.06) !important;
+  background:#ecfdf3 !important;
+  color:#16a34a !important;
+  border:1px solid #bbf7d0 !important;
+  box-shadow:0 6px 14px rgba(22,163,74,.10) !important;
+  font-weight:950 !important;
 }
 
 .filePlus.flip-active .plus{
@@ -4521,7 +4530,10 @@ body.visitanteNaoLogado .hero .tempoEstimadoBox{
                 <div class="filePlus" data-file-for="escudo1" tabindex="0" role="button" aria-label="Enviar arquivo 1">
                   <div class="left">
                     <div class="name"></div>
-                    <div class="chosen placeholderLike" id="chosen_escudo1">Escudo<br>Time A *</div>
+                    <div class="chosen placeholderLike" id="chosen_escudo1">
+  <span style="font-size:28px;display:block;line-height:1;margin-bottom:4px;">+</span>
+  Enviar escudo<br>do time
+</div>
                   </div>
                   <div class="plus">+</div>
                 </div>
@@ -4538,7 +4550,10 @@ body.visitanteNaoLogado .hero .tempoEstimadoBox{
                 <div class="filePlus" data-file-for="escudo2" tabindex="0" role="button" aria-label="Enviar arquivo 2">
                   <div class="left">
                     <div class="name"></div>
-                    <div class="chosen placeholderLike" id="chosen_escudo2">Escudo<br>Time B</div>
+                    <div class="chosen placeholderLike" id="chosen_escudo2">
+  <span style="font-size:28px;display:block;line-height:1;margin-bottom:4px;">+</span>
+  Escudo adversário
+</div>
                   </div>
                   <div class="plus">+</div>
                 </div>
@@ -8797,6 +8812,8 @@ ia4ChatInput?.addEventListener("keydown", (e)=>{
 </script>
 </body>
 </html>
+
+
 
 
 
