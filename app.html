@@ -4083,7 +4083,16 @@ body.visitanteNaoLogado .hero .tempoEstimadoBox{
         </div>
 
         <div class="saldoTopoExtra">
-            <button class="btnGreen" id="btnAbrirSaldo">Adicionar saldo</button>
+            <div class="saldoBoxTopo" style="position:relative;">
+              <button class="btnGreen" id="btnAbrirSaldo">Adicionar saldo</button>
+
+              <div class="saldoMenu" id="saldoMenu">
+                <button type="button" class="saldoOpcao" data-pacote="18">R$18</button>
+                <button type="button" class="saldoOpcao" data-pacote="30">R$30</button>
+                <button type="button" class="saldoOpcao" data-pacote="50">R$50</button>
+                <button type="button" class="saldoOpcao" data-pacote="100">R$100</button>
+              </div>
+            </div>
 
             <button class="topOrders" id="btnMeusPedidos" type="button" onclick="togglePedidosTopo(event)" style="white-space:nowrap;">📁 Pedidos <span class="pedidosBadge" id="pedidosBadge">0</span></button>
 
@@ -5038,7 +5047,7 @@ async function entrarComGoogle(response){
     document.querySelector("#btnMeusPedidos")?.style.setProperty("display","inline-flex","important");
     document.querySelector(".saldoTopoExtra")?.style.setProperty("display","flex","important");
 
-    if(onboardingEscudo3d) onboardingEscudo3d.style.display = "none";
+    if(onboardingEscudo3d) onboardingEscudo3d.style.setProperty("display", "none", "important");
 
     fecharCadastroVisitanteModal();
 
@@ -8332,7 +8341,7 @@ async function carregarHistorico(){
         historicoAssinaturaAtual = novaAssinatura;
       }
 
-      if(token && onboardingEscudo3d){
+      if(!token && onboardingEscudo3d){
         onboardingEscudo3d.style.display = "block";
       }
 
@@ -8789,6 +8798,8 @@ ia4ChatInput?.addEventListener("keydown", (e)=>{
 </script>
 </body>
 </html>
+
+
 
 
 
