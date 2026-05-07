@@ -9011,6 +9011,22 @@ async function ia4EnviarTextoSuporte(mensagem){
     if(data.ok){
       ia4AddMsg(data.resposta || "Não consegui responder agora. Vou encaminhar para o suporte.", "bot");
 
+      if(data.mostrar_opcoes_pos_ia && Array.isArray(data.opcoes_pos_ia)){
+        const box = document.createElement("div");
+        box.className = "ia4QuickOptions";
+
+        box.innerHTML = data.opcoes_pos_ia.map(op => `
+          <button type="button"
+            class="ia4QuickBtn"
+            onclick="ia4ResponderOpcaoPosIA('${String(op.valor || "").replace(/'/g,"")}')">
+            ${op.texto || ""}
+          </button>
+        `).join("");
+
+        ia4ChatMessages.appendChild(box);
+        ia4ChatMessages.scrollTop = ia4ChatMessages.scrollHeight;
+      }
+
       if(data.modo_humano){
         ia4AddMsg("Pode deixar essa conversa aberta. Se o suporte responder, a mensagem aparece aqui.", "bot");
       }
@@ -9052,6 +9068,21 @@ ia4ChatClose?.addEventListener("click", ()=>{
 
 ia4ChatSend?.addEventListener("click", ia4EnviarSuporte);
 
+function ia4ResponderOpcaoPosIA(valor){
+  valor = String(valor || "");
+
+  if(valor === "continuar_robo"){
+    ia4AddMsg("Quero continuar com o robô", "user");
+    ia4AddMsg("Pode continuar me perguntando normalmente 🙂", "bot");
+    return;
+  }
+
+  if(valor === "falar_humano"){
+    ia4EnviarTextoSuporte("Quero falar com suporte");
+    return;
+  }
+}
+
 ia4ChatInput?.addEventListener("keydown", (e)=>{
   if(e.key === "Enter"){
     e.preventDefault();
@@ -9061,6 +9092,8 @@ ia4ChatInput?.addEventListener("keydown", (e)=>{
 </script>
 </body>
 </html>
+
+
 
 
 
