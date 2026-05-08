@@ -2101,8 +2101,94 @@ body{
   display:flex;
   justify-content:space-between;
   align-items:center;
-  padding:6px 12px 0;
+  gap:14px;
+  padding:10px 14px 0;
   background:#ffffff;
+  flex-wrap:nowrap;
+}
+
+.ia4TrustTop{
+  display:flex;
+  align-items:center;
+  gap:14px;
+  flex:1;
+  min-width:0;
+  overflow:hidden;
+}
+
+.ia4TrustItem{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  color:#111827;
+  min-width:0;
+}
+
+.ia4TrustItem strong{
+  display:block;
+  font-size:13px;
+  line-height:1;
+  font-weight:950;
+}
+
+.ia4TrustItem small{
+  display:block;
+  margin-top:3px;
+  font-size:11px;
+  color:#64748b;
+  font-weight:800;
+  line-height:1;
+}
+
+.ia4TrustIcon{
+  font-size:22px;
+  line-height:1;
+}
+
+.ia4GoogleIcon{
+  width:24px;
+  height:24px;
+  object-fit:contain;
+  display:block;
+}
+
+.ia4TrustDivider{
+  width:1px;
+  height:34px;
+  background:#e5e7eb;
+  flex:0 0 auto;
+}
+
+@media (max-width:680px){
+  .logoutTopBar{
+    padding:8px 10px 0;
+    gap:8px;
+  }
+
+  .ia4TrustTop{
+    gap:8px;
+  }
+
+  .ia4TrustItem strong{
+    font-size:10px;
+  }
+
+  .ia4TrustItem small{
+    font-size:8px;
+  }
+
+  .ia4TrustIcon{
+    font-size:16px;
+  }
+
+  .ia4GoogleIcon{
+    width:18px;
+    height:18px;
+  }
+
+  .ia4TrustDivider{
+    height:24px;
+  }
 }
 
 .logoutTopBar button,
@@ -4196,6 +4282,36 @@ body.visitanteNaoLogado .optLabel span{
 <body data-page="home">
   <div class="wrap">
     <div class="logoutTopBar">
+      <div class="ia4TrustTop">
+        <div class="ia4TrustItem">
+          <span class="ia4TrustIcon">🛡️</span>
+          <div>
+            <strong>Site seguro</strong>
+            <small>SSL criptografado</small>
+          </div>
+        </div>
+
+        <div class="ia4TrustDivider"></div>
+
+        <div class="ia4TrustItem">
+          <img src="google-g.png" class="ia4GoogleIcon">
+          <div>
+            <strong>Empresa verificada</strong>
+            <small>No Google</small>
+          </div>
+        </div>
+
+        <div class="ia4TrustDivider"></div>
+
+        <div class="ia4TrustItem">
+          <span class="ia4TrustIcon">✔️</span>
+          <div>
+            <strong>Pagamentos protegidos</strong>
+            <small>100% seguros</small>
+          </div>
+        </div>
+      </div>
+
       <button type="button" id="btnInstalarApp" class="instalarAppBtn"></button>
       <button id="btnSair" type="button">Sair</button>
     </div>
@@ -9219,6 +9335,7 @@ ia4ChatInput?.addEventListener("keydown", (e)=>{
 </script>
 </body>
 </html>
+
 
 
 
