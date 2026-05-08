@@ -1,4 +1,10 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://www.SEU-DOMINIO.com/sitemap.xml
+Disallow: /login
+Disallow: /painel
+Disallow: /app
+Disallow: /admin
+Disallow: /api
+
+Sitemap: https://omascote.com.br/sitemap.xml
