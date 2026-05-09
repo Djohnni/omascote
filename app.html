@@ -2387,11 +2387,17 @@ body{
 }
 
 .previewAviso{
-  margin-top:6px;
-  font-size:11px;
+  margin-top:10px;
+  padding:12px 14px;
+  border-radius:14px;
+  background:linear-gradient(180deg,#ecfdf3,#ffffff);
+  border:1px solid #bbf7d0;
+  font-size:13px;
+  line-height:1.35;
   font-weight:950;
-  color:#64748b;
+  color:#14532d;
   text-align:center;
+  box-shadow:0 10px 24px rgba(22,163,74,.10);
 }
 
 .ajustePedidoBox{
@@ -8931,7 +8937,11 @@ async function carregarHistorico(){
         ${p.imagem_url ? `
           <div style="margin-top:10px;text-align:center;">
             <img src="${p.imagem_url}" class="previewProtegida" alt="Prévia da arte" oncontextmenu="return false;" draggable="false">
-            <div class="previewAviso">PRÉVIA EM QUALIDADE REDUZIDA</div>
+            <div class="previewAviso">
+  👇 Esta é apenas a prévia da sua arte.<br>
+  Você pode baixar a imagem final em alta qualidade<br>
+  ou pedir 1 edição gratuita antes de baixar 🚀
+</div>
           </div>
         ` : ""}
 
@@ -9644,6 +9654,7 @@ ia4ChatInput?.addEventListener("keydown", (e)=>{
 </script>
 </body>
 </html>
+
 
 
 
