@@ -2359,6 +2359,82 @@ body{
   box-shadow:none !important;
 }
 
+.menuPedidoBtnAjuste{
+  margin-top:8px;
+  width:100%;
+  padding:9px 10px !important;
+  border-radius:10px !important;
+  background:#ffffff !important;
+  color:#111827 !important;
+  border:1px solid #d1d5db !important;
+  font-size:13px !important;
+  font-weight:950 !important;
+  box-shadow:none !important;
+}
+
+.previewProtegida{
+  width:100%;
+  max-width:240px;
+  border-radius:18px;
+  border:1px solid #e5e7eb;
+  box-shadow:0 12px 28px rgba(15,23,42,.14);
+  user-select:none;
+  -webkit-user-select:none;
+  -webkit-user-drag:none;
+  pointer-events:auto;
+}
+
+.previewAviso{
+  margin-top:6px;
+  font-size:11px;
+  font-weight:950;
+  color:#64748b;
+  text-align:center;
+}
+
+.ajustePedidoBox{
+  margin-top:8px;
+  font-size:12px;
+  font-weight:900;
+  color:#64748b;
+  line-height:1.25;
+}
+
+.ajusteModalBody{
+  padding:18px;
+  background:#f8fafc;
+  color:#111827;
+}
+
+.ajusteModalBody textarea{
+  width:100%;
+  min-height:120px;
+  margin-top:10px;
+  background:#ffffff !important;
+  color:#111827 !important;
+  border:1px solid #d1d5db !important;
+  box-shadow:none !important;
+  border-radius:14px !important;
+  font-size:14px;
+  font-weight:800;
+}
+
+.ajusteModalMsg{
+  margin-top:10px;
+  font-size:13px;
+  font-weight:900;
+  color:#64748b;
+  text-align:center;
+}
+
+.ajusteModalMsg.err{
+  color:#dc2626;
+}
+
+.ajusteModalMsg.ok{
+  color:#16a34a;
+}
+
 .ia4Brand{
   height:100% !important;
 }
@@ -4983,6 +5059,33 @@ body.visitanteNaoLogado .optLabel span{
   <div class="ia4ToastPedidoBox">
     <strong>✅ Pedido recebido!</strong>
     <span>Sua arte já entrou em produção. Acompanhe em Meus pedidos — quando ficar pronta, ela aparecerá lá para baixar.</span>
+  </div>
+</div>
+
+<div class="modalMask" id="ajustePedidoModal" aria-hidden="true">
+  <div class="modalCard" role="dialog" aria-modal="true" aria-label="Pedir ajuste">
+    <div class="modalTop">
+      <div class="modalTitle">O que ficou errado?</div>
+      <button class="modalClose btnGhost" id="ajustePedidoCloseBtn" type="button">✕</button>
+    </div>
+
+    <div class="ajusteModalBody">
+      <div style="font-size:15px;font-weight:950;color:#111827;line-height:1.25;">
+        Descreva exatamente o detalhe que precisa corrigir.
+      </div>
+
+      <textarea id="ajustePedidoTexto" placeholder="Ex: o escudo ficou errado, o nome saiu errado, faltou jogador..."></textarea>
+
+      <button class="btnGreen" id="ajustePedidoEnviarBtn" type="button" style="width:100%;margin-top:12px;">
+        Enviar ajuste
+      </button>
+
+      <div style="margin-top:8px;font-size:12px;font-weight:900;color:#64748b;text-align:center;">
+        Essa correção automática pode ser usada apenas 1 vez.
+      </div>
+
+      <div class="ajusteModalMsg" id="ajustePedidoMsg"></div>
+    </div>
   </div>
 </div>
 
@@ -8675,13 +8778,19 @@ function atualizarMenuPedidosTopo(pedidos){
     return;
   }
 
-  menu.innerHTML = lista.map(p => `
+  menu.innerHTML = lista.map(p => {
+    const statusPedido = String(p.status || "").toLowerCase();
+    const ajustePendente = statusPedido === "ajuste_pendente";
+    const aprovado = p.aprovado_cliente === true;
+    const usouAjuste = p.ajuste_automatico_usado === true;
+
+    return `
     <div class="menuPedidoItem">
-      ${p.imagem_url ? `<img class="menuPedidoThumb" src="${p.imagem_url}" alt="Arte pronta">` : `<div class="menuPedidoThumb"></div>`}
+      ${p.imagem_url ? `<img class="menuPedidoThumb" src="${p.imagem_url}" alt="Prévia da arte" oncontextmenu="return false;" draggable="false">` : `<div class="menuPedidoThumb"></div>`}
 
       <div class="menuPedidoInfo">
         <div class="menuPedidoTipo">${p.tipo || "Arte"}</div>
-        <div class="menuPedidoStatus">${textoStatusPedido(p.status)}</div>
+        <div class="menuPedidoStatus">${ajustePendente ? "⏳ Ajustando sua arte..." : textoStatusPedido(p.status)}</div>
         ${p.status === "pronto" ? `<div class="descLabelInstagram">Sugestão de descrição para Instagram</div>` : ``}
         ${barraProducaoPedido(p)}
         ${p.status === "pronto" ? `
@@ -8691,11 +8800,22 @@ function atualizarMenuPedidosTopo(pedidos){
   <button class="btnCopiar" onclick="copiarDescricaoTopo('${p.id}')">📋</button>
 </div>
 
-<button type="button" class="menuPedidoBtn" onclick="baixarPedido('${p.id}')">Baixar arte</button>
+${aprovado ? `
+<button type="button" class="menuPedidoBtn" onclick="baixarPedido('${p.id}')">Baixar novamente</button>
+` : `
+<button type="button" class="menuPedidoBtn" onclick="aprovarPedido('${p.id}')">✅ Está boa, baixar</button>
+${usouAjuste ? `
+<div class="ajustePedidoBox">Esse pedido já utilizou o ajuste automático.</div>
+` : `
+<button type="button" class="menuPedidoBtnAjuste" onclick="abrirModalAjuste('${p.id}')">✏️ Pedir ajuste gratuito</button>
+<div class="ajustePedidoBox">Você tem 1 ajuste automático gratuito por pedido.</div>
+`}
+`}
 ` : ``}
       </div>
     </div>
-  `).join("");
+  `;
+  }).join("");
 }
 
 let historicoTimer = null;
@@ -8755,7 +8875,10 @@ async function carregarHistorico(){
       tipo: p.tipo,
       status: p.status,
       imagem_url: p.imagem_url,
-      descricao_instagram: p.descricao_instagram
+      descricao_instagram: p.descricao_instagram,
+      aprovado_cliente: p.aprovado_cliente,
+      ajuste_automatico_usado: p.ajuste_automatico_usado,
+      motivo_ajuste: p.motivo_ajuste
     })));
 
     if(pedidos.length === 0){
@@ -8789,15 +8912,26 @@ async function carregarHistorico(){
     atualizarMenuPedidosTopo(pedidos);
     historicoVazioEl.textContent = "";
 
-    historicoListaEl.innerHTML = pedidos.map(p => `
+    historicoListaEl.innerHTML = pedidos.map(p => {
+      const statusPedido = String(p.status || "").toLowerCase();
+      const ajustePendente = statusPedido === "ajuste_pendente";
+      const aprovado = p.aprovado_cliente === true;
+      const usouAjuste = p.ajuste_automatico_usado === true;
+
+      return `
       <div style="background:#fff;color:#000;padding:10px;border-radius:10px;border:1px solid #e5e7eb;">
         <b>${p.tipo}</b><br>
         ID: ${p.id}<br>
-        Status: ${textoStatusPedido(p.status)}<br>
+        Status: ${ajustePendente ? "⏳ Ajustando sua arte..." : textoStatusPedido(p.status)}<br>
         ${p.status === "pronto" ? `<div class="descLabelInstagram">Sugestão de descrição para Instagram</div>` : ``}
         ${barraProducaoPedido(p)}
 
-        ${p.imagem_url ? `<img src="${p.imagem_url}" style="width:100px;"><br>` : ""}
+        ${p.imagem_url ? `
+          <div style="margin-top:10px;text-align:center;">
+            <img src="${p.imagem_url}" class="previewProtegida" alt="Prévia da arte" oncontextmenu="return false;" draggable="false">
+            <div class="previewAviso">PRÉVIA EM QUALIDADE REDUZIDA</div>
+          </div>
+        ` : ""}
 
 ${p.status === "pronto" ? `
 <div class="descBox">
@@ -8806,12 +8940,28 @@ ${p.status === "pronto" ? `
   <button class="btnCopiar" onclick="copiarDescricao('${p.id}')">📋</button>
 </div>
 
-        <button onclick="baixarPedido('${p.id}')" style="margin-top:8px;padding:6px 10px;border-radius:6px;border:none;background:#2ecc71;color:#fff;font-weight:700;cursor:pointer;">
-          Baixar
+${aprovado ? `
+        <button onclick="baixarPedido('${p.id}')" style="margin-top:8px;padding:8px 12px;border-radius:10px;border:none;background:#2ecc71;color:#fff;font-weight:900;cursor:pointer;width:100%;">
+          Baixar novamente
         </button>
+` : `
+        <button onclick="aprovarPedido('${p.id}')" style="margin-top:8px;padding:8px 12px;border-radius:10px;border:none;background:#16a34a;color:#fff;font-weight:900;cursor:pointer;width:100%;">
+          ✅ Está boa, baixar imagem
+        </button>
+
+        ${usouAjuste ? `
+          <div class="ajustePedidoBox">Esse pedido já utilizou o ajuste automático.</div>
+        ` : `
+          <button onclick="abrirModalAjuste('${p.id}')" style="margin-top:8px;padding:8px 12px;border-radius:10px;border:1px solid #d1d5db;background:#fff;color:#111827;font-weight:900;cursor:pointer;width:100%;">
+            ✏️ Pedir ajuste gratuito
+          </button>
+          <div class="ajustePedidoBox">Você tem 1 ajuste automático gratuito por pedido.</div>
+        `}
+`}
 ` : ""}
       </div>
-    `).join("");
+    `;
+    }).join("");
 
   }catch{
     if(!historicoCarregadoUmaVez){
@@ -8834,6 +8984,123 @@ async function copiarDescricaoTopo(id){
 
   navigator.clipboard.writeText(el.innerText);
   alert("Copiado!");
+}
+
+let ajustePedidoAtualId = "";
+
+function abrirModalAjuste(id){
+  ajustePedidoAtualId = id || "";
+
+  const modal = document.getElementById("ajustePedidoModal");
+  const texto = document.getElementById("ajustePedidoTexto");
+  const msg = document.getElementById("ajustePedidoMsg");
+
+  if(texto) texto.value = "";
+  if(msg){
+    msg.textContent = "";
+    msg.className = "ajusteModalMsg";
+  }
+
+  if(modal){
+    modal.classList.add("open");
+    modal.setAttribute("aria-hidden", "false");
+  }
+
+  setTimeout(()=>texto?.focus(), 120);
+}
+
+function fecharModalAjuste(){
+  const modal = document.getElementById("ajustePedidoModal");
+  if(modal){
+    modal.classList.remove("open");
+    modal.setAttribute("aria-hidden", "true");
+  }
+}
+
+async function enviarAjustePedido(){
+  const id = ajustePedidoAtualId;
+  const texto = document.getElementById("ajustePedidoTexto")?.value?.trim() || "";
+  const msg = document.getElementById("ajustePedidoMsg");
+  const btn = document.getElementById("ajustePedidoEnviarBtn");
+
+  if(!id){
+    return;
+  }
+
+  if(!texto || texto.length < 5){
+    if(msg){
+      msg.textContent = "Descreva melhor o que ficou errado.";
+      msg.className = "ajusteModalMsg err";
+    }
+    return;
+  }
+
+  if(btn){
+    btn.disabled = true;
+    btn.textContent = "Enviando ajuste...";
+  }
+
+  try{
+    const r = await fetch(`${API_BASE}/pedidos/${id}/solicitar-ajuste`, {
+      method:"POST",
+      headers:{
+        "Authorization":"Bearer " + token,
+        "Content-Type":"application/json"
+      },
+      body:JSON.stringify({
+        motivo_ajuste:texto
+      })
+    });
+
+    const data = await r.json().catch(()=>({}));
+
+    if(!r.ok || !data.ok){
+      if(msg){
+        msg.textContent = data.error || "Não foi possível solicitar o ajuste.";
+        msg.className = "ajusteModalMsg err";
+      }
+      return;
+    }
+
+    ia4RegistrarAcao("solicitou_ajuste_pedido", {
+      pedido_id:id
+    });
+
+    if(msg){
+      msg.textContent = data.modo_humano ? "Esse pedido foi enviado para o suporte." : "Ajuste solicitado. Sua arte voltou para produção.";
+      msg.className = "ajusteModalMsg ok";
+    }
+
+    setTimeout(()=>{
+      fecharModalAjuste();
+      carregarHistorico();
+    }, 900);
+
+  }catch{
+    if(msg){
+      msg.textContent = "Erro de rede ao solicitar ajuste.";
+      msg.className = "ajusteModalMsg err";
+    }
+  }
+
+  if(btn){
+    btn.disabled = false;
+    btn.textContent = "Enviar ajuste";
+  }
+}
+
+async function aprovarPedido(id){
+  try{
+    await fetch(`${API_BASE}/pedidos/${id}/aprovar`, {
+      method:"POST",
+      headers:{
+        "Authorization":"Bearer " + token,
+        "Content-Type":"application/json"
+      }
+    });
+  }catch(e){}
+
+  await baixarPedido(id);
 }
 
 async function baixarPedido(id){
@@ -8871,6 +9138,14 @@ async function baixarPedido(id){
   }
 }
 
+document.getElementById("ajustePedidoCloseBtn")?.addEventListener("click", fecharModalAjuste);
+document.getElementById("ajustePedidoEnviarBtn")?.addEventListener("click", enviarAjustePedido);
+document.getElementById("ajustePedidoModal")?.addEventListener("click", (e)=>{
+  if(e.target && e.target.id === "ajustePedidoModal"){
+    fecharModalAjuste();
+  }
+});
+
 async function acompanharResultado(pedidoId){
   const boxEl = document.getElementById("resultadoBox");
   const statusElLocal = document.getElementById("statusResultado");
@@ -8897,11 +9172,19 @@ async function acompanharResultado(pedidoId){
 
         const previewUrl = `${API_BASE}/pedidos/${pedidoId}/preview?ts=${Date.now()}`;
 
-        statusElLocal.textContent = "Sua imagem chegou!";
+        statusElLocal.textContent = "Confira sua arte antes de baixar";
         imgEl.src = previewUrl;
+        imgEl.classList.add("previewProtegida");
+        imgEl.setAttribute("oncontextmenu", "return false;");
+        imgEl.setAttribute("draggable", "false");
         imgEl.style.display = "block";
 
-        downloadEl.href = previewUrl;
+        downloadEl.removeAttribute("href");
+        downloadEl.textContent = "✅ Está boa, baixar imagem";
+        downloadEl.onclick = (ev)=>{
+          ev.preventDefault();
+          aprovarPedido(pedidoId);
+        };
         downloadEl.style.display = "inline-block";
       } else {
         statusElLocal.textContent = "Estamos montando sua imagem...";
@@ -9359,28 +9642,6 @@ ia4ChatInput?.addEventListener("keydown", (e)=>{
 </script>
 </body>
 </html>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
