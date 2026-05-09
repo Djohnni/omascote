@@ -6335,7 +6335,9 @@ async function carregarTempoEstimado(){
   };
 
   try{
-    const r = await fetch(`${API_BASE}/tempo-estimado`);
+    const r = await fetch(`${API_BASE}/tempo-estimado?ts=${Date.now()}`, {
+      cache:"no-store"
+    });
     const data = await r.json();
 
     if(!data.ok || data.aprendendo || Number(data.tempo_estimado_segundos || 0) <= 0){
