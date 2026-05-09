@@ -6864,7 +6864,7 @@ function validarPedidoAntesDeEnviar(productKey){
   }
 
   if(erros.length > 0){
-    msgPedidoEl.textContent = erros[0].msg;
+    msgPedidoEl.innerHTML = "Preencha os campos obrigatórios:<br>• " + erros.map(e => e.msg).join("<br>• ");
     focarCampoObrigatorio(erros[0].el);
     return false;
   }
@@ -9359,6 +9359,29 @@ ia4ChatInput?.addEventListener("keydown", (e)=>{
 </script>
 </body>
 </html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
