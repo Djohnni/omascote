@@ -2285,10 +2285,54 @@ body{
   border-radius:20px 20px 0 0;
   box-shadow:0 -20px 60px rgba(15,23,42,.25);
   z-index:99999;
-  padding:16px;
+  padding:0 16px 16px;
   overflow:auto;
   display:none;
   animation: subirPedidos .25s ease;
+  touch-action:pan-y;
+}
+
+.menuPedidosTopoHeader{
+  position:sticky;
+  top:0;
+  z-index:5;
+  background:#ffffff;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+  padding:12px 0 10px;
+  border-bottom:1px solid #e5e7eb;
+  margin-bottom:12px;
+}
+
+.menuPedidosHandle{
+  width:52px;
+  height:5px;
+  border-radius:999px;
+  background:#cbd5e1;
+  margin:0 auto 6px;
+}
+
+.menuPedidosTitulo{
+  flex:1;
+  text-align:center;
+  color:#111827;
+  font-size:15px;
+  font-weight:950;
+}
+
+.menuPedidosFechar{
+  width:38px;
+  height:38px;
+  padding:0 !important;
+  border-radius:999px !important;
+  background:#f1f5f9 !important;
+  color:#111827 !important;
+  border:1px solid #e5e7eb !important;
+  box-shadow:none !important;
+  font-size:22px !important;
+  font-weight:950 !important;
 }
 
 .menuPedidosTopo.open{
@@ -8701,6 +8745,13 @@ function atualizarBadgePedidos(pedidos){
   }
 }
 
+function fecharPedidosTopo(){
+  const menu = document.getElementById("menuPedidosTopo");
+  if(!menu) return;
+  menu.classList.remove("open");
+  menu.style.transform = "";
+}
+
 function togglePedidosTopo(event){
   if(event) event.stopPropagation();
 
@@ -8710,6 +8761,72 @@ function togglePedidosTopo(event){
   if(!menu) return;
 
   menu.classList.toggle("open");
+  menu.style.transform = "";
+}
+
+function menuPedidosHeaderHtml(){
+  return `
+    <div class="menuPedidosTopoHeader">
+      <div style="flex:1;">
+        <div class="menuPedidosHandle"></div>
+        <div class="menuPedidosTitulo">Meus pedidos</div>
+      </div>
+      <button type="button" class="menuPedidosFechar" onclick="fecharPedidosTopo()">×</button>
+    </div>
+  `;
+}
+
+function inicializarArrastarPedidosTopo(){
+  const menu = document.getElementById("menuPedidosTopo");
+  if(!menu) return;
+
+  let inicioY = 0;
+  let atualY = 0;
+  let arrastando = false;
+
+  menu.addEventListener("touchstart", (e)=>{
+    if(!menu.classList.contains("open")) return;
+    if(menu.scrollTop > 0) return;
+
+    const t = e.touches && e.touches[0];
+    if(!t) return;
+
+    inicioY = t.clientY;
+    atualY = inicioY;
+    arrastando = true;
+  }, { passive:true });
+
+  menu.addEventListener("touchmove", (e)=>{
+    if(!arrastando) return;
+
+    const t = e.touches && e.touches[0];
+    if(!t) return;
+
+    atualY = t.clientY;
+    const diff = Math.max(0, atualY - inicioY);
+
+    if(diff > 8){
+      menu.style.transform = `translateY(${diff}px)`;
+    }
+  }, { passive:true });
+
+  menu.addEventListener("touchend", ()=>{
+    if(!arrastando) return;
+
+    const diff = Math.max(0, atualY - inicioY);
+    arrastando = false;
+
+    if(diff > 120){
+      fecharPedidosTopo();
+    }else{
+      menu.style.transform = "";
+    }
+  });
+
+  menu.addEventListener("touchcancel", ()=>{
+    arrastando = false;
+    menu.style.transform = "";
+  });
 }
 
 function textoStatusPedido(status){
@@ -8782,11 +8899,11 @@ function atualizarMenuPedidosTopo(pedidos){
   const lista = (pedidos || []).slice(0, 8);
 
   if(lista.length === 0){
-    menu.innerHTML = `<div class="menuPedidosTopoVazio">Nenhum pedido ainda.</div>`;
+    menu.innerHTML = menuPedidosHeaderHtml() + `<div class="menuPedidosTopoVazio">Nenhum pedido ainda.</div>`;
     return;
   }
 
-  menu.innerHTML = lista.map(p => {
+  menu.innerHTML = menuPedidosHeaderHtml() + lista.map(p => {
     const statusPedido = String(p.status || "").toLowerCase();
     const ajustePendente = statusPedido === "ajuste_pendente";
     const aprovado = p.aprovado_cliente === true;
@@ -8794,7 +8911,16 @@ function atualizarMenuPedidosTopo(pedidos){
 
     return `
     <div class="menuPedidoItem">
-      ${p.imagem_url ? `<img class="menuPedidoThumb" src="${p.imagem_url}" alt="Prévia da arte" oncontextmenu="return false;" draggable="false">` : `<div class="menuPedidoThumb"></div>`}
+      ${p.imagem_url ? `
+        <div>
+          <img class="menuPedidoThumb" src="${p.imagem_url}" alt="Arte pronta" oncontextmenu="return false;" draggable="false">
+          <div class="previewAviso">
+            👇 Esta é apenas a prévia da imagem abaixo.<br>
+            Você pode baixar a imagem final<br>
+            ou pedir 1 edição gratuita antes de baixar 🚀
+          </div>
+        </div>
+      ` : `<div class="menuPedidoThumb"></div>`}
 
       <div class="menuPedidoInfo">
         <div class="menuPedidoTipo">${p.tipo || "Arte"}</div>
@@ -9287,6 +9413,7 @@ setTimeout(()=>{
 updateChosenPlaceholders(null);
 selectorStage?.classList.add("open");
 resetProductCategory();
+inicializarArrastarPedidosTopo();
 inicializarLoginGoogle();
 iniciarFlipCampos();
 ia4IniciarEventos();
@@ -9654,6 +9781,7 @@ ia4ChatInput?.addEventListener("keydown", (e)=>{
 </script>
 </body>
 </html>
+
 
 
 
