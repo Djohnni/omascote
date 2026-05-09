@@ -8951,7 +8951,12 @@ function atualizarMenuPedidosTopo(pedidos){
             ou pedir 1 edição gratuita antes de baixar 🚀
           </div>
         </div>
-      ` : `<div class="menuPedidoThumb"></div>`}
+      ` : `
+        <div class="menuPedidoThumb" style="display:flex;align-items:center;justify-content:center;padding:18px;text-align:center;color:#ffffff;font-size:16px;font-weight:950;line-height:1.35;background:#0f172a;">
+          🚀 A IA4Tube está criando sua arte profissional.<br><br>
+          Sua imagem já vai com descrição pronta para copiar e postar no Instagram.
+        </div>
+      `}
 
       <div class="menuPedidoInfo">
         <div class="menuPedidoTipo">${p.tipo || "Arte"}</div>
@@ -9100,7 +9105,14 @@ async function carregarHistorico(){
   ou pedir 1 edição gratuita antes de baixar 🚀
 </div>
           </div>
-        ` : ""}
+        ` : `
+          <div style="margin-top:10px;text-align:center;">
+            <div class="previewProtegida" style="aspect-ratio:9/16;display:flex;align-items:center;justify-content:center;padding:24px;background:#0f172a;color:#ffffff;font-size:16px;font-weight:950;line-height:1.5;">
+              🚀 A IA4Tube transforma suas informações em uma arte profissional em poucos minutos.<br><br>
+              📲 Sua arte já vai com descrição pronta para copiar e postar no Instagram.
+            </div>
+          </div>
+        `}
 
 ${p.status === "pronto" ? `
 <div class="descBox">
@@ -9812,6 +9824,7 @@ ia4ChatInput?.addEventListener("keydown", (e)=>{
 </script>
 </body>
 </html>
+
 
 
 
