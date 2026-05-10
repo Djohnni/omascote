@@ -6549,8 +6549,7 @@ const PRIMEIRO_ESCUDO_INICIO_KEY = "ia4tube_primeiro_escudo_inicio";
 
 function calcularProgressoPorInicio(inicio){
   const segundos = Math.floor((Date.now() - Number(inicio || Date.now())) / 1000);
-  let progresso = Math.floor((segundos / 90) * 90);
-  if(progresso < 8) progresso = 8;
+  let progresso = 8 + Math.floor((segundos / 90) * 82);
   return Math.min(92, progresso);
 }
 
