@@ -3802,6 +3802,27 @@ textarea.campoObrigatorioErro,
   user-select:none;
 }
 
+.ia4SupportPulse{
+  animation: ia4PulseSuporte 1s infinite;
+}
+
+@keyframes ia4PulseSuporte{
+  0%{
+    transform:scale(1);
+    box-shadow:0 14px 34px rgba(15,23,42,.28);
+  }
+
+  50%{
+    transform:scale(1.08);
+    box-shadow:0 0 0 10px rgba(239,68,68,.18);
+  }
+
+  100%{
+    transform:scale(1);
+    box-shadow:0 14px 34px rgba(15,23,42,.28);
+  }
+}
+
 .ia4SupportIcon{
   width:42px;
   height:42px;
@@ -9679,8 +9700,18 @@ async function ia4BuscarMensagensSuporte(){
 
     const data = await r.json();
 
-    if(data.ok && data.mensagens && data.mensagens.length > 0){
+    if(data.ok && data.mensagens){
       ia4RenderMensagensSuporte(data.mensagens);
+
+      if(data.tem_mensagem_nova){
+        ia4ChatBox?.classList.add("open");
+
+        ia4SupportBtn?.classList.add("ia4SupportPulse");
+
+        setTimeout(()=>{
+          ia4SupportBtn?.classList.remove("ia4SupportPulse");
+        }, 12000);
+      }
     }
   }catch(e){}
 }
@@ -9823,6 +9854,7 @@ ia4ChatInput?.addEventListener("keydown", (e)=>{
 </script>
 </body>
 </html>
+
 
 
 
