@@ -9655,6 +9655,7 @@ function ia4MostrarPagamentoSuporte(){
 
 let ia4SuporteUltimaAssinatura = "";
 let ia4SuporteTimer = null;
+const IA4_SUPORTE_FORCADO_KEY = "ia4tube_suporte_forcado_aberto";
 
 function ia4RenderMensagensSuporte(mensagens){
   if(!ia4ChatMessages || !Array.isArray(mensagens)) return;
@@ -9686,6 +9687,13 @@ async function ia4BuscarMensagensSuporte(){
   if(!token) return;
 
   try{
+    const suporteForcado = localStorage.getItem(IA4_SUPORTE_FORCADO_KEY) === "1";
+
+    if(suporteForcado){
+      ia4ChatBox?.classList.add("open");
+      ia4SupportBtn?.classList.add("ia4SupportPulse");
+    }
+
     const r = await fetch(`${API_BASE}/suporte/minhas-mensagens?ts=${Date.now()}`, {
       cache:"no-store",
       headers:{
@@ -9705,9 +9713,6 @@ async function ia4BuscarMensagensSuporte(){
 
       if(data.tem_mensagem_nova){
         localStorage.setItem(IA4_SUPORTE_FORCADO_KEY, "1");
-      }
-
-      if(localStorage.getItem(IA4_SUPORTE_FORCADO_KEY) === "1"){
         ia4ChatBox?.classList.add("open");
         ia4SupportBtn?.classList.add("ia4SupportPulse");
       }
@@ -9722,7 +9727,7 @@ function ia4IniciarPollingSuporte(){
 
   ia4SuporteTimer = setInterval(()=>{
     ia4BuscarMensagensSuporte();
-  }, 5000);
+  }, 2500);
 }
 
 async function ia4EnviarTextoSuporte(mensagem){
@@ -9850,9 +9855,19 @@ ia4ChatInput?.addEventListener("keydown", (e)=>{
     ia4EnviarSuporte();
   }
 });
+
+if(token){
+  ia4IniciarPollingSuporte();
+
+  if(localStorage.getItem(IA4_SUPORTE_FORCADO_KEY) === "1"){
+    ia4ChatBox?.classList.add("open");
+    ia4SupportBtn?.classList.add("ia4SupportPulse");
+  }
+}
 </script>
 </body>
 </html>
+
 
 
 
