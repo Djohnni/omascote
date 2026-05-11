@@ -9711,7 +9711,13 @@ async function ia4BuscarMensagensSuporte(){
     if(data.ok && data.mensagens){
       ia4RenderMensagensSuporte(data.mensagens);
 
-      if(data.tem_mensagem_nova){
+      const suportePrecisaAbrir =
+        data.tem_mensagem_nova ||
+        data.conversa?.cliente_leu === false ||
+        data.conversa?.status === "humano_assumiu" ||
+        data.conversa?.precisa_humano === true;
+
+      if(suportePrecisaAbrir){
         localStorage.setItem(IA4_SUPORTE_FORCADO_KEY, "1");
         ia4ChatBox?.classList.add("open");
         ia4SupportBtn?.classList.add("ia4SupportPulse");
@@ -9867,6 +9873,7 @@ if(token){
 </script>
 </body>
 </html>
+
 
 
 
