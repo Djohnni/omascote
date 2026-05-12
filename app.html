@@ -4597,18 +4597,21 @@ body.visitanteNaoLogado .optLabel span{
     <div id="onboardingEscudo3d" style="padding:0 14px;">
       <div style="max-width:760px;margin:14px auto 24px;background:linear-gradient(180deg,#ecfdf3,#ffffff);border:1px solid #bbf7d0;border-radius:18px;padding:18px;box-shadow:0 14px 34px rgba(15,23,42,.12);color:#111827;">
         <div style="text-align:center;">
-          <img
-            src="banner-home-jogador.jpg"
-            alt="Poste como jogador profissional"
-            style="
-              width:100%;
-              max-width:760px;
-              display:block;
-              margin:0 auto;
-              border-radius:18px;
-              box-shadow:0 14px 34px rgba(15,23,42,.18);
-            "
-          >
+          <a href="#" id="bannerJogadorEscudoLink" style="display:block;">
+  <img
+    src="banner-home-jogador.jpg"
+    alt="Poste como jogador profissional"
+    style="
+      width:100%;
+      max-width:760px;
+      display:block;
+      margin:0 auto;
+      border-radius:18px;
+      box-shadow:0 14px 34px rgba(15,23,42,.18);
+      cursor:pointer;
+    "
+  >
+</a>
         </div>
 
         <div id="tempoEstimadoOnboardingBox" class="tempoEstimadoBox" style="font-size:13px;padding:8px 12px;margin:12px auto 18px !important;">
@@ -9567,6 +9570,24 @@ inicializarArrastarPedidosTopo();
 inicializarLoginGoogle();
 iniciarFlipCampos();
 ia4IniciarEventos();
+
+const bannerJogadorEscudoLink = document.getElementById("bannerJogadorEscudoLink");
+
+bannerJogadorEscudoLink?.addEventListener("click", (e)=>{
+  e.preventDefault();
+
+  showProductCategory("jogador");
+
+  setTimeout(()=>{
+    selectProduct("jogador_escudo");
+
+    document.querySelector('[data-product="jogador_escudo"]')?.scrollIntoView({
+      behavior:"smooth",
+      block:"center"
+    });
+  }, 120);
+});
+
 setTimeout(()=>window.scrollTo({ top:0, behavior:"auto" }), 180);
 
 function destacarMeusPedidos(){
@@ -9958,6 +9979,7 @@ if(token){
 </script>
 </body>
 </html>
+
 
 
 
