@@ -3802,6 +3802,58 @@ textarea.campoObrigatorioErro,
   user-select:none;
 }
 
+.ia4WhatsappBtn{
+  position:fixed;
+  right:18px;
+  bottom:92px;
+  z-index:9997;
+  display:flex;
+  align-items:center;
+  gap:10px;
+  padding:10px 14px 10px 10px;
+  border-radius:999px;
+  background:#16a34a;
+  color:#ffffff;
+  box-shadow:0 14px 34px rgba(22,163,74,.28);
+  cursor:pointer;
+  border:1px solid rgba(255,255,255,.18);
+  user-select:none;
+  text-decoration:none;
+}
+
+.ia4WhatsappBtn:hover{
+  filter:brightness(1.05);
+}
+
+.ia4WhatsappIcon{
+  width:42px;
+  height:42px;
+  border-radius:999px;
+  display:grid;
+  place-items:center;
+  background:linear-gradient(135deg,#22c55e,#15803d);
+  color:#fff;
+  font-size:22px;
+  font-weight:950;
+}
+
+.ia4WhatsappText{
+  display:flex;
+  flex-direction:column;
+  line-height:1.05;
+}
+
+.ia4WhatsappText strong{
+  font-size:14px;
+  font-weight:950;
+}
+
+.ia4WhatsappText span{
+  font-size:11px;
+  font-weight:800;
+  color:#dcfce7;
+}
+
 .ia4SupportPulse{
   animation: ia4PulseSuporte 1s infinite;
 }
@@ -3997,7 +4049,14 @@ textarea.campoObrigatorioErro,
     padding:8px 12px 8px 8px;
   }
 
-  .ia4SupportIcon{
+  .ia4WhatsappBtn{
+    right:12px;
+    bottom:82px;
+    padding:8px 12px 8px 8px;
+  }
+
+  .ia4SupportIcon,
+  .ia4WhatsappIcon{
     width:38px;
     height:38px;
     font-size:20px;
@@ -5179,6 +5238,19 @@ body.visitanteNaoLogado .optLabel span{
     <span>IA4Tube</span>
   </div>
 </div>
+
+<a
+  href="https://wa.me/5547992536917?text=Ol%C3%A1%2C%20vim%20pelo%20IA4Tube%20%F0%9F%9A%80"
+  target="_blank"
+  class="ia4WhatsappBtn"
+  title="Falar no WhatsApp"
+>
+  <div class="ia4WhatsappIcon">💬</div>
+  <div class="ia4WhatsappText">
+    <strong>WhatsApp</strong>
+    <span>Falar direto</span>
+  </div>
+</a>
 
 <div class="ia4ChatBox" id="ia4ChatBox">
   <div class="ia4ChatTop">
@@ -9871,6 +9943,7 @@ if(token){
 </script>
 </body>
 </html>
+
 
 
 
