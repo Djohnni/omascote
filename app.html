@@ -4244,6 +4244,26 @@ body.visitanteNaoLogado .hero .tempoEstimadoBox{
   display:none !important;
 }
 
+body.visitanteNaoLogado .productGroupTime{
+  display:none !important;
+}
+
+body.visitanteNaoLogado .productGroupJogador{
+  display:grid !important;
+  grid-template-columns:1fr !important;
+  max-width:420px !important;
+  margin:0 auto !important;
+}
+
+body.visitanteNaoLogado .productGroupJogador .optionBtn:not([data-product="jogador_escudo"]){
+  display:none !important;
+}
+
+body.visitanteNaoLogado .productGroupJogador::before{
+  content:"Poste como jogador profissional";
+  text-align:center !important;
+}
+
 body.visitanteNaoLogado .optLabel span{
   display:none !important;
 }
@@ -9924,6 +9944,7 @@ if(token){
 </script>
 </body>
 </html>
+
 
 
 
