@@ -1,14 +1,20 @@
 <!doctype html>
 <html lang="pt-br" translate="no">
 <head>
-  <!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-98RSV0WJ0J"></script>
+  <!-- Google tag carregado com atraso para não travar a primeira tela -->
 <script>
   window.dataLayer = window.dataLayer || [];
   function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
 
-  gtag('config', 'G-98RSV0WJ0J');
+  setTimeout(()=>{
+    const s = document.createElement("script");
+    s.async = true;
+    s.src = "https://www.googletagmanager.com/gtag/js?id=G-98RSV0WJ0J";
+    document.head.appendChild(s);
+
+    gtag("js", new Date());
+    gtag("config", "G-98RSV0WJ0J");
+  }, 3500);
 </script>
   <meta name="google" content="notranslate">
   <meta name="robots" content="index, follow">
@@ -4660,18 +4666,7 @@ body.visitanteNaoLogado .optLabel span{
           ⏱ Calculando tempo estimado...
         </div>
 
-<div style="display:none !important;">
-  <button type="button" class="optionBtn" data-product="escudo3d" style="opacity:1;transform:none;">
-    <div class="circle">
-      <img src="icons/escudo3d.png" class="iconImg">
-    </div>
-    <div class="optLabel">
-      Primeira arte<br>Escudo 3D<br>
-      <span style="font-size:11px;color:#777;text-decoration:line-through;">R$18</span>
-      <span style="color:#1fbf63;font-weight:900;"> R$4</span>
-    </div>
-  </button>
-</div>
+<!-- removido: escudo3d oculto que carregava icons/escudo3d.png -->
 
 
 
@@ -4712,32 +4707,32 @@ body.visitanteNaoLogado .optLabel span{
 
           <div class="optionsRow productGroup productGroupTime">
             <button type="button" class="optionBtn" data-product="resultado">
-              <img src="produtos/resultado.jpg" class="imgProduto">
+              <img src="produtos/resultado.jpg" class="imgProduto" loading="lazy" decoding="async" alt="Resultado do jogo">
               <div class="optLabel">Resultado<br>do Jogo<br><span style="color:#1fbf63;font-weight:900;">R$8,00</span></div>
             </button>
 
             <button type="button" class="optionBtn" data-product="escalacao">
-              <img src="produtos/escalacao.jpg" class="imgProduto">
+              <img src="produtos/escalacao.jpg" class="imgProduto" loading="lazy" decoding="async" alt="Escalação">
               <div class="optLabel">Escalação<br><span style="color:#1fbf63;font-weight:900;">R$8,00</span></div>
             </button>
 
             <button type="button" class="optionBtn" data-product="contratacao">
-              <img src="produtos/contratacao.jpg" class="imgProduto">
+              <img src="produtos/contratacao.jpg" class="imgProduto" loading="lazy" decoding="async" alt="Contratação">
               <div class="optLabel">Contratação<br><span style="color:#1fbf63;font-weight:900;">R$7,00</span></div>
             </button>
 
             <button type="button" class="optionBtn" data-product="proximo_jogo">
-              <img src="produtos/proximo_jogo.jpg" class="imgProduto">
+              <img src="produtos/proximo_jogo.jpg" class="imgProduto" loading="lazy" decoding="async" alt="Próximo jogo">
               <div class="optLabel">Próximo Jogo<br><span style="color:#1fbf63;font-weight:900;">R$7,00</span></div>
             </button>
 
             <button type="button" class="optionBtn" data-product="patrocinador">
-              <img src="produtos/patrocinador.jpg" class="imgProduto">
+              <img src="produtos/patrocinador.jpg" class="imgProduto" loading="lazy" decoding="async" alt="Patrocinador">
               <div class="optLabel">Patrocinador<br>/ Apoio<br><span style="color:#1fbf63;font-weight:900;">R$8,00</span></div>
             </button>
 
             <button type="button" class="optionBtn" data-product="escudo3d">
-              <img src="produtos/escudo3d.jpg" class="imgProduto">
+              <img src="produtos/escudo3d.jpg" class="imgProduto" loading="lazy" decoding="async" alt="Escudo 3D">
               <div class="optLabel">
                 Primeira arte<br>Escudo 3D<br>
                 <span style="font-size:11px;color:#777;text-decoration:line-through;">R$18</span>
@@ -4749,12 +4744,12 @@ body.visitanteNaoLogado .optLabel span{
           <div class="optionsRow productGroup productGroupJogador">
             <button type="button" class="optionBtn" data-product="proximo_jogo_jogador">
               <div class="optLabel">Próximo Jogo<br>Jogador<br><span style="color:#1fbf63;font-weight:900;">R$7,00</span></div>
-              <img src="produtos/proximo_jogo_jogador.jpg" class="imgProduto">
+              <img src="produtos/proximo_jogo_jogador.jpg" class="imgProduto" loading="lazy" decoding="async" alt="Próximo jogo jogador">
             </button>
 
             <button type="button" class="optionBtn" data-product="resultado_jogo_jogador">
               <div class="optLabel">Resultado<br>Jogador<br><span style="color:#1fbf63;font-weight:900;">R$8,00</span></div>
-              <img src="produtos/resultado_jogador.jpg" class="imgProduto">
+              <img src="produtos/resultado_jogador.jpg" class="imgProduto" loading="lazy" decoding="async" alt="Resultado jogador">
             </button>
 
             <button type="button" class="optionBtn" data-product="jogador_escudo">
@@ -9846,6 +9841,7 @@ if(token){
 </script>
 </body>
 </html>
+
 
 
 
