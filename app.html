@@ -4146,6 +4146,11 @@ textarea.campoObrigatorioErro,
   justify-content:center;
 }
 
+.googleLoginBox > div{
+  transform:scale(1.14);
+  transform-origin:center;
+}
+
 .googleLoginBoxGrande{
   margin-top:14px;
   display:flex;
@@ -5167,6 +5172,12 @@ body.visitanteNaoLogado .optLabel span{
   Criar meu time e gerar Minha Arte Brinde 🚀
 </button>
 
+      <div style="display:flex;align-items:center;gap:10px;margin:16px 0 8px;">
+        <div style="height:1px;background:#d1d5db;flex:1;"></div>
+        <div style="font-size:13px;font-weight:950;color:#64748b;">OU</div>
+        <div style="height:1px;background:#d1d5db;flex:1;"></div>
+      </div>
+
       <div class="googleLoginBox">
         <div id="googleLoginModal"></div>
       </div>
@@ -5335,7 +5346,7 @@ async function inicializarLoginGoogle(){
           size: "large",
           text: "continue_with",
           shape: "pill",
-          width: 280
+          width: 340
         });
       });
 
@@ -6437,11 +6448,11 @@ function abrirCadastroVisitanteModal(){
   escudo3dCadastroFile = null;
   clearInterval(authProgressTimer);
 
-  document.querySelector(".authPromoBox h2").textContent = "Entrar na sua conta";
-  document.querySelector(".authPromoBox p").textContent = "Digite seu WhatsApp e senha para acessar seus pedidos.";
+  document.querySelector(".authPromoBox h2").textContent = "Criar cadastro";
+  document.querySelector(".authPromoBox p").textContent = "Salve seus dados para receber e acompanhar sua arte.";
   document.getElementById("authProgressWrap")?.style.setProperty("display", "none", "important");
   document.getElementById("authProgressText")?.style.setProperty("display", "none", "important");
-  document.getElementById("authSenha")?.setAttribute("placeholder", "Digite sua senha");
+  document.getElementById("authSenha")?.setAttribute("placeholder", "Crie uma senha simples");
 
   ia4Track("iniciou_cadastro", {
     origem: selectedProductInput?.value || "sem_produto"
@@ -6449,15 +6460,20 @@ function abrirCadastroVisitanteModal(){
 
   if(!authVisitanteModal) return;
 
-  modoCadastro = false;
+  modoCadastro = true;
 
-  if(labelNomeTime) labelNomeTime.style.display = "none";
-  if(document.getElementById("authNomeTime")) document.getElementById("authNomeTime").style.display = "none";
+  if(labelNomeTime) labelNomeTime.style.display = "block";
+  if(document.getElementById("authNomeTime")) document.getElementById("authNomeTime").style.display = "block";
   if(labelSenha) labelSenha.style.display = "block";
   if(document.getElementById("authSenha")) document.getElementById("authSenha").style.display = "block";
   if(authEscudo3dArea) authEscudo3dArea.style.display = "none";
   if(authBtnsRow) authBtnsRow.style.display = "flex";
-  if(authCriarContaBtn) authCriarContaBtn.style.display = "none";
+  if(authEntrarBtn) authEntrarBtn.textContent = "Já tenho conta";
+  if(authCriarContaToggle) authCriarContaToggle.style.display = "none";
+  if(authCriarContaBtn){
+    authCriarContaBtn.style.display = "block";
+    authCriarContaBtn.textContent = "Criar minha arte 🚀";
+  }
 
   if(authVisitanteMsg){
     authVisitanteMsg.textContent = "";
@@ -6466,7 +6482,7 @@ function abrirCadastroVisitanteModal(){
 
   authVisitanteModal.classList.add("open");
   authVisitanteModal.setAttribute("aria-hidden", "false");
-  setTimeout(()=>document.getElementById("authWhatsapp")?.focus(), 120);
+  setTimeout(()=>document.getElementById("authNomeTime")?.focus(), 120);
 }
 
 function abrirCadastroEscudo3dModal(){
@@ -6804,18 +6820,47 @@ authEscudo3dContinuarBtn?.addEventListener("click", ()=>{
 });
 
 authEntrarBtn?.addEventListener("click", ()=>{
-  modoCadastro = false;
+  if(modoCadastro){
+    modoCadastro = false;
+
+    document.querySelector(".authPromoBox h2").textContent = "Entrar na sua conta";
+    document.querySelector(".authPromoBox p").textContent = "Digite seu WhatsApp e senha para acessar seus pedidos.";
+    document.getElementById("authSenha")?.setAttribute("placeholder", "Digite sua senha");
+
+    if(labelNomeTime) labelNomeTime.style.display = "none";
+    if(document.getElementById("authNomeTime")) document.getElementById("authNomeTime").style.display = "none";
+    if(authCriarContaBtn) authCriarContaBtn.style.display = "none";
+    if(authEntrarBtn) authEntrarBtn.textContent = "Entrar 🚀";
+    if(authCriarContaToggle){
+      authCriarContaToggle.style.display = "block";
+      authCriarContaToggle.textContent = "Criar conta";
+    }
+
+    setTimeout(()=>document.getElementById("authWhatsapp")?.focus(), 120);
+    return;
+  }
+
   finalizarCadastroVisitante();
 });
 
 authCriarContaToggle?.addEventListener("click", ()=>{
   modoCadastro = true;
 
-  labelNomeTime.style.display = "block";
-  document.getElementById("authNomeTime").style.display = "block";
+  document.querySelector(".authPromoBox h2").textContent = "Criar cadastro";
+  document.querySelector(".authPromoBox p").textContent = "Salve seus dados para receber e acompanhar sua arte.";
+  document.getElementById("authSenha")?.setAttribute("placeholder", "Crie uma senha simples");
 
-  authBtnsRow.style.display = "none";
-  authCriarContaBtn.style.display = "block";
+  if(labelNomeTime) labelNomeTime.style.display = "block";
+  if(document.getElementById("authNomeTime")) document.getElementById("authNomeTime").style.display = "block";
+  if(authBtnsRow) authBtnsRow.style.display = "flex";
+  if(authEntrarBtn) authEntrarBtn.textContent = "Já tenho conta";
+  if(authCriarContaToggle) authCriarContaToggle.style.display = "none";
+  if(authCriarContaBtn){
+    authCriarContaBtn.style.display = "block";
+    authCriarContaBtn.textContent = "Criar minha arte 🚀";
+  }
+
+  setTimeout(()=>document.getElementById("authNomeTime")?.focus(), 120);
 });
 
 authCriarContaBtn?.addEventListener("click", ()=>{
@@ -9843,6 +9888,7 @@ if(token){
   </main>
 </body>
 </html>
+
 
 
 
