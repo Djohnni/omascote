@@ -6447,6 +6447,8 @@ async function criarContaAutomaticaAntesPedido(){
       return false;
     }
 
+    token = data.token;
+
     localStorage.setItem("ia4tube_login_automatico", data.login || "");
     localStorage.setItem("ia4tube_senha_automatica", data.senha_cliente || senhaGerada);
     localStorage.setItem("ia4tube_token_pendente", data.token || "");
@@ -10124,6 +10126,7 @@ if(token){
   </main>
 </body>
 </html>
+
 
 
 
