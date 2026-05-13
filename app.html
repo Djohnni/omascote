@@ -6492,7 +6492,24 @@ Ativar conta e baixar 🚀
 
           localStorage.setItem("omascote_token", tokenPendente);
 
+          localStorage.setItem(
+            "omascote_nome_time",
+            localStorage.getItem("omascote_nome_time") || ""
+          );
+
+          localStorage.setItem(
+            "omascote_plano",
+            localStorage.getItem("omascote_plano") || "0"
+          );
+
+          localStorage.setItem(
+            "omascote_usados",
+            localStorage.getItem("omascote_usados") || "0"
+          );
+
           document.body.classList.remove("visitanteNaoLogado");
+
+          document.querySelector(".productGroupTime")?.style.setProperty("display","grid","important");
 
           document.querySelector(".topRightArea")?.style.setProperty("display", "flex", "important");
           document.querySelector(".saldoTopoArea")?.style.setProperty("display","flex","important");
@@ -10126,6 +10143,7 @@ if(token){
   </main>
 </body>
 </html>
+
 
 
 
