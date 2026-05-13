@@ -5314,6 +5314,8 @@ body.visitanteNaoLogado .optLabel span{
 <script>
 const API_BASE = "https://api.omascote.com.br";
 
+let token = localStorage.getItem("omascote_token");
+
 const storyImagens = token ? [
   "stories/1.jpg",
   "stories/2.jpg",
@@ -5454,8 +5456,6 @@ function storyAnterior(event){
   reiniciarStoryTimer();
 }
 
-
-let token = localStorage.getItem("omascote_token");
 
 let googleClientId = "";
 let googleLoginInicializado = false;
@@ -10023,6 +10023,7 @@ if(token){
 </script>
 </body>
 </html>
+
 
 
 
