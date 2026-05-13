@@ -6615,15 +6615,8 @@ if(modoCadastro){
 
     let data = await r.json().catch(()=>({}));
 
-    if(!r.ok || !data.ok){
-      r = await fetch(`${API_BASE}/auth/login`, {
-        method:"POST",
-        headers:{ "Content-Type":"application/json" },
-        body:JSON.stringify({ whatsapp, senha })
-      });
-
-      data = await r.json().catch(()=>({}));
-    }
+    // Cadastro falhou.
+    // Não tenta login automático para evitar entrar em conta já existente.
 
     if(!r.ok || !data.ok || !data.token){
       setAuthVisitanteMsg(data.error || "Não foi possível entrar. Confira os dados.", "err");
@@ -9991,6 +9984,7 @@ if(token){
   </main>
 </body>
 </html>
+
 
 
 
