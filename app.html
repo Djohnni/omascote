@@ -5138,8 +5138,8 @@ body.visitanteNaoLogado .optLabel span{
       <label for="authNomeTime" id="labelNomeTime" style="display:none;">Nome do time</label>
       <input id="authNomeTime" placeholder="Ex: Los Hermanos" style="display:none;">
 
-      <label for="authWhatsapp">WhatsApp</label>
-      <input id="authWhatsapp" inputmode="numeric" placeholder="Somente números">
+      <label for="authWhatsapp">Login</label>
+      <input id="authWhatsapp" inputmode="text" autocomplete="username" placeholder="WhatsApp ou nome do time">
 
       <div id="authEscudo3dArea" style="display:none;margin-top:12px;">
         <label for="authEscudo3dFile">Escudo do time</label>
@@ -6391,7 +6391,12 @@ function fecharAvisoPedido(){
 }
 
 function onlyDigits(s){
-  return String(s || "").replace(/\D+/g, "");
+  return String(s || "")
+    .trim()
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/[^a-z0-9._-]+/g, "");
 }
 
 const authVisitanteModal = document.getElementById("authVisitanteModal");
@@ -6462,8 +6467,8 @@ function abrirCadastroVisitanteModal(){
 
   modoCadastro = true;
 
-  if(labelNomeTime) labelNomeTime.style.display = "block";
-  if(document.getElementById("authNomeTime")) document.getElementById("authNomeTime").style.display = "block";
+  if(labelNomeTime) labelNomeTime.style.display = "none";
+  if(document.getElementById("authNomeTime")) document.getElementById("authNomeTime").style.display = "none";
   if(labelSenha) labelSenha.style.display = "block";
   if(document.getElementById("authSenha")) document.getElementById("authSenha").style.display = "block";
   if(authEscudo3dArea) authEscudo3dArea.style.display = "none";
@@ -6482,7 +6487,7 @@ function abrirCadastroVisitanteModal(){
 
   authVisitanteModal.classList.add("open");
   authVisitanteModal.setAttribute("aria-hidden", "false");
-  setTimeout(()=>document.getElementById("authNomeTime")?.focus(), 120);
+  setTimeout(()=>document.getElementById("authWhatsapp")?.focus(), 120);
 }
 
 function abrirCadastroEscudo3dModal(){
@@ -6567,17 +6572,12 @@ function iniciarProgressoCadastroEscudo3d(){
 }
 
 async function finalizarCadastroVisitante(){
-  const nome_time = document.getElementById("authNomeTime")?.value?.trim() || "";
   const whatsapp = onlyDigits(document.getElementById("authWhatsapp")?.value || "");
+  const nome_time = document.getElementById("authNomeTime")?.value?.trim() || whatsapp;
   const senha = document.getElementById("authSenha")?.value || "";
 
-  if(modoCadastro && !nome_time){
-    setAuthVisitanteMsg("Digite o nome do time.", "err");
-    return;
-  }
-
-  if(!whatsapp || whatsapp.length < 10){
-    setAuthVisitanteMsg("Digite um WhatsApp válido.", "err");
+  if(!whatsapp || whatsapp.length < 3){
+    setAuthVisitanteMsg("Digite um login com pelo menos 3 caracteres.", "err");
     return;
   }
 
@@ -6795,8 +6795,8 @@ homeAuthEscudo3dContinuarBtn?.addEventListener("click", async ()=>{
 authEscudo3dContinuarBtn?.addEventListener("click", ()=>{
   const whatsapp = onlyDigits(document.getElementById("authWhatsapp")?.value || "");
 
-  if(!whatsapp || whatsapp.length < 10){
-    setAuthVisitanteMsg("Digite seu WhatsApp para receber seu escudo.", "err");
+  if(!whatsapp || whatsapp.length < 3){
+    setAuthVisitanteMsg("Digite um login com pelo menos 3 caracteres.", "err");
     return;
   }
 
@@ -6807,8 +6807,8 @@ authEscudo3dContinuarBtn?.addEventListener("click", ()=>{
 
   modoCadastro = true;
 
-  if(labelNomeTime) labelNomeTime.style.display = "block";
-  if(document.getElementById("authNomeTime")) document.getElementById("authNomeTime").style.display = "block";
+  if(labelNomeTime) labelNomeTime.style.display = "none";
+  if(document.getElementById("authNomeTime")) document.getElementById("authNomeTime").style.display = "none";
   if(labelSenha) labelSenha.style.display = "block";
   if(document.getElementById("authSenha")) document.getElementById("authSenha").style.display = "block";
   if(authEscudo3dArea) authEscudo3dArea.style.display = "none";
@@ -6824,7 +6824,7 @@ authEntrarBtn?.addEventListener("click", ()=>{
     modoCadastro = false;
 
     document.querySelector(".authPromoBox h2").textContent = "Entrar na sua conta";
-    document.querySelector(".authPromoBox p").textContent = "Digite seu WhatsApp e senha para acessar seus pedidos.";
+    document.querySelector(".authPromoBox p").textContent = "Digite seu WhatsApp ou nome do time e senha para acessar seus pedidos.";
     document.getElementById("authSenha")?.setAttribute("placeholder", "Digite sua senha");
 
     if(labelNomeTime) labelNomeTime.style.display = "none";
@@ -9888,6 +9888,8 @@ if(token){
   </main>
 </body>
 </html>
+
+
 
 
 
