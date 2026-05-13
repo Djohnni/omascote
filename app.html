@@ -4244,6 +4244,42 @@ body.visitanteNaoLogado .hero .tempoEstimadoBox{
   display:none !important;
 }
 
+body.visitanteNaoLogado .storiesBar{
+  display:none !important;
+}
+
+body.visitanteNaoLogado .homeExamples{
+  display:none !important;
+}
+
+body.visitanteNaoLogado .productGroupTime{
+  display:none !important;
+}
+
+body.visitanteNaoLogado .productGroupJogador{
+  display:grid !important;
+  grid-template-columns:1fr !important;
+  max-width:420px !important;
+  margin:0 auto !important;
+}
+
+body.visitanteNaoLogado .productGroupJogador .optionBtn:not([data-product="jogador_escudo"]){
+  display:none !important;
+}
+
+body.visitanteNaoLogado .productGroupJogador::before{
+  content:"Poste como jogador profissional";
+  text-align:center !important;
+}
+
+body.visitanteNaoLogado .panel{
+  min-height:100vh;
+}
+
+body.visitanteNaoLogado .selectorStage{
+  margin-top:10px !important;
+}
+
 body.visitanteNaoLogado .productGroupTime{
   display:none !important;
 }
@@ -4522,7 +4558,7 @@ body.visitanteNaoLogado .optLabel span{
         <div class="ia4TrustDivider"></div>
 
         <div class="ia4TrustItem">
-          <img src="google-g.png" class="ia4GoogleIcon">
+          <img src="google-g.png" class="ia4GoogleIcon" alt="Google">
           <div>
             <strong>Empresa verificada</strong>
             <small>No Google</small>
@@ -4749,7 +4785,7 @@ body.visitanteNaoLogado .optLabel span{
 
             <button type="button" class="optionBtn" data-product="jogador_escudo">
               <div class="optLabel">Jogador<br>+ Escudo<br><span style="color:#1fbf63;font-weight:900;">R$6,00</span></div>
-              <img src="produtos/jogador_escudo.jpg" class="imgProduto">
+              <img src="produtos/jogador_escudo.jpg" class="imgProduto" fetchpriority="high" loading="eager" alt="Jogador mais escudo">
             </button>
           </div>
         </div>
@@ -9944,6 +9980,7 @@ if(token){
 </script>
 </body>
 </html>
+
 
 
 
