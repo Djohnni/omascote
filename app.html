@@ -6447,33 +6447,82 @@ async function criarContaAutomaticaAntesPedido(){
       return false;
     }
 
-    token = data.token;
-
-    localStorage.setItem("omascote_token", data.token);
-    localStorage.setItem("omascote_nome_time", data.nome_time || nomeBase || "");
-    localStorage.setItem("omascote_plano", String(data.plano ?? ""));
-    localStorage.setItem("omascote_usados", String(data.usados_no_ciclo ?? ""));
-    localStorage.setItem("omascote_saldo", String(data.saldo ?? ""));
     localStorage.setItem("ia4tube_login_automatico", data.login || "");
     localStorage.setItem("ia4tube_senha_automatica", data.senha_cliente || senhaGerada);
+    localStorage.setItem("ia4tube_token_pendente", data.token || "");
 
-    document.body.classList.remove("visitanteNaoLogado");
-    document.querySelector(".topRightArea")?.style.setProperty("display", "flex", "important");
-    document.querySelector(".saldoTopoArea")?.style.setProperty("display","flex","important");
-    document.querySelector("#btnMeusPedidos")?.style.setProperty("display","inline-flex","important");
-    document.querySelector(".saldoTopoExtra")?.style.setProperty("display","flex","important");
+    msgPedidoEl.innerHTML = `
+🎉 Sua arte está sendo criada.<br><br>
 
-    applyLocal();
-    refreshMe();
-    iniciarAtualizacaoHistorico();
+Login: <b>${data.login || ""}</b><br>
+Senha: <b>${data.senha_cliente || senhaGerada}</b><br><br>
 
-    const btnSairEl = document.getElementById("btnSair");
-    if(btnSairEl){
-      btnSairEl.textContent = "Sair";
-      btnSairEl.style.background = "#ffffff";
-    }
+<button
+  id="btnAtivarContaAuto"
+  style="
+    margin-top:10px;
+    padding:12px 16px;
+    border:none;
+    border-radius:12px;
+    background:#16a34a;
+    color:#fff;
+    font-weight:900;
+    cursor:pointer;
+  "
+>
+Ativar conta e baixar 🚀
+</button>
+`;
 
-    msgPedidoEl.innerHTML = `Conta criada automaticamente.<br>Login: <b>${data.login || ""}</b><br>Senha: <b>${data.senha_cliente || senhaGerada}</b><br>Guarde esses dados para voltar depois.`;
+    setTimeout(()=>{
+      const btn = document.getElementById("btnAtivarContaAuto");
+
+      if(btn){
+        btn.onclick = async () => {
+          const tokenPendente = localStorage.getItem("ia4tube_token_pendente");
+
+          if(!tokenPendente){
+            alert("Não foi possível ativar sua conta.");
+            return;
+          }
+
+          token = tokenPendente;
+
+          localStorage.setItem("omascote_token", tokenPendente);
+
+          document.body.classList.remove("visitanteNaoLogado");
+
+          document.querySelector(".topRightArea")?.style.setProperty("display", "flex", "important");
+          document.querySelector(".saldoTopoArea")?.style.setProperty("display","flex","important");
+          document.querySelector("#btnMeusPedidos")?.style.setProperty("display","inline-flex","important");
+          document.querySelector(".saldoTopoExtra")?.style.setProperty("display","flex","important");
+
+          applyLocal();
+          refreshMe();
+          iniciarAtualizacaoHistorico();
+
+          const btnSairEl = document.getElementById("btnSair");
+
+          if(btnSairEl){
+            btnSairEl.textContent = "Sair";
+            btnSairEl.style.background = "#ffffff";
+          }
+
+          try{
+            await fetch(`${API_BASE}/auth/ativar-conta-auto`, {
+              method:"POST",
+              headers:{
+                "Authorization":"Bearer " + tokenPendente
+              }
+            });
+          }catch(e){}
+
+          btn.remove();
+
+          msgPedidoEl.innerHTML += "<br><br>✅ Conta ativada com sucesso.";
+        };
+      }
+    }, 50);
 
     return true;
 
@@ -10075,6 +10124,7 @@ if(token){
   </main>
 </body>
 </html>
+
 
 
 
