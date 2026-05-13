@@ -4147,11 +4147,16 @@ textarea.campoObrigatorioErro,
   margin-top:12px;
   display:flex;
   justify-content:center;
+  width:100%;
+  overflow:hidden;
+  padding:0 4px;
 }
 
 .googleLoginBox > div{
-  transform:scale(1.14);
+  transform:scale(1.04);
   transform-origin:center;
+  width:100%;
+  max-width:280px;
 }
 
 .googleLoginBoxGrande{
@@ -5349,7 +5354,7 @@ async function inicializarLoginGoogle(){
           size: "large",
           text: "continue_with",
           shape: "pill",
-          width: 340
+          width: 280
         });
       });
 
@@ -6482,12 +6487,22 @@ function abrirCadastroVisitanteModal(){
   if(authCriarContaBtn){
     authCriarContaBtn.style.display = "block";
     authCriarContaBtn.textContent = "Criar conta e receber arte grátis 🚀";
-    authCriarContaBtn.style.order = "-1";
+    authCriarContaBtn.style.width = "100%";
+    authCriarContaBtn.style.marginTop = "14px";
   }
 
   if(authBtnsRow){
     authBtnsRow.style.display = "flex";
-    authBtnsRow.style.flexDirection = "column-reverse";
+    authBtnsRow.style.flexDirection = "column";
+    authBtnsRow.style.gap = "10px";
+  }
+
+  if(authEntrarBtn){
+    authEntrarBtn.style.width = "100%";
+  }
+
+  if(authCriarContaBtn && authBtnsRow && authBtnsRow.parentNode){
+    authBtnsRow.parentNode.insertBefore(authCriarContaBtn, authBtnsRow);
   }
 
   if(authVisitanteMsg){
@@ -9992,6 +10007,7 @@ if(token){
   </main>
 </body>
 </html>
+
 
 
 
