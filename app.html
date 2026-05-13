@@ -33,7 +33,7 @@
   <meta property="og:image:height" content="630">
   <meta property="og:image:alt" content="IA4Tube — artes esportivas automáticas para times de futebol">
 
-  <link rel="canonical" href="https://omascote.com.br/">
+  <link rel="canonical" href="https://omascote.com.br/app.html">
 
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="IA4Tube — Artes esportivas automáticas para times de futebol">
@@ -3821,7 +3821,7 @@ textarea.campoObrigatorioErro,
   gap:10px;
   padding:10px 14px 10px 10px;
   border-radius:999px;
-  background:#16a34a;
+  background:#15803d;
   color:#ffffff;
   box-shadow:0 14px 34px rgba(22,163,74,.28);
   cursor:pointer;
@@ -4553,6 +4553,7 @@ body.visitanteNaoLogado .optLabel span{
 </head>
 
 <body data-page="home">
+  <main>
   <div class="wrap">
     <div class="logoutTopBar">
       <div class="ia4TrustTop">
@@ -4585,7 +4586,7 @@ body.visitanteNaoLogado .optLabel span{
         </div>
       </div>
 
-      <button type="button" id="btnInstalarApp" class="instalarAppBtn"></button>
+      <button type="button" id="btnInstalarApp" class="instalarAppBtn" aria-label="Instalar aplicativo IA4Tube">Instalar app</button>
       <button id="btnSair" type="button">Sair</button>
     </div>
 
@@ -4767,8 +4768,8 @@ body.visitanteNaoLogado .optLabel span{
       </div>
 
       <div class="hiddenTabs">
-        <input class="tabRadio" type="radio" name="aba" id="tab_flyer">
-        <input class="tabRadio" type="radio" name="aba" id="tab_contrat">
+        <input class="tabRadio flip-active" type="radio" name="aba" id="tab_flyer" aria-label="Modo flyer">
+        <input class="tabRadio flip-active" type="radio" name="aba" id="tab_contrat" aria-label="Modo contratação">
       </div>
 
       <div class="builderArea" id="builderArea">
@@ -9839,8 +9840,10 @@ if(token){
   }
 }
 </script>
+  </main>
 </body>
 </html>
+
 
 
 
