@@ -48,7 +48,21 @@
   }
   </script>
 
-<script src="https://accounts.google.com/gsi/client" async defer></script>
+---
+PROCURE ISSO:
+<div style="display:none !important;">
+  <button type="button" class="optionBtn" data-product="escudo3d" style="opacity:1;transform:none;">
+    <div class="circle">
+      <img src="icons/escudo3d.png" class="iconImg">
+    </div>
+    <div class="optLabel">
+      Primeira arte<br>Escudo 3D<br>
+      <span style="font-size:11px;color:#777;text-decoration:line-through;">R$18</span>
+      <span style="color:#1fbf63;font-weight:900;"> R$4</span>
+    </div>
+  </button>
+</div>
+TROQUE POR ISSO:
   <title>IA4Tube — Artes automáticas para times de futebol</title>
   <link rel="icon" href="/favicon.ico" type="image/x-icon">
   <link rel="shortcut icon" href="/favicon.ico?v=2" type="image/x-icon">
@@ -4724,12 +4738,7 @@ body.visitanteNaoLogado .optLabel span{
             </button>
           </div>
 
-          <div class="homeExamples" id="homeExamples">
-            <img src="exemplo5.jpg" alt="Exemplo de arte 1">
-            <img src="exemplo2.jpg" alt="Exemplo de arte 2">
-            <img src="exemplo3.jpg" alt="Exemplo de arte 3">
-            <img src="exemplo4.jpg" alt="Exemplo de arte 4">
-          </div>
+          <div class="homeExamples" id="homeExamples"></div>
 
           <div class="categoryMiniRow">
             <button type="button" class="categoryMiniBtn" data-category="time">🏆 Time</button>
@@ -5305,12 +5314,12 @@ body.visitanteNaoLogado .optLabel span{
 <script>
 const API_BASE = "https://api.omascote.com.br";
 
-const storyImagens = [
+const storyImagens = token ? [
   "stories/1.jpg",
   "stories/2.jpg",
   "stories/3.jpg",
   "stories/4.jpg"
-];
+] : [];
 
 let storyAtual = 0;
 let storyTimer = null;
@@ -5451,8 +5460,38 @@ let token = localStorage.getItem("omascote_token");
 let googleClientId = "";
 let googleLoginInicializado = false;
 
+function carregarScriptGoogleLogin(){
+  return new Promise((resolve, reject)=>{
+    if(window.google && window.google.accounts && window.google.accounts.id){
+      resolve();
+      return;
+    }
+
+    if(document.getElementById("googleLoginScript")){
+      const esperar = setInterval(()=>{
+        if(window.google && window.google.accounts && window.google.accounts.id){
+          clearInterval(esperar);
+          resolve();
+        }
+      }, 150);
+      setTimeout(()=>clearInterval(esperar), 8000);
+      return;
+    }
+
+    const s = document.createElement("script");
+    s.id = "googleLoginScript";
+    s.src = "https://accounts.google.com/gsi/client";
+    s.async = true;
+    s.defer = true;
+    s.onload = resolve;
+    s.onerror = reject;
+    document.head.appendChild(s);
+  });
+}
+
 async function inicializarLoginGoogle(){
   try{
+    await carregarScriptGoogleLogin();
     const r = await fetch(`${API_BASE}/auth/google-config`);
     const data = await r.json();
 
@@ -6578,6 +6617,7 @@ abrirCadastroHomeCamposBtn?.addEventListener("click", mostrarCadastroHomeCampos)
 let modoCadastro = false;
 
 function abrirCadastroVisitanteModal(){
+  inicializarLoginGoogle();
   fluxoEscudo3dCadastro = false;
   escudo3dCadastroFile = null;
   clearInterval(authProgressTimer);
@@ -6615,6 +6655,7 @@ function abrirCadastroVisitanteModal(){
 }
 
 function abrirCadastroEscudo3dModal(){
+  inicializarLoginGoogle();
   fluxoEscudo3dCadastro = true;
   escudo3dCadastroFile = null;
   modoCadastro = false;
@@ -9568,7 +9609,9 @@ updateChosenPlaceholders(null);
 selectorStage?.classList.add("open");
 resetProductCategory();
 inicializarArrastarPedidosTopo();
-inicializarLoginGoogle();
+if(token){
+  inicializarLoginGoogle();
+}
 iniciarFlipCampos();
 ia4IniciarEventos();
 
@@ -9980,6 +10023,7 @@ if(token){
 </script>
 </body>
 </html>
+
 
 
 
