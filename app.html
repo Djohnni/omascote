@@ -7329,6 +7329,11 @@ function configureOptionalSections(productKey){
     const mascoteToggle = document.querySelector(`[data-optional-field="mascote"] [data-optional-toggle]`);
     if(mascoteToggle) mascoteToggle.style.display = "none";
 
+    const optionalDivider = document.getElementById("optionalDivider");
+    if(optionalDivider){
+      optionalDivider.style.display = "none";
+    }
+
     return;
   }
 
@@ -9984,6 +9989,7 @@ if(token){
   </main>
 </body>
 </html>
+
 
 
 
