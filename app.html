@@ -4147,16 +4147,11 @@ textarea.campoObrigatorioErro,
   margin-top:12px;
   display:flex;
   justify-content:center;
-  width:100%;
-  overflow:hidden;
-  padding:0 4px;
 }
 
 .googleLoginBox > div{
-  transform:scale(1.04);
+  transform:scale(1.14);
   transform-origin:center;
-  width:100%;
-  max-width:280px;
 }
 
 .googleLoginBoxGrande{
@@ -4599,6 +4594,7 @@ body.visitanteNaoLogado .optLabel span{
         </div>
       </div>
 
+      <button type="button" id="btnInstalarApp" class="instalarAppBtn" aria-label="Instalar aplicativo IA4Tube">Instalar app</button>
       <button id="btnSair" type="button">Sair</button>
     </div>
 
@@ -5353,7 +5349,7 @@ async function inicializarLoginGoogle(){
           size: "large",
           text: "continue_with",
           shape: "pill",
-          width: 280
+          width: 340
         });
       });
 
@@ -6406,6 +6402,87 @@ function onlyDigits(s){
     .replace(/[^a-z0-9._-]+/g, "");
 }
 
+function ia4GetDeviceIdAuto(){
+  let id = localStorage.getItem("ia4tube_device_id");
+  if(!id){
+    id = "dev_" + Date.now() + "_" + Math.random().toString(16).slice(2);
+    localStorage.setItem("ia4tube_device_id", id);
+  }
+  return id;
+}
+
+async function criarContaAutomaticaAntesPedido(){
+  const produto = selectedProductInput?.value || "";
+  const nomeJogador = document.getElementById("dataJogo")?.value?.trim() || "";
+  const timeA = document.getElementById("timePrincipal")?.value?.trim() || "";
+  const rodada = document.getElementById("rodada")?.value?.trim() || "";
+
+  const nomeBase =
+    nomeJogador ||
+    timeA ||
+    rodada ||
+    "Jogador";
+
+  const senhaGerada = "ia4" + Math.random().toString(36).slice(2, 8);
+
+  msgPedidoEl.textContent = "Criando sua conta automaticamente...";
+
+  try{
+    const r = await fetch(`${API_BASE}/auth/auto-register`, {
+      method:"POST",
+      headers:{ "Content-Type":"application/json" },
+      body:JSON.stringify({
+        nome_time: nomeBase,
+        login: nomeBase,
+        senha: senhaGerada,
+        produto,
+        device_id: ia4GetDeviceIdAuto()
+      })
+    });
+
+    const data = await r.json().catch(()=>({}));
+
+    if(!r.ok || !data.ok || !data.token){
+      msgPedidoEl.textContent = data.error || "Não foi possível criar sua conta automática.";
+      return false;
+    }
+
+    token = data.token;
+
+    localStorage.setItem("omascote_token", data.token);
+    localStorage.setItem("omascote_nome_time", data.nome_time || nomeBase || "");
+    localStorage.setItem("omascote_plano", String(data.plano ?? ""));
+    localStorage.setItem("omascote_usados", String(data.usados_no_ciclo ?? ""));
+    localStorage.setItem("omascote_saldo", String(data.saldo ?? ""));
+    localStorage.setItem("ia4tube_login_automatico", data.login || "");
+    localStorage.setItem("ia4tube_senha_automatica", data.senha_cliente || senhaGerada);
+
+    document.body.classList.remove("visitanteNaoLogado");
+    document.querySelector(".topRightArea")?.style.setProperty("display", "flex", "important");
+    document.querySelector(".saldoTopoArea")?.style.setProperty("display","flex","important");
+    document.querySelector("#btnMeusPedidos")?.style.setProperty("display","inline-flex","important");
+    document.querySelector(".saldoTopoExtra")?.style.setProperty("display","flex","important");
+
+    applyLocal();
+    refreshMe();
+    iniciarAtualizacaoHistorico();
+
+    const btnSairEl = document.getElementById("btnSair");
+    if(btnSairEl){
+      btnSairEl.textContent = "Sair";
+      btnSairEl.style.background = "#ffffff";
+    }
+
+    msgPedidoEl.innerHTML = `Conta criada automaticamente.<br>Login: <b>${data.login || ""}</b><br>Senha: <b>${data.senha_cliente || senhaGerada}</b><br>Guarde esses dados para voltar depois.`;
+
+    return true;
+
+  }catch(e){
+    msgPedidoEl.textContent = "Erro de rede ao criar sua conta automática.";
+    return false;
+  }
+}
+
 const authVisitanteModal = document.getElementById("authVisitanteModal");
 const authVisitanteCloseBtn = document.getElementById("authVisitanteCloseBtn");
 const authCriarContaBtn = document.getElementById("authCriarContaBtn");
@@ -6486,22 +6563,12 @@ function abrirCadastroVisitanteModal(){
   if(authCriarContaBtn){
     authCriarContaBtn.style.display = "block";
     authCriarContaBtn.textContent = "Criar conta e receber arte grátis 🚀";
-    authCriarContaBtn.style.width = "100%";
-    authCriarContaBtn.style.marginTop = "14px";
+    authCriarContaBtn.style.order = "-1";
   }
 
   if(authBtnsRow){
     authBtnsRow.style.display = "flex";
-    authBtnsRow.style.flexDirection = "column";
-    authBtnsRow.style.gap = "10px";
-  }
-
-  if(authEntrarBtn){
-    authEntrarBtn.style.width = "100%";
-  }
-
-  if(authCriarContaBtn && authBtnsRow && authBtnsRow.parentNode){
-    authBtnsRow.parentNode.insertBefore(authCriarContaBtn, authBtnsRow);
+    authBtnsRow.style.flexDirection = "column-reverse";
   }
 
   if(authVisitanteMsg){
@@ -8414,9 +8481,11 @@ document.getElementById("pedidoForm").addEventListener("submit", async (e)=>{
   }
 
   if(!token){
-    acaoDepoisDoCadastro = () => document.getElementById("pedidoForm")?.requestSubmit();
-    abrirCadastroVisitanteModal();
-    return;
+    const criouContaAuto = await criarContaAutomaticaAntesPedido();
+
+    if(!criouContaAuto){
+      return;
+    }
   }
 
   msgPedidoEl.textContent = "Enviando...";
