@@ -2879,7 +2879,10 @@ body.mode-result .formGrid{
 
 .field-optional-title{
   grid-column:1 / -1 !important;
-  display:block !important;
+}
+
+.field-optional-title.is-hidden{
+  display:none !important;
 }
 
 .optionalDividerTitle{
@@ -7331,7 +7334,7 @@ function configureOptionalSections(productKey){
 
     const optionalDivider = document.getElementById("optionalDivider");
     if(optionalDivider){
-      optionalDivider.style.display = "none";
+      optionalDivider.classList.add("is-hidden");
     }
 
     return;
