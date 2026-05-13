@@ -50,8 +50,37 @@
 
 
 
-      <div class="topbar">
-        <div class="storiesBar" id="storiesBar"></div>
+---
+PROCURE ISSO:
+    <div class="topbar">
+      <div class="storiesBar">
+        <div class="storyItem" onclick="abrirStory(0)">
+          <div class="storyCircle">
+            <img src="stories/1.jpg">
+          </div>
+        </div>
+
+        <div class="storyItem" onclick="abrirStory(1)">
+          <div class="storyCircle">
+            <img src="stories/2.jpg">
+          </div>
+        </div>
+
+        <div class="storyItem" onclick="abrirStory(2)">
+          <div class="storyCircle">
+            <img src="stories/3.jpg">
+          </div>
+        </div>
+
+        <div class="storyItem" onclick="abrirStory(3)">
+          <div class="storyCircle">
+            <img src="stories/4.jpg">
+          </div>
+        </div>
+      </div>
+
+TROQUE POR ISSO:
+    <div class="topbar">
 
   <title>IA4Tube — Artes automáticas para times de futebol</title>
   <link rel="icon" href="/favicon.ico" type="image/x-icon">
@@ -5239,15 +5268,152 @@ body.visitanteNaoLogado .optLabel span{
   </div>
 </div>
 
-<div class="storyModal" id="storyModal" onclick="fecharStoryPorFora(event)">
-  <div class="storyViewer">
-    <div class="storyProgress" id="storyProgress"></div>
-    <button type="button" class="storyClose" onclick="fecharStory()">×</button>
-    <button type="button" class="storyArrow storyPrev" onclick="storyAnterior(event)">‹</button>
-    <img id="storyImagemAtual" src="" alt="Story IA4Tube" oncontextmenu="return false;" onpointerdown="pausarStory(event)" onpointerup="continuarStory(event)" onpointercancel="continuarStory(event)" onpointerleave="continuarStory(event)">
-    <button type="button" class="storyArrow storyNext" onclick="proximoStory(event)">›</button>
-  </div>
-</div>
+---
+PROCURE ISSO:
+const storyImagens = token ? [
+  "stories/1.jpg",
+  "stories/2.jpg",
+  "stories/3.jpg",
+  "stories/4.jpg"
+] : [];
+
+let storyAtual = 0;
+let storyTimer = null;
+let storyPausado = false;
+let storyInicioTempo = 0;
+let storyTempoRestante = 5000;
+
+function renderStoryProgress(){
+  const progress = document.getElementById("storyProgress");
+  if(!progress) return;
+
+  progress.innerHTML = storyImagens.map((_, i)=>`
+    <div class="storyProgressItem ${i < storyAtual ? "done" : ""} ${i === storyAtual ? "active" : ""}">
+      <div class="storyProgressFill"></div>
+    </div>
+  `).join("");
+}
+
+function reiniciarStoryTimer(){
+  clearTimeout(storyTimer);
+  storyPausado = false;
+  storyTempoRestante = 5000;
+  storyInicioTempo = Date.now();
+
+  storyTimer = setTimeout(()=>{
+    proximoStory();
+  }, storyTempoRestante);
+}
+
+function pausarStory(event){
+  if(event) event.preventDefault();
+  if(storyPausado) return;
+
+  storyPausado = true;
+  clearTimeout(storyTimer);
+
+  const passado = Date.now() - storyInicioTempo;
+  storyTempoRestante = Math.max(300, storyTempoRestante - passado);
+
+  const ativo = document.querySelector(".storyProgressItem.active .storyProgressFill");
+  if(ativo){
+    const largura = ativo.getBoundingClientRect().width;
+    const pai = ativo.parentElement.getBoundingClientRect().width;
+    const pct = pai ? (largura / pai) * 100 : 0;
+    ativo.style.animationPlayState = "paused";
+    ativo.style.width = pct + "%";
+  }
+}
+
+function continuarStory(event){
+  if(event) event.preventDefault();
+  if(!storyPausado) return;
+
+  storyPausado = false;
+  storyInicioTempo = Date.now();
+
+  const ativo = document.querySelector(".storyProgressItem.active .storyProgressFill");
+  if(ativo){
+    ativo.style.animation = "none";
+    requestAnimationFrame(()=>{
+      ativo.style.animation = `storyTempo ${storyTempoRestante}ms linear forwards`;
+    });
+  }
+
+  clearTimeout(storyTimer);
+  storyTimer = setTimeout(()=>{
+    proximoStory();
+  }, storyTempoRestante);
+}
+
+function abrirStory(index){
+  storyAtual = Number(index || 0);
+
+  ia4RegistrarAcao("abriu_story", {
+    story: storyAtual
+  });
+
+  const modal = document.getElementById("storyModal");
+  const img = document.getElementById("storyImagemAtual");
+
+  if(!modal || !img) return;
+
+  img.src = storyImagens[storyAtual] || storyImagens[0];
+  modal.classList.add("open");
+  renderStoryProgress();
+  reiniciarStoryTimer();
+}
+
+function fecharStory(){
+  const modal = document.getElementById("storyModal");
+  if(!modal) return;
+
+  modal.classList.remove("open");
+  clearTimeout(storyTimer);
+}
+
+function fecharStoryPorFora(event){
+  if(event.target && event.target.id === "storyModal"){
+    fecharStory();
+  }
+}
+
+function proximoStory(event){
+  if(event) event.stopPropagation();
+
+  storyAtual++;
+
+  if(storyAtual >= storyImagens.length){
+    fecharStory();
+    return;
+  }
+
+  const img = document.getElementById("storyImagemAtual");
+  if(img) img.src = storyImagens[storyAtual];
+
+  renderStoryProgress();
+  reiniciarStoryTimer();
+}
+
+function storyAnterior(event){
+  if(event) event.stopPropagation();
+
+  storyAtual--;
+
+  if(storyAtual < 0){
+    storyAtual = 0;
+  }
+
+  const img = document.getElementById("storyImagemAtual");
+  if(img) img.src = storyImagens[storyAtual];
+
+  renderStoryProgress();
+  reiniciarStoryTimer();
+}
+
+
+TROQUE POR ISSO:
+ 
 
 <div class="ia4SupportBtn" id="ia4SupportBtn" title="Suporte IA4Tube">
   <div class="ia4SupportIcon">🎬</div>
@@ -10018,6 +10184,7 @@ if(token){
 </script>
 </body>
 </html>
+
 
 
 
