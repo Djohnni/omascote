@@ -5161,7 +5161,7 @@ body.visitanteNaoLogado .optLabel span{
 
       <div style="display:flex;gap:8px;margin-top:14px;" id="authBtnsRow">
   <button class="btnGreen" id="authEntrarBtn" type="button" style="flex:1;">
-    Entrar 🚀
+    Já tenho conta
   </button>
   <button id="authCriarContaToggle" type="button" style="flex:1;background:#e5e7eb;color:#111827;font-weight:900;border-radius:10px;">
     Criar conta
@@ -6475,9 +6475,16 @@ function abrirCadastroVisitanteModal(){
   if(authBtnsRow) authBtnsRow.style.display = "flex";
   if(authEntrarBtn) authEntrarBtn.textContent = "Já tenho conta";
   if(authCriarContaToggle) authCriarContaToggle.style.display = "none";
+
   if(authCriarContaBtn){
     authCriarContaBtn.style.display = "block";
-    authCriarContaBtn.textContent = "Criar minha arte 🚀";
+    authCriarContaBtn.textContent = "Criar conta e receber arte grátis 🚀";
+    authCriarContaBtn.style.order = "-1";
+  }
+
+  if(authBtnsRow){
+    authBtnsRow.style.display = "flex";
+    authBtnsRow.style.flexDirection = "column-reverse";
   }
 
   if(authVisitanteMsg){
@@ -6637,6 +6644,102 @@ if(modoCadastro){
     localStorage.setItem("omascote_usados", String(data.usados_no_ciclo ?? ""));
 
     setAuthVisitanteMsg(modoCadastro ? "Conta criada! Continuando..." : "Login realizado!", "ok");
+
+    if(modoCadastro){
+      document.body.classList.remove("visitanteNaoLogado");
+
+      const desbloqueio = document.createElement("div");
+
+      desbloqueio.innerHTML = `
+        <div id="ia4UnlockOverlay" style="
+          position:fixed;
+          inset:0;
+          z-index:100000;
+          background:rgba(15,23,42,.72);
+          display:flex;
+          align-items:center;
+          justify-content:center;
+          padding:18px;
+        ">
+          <div style="
+            width:min(520px,94vw);
+            background:#ffffff;
+            border-radius:24px;
+            padding:28px 22px;
+            text-align:center;
+            box-shadow:0 24px 70px rgba(15,23,42,.35);
+          ">
+            <div style="font-size:56px;">🚀</div>
+
+            <div style="
+              margin-top:10px;
+              font-size:28px;
+              font-weight:950;
+              color:#111827;
+              line-height:1.1;
+            ">
+              Parabéns!
+            </div>
+
+            <div style="
+              margin-top:12px;
+              font-size:18px;
+              font-weight:850;
+              color:#334155;
+              line-height:1.4;
+            ">
+              Você desbloqueou todas as artes da IA4Tube.
+            </div>
+
+            <div style="
+              margin-top:18px;
+              padding:16px;
+              border-radius:18px;
+              background:#ecfdf3;
+              border:1px solid #bbf7d0;
+              color:#14532d;
+              font-size:16px;
+              font-weight:900;
+              line-height:1.4;
+            ">
+              Enquanto sua arte gratuita fica pronta,<br>
+              veja outros produtos profissionais<br>
+              que você pode criar em poucos minutos.
+            </div>
+
+            <button id="ia4UnlockBtn" style="
+              margin-top:20px;
+              width:100%;
+              height:64px;
+              border:none;
+              border-radius:18px;
+              background:linear-gradient(135deg,#0f62fe,#0047c7);
+              color:#ffffff;
+              font-size:20px;
+              font-weight:950;
+              cursor:pointer;
+            ">
+              Ver todas as artes ⚽
+            </button>
+          </div>
+        </div>
+      `;
+
+      document.body.appendChild(desbloqueio);
+
+      document.getElementById("ia4UnlockBtn")?.addEventListener("click", ()=>{
+        document.getElementById("ia4UnlockOverlay")?.remove();
+
+        document.body.classList.remove("visitanteNaoLogado");
+
+        document.querySelector(".productGroupTime")?.style.setProperty("display","grid","important");
+
+        window.scrollTo({
+          top:0,
+          behavior:"smooth"
+        });
+      });
+    }
 
     fecharCadastroVisitanteModal();
 
@@ -6857,7 +6960,7 @@ authCriarContaToggle?.addEventListener("click", ()=>{
   if(authCriarContaToggle) authCriarContaToggle.style.display = "none";
   if(authCriarContaBtn){
     authCriarContaBtn.style.display = "block";
-    authCriarContaBtn.textContent = "Criar minha arte 🚀";
+    authCriarContaBtn.textContent = "Criar conta e receber arte grátis 🚀";
   }
 
   setTimeout(()=>document.getElementById("authNomeTime")?.focus(), 120);
@@ -9888,6 +9991,8 @@ if(token){
   </main>
 </body>
 </html>
+
+
 
 
 
