@@ -49,18 +49,9 @@
   </script>
 
 
-<div style="display:none !important;">
-  <button type="button" class="optionBtn" data-product="escudo3d" style="opacity:1;transform:none;">
-    <div class="circle">
-      <img src="icons/escudo3d.png" class="iconImg">
-    </div>
-    <div class="optLabel">
-      Primeira arte<br>Escudo 3D<br>
-      <span style="font-size:11px;color:#777;text-decoration:line-through;">R$18</span>
-      <span style="color:#1fbf63;font-weight:900;"> R$4</span>
-    </div>
-  </button>
-</div>
+
+      <div class="topbar">
+        <div class="storiesBar" id="storiesBar"></div>
 
   <title>IA4Tube — Artes automáticas para times de futebol</title>
   <link rel="icon" href="/favicon.ico" type="image/x-icon">
@@ -5253,7 +5244,7 @@ body.visitanteNaoLogado .optLabel span{
     <div class="storyProgress" id="storyProgress"></div>
     <button type="button" class="storyClose" onclick="fecharStory()">×</button>
     <button type="button" class="storyArrow storyPrev" onclick="storyAnterior(event)">‹</button>
-    <img id="storyImagemAtual" src="stories/1.jpg" alt="Story IA4Tube" oncontextmenu="return false;" onpointerdown="pausarStory(event)" onpointerup="continuarStory(event)" onpointercancel="continuarStory(event)" onpointerleave="continuarStory(event)">
+    <img id="storyImagemAtual" src="" alt="Story IA4Tube" oncontextmenu="return false;" onpointerdown="pausarStory(event)" onpointerup="continuarStory(event)" onpointercancel="continuarStory(event)" onpointerleave="continuarStory(event)">
     <button type="button" class="storyArrow storyNext" onclick="proximoStory(event)">›</button>
   </div>
 </div>
@@ -5380,8 +5371,9 @@ function continuarStory(event){
   const ativo = document.querySelector(".storyProgressItem.active .storyProgressFill");
   if(ativo){
     ativo.style.animation = "none";
-    ativo.offsetHeight;
-    ativo.style.animation = `storyTempo ${storyTempoRestante}ms linear forwards`;
+    requestAnimationFrame(()=>{
+      ativo.style.animation = `storyTempo ${storyTempoRestante}ms linear forwards`;
+    });
   }
 
   clearTimeout(storyTimer);
@@ -9589,8 +9581,10 @@ if(token){
 
   document.querySelector(".topRightArea")?.style.setProperty("display", "flex", "important");
 }
-carregarTempoEstimado();
-setInterval(carregarTempoEstimado, 30000);
+setTimeout(()=>{
+  carregarTempoEstimado();
+  setInterval(carregarTempoEstimado, 30000);
+}, 4000);
 setInterval(atualizarBarrasPedidosNaTela, 1000);
 
 // 🔥 DESTACAR MEUS PEDIDOS AO ENTRAR
@@ -9638,8 +9632,10 @@ function destacarMeusPedidos(){
   if(!btn) return;
 
   btn.classList.remove("highlightPedidos");
-  void btn.offsetWidth;
-  btn.classList.add("highlightPedidos");
+
+  requestAnimationFrame(()=>{
+    btn.classList.add("highlightPedidos");
+  });
 
   setTimeout(()=>{
     btn.classList.remove("highlightPedidos");
@@ -10022,6 +10018,7 @@ if(token){
 </script>
 </body>
 </html>
+
 
 
 
