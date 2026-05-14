@@ -4940,7 +4940,7 @@ body.visitanteNaoLogado .optLabel span{
               </button>
               <div class="optionalContent" data-optional-content="data">
                 <div class="phraseWrap">
-                  <input id="dataJogo" placeholder="QUAL ANIMAL VOCE QUER QUE VIRE MASCOTE?" />
+                  <input id="dataJogo" />
                   <button type="button" class="phraseBtn" id="openPhraseBtn" aria-label="Abrir frases prontas">+</button>
 
                   <div class="phraseMenu" id="phraseMenu">
@@ -5008,7 +5008,7 @@ body.visitanteNaoLogado .optLabel span{
                     <div class="name"></div>
                     <div class="chosen placeholderLike" id="chosen_escudo1">
   <span style="font-size:28px;display:block;line-height:1;margin-bottom:4px;">+</span>
-  Escudo ou brasão<br>do time
+  Enviar escudo<br>do time
 </div>
                   </div>
                   <div class="plus">+</div>
@@ -5925,15 +5925,15 @@ const PRODUCTS = {
   mascote_uniforme: {
     mode: "flyer",
     title: "Mascote + uniforme",
-    hint: "Envie o nome, o escudo do time e a camiseta/uniforme para criar o mascote profissional.",
+    hint: "Envie o animal que deseja transformar em mascote, o escudo/brasão do time e a camiseta/uniforme para criar o mascote profissional.",
     flyerTipo: "mascote_uniforme",
     labels: {
-      data: "Nome do mascote ou time",
-      esc1: "Escudo do time",
+      data: "QUAL ANIMAL VOCE QUER QUE VIRE MASCOTE?",
+      esc1: "Escudo ou brasão do time",
       mascote: "Camiseta / uniforme do time"
     },
     placeholders: {
-      data: "Nome do mascote ou time"
+      data: "QUAL ANIMAL VOCE QUER QUE VIRE MASCOTE?"
     },
     required: {
       esc1: true,
