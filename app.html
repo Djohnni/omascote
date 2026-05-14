@@ -6449,9 +6449,32 @@ async function criarContaAutomaticaAntesPedido(){
 
     token = data.token;
 
+    localStorage.setItem("omascote_token", data.token);
+    localStorage.setItem("omascote_nome_time", data.nome_time || nomeBase || "");
+    localStorage.setItem("omascote_plano", String(data.plano ?? "0"));
+    localStorage.setItem("omascote_usados", String(data.usados_no_ciclo ?? "0"));
+    localStorage.setItem("omascote_saldo", String(data.saldo ?? ""));
+
     localStorage.setItem("ia4tube_login_automatico", data.login || "");
     localStorage.setItem("ia4tube_senha_automatica", data.senha_cliente || senhaGerada);
     localStorage.setItem("ia4tube_token_pendente", data.token || "");
+
+    document.body.classList.remove("visitanteNaoLogado");
+
+    document.querySelector(".topRightArea")?.style.setProperty("display", "flex", "important");
+    document.querySelector(".saldoTopoArea")?.style.setProperty("display","flex","important");
+    document.querySelector("#btnMeusPedidos")?.style.setProperty("display","inline-flex","important");
+    document.querySelector(".saldoTopoExtra")?.style.setProperty("display","flex","important");
+
+    applyLocal();
+    refreshMe();
+    iniciarAtualizacaoHistorico();
+
+    const btnSairEl = document.getElementById("btnSair");
+    if(btnSairEl){
+      btnSairEl.textContent = "Sair";
+      btnSairEl.style.background = "#ffffff";
+    }
 
     msgPedidoEl.innerHTML = `
 🎉 Sua arte está sendo criada.<br><br>
@@ -10143,6 +10166,7 @@ if(token){
   </main>
 </body>
 </html>
+
 
 
 
