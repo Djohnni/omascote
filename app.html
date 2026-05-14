@@ -4349,7 +4349,7 @@ body.visitanteNaoLogado .productGroupTime{
 body.visitanteNaoLogado .productGroupJogador{
   display:grid !important;
   grid-template-columns:1fr !important;
-  max-width:420px !important;
+  max-width:320px !important;
   margin:0 auto !important;
 }
 
@@ -9840,10 +9840,13 @@ selectorStage?.classList.add("open");
 resetProductCategory();
 
 if(!token){
-  showProductCategory("jogador");
+  selectorStage?.classList.add("open");
 
   setTimeout(()=>{
     selectProduct("jogador_escudo");
+
+    document.querySelector(".categoryChoiceRow")?.style.setProperty("display", "none", "important");
+    document.querySelector(".categoryMiniRow")?.style.setProperty("display", "none", "important");
 
     window.scrollTo({
       top:0,
@@ -10270,6 +10273,7 @@ if(token){
   </main>
 </body>
 </html>
+
 
 
 
