@@ -5468,6 +5468,7 @@ async function entrarComGoogle(response){
     localStorage.setItem("omascote_plano", String(data.plano ?? ""));
     localStorage.setItem("omascote_usados", String(data.usados_no_ciclo ?? ""));
     localStorage.setItem("omascote_saldo", String(data.saldo ?? ""));
+    localStorage.removeItem("ia4tube_conta_auto_pendente");
 
     document.body.classList.remove("visitanteNaoLogado");
 
@@ -6833,6 +6834,7 @@ if(modoCadastro){
     localStorage.setItem("omascote_nome_time", data.nome_time || nome_time || "");
     localStorage.setItem("omascote_plano", String(data.plano ?? ""));
     localStorage.setItem("omascote_usados", String(data.usados_no_ciclo ?? ""));
+    localStorage.removeItem("ia4tube_conta_auto_pendente");
 
     setAuthVisitanteMsg(modoCadastro ? "Conta criada! Continuando..." : "Login realizado!", "ok");
 
@@ -9368,6 +9370,13 @@ async function ia4FinalizarContaAuto(id){
     const data = await r.json().catch(()=>({}));
 
     if(!r.ok || !data.ok || !data.token){
+      if(String(data.error || "").includes("já foi finalizada")){
+        localStorage.removeItem("ia4tube_conta_auto_pendente");
+        await carregarHistorico();
+        await aprovarPedido(id);
+        return;
+      }
+
       alert(data.error || "Não foi possível liberar o download.");
       return;
     }
@@ -10363,6 +10372,7 @@ if(token){
   </main>
 </body>
 </html>
+
 
 
 
