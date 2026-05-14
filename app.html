@@ -6377,8 +6377,8 @@ if(saldoHeroEl){
 }
 
 const jaComprou = Number(data.usados_no_ciclo || 0) > 0;
-const brindeMascoteDisponivel = data.brinde_mascote_disponivel === true;
-
+const brindeMascoteDisponivel = data.brinde_mascote_disponivel === true || Number(data.usados_no_ciclo || 0) === 0;
+      
 document.body.classList.toggle("clienteComBrindeMascote", brindeMascoteDisponivel);
 
 const mascotePromo = document.querySelector('[data-product="mascote_uniforme"]');
