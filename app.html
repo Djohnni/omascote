@@ -3785,6 +3785,10 @@ textarea.campoObrigatorioErro,
 }
 
 .productGroupBrinde::before{
+  content:"Mascote do seu time";
+}
+
+.clienteComBrindeMascote .productGroupBrinde::before{
   content:"🎁 Brinde primeira compra";
 }
 
@@ -4820,7 +4824,7 @@ body.visitanteNaoLogado .optLabel span{
 
           <div class="optionsRow productGroup productGroupBrinde">
             <button type="button" class="optionBtn" data-product="mascote_uniforme">
-              <div class="optLabel">Mascote<br>+ Uniforme<br><span style="color:#1fbf63;font-weight:900;">R$18,00</span></div>
+              <div class="optLabel">Mascote<br>do seu Time<br><span style="color:#1fbf63;font-weight:900;">R$18,00</span></div>
               <img src="produtos/mascote_uniforme.jpg" class="imgProduto" fetchpriority="high" loading="eager" alt="Mascote com uniforme">
             </button>
           </div>
@@ -6372,6 +6376,21 @@ if(saldoHeroEl){
 }
 
 const jaComprou = Number(data.usados_no_ciclo || 0) > 0;
+const brindeMascoteDisponivel = data.brinde_mascote_disponivel === true;
+
+document.body.classList.toggle("clienteComBrindeMascote", brindeMascoteDisponivel);
+
+const mascotePromo = document.querySelector('[data-product="mascote_uniforme"]');
+
+if(mascotePromo){
+  const label = mascotePromo.querySelector(".optLabel");
+
+  if(label){
+    label.innerHTML = brindeMascoteDisponivel
+      ? `Mascote<br>do seu Time<br><span style="font-size:13px;color:#777;text-decoration:line-through;">R$18,00</span> <span style="color:#1fbf63;font-weight:900;">Grátis</span>`
+      : `Mascote<br>do seu Time<br><span style="color:#1fbf63;font-weight:900;">R$18,00</span>`;
+  }
+}
 
 const escudoPromo = document.querySelector('[data-product="escudo3d"]');
 
@@ -10344,6 +10363,7 @@ if(token){
   </main>
 </body>
 </html>
+
 
 
 
