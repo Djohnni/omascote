@@ -4347,7 +4347,7 @@ body.visitanteNaoLogado .productGroupTime{
 body.visitanteNaoLogado .productGroupJogador{
   display:grid !important;
   grid-template-columns:1fr !important;
-  max-width:420px !important;
+  max-width:320px !important;
   margin:0 auto !important;
 }
 
@@ -5190,7 +5190,7 @@ body.visitanteNaoLogado .optLabel span{
       <label for="authNomeTime" id="labelNomeTime" style="display:none;">Nome do time</label>
       <input id="authNomeTime" placeholder="Ex: Los Hermanos" style="display:none;">
 
-      <label for="authWhatsapp">Login</label>
+      <label for="authWhatsapp">Login(Nome ou WhatsApp)</label>
       <input id="authWhatsapp" inputmode="text" autocomplete="username" placeholder="WhatsApp ou nome do time">
 
       <div id="authEscudo3dArea" style="display:none;margin-top:12px;">
@@ -9836,6 +9836,20 @@ setTimeout(()=>{
 updateChosenPlaceholders(null);
 selectorStage?.classList.add("open");
 resetProductCategory();
+
+if(!token){
+  showProductCategory("jogador");
+
+  setTimeout(()=>{
+    selectProduct("jogador_escudo");
+
+    window.scrollTo({
+      top:0,
+      behavior:"auto"
+    });
+  }, 120);
+}
+
 inicializarArrastarPedidosTopo();
 if(token){
   inicializarLoginGoogle();
@@ -10254,6 +10268,7 @@ if(token){
   </main>
 </body>
 </html>
+
 
 
 
