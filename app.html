@@ -9216,6 +9216,7 @@ function atualizarMenuPedidosTopo(pedidos){
       ${p.imagem_url ? `
         <div>
           <img class="menuPedidoThumb" src="${p.imagem_url}" alt="Arte pronta" oncontextmenu="return false;" draggable="false">
+          ${ia4FinalizarContaBox(p.id)}
           <div class="previewAviso">
             👇 Esta é apenas a prévia da imagem abaixo.<br>
             Você pode baixar a imagem final<br>
@@ -9242,7 +9243,6 @@ function atualizarMenuPedidosTopo(pedidos){
 </div>
 
 ${ia4ContaAutoPendente() ? `
-${ia4FinalizarContaBox(p.id)}
 ` : aprovado ? `
 <button type="button" class="menuPedidoBtn" onclick="baixarPedido('${p.id}')">Baixar novamente</button>
 ` : `
@@ -10151,6 +10151,7 @@ if(token){
   </main>
 </body>
 </html>
+
 
 
 
