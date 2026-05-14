@@ -4802,6 +4802,11 @@ body.visitanteNaoLogado .optLabel span{
           </div>
 
           <div class="optionsRow productGroup productGroupJogador">
+            <button type="button" class="optionBtn" data-product="mascote_uniforme">
+              <div class="optLabel">Mascote<br>+ Uniforme<br><span style="color:#1fbf63;font-weight:900;">R$18,00</span></div>
+              <img src="produtos/mascote_uniforme.jpg" class="imgProduto" fetchpriority="high" loading="eager" alt="Mascote com uniforme">
+            </button>
+
             <button type="button" class="optionBtn" data-product="proximo_jogo_jogador">
               <div class="optLabel">Próximo Jogo<br>Jogador<br><span style="color:#1fbf63;font-weight:900;">R$7,00</span></div>
               <img src="produtos/proximo_jogo_jogador.jpg" class="imgProduto" loading="lazy" decoding="async" alt="Próximo jogo jogador">
@@ -5887,6 +5892,28 @@ const PRODUCTS = {
     required: {
       esc1: true,
       esc2: false
+    },
+    phraseMenu: false,
+    hiddenFields: ["rodada", "hora", "arena", "esc2", "patro"]
+  },
+
+  mascote_uniforme: {
+    mode: "flyer",
+    title: "Mascote + uniforme",
+    hint: "Envie o nome, o escudo do time e a camiseta/uniforme para criar o mascote profissional.",
+    flyerTipo: "mascote_uniforme",
+    labels: {
+      data: "Nome do mascote ou time",
+      esc1: "Escudo do time",
+      mascote: "Camiseta / uniforme do time"
+    },
+    placeholders: {
+      data: "Nome do mascote ou time"
+    },
+    required: {
+      esc1: true,
+      esc2: false,
+      mascote: true
     },
     phraseMenu: false,
     hiddenFields: ["rodada", "hora", "arena", "esc2", "patro"]
@@ -7260,6 +7287,12 @@ function validarPedidoAntesDeEnviar(productKey){
     addFile("mascote", "Envie a foto do jogador.");
   }
 
+  if(productKey === "mascote_uniforme"){
+    addInput("dataJogo", "Preencha o nome do mascote ou time.");
+    addFile("escudo1", "Envie o escudo do time.");
+    addFile("mascote", "Envie a camiseta/uniforme do time.");
+  }
+
   if(erros.length > 0){
     msgPedidoEl.innerHTML = "Preencha os campos obrigatórios:<br>• " + erros.map(e => e.msg).join("<br>• ");
     focarCampoObrigatorio(erros[0].el);
@@ -7447,7 +7480,7 @@ function configureOptionalSections(productKey){
     return;
   }
 
-  if(productKey === "jogador_escudo"){
+  if(productKey === "jogador_escudo" || productKey === "mascote_uniforme"){
     lockOpen("data");
     lockOpen("esc1");
     lockOpen("mascote");
@@ -7516,7 +7549,8 @@ function arrangeFieldSequence(productKey){
     patrocinador: ["rodada", "esc1", "patro", "optionalDivider", "data", "submit", "msg"],
     proximo_jogo_jogador: ["placar", "esc1", "esc2", "mascote", "data", "hora", "optionalDivider", "arena", "submit", "msg"],
     resultado_jogo_jogador: ["placar", "esc1", "esc2", "mascote", "optionalDivider", "hora", "data", "submit", "msg"],
-    jogador_escudo: ["data", "esc1", "mascote", "submit", "msg"]
+    jogador_escudo: ["data", "esc1", "mascote", "submit", "msg"],
+    mascote_uniforme: ["data", "esc1", "mascote", "submit", "msg"]
   };
 
   const sequence = sequenceMap[productKey];
@@ -7594,7 +7628,7 @@ function selectProduct(productKey){
 
   selectedProductInput.value = productKey;
 
-  const categoriaInferida = ["proximo_jogo_jogador", "resultado_jogo_jogador", "jogador_escudo"].includes(productKey)
+  const categoriaInferida = ["mascote_uniforme", "proximo_jogo_jogador", "resultado_jogo_jogador", "jogador_escudo"].includes(productKey)
     ? "jogador"
     : "time";
 
@@ -8790,6 +8824,23 @@ document.getElementById("pedidoForm").addEventListener("submit", async (e)=>{
 
     fd.append("jogadores_json", JSON.stringify([{ nome: nomeJogador, posicao: "" }]));
     fd.append("jogadores_texto", nomeJogador);
+    fd.append("artilheiros", "[]");
+    fd.append("artilheiros_json", "[]");
+    fd.append("artilheiros_texto", "");
+    fd.append("artilheiros_qtd", "0");
+
+    appendEscudo1();
+    appendArquivoAtivo("mascote", "mascote", "mascote");
+  }
+
+  else if(productKey === "mascote_uniforme"){
+    const nomeMascote = val("dataJogo") || product.title || "Mascote";
+
+    fd.append("rodada", "Mascote + uniforme");
+    fd.append("data", nomeMascote);
+
+    fd.append("jogadores_json", JSON.stringify([{ nome: nomeMascote, posicao: "" }]));
+    fd.append("jogadores_texto", nomeMascote);
     fd.append("artilheiros", "[]");
     fd.append("artilheiros_json", "[]");
     fd.append("artilheiros_texto", "");
@@ -10273,6 +10324,7 @@ if(token){
   </main>
 </body>
 </html>
+
 
 
 
