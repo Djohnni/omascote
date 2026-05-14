@@ -8857,7 +8857,9 @@ document.getElementById("pedidoForm").addEventListener("submit", async (e)=>{
     const out = await r.json();
 
     if(out.ok){
-      msgPedidoEl.textContent = "";
+      if(!localStorage.getItem("ia4tube_login_automatico")){
+        msgPedidoEl.textContent = "";
+      }
       mostrarAvisoPedido();
 
       ia4Track("pedido_concluido", {
@@ -9579,8 +9581,57 @@ async function baixarPedido(id){
     pedido_id: id || ""
   });
 
-  marcarPedidoBaixado(id);
-  carregarHistorico();
+  const loginAuto = localStorage.getItem("ia4tube_login_automatico") || "";
+  const senhaAuto = localStorage.getItem("ia4tube_senha_automatica") || "";
+
+  if(loginAuto && senhaAuto && localStorage.getItem("ia4tube_conta_auto_ativada") !== "1"){
+    msgPedidoEl.innerHTML = `
+🎉 Sua arte está pronta!<br><br>
+Para baixar, ative sua conta grátis:<br><br>
+Login: <b>${loginAuto}</b><br>
+Senha: <b>${senhaAuto}</b><br><br>
+<button
+  id="btnAtivarContaAutoBaixar"
+  style="
+    margin-top:10px;
+    padding:14px 18px;
+    border:none;
+    border-radius:14px;
+    background:#16a34a;
+    color:#fff;
+    font-weight:950;
+    cursor:pointer;
+  "
+>
+Ativar conta e baixar 🚀
+</button>
+`;
+
+    setTimeout(()=>{
+      const btn = document.getElementById("btnAtivarContaAutoBaixar");
+
+      if(btn){
+        btn.onclick = async () => {
+          const tokenPendente = localStorage.getItem("ia4tube_token_pendente") || token;
+
+          try{
+            await fetch(`${API_BASE}/auth/ativar-conta-auto`, {
+              method:"POST",
+              headers:{
+                "Authorization":"Bearer " + tokenPendente
+              }
+            });
+          }catch(e){}
+
+          localStorage.setItem("ia4tube_conta_auto_ativada", "1");
+          baixarPedido(id);
+        };
+      }
+    }, 50);
+
+    msgPedidoEl.scrollIntoView({ behavior:"smooth", block:"center" });
+    return;
+  }
 
   try{
     const r = await fetch(`${API_BASE}/pedidos/${id}/download-resultado`, {
@@ -9591,6 +9642,9 @@ async function baixarPedido(id){
       alert("Erro ao baixar imagem");
       return;
     }
+
+    marcarPedidoBaixado(id);
+    carregarHistorico();
 
     const blob = await r.blob();
     const url = window.URL.createObjectURL(blob);
@@ -10166,6 +10220,7 @@ if(token){
   </main>
 </body>
 </html>
+
 
 
 
