@@ -4147,11 +4147,16 @@ textarea.campoObrigatorioErro,
   margin-top:12px;
   display:flex;
   justify-content:center;
+  width:100%;
+  overflow:hidden;
+  padding:0 4px;
 }
 
 .googleLoginBox > div{
-  transform:scale(1.14);
+  transform:scale(1.04);
   transform-origin:center;
+  width:100%;
+  max-width:280px;
 }
 
 .googleLoginBoxGrande{
@@ -4594,7 +4599,6 @@ body.visitanteNaoLogado .optLabel span{
         </div>
       </div>
 
-      <button type="button" id="btnInstalarApp" class="instalarAppBtn" aria-label="Instalar aplicativo IA4Tube">Instalar app</button>
       <button id="btnSair" type="button">Sair</button>
     </div>
 
@@ -5349,7 +5353,7 @@ async function inicializarLoginGoogle(){
           size: "large",
           text: "continue_with",
           shape: "pill",
-          width: 340
+          width: 280
         });
       });
 
@@ -6412,38 +6416,29 @@ function ia4GetDeviceIdAuto(){
 }
 
 async function criarContaAutomaticaAntesPedido(){
-  const produto = selectedProductInput?.value || "";
-  const nomeJogador = document.getElementById("dataJogo")?.value?.trim() || "";
-  const timeA = document.getElementById("timePrincipal")?.value?.trim() || "";
-  const rodada = document.getElementById("rodada")?.value?.trim() || "";
-
   const nomeBase =
-    nomeJogador ||
-    timeA ||
-    rodada ||
+    document.getElementById("dataJogo")?.value?.trim() ||
+    document.getElementById("timePrincipal")?.value?.trim() ||
     "Jogador";
 
-  const senhaGerada = "ia4" + Math.random().toString(36).slice(2, 8);
-
-  msgPedidoEl.textContent = "Criando sua conta automaticamente...";
-
   try{
+    msgPedidoEl.textContent = "Preparando sua arte...";
+
     const r = await fetch(`${API_BASE}/auth/auto-register`, {
       method:"POST",
       headers:{ "Content-Type":"application/json" },
       body:JSON.stringify({
-        nome_time: nomeBase,
-        login: nomeBase,
-        senha: senhaGerada,
-        produto,
-        device_id: ia4GetDeviceIdAuto()
+        nome_time:nomeBase,
+        login:nomeBase,
+        produto:selectedProductInput?.value || "",
+        device_id:ia4GetDeviceIdAuto()
       })
     });
 
     const data = await r.json().catch(()=>({}));
 
     if(!r.ok || !data.ok || !data.token){
-      msgPedidoEl.textContent = data.error || "Não foi possível criar sua conta automática.";
+      msgPedidoEl.textContent = data.error || "Não foi possível preparar seu acesso automático.";
       return false;
     }
 
@@ -6454,13 +6449,9 @@ async function criarContaAutomaticaAntesPedido(){
     localStorage.setItem("omascote_plano", String(data.plano ?? "0"));
     localStorage.setItem("omascote_usados", String(data.usados_no_ciclo ?? "0"));
     localStorage.setItem("omascote_saldo", String(data.saldo ?? ""));
-
-    localStorage.setItem("ia4tube_login_automatico", data.login || "");
-    localStorage.setItem("ia4tube_senha_automatica", data.senha_cliente || senhaGerada);
-    localStorage.setItem("ia4tube_token_pendente", data.token || "");
+    localStorage.setItem("ia4tube_conta_auto_pendente", "1");
 
     document.body.classList.remove("visitanteNaoLogado");
-
     document.querySelector(".topRightArea")?.style.setProperty("display", "flex", "important");
     document.querySelector(".saldoTopoArea")?.style.setProperty("display","flex","important");
     document.querySelector("#btnMeusPedidos")?.style.setProperty("display","inline-flex","important");
@@ -6476,100 +6467,9 @@ async function criarContaAutomaticaAntesPedido(){
       btnSairEl.style.background = "#ffffff";
     }
 
-    msgPedidoEl.innerHTML = `
-🎉 Sua arte está sendo criada.<br><br>
-
-Login: <b>${data.login || ""}</b><br>
-Senha: <b>${data.senha_cliente || senhaGerada}</b><br><br>
-
-<button
-  id="btnAtivarContaAuto"
-  style="
-    margin-top:10px;
-    padding:12px 16px;
-    border:none;
-    border-radius:12px;
-    background:#16a34a;
-    color:#fff;
-    font-weight:900;
-    cursor:pointer;
-  "
->
-Ativar conta e baixar 🚀
-</button>
-`;
-
-    setTimeout(()=>{
-      const btn = document.getElementById("btnAtivarContaAuto");
-
-      if(btn){
-        btn.onclick = async () => {
-          const tokenPendente = localStorage.getItem("ia4tube_token_pendente");
-
-          if(!tokenPendente){
-            alert("Não foi possível ativar sua conta.");
-            return;
-          }
-
-          token = tokenPendente;
-
-          localStorage.setItem("omascote_token", tokenPendente);
-
-          localStorage.setItem(
-            "omascote_nome_time",
-            localStorage.getItem("omascote_nome_time") || ""
-          );
-
-          localStorage.setItem(
-            "omascote_plano",
-            localStorage.getItem("omascote_plano") || "0"
-          );
-
-          localStorage.setItem(
-            "omascote_usados",
-            localStorage.getItem("omascote_usados") || "0"
-          );
-
-          document.body.classList.remove("visitanteNaoLogado");
-
-          document.querySelector(".productGroupTime")?.style.setProperty("display","grid","important");
-
-          document.querySelector(".topRightArea")?.style.setProperty("display", "flex", "important");
-          document.querySelector(".saldoTopoArea")?.style.setProperty("display","flex","important");
-          document.querySelector("#btnMeusPedidos")?.style.setProperty("display","inline-flex","important");
-          document.querySelector(".saldoTopoExtra")?.style.setProperty("display","flex","important");
-
-          applyLocal();
-          refreshMe();
-          iniciarAtualizacaoHistorico();
-
-          const btnSairEl = document.getElementById("btnSair");
-
-          if(btnSairEl){
-            btnSairEl.textContent = "Sair";
-            btnSairEl.style.background = "#ffffff";
-          }
-
-          try{
-            await fetch(`${API_BASE}/auth/ativar-conta-auto`, {
-              method:"POST",
-              headers:{
-                "Authorization":"Bearer " + tokenPendente
-              }
-            });
-          }catch(e){}
-
-          btn.remove();
-
-          msgPedidoEl.innerHTML += "<br><br>✅ Conta ativada com sucesso.";
-        };
-      }
-    }, 50);
-
     return true;
-
   }catch(e){
-    msgPedidoEl.textContent = "Erro de rede ao criar sua conta automática.";
+    msgPedidoEl.textContent = "Erro de rede ao preparar seu acesso automático.";
     return false;
   }
 }
@@ -6654,12 +6554,22 @@ function abrirCadastroVisitanteModal(){
   if(authCriarContaBtn){
     authCriarContaBtn.style.display = "block";
     authCriarContaBtn.textContent = "Criar conta e receber arte grátis 🚀";
-    authCriarContaBtn.style.order = "-1";
+    authCriarContaBtn.style.width = "100%";
+    authCriarContaBtn.style.marginTop = "14px";
   }
 
   if(authBtnsRow){
     authBtnsRow.style.display = "flex";
-    authBtnsRow.style.flexDirection = "column-reverse";
+    authBtnsRow.style.flexDirection = "column";
+    authBtnsRow.style.gap = "10px";
+  }
+
+  if(authEntrarBtn){
+    authEntrarBtn.style.width = "100%";
+  }
+
+  if(authCriarContaBtn && authBtnsRow && authBtnsRow.parentNode){
+    authBtnsRow.parentNode.insertBefore(authCriarContaBtn, authBtnsRow);
   }
 
   if(authVisitanteMsg){
@@ -8572,11 +8482,8 @@ document.getElementById("pedidoForm").addEventListener("submit", async (e)=>{
   }
 
   if(!token){
-    const criouContaAuto = await criarContaAutomaticaAntesPedido();
-
-    if(!criouContaAuto){
-      return;
-    }
+    const okAuto = await criarContaAutomaticaAntesPedido();
+    if(!okAuto) return;
   }
 
   msgPedidoEl.textContent = "Enviando...";
@@ -8857,9 +8764,7 @@ document.getElementById("pedidoForm").addEventListener("submit", async (e)=>{
     const out = await r.json();
 
     if(out.ok){
-      if(!localStorage.getItem("ia4tube_login_automatico")){
-        msgPedidoEl.textContent = "";
-      }
+      msgPedidoEl.textContent = "";
       mostrarAvisoPedido();
 
       ia4Track("pedido_concluido", {
@@ -9215,6 +9120,80 @@ function atualizarBarrasPedidosNaTela(){
   });
 }
 
+function ia4ContaAutoPendente(){
+  return localStorage.getItem("ia4tube_conta_auto_pendente") === "1";
+}
+
+function ia4FinalizarContaBox(id){
+  if(!ia4ContaAutoPendente()) return "";
+
+  return `
+    <div style="margin-top:12px;padding:14px;border-radius:16px;background:#ecfdf3;border:1px solid #bbf7d0;color:#14532d;text-align:left;">
+      <div style="font-size:16px;font-weight:950;text-align:center;margin-bottom:10px;">
+        🎉 Sua arte está pronta!
+      </div>
+
+      <div style="font-size:13px;font-weight:900;line-height:1.35;text-align:center;margin-bottom:12px;">
+        Para liberar o download, crie seu acesso grátis:
+      </div>
+
+      <input id="login_auto_${id}" placeholder="Crie seu login" style="margin-bottom:8px;background:#fff!important;color:#111827!important;border:1px solid #bbf7d0!important;">
+      <input id="senha_auto_${id}" type="password" placeholder="Crie sua senha" style="margin-bottom:10px;background:#fff!important;color:#111827!important;border:1px solid #bbf7d0!important;">
+
+      <button type="button" class="menuPedidoBtn" onclick="ia4FinalizarContaAuto('${id}')">
+        Liberar download 🚀
+      </button>
+    </div>
+  `;
+}
+
+async function ia4FinalizarContaAuto(id){
+  const login = document.getElementById("login_auto_" + id)?.value?.trim() || "";
+  const senha = document.getElementById("senha_auto_" + id)?.value || "";
+
+  if(login.length < 3){
+    alert("Digite um login com pelo menos 3 caracteres.");
+    return;
+  }
+
+  if(senha.length < 3){
+    alert("Digite uma senha com pelo menos 3 caracteres.");
+    return;
+  }
+
+  try{
+    const r = await fetch(`${API_BASE}/auth/finalizar-conta-auto`, {
+      method:"POST",
+      headers:{
+        "Authorization":"Bearer " + token,
+        "Content-Type":"application/json"
+      },
+      body:JSON.stringify({ login, senha })
+    });
+
+    const data = await r.json().catch(()=>({}));
+
+    if(!r.ok || !data.ok || !data.token){
+      alert(data.error || "Não foi possível liberar o download.");
+      return;
+    }
+
+    token = data.token;
+
+    localStorage.setItem("omascote_token", data.token);
+    localStorage.setItem("omascote_nome_time", data.nome_time || login);
+    localStorage.setItem("ia4tube_conta_auto_pendente", "0");
+
+    applyLocal();
+    refreshMe();
+    await carregarHistorico();
+
+    await aprovarPedido(id);
+  }catch(e){
+    alert("Erro de rede ao liberar download.");
+  }
+}
+
 function atualizarMenuPedidosTopo(pedidos){
   const menu = document.getElementById("menuPedidosTopo");
   if(!menu) return;
@@ -9262,7 +9241,9 @@ function atualizarMenuPedidosTopo(pedidos){
   <button class="btnCopiar" onclick="copiarDescricaoTopo('${p.id}')">📋</button>
 </div>
 
-${aprovado ? `
+${ia4ContaAutoPendente() ? `
+${ia4FinalizarContaBox(p.id)}
+` : aprovado ? `
 <button type="button" class="menuPedidoBtn" onclick="baixarPedido('${p.id}')">Baixar novamente</button>
 ` : `
 <button type="button" class="menuPedidoBtn" onclick="aprovarPedido('${p.id}')">✅ Está boa, baixar</button>
@@ -9413,7 +9394,9 @@ ${p.status === "pronto" ? `
   <button class="btnCopiar" onclick="copiarDescricao('${p.id}')">📋</button>
 </div>
 
-${aprovado ? `
+${ia4ContaAutoPendente() ? `
+${ia4FinalizarContaBox(p.id)}
+` : aprovado ? `
         <button onclick="baixarPedido('${p.id}')" style="margin-top:8px;padding:8px 12px;border-radius:10px;border:none;background:#2ecc71;color:#fff;font-weight:900;cursor:pointer;width:100%;">
           Baixar novamente
         </button>
@@ -9581,57 +9564,8 @@ async function baixarPedido(id){
     pedido_id: id || ""
   });
 
-  const loginAuto = localStorage.getItem("ia4tube_login_automatico") || "";
-  const senhaAuto = localStorage.getItem("ia4tube_senha_automatica") || "";
-
-  if(loginAuto && senhaAuto && localStorage.getItem("ia4tube_conta_auto_ativada") !== "1"){
-    msgPedidoEl.innerHTML = `
-🎉 Sua arte está pronta!<br><br>
-Para baixar, ative sua conta grátis:<br><br>
-Login: <b>${loginAuto}</b><br>
-Senha: <b>${senhaAuto}</b><br><br>
-<button
-  id="btnAtivarContaAutoBaixar"
-  style="
-    margin-top:10px;
-    padding:14px 18px;
-    border:none;
-    border-radius:14px;
-    background:#16a34a;
-    color:#fff;
-    font-weight:950;
-    cursor:pointer;
-  "
->
-Ativar conta e baixar 🚀
-</button>
-`;
-
-    setTimeout(()=>{
-      const btn = document.getElementById("btnAtivarContaAutoBaixar");
-
-      if(btn){
-        btn.onclick = async () => {
-          const tokenPendente = localStorage.getItem("ia4tube_token_pendente") || token;
-
-          try{
-            await fetch(`${API_BASE}/auth/ativar-conta-auto`, {
-              method:"POST",
-              headers:{
-                "Authorization":"Bearer " + tokenPendente
-              }
-            });
-          }catch(e){}
-
-          localStorage.setItem("ia4tube_conta_auto_ativada", "1");
-          baixarPedido(id);
-        };
-      }
-    }, 50);
-
-    msgPedidoEl.scrollIntoView({ behavior:"smooth", block:"center" });
-    return;
-  }
+  marcarPedidoBaixado(id);
+  carregarHistorico();
 
   try{
     const r = await fetch(`${API_BASE}/pedidos/${id}/download-resultado`, {
@@ -9642,9 +9576,6 @@ Ativar conta e baixar 🚀
       alert("Erro ao baixar imagem");
       return;
     }
-
-    marcarPedidoBaixado(id);
-    carregarHistorico();
 
     const blob = await r.blob();
     const url = window.URL.createObjectURL(blob);
@@ -10220,10 +10151,6 @@ if(token){
   </main>
 </body>
 </html>
-
-
-
-
 
 
 
