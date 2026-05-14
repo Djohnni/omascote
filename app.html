@@ -2026,22 +2026,20 @@
 
 .saldoMenu{
   position:absolute;
-  top:calc(100% + 12px);
+  top:calc(100% + 10px);
   right:0;
   left:auto;
   transform:none;
   display:none;
-  grid-template-columns:repeat(2, minmax(110px, 1fr));
-  gap:12px;
-  width:min(320px, calc(100vw - 20px));
-  max-width:calc(100vw - 20px);
-  padding:14px;
-  border-radius:24px;
+  grid-template-columns:repeat(2, minmax(90px, 1fr));
+  gap:10px;
+  width:min(260px, calc(100vw - 28px));
+  padding:12px;
+  border-radius:18px;
   background:#ffffff;
   border:1px solid #e5e7eb;
-  box-shadow:0 24px 60px rgba(15,23,42,.18);
+  box-shadow:0 18px 40px rgba(15,23,42,.18);
   z-index:9999;
-  overflow:hidden;
 }
 
 .saldoMenu.open{
@@ -2049,73 +2047,50 @@
 }
 
 .saldoOpcao{
-  position:relative;
-  background:linear-gradient(180deg,#ffffff,#f8fafc);
-  color:#111827;
-  border:1px solid #e5e7eb;
-  border-radius:22px;
-  padding:18px 14px;
+  background:#f8fff9;
+  color:#159947;
+  border:1px solid #dcfce7;
+  border-radius:16px;
+  padding:16px 12px;
   font-size:20px;
   font-weight:950;
-  box-shadow:0 10px 24px rgba(15,23,42,.06);
+  box-shadow:none;
   display:flex;
   flex-direction:column;
   align-items:center;
   justify-content:center;
-  gap:10px;
+  gap:6px;
   text-align:center;
-  min-height:138px;
-  transition:all .18s ease;
+  min-height:118px;
 }
 
 .saldoValor{
-  font-size:42px;
+  font-size:34px;
   line-height:1;
   font-weight:950;
-  color:#111827;
-  letter-spacing:-1px;
+  color:#16a34a;
 }
 
 .saldoTexto{
-  font-size:13px;
-  line-height:1.35;
-  font-weight:850;
-  color:#475569;
+  font-size:12px;
+  line-height:1.2;
+  font-weight:900;
+  color:#334155;
 }
 
 .saldoTextoBonus{
-  font-size:13px;
-  line-height:1.35;
-  font-weight:850;
-  color:#475569;
+  font-size:12px;
+  line-height:1.2;
+  font-weight:950;
+  color:#16a34a;
 }
 
 .saldoOpcaoPrimeira{
   background:linear-gradient(180deg,#ffffff,#f8fafc);
 }
 
-.saldoMaisPopular{
-  border:2px solid #16a34a;
-  background:linear-gradient(180deg,#ffffff,#f0fdf4);
-}
-
-.saldoMaisPopular::before{
-  content:"MAIS ESCOLHIDO";
-  position:absolute;
-  top:-10px;
-  padding:5px 12px;
-  border-radius:999px;
-  background:#16a34a;
-  color:#fff;
-  font-size:10px;
-  font-weight:950;
-  letter-spacing:.08em;
-}
-
 .saldoOpcao:hover{
-  transform:translateY(-2px);
-  border-color:#cbd5e1;
-  box-shadow:0 18px 34px rgba(15,23,42,.10);
+  background:#ecfdf3;
 }
 
 /* ===== IA4TUBE UI SIMPLES - TESTE VISUAL ===== */
@@ -3013,38 +2988,6 @@ body.mode-result .formGrid{
 }
 
 @media (max-width:680px){
-
-  .saldoMenu{
-    right:50% !important;
-    left:auto !important;
-    transform:translateX(50%) !important;
-    width:min(300px, calc(100vw - 16px)) !important;
-    max-width:calc(100vw - 16px) !important;
-    gap:10px !important;
-    padding:12px !important;
-  }
-
-  .saldoOpcao{
-    min-height:120px !important;
-    padding:14px 10px !important;
-    border-radius:18px !important;
-  }
-
-  .saldoValor{
-    font-size:34px !important;
-  }
-
-  .saldoTexto,
-  .saldoTextoBonus{
-    font-size:11px !important;
-    line-height:1.25 !important;
-  }
-
-  .saldoMaisPopular::before{
-    font-size:9px !important;
-    padding:4px 10px !important;
-  }
-
   .topbar{
     padding:14px 16px !important;
     gap:8px !important;
@@ -4742,24 +4685,24 @@ body.visitanteNaoLogado .optLabel span{
               <button class="btnGreen" id="btnAbrirSaldo">Adicionar saldo</button>
 
               <div class="saldoMenu" id="saldoMenu">
-                <button type="button" class="saldoOpcao" data-pacote="saldo_800">
+                <button type="button" class="saldoOpcao saldoOpcaoPrimeira" data-pacote="saldo_800">
                   <span class="saldoValor">R$8</span>
-                  <span class="saldoTexto">Ideal para começar</span>
+                  <span class="saldoTexto">Receba R$8 de saldo<br>Pague no Pix<br>ou cartão</span>
                 </button>
 
-                <button type="button" class="saldoOpcao saldoMaisPopular" data-pacote="saldo_1800">
+                <button type="button" class="saldoOpcao" data-pacote="saldo_1800">
                   <span class="saldoValor">R$18</span>
-                  <span class="saldoTexto">Melhor escolha para postar mais</span>
+                  <span class="saldoTextoBonus">Receba R$18 de saldo<br>+ 1 arte grátis à sua escolha</span>
                 </button>
 
                 <button type="button" class="saldoOpcao" data-pacote="saldo_2800">
                   <span class="saldoValor">R$28</span>
-                  <span class="saldoTexto">Para times mais ativos</span>
+                  <span class="saldoTextoBonus">Receba R$28 de saldo<br>+ 1 arte grátis à sua escolha</span>
                 </button>
 
                 <button type="button" class="saldoOpcao" data-pacote="saldo_4800">
                   <span class="saldoValor">R$48</span>
-                  <span class="saldoTexto">Melhor custo-benefício</span>
+                  <span class="saldoTextoBonus">Receba R$48 de saldo<br>+ 1 arte grátis à sua escolha</span>
                 </button>
               </div>
             </div>
@@ -5982,15 +5925,15 @@ const PRODUCTS = {
   mascote_uniforme: {
     mode: "flyer",
     title: "Mascote + uniforme",
-    hint: "Envie o nome, o escudo do time e a camiseta/uniforme para criar o mascote profissional.",
+    hint: "Envie o animal que deseja transformar em mascote, o escudo/brasão do time e a camiseta/uniforme para criar o mascote profissional.",
     flyerTipo: "mascote_uniforme",
     labels: {
-      data: "Nome do mascote ou time",
-      esc1: "Escudo do time",
+      data: "QUAL ANIMAL VOCE QUER QUE VIRE MASCOTE?",
+      esc1: "Escudo ou brasão do time",
       mascote: "Camiseta / uniforme do time"
     },
     placeholders: {
-      data: "Nome do mascote ou time"
+      data: "QUAL ANIMAL VOCE QUER QUE VIRE MASCOTE?"
     },
     required: {
       esc1: true,
@@ -10429,23 +10372,6 @@ if(token){
   </main>
 </body>
 </html>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
