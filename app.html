@@ -2031,15 +2031,17 @@
   left:auto;
   transform:none;
   display:none;
-  grid-template-columns:repeat(2, minmax(120px, 1fr));
-  gap:14px;
-  width:min(340px, calc(100vw - 28px));
-  padding:16px;
-  border-radius:26px;
+  grid-template-columns:repeat(2, minmax(110px, 1fr));
+  gap:12px;
+  width:min(320px, calc(100vw - 20px));
+  max-width:calc(100vw - 20px);
+  padding:14px;
+  border-radius:24px;
   background:#ffffff;
   border:1px solid #e5e7eb;
   box-shadow:0 24px 60px rgba(15,23,42,.18);
   z-index:9999;
+  overflow:hidden;
 }
 
 .saldoMenu.open{
@@ -3007,6 +3009,38 @@ body.mode-result .formGrid{
 }
 
 @media (max-width:680px){
+
+  .saldoMenu{
+    right:50% !important;
+    left:auto !important;
+    transform:translateX(50%) !important;
+    width:min(300px, calc(100vw - 16px)) !important;
+    max-width:calc(100vw - 16px) !important;
+    gap:10px !important;
+    padding:12px !important;
+  }
+
+  .saldoOpcao{
+    min-height:120px !important;
+    padding:14px 10px !important;
+    border-radius:18px !important;
+  }
+
+  .saldoValor{
+    font-size:34px !important;
+  }
+
+  .saldoTexto,
+  .saldoTextoBonus{
+    font-size:11px !important;
+    line-height:1.25 !important;
+  }
+
+  .saldoMaisPopular::before{
+    font-size:9px !important;
+    padding:4px 10px !important;
+  }
+
   .topbar{
     padding:14px 16px !important;
     gap:8px !important;
@@ -10391,6 +10425,7 @@ if(token){
   </main>
 </body>
 </html>
+
 
 
 
