@@ -2296,8 +2296,8 @@ body{
 }
 
 .ia4TopProducaoBar{
-  width:54px;
-  height:7px;
+  width:min(70vw, 320px);
+  height:9px;
   border-radius:999px;
   background:#dcfce7;
   overflow:hidden;
@@ -9101,7 +9101,7 @@ function atualizarTopoProducao(pedidos){
     }
 
     const passouMs = Date.now() - Number(inicio || Date.now());
-    const pct = Math.min(96, Math.max(4, Math.round((passouMs / 120000) * 100)));
+    const pct = Math.min(96, Math.max(4, Math.round((passouMs / 105000) * 100)));
 
     texto.textContent = "Aguarde";
     fill.style.width = pct + "%";
@@ -10254,6 +10254,7 @@ if(token){
   </main>
 </body>
 </html>
+
 
 
 
