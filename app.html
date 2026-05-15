@@ -3569,16 +3569,25 @@ textarea.campoObrigatorioErro,
   color:#dc2626 !important;
 }
 
-/* ===== LAYOUT PRODUTO AO LADO DOS CAMPOS ===== */
+/* ===== FORMULÁRIO ABERTO JUNTO DO PRODUTO ===== */
 
-.builderVisualLayout{
+.productInlineFormSlot{
+  grid-column:1 / -1 !important;
+  display:none !important;
+  width:100% !important;
+  margin:8px 0 24px !important;
+}
+
+.productInlineFormSlot.active{
+  display:block !important;
+}
+
+.productInlineFormInner{
   display:grid !important;
-  grid-template-columns:minmax(220px, 34%) minmax(0, 1fr) !important;
-  gap:28px !important;
+  grid-template-columns:minmax(220px, 300px) minmax(0, 1fr) !important;
+  gap:24px !important;
   align-items:start !important;
   width:100% !important;
-  max-width:980px !important;
-  margin:0 auto !important;
   padding:22px !important;
   border-radius:24px !important;
   border:1px solid #e5e7eb !important;
@@ -3586,66 +3595,66 @@ textarea.campoObrigatorioErro,
   box-shadow:0 18px 42px rgba(15,23,42,.08) !important;
 }
 
-.builderProdutoPreview{
+.productInlinePreview{
   position:sticky !important;
   top:16px !important;
-  align-self:start !important;
 }
 
-.builderProdutoImgBox{
-  width:100% !important;
-  border-radius:20px !important;
-  overflow:hidden !important;
-  background:#f8fafc !important;
-  border:1px solid #e5e7eb !important;
-  box-shadow:0 14px 30px rgba(15,23,42,.10) !important;
+.productInlinePreviewLabel{
+  margin:0 0 14px !important;
+  text-align:center !important;
+  color:#111827 !important;
+  font-size:24px !important;
+  line-height:1.12 !important;
+  font-weight:950 !important;
 }
 
-.builderProdutoImgBox img{
+.productInlinePreview img{
   width:100% !important;
   aspect-ratio:9/16 !important;
   object-fit:cover !important;
   display:block !important;
+  border-radius:18px !important;
+  box-shadow:0 14px 30px rgba(15,23,42,.12) !important;
 }
 
-.builderProdutoLegenda{
-  margin-top:10px !important;
-  text-align:center !important;
-  color:#64748b !important;
-  font-size:13px !important;
-  font-weight:950 !important;
-}
-
-.builderFormSide{
+.productInlineFormMount{
   min-width:0 !important;
 }
 
-body.mode-result .builderFormSide .formGrid,
-body.mode-flyer .builderFormSide .formGrid{
+.productInlineFormMount .builderArea{
+  margin-top:0 !important;
+}
+
+.productInlineFormMount .card{
+  padding:0 !important;
+}
+
+.productInlineFormMount .formGrid{
   margin-top:0 !important;
 }
 
 @media (max-width:680px){
-  .builderVisualLayout{
+  .productInlineFormInner{
     grid-template-columns:1fr !important;
     gap:16px !important;
     padding:14px !important;
     border-radius:20px !important;
   }
 
-  .builderProdutoPreview{
+  .productInlinePreview{
     position:relative !important;
     top:auto !important;
     width:min(230px, 78vw) !important;
     margin:0 auto !important;
   }
 
-  .builderProdutoLegenda{
-    font-size:12px !important;
+  .productInlinePreviewLabel{
+    font-size:19px !important;
   }
 }
 
-/* ===== FIM LAYOUT PRODUTO AO LADO DOS CAMPOS ===== */
+/* ===== FIM FORMULÁRIO ABERTO JUNTO DO PRODUTO ===== */
 
 /* ===== FIM VISUAL LIMPO CAMPOS IA4TUBE ===== */
 
@@ -4953,16 +4962,7 @@ body.visitanteNaoLogado .optLabel span{
         </div>
 
         <div class="card">
-          <div class="builderVisualLayout">
-            <div class="builderProdutoPreview" id="builderProdutoPreview">
-              <div class="builderProdutoImgBox">
-                <img id="builderProdutoImg" src="" alt="Prévia do produto">
-              </div>
-              <div class="builderProdutoLegenda" id="builderProdutoLegenda">Prévia da arte</div>
-            </div>
-
-            <div class="builderFormSide">
-              <div class="meta">
+          <div class="meta">
             <div class="pill" id="plano">Plano: —</div>
             <div class="pill" id="usados">Usados no mês: —</div>
             <div class="pill" id="status">Status: —</div>
@@ -5174,8 +5174,6 @@ body.visitanteNaoLogado .optLabel span{
               </div>
             </div>
           </form>
-            </div>
-          </div>
         </div>
 
         <div class="card" style="margin-top:16px; display:none !important;">
@@ -7692,6 +7690,54 @@ function arrangeFieldSequence(productKey){
   });
 }
 
+function prepararSlotsProdutos(){
+  document.querySelectorAll(".optionBtn[data-product]").forEach((btn)=>{
+    if(btn.nextElementSibling && btn.nextElementSibling.classList && btn.nextElementSibling.classList.contains("productInlineFormSlot")){
+      return;
+    }
+
+    const slot = document.createElement("div");
+    slot.className = "productInlineFormSlot";
+    slot.dataset.productSlot = btn.dataset.product || "";
+    btn.insertAdjacentElement("afterend", slot);
+  });
+}
+
+function abrirFormularioInline(productKey){
+  prepararSlotsProdutos();
+
+  document.querySelectorAll(".productInlineFormSlot").forEach(slot=>{
+    slot.classList.remove("active");
+    slot.innerHTML = "";
+  });
+
+  const btnProduto = document.querySelector(`.optionBtn[data-product="${productKey}"]`);
+  const slot = document.querySelector(`.productInlineFormSlot[data-product-slot="${productKey}"]`);
+  const area = document.getElementById("builderArea");
+
+  if(!btnProduto || !slot || !area) return;
+
+  const img = btnProduto.querySelector(".imgProduto");
+  const label = btnProduto.querySelector(".optLabel");
+
+  slot.innerHTML = `
+    <div class="productInlineFormInner">
+      <div class="productInlinePreview">
+        <div class="productInlinePreviewLabel">${label ? label.innerHTML : ""}</div>
+        ${img ? `<img src="${img.getAttribute("src") || ""}" alt="${img.getAttribute("alt") || "Produto"}">` : ""}
+      </div>
+      <div class="productInlineFormMount"></div>
+    </div>
+  `;
+
+  const mount = slot.querySelector(".productInlineFormMount");
+  if(mount){
+    mount.appendChild(area);
+  }
+
+  slot.classList.add("active");
+}
+
 function scrollToBuilder(){
   const el = document.getElementById("dynamicHint");
   if(el){
@@ -7752,23 +7798,6 @@ document.querySelectorAll(".categoryBtn, .categoryMiniBtn").forEach(btn=>{
   });
 });
 
-function atualizarPreviewProdutoSelecionado(productKey){
-  const imgDestino = document.getElementById("builderProdutoImg");
-  const legendaDestino = document.getElementById("builderProdutoLegenda");
-  const botaoProduto = document.querySelector(`.optionBtn[data-product="${productKey}"]`);
-  const imgOrigem = botaoProduto?.querySelector(".imgProduto");
-  const labelOrigem = botaoProduto?.querySelector(".optLabel");
-
-  if(imgDestino && imgOrigem){
-    imgDestino.src = imgOrigem.getAttribute("src") || "";
-    imgDestino.alt = imgOrigem.getAttribute("alt") || "Prévia do produto";
-  }
-
-  if(legendaDestino && labelOrigem){
-    legendaDestino.innerHTML = labelOrigem.innerHTML;
-  }
-}
-
 function selectProduct(productKey){
   const product = PRODUCTS[productKey];
   if(!product) return;
@@ -7808,7 +7837,6 @@ function selectProduct(productKey){
   dynamicTitleEl.textContent = product.title;
   dynamicHintEl.textContent = `Para ${product.title}, preciso dessas informações abaixo...`;
   btnEnviar.textContent = "Criar minha arte 🚀";
-  atualizarPreviewProdutoSelecionado(productKey);
 
   const placarTitleEl = document.querySelector(".field-placar .sectionTitle");
   if(placarTitleEl){
@@ -7860,7 +7888,7 @@ function selectProduct(productKey){
     selectorStage.classList.add("open");
   }
 
-  setTimeout(scrollToBuilder, 120);
+  abrirFormularioInline(productKey);
 }
 
 function abrirEscudo3dModal(){
@@ -10041,6 +10069,7 @@ setTimeout(()=>{
     }, 7000);
   }
 }, 500);
+prepararSlotsProdutos();
 updateChosenPlaceholders(null);
 selectorStage?.classList.add("open");
 resetProductCategory();
