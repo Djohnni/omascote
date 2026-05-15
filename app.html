@@ -4746,17 +4746,19 @@ body.visitanteNaoLogado .optLabel span{
 /* ===== MODELO NOVO: FORMULARIOS REAIS POR PRODUTO ===== */
 .productFormsRoot{
   display:grid;
-  gap:24px;
+  grid-template-columns:1fr;
+  gap:28px;
   width:100%;
-  margin-top:18px;
+  max-width:860px;
+  margin:18px auto 0;
 }
 
 .cleanProductBlock{
   display:grid;
-  grid-template-columns:minmax(230px, 34%) minmax(0, 1fr);
-  gap:22px;
+  grid-template-columns:1fr;
+  gap:18px;
   align-items:start;
-  padding:12px;
+  padding:14px;
   border-radius:26px;
   background:#ffffff;
   border:1px solid #e5e7eb;
@@ -4770,7 +4772,7 @@ body.visitanteNaoLogado .optLabel span{
 
 .cleanProductImage{
   width:100%;
-  aspect-ratio:4 / 5;
+  aspect-ratio:16 / 10;
   border-radius:20px;
   overflow:hidden;
   background:#f3f4f6;
@@ -4792,8 +4794,26 @@ body.visitanteNaoLogado .optLabel span{
 .cleanProductTitle{
   margin:0;
   color:#111827;
-  font-size:24px;
+  font-size:28px;
   line-height:1.1;
+  font-weight:950;
+}
+
+.cleanProductHeader{
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  gap:12px;
+}
+
+.cleanProductPrice{
+  flex:0 0 auto;
+  padding:8px 12px;
+  border-radius:999px;
+  background:#ecfdf3;
+  border:1px solid #bbf7d0;
+  color:#15803d;
+  font-size:15px;
   font-weight:950;
 }
 
@@ -4929,15 +4949,13 @@ body.visitanteNaoLogado .optLabel span{
   display:none !important;
 }
 
-@media (max-width:900px){
-  .cleanProductBlock{
-    grid-template-columns:1fr;
-  }
-
-  .cleanProductImage{
-    aspect-ratio:16 / 10;
-    max-height:280px;
-  }
+.categoryChoiceRow,
+.homeExamples,
+.categoryMiniRow,
+.optionsRow.productGroup,
+.examplesLink,
+.switchModeRow{
+  display:none !important;
 }
 
 @media (max-width:680px){
@@ -4949,6 +4967,10 @@ body.visitanteNaoLogado .optLabel span{
 
   .cleanProductTitle{
     font-size:20px;
+  }
+
+  .cleanProductHeader{
+    flex-direction:column;
   }
 
   .cleanScoreGrid{
@@ -7054,14 +7076,20 @@ function renderCleanProductField(product, field){
   return "";
 }
 
+function formatCleanProductPrice(product){
+  const price = Number(product?.price || 0);
+  return price ? `R$${price.toFixed(2).replace(".", ",")}` : "";
+}
+
 function renderCleanProductForms(){
   const root = document.getElementById("productFormsRoot");
   if(!root) return;
 
-  const html = Object.keys(CLEAN_PRODUCT_FORM_SCHEMAS).map(productKey => {
+  const formsHtml = Object.keys(CLEAN_PRODUCT_FORM_SCHEMAS).map(productKey => {
     const product = PRODUCTS[productKey];
     const schema = getCleanProductSchema(productKey);
     if(!product || !schema) return "";
+    const priceLabel = formatCleanProductPrice(product);
 
     return `
       <section class="cleanProductBlock" data-clean-product-block="${htmlEscape(productKey)}">
@@ -7069,7 +7097,10 @@ function renderCleanProductForms(){
           <img src="${htmlEscape(product.image || "")}" alt="">
         </div>
         <form class="cleanProductForm" data-product-form="${htmlEscape(productKey)}" enctype="multipart/form-data" novalidate>
-          <h3 class="cleanProductTitle">${htmlEscape(product.title || product.name || productKey)}</h3>
+          <div class="cleanProductHeader">
+            <h3 class="cleanProductTitle">${htmlEscape(product.title || product.name || productKey)}</h3>
+            ${priceLabel ? `<div class="cleanProductPrice">${htmlEscape(priceLabel)}</div>` : ""}
+          </div>
           ${schema.fields.map(field => renderCleanProductField(product, field)).join("")}
           <button class="btnGreen cleanSubmitBtn" type="submit">Criar minha arte ðŸš€</button>
           <div class="cleanProductMsg" data-clean-msg></div>
@@ -7083,7 +7114,24 @@ function renderCleanProductForms(){
     `;
   }).join("");
 
-  root.innerHTML = html;
+  const escudo3dProduct = PRODUCTS.escudo3d;
+  const escudo3dPriceLabel = formatCleanProductPrice(escudo3dProduct);
+  const escudo3dHtml = escudo3dProduct ? `
+    <section class="cleanProductBlock cleanEscudo3dBlock" data-clean-product-block="escudo3d">
+      <div class="cleanProductImage" aria-hidden="true">
+        <img src="${htmlEscape(escudo3dProduct.image || "")}" alt="">
+      </div>
+      <div class="cleanProductForm">
+        <div class="cleanProductHeader">
+          <h3 class="cleanProductTitle">${htmlEscape(escudo3dProduct.title || escudo3dProduct.name || "Escudo 3D")}</h3>
+          ${escudo3dPriceLabel ? `<div class="cleanProductPrice">${htmlEscape(escudo3dPriceLabel)}</div>` : ""}
+        </div>
+        <button class="btnGreen cleanSubmitBtn" type="button" data-open-escudo3d> Criar minha arte ðŸš€</button>
+      </div>
+    </section>
+  ` : "";
+
+  root.innerHTML = formsHtml + escudo3dHtml;
   bindCleanProductForms(root);
 }
 
@@ -7502,6 +7550,17 @@ function bindCleanProductForms(root){
 
   root.querySelectorAll("[data-product-form]").forEach(form => {
     form.addEventListener("submit", submitCleanProductForm);
+  });
+
+  root.querySelectorAll("[data-open-escudo3d]").forEach(btn => {
+    btn.addEventListener("click", () => {
+      activateCleanProductBlock("escudo3d");
+      if(!token){
+        abrirCadastroEscudo3dModal();
+        return;
+      }
+      abrirEscudo3dModal();
+    });
   });
 }
 
@@ -9336,13 +9395,9 @@ function selectProduct(productKey){
     selectorStage.classList.add("open");
   }
 
-  setTimeout(()=>{
-    if(getCleanProductSchema(productKey)){
-      scrollToCleanProductBlock(productKey);
-    }else{
-      scrollToBuilder();
-    }
-  }, 120);
+  if(!getCleanProductSchema(productKey)){
+    setTimeout(scrollToBuilder, 120);
+  }
 }
 
 function abrirEscudo3dModal(){
