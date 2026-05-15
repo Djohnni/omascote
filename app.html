@@ -3569,93 +3569,6 @@ textarea.campoObrigatorioErro,
   color:#dc2626 !important;
 }
 
-/* ===== FORMULÁRIO ABERTO JUNTO DO PRODUTO ===== */
-
-.productInlineFormSlot{
-  grid-column:1 / -1 !important;
-  display:none !important;
-  width:100% !important;
-  margin:8px 0 24px !important;
-}
-
-.productInlineFormSlot.active{
-  display:block !important;
-}
-
-.productInlineFormInner{
-  display:grid !important;
-  grid-template-columns:minmax(220px, 300px) minmax(0, 1fr) !important;
-  gap:24px !important;
-  align-items:start !important;
-  width:100% !important;
-  padding:22px !important;
-  border-radius:24px !important;
-  border:1px solid #e5e7eb !important;
-  background:#ffffff !important;
-  box-shadow:0 18px 42px rgba(15,23,42,.08) !important;
-}
-
-.productInlinePreview{
-  position:sticky !important;
-  top:16px !important;
-}
-
-.productInlinePreviewLabel{
-  margin:0 0 14px !important;
-  text-align:center !important;
-  color:#111827 !important;
-  font-size:24px !important;
-  line-height:1.12 !important;
-  font-weight:950 !important;
-}
-
-.productInlinePreview img{
-  width:100% !important;
-  aspect-ratio:9/16 !important;
-  object-fit:cover !important;
-  display:block !important;
-  border-radius:18px !important;
-  box-shadow:0 14px 30px rgba(15,23,42,.12) !important;
-}
-
-.productInlineFormMount{
-  min-width:0 !important;
-}
-
-.productInlineFormMount .builderArea{
-  margin-top:0 !important;
-}
-
-.productInlineFormMount .card{
-  padding:0 !important;
-}
-
-.productInlineFormMount .formGrid{
-  margin-top:0 !important;
-}
-
-@media (max-width:680px){
-  .productInlineFormInner{
-    grid-template-columns:1fr !important;
-    gap:16px !important;
-    padding:14px !important;
-    border-radius:20px !important;
-  }
-
-  .productInlinePreview{
-    position:relative !important;
-    top:auto !important;
-    width:min(230px, 78vw) !important;
-    margin:0 auto !important;
-  }
-
-  .productInlinePreviewLabel{
-    font-size:19px !important;
-  }
-}
-
-/* ===== FIM FORMULÁRIO ABERTO JUNTO DO PRODUTO ===== */
-
 /* ===== FIM VISUAL LIMPO CAMPOS IA4TUBE ===== */
 
 /* ===== FIM CORREÇÃO RESULTADO DO JOGO ===== */
@@ -3842,8 +3755,8 @@ textarea.campoObrigatorioErro,
   position:static !important;
   transform:none !important;
   width:100% !important;
-  grid-template-columns:repeat(3,1fr) !important;
-  gap:30px !important;
+  grid-template-columns:1fr !important;
+  gap:18px !important;
 }
 
 .productGroupBrinde{
@@ -3888,32 +3801,97 @@ textarea.campoObrigatorioErro,
 }
 
 .productGroup .optionBtn{
-  justify-content:flex-start !important;
-  padding:22px 10px 16px !important;
-}
-
-.productGroup .optLabel{
-  order:1 !important;
-  margin:0 0 14px !important;
-  max-width:100% !important;
+  min-height:0 !important;
+  display:grid !important;
+  grid-template-columns:170px 1fr !important;
+  grid-template-rows:auto auto !important;
+  gap:8px 18px !important;
+  align-items:center !important;
+  justify-content:initial !important;
+  padding:14px !important;
+  text-align:left !important;
 }
 
 .productGroup .imgProduto{
-  order:2 !important;
+  grid-column:1 !important;
+  grid-row:1 / 3 !important;
+  order:1 !important;
   width:100% !important;
   aspect-ratio:9/16 !important;
   object-fit:cover !important;
-  border-radius:16px !important;
-  margin:0 auto !important;
+  border-radius:18px !important;
+  margin:0 !important;
   box-shadow:0 12px 26px rgba(15,23,42,.12) !important;
   display:block !important;
+}
+
+.productGroup .optLabel{
+  grid-column:2 !important;
+  grid-row:1 !important;
+  order:2 !important;
+  margin:0 !important;
+  max-width:100% !important;
+  text-align:left !important;
+  font-size:26px !important;
+}
+
+.productGroup .optionBtn::after{
+  grid-column:2 !important;
+  grid-row:2 !important;
+  display:block !important;
+  color:#475569 !important;
+  font-size:16px !important;
+  line-height:1.35 !important;
+  font-weight:800 !important;
+  white-space:pre-line !important;
+  text-align:left !important;
+}
+
+.productGroup .optionBtn[data-product="mascote_uniforme"]::after{
+  content:"Transforme o animal do time em um mascote profissional com uniforme. Ideal para impressionar e dar identidade ao clube.";
+}
+
+.productGroup .optionBtn[data-product="proximo_jogo_jogador"]::after{
+  content:"Arte pronta para jogador divulgar o próximo jogo com aparência profissional e mais destaque no Instagram.";
+}
+
+.productGroup .optionBtn[data-product="resultado_jogo_jogador"]::after{
+  content:"Post de resultado focado no jogador, perfeito para mostrar desempenho, vitória e gerar reconhecimento.";
+}
+
+.productGroup .optionBtn[data-product="jogador_escudo"]::after{
+  content:"Foto do jogador com escudo em uma arte forte, rápida e pronta para postar. Ótima para chamar atenção.";
+}
+
+.productGroup .optionBtn[data-product="resultado"]::after{
+  content:"Mostre o placar do jogo com visual profissional e descrição pronta para postar no Instagram.";
+}
+
+.productGroup .optionBtn[data-product="escalacao"]::after{
+  content:"Monte a escalação do time com escudo, confronto e jogadores em uma arte organizada e bonita.";
+}
+
+.productGroup .optionBtn[data-product="contratacao"]::after{
+  content:"Anuncie reforços e novidades do elenco com uma arte de impacto para valorizar o jogador.";
+}
+
+.productGroup .optionBtn[data-product="proximo_jogo"]::after{
+  content:"Divulgue o próximo confronto com data, horário, adversário e escudos em visual de time grande.";
+}
+
+.productGroup .optionBtn[data-product="patrocinador"]::after{
+  content:"Valorize apoiadores e patrocinadores com uma arte profissional que ajuda o time a vender mais apoio.";
+}
+
+.productGroup .optionBtn[data-product="escudo3d"]::after{
+  content:"Transforme o escudo do time em uma arte 3D moderna, forte e pronta para usar nas redes.";
 }
 
 @media (max-width:680px){
   .productGroup,
   .optionsRow.productGroup{
-    grid-template-columns:repeat(3,1fr) !important;
-    gap:8px !important;
+    grid-template-columns:1fr !important;
+    gap:12px !important;
   }
 
   .productGroup::before{
@@ -3921,10 +3899,27 @@ textarea.campoObrigatorioErro,
     margin:4px 0 0 !important;
   }
 
+  .productGroup .optionBtn{
+    grid-template-columns:112px 1fr !important;
+    gap:6px 12px !important;
+    padding:10px !important;
+    border-radius:18px !important;
+  }
+
   .productGroup .imgProduto{
     width:100% !important;
     aspect-ratio:9/16 !important;
-    border-radius:10px !important;
+    border-radius:12px !important;
+  }
+
+  .productGroup .optLabel{
+    font-size:17px !important;
+    line-height:1.1 !important;
+  }
+
+  .productGroup .optionBtn::after{
+    font-size:12px !important;
+    line-height:1.3 !important;
   }
 }
 
@@ -7690,54 +7685,6 @@ function arrangeFieldSequence(productKey){
   });
 }
 
-function prepararSlotsProdutos(){
-  document.querySelectorAll(".optionBtn[data-product]").forEach((btn)=>{
-    if(btn.nextElementSibling && btn.nextElementSibling.classList && btn.nextElementSibling.classList.contains("productInlineFormSlot")){
-      return;
-    }
-
-    const slot = document.createElement("div");
-    slot.className = "productInlineFormSlot";
-    slot.dataset.productSlot = btn.dataset.product || "";
-    btn.insertAdjacentElement("afterend", slot);
-  });
-}
-
-function abrirFormularioInline(productKey){
-  prepararSlotsProdutos();
-
-  document.querySelectorAll(".productInlineFormSlot").forEach(slot=>{
-    slot.classList.remove("active");
-    slot.innerHTML = "";
-  });
-
-  const btnProduto = document.querySelector(`.optionBtn[data-product="${productKey}"]`);
-  const slot = document.querySelector(`.productInlineFormSlot[data-product-slot="${productKey}"]`);
-  const area = document.getElementById("builderArea");
-
-  if(!btnProduto || !slot || !area) return;
-
-  const img = btnProduto.querySelector(".imgProduto");
-  const label = btnProduto.querySelector(".optLabel");
-
-  slot.innerHTML = `
-    <div class="productInlineFormInner">
-      <div class="productInlinePreview">
-        <div class="productInlinePreviewLabel">${label ? label.innerHTML : ""}</div>
-        ${img ? `<img src="${img.getAttribute("src") || ""}" alt="${img.getAttribute("alt") || "Produto"}">` : ""}
-      </div>
-      <div class="productInlineFormMount"></div>
-    </div>
-  `;
-
-  const mount = slot.querySelector(".productInlineFormMount");
-  if(mount){
-    mount.appendChild(area);
-  }
-
-  slot.classList.add("active");
-}
-
 function scrollToBuilder(){
   const el = document.getElementById("dynamicHint");
   if(el){
@@ -7888,7 +7835,7 @@ function selectProduct(productKey){
     selectorStage.classList.add("open");
   }
 
-  abrirFormularioInline(productKey);
+  setTimeout(scrollToBuilder, 120);
 }
 
 function abrirEscudo3dModal(){
@@ -10069,7 +10016,6 @@ setTimeout(()=>{
     }, 7000);
   }
 }, 500);
-prepararSlotsProdutos();
 updateChosenPlaceholders(null);
 selectorStage?.classList.add("open");
 resetProductCategory();
