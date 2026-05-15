@@ -6276,6 +6276,24 @@ const PRODUCT_SERIALIZERS = {
 
     appendEscudo1();
     appendArquivoAtivo("mascote", "mascote", "mascote");
+  },
+
+  mascote_uniforme(ctx){
+    const { fd, product, val, appendEscudo1, appendArquivoAtivo } = ctx;
+    const nomeMascote = val("dataJogo") || product.title || "Mascote";
+
+    fd.append("rodada", "Mascote + uniforme");
+    fd.append("data", nomeMascote);
+
+    fd.append("jogadores_json", JSON.stringify([{ nome: nomeMascote, posicao: "" }]));
+    fd.append("jogadores_texto", nomeMascote);
+    fd.append("artilheiros", "[]");
+    fd.append("artilheiros_json", "[]");
+    fd.append("artilheiros_texto", "");
+    fd.append("artilheiros_qtd", "0");
+
+    appendEscudo1();
+    appendArquivoAtivo("mascote", "mascote", "mascote");
   }
 };
 
@@ -10729,4 +10747,3 @@ if(token){
   </main>
 </body>
 </html>
-
