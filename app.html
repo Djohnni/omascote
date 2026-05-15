@@ -6294,6 +6294,73 @@ const PRODUCT_SERIALIZERS = {
 
     appendEscudo1();
     appendArquivoAtivo("mascote", "mascote", "mascote");
+  },
+
+  proximo_jogo_jogador(ctx){
+    const { fd, product, val, campoAtivo, appendTextoAtivo, appendArquivoAtivo, appendEscudo1, appendEscudo2 } = ctx;
+    const t1 = val("timePrincipal");
+    const t2 = val("timeAdv");
+
+    let confronto = "";
+    if(t1 && t2) confronto = `${t1} x ${t2}`;
+    else confronto = t1 || t2 || val("rodada") || product.title || "PrÃ³ximo jogo";
+
+    fd.append("rodada", confronto);
+    fd.append("data", campoAtivo("data") && val("dataJogo") ? val("dataJogo") : "PrÃ³ximo jogo");
+    fd.append("time_principal", t1);
+    fd.append("time_adversario", t2);
+
+    appendTextoAtivo("hora", "hora", val("hora"));
+    appendTextoAtivo("arena", "arena", val("arena"));
+
+    fd.append("jogadores_json", "[]");
+    fd.append("jogadores_texto", "");
+    fd.append("artilheiros", "[]");
+    fd.append("artilheiros_json", "[]");
+    fd.append("artilheiros_texto", "");
+    fd.append("artilheiros_qtd", "0");
+
+    appendEscudo1();
+    appendEscudo2();
+    appendArquivoAtivo("mascote", "mascote", "mascote");
+  },
+
+  resultado_jogo_jogador(ctx){
+    const { fd, val, campoAtivo, appendTextoAtivo, appendArquivoAtivo, appendEscudo1, appendEscudo2 } = ctx;
+    const t1 = val("timePrincipal");
+    const g1 = val("golsTime");
+    const g2 = val("golsAdv");
+    const t2 = val("timeAdv");
+
+    let resultadoFinal = "";
+
+    if(t1 && t2){
+      resultadoFinal = `${t1} ${g1 || "0"} x ${g2 || "0"} ${t2}`;
+    }else if(t1){
+      resultadoFinal = `${t1} ${g1 || "0"} x ${g2 || "0"}`;
+    }else if(g1 || g2){
+      resultadoFinal = `${g1 || "0"} x ${g2 || "0"}`;
+    }
+
+    fd.append("rodada", resultadoFinal || "Resultado do jogo");
+    fd.append("data", campoAtivo("data") && val("dataJogo") ? val("dataJogo") : "Resultado do jogo");
+
+    fd.append("time_principal", t1);
+    fd.append("gols_time_principal", g1);
+    fd.append("gols_adversario", g2);
+    fd.append("time_adversario", t2);
+
+    appendTextoAtivo("hora", "hora", val("hora"));
+    appendArquivoAtivo("mascote", "mascote", "mascote");
+    appendEscudo1();
+    appendEscudo2();
+
+    fd.append("artilheiros", "[]");
+    fd.append("artilheiros_json", "[]");
+    fd.append("artilheiros_texto", "");
+    fd.append("artilheiros_qtd", "0");
+    fd.append("jogadores_json", "[]");
+    fd.append("jogadores_texto", "");
   }
 };
 
