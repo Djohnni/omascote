@@ -4736,10 +4736,233 @@ body.visitanteNaoLogado .optLabel span{
     max-height:220px;
   }
 
-  .productFieldsPanel > .optionalField,
+.productFieldsPanel > .optionalField,
   .productFieldsPanel > .field-placar{
     padding:10px !important;
     border-radius:18px !important;
+  }
+}
+
+/* ===== MODELO NOVO: FORMULARIOS REAIS POR PRODUTO ===== */
+.productFormsRoot{
+  display:grid;
+  gap:24px;
+  width:100%;
+  margin-top:18px;
+}
+
+.cleanProductBlock{
+  display:grid;
+  grid-template-columns:minmax(230px, 34%) minmax(0, 1fr);
+  gap:22px;
+  align-items:start;
+  padding:12px;
+  border-radius:26px;
+  background:#ffffff;
+  border:1px solid #e5e7eb;
+  box-shadow:0 18px 38px rgba(15,23,42,.08);
+}
+
+.cleanProductBlock.is-active{
+  border-color:#16a34a;
+  box-shadow:0 20px 42px rgba(22,163,74,.16);
+}
+
+.cleanProductImage{
+  width:100%;
+  aspect-ratio:4 / 5;
+  border-radius:20px;
+  overflow:hidden;
+  background:#f3f4f6;
+}
+
+.cleanProductImage img{
+  display:block;
+  width:100%;
+  height:100%;
+  object-fit:cover;
+}
+
+.cleanProductForm{
+  display:grid;
+  gap:14px;
+  align-content:start;
+}
+
+.cleanProductTitle{
+  margin:0;
+  color:#111827;
+  font-size:24px;
+  line-height:1.1;
+  font-weight:950;
+}
+
+.cleanFieldCard{
+  display:grid;
+  gap:8px;
+  padding:14px;
+  border-radius:20px;
+  background:#f8fafc;
+  border:1px solid #e5e7eb;
+}
+
+.cleanFieldLabel{
+  display:flex;
+  align-items:center;
+  gap:9px;
+  margin:0;
+  color:#111827;
+  font-size:14px;
+  font-weight:900;
+}
+
+.cleanFieldLabel::before{
+  content:"";
+  flex:0 0 16px;
+  width:16px;
+  height:16px;
+  border-radius:6px;
+  background:linear-gradient(135deg,#16a34a,#8bd450);
+  box-shadow:inset 0 0 0 4px rgba(255,255,255,.70);
+}
+
+.cleanScoreGrid{
+  display:grid;
+  grid-template-columns:1fr 78px 28px 78px 1fr;
+  gap:10px;
+  align-items:center;
+}
+
+.cleanScoreX{
+  color:#111827;
+  font-weight:950;
+  text-align:center;
+}
+
+.cleanPlayerRows{
+  display:grid;
+  gap:8px;
+}
+
+.cleanPlayerRow{
+  display:grid;
+  grid-template-columns:1fr 120px;
+  gap:8px;
+}
+
+.cleanFileBox{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  min-height:58px;
+  padding:12px 14px;
+  border-radius:18px;
+  border:2px dashed #d1d5db;
+  background:#ffffff;
+  color:#243041;
+  cursor:pointer;
+  font-weight:800;
+}
+
+.cleanFileBox:hover{
+  border-color:#16a34a;
+  background:#f0fdf4;
+}
+
+.cleanFilePlus{
+  display:grid;
+  place-items:center;
+  width:34px;
+  height:34px;
+  flex:0 0 34px;
+  border-radius:12px;
+  background:#16a34a;
+  color:#ffffff;
+  font-size:24px;
+  line-height:1;
+}
+
+.cleanSubmitBtn{
+  width:100%;
+  min-height:76px;
+  border-radius:18px;
+  font-size:22px;
+  font-weight:950;
+  text-transform:uppercase;
+}
+
+.cleanProductMsg,
+.cleanResultStatus{
+  color:#4b5563;
+  font-size:14px;
+  font-weight:800;
+  text-align:center;
+}
+
+.cleanResultBox{
+  display:none;
+  text-align:center;
+}
+
+.cleanResultBox img{
+  display:none;
+  width:100%;
+  max-width:420px;
+  border-radius:16px;
+  border:1px solid #e5e7eb;
+  box-shadow:0 14px 30px rgba(15,23,42,.12);
+}
+
+.cleanResultDownload{
+  display:none;
+  margin-top:10px;
+  color:#ffffff;
+  font-weight:900;
+  text-decoration:none;
+  padding:12px 16px;
+  border-radius:14px;
+  background:linear-gradient(135deg, #2ecc71, #1b9b51);
+}
+
+.legacyOrderFormArea{
+  display:none !important;
+}
+
+@media (max-width:900px){
+  .cleanProductBlock{
+    grid-template-columns:1fr;
+  }
+
+  .cleanProductImage{
+    aspect-ratio:16 / 10;
+    max-height:280px;
+  }
+}
+
+@media (max-width:680px){
+  .cleanProductBlock{
+    gap:14px;
+    padding:10px;
+    border-radius:22px;
+  }
+
+  .cleanProductTitle{
+    font-size:20px;
+  }
+
+  .cleanScoreGrid{
+    grid-template-columns:1fr 58px 20px 58px 1fr;
+    gap:6px;
+  }
+
+  .cleanPlayerRow{
+    grid-template-columns:1fr;
+  }
+
+  .cleanSubmitBtn{
+    min-height:64px;
+    font-size:18px;
   }
 }
 </style>
@@ -5010,7 +5233,9 @@ body.visitanteNaoLogado .optLabel span{
           <input type="hidden" id="flyerTipo" value="zz1fs">
           <input type="hidden" id="selectedProduct" value="">
 
-          <div class="productBuildLayout">
+          <div id="productFormsRoot" class="productFormsRoot"></div>
+
+          <div class="productBuildLayout legacyOrderFormArea">
             <div class="productPreviewPanel" aria-hidden="true">
               <div class="productPreviewMedia">
                 <img id="selectedProductPreviewImg" src="produtos/resultado.jpg" alt="">
@@ -6627,6 +6852,673 @@ const PRODUCT_SERIALIZERS = {
 function getProductSerializer(productKey){
   return PRODUCT_SERIALIZERS[productKey] || null;
 }
+
+const CLEAN_PRODUCT_SCHEMA_VERSION = 2;
+
+const CLEAN_PRODUCT_FORM_SCHEMAS = {
+  resultado: {
+    endpoint: "/resultado_do_jogo",
+    fields: [
+      { key: "score", type: "score", label: "Placar", required: true },
+      { key: "competition", type: "text", legacyName: "hora", labelKey: "hora", placeholderKey: "hora", required: false },
+      { key: "headline", type: "text", legacyName: "data", labelKey: "data", placeholderKey: "data", required: false, defaultValue: "Resultado do jogo" },
+      { key: "home_crest", type: "file", legacyName: "escudo1", labelKey: "esc1", required: true, savedFallback: true },
+      { key: "away_crest", type: "file", legacyName: "escudo2", labelKey: "esc2", required: true },
+      { key: "match_photo", type: "file", legacyName: "mascote", labelKey: "mascote", required: false },
+      { key: "scorers", type: "scorers", label: "Ver artilheiros", required: false }
+    ]
+  },
+  escalacao: {
+    endpoint: "/pedidos",
+    fields: [
+      { key: "matchup", type: "text", legacyName: "rodada", labelKey: "rodada", placeholderKey: "rodada", required: true },
+      { key: "match_datetime", type: "text", legacyName: "data", labelKey: "data", placeholderKey: "data", required: true },
+      { key: "competition", type: "text", legacyName: "hora", labelKey: "hora", placeholderKey: "hora", required: true },
+      { key: "venue", type: "text", legacyName: "arena", labelKey: "arena", placeholderKey: "arena", required: false },
+      { key: "players", type: "players", label: "Nome dos jogadores aqui", required: true },
+      { key: "team_crest", type: "file", legacyName: "escudo1", labelKey: "esc1", required: true, savedFallback: true },
+      { key: "opponent_crest", type: "file", legacyName: "escudo2", labelKey: "esc2", required: false },
+      { key: "team_photo", type: "file", legacyName: "mascote", labelKey: "mascote", required: false }
+    ]
+  },
+  contratacao: {
+    endpoint: "/pedidos",
+    fields: [
+      { key: "title", type: "text", legacyName: "rodada", labelKey: "rodada", placeholderKey: "rodada", required: true },
+      { key: "player_name", type: "text", legacyName: "data", labelKey: "data", placeholderKey: "data", required: true },
+      { key: "player_info", type: "text", legacyName: "hora", labelKey: "hora", placeholderKey: "hora", required: false },
+      { key: "team_crest", type: "file", legacyName: "escudo1", labelKey: "esc1", required: true, savedFallback: true },
+      { key: "player_photo", type: "file", legacyName: "escudo2", labelKey: "esc2", required: true }
+    ]
+  },
+  proximo_jogo: {
+    endpoint: "/pedidos",
+    fields: [
+      { key: "matchup", type: "matchup", label: "Confronto", required: true },
+      { key: "match_datetime", type: "text", legacyName: "data", labelKey: "data", placeholderKey: "data", required: true },
+      { key: "competition", type: "text", legacyName: "hora", labelKey: "hora", placeholderKey: "hora", required: true },
+      { key: "venue", type: "text", legacyName: "arena", labelKey: "arena", placeholderKey: "arena", required: false },
+      { key: "home_crest", type: "file", legacyName: "escudo1", labelKey: "esc1", required: true, savedFallback: true },
+      { key: "away_crest", type: "file", legacyName: "escudo2", labelKey: "esc2", required: true }
+    ]
+  },
+  patrocinador: {
+    endpoint: "/pedidos",
+    fields: [
+      { key: "title", type: "text", legacyName: "rodada", labelKey: "rodada", placeholderKey: "rodada", required: true },
+      { key: "headline", type: "text", legacyName: "data", labelKey: "data", placeholderKey: "data", required: false },
+      { key: "team_crest", type: "file", legacyName: "escudo1", labelKey: "esc1", required: true, savedFallback: true },
+      { key: "sponsor_logos", type: "multi-file", legacyName: "patrocinadores", labelKey: "patro", required: true }
+    ]
+  },
+  proximo_jogo_jogador: {
+    endpoint: "/pedidos",
+    fields: [
+      { key: "matchup", type: "matchup", label: "Confronto", required: true },
+      { key: "match_datetime", type: "text", legacyName: "data", labelKey: "data", placeholderKey: "data", required: true },
+      { key: "competition", type: "text", legacyName: "hora", labelKey: "hora", placeholderKey: "hora", required: true },
+      { key: "venue", type: "text", legacyName: "arena", labelKey: "arena", placeholderKey: "arena", required: false },
+      { key: "team_crest", type: "file", legacyName: "escudo1", labelKey: "esc1", required: true, savedFallback: true },
+      { key: "opponent_crest", type: "file", legacyName: "escudo2", labelKey: "esc2", required: true },
+      { key: "player_photo", type: "file", legacyName: "mascote", labelKey: "mascote", required: true }
+    ]
+  },
+  resultado_jogo_jogador: {
+    endpoint: "/pedidos",
+    fields: [
+      { key: "score", type: "score", label: "Placar", required: true },
+      { key: "competition", type: "text", legacyName: "hora", labelKey: "hora", placeholderKey: "hora", required: false },
+      { key: "headline", type: "text", legacyName: "data", labelKey: "data", placeholderKey: "data", required: false, defaultValue: "Resultado do jogo" },
+      { key: "team_crest", type: "file", legacyName: "escudo1", labelKey: "esc1", required: true, savedFallback: true },
+      { key: "opponent_crest", type: "file", legacyName: "escudo2", labelKey: "esc2", required: true },
+      { key: "player_photo", type: "file", legacyName: "mascote", labelKey: "mascote", required: true }
+    ]
+  },
+  jogador_escudo: {
+    endpoint: "/pedidos",
+    fields: [
+      { key: "player_name", type: "text", legacyName: "data", labelKey: "data", placeholderKey: "data", required: true },
+      { key: "team_crest", type: "file", legacyName: "escudo1", labelKey: "esc1", required: true, savedFallback: true },
+      { key: "player_photo", type: "file", legacyName: "mascote", labelKey: "mascote", required: true }
+    ],
+    legacyDefaults: { rodada: "Jogador + escudo" }
+  },
+  mascote_uniforme: {
+    endpoint: "/pedidos",
+    fields: [
+      { key: "mascot_animal", type: "text", legacyName: "data", labelKey: "data", placeholderKey: "data", required: true },
+      { key: "team_crest", type: "file", legacyName: "escudo1", labelKey: "esc1", required: true, savedFallback: true },
+      { key: "uniform_image", type: "file", legacyName: "mascote", labelKey: "mascote", required: true }
+    ],
+    legacyDefaults: { rodada: "Mascote + uniforme" }
+  }
+};
+
+function getCleanProductSchema(productKey){
+  if(productKey === "escudo3d") return null;
+  return CLEAN_PRODUCT_FORM_SCHEMAS[productKey] || null;
+}
+
+function htmlEscape(value){
+  return String(value ?? "")
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;");
+}
+
+function getCleanFieldLabel(product, field){
+  return field.label || product?.labels?.[field.labelKey] || field.key;
+}
+
+function getCleanFieldPlaceholder(product, field){
+  return field.placeholder || product?.placeholders?.[field.placeholderKey] || "";
+}
+
+function renderCleanTextField(product, field){
+  return `
+    <div class="cleanFieldCard" data-clean-field-card="${htmlEscape(field.key)}">
+      <label class="cleanFieldLabel">${getCleanFieldLabel(product, field)}</label>
+      <input name="${htmlEscape(field.key)}" data-field="${htmlEscape(field.key)}" placeholder="${htmlEscape(getCleanFieldPlaceholder(product, field))}">
+    </div>
+  `;
+}
+
+function renderCleanFileField(product, field){
+  const multiple = field.type === "multi-file" ? " multiple" : "";
+  return `
+    <div class="cleanFieldCard" data-clean-field-card="${htmlEscape(field.key)}">
+      <label class="cleanFieldLabel">${getCleanFieldLabel(product, field)}</label>
+      <input class="fileHidden" type="file" name="${htmlEscape(field.key)}" data-asset="${htmlEscape(field.key)}"${multiple} accept="image/png,image/jpeg,image/jpg,image/webp">
+      <div class="cleanFileBox" data-clean-file-for="${htmlEscape(field.key)}" tabindex="0" role="button">
+        <span data-clean-file-name="${htmlEscape(field.key)}">Nenhum arquivo</span>
+        <span class="cleanFilePlus">+</span>
+      </div>
+    </div>
+  `;
+}
+
+function renderCleanScoreField(field){
+  return `
+    <div class="cleanFieldCard" data-clean-field-card="${htmlEscape(field.key)}">
+      <label class="cleanFieldLabel">${htmlEscape(field.label || "Placar")}</label>
+      <div class="cleanScoreGrid" data-field="${htmlEscape(field.key)}">
+        <input name="home_team" data-field="home_team" placeholder="Time A">
+        <input name="home_score" data-field="home_score" type="number" min="0" placeholder="0">
+        <div class="cleanScoreX">x</div>
+        <input name="away_score" data-field="away_score" type="number" min="0" placeholder="0">
+        <input name="away_team" data-field="away_team" placeholder="Time B">
+      </div>
+    </div>
+  `;
+}
+
+function renderCleanMatchupField(field){
+  return `
+    <div class="cleanFieldCard" data-clean-field-card="${htmlEscape(field.key)}">
+      <label class="cleanFieldLabel">${htmlEscape(field.label || "Confronto")}</label>
+      <div class="cleanScoreGrid" data-field="${htmlEscape(field.key)}">
+        <input name="home_team" data-field="home_team" placeholder="Time A">
+        <div></div>
+        <div class="cleanScoreX">x</div>
+        <div></div>
+        <input name="away_team" data-field="away_team" placeholder="Time B">
+      </div>
+    </div>
+  `;
+}
+
+function renderCleanPeopleField(field){
+  const scorePlaceholder = field.type === "players" ? "PosiÃ§Ã£o (opcional)" : "Gols";
+  const scoreType = field.type === "players" ? "text" : "number";
+  return `
+    <div class="cleanFieldCard" data-clean-field-card="${htmlEscape(field.key)}">
+      <label class="cleanFieldLabel">${htmlEscape(field.label || "Jogadores")}</label>
+      <div class="cleanPlayerRows" data-clean-people="${htmlEscape(field.key)}" data-clean-people-type="${htmlEscape(field.type)}">
+        <div class="cleanPlayerRow">
+          <input data-player-name placeholder="Nome do jogador">
+          <input data-player-extra type="${scoreType}" min="0" placeholder="${scorePlaceholder}">
+        </div>
+      </div>
+      <button type="button" class="escActionBtn escActionSave" data-add-clean-people="${htmlEscape(field.key)}">Adicionar jogador</button>
+    </div>
+  `;
+}
+
+function renderCleanProductField(product, field){
+  if(field.type === "text") return renderCleanTextField(product, field);
+  if(field.type === "file" || field.type === "multi-file") return renderCleanFileField(product, field);
+  if(field.type === "score") return renderCleanScoreField(field);
+  if(field.type === "matchup") return renderCleanMatchupField(field);
+  if(field.type === "players" || field.type === "scorers") return renderCleanPeopleField(field);
+  return "";
+}
+
+function renderCleanProductForms(){
+  const root = document.getElementById("productFormsRoot");
+  if(!root) return;
+
+  const html = Object.keys(CLEAN_PRODUCT_FORM_SCHEMAS).map(productKey => {
+    const product = PRODUCTS[productKey];
+    const schema = getCleanProductSchema(productKey);
+    if(!product || !schema) return "";
+
+    return `
+      <section class="cleanProductBlock" data-clean-product-block="${htmlEscape(productKey)}">
+        <div class="cleanProductImage" aria-hidden="true">
+          <img src="${htmlEscape(product.image || "")}" alt="">
+        </div>
+        <form class="cleanProductForm" data-product-form="${htmlEscape(productKey)}" enctype="multipart/form-data" novalidate>
+          <h3 class="cleanProductTitle">${htmlEscape(product.title || product.name || productKey)}</h3>
+          ${schema.fields.map(field => renderCleanProductField(product, field)).join("")}
+          <button class="btnGreen cleanSubmitBtn" type="submit">Criar minha arte ðŸš€</button>
+          <div class="cleanProductMsg" data-clean-msg></div>
+          <div class="cleanResultBox" data-clean-result-box>
+            <div class="cleanResultStatus" data-clean-result-status>Estamos montando sua imagem...</div>
+            <img alt="Resultado pronto" data-clean-result-preview oncontextmenu="return false;" draggable="false">
+            <a href="#" class="cleanResultDownload" data-clean-result-download>Baixar imagem</a>
+          </div>
+        </form>
+      </section>
+    `;
+  }).join("");
+
+  root.innerHTML = html;
+  bindCleanProductForms(root);
+}
+
+function getCleanFormField(form, key){
+  return form.querySelector(`[data-field="${CSS.escape(key)}"]`);
+}
+
+function getCleanFormAsset(form, key){
+  return form.querySelector(`[data-asset="${CSS.escape(key)}"]`);
+}
+
+function getCleanFieldValue(form, key){
+  return getCleanFormField(form, key)?.value?.trim() || "";
+}
+
+function getCleanAssetFiles(form, key){
+  return Array.from(getCleanFormAsset(form, key)?.files || []);
+}
+
+function collectCleanPeople(form, key, type){
+  const rows = Array.from(form.querySelectorAll(`[data-clean-people="${CSS.escape(key)}"] .cleanPlayerRow`));
+  return rows.map(row => {
+    const nome = row.querySelector("[data-player-name]")?.value?.trim() || "";
+    const extra = row.querySelector("[data-player-extra]")?.value?.trim() || "";
+    if(!nome) return null;
+    if(type === "players") return { nome, posicao: extra };
+    if(extra === "" || Number(extra) < 0) return null;
+    return { nome, gols: Number(extra) };
+  }).filter(Boolean);
+}
+
+function validateCleanProductForm(productKey, form){
+  const schema = getCleanProductSchema(productKey);
+  const product = PRODUCTS[productKey];
+  const errors = [];
+
+  if(!schema) return ["Produto sem configuracao."];
+
+  form.querySelectorAll(".campoObrigatorioErro").forEach(el => el.classList.remove("campoObrigatorioErro"));
+
+  const markError = (field, message) => {
+    errors.push(message);
+    const card = form.querySelector(`[data-clean-field-card="${CSS.escape(field.key)}"]`);
+    if(card) card.classList.add("campoObrigatorioErro");
+  };
+
+  schema.fields.forEach(field => {
+    if(!field.required) return;
+
+    const label = String(getCleanFieldLabel(product, field)).replace(/<br\s*\/?>/gi, " ");
+
+    if(field.type === "text" && !getCleanFieldValue(form, field.key)){
+      markError(field, `${label} e obrigatorio.`);
+    }
+
+    if(field.type === "score"){
+      const required = ["home_team", "home_score", "away_score", "away_team"];
+      const missing = required.some(key => !getCleanFieldValue(form, key));
+      if(missing) markError(field, `${label} e obrigatorio.`);
+    }
+
+    if(field.type === "matchup"){
+      if(!getCleanFieldValue(form, "home_team") || !getCleanFieldValue(form, "away_team")){
+        markError(field, `${label} e obrigatorio.`);
+      }
+    }
+
+    if(field.type === "file" || field.type === "multi-file"){
+      const hasFiles = getCleanAssetFiles(form, field.key).length > 0;
+      const hasSaved = field.savedFallback && typeof getSavedEscudo1File === "function" && !!getSavedEscudo1File();
+      if(!hasFiles && !hasSaved) markError(field, `${label} e obrigatorio.`);
+    }
+
+    if(field.type === "players" || field.type === "scorers"){
+      const people = collectCleanPeople(form, field.key, field.type);
+      if(!people.length) markError(field, `${label} e obrigatorio.`);
+    }
+  });
+
+  return errors;
+}
+
+function serializeCleanProductForm(productKey, form){
+  const schema = getCleanProductSchema(productKey);
+  const fields = {};
+  const assets = {};
+
+  schema.fields.forEach(field => {
+    if(field.type === "text"){
+      fields[field.key] = getCleanFieldValue(form, field.key);
+    }
+
+    if(field.type === "score"){
+      fields.score = {
+        home_team: getCleanFieldValue(form, "home_team"),
+        home_score: getCleanFieldValue(form, "home_score"),
+        away_score: getCleanFieldValue(form, "away_score"),
+        away_team: getCleanFieldValue(form, "away_team")
+      };
+    }
+
+    if(field.type === "matchup"){
+      fields.matchup = {
+        home_team: getCleanFieldValue(form, "home_team"),
+        away_team: getCleanFieldValue(form, "away_team")
+      };
+    }
+
+    if(field.type === "players" || field.type === "scorers"){
+      fields[field.key] = collectCleanPeople(form, field.key, field.type);
+    }
+
+    if(field.type === "file" || field.type === "multi-file"){
+      const files = getCleanAssetFiles(form, field.key);
+      assets[field.key] = {
+        legacyName: field.legacyName || field.key,
+        files
+      };
+    }
+  });
+
+  return {
+    schema_version: CLEAN_PRODUCT_SCHEMA_VERSION,
+    product_id: productKey,
+    fields,
+    assets
+  };
+}
+
+function appendCleanTextLegacy(fd, name, value){
+  const text = String(value || "").trim();
+  if(text) fd.append(name, text);
+}
+
+function appendCleanAssetLegacy(fd, cleanOrder, fieldKey, legacyName, fallbackFile = null){
+  const files = cleanOrder.assets?.[fieldKey]?.files || [];
+  if(files.length){
+    files.forEach(file => fd.append(legacyName, file));
+    return;
+  }
+  if(fallbackFile) fd.append(legacyName, fallbackFile);
+}
+
+function buildLegacyFormDataFromClean(productKey, cleanOrder){
+  const product = PRODUCTS[productKey];
+  const schema = getCleanProductSchema(productKey);
+  const fd = new FormData();
+
+  fd.append("schema_version", String(cleanOrder.schema_version));
+  fd.append("product_id", cleanOrder.product_id);
+  fd.append("fields_json", JSON.stringify(cleanOrder.fields || {}));
+  fd.append("assets_json", JSON.stringify(Object.fromEntries(Object.entries(cleanOrder.assets || {}).map(([key, asset]) => [
+    key,
+    {
+      legacyName: asset.legacyName,
+      files: (asset.files || []).map(file => file.name || "")
+    }
+  ]))));
+
+  if(product?.mode === "flyer" || product?.flyerTipo){
+    fd.append("flyer_tipo", product.flyerTipo || "");
+  }
+
+  const defaults = schema.legacyDefaults || {};
+  Object.keys(defaults).forEach(name => appendCleanTextLegacy(fd, name, defaults[name]));
+
+  schema.fields.forEach(field => {
+    if(field.type === "text" && field.legacyName){
+      appendCleanTextLegacy(fd, field.legacyName, cleanOrder.fields[field.key] || field.defaultValue || "");
+    }
+
+    if((field.type === "file" || field.type === "multi-file") && field.legacyName){
+      const fallback = field.legacyName === "escudo1" && field.savedFallback ? getSavedEscudo1File() : null;
+      appendCleanAssetLegacy(fd, cleanOrder, field.key, field.legacyName, fallback);
+    }
+  });
+
+  if(cleanOrder.fields.score){
+    const s = cleanOrder.fields.score;
+    const rodada = `${s.home_team || ""} ${s.home_score || "0"} x ${s.away_score || "0"} ${s.away_team || ""}`.trim();
+    appendCleanTextLegacy(fd, "rodada", rodada || "Resultado do jogo");
+    if(!fd.has("data")) appendCleanTextLegacy(fd, "data", cleanOrder.fields.headline || "Resultado do jogo");
+    fd.append("time_principal", s.home_team || "");
+    fd.append("gols_time_principal", s.home_score || "");
+    fd.append("gols_adversario", s.away_score || "");
+    fd.append("time_adversario", s.away_team || "");
+  }
+
+  if(cleanOrder.fields.matchup){
+    const m = cleanOrder.fields.matchup;
+    const confronto = `${m.home_team || ""} x ${m.away_team || ""}`.trim();
+    appendCleanTextLegacy(fd, "rodada", confronto);
+    fd.append("time_principal", m.home_team || "");
+    fd.append("time_adversario", m.away_team || "");
+  }
+
+  if(productKey === "jogador_escudo" || productKey === "mascote_uniforme"){
+    const nome = cleanOrder.fields.player_name || cleanOrder.fields.mascot_animal || product?.title || "";
+    const jogadores = nome ? [{ nome, posicao: "" }] : [];
+    fd.append("jogadores_json", JSON.stringify(jogadores));
+    fd.append("jogadores_texto", nome);
+  }else if(productKey === "escalacao"){
+    const jogadores = cleanOrder.fields.players || [];
+    fd.append("jogadores_json", JSON.stringify(jogadores));
+    fd.append("jogadores_texto", jogadores.map(j => j.posicao ? `${j.nome} - ${j.posicao}` : j.nome).join("; "));
+  }else{
+    fd.append("jogadores_json", "[]");
+    fd.append("jogadores_texto", "");
+  }
+
+  if(productKey === "resultado"){
+    const artilheiros = cleanOrder.fields.scorers || [];
+    fd.append("artilheiros", JSON.stringify(artilheiros));
+    fd.append("artilheiros_json", JSON.stringify(artilheiros));
+    fd.append("artilheiros_texto", artilheiros.map(a => `${a.nome} (${a.gols} gol${a.gols === 1 ? "" : "s"})`).join("; "));
+    fd.append("artilheiros_qtd", String(artilheiros.length));
+  }else{
+    fd.append("artilheiros", "[]");
+    fd.append("artilheiros_json", "[]");
+    fd.append("artilheiros_texto", "");
+    fd.append("artilheiros_qtd", "0");
+  }
+
+  if(!fd.has("rodada")) appendCleanTextLegacy(fd, "rodada", product?.title || productKey);
+  if(!fd.has("data")) appendCleanTextLegacy(fd, "data", product?.title || productKey);
+
+  return fd;
+}
+
+function setCleanProductMsg(form, text, isError = false){
+  const msg = form.querySelector("[data-clean-msg]");
+  if(msg){
+    msg.textContent = text || "";
+    msg.style.color = isError ? "#dc2626" : "#4b5563";
+  }
+  if(msgPedidoEl) msgPedidoEl.textContent = text || "";
+}
+
+function resetCleanFormAfterSend(form){
+  form.reset();
+  form.querySelectorAll("[data-clean-file-name]").forEach(el => {
+    el.textContent = "Nenhum arquivo";
+  });
+  form.querySelectorAll(".campoObrigatorioErro").forEach(el => el.classList.remove("campoObrigatorioErro"));
+}
+
+async function acompanharResultadoClean(pedidoId, form){
+  const boxEl = form.querySelector("[data-clean-result-box]");
+  const statusElLocal = form.querySelector("[data-clean-result-status]");
+  const imgEl = form.querySelector("[data-clean-result-preview]");
+  const downloadEl = form.querySelector("[data-clean-result-download]");
+
+  if(!boxEl || !statusElLocal || !imgEl || !downloadEl) return;
+
+  boxEl.style.display = "block";
+  statusElLocal.textContent = "Estamos montando sua imagem...";
+  imgEl.style.display = "none";
+  downloadEl.style.display = "none";
+
+  const timer = setInterval(async () => {
+    try{
+      const r = await fetch(`${API_BASE}/pedidos/${pedidoId}/info`, {
+        headers: { "Authorization": "Bearer " + token }
+      });
+      const data = await r.json();
+
+      if(data.ok && data.imagem_pronta){
+        clearInterval(timer);
+        const previewUrl = `${API_BASE}/pedidos/${pedidoId}/preview?ts=${Date.now()}`;
+        statusElLocal.textContent = "Confira sua arte antes de baixar";
+        imgEl.src = previewUrl;
+        imgEl.classList.add("previewProtegida");
+        imgEl.style.display = "block";
+        downloadEl.removeAttribute("href");
+        downloadEl.textContent = "âœ… EstÃ¡ boa, baixar imagem";
+        downloadEl.onclick = (ev)=>{
+          ev.preventDefault();
+          aprovarPedido(pedidoId);
+        };
+        downloadEl.style.display = "inline-block";
+      }else{
+        statusElLocal.textContent = "Estamos montando sua imagem...";
+      }
+    }catch{
+      statusElLocal.textContent = "Erro ao consultar status da imagem.";
+    }
+  }, 5000);
+}
+
+async function submitCleanProductForm(e){
+  e.preventDefault();
+
+  const form = e.currentTarget;
+  const productKey = form.dataset.productForm || "";
+  const product = PRODUCTS[productKey];
+  const schema = getCleanProductSchema(productKey);
+
+  if(!product || !schema) return;
+
+  selectedProductInput.value = productKey;
+  flyerTipoInput.value = product.flyerTipo || "";
+  activateCleanProductBlock(productKey);
+
+  ia4RegistrarAcao("tentou_enviar_pedido", {
+    produto: productKey,
+    categoria: product.visualCategory || categoriaSelecionada || ""
+  });
+
+  const errors = validateCleanProductForm(productKey, form);
+  if(errors.length){
+    setCleanProductMsg(form, errors[0], true);
+    ia4RegistrarAcao("erro_validacao_pedido", {
+      produto: productKey,
+      categoria: product.visualCategory || categoriaSelecionada || "",
+      campo_atual: ia4CampoAtual || ""
+    });
+    return;
+  }
+
+  if(!token){
+    const okAuto = await criarContaAutomaticaAntesPedido();
+    if(!okAuto) return;
+  }
+
+  setCleanProductMsg(form, "Enviando...");
+
+  const cleanOrder = serializeCleanProductForm(productKey, form);
+  const fd = buildLegacyFormDataFromClean(productKey, cleanOrder);
+
+  try{
+    const r = await fetch(`${API_BASE}${schema.endpoint}`, {
+      method:"POST",
+      headers:{ "Authorization": "Bearer " + token },
+      body:fd
+    });
+
+    const out = await r.json();
+
+    if(out.ok){
+      setCleanProductMsg(form, "");
+      atualizarTopoProducao([{ id: out.pedido_id || "novo", status: "processando" }]);
+      mostrarAvisoPedido();
+
+      ia4Track("pedido_concluido", {
+        produto: productKey,
+        categoria: product.visualCategory || categoriaSelecionada || "",
+        pedido_id: out.pedido_id || ""
+      });
+
+      resetCleanFormAfterSend(form);
+      refreshMe();
+      carregarHistorico();
+      destacarMeusPedidos();
+
+      if(schema.endpoint === "/resultado_do_jogo"){
+        acompanharResultadoClean(out.pedido_id, form);
+      }else{
+        setTimeout(()=>{
+          window.scrollTo({ top:0, behavior:"smooth" });
+        }, 300);
+      }
+    }else{
+      ia4Track("erro_envio_pedido", {
+        produto: productKey,
+        categoria: product.visualCategory || categoriaSelecionada || "",
+        erro: out.error || "Erro ao enviar"
+      });
+      setCleanProductMsg(form, out.error || "Erro ao enviar", true);
+    }
+  }catch{
+    setCleanProductMsg(form, "Erro de rede ao enviar.", true);
+  }
+}
+
+function bindCleanProductForms(root){
+  root.querySelectorAll("[data-clean-file-for]").forEach(box => {
+    box.addEventListener("click", () => {
+      const form = box.closest("[data-product-form]");
+      const key = box.dataset.cleanFileFor;
+      getCleanFormAsset(form, key)?.click();
+    });
+    box.addEventListener("keydown", (e) => {
+      if(e.key === "Enter" || e.key === " "){
+        e.preventDefault();
+        box.click();
+      }
+    });
+  });
+
+  root.querySelectorAll("[data-asset]").forEach(input => {
+    input.addEventListener("change", () => {
+      const form = input.closest("[data-product-form]");
+      const label = form?.querySelector(`[data-clean-file-name="${CSS.escape(input.dataset.asset)}"]`);
+      if(!label) return;
+      const files = Array.from(input.files || []);
+      label.textContent = files.length ? files.map(file => file.name).join(", ") : "Nenhum arquivo";
+    });
+  });
+
+  root.querySelectorAll("[data-add-clean-people]").forEach(btn => {
+    btn.addEventListener("click", () => {
+      const key = btn.dataset.addCleanPeople;
+      const rows = btn.closest("[data-product-form]")?.querySelector(`[data-clean-people="${CSS.escape(key)}"]`);
+      const type = rows?.dataset.cleanPeopleType || "scorers";
+      if(!rows) return;
+      const extraPlaceholder = type === "players" ? "PosiÃ§Ã£o (opcional)" : "Gols";
+      const extraType = type === "players" ? "text" : "number";
+      rows.insertAdjacentHTML("beforeend", `
+        <div class="cleanPlayerRow">
+          <input data-player-name placeholder="Nome do jogador">
+          <input data-player-extra type="${extraType}" min="0" placeholder="${extraPlaceholder}">
+        </div>
+      `);
+    });
+  });
+
+  root.querySelectorAll("[data-product-form]").forEach(form => {
+    form.addEventListener("submit", submitCleanProductForm);
+  });
+}
+
+function activateCleanProductBlock(productKey){
+  document.querySelectorAll("[data-clean-product-block]").forEach(block => {
+    block.classList.toggle("is-active", block.dataset.cleanProductBlock === productKey);
+  });
+}
+
+function scrollToCleanProductBlock(productKey){
+  const block = document.querySelector(`[data-clean-product-block="${CSS.escape(productKey)}"]`);
+  if(block){
+    block.scrollIntoView({ behavior:"smooth", block:"start" });
+  }
+}
+
+renderCleanProductForms();
 
 function getArtilheiroRowHtml(mode = "resultado"){
   if(mode === "escalacao"){
@@ -8392,6 +9284,8 @@ function selectProduct(productKey){
     selectedProductPreviewImg.alt = product.title || product.name || "";
   }
 
+  activateCleanProductBlock(productKey);
+
   const placarTitleEl = document.querySelector(".field-placar .sectionTitle");
   if(placarTitleEl){
     placarTitleEl.textContent = productKey === "proximo_jogo" ? "Confronto" : "Placar";
@@ -8442,7 +9336,13 @@ function selectProduct(productKey){
     selectorStage.classList.add("open");
   }
 
-  setTimeout(scrollToBuilder, 120);
+  setTimeout(()=>{
+    if(getCleanProductSchema(productKey)){
+      scrollToCleanProductBlock(productKey);
+    }else{
+      scrollToBuilder();
+    }
+  }, 120);
 }
 
 function abrirEscudo3dModal(){
