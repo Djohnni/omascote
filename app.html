@@ -5945,6 +5945,344 @@ const PRODUCTS = {
   }
 };
 
+const PRODUCT_CONFIG_DETAILS = {
+  resultado: {
+    id: "resultado",
+    name: "Resultado do jogo",
+    price: 8,
+    visualCategory: "time",
+    image: "produtos/resultado.jpg",
+    fields: {
+      placar: { visible: true, required: true },
+      hora: { visible: true, required: false },
+      data: { visible: true, required: false },
+      esc1: { visible: true, required: true },
+      esc2: { visible: true, required: true },
+      mascote: { visible: true, required: false },
+      artilheiros: { visible: true, required: false }
+    },
+    validation: {
+      requiredInputs: ["timePrincipal", "golsTime", "golsAdv", "timeAdv"],
+      requiredUploads: ["escudo1", "escudo2"]
+    },
+    uploads: {
+      escudo1: { used: true, required: true, formField: "escudo1", outputName: "escudo1.png" },
+      escudo2: { used: true, required: true, formField: "escudo2", outputName: "escudo2.png" },
+      mascote: { used: true, required: false, formField: "mascote", outputName: "mascote.png" },
+      patrocinadores: { used: false, required: false, formField: "patrocinadores" }
+    },
+    serializer: "resultado",
+    legacy: { endpoint: "/resultado_do_jogo", flyerTipo: "", backendCategoria: "resultado" },
+    specialRules: { endpointResultado: true, phraseMenu: true, savedEscudo1Fallback: true }
+  },
+
+  escalacao: {
+    id: "escalacao",
+    name: "Escalacao",
+    price: 8,
+    visualCategory: "time",
+    image: "produtos/escalacao.jpg",
+    fields: {
+      rodada: { visible: true, required: true },
+      data: { visible: true, required: true },
+      hora: { visible: true, required: true },
+      arena: { visible: true, required: false },
+      esc1: { visible: true, required: true },
+      esc2: { visible: true, required: false },
+      mascote: { visible: true, required: false },
+      artilheiros: { visible: true, required: true }
+    },
+    validation: {
+      requiredInputs: ["rodada", "dataJogo", "hora"],
+      requiredUploads: ["escudo1"],
+      custom: ["jogadores"]
+    },
+    uploads: {
+      escudo1: { used: true, required: true, formField: "escudo1", outputName: "escudo1.png" },
+      escudo2: { used: true, required: false, formField: "escudo2", outputName: "escudo2.png" },
+      mascote: { used: true, required: false, formField: "mascote", outputName: "mascote.png" },
+      patrocinadores: { used: false, required: false, formField: "patrocinadores" }
+    },
+    serializer: "escalacao",
+    legacy: { endpoint: "/pedidos", flyerTipo: "zz1fs", backendCategoria: "escalacao" },
+    specialRules: { playerListMode: "escalacao", savedEscudo1Fallback: true }
+  },
+
+  contratacao: {
+    id: "contratacao",
+    name: "Contratacao",
+    price: 7,
+    visualCategory: "time",
+    image: "produtos/contratacao.jpg",
+    fields: {
+      rodada: { visible: true, required: true },
+      data: { visible: true, required: true },
+      hora: { visible: true, required: false },
+      esc1: { visible: true, required: true },
+      esc2: { visible: true, required: true }
+    },
+    validation: {
+      requiredInputs: ["rodada", "dataJogo"],
+      requiredUploads: ["escudo1", "escudo2"]
+    },
+    uploads: {
+      escudo1: { used: true, required: true, formField: "escudo1", outputName: "escudo1.png" },
+      escudo2: { used: true, required: true, formField: "escudo2", outputName: "escudo2.png" },
+      mascote: { used: false, required: false, formField: "mascote", outputName: "mascote.png" },
+      patrocinadores: { used: false, required: false, formField: "patrocinadores" }
+    },
+    serializer: "contratacao",
+    legacy: { endpoint: "/pedidos", flyerTipo: "zz1fm", backendCategoria: "contratacao" },
+    specialRules: { usesDataAsPlayerName: true, savedEscudo1Fallback: true }
+  },
+
+  proximo_jogo: {
+    id: "proximo_jogo",
+    name: "Proximo jogo",
+    price: 7,
+    visualCategory: "time",
+    image: "produtos/proximo_jogo.jpg",
+    fields: {
+      placar: { visible: true, required: false },
+      data: { visible: true, required: true },
+      hora: { visible: true, required: true },
+      arena: { visible: true, required: false },
+      esc1: { visible: true, required: true },
+      esc2: { visible: true, required: true }
+    },
+    validation: {
+      requiredInputs: ["timePrincipal", "timeAdv", "dataJogo", "hora"],
+      requiredUploads: ["escudo1", "escudo2"]
+    },
+    uploads: {
+      escudo1: { used: true, required: true, formField: "escudo1", outputName: "escudo1.png" },
+      escudo2: { used: true, required: true, formField: "escudo2", outputName: "escudo2.png" },
+      mascote: { used: false, required: false, formField: "mascote", outputName: "mascote.png" },
+      patrocinadores: { used: false, required: false, formField: "patrocinadores" }
+    },
+    serializer: "proximo_jogo",
+    legacy: { endpoint: "/pedidos", flyerTipo: "zz1ft", backendCategoria: "proximo_jogo" },
+    specialRules: { usesMatchTeams: true, savedEscudo1Fallback: true }
+  },
+
+  patrocinador: {
+    id: "patrocinador",
+    name: "Patrocinador / Apoio",
+    price: 8,
+    visualCategory: "time",
+    image: "produtos/patrocinador.jpg",
+    fields: {
+      rodada: { visible: true, required: true },
+      data: { visible: true, required: false },
+      esc1: { visible: true, required: true },
+      patro: { visible: true, required: true }
+    },
+    validation: {
+      requiredInputs: ["rodada"],
+      requiredUploads: ["escudo1", "patrocinadores"]
+    },
+    uploads: {
+      escudo1: { used: true, required: true, formField: "escudo1", outputName: "escudo1.png" },
+      escudo2: { used: false, required: false, formField: "escudo2", outputName: "escudo2.png" },
+      mascote: { used: false, required: false, formField: "mascote", outputName: "mascote.png" },
+      patrocinadores: { used: true, required: true, formField: "patrocinadores", outputNamePattern: "pat{NN}.png" }
+    },
+    serializer: "patrocinador",
+    legacy: { endpoint: "/pedidos", flyerTipo: "zz1fj", backendCategoria: "patrocinador" },
+    specialRules: { multipleSponsors: true, savedEscudo1Fallback: true }
+  },
+
+  escudo3d: {
+    id: "escudo3d",
+    name: "Escudo 3D",
+    price: 4,
+    visualCategory: "time",
+    image: "produtos/escudo3d.jpg",
+    fields: {
+      esc1: { visible: true, required: true }
+    },
+    validation: {
+      requiredInputs: [],
+      requiredUploads: ["escudo1"]
+    },
+    uploads: {
+      escudo1: { used: true, required: true, formField: "escudo1", outputName: "escudo1.png" },
+      escudo2: { used: false, required: false, formField: "escudo2", outputName: "escudo2.png" },
+      mascote: { used: false, required: false, formField: "mascote", outputName: "mascote.png" },
+      patrocinadores: { used: false, required: false, formField: "patrocinadores" }
+    },
+    serializer: "escudo3d",
+    legacy: { endpoint: "/pedidos", flyerTipo: "escudo3d", backendCategoria: "escudo3d" },
+    specialRules: { modalFlow: true, autoRegisterFlow: true }
+  },
+
+  proximo_jogo_jogador: {
+    id: "proximo_jogo_jogador",
+    name: "Proximo jogo jogador",
+    price: 7,
+    visualCategory: "jogador",
+    image: "produtos/proximo_jogo_jogador.jpg",
+    fields: {
+      placar: { visible: true, required: false },
+      data: { visible: true, required: true },
+      hora: { visible: true, required: true },
+      arena: { visible: true, required: false },
+      esc1: { visible: true, required: true },
+      esc2: { visible: true, required: false },
+      mascote: { visible: true, required: true }
+    },
+    validation: {
+      requiredInputs: ["timePrincipal", "timeAdv", "dataJogo", "hora"],
+      requiredUploads: ["escudo1", "mascote"]
+    },
+    uploads: {
+      escudo1: { used: true, required: true, formField: "escudo1", outputName: "escudo1.png" },
+      escudo2: { used: true, required: false, formField: "escudo2", outputName: "escudo2.png" },
+      mascote: { used: true, required: true, formField: "mascote", outputName: "mascote.png" },
+      patrocinadores: { used: false, required: false, formField: "patrocinadores" }
+    },
+    serializer: "proximo_jogo_jogador",
+    legacy: { endpoint: "/pedidos", flyerTipo: "jog_proximo", backendCategoria: "proximo_jogo_jogador" },
+    specialRules: { playerFocused: true, savedEscudo1Fallback: true }
+  },
+
+  resultado_jogo_jogador: {
+    id: "resultado_jogo_jogador",
+    name: "Resultado jogador",
+    price: 8,
+    visualCategory: "jogador",
+    image: "produtos/resultado_jogador.jpg",
+    fields: {
+      placar: { visible: true, required: true },
+      hora: { visible: true, required: false },
+      data: { visible: true, required: false },
+      esc1: { visible: true, required: true },
+      esc2: { visible: true, required: true },
+      mascote: { visible: true, required: true }
+    },
+    validation: {
+      requiredInputs: ["timePrincipal", "golsTime", "golsAdv", "timeAdv"],
+      requiredUploads: ["escudo1", "escudo2", "mascote"]
+    },
+    uploads: {
+      escudo1: { used: true, required: true, formField: "escudo1", outputName: "escudo1.png" },
+      escudo2: { used: true, required: true, formField: "escudo2", outputName: "escudo2.png" },
+      mascote: { used: true, required: true, formField: "mascote", outputName: "mascote.png" },
+      patrocinadores: { used: false, required: false, formField: "patrocinadores" }
+    },
+    serializer: "resultado_jogo_jogador",
+    legacy: { endpoint: "/pedidos", flyerTipo: "jog_resultado", backendCategoria: "resultado_jogo_jogador" },
+    specialRules: { playerFocused: true, phraseMenu: true, savedEscudo1Fallback: true }
+  },
+
+  jogador_escudo: {
+    id: "jogador_escudo",
+    name: "Jogador + escudo",
+    price: 6,
+    visualCategory: "jogador",
+    image: "produtos/jogador_escudo.jpg",
+    fields: {
+      data: { visible: true, required: true },
+      esc1: { visible: true, required: true },
+      mascote: { visible: true, required: true }
+    },
+    validation: {
+      requiredInputs: ["dataJogo"],
+      requiredUploads: ["escudo1", "mascote"]
+    },
+    uploads: {
+      escudo1: { used: true, required: true, formField: "escudo1", outputName: "escudo1.png" },
+      escudo2: { used: false, required: false, formField: "escudo2", outputName: "escudo2.png" },
+      mascote: { used: true, required: true, formField: "mascote", outputName: "mascote.png" },
+      patrocinadores: { used: false, required: false, formField: "patrocinadores" }
+    },
+    serializer: "jogador_escudo",
+    legacy: { endpoint: "/pedidos", flyerTipo: "jog_escudo", backendCategoria: "jogador_escudo" },
+    specialRules: { usesDataAsPlayerName: true, savedEscudo1Fallback: true }
+  },
+
+  mascote_uniforme: {
+    id: "mascote_uniforme",
+    name: "Mascote + uniforme",
+    price: 18,
+    visualCategory: "time",
+    image: "produtos/mascote_uniforme.jpg",
+    fields: {
+      data: { visible: true, required: true },
+      esc1: { visible: true, required: true },
+      mascote: { visible: true, required: true }
+    },
+    validation: {
+      requiredInputs: ["dataJogo"],
+      requiredUploads: ["escudo1", "mascote"]
+    },
+    uploads: {
+      escudo1: { used: true, required: true, formField: "escudo1", outputName: "escudo1.png" },
+      escudo2: { used: false, required: false, formField: "escudo2", outputName: "escudo2.png" },
+      mascote: { used: true, required: true, formField: "mascote", outputName: "mascote.png" },
+      patrocinadores: { used: false, required: false, formField: "patrocinadores" }
+    },
+    serializer: "mascote_uniforme",
+    legacy: { endpoint: "/pedidos", flyerTipo: "mascote_uniforme", backendCategoria: "mascote_uniforme" },
+    specialRules: { canUseGift: true, usesDataAsMascotName: true, savedEscudo1Fallback: true }
+  }
+};
+
+Object.keys(PRODUCT_CONFIG_DETAILS).forEach((productKey) => {
+  PRODUCTS[productKey] = {
+    ...(PRODUCTS[productKey] || {}),
+    ...PRODUCT_CONFIG_DETAILS[productKey]
+  };
+});
+
+function getProductConfig(productKey){
+  return PRODUCTS[productKey] || null;
+}
+
+function getProductFieldsConfig(productKey){
+  return getProductConfig(productKey)?.fields || {};
+}
+
+function getProductUploadConfig(productKey){
+  return getProductConfig(productKey)?.uploads || {};
+}
+
+function getProductValidationConfig(productKey){
+  return getProductConfig(productKey)?.validation || {};
+}
+
+function getProductLegacyConfig(productKey){
+  return getProductConfig(productKey)?.legacy || {};
+}
+
+function getProductSpecialRules(productKey){
+  return getProductConfig(productKey)?.specialRules || {};
+}
+
+const PRODUCT_SERIALIZERS = {
+  jogador_escudo(ctx){
+    const { fd, product, val, appendEscudo1, appendArquivoAtivo } = ctx;
+    const nomeJogador = val("dataJogo") || product.title || "Jogador";
+
+    fd.append("rodada", "Jogador + escudo");
+    fd.append("data", nomeJogador);
+
+    fd.append("jogadores_json", JSON.stringify([{ nome: nomeJogador, posicao: "" }]));
+    fd.append("jogadores_texto", nomeJogador);
+    fd.append("artilheiros", "[]");
+    fd.append("artilheiros_json", "[]");
+    fd.append("artilheiros_texto", "");
+    fd.append("artilheiros_qtd", "0");
+
+    appendEscudo1();
+    appendArquivoAtivo("mascote", "mascote", "mascote");
+  }
+};
+
+function getProductSerializer(productKey){
+  return PRODUCT_SERIALIZERS[productKey] || null;
+}
+
 function getArtilheiroRowHtml(mode = "resultado"){
   if(mode === "escalacao"){
     return `
@@ -8702,7 +9040,26 @@ document.getElementById("pedidoForm").addEventListener("submit", async (e)=>{
     return artilheiros;
   };
 
-  if(productKey === "resultado" || productKey === "resultado_jogo_jogador"){
+  const productSerializer = getProductSerializer(productKey);
+
+  if(productSerializer){
+    productSerializer({
+      fd,
+      productKey,
+      product,
+      val,
+      campoAtivo,
+      appendTextoAtivo,
+      appendArquivoAtivo,
+      appendEscudo1,
+      appendEscudo2,
+      appendPatrocinadores,
+      coletarJogadores,
+      coletarArtilheiros
+    });
+  }
+
+  else if(productKey === "resultado" || productKey === "resultado_jogo_jogador"){
     const t1 = val("timePrincipal");
     const g1 = val("golsTime");
     const g2 = val("golsAdv");
@@ -10372,7 +10729,4 @@ if(token){
   </main>
 </body>
 </html>
-
-
-
 
