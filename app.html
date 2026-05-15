@@ -6361,6 +6361,54 @@ const PRODUCT_SERIALIZERS = {
     fd.append("artilheiros_qtd", "0");
     fd.append("jogadores_json", "[]");
     fd.append("jogadores_texto", "");
+  },
+
+  contratacao(ctx){
+    const { fd, product, val, appendTextoAtivo, appendEscudo1, appendEscudo2 } = ctx;
+    const titulo = val("rodada") || product.title || "ContrataÃ§Ã£o";
+    const nomeJogador = val("dataJogo") || titulo;
+
+    fd.append("rodada", titulo);
+    fd.append("data", nomeJogador);
+    appendTextoAtivo("hora", "hora", val("hora"));
+
+    fd.append("jogadores_json", "[]");
+    fd.append("jogadores_texto", "");
+    fd.append("artilheiros", "[]");
+    fd.append("artilheiros_json", "[]");
+    fd.append("artilheiros_texto", "");
+    fd.append("artilheiros_qtd", "0");
+
+    appendEscudo1();
+    appendEscudo2();
+  },
+
+  proximo_jogo(ctx){
+    const { fd, product, val, campoAtivo, appendTextoAtivo, appendEscudo1, appendEscudo2 } = ctx;
+    const t1 = val("timePrincipal");
+    const t2 = val("timeAdv");
+
+    let confronto = "";
+    if(t1 && t2) confronto = `${t1} x ${t2}`;
+    else confronto = t1 || t2 || val("rodada") || product.title || "PrÃ³ximo jogo";
+
+    fd.append("rodada", confronto);
+    fd.append("data", campoAtivo("data") && val("dataJogo") ? val("dataJogo") : "PrÃ³ximo jogo");
+    fd.append("time_principal", t1);
+    fd.append("time_adversario", t2);
+
+    appendTextoAtivo("hora", "hora", val("hora"));
+    appendTextoAtivo("arena", "arena", val("arena"));
+
+    fd.append("jogadores_json", "[]");
+    fd.append("jogadores_texto", "");
+    fd.append("artilheiros", "[]");
+    fd.append("artilheiros_json", "[]");
+    fd.append("artilheiros_texto", "");
+    fd.append("artilheiros_qtd", "0");
+
+    appendEscudo1();
+    appendEscudo2();
   }
 };
 
