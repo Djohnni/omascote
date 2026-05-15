@@ -4788,7 +4788,7 @@ body.visitanteNaoLogado .optLabel span{
 
 .cleanProductImage{
   width:100%;
-  aspect-ratio:9 / 16;
+  aspect-ratio:auto !important;
   border-radius:20px;
   overflow:hidden;
   background:#f3f4f6;
@@ -4797,7 +4797,8 @@ body.visitanteNaoLogado .optLabel span{
 .cleanProductImage img{
   display:block;
   width:100%;
-  height:100%;
+  height:auto !important;
+  max-height:none;
   object-fit:contain;
   object-position:top center;
 }
@@ -10759,18 +10760,19 @@ function atualizarTopoProducao(pedidos){
   }
 
   if(temPronto){
-    texto.textContent = "Finalizado";
+    texto.textContent = "";
     fill.style.width = "100%";
     box.classList.add("show");
 
     setTimeout(()=>{
       const aindaTexto = document.getElementById("ia4TopProducaoTexto");
       const aindaBox = document.getElementById("ia4TopProducaoBox");
+      const aindaFill = document.querySelector(".ia4TopProducaoFill");
 
-      if(aindaTexto && aindaTexto.textContent === "Finalizado"){
+      if(aindaTexto && !aindaTexto.textContent && aindaFill?.style.width === "100%"){
         aindaBox?.classList.remove("show");
       }
-    }, 8000);
+    }, 3000);
 
     return;
   }
