@@ -3930,14 +3930,19 @@ textarea.campoObrigatorioErro,
   content:none !important;
 }
 
-.produtoFormSlot{
+.productGroup .optionBtn{
   display:none !important;
+}
+
+.produtoFormSlot{
+  display:block !important;
   grid-column:1 / -1 !important;
   width:100% !important;
+  cursor:pointer !important;
 }
 
 .produtoFormSlot.active{
-  display:block !important;
+  cursor:default !important;
 }
 
 .produtoFormBox{
@@ -3960,6 +3965,97 @@ textarea.campoObrigatorioErro,
   border-radius:18px !important;
   box-shadow:0 12px 26px rgba(15,23,42,.12) !important;
   display:block !important;
+}
+
+.produtoPreviewLegenda{
+  margin-top:10px !important;
+  text-align:center !important;
+  font-size:12px !important;
+  font-weight:950 !important;
+  color:#64748b !important;
+}
+
+.produtoFakeTitulo{
+  font-size:16px !important;
+  font-weight:950 !important;
+  color:#111827 !important;
+  margin:0 0 12px !important;
+}
+
+.produtoFakeCampo{
+  display:flex !important;
+  align-items:center !important;
+  gap:12px !important;
+  width:100% !important;
+  min-height:72px !important;
+  padding:14px !important;
+  margin-bottom:10px !important;
+  border-radius:18px !important;
+  border:1px solid #e5e7eb !important;
+  background:#ffffff !important;
+  box-shadow:0 8px 20px rgba(15,23,42,.05) !important;
+}
+
+.produtoFakeIcon{
+  width:42px !important;
+  height:42px !important;
+  flex:0 0 42px !important;
+  display:grid !important;
+  place-items:center !important;
+  border-radius:14px !important;
+  background:#f1f5f9 !important;
+  color:#334155 !important;
+  font-size:20px !important;
+  font-weight:950 !important;
+}
+
+.produtoFakeCampo strong{
+  display:block !important;
+  color:#111827 !important;
+  font-size:15px !important;
+  font-weight:950 !important;
+  line-height:1.15 !important;
+}
+
+.produtoFakeCampo span{
+  display:block !important;
+  margin-top:4px !important;
+  color:#94a3b8 !important;
+  font-size:13px !important;
+  font-weight:800 !important;
+  line-height:1.2 !important;
+}
+
+.produtoFakeSeta{
+  margin-left:auto !important;
+  color:#94a3b8 !important;
+  font-size:28px !important;
+  font-weight:700 !important;
+}
+
+.produtoFakeUploadIcon{
+  margin-left:auto !important;
+  width:46px !important;
+  height:46px !important;
+  display:grid !important;
+  place-items:center !important;
+  border-radius:14px !important;
+  background:#ecfdf3 !important;
+  color:#16a34a !important;
+  border:1px solid #bbf7d0 !important;
+  font-size:28px !important;
+  font-weight:950 !important;
+}
+
+.produtoFakeDica{
+  margin-top:12px !important;
+  padding:14px !important;
+  border-radius:16px !important;
+  background:#eef6ff !important;
+  color:#334155 !important;
+  font-size:13px !important;
+  line-height:1.35 !important;
+  font-weight:850 !important;
 }
 
 .produtoFormPreview .optLabel{
@@ -7775,50 +7871,131 @@ function arrangeFieldSequence(productKey){
   });
 }
 
+function getFakeCamposProduto(productKey){
+  const product = PRODUCTS[productKey] || {};
+  const label = product.labels || {};
+  const ph = product.placeholders || {};
+
+  const itemTexto = (titulo, exemplo="") => `
+    <div class="produtoFakeCampo">
+      <div class="produtoFakeIcon">✎</div>
+      <div>
+        <strong>${titulo}</strong>
+        ${exemplo ? `<span>${exemplo}</span>` : ``}
+      </div>
+      <div class="produtoFakeSeta">›</div>
+    </div>
+  `;
+
+  const itemUpload = (titulo, subtitulo="Envie a imagem") => `
+    <div class="produtoFakeCampo produtoFakeUpload">
+      <div class="produtoFakeIcon">🛡️</div>
+      <div>
+        <strong>${titulo}</strong>
+        <span>${subtitulo}</span>
+      </div>
+      <div class="produtoFakeUploadIcon">↥</div>
+    </div>
+  `;
+
+  if(product.mode === "resultado"){
+    return `
+      <div class="produtoFakeTitulo">Elementos visuais</div>
+      ${itemUpload(label.esc1 || "Escudo Time A", "Envie o escudo")}
+      ${itemUpload(label.esc2 || "Escudo Time B", "Envie o escudo")}
+      ${itemTexto("Placar", "Time A 0 x 0 Time B")}
+      ${itemTexto(label.hora || "Campeonato / competição", ph.hora || "Ex.: Campeonato municipal")}
+      ${itemTexto(label.data || "Frase na imagem", ph.data || "Escolha ou escreva uma frase")}
+    `;
+  }
+
+  if(productKey === "mascote_uniforme"){
+    return `
+      <div class="produtoFakeTitulo">Elementos visuais</div>
+      ${itemUpload(label.esc1 || "Escudo ou brasão do time", "Envie o escudo")}
+      ${itemUpload(label.mascote || "Camiseta / uniforme", "Envie a imagem do uniforme")}
+      ${itemTexto(label.data || "Qual animal você quer que vire mascote?", ph.data || "Ex.: Leão, tigre, pássaro azul")}
+      <div class="produtoFakeDica">✨ Dica: use imagens em alta resolução para melhor resultado.</div>
+    `;
+  }
+
+  return `
+    <div class="produtoFakeTitulo">Informações da arte</div>
+    ${label.rodada ? itemTexto(label.rodada, ph.rodada || "") : ``}
+    ${label.data ? itemTexto(label.data, ph.data || "") : ``}
+    ${label.hora ? itemTexto(label.hora, ph.hora || "") : ``}
+    ${label.arena ? itemTexto(label.arena, ph.arena || "") : ``}
+    ${label.esc1 ? itemUpload(label.esc1.replace(/<br>/g, " "), "Envie o escudo") : ``}
+    ${label.esc2 ? itemUpload(label.esc2.replace(/<br>/g, " "), "Envie a imagem") : ``}
+    ${label.mascote ? itemUpload(label.mascote, "Envie a imagem") : ``}
+  `;
+}
+
 function prepararSlotsProdutos(){
   document.querySelectorAll(".optionBtn[data-product]").forEach((btn)=>{
-    if(btn.nextElementSibling?.classList?.contains("produtoFormSlot")) return;
+    let slot = btn.nextElementSibling;
 
-    const slot = document.createElement("div");
-    slot.className = "produtoFormSlot";
-    slot.dataset.productSlot = btn.dataset.product || "";
-    btn.insertAdjacentElement("afterend", slot);
+    if(!slot?.classList?.contains("produtoFormSlot")){
+      slot = document.createElement("div");
+      slot.className = "produtoFormSlot";
+      slot.dataset.productSlot = btn.dataset.product || "";
+      btn.insertAdjacentElement("afterend", slot);
+    }
+  });
+}
+
+function montarTodosBlocosProdutos(productKeyAtivo=""){
+  prepararSlotsProdutos();
+
+  document.querySelectorAll(".optionBtn[data-product]").forEach((btn)=>{
+    const key = btn.dataset.product || "";
+    const slot = document.querySelector(`.produtoFormSlot[data-product-slot="${key}"]`);
+    if(!slot) return;
+
+    const img = btn.querySelector(".imgProduto");
+    const label = btn.querySelector(".optLabel");
+    const ativo = key === productKeyAtivo;
+
+    slot.classList.toggle("active", ativo);
+
+    slot.innerHTML = `
+      <div class="produtoFormBox" data-form-product="${key}">
+        <div class="produtoFormPreview">
+          <div class="optLabel">${label ? label.innerHTML : ""}</div>
+          ${img ? `<img src="${img.getAttribute("src") || ""}" alt="${img.getAttribute("alt") || "Produto"}">` : ""}
+          <div class="produtoPreviewLegenda">✦ Prévia em alta qualidade</div>
+        </div>
+        <div class="produtoFormCampos"></div>
+      </div>
+    `;
+
+    const mount = slot.querySelector(".produtoFormCampos");
+
+    if(ativo){
+      const area = document.getElementById("builderArea");
+      if(mount && area){
+        mount.appendChild(area);
+      }
+    }else if(mount){
+      mount.innerHTML = getFakeCamposProduto(key);
+      slot.addEventListener("click", ()=>{
+        if(key === "escudo3d"){
+          if(!token){
+            abrirCadastroEscudo3dModal();
+            return;
+          }
+          abrirEscudo3dModal();
+          return;
+        }
+
+        selectProduct(key);
+      }, { once:true });
+    }
   });
 }
 
 function montarFormularioNoProduto(productKey){
-  prepararSlotsProdutos();
-
-  document.querySelectorAll(".produtoFormSlot").forEach(slot=>{
-    slot.classList.remove("active");
-    slot.innerHTML = "";
-  });
-
-  const btnProduto = document.querySelector(`.optionBtn[data-product="${productKey}"]`);
-  const slot = document.querySelector(`.produtoFormSlot[data-product-slot="${productKey}"]`);
-  const area = document.getElementById("builderArea");
-
-  if(!btnProduto || !slot || !area) return;
-
-  const img = btnProduto.querySelector(".imgProduto");
-  const label = btnProduto.querySelector(".optLabel");
-
-  slot.innerHTML = `
-    <div class="produtoFormBox">
-      <div class="produtoFormPreview">
-        <div class="optLabel">${label ? label.innerHTML : ""}</div>
-        ${img ? `<img src="${img.getAttribute("src") || ""}" alt="${img.getAttribute("alt") || "Produto"}">` : ""}
-      </div>
-      <div class="produtoFormCampos"></div>
-    </div>
-  `;
-
-  const mount = slot.querySelector(".produtoFormCampos");
-  if(mount){
-    mount.appendChild(area);
-  }
-
-  slot.classList.add("active");
+  montarTodosBlocosProdutos(productKey);
 }
 
 function scrollToBuilder(){
@@ -7971,7 +8148,7 @@ function selectProduct(productKey){
     selectorStage.classList.add("open");
   }
 
-  montarFormularioNoProduto(productKey);
+  montarTodosBlocosProdutos(productKey);
 }
 
 function abrirEscudo3dModal(){
@@ -8005,7 +8182,7 @@ document.querySelectorAll(".optionBtn").forEach(btn=>{
   });
 });
 
-prepararSlotsProdutos();
+montarTodosBlocosProdutos("");
 
 setTimeout(()=>{
   if(!selectedProductInput.value){
@@ -10598,6 +10775,7 @@ if(token){
   </main>
 </body>
 </html>
+
 
 
 
