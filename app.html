@@ -6409,6 +6409,51 @@ const PRODUCT_SERIALIZERS = {
 
     appendEscudo1();
     appendEscudo2();
+  },
+
+  resultado(ctx){
+    const { fd, val, campoAtivo, appendTextoAtivo, appendArquivoAtivo, appendEscudo1, appendEscudo2, coletarArtilheiros } = ctx;
+    const t1 = val("timePrincipal");
+    const g1 = val("golsTime");
+    const g2 = val("golsAdv");
+    const t2 = val("timeAdv");
+
+    let resultadoFinal = "";
+
+    if(t1 && t2){
+      resultadoFinal = `${t1} ${g1 || "0"} x ${g2 || "0"} ${t2}`;
+    }else if(t1){
+      resultadoFinal = `${t1} ${g1 || "0"} x ${g2 || "0"}`;
+    }else if(g1 || g2){
+      resultadoFinal = `${g1 || "0"} x ${g2 || "0"}`;
+    }
+
+    fd.append("rodada", resultadoFinal || "Resultado do jogo");
+    fd.append("data", campoAtivo("data") && val("dataJogo") ? val("dataJogo") : "Resultado do jogo");
+
+    fd.append("time_principal", t1);
+    fd.append("gols_time_principal", g1);
+    fd.append("gols_adversario", g2);
+    fd.append("time_adversario", t2);
+
+    appendTextoAtivo("hora", "hora", val("hora"));
+    appendArquivoAtivo("mascote", "mascote", "mascote");
+    appendEscudo1();
+    appendEscudo2();
+
+    const artilheiros = coletarArtilheiros();
+    const artilheirosJson = JSON.stringify(artilheiros);
+    const artilheirosTexto = artilheiros
+      .map(a => `${a.nome} (${a.gols} gol${a.gols === 1 ? "" : "s"})`)
+      .join("; ");
+
+    fd.append("artilheiros", artilheirosJson);
+    fd.append("artilheiros_json", artilheirosJson);
+    fd.append("artilheiros_texto", artilheirosTexto);
+    fd.append("artilheiros_qtd", String(artilheiros.length));
+
+    fd.append("jogadores_json", "[]");
+    fd.append("jogadores_texto", "");
   }
 };
 
