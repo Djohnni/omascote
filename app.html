@@ -6454,6 +6454,35 @@ const PRODUCT_SERIALIZERS = {
 
     fd.append("jogadores_json", "[]");
     fd.append("jogadores_texto", "");
+  },
+
+  escalacao(ctx){
+    const { fd, val, appendArquivoAtivo, appendEscudo1, appendEscudo2, coletarJogadores } = ctx;
+    const confronto = val("rodada") || "EscalaÃ§Ã£o";
+    const dataHora = val("dataJogo") || "";
+    const campeonato = val("hora") || "";
+    const localJogo = val("arena") || "";
+    const jogadores = coletarJogadores();
+
+    fd.append("rodada", confronto);
+    fd.append("data", dataHora);
+    fd.append("hora", campeonato);
+    fd.append("arena", localJogo);
+
+    fd.append("jogadores_json", JSON.stringify(jogadores));
+    fd.append(
+      "jogadores_texto",
+      jogadores.map(j => j.posicao ? `${j.nome} - ${j.posicao}` : j.nome).join("; ")
+    );
+
+    fd.append("artilheiros", "[]");
+    fd.append("artilheiros_json", "[]");
+    fd.append("artilheiros_texto", "");
+    fd.append("artilheiros_qtd", "0");
+
+    appendEscudo1();
+    appendEscudo2();
+    appendArquivoAtivo("mascote", "mascote", "mascote");
   }
 };
 
