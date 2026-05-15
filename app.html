@@ -6483,6 +6483,25 @@ const PRODUCT_SERIALIZERS = {
     appendEscudo1();
     appendEscudo2();
     appendArquivoAtivo("mascote", "mascote", "mascote");
+  },
+
+  patrocinador(ctx){
+    const { fd, product, val, campoAtivo, appendEscudo1, appendPatrocinadores } = ctx;
+    const titulo = val("rodada") || product.title || "Patrocinador";
+    const textoPrincipal = campoAtivo("data") && val("dataJogo") ? val("dataJogo") : titulo;
+
+    fd.append("rodada", titulo);
+    fd.append("data", textoPrincipal);
+
+    fd.append("jogadores_json", "[]");
+    fd.append("jogadores_texto", "");
+    fd.append("artilheiros", "[]");
+    fd.append("artilheiros_json", "[]");
+    fd.append("artilheiros_texto", "");
+    fd.append("artilheiros_qtd", "0");
+
+    appendEscudo1();
+    appendPatrocinadores();
   }
 };
 
