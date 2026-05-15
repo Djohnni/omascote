@@ -3923,6 +3923,96 @@ textarea.campoObrigatorioErro,
   }
 }
 
+/* ===== FORM REAL AO LADO DA IMAGEM DO PRODUTO ===== */
+
+.productGroup .optionBtn::after{
+  display:none !important;
+  content:none !important;
+}
+
+.produtoFormSlot{
+  display:none !important;
+  grid-column:1 / -1 !important;
+  width:100% !important;
+}
+
+.produtoFormSlot.active{
+  display:block !important;
+}
+
+.produtoFormBox{
+  display:grid !important;
+  grid-template-columns:minmax(180px, 280px) minmax(0, 1fr) !important;
+  gap:28px !important;
+  align-items:start !important;
+  width:100% !important;
+  padding:22px !important;
+  border-radius:24px !important;
+  border:1px solid #e5e7eb !important;
+  background:#ffffff !important;
+  box-shadow:0 18px 42px rgba(15,23,42,.08) !important;
+}
+
+.produtoFormPreview img{
+  width:100% !important;
+  aspect-ratio:9/16 !important;
+  object-fit:cover !important;
+  border-radius:18px !important;
+  box-shadow:0 12px 26px rgba(15,23,42,.12) !important;
+  display:block !important;
+}
+
+.produtoFormPreview .optLabel{
+  margin:0 0 14px !important;
+  text-align:center !important;
+  font-size:24px !important;
+  line-height:1.12 !important;
+  font-weight:950 !important;
+  color:#111827 !important;
+  max-width:100% !important;
+}
+
+.produtoFormCampos{
+  min-width:0 !important;
+}
+
+.produtoFormCampos .builderArea{
+  margin-top:0 !important;
+}
+
+.productGroup .optionBtn.active{
+  display:none !important;
+}
+
+@media (max-width:680px){
+  .produtoFormBox{
+    grid-template-columns:118px minmax(0, 1fr) !important;
+    gap:12px !important;
+    padding:12px !important;
+    border-radius:20px !important;
+  }
+
+  .produtoFormPreview .optLabel{
+    font-size:14px !important;
+  }
+
+  .produtoFormCampos .formGrid{
+    gap:8px !important;
+  }
+
+  .produtoFormCampos .filePlus{
+    min-height:72px !important;
+    padding:10px 8px !important;
+  }
+
+  .produtoFormCampos #btnEnviar{
+    height:54px !important;
+    font-size:15px !important;
+  }
+}
+
+/* ===== FIM FORM REAL AO LADO DA IMAGEM DO PRODUTO ===== */
+
 /* ===== FIM IA4TUBE PRODUTOS DIRETO NA HOME ===== */
 
 /* ===== FIM CATEGORIA TIME / JOGADOR ===== */
@@ -7685,6 +7775,52 @@ function arrangeFieldSequence(productKey){
   });
 }
 
+function prepararSlotsProdutos(){
+  document.querySelectorAll(".optionBtn[data-product]").forEach((btn)=>{
+    if(btn.nextElementSibling?.classList?.contains("produtoFormSlot")) return;
+
+    const slot = document.createElement("div");
+    slot.className = "produtoFormSlot";
+    slot.dataset.productSlot = btn.dataset.product || "";
+    btn.insertAdjacentElement("afterend", slot);
+  });
+}
+
+function montarFormularioNoProduto(productKey){
+  prepararSlotsProdutos();
+
+  document.querySelectorAll(".produtoFormSlot").forEach(slot=>{
+    slot.classList.remove("active");
+    slot.innerHTML = "";
+  });
+
+  const btnProduto = document.querySelector(`.optionBtn[data-product="${productKey}"]`);
+  const slot = document.querySelector(`.produtoFormSlot[data-product-slot="${productKey}"]`);
+  const area = document.getElementById("builderArea");
+
+  if(!btnProduto || !slot || !area) return;
+
+  const img = btnProduto.querySelector(".imgProduto");
+  const label = btnProduto.querySelector(".optLabel");
+
+  slot.innerHTML = `
+    <div class="produtoFormBox">
+      <div class="produtoFormPreview">
+        <div class="optLabel">${label ? label.innerHTML : ""}</div>
+        ${img ? `<img src="${img.getAttribute("src") || ""}" alt="${img.getAttribute("alt") || "Produto"}">` : ""}
+      </div>
+      <div class="produtoFormCampos"></div>
+    </div>
+  `;
+
+  const mount = slot.querySelector(".produtoFormCampos");
+  if(mount){
+    mount.appendChild(area);
+  }
+
+  slot.classList.add("active");
+}
+
 function scrollToBuilder(){
   const el = document.getElementById("dynamicHint");
   if(el){
@@ -7835,7 +7971,7 @@ function selectProduct(productKey){
     selectorStage.classList.add("open");
   }
 
-  setTimeout(scrollToBuilder, 120);
+  montarFormularioNoProduto(productKey);
 }
 
 function abrirEscudo3dModal(){
@@ -7868,6 +8004,14 @@ document.querySelectorAll(".optionBtn").forEach(btn=>{
     selectProduct(btn.dataset.product);
   });
 });
+
+prepararSlotsProdutos();
+
+setTimeout(()=>{
+  if(!selectedProductInput.value){
+    selectProduct("mascote_uniforme");
+  }
+}, 100);
 
 if(escudo3dCloseBtn){
   escudo3dCloseBtn.addEventListener("click", fecharEscudo3dModal);
@@ -10454,6 +10598,7 @@ if(token){
   </main>
 </body>
 </html>
+
 
 
 
