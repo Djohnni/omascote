@@ -4623,6 +4623,125 @@ body.visitanteNaoLogado .optLabel span{
     border-radius:18px;
   }
 }
+
+/* ===== FASE 4: LAYOUT VISUAL PRODUTO + CAMPOS ===== */
+.productBuildLayout{
+  display:grid;
+  grid-template-columns:minmax(240px, 36%) minmax(0, 1fr);
+  gap:24px;
+  align-items:start;
+  width:100%;
+  margin-top:18px;
+}
+
+.productPreviewPanel{
+  position:sticky;
+  top:16px;
+  width:100%;
+  padding:12px;
+  border-radius:24px;
+  background:#ffffff;
+  border:1px solid #e5e7eb;
+  box-shadow:0 18px 38px rgba(15,23,42,.10);
+}
+
+.productPreviewMedia{
+  width:100%;
+  aspect-ratio:4 / 5;
+  border-radius:18px;
+  overflow:hidden;
+  background:#f3f4f6;
+}
+
+.productPreviewMedia img{
+  display:block;
+  width:100%;
+  height:100%;
+  object-fit:cover;
+}
+
+.productFieldsPanel{
+  margin-top:0 !important;
+}
+
+.productFieldsPanel > .optionalField,
+.productFieldsPanel > .field-placar{
+  padding:14px !important;
+  border-radius:22px !important;
+  background:#ffffff !important;
+  border:1px solid #e5e7eb !important;
+  box-shadow:0 14px 30px rgba(15,23,42,.07) !important;
+}
+
+.productFieldsPanel > .optionalField .optionalContent{
+  margin-bottom:0 !important;
+}
+
+.productFieldsPanel .optionalToggleText:not(.hiddenLabel),
+.productFieldsPanel .sectionTitle{
+  display:flex !important;
+  align-items:center;
+  gap:10px;
+}
+
+.productFieldsPanel .optionalToggleText:not(.hiddenLabel)::before,
+.productFieldsPanel .sectionTitle::before{
+  content:"";
+  flex:0 0 18px;
+  width:18px;
+  height:18px;
+  border-radius:7px;
+  background:linear-gradient(135deg,#16a34a,#8bd450);
+  box-shadow:inset 0 0 0 4px rgba(255,255,255,.70);
+}
+
+.productFieldsPanel .submitRow{
+  margin-top:10px !important;
+}
+
+.productFieldsPanel #btnEnviar{
+  width:100% !important;
+  min-height:74px !important;
+}
+
+@media (max-width:900px){
+  .productBuildLayout{
+    grid-template-columns:1fr;
+    gap:18px;
+  }
+
+  .productPreviewPanel{
+    position:relative;
+    top:auto;
+  }
+
+  .productPreviewMedia{
+    aspect-ratio:16 / 10;
+    max-height:280px;
+  }
+}
+
+@media (max-width:680px){
+  .productBuildLayout{
+    margin-top:12px;
+  }
+
+  .productPreviewPanel{
+    padding:10px;
+    border-radius:20px;
+  }
+
+  .productPreviewMedia{
+    border-radius:16px;
+    max-height:220px;
+  }
+
+  .productFieldsPanel > .optionalField,
+  .productFieldsPanel > .field-placar{
+    padding:10px !important;
+    border-radius:18px !important;
+  }
+}
 </style>
 </head>
 
@@ -4891,7 +5010,14 @@ body.visitanteNaoLogado .optLabel span{
           <input type="hidden" id="flyerTipo" value="zz1fs">
           <input type="hidden" id="selectedProduct" value="">
 
-          <form id="pedidoForm" class="formGrid" enctype="multipart/form-data" novalidate>
+          <div class="productBuildLayout">
+            <div class="productPreviewPanel" aria-hidden="true">
+              <div class="productPreviewMedia">
+                <img id="selectedProductPreviewImg" src="produtos/resultado.jpg" alt="">
+              </div>
+            </div>
+
+          <form id="pedidoForm" class="formGrid productFieldsPanel" enctype="multipart/form-data" novalidate>
             <div class="field-placar full">
               <label class="sectionTitle">Placar</label>
               <div class="placarRow">
@@ -5087,6 +5213,7 @@ body.visitanteNaoLogado .optLabel span{
               </div>
             </div>
           </form>
+          </div>
         </div>
 
         <div class="card" style="margin-top:16px; display:none !important;">
@@ -8258,6 +8385,12 @@ function selectProduct(productKey){
   dynamicTitleEl.textContent = product.title;
   dynamicHintEl.textContent = `Para ${product.title}, preciso dessas informações abaixo...`;
   btnEnviar.textContent = "Criar minha arte 🚀";
+
+  const selectedProductPreviewImg = document.getElementById("selectedProductPreviewImg");
+  if(selectedProductPreviewImg && product.image){
+    selectedProductPreviewImg.src = product.image;
+    selectedProductPreviewImg.alt = product.title || product.name || "";
+  }
 
   const placarTitleEl = document.querySelector(".field-placar .sectionTitle");
   if(placarTitleEl){
