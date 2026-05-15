@@ -2245,6 +2245,22 @@ body{
   box-shadow:none !important;
 }
 
+.topbar .ia4Brand{
+  width:auto !important;
+  flex:0 0 auto !important;
+  justify-content:flex-start !important;
+}
+
+.logoTopoText{
+  min-width:118px;
+  padding:0 !important;
+}
+
+.logoTopoText .c1{color:#1e88ff}
+.logoTopoText .c2{color:#e53935}
+.logoTopoText .c3{color:#f4b400}
+.logoTopoText .c4{color:#34a853}
+
 .ia4Brand strong{
   display:block;
   font-size:30px;
@@ -5010,7 +5026,7 @@ body:not(.modeChosen) .builderArea,
     <div class="logoutTopBar">
       <div class="ia4TrustTop">
         <div class="ia4TrustItem">
-          <span class="ia4TrustIcon">ðŸ›¡ï¸</span>
+          <span class="ia4TrustIcon">🛡️</span>
           <div>
             <strong>Site seguro</strong>
             <small>SSL criptografado</small>
@@ -5030,7 +5046,7 @@ body:not(.modeChosen) .builderArea,
         <div class="ia4TrustDivider"></div>
 
         <div class="ia4TrustItem">
-          <span class="ia4TrustIcon">âœ”ï¸</span>
+          <span class="ia4TrustIcon">✅</span>
           <div>
             <strong>Pagamentos protegidos</strong>
             <small>100% seguros</small>
@@ -5044,6 +5060,11 @@ body:not(.modeChosen) .builderArea,
     <div class="topbar">
       <!-- removido: stories da barra superior -->
 
+      <div class="ia4Brand logoTopoText" aria-label="IA4Tube">
+        <strong><span class="c1">i</span><span class="c2">A</span><span class="c3">4</span><span class="c4">Tube</span></strong>
+        <small>ARTES ESPORTIVAS</small>
+      </div>
+
       <div id="ia4TopProducaoBox" class="ia4TopProducaoBox">
         <span id="ia4TopProducaoTexto">Aguarde</span>
         <div class="ia4TopProducaoBar">
@@ -5054,7 +5075,7 @@ body:not(.modeChosen) .builderArea,
       <div class="topRightArea">
         <div class="saldoTopoArea">
           <div id="saldoHero" class="saldoTopoTexto">
-            Saldo disponÃ­vel: â€”
+            Saldo disponível: —
           </div>
         </div>
 
@@ -5065,27 +5086,27 @@ body:not(.modeChosen) .builderArea,
               <div class="saldoMenu" id="saldoMenu">
                 <button type="button" class="saldoOpcao saldoOpcaoPrimeira" data-pacote="saldo_800">
                   <span class="saldoValor">R$8</span>
-                  <span class="saldoTexto">Ideal para comeÃ§ar<br>Pix ou cartÃ£o</span>
+                  <span class="saldoTexto">Ideal para começar<br>Pix ou cartão</span>
                 </button>
 
                 <button type="button" class="saldoOpcao" data-pacote="saldo_1800">
                   <span class="saldoValor">R$18</span>
-                  <span class="saldoTextoBonus">Mais escolhido<br>Pix ou cartÃ£o</span>
+                  <span class="saldoTextoBonus">Mais escolhido<br>Pix ou cartão</span>
                 </button>
 
                 <button type="button" class="saldoOpcao" data-pacote="saldo_2800">
                   <span class="saldoValor">R$28</span>
-                  <span class="saldoTextoBonus">Para times ativos<br>Pix ou cartÃ£o</span>
+                  <span class="saldoTextoBonus">Para times ativos<br>Pix ou cartão</span>
                 </button>
 
                 <button type="button" class="saldoOpcao" data-pacote="saldo_4800">
                   <span class="saldoValor">R$48</span>
-                  <span class="saldoTextoBonus">Melhor custo-benefÃ­cio<br>Pix ou cartÃ£o</span>
+                  <span class="saldoTextoBonus">Melhor custo-benefício<br>Pix ou cartão</span>
                 </button>
               </div>
             </div>
 
-            <button class="topOrders" id="btnMeusPedidos" type="button" onclick="togglePedidosTopo(event)" style="white-space:nowrap;">ðŸ“ Pedidos <span class="pedidosBadge" id="pedidosBadge">0</span></button>
+            <button class="topOrders" id="btnMeusPedidos" type="button" onclick="togglePedidosTopo(event)" style="white-space:nowrap;">📁 Pedidos <span class="pedidosBadge" id="pedidosBadge">0</span></button>
 
             <div id="menuPedidosTopo" class="menuPedidosTopo">
               <div class="menuPedidosTopoVazio">Carregando pedidos...</div>
@@ -5122,7 +5143,7 @@ body:not(.modeChosen) .builderArea,
         </section>
 
         <div id="tempoEstimadoBox" class="tempoEstimadoBox">
-          â± Calculando tempo estimado...
+          ⏱ Calculando tempo estimado...
         </div>
 
 <!-- removido: escudo3d oculto que carregava icons/escudo3d.png -->
@@ -5254,10 +5275,10 @@ body:not(.modeChosen) .builderArea,
 
         <div class="card">
           <div class="meta">
-            <div class="pill" id="plano">Plano: â€”</div>
-            <div class="pill" id="usados">Usados no mÃªs: â€”</div>
+            <div class="pill" id="plano">Plano: —</div>
+            <div class="pill" id="usados">Usados no mês: —</div>
             <div class="pill" id="status">Status: â€”</div>
-<div class="pill" id="saldo">Saldo disponÃ­vel: â€”</div>
+<div class="pill" id="saldo">Saldo disponível: —</div>
           </div>
 
           <div class="msg" id="msg"></div>
@@ -8037,10 +8058,10 @@ function applyLocal(){
   const usados = localStorage.getItem("omascote_usados") || "";
 
   welcomeEl.textContent = nome || "Seu time";
-  planoEl.textContent = `Plano: ${plano || "â€”"} pedidos/mÃªs`;
-  usadosEl.textContent = `Usados no mÃªs: ${usados || "â€”"}`;
+  planoEl.textContent = `Plano: ${plano || "—"} pedidos/mês`;
+  usadosEl.textContent = `Usados no mês: ${usados || "—"}`;
   if(saldoEl){
-    saldoEl.textContent = "Saldo disponÃ­vel: â€”";
+    saldoEl.textContent = "Saldo disponível: —";
   }
 }
 
@@ -8060,11 +8081,11 @@ async function refreshMe(){
       const saldo = Number(data.saldo || 0);
 
 if(saldoEl){
-  saldoEl.textContent = `Saldo disponÃ­vel: R$ ${saldo.toFixed(2).replace(".", ",")}`;
+  saldoEl.textContent = `Saldo disponível: R$ ${saldo.toFixed(2).replace(".", ",")}`;
 }
 
 if(saldoHeroEl){
-  saldoHeroEl.textContent = `Saldo disponÃ­vel: R$ ${saldo.toFixed(2).replace(".", ",")}`;
+  saldoHeroEl.textContent = `Saldo disponível: R$ ${saldo.toFixed(2).replace(".", ",")}`;
 }
 
 const jaComprou = Number(data.usados_no_ciclo || 0) > 0;
@@ -8130,14 +8151,14 @@ async function carregarTempoEstimado(){
     const data = await r.json();
 
     if(!data.ok || data.aprendendo || Number(data.tempo_estimado_segundos || 0) <= 0){
-      aplicarTextoTempo("â± Estamos calculando o tempo real dos pedidos...");
+      aplicarTextoTempo("⏱ Estamos calculando o tempo real dos pedidos...");
       return;
     }
 
     const textoTempo = formatarTempoEstimado(data.tempo_estimado_segundos);
-    aplicarTextoTempo(`â± No momento, o tempo estimado para criar sua arte Ã© de ${textoTempo}`);
+    aplicarTextoTempo(`⏱ No momento, o tempo estimado para criar sua arte é de ${textoTempo}`);
   }catch{
-    aplicarTextoTempo("â± Estamos calculando o tempo real dos pedidos...");
+    aplicarTextoTempo("⏱ Estamos calculando o tempo real dos pedidos...");
   }
 }
 
@@ -10644,7 +10665,7 @@ function menuPedidosHeaderHtml(){
         <div class="menuPedidosHandle"></div>
         <div class="menuPedidosTitulo">Meus pedidos</div>
       </div>
-      <button type="button" class="menuPedidosFechar" onclick="fecharPedidosTopo()">Ã—</button>
+      <button type="button" class="menuPedidosFechar" onclick="fecharPedidosTopo()">×</button>
     </div>
   `;
 }
