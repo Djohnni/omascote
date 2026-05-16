@@ -7535,6 +7535,16 @@ function restaurarImagemOriginalDoProduto(target){
   }
 
   imageBox?.classList.remove("is-processing");
+  imageBox?.classList.remove("is-preview-ready");
+  if(imageBox){
+    delete imageBox.dataset.previewUrl;
+    delete imageBox.dataset.previewPedidoId;
+  }
+  if(img){
+    img.removeAttribute("data-preview-url");
+    img.style.cursor = "";
+    img.onclick = null;
+  }
 }
 
 function renderCleanProgressOverlay(imageBox, percent, text){
@@ -7579,18 +7589,22 @@ function iniciarProgressoNoProduto(form, pedidoId){
   guardarImagemOriginalDoProduto(form);
 
   const startedAt = Date.now();
-  const timeTo90 = 80000;
-  const timePerPercentAfter90 = 3000;
+  const timeTo50 = 35000;
+  const timeFrom51To90 = 45000;
+  const timeTo90 = timeTo50 + timeFrom51To90;
+  const timePerPercentAfter90 = 5000;
   renderCleanProgressOverlay(imageBox, 1, "Criando sua arte...");
 
   const timer = setInterval(() => {
     const elapsed = Date.now() - startedAt;
     let percent;
 
-    if(elapsed <= timeTo90){
-      percent = Math.min(90, 1 + Math.floor((elapsed / timeTo90) * 89));
+    if(elapsed <= timeTo50){
+      percent = Math.min(50, 1 + Math.floor((elapsed / timeTo50) * 49));
+    }else if(elapsed <= timeTo90){
+      percent = Math.min(90, 51 + Math.floor(((elapsed - timeTo50) / timeFrom51To90) * 39));
     }else{
-      percent = Math.min(99, 90 + Math.floor((elapsed - timeTo90) / timePerPercentAfter90));
+      percent = Math.min(99, 91 + Math.floor((elapsed - timeTo90) / timePerPercentAfter90));
     }
 
     renderCleanProgressOverlay(imageBox, percent, "Criando sua arte...");
@@ -7608,8 +7622,18 @@ function finalizarProgressoNoProduto(form, pedidoId){
   if(!imageBox) return;
 
   const img = imageBox.querySelector("img");
+  const previewUrl = pedidoId ? `${API_BASE}/pedidos/${pedidoId}/preview?ts=${Date.now()}` : "";
   if(img && pedidoId){
-    img.src = `${API_BASE}/pedidos/${pedidoId}/preview?ts=${Date.now()}`;
+    img.src = previewUrl;
+    img.setAttribute("data-preview-url", previewUrl);
+    img.style.cursor = "zoom-in";
+    img.onclick = () => window.open(previewUrl, "_blank", "noopener");
+  }
+
+  if(previewUrl){
+    imageBox.dataset.previewUrl = previewUrl;
+    imageBox.dataset.previewPedidoId = pedidoId;
+    imageBox.classList.add("is-preview-ready");
   }
 
   renderCleanProgressOverlay(imageBox, 100, "Arte pronta!");
