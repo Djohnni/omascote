@@ -2525,6 +2525,39 @@ body{
   box-shadow:0 10px 24px rgba(22,163,74,.10);
 }
 
+.pagamentoPendenteBox{
+  margin-top:12px;
+  padding:14px;
+  border-radius:18px;
+  background:linear-gradient(135deg,#111827,#1f2937);
+  border:1px solid rgba(250,204,21,.45);
+  color:#ffffff;
+  text-align:center;
+  box-shadow:0 18px 38px rgba(15,23,42,.28);
+}
+
+.pagamentoPendenteTitulo{
+  font-size:16px;
+  font-weight:950;
+  line-height:1.25;
+  margin-bottom:6px;
+}
+
+.pagamentoPendenteTexto{
+  font-size:13px;
+  font-weight:850;
+  line-height:1.35;
+  color:#fde68a;
+  margin-bottom:12px;
+}
+
+.pagamentoPendenteBox .menuPedidoBtn{
+  margin-top:0;
+  background:linear-gradient(135deg,#facc15,#f97316);
+  color:#111827;
+  box-shadow:0 10px 24px rgba(249,115,22,.26);
+}
+
 .ajustePedidoBox{
   margin-top:8px;
   font-size:12px;
@@ -11151,6 +11184,23 @@ function ia4FinalizarContaBox(id){
   `;
 }
 
+function cardPagamentoPendente(p) {
+  const valor = Number(p.valor_pendente || 0).toFixed(2).replace(".", ",");
+  return `
+    <div class="pagamentoPendenteBox">
+      <div class="pagamentoPendenteTitulo">Sua prévia está pronta ✅</div>
+      <div class="pagamentoPendenteTexto">Desbloqueie a imagem em alta qualidade por R$ ${valor}</div>
+      <button type="button" class="menuPedidoBtn" onclick="desbloquearImagem('${p.id}')">
+        Desbloquear imagem
+      </button>
+    </div>
+  `;
+}
+
+function desbloquearImagem(id) {
+  alert("Pagamento será conectado na próxima etapa. Pedido: " + id);
+}
+
 async function ia4FinalizarContaAuto(id){
   const login = document.getElementById("login_auto_" + id)?.value?.trim() || "";
   const senha = document.getElementById("senha_auto_" + id)?.value || "";
@@ -11220,6 +11270,7 @@ function atualizarMenuPedidosTopo(pedidos){
     const statusPedido = String(p.status || "").toLowerCase();
     const ajustePendente = statusPedido === "ajuste_pendente";
     const aprovado = p.aprovado_cliente === true;
+    const pagamentoPendente = p.pagamento_pendente === true;
     const usouAjuste = p.ajuste_automatico_usado === true;
 
     return `
@@ -11253,7 +11304,9 @@ function atualizarMenuPedidosTopo(pedidos){
   <button class="btnCopiar" onclick="copiarDescricaoTopo('${p.id}')">📋</button>
 </div>
 
-${ia4ContaAutoPendente() ? `
+${pagamentoPendente ? `
+${cardPagamentoPendente(p)}
+` : ia4ContaAutoPendente() ? `
 ` : aprovado ? `
 <button type="button" class="menuPedidoBtn" onclick="baixarPedido('${p.id}')">Baixar novamente</button>
 ` : `
@@ -11332,6 +11385,8 @@ async function carregarHistorico(){
       imagem_url: p.imagem_url,
       descricao_instagram: p.descricao_instagram,
       aprovado_cliente: p.aprovado_cliente,
+      pagamento_pendente: p.pagamento_pendente,
+      valor_pendente: p.valor_pendente,
       ajuste_automatico_usado: p.ajuste_automatico_usado,
       motivo_ajuste: p.motivo_ajuste
     })));
@@ -11371,6 +11426,7 @@ async function carregarHistorico(){
       const statusPedido = String(p.status || "").toLowerCase();
       const ajustePendente = statusPedido === "ajuste_pendente";
       const aprovado = p.aprovado_cliente === true;
+      const pagamentoPendente = p.pagamento_pendente === true;
       const usouAjuste = p.ajuste_automatico_usado === true;
 
       return `
@@ -11406,7 +11462,9 @@ ${p.status === "pronto" ? `
   <button class="btnCopiar" onclick="copiarDescricao('${p.id}')">📋</button>
 </div>
 
-${ia4ContaAutoPendente() ? `
+${pagamentoPendente ? `
+${cardPagamentoPendente(p)}
+` : ia4ContaAutoPendente() ? `
 ${ia4FinalizarContaBox(p.id)}
 ` : aprovado ? `
         <button onclick="baixarPedido('${p.id}')" style="margin-top:8px;padding:8px 12px;border-radius:10px;border:none;background:#2ecc71;color:#fff;font-weight:900;cursor:pointer;width:100%;">
