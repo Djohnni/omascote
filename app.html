@@ -2558,6 +2558,29 @@ body{
   box-shadow:0 10px 24px rgba(249,115,22,.26);
 }
 
+.pixQrBody{
+  padding:16px;
+  text-align:center;
+  color:#ffffff;
+}
+
+.pixQrImagem{
+  width:min(280px, 78vw);
+  border-radius:18px;
+  background:#ffffff;
+  padding:10px;
+  margin:0 auto 14px;
+  display:block;
+}
+
+.pixQrTexto{
+  font-size:13px;
+  font-weight:850;
+  line-height:1.35;
+  color:#e5e7eb;
+  margin-bottom:12px;
+}
+
 .ajustePedidoBox{
   margin-top:8px;
   font-size:12px;
@@ -5835,6 +5858,16 @@ body:not(.modeChosen) .builderArea,
 
       <div class="ajusteModalMsg" id="ajustePedidoMsg"></div>
     </div>
+  </div>
+</div>
+
+<div class="modalMask" id="pixQrModal" aria-hidden="true">
+  <div class="modalCard" role="dialog" aria-modal="true" aria-label="QR Code Pix">
+    <div class="modalTop">
+      <div class="modalTitle">Pagamento Pix</div>
+      <button class="modalClose btnGhost" id="pixQrCloseBtn" type="button">×</button>
+    </div>
+    <div class="pixQrBody" id="pixQrBody"></div>
   </div>
 </div>
 
@@ -11203,12 +11236,75 @@ function cardPagamentoPendente(p) {
   `;
 }
 
-function copiarPixPedido(id) {
-  alert("Pix será conectado na próxima etapa.");
+async function gerarPixPedido(id) {
+  if(!token){
+    alert("Faça login para pagar com Pix.");
+    return null;
+  }
+
+  const r = await fetch(`${API_BASE}/pedidos/${id}/gerar-pix`, {
+    method:"POST",
+    headers:{
+      "Authorization":"Bearer " + token
+    }
+  });
+
+  const data = await r.json().catch(()=>({}));
+
+  if(!r.ok || !data.ok){
+    throw new Error(data.error || "Não foi possível gerar Pix.");
+  }
+
+  return data;
 }
 
-function verQrCodePedido(id) {
-  alert("QR Code será conectado na próxima etapa.");
+async function copiarTextoPix(texto) {
+  if(navigator.clipboard?.writeText){
+    await navigator.clipboard.writeText(texto);
+    return;
+  }
+
+  const input = document.createElement("textarea");
+  input.value = texto;
+  input.style.position = "fixed";
+  input.style.opacity = "0";
+  document.body.appendChild(input);
+  input.focus();
+  input.select();
+  document.execCommand("copy");
+  input.remove();
+}
+
+async function copiarPixPedido(id) {
+  try{
+    const data = await gerarPixPedido(id);
+    if(!data?.pix_copia_cola){
+      alert("Pix ainda não disponível para este pedido.");
+      return;
+    }
+
+    await copiarTextoPix(data.pix_copia_cola);
+    alert("Pix copiado. Após o pagamento, a imagem será liberada automaticamente.");
+    carregarHistorico();
+  }catch(e){
+    alert(e.message || "Erro ao copiar Pix.");
+  }
+}
+
+async function verQrCodePedido(id) {
+  try{
+    const data = await gerarPixPedido(id);
+
+    if(!data?.qr_code_base64){
+      alert("QR Code ainda não disponível. Use Copiar Pix.");
+      return;
+    }
+
+    abrirModalPixQr(id, data);
+    carregarHistorico();
+  }catch(e){
+    alert(e.message || "Erro ao abrir QR Code.");
+  }
 }
 
 async function usarSaldoPedido(id) {
@@ -11238,6 +11334,36 @@ async function usarSaldoPedido(id) {
   }catch(e){
     alert("Erro de rede ao usar saldo IA4Tube.");
   }
+}
+
+function abrirModalPixQr(id, data) {
+  const modal = document.getElementById("pixQrModal");
+  const body = document.getElementById("pixQrBody");
+
+  if(!modal || !body) return;
+
+  const src = `data:image/png;base64,${data.qr_code_base64}`;
+
+  body.innerHTML = `
+    <img class="pixQrImagem" src="${src}" alt="QR Code Pix">
+    <div class="pixQrTexto">
+      Escaneie o QR Code ou copie o Pix. Após o pagamento, a imagem será liberada automaticamente.
+    </div>
+    <button type="button" class="menuPedidoBtn" onclick="copiarPixPedido('${id}')">
+      Copiar Pix
+    </button>
+  `;
+
+  modal.classList.add("open");
+  modal.setAttribute("aria-hidden", "false");
+}
+
+function fecharModalPixQr() {
+  const modal = document.getElementById("pixQrModal");
+  if(!modal) return;
+
+  modal.classList.remove("open");
+  modal.setAttribute("aria-hidden", "true");
 }
 
 async function ia4FinalizarContaAuto(id){
@@ -11708,6 +11834,12 @@ document.getElementById("ajustePedidoEnviarBtn")?.addEventListener("click", envi
 document.getElementById("ajustePedidoModal")?.addEventListener("click", (e)=>{
   if(e.target && e.target.id === "ajustePedidoModal"){
     fecharModalAjuste();
+  }
+});
+document.getElementById("pixQrCloseBtn")?.addEventListener("click", fecharModalPixQr);
+document.getElementById("pixQrModal")?.addEventListener("click", (e)=>{
+  if(e.target && e.target.id === "pixQrModal"){
+    fecharModalPixQr();
   }
 });
 
