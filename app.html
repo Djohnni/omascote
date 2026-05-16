@@ -4922,6 +4922,7 @@ body.visitanteNaoLogado .cleanProductPrice{
   color:#ffffff;
   text-align:center;
   z-index:2;
+  pointer-events:none;
 }
 
 .cleanProgressContent{
@@ -11393,7 +11394,7 @@ async function abrirPedidoDireto(pedidoId) {
   await carregarHistorico();
 
   setTimeout(() => {
-    const pedidoEl = document.querySelector(`[data-pedido-id="${pedidoId}"]`);
+    const pedidoEl = document.querySelector(`[data-historico-pedido-id="${pedidoId}"]`);
     if(!pedidoEl) return;
 
     pedidoEl.scrollIntoView({ behavior:"smooth", block:"center" });
@@ -11634,7 +11635,7 @@ async function carregarHistorico(){
       const usouAjuste = p.ajuste_automatico_usado === true;
 
       return `
-      <div data-pedido-id="${p.id}" style="background:#fff;color:#000;padding:10px;border-radius:10px;border:1px solid #e5e7eb;">
+      <div data-pedido-id="${p.id}" data-historico-pedido-id="${p.id}" style="background:#fff;color:#000;padding:10px;border-radius:10px;border:1px solid #e5e7eb;">
         <b>${p.tipo}</b><br>
         ID: ${p.id}<br>
         Status: ${ajustePendente ? "⏳ Ajustando sua arte..." : textoStatusPedido(p.status)}<br>
