@@ -11394,7 +11394,16 @@ async function abrirPedidoDireto(pedidoId) {
   await carregarHistorico();
 
   setTimeout(() => {
-    const pedidoEl = document.querySelector(`[data-historico-pedido-id="${pedidoId}"]`);
+    const pedidoEl =
+      menu?.querySelector(`[data-pedido-id="${pedidoId}"]`) ||
+      document.querySelector(`[data-historico-pedido-id="${pedidoId}"]`);
+
+    console.log("[abrirPedidoDireto]", {
+      pedidoId,
+      menuAberto: menu?.classList.contains("open"),
+      pedidoEl
+    });
+
     if(!pedidoEl) return;
 
     pedidoEl.scrollIntoView({ behavior:"smooth", block:"center" });
