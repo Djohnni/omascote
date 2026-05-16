@@ -7607,9 +7607,59 @@ function resetCleanFormAfterSend(form){
 }
 
 const cleanProductProgressTimers = new WeakMap();
+const cleanProductResultWatchers = new Map();
+const IA4_ACTIVE_ORDERS_KEY = "ia4tube_pedidos_ativos";
+const IA4_ACTIVE_ORDER_MAX_AGE = 48 * 60 * 60 * 1000;
 
 function getCleanProductImageFromForm(form){
   return form?.closest(".cleanProductBlock")?.querySelector(".cleanProductImage") || null;
+}
+
+function listarPedidosAtivosLocal(){
+  try{
+    const parsed = JSON.parse(localStorage.getItem(IA4_ACTIVE_ORDERS_KEY) || "[]");
+    return Array.isArray(parsed) ? parsed.filter(item => item?.pedido_id && item?.product_id) : [];
+  }catch(e){
+    return [];
+  }
+}
+
+function salvarPedidosAtivosLocal(lista){
+  localStorage.setItem(IA4_ACTIVE_ORDERS_KEY, JSON.stringify(lista || []));
+}
+
+function salvarPedidoAtivoLocal(pedidoId, productId){
+  if(!pedidoId || !productId) return;
+
+  const lista = listarPedidosAtivosLocal().filter(item => item.pedido_id !== pedidoId);
+  lista.push({
+    pedido_id: pedidoId,
+    product_id: productId,
+    criado_em: Date.now()
+  });
+
+  salvarPedidosAtivosLocal(lista);
+}
+
+function removerPedidoAtivoLocal(pedidoId){
+  if(!pedidoId) return;
+  salvarPedidosAtivosLocal(listarPedidosAtivosLocal().filter(item => item.pedido_id !== pedidoId));
+}
+
+function limparPedidosAtivosAntigos(){
+  const agora = Date.now();
+  salvarPedidosAtivosLocal(
+    listarPedidosAtivosLocal().filter(item => {
+      const criadoEm = Number(item.criado_em || 0);
+      return criadoEm && (agora - criadoEm) <= IA4_ACTIVE_ORDER_MAX_AGE;
+    })
+  );
+}
+
+function getCleanProductFormByProductId(productId){
+  if(!productId) return null;
+  return document.querySelector(`[data-product-form="${CSS.escape(productId)}"]`) ||
+    document.querySelector(`[data-clean-product-block="${CSS.escape(productId)}"]`);
 }
 
 function guardarImagemOriginalDoProduto(target){
@@ -7678,7 +7728,25 @@ function renderCleanProgressOverlay(imageBox, percent, text){
   return overlay;
 }
 
-function iniciarProgressoNoProduto(form, pedidoId){
+function calcularPercentualProgressoProduto(startedAt){
+  const elapsed = Math.max(0, Date.now() - Number(startedAt || Date.now()));
+  const timeTo50 = 35000;
+  const timeFrom51To90 = 45000;
+  const timeTo90 = timeTo50 + timeFrom51To90;
+  const timePerPercentAfter90 = 5000;
+
+  if(elapsed <= timeTo50){
+    return Math.min(50, 1 + Math.floor((elapsed / timeTo50) * 49));
+  }
+
+  if(elapsed <= timeTo90){
+    return Math.min(90, 51 + Math.floor(((elapsed - timeTo50) / timeFrom51To90) * 39));
+  }
+
+  return Math.min(99, 91 + Math.floor((elapsed - timeTo90) / timePerPercentAfter90));
+}
+
+function iniciarProgressoNoProduto(form, pedidoId, startedAt){
   cancelarProgressoNoProduto(form);
 
   const imageBox = getCleanProductImageFromForm(form);
@@ -7686,26 +7754,11 @@ function iniciarProgressoNoProduto(form, pedidoId){
 
   guardarImagemOriginalDoProduto(form);
 
-  const startedAt = Date.now();
-  const timeTo50 = 35000;
-  const timeFrom51To90 = 45000;
-  const timeTo90 = timeTo50 + timeFrom51To90;
-  const timePerPercentAfter90 = 5000;
-  renderCleanProgressOverlay(imageBox, 1, "Criando sua arte...");
+  const progressStartedAt = Number(startedAt || Date.now());
+  renderCleanProgressOverlay(imageBox, calcularPercentualProgressoProduto(progressStartedAt), "Criando sua arte...");
 
   const timer = setInterval(() => {
-    const elapsed = Date.now() - startedAt;
-    let percent;
-
-    if(elapsed <= timeTo50){
-      percent = Math.min(50, 1 + Math.floor((elapsed / timeTo50) * 49));
-    }else if(elapsed <= timeTo90){
-      percent = Math.min(90, 51 + Math.floor(((elapsed - timeTo50) / timeFrom51To90) * 39));
-    }else{
-      percent = Math.min(99, 91 + Math.floor((elapsed - timeTo90) / timePerPercentAfter90));
-    }
-
-    renderCleanProgressOverlay(imageBox, percent, "Criando sua arte...");
+    renderCleanProgressOverlay(imageBox, calcularPercentualProgressoProduto(progressStartedAt), "Criando sua arte...");
   }, 1000);
 
   cleanProductProgressTimers.set(form, { timer, pedidoId });
@@ -7763,6 +7816,8 @@ function cancelarProgressoNoProduto(form){
 }
 
 async function acompanharResultadoClean(pedidoId, form){
+  if(pedidoId && cleanProductResultWatchers.has(pedidoId)) return;
+
   const boxEl = form.querySelector("[data-clean-result-box]");
   const statusElLocal = form.querySelector("[data-clean-result-status]");
   const imgEl = form.querySelector("[data-clean-result-preview]");
@@ -7782,6 +7837,7 @@ async function acompanharResultadoClean(pedidoId, form){
 
       if(data.ok && data.imagem_pronta){
         clearInterval(timer);
+        cleanProductResultWatchers.delete(pedidoId);
         finalizarProgressoNoProduto(form, pedidoId);
         const previewUrl = `${API_BASE}/pedidos/${pedidoId}/preview?ts=${Date.now()}`;
         if(statusElLocal) statusElLocal.textContent = "Confira sua arte antes de baixar";
@@ -7807,6 +7863,59 @@ async function acompanharResultadoClean(pedidoId, form){
       if(statusElLocal) statusElLocal.textContent = "Erro ao consultar status da imagem.";
     }
   }, 5000);
+
+  if(pedidoId) cleanProductResultWatchers.set(pedidoId, timer);
+}
+
+function restaurarPedidosAtivos(pedidos){
+  limparPedidosAtivosAntigos();
+
+  const listaPedidos = Array.isArray(pedidos) ? pedidos : [];
+  const pedidosPorId = new Map(listaPedidos.map(p => [String(p.id || ""), p]));
+  const ativos = listarPedidosAtivosLocal()
+    .sort((a, b) => Number(b.criado_em || 0) - Number(a.criado_em || 0));
+  const produtosRestaurados = new Set();
+
+  for(const ativo of ativos){
+    const pedido = pedidosPorId.get(String(ativo.pedido_id || ""));
+
+    if(!pedido){
+      removerPedidoAtivoLocal(ativo.pedido_id);
+      continue;
+    }
+
+    if(pedido.aprovado_cliente === true && pedido.pagamento_pendente !== true){
+      removerPedidoAtivoLocal(pedido.id);
+      continue;
+    }
+
+    if(getPedidosBaixados().includes(pedido.id)){
+      removerPedidoAtivoLocal(pedido.id);
+      continue;
+    }
+
+    if(produtosRestaurados.has(ativo.product_id)) continue;
+
+    const form = getCleanProductFormByProductId(ativo.product_id);
+    if(!form) continue;
+
+    produtosRestaurados.add(ativo.product_id);
+
+    if(pedido.imagem_pronta === true){
+      const imageBox = getCleanProductImageFromForm(form);
+      if(imageBox?.dataset.previewPedidoId !== pedido.id){
+        finalizarProgressoNoProduto(form, pedido.id);
+      }
+      continue;
+    }
+
+    const state = cleanProductProgressTimers.get(form);
+    if(state?.pedidoId !== pedido.id){
+      iniciarProgressoNoProduto(form, pedido.id, ativo.criado_em);
+    }
+
+    acompanharResultadoClean(pedido.id, form);
+  }
 }
 
 async function submitCleanProductForm(e){
@@ -7861,6 +7970,9 @@ async function submitCleanProductForm(e){
 
     if(out.ok){
       setCleanProductMsg(form, "");
+      if(out.pedido_id){
+        salvarPedidoAtivoLocal(out.pedido_id, productKey);
+      }
       atualizarTopoProducao([{ id: out.pedido_id || "novo", status: "processando" }]);
       iniciarProgressoNoProduto(form, out.pedido_id || "novo");
       mostrarAvisoPedido();
@@ -9904,6 +10016,9 @@ async function enviarPedidoEscudo3dComArquivo(file, progressTarget = null){
       }
 
       if(escudo3dMsg) escudo3dMsg.textContent = `✅ Pedido enviado! ID: ${out.pedido_id}`;
+      if(out.pedido_id){
+        salvarPedidoAtivoLocal(out.pedido_id, "escudo3d");
+      }
       if(progressTarget){
         iniciarProgressoNoProduto(progressTarget, out.pedido_id || "novo");
         if(out.pedido_id) acompanharResultadoClean(out.pedido_id, progressTarget);
@@ -11600,6 +11715,7 @@ async function carregarHistorico(){
 
     atualizarBadgePedidos(pedidos);
     atualizarTopoProducao(pedidos);
+    restaurarPedidosAtivos(pedidos);
 
     const novaAssinatura = JSON.stringify(pedidos.map(p => ({
       id: p.id,
