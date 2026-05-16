@@ -7516,6 +7516,27 @@ function getCleanProductImageFromForm(form){
   return form?.closest(".cleanProductBlock")?.querySelector(".cleanProductImage") || null;
 }
 
+function guardarImagemOriginalDoProduto(target){
+  const imageBox = getCleanProductImageFromForm(target);
+  const img = imageBox?.querySelector("img");
+
+  if(img && !imageBox.dataset.originalProductImage){
+    imageBox.dataset.originalProductImage = img.getAttribute("src") || img.currentSrc || "";
+  }
+}
+
+function restaurarImagemOriginalDoProduto(target){
+  const imageBox = getCleanProductImageFromForm(target);
+  const img = imageBox?.querySelector("img");
+  const originalSrc = imageBox?.dataset.originalProductImage || "";
+
+  if(img && originalSrc){
+    img.src = originalSrc;
+  }
+
+  imageBox?.classList.remove("is-processing");
+}
+
 function renderCleanProgressOverlay(imageBox, percent, text){
   if(!imageBox) return null;
 
@@ -7555,22 +7576,30 @@ function iniciarProgressoNoProduto(form, pedidoId){
   const imageBox = getCleanProductImageFromForm(form);
   if(!imageBox) return;
 
-  let percent = 1;
-  renderCleanProgressOverlay(imageBox, percent, "Criando sua arte...");
+  guardarImagemOriginalDoProduto(form);
+
+  const startedAt = Date.now();
+  const timeTo90 = 80000;
+  const timePerPercentAfter90 = 3000;
+  renderCleanProgressOverlay(imageBox, 1, "Criando sua arte...");
 
   const timer = setInterval(() => {
-    percent = Math.min(92, percent + Math.max(1, Math.round((92 - percent) / 14)));
-    renderCleanProgressOverlay(imageBox, percent, "Criando sua arte...");
+    const elapsed = Date.now() - startedAt;
+    let percent;
 
-    if(percent >= 92){
-      clearInterval(timer);
+    if(elapsed <= timeTo90){
+      percent = Math.min(90, 1 + Math.floor((elapsed / timeTo90) * 89));
+    }else{
+      percent = Math.min(99, 90 + Math.floor((elapsed - timeTo90) / timePerPercentAfter90));
     }
-  }, 900);
+
+    renderCleanProgressOverlay(imageBox, percent, "Criando sua arte...");
+  }, 1000);
 
   cleanProductProgressTimers.set(form, { timer, pedidoId });
 }
 
-function finalizarProgressoNoProduto(form){
+function finalizarProgressoNoProduto(form, pedidoId){
   const state = cleanProductProgressTimers.get(form);
   if(state?.timer) clearInterval(state.timer);
   cleanProductProgressTimers.delete(form);
@@ -7578,12 +7607,17 @@ function finalizarProgressoNoProduto(form){
   const imageBox = getCleanProductImageFromForm(form);
   if(!imageBox) return;
 
+  const img = imageBox.querySelector("img");
+  if(img && pedidoId){
+    img.src = `${API_BASE}/pedidos/${pedidoId}/preview?ts=${Date.now()}`;
+  }
+
   renderCleanProgressOverlay(imageBox, 100, "Arte pronta!");
+  imageBox.classList.remove("is-processing");
 
   setTimeout(() => {
     const overlay = imageBox.querySelector(".cleanProgressOverlay");
     overlay?.remove();
-    imageBox.classList.remove("is-processing");
   }, 1800);
 }
 
@@ -7596,7 +7630,7 @@ function cancelarProgressoNoProduto(form){
   if(!imageBox) return;
 
   imageBox.querySelector(".cleanProgressOverlay")?.remove();
-  imageBox.classList.remove("is-processing");
+  restaurarImagemOriginalDoProduto(form);
 }
 
 async function acompanharResultadoClean(pedidoId, form){
@@ -7605,12 +7639,10 @@ async function acompanharResultadoClean(pedidoId, form){
   const imgEl = form.querySelector("[data-clean-result-preview]");
   const downloadEl = form.querySelector("[data-clean-result-download]");
 
-  if(!boxEl || !statusElLocal || !imgEl || !downloadEl) return;
-
-  boxEl.style.display = "block";
-  statusElLocal.textContent = "Estamos montando sua imagem...";
-  imgEl.style.display = "none";
-  downloadEl.style.display = "none";
+  if(boxEl) boxEl.style.display = "block";
+  if(statusElLocal) statusElLocal.textContent = "Estamos montando sua imagem...";
+  if(imgEl) imgEl.style.display = "none";
+  if(downloadEl) downloadEl.style.display = "none";
 
   const timer = setInterval(async () => {
     try{
@@ -7621,24 +7653,29 @@ async function acompanharResultadoClean(pedidoId, form){
 
       if(data.ok && data.imagem_pronta){
         clearInterval(timer);
-        finalizarProgressoNoProduto(form);
+        finalizarProgressoNoProduto(form, pedidoId);
         const previewUrl = `${API_BASE}/pedidos/${pedidoId}/preview?ts=${Date.now()}`;
-        statusElLocal.textContent = "Confira sua arte antes de baixar";
-        imgEl.src = previewUrl;
-        imgEl.classList.add("previewProtegida");
-        imgEl.style.display = "block";
-        downloadEl.removeAttribute("href");
-        downloadEl.textContent = "✅ Está boa, baixar imagem";
-        downloadEl.onclick = (ev)=>{
-          ev.preventDefault();
-          aprovarPedido(pedidoId);
-        };
-        downloadEl.style.display = "inline-block";
+        if(statusElLocal) statusElLocal.textContent = "Confira sua arte antes de baixar";
+        if(imgEl){
+          imgEl.src = previewUrl;
+          imgEl.classList.add("previewProtegida");
+          imgEl.style.display = "block";
+        }
+        if(downloadEl){
+          downloadEl.removeAttribute("href");
+          downloadEl.textContent = "✅ Está boa, baixar imagem";
+          downloadEl.onclick = async (ev)=>{
+            ev.preventDefault();
+            await aprovarPedido(pedidoId);
+            restaurarImagemOriginalDoProduto(form);
+          };
+          downloadEl.style.display = "inline-block";
+        }
       }else{
-        statusElLocal.textContent = "Estamos montando sua imagem...";
+        if(statusElLocal) statusElLocal.textContent = "Estamos montando sua imagem...";
       }
     }catch{
-      statusElLocal.textContent = "Erro ao consultar status da imagem.";
+      if(statusElLocal) statusElLocal.textContent = "Erro ao consultar status da imagem.";
     }
   }, 5000);
 }
@@ -7710,11 +7747,10 @@ async function submitCleanProductForm(e){
       carregarHistorico();
       destacarMeusPedidos();
 
-      if(schema.endpoint === "/resultado_do_jogo"){
+      if(out.pedido_id){
         acompanharResultadoClean(out.pedido_id, form);
-      }else{
-        setCleanProductMsg(form, "Pedido enviado. Acompanhe em Meus pedidos.");
       }
+      setCleanProductMsg(form, "Pedido enviado. Acompanhe em Meus pedidos.");
     }else{
       ia4Track("erro_envio_pedido", {
         produto: productKey,
@@ -9739,7 +9775,10 @@ async function enviarPedidoEscudo3dComArquivo(file, progressTarget = null){
       }
 
       if(escudo3dMsg) escudo3dMsg.textContent = `✅ Pedido enviado! ID: ${out.pedido_id}`;
-      if(progressTarget) iniciarProgressoNoProduto(progressTarget, out.pedido_id || "novo");
+      if(progressTarget){
+        iniciarProgressoNoProduto(progressTarget, out.pedido_id || "novo");
+        if(out.pedido_id) acompanharResultadoClean(out.pedido_id, progressTarget);
+      }
 
       ia4Track("pedido_concluido", {
         produto: "escudo3d",
