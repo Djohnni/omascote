@@ -2217,6 +2217,24 @@ body{
   line-height:1 !important;
 }
 
+.logoutTopBar.logoutOnlyTop{
+  justify-content:flex-end;
+}
+
+.trustFooter{
+  margin:28px auto 0;
+  padding:16px 14px;
+  border-top:1px solid #e5e7eb;
+  justify-content:center;
+}
+
+.trustFooter .ia4TrustTop{
+  flex:0 1 auto;
+  justify-content:center;
+  flex-wrap:wrap;
+  overflow:visible;
+}
+
 .topbar{
   background:linear-gradient(180deg,#ffffff 0%,#f8fafc 100%) !important;
   padding:18px 32px !important;
@@ -2290,7 +2308,7 @@ body{
 }
 
 .ia4TopProducaoBox{
-  display:none;
+  display:none !important;
   align-items:center;
   gap:8px;
   position:fixed;
@@ -2308,7 +2326,7 @@ body{
 }
 
 .ia4TopProducaoBox.show{
-  display:flex;
+   display:none !important;
 }
 
 .ia4TopProducaoBar{
@@ -5024,37 +5042,7 @@ body:not(.modeChosen) .builderArea,
 <body data-page="home">
   <main>
   <div class="wrap">
-    <div class="logoutTopBar">
-      <div class="ia4TrustTop">
-        <div class="ia4TrustItem">
-          <span class="ia4TrustIcon">🛡️</span>
-          <div>
-            <strong>Site seguro</strong>
-            <small>SSL criptografado</small>
-          </div>
-        </div>
-
-        <div class="ia4TrustDivider"></div>
-
-        <div class="ia4TrustItem">
-          <img src="google-g.png" class="ia4GoogleIcon" alt="Google">
-          <div>
-            <strong>Empresa verificada</strong>
-            <small>No Google</small>
-          </div>
-        </div>
-
-        <div class="ia4TrustDivider"></div>
-
-        <div class="ia4TrustItem">
-          <span class="ia4TrustIcon">✅</span>
-          <div>
-            <strong>Pagamentos protegidos</strong>
-            <small>100% seguros</small>
-          </div>
-        </div>
-      </div>
-
+    <div class="logoutTopBar logoutOnlyTop">
       <button id="btnSair" type="button">Sair</button>
     </div>
 
@@ -5292,6 +5280,38 @@ body:not(.modeChosen) .builderArea,
           <input type="hidden" id="selectedProduct" value="">
 
           <div id="productFormsRoot" class="productFormsRoot"></div>
+
+          <div class="logoutTopBar trustFooter">
+            <div class="ia4TrustTop">
+              <div class="ia4TrustItem">
+                <span class="ia4TrustIcon">🛡️</span>
+                <div>
+                  <strong>Site seguro</strong>
+                  <small>SSL criptografado</small>
+                </div>
+              </div>
+
+              <div class="ia4TrustDivider"></div>
+
+              <div class="ia4TrustItem">
+                <img src="google-g.png" class="ia4GoogleIcon" alt="Google">
+                <div>
+                  <strong>Empresa verificada</strong>
+                  <small>No Google</small>
+                </div>
+              </div>
+
+              <div class="ia4TrustDivider"></div>
+
+              <div class="ia4TrustItem">
+                <span class="ia4TrustIcon">✅</span>
+                <div>
+                  <strong>Pagamentos protegidos</strong>
+                  <small>100% seguros</small>
+                </div>
+              </div>
+            </div>
+          </div>
 
           <div class="productBuildLayout legacyOrderFormArea">
             <div class="productPreviewPanel" aria-hidden="true">
