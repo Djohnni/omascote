@@ -2552,7 +2552,7 @@ body{
 }
 
 .pagamentoPendenteBox .menuPedidoBtn{
-  margin-top:0;
+  margin-top:8px;
   background:linear-gradient(135deg,#facc15,#f97316);
   color:#111827;
   box-shadow:0 10px 24px rgba(249,115,22,.26);
@@ -11190,15 +11190,54 @@ function cardPagamentoPendente(p) {
     <div class="pagamentoPendenteBox">
       <div class="pagamentoPendenteTitulo">Sua prévia está pronta ✅</div>
       <div class="pagamentoPendenteTexto">Desbloqueie a imagem em alta qualidade por R$ ${valor}</div>
-      <button type="button" class="menuPedidoBtn" onclick="desbloquearImagem('${p.id}')">
-        Desbloquear imagem
+      <button type="button" class="menuPedidoBtn" onclick="copiarPixPedido('${p.id}')">
+        Copiar Pix
+      </button>
+      <button type="button" class="menuPedidoBtn" onclick="verQrCodePedido('${p.id}')">
+        Ver QR Code
+      </button>
+      <button type="button" class="menuPedidoBtn" onclick="usarSaldoPedido('${p.id}')">
+        Usar saldo IA4Tube
       </button>
     </div>
   `;
 }
 
-function desbloquearImagem(id) {
-  alert("Pagamento será conectado na próxima etapa. Pedido: " + id);
+function copiarPixPedido(id) {
+  alert("Pix será conectado na próxima etapa.");
+}
+
+function verQrCodePedido(id) {
+  alert("QR Code será conectado na próxima etapa.");
+}
+
+async function usarSaldoPedido(id) {
+  if(!token){
+    alert("Faça login para usar seu saldo IA4Tube.");
+    return;
+  }
+
+  try{
+    const r = await fetch(`${API_BASE}/pedidos/${id}/pagar-com-saldo`, {
+      method:"POST",
+      headers:{
+        "Authorization":"Bearer " + token
+      }
+    });
+
+    const data = await r.json().catch(()=>({}));
+
+    if(!r.ok || !data.ok){
+      alert(data.error || "Não foi possível desbloquear com saldo.");
+      return;
+    }
+
+    alert("Imagem desbloqueada com saldo IA4Tube.");
+    await refreshMe();
+    await carregarHistorico();
+  }catch(e){
+    alert("Erro de rede ao usar saldo IA4Tube.");
+  }
 }
 
 async function ia4FinalizarContaAuto(id){
