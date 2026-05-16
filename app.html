@@ -7635,6 +7635,8 @@ function restaurarImagemOriginalDoProduto(target){
   if(imageBox){
     delete imageBox.dataset.previewUrl;
     delete imageBox.dataset.previewPedidoId;
+    imageBox.style.cursor = "";
+    imageBox.onclick = null;
   }
   if(img){
     img.removeAttribute("data-preview-url");
@@ -7729,6 +7731,13 @@ function finalizarProgressoNoProduto(form, pedidoId){
   if(previewUrl){
     imageBox.dataset.previewUrl = previewUrl;
     imageBox.dataset.previewPedidoId = pedidoId;
+    imageBox.style.cursor = "pointer";
+    imageBox.onclick = (ev) => {
+      ev.preventDefault();
+      ev.stopPropagation();
+      console.log("[preview-card-click]", { pedidoId, target: ev.target });
+      abrirPedidoDireto(pedidoId);
+    };
     imageBox.classList.add("is-preview-ready");
   }
 
