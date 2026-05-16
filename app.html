@@ -4810,6 +4810,7 @@ body.visitanteNaoLogado .optLabel span{
   border-radius:20px;
   overflow:hidden;
   background:#f3f4f6;
+  position:relative;
 }
 
 .cleanProductImage img{
@@ -4819,6 +4820,58 @@ body.visitanteNaoLogado .optLabel span{
   max-height:none;
   object-fit:contain;
   object-position:top center;
+}
+
+.cleanProductImage.is-processing img{
+  filter:brightness(.48) blur(1px);
+}
+
+.cleanProgressOverlay{
+  position:absolute;
+  inset:0;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:22px;
+  background:rgba(15,23,42,.46);
+  color:#ffffff;
+  text-align:center;
+  z-index:2;
+}
+
+.cleanProgressContent{
+  width:min(78%, 360px);
+}
+
+.cleanProgressPercent{
+  font-size:clamp(48px, 11vw, 86px);
+  line-height:.95;
+  font-weight:950;
+  letter-spacing:0;
+  text-shadow:0 8px 26px rgba(0,0,0,.42);
+}
+
+.cleanProgressText{
+  margin-top:10px;
+  font-size:14px;
+  font-weight:900;
+}
+
+.cleanProgressBar{
+  width:100%;
+  height:9px;
+  margin-top:15px;
+  border-radius:999px;
+  background:rgba(255,255,255,.28);
+  overflow:hidden;
+}
+
+.cleanProgressFill{
+  width:1%;
+  height:100%;
+  border-radius:999px;
+  background:#22c55e;
+  transition:width .35s ease;
 }
 
 .cleanProductForm{
@@ -7457,6 +7510,95 @@ function resetCleanFormAfterSend(form){
   form.querySelectorAll(".campoObrigatorioErro").forEach(el => el.classList.remove("campoObrigatorioErro"));
 }
 
+const cleanProductProgressTimers = new WeakMap();
+
+function getCleanProductImageFromForm(form){
+  return form?.closest(".cleanProductBlock")?.querySelector(".cleanProductImage") || null;
+}
+
+function renderCleanProgressOverlay(imageBox, percent, text){
+  if(!imageBox) return null;
+
+  let overlay = imageBox.querySelector(".cleanProgressOverlay");
+
+  if(!overlay){
+    overlay = document.createElement("div");
+    overlay.className = "cleanProgressOverlay";
+    overlay.innerHTML = `
+      <div class="cleanProgressContent">
+        <div class="cleanProgressPercent" data-clean-progress-percent>1%</div>
+        <div class="cleanProgressBar">
+          <div class="cleanProgressFill" data-clean-progress-fill></div>
+        </div>
+        <div class="cleanProgressText" data-clean-progress-text>Criando sua arte...</div>
+      </div>
+    `;
+    imageBox.appendChild(overlay);
+  }
+
+  const safePercent = Math.max(1, Math.min(100, Number(percent || 1)));
+  const percentEl = overlay.querySelector("[data-clean-progress-percent]");
+  const fillEl = overlay.querySelector("[data-clean-progress-fill]");
+  const textEl = overlay.querySelector("[data-clean-progress-text]");
+
+  if(percentEl) percentEl.textContent = `${safePercent}%`;
+  if(fillEl) fillEl.style.width = `${safePercent}%`;
+  if(textEl) textEl.textContent = text || "Criando sua arte...";
+
+  imageBox.classList.add("is-processing");
+  return overlay;
+}
+
+function iniciarProgressoNoProduto(form, pedidoId){
+  cancelarProgressoNoProduto(form);
+
+  const imageBox = getCleanProductImageFromForm(form);
+  if(!imageBox) return;
+
+  let percent = 1;
+  renderCleanProgressOverlay(imageBox, percent, "Criando sua arte...");
+
+  const timer = setInterval(() => {
+    percent = Math.min(92, percent + Math.max(1, Math.round((92 - percent) / 14)));
+    renderCleanProgressOverlay(imageBox, percent, "Criando sua arte...");
+
+    if(percent >= 92){
+      clearInterval(timer);
+    }
+  }, 900);
+
+  cleanProductProgressTimers.set(form, { timer, pedidoId });
+}
+
+function finalizarProgressoNoProduto(form){
+  const state = cleanProductProgressTimers.get(form);
+  if(state?.timer) clearInterval(state.timer);
+  cleanProductProgressTimers.delete(form);
+
+  const imageBox = getCleanProductImageFromForm(form);
+  if(!imageBox) return;
+
+  renderCleanProgressOverlay(imageBox, 100, "Arte pronta!");
+
+  setTimeout(() => {
+    const overlay = imageBox.querySelector(".cleanProgressOverlay");
+    overlay?.remove();
+    imageBox.classList.remove("is-processing");
+  }, 1800);
+}
+
+function cancelarProgressoNoProduto(form){
+  const state = cleanProductProgressTimers.get(form);
+  if(state?.timer) clearInterval(state.timer);
+  cleanProductProgressTimers.delete(form);
+
+  const imageBox = getCleanProductImageFromForm(form);
+  if(!imageBox) return;
+
+  imageBox.querySelector(".cleanProgressOverlay")?.remove();
+  imageBox.classList.remove("is-processing");
+}
+
 async function acompanharResultadoClean(pedidoId, form){
   const boxEl = form.querySelector("[data-clean-result-box]");
   const statusElLocal = form.querySelector("[data-clean-result-status]");
@@ -7479,6 +7621,7 @@ async function acompanharResultadoClean(pedidoId, form){
 
       if(data.ok && data.imagem_pronta){
         clearInterval(timer);
+        finalizarProgressoNoProduto(form);
         const previewUrl = `${API_BASE}/pedidos/${pedidoId}/preview?ts=${Date.now()}`;
         statusElLocal.textContent = "Confira sua arte antes de baixar";
         imgEl.src = previewUrl;
@@ -7521,6 +7664,7 @@ async function submitCleanProductForm(e){
 
   const errors = validateCleanProductForm(productKey, form);
   if(errors.length){
+    cancelarProgressoNoProduto(form);
     setCleanProductMsg(form, errors[0], true);
     ia4RegistrarAcao("erro_validacao_pedido", {
       produto: productKey,
@@ -7552,6 +7696,7 @@ async function submitCleanProductForm(e){
     if(out.ok){
       setCleanProductMsg(form, "");
       atualizarTopoProducao([{ id: out.pedido_id || "novo", status: "processando" }]);
+      iniciarProgressoNoProduto(form, out.pedido_id || "novo");
       mostrarAvisoPedido();
 
       ia4Track("pedido_concluido", {
@@ -7568,9 +7713,7 @@ async function submitCleanProductForm(e){
       if(schema.endpoint === "/resultado_do_jogo"){
         acompanharResultadoClean(out.pedido_id, form);
       }else{
-        setTimeout(()=>{
-          window.scrollTo({ top:0, behavior:"smooth" });
-        }, 300);
+        setCleanProductMsg(form, "Pedido enviado. Acompanhe em Meus pedidos.");
       }
     }else{
       ia4Track("erro_envio_pedido", {
@@ -7578,9 +7721,11 @@ async function submitCleanProductForm(e){
         categoria: product.visualCategory || categoriaSelecionada || "",
         erro: out.error || "Erro ao enviar"
       });
+      cancelarProgressoNoProduto(form);
       setCleanProductMsg(form, out.error || "Erro ao enviar", true);
     }
   }catch{
+    cancelarProgressoNoProduto(form);
     setCleanProductMsg(form, "Erro de rede ao enviar.", true);
   }
 }
@@ -7647,7 +7792,7 @@ function bindCleanProductForms(root){
     btn.addEventListener("click", async () => {
       activateCleanProductBlock("escudo3d");
       const file = escudo3dFile?.files && escudo3dFile.files[0] ? escudo3dFile.files[0] : null;
-      await enviarPedidoEscudo3dComArquivo(file);
+      await enviarPedidoEscudo3dComArquivo(file, btn.closest(".cleanProductBlock"));
     });
   });
 
@@ -9555,7 +9700,7 @@ if(escudo3dUploadBtn && escudo3dFile){
   });
 }
 
-async function enviarPedidoEscudo3dComArquivo(file){
+async function enviarPedidoEscudo3dComArquivo(file, progressTarget = null){
   if(!token){
     escudo3dCadastroFile = file || null;
     abrirCadastroEscudo3dModal();
@@ -9594,6 +9739,7 @@ async function enviarPedidoEscudo3dComArquivo(file){
       }
 
       if(escudo3dMsg) escudo3dMsg.textContent = `✅ Pedido enviado! ID: ${out.pedido_id}`;
+      if(progressTarget) iniciarProgressoNoProduto(progressTarget, out.pedido_id || "novo");
 
       ia4Track("pedido_concluido", {
         produto: "escudo3d",
@@ -9613,9 +9759,11 @@ async function enviarPedidoEscudo3dComArquivo(file){
       carregarHistorico();
       destacarMeusPedidos();
 
-      setTimeout(()=>{
-        window.scrollTo({ top:0, behavior:"smooth" });
-      }, 300);
+      if(!progressTarget){
+        setTimeout(()=>{
+          window.scrollTo({ top:0, behavior:"smooth" });
+        }, 300);
+      }
 
       setTimeout(fecharEscudo3dModal, 900);
     }else{
@@ -9625,6 +9773,7 @@ async function enviarPedidoEscudo3dComArquivo(file){
       });
 
       if(escudo3dMsg) escudo3dMsg.textContent = out.error || "Erro ao enviar.";
+      if(progressTarget) cancelarProgressoNoProduto(progressTarget);
       alert(out.error || "Erro ao enviar.");
     }
   }catch{
@@ -9634,6 +9783,7 @@ async function enviarPedidoEscudo3dComArquivo(file){
     });
 
     if(escudo3dMsg) escudo3dMsg.textContent = "Erro de rede.";
+    if(progressTarget) cancelarProgressoNoProduto(progressTarget);
     alert("Erro de rede.");
   }
 
