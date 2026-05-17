@@ -3891,7 +3891,7 @@ textarea.campoObrigatorioErro,
 }
 
 .productGroupBrinde::before{
-  content:"🎁 Arte de boas-vindas por R$1";
+  content:"🎁 Veja antes de pagar";
 }
 
 .clienteComBrindeMascote .productGroupBrinde::before{
@@ -4879,6 +4879,48 @@ body.visitanteNaoLogado .visitanteWelcomeCallout{
   font-weight:900;
 }
 
+.cleanProgressCadastro{
+  margin-top:14px;
+  padding:12px;
+  border-radius:16px;
+  background:rgba(255,255,255,.94);
+  color:#111827;
+  box-shadow:0 16px 36px rgba(15,23,42,.28);
+  pointer-events:auto;
+}
+
+.cleanProgressCadastroText{
+  font-size:12px;
+  font-weight:900;
+  line-height:1.3;
+  margin-bottom:8px;
+}
+
+.cleanProgressCadastro input{
+  width:100%;
+  margin-top:6px;
+  padding:9px 10px;
+  border-radius:10px;
+  border:1px solid #d1d5db;
+  background:#ffffff;
+  color:#111827;
+  font-size:13px;
+  font-weight:800;
+}
+
+.cleanProgressCadastro button{
+  width:100%;
+  margin-top:8px;
+  padding:10px 12px;
+  border:0;
+  border-radius:12px;
+  background:#16a34a;
+  color:#ffffff;
+  font-size:13px;
+  font-weight:950;
+  cursor:pointer;
+}
+
 .cleanProgressBar{
   width:100%;
   height:9px;
@@ -5357,7 +5399,7 @@ body:not(.modeChosen) .builderArea,
 
           <div class="visitanteWelcomeCallout" aria-hidden="true">
             <div class="visitanteWelcomeLine">👀 Primeiro você vê como ficou</div>
-            <div class="visitanteWelcomeLine">⚡ Depois desbloqueia por apenas R$1</div>
+            <div class="visitanteWelcomeLine">⚡ Depois desbloqueia pelo preço do produto</div>
           </div>
 
           <div id="productFormsRoot" class="productFormsRoot"></div>
@@ -7641,6 +7683,14 @@ function renderCleanProgressOverlay(imageBox, percent, text){
   if(!imageBox) return null;
 
   let overlay = imageBox.querySelector(".cleanProgressOverlay");
+  const cadastroHtml = ia4ContaAutoPendente() ? `
+        <div class="cleanProgressCadastro">
+          <div class="cleanProgressCadastroText">Aproveite enquanto sua arte está sendo criada e salve seu cadastro para receber sua imagem.</div>
+          <input data-progress-login placeholder="Crie seu login">
+          <input data-progress-senha type="password" placeholder="Crie sua senha">
+          <button type="button" onclick="finalizarCadastroDuranteProgresso(event)">Salvar cadastro</button>
+        </div>
+  ` : "";
 
   if(!overlay){
     overlay = document.createElement("div");
@@ -7652,9 +7702,15 @@ function renderCleanProgressOverlay(imageBox, percent, text){
           <div class="cleanProgressFill" data-clean-progress-fill></div>
         </div>
         <div class="cleanProgressText" data-clean-progress-text>Criando sua arte...</div>
+        <div data-clean-progress-cadastro>${cadastroHtml}</div>
       </div>
     `;
     imageBox.appendChild(overlay);
+  } else {
+    const cadastroEl = overlay.querySelector("[data-clean-progress-cadastro]");
+    if(cadastroEl && !cadastroEl.querySelector("input:focus")){
+      cadastroEl.innerHTML = cadastroHtml;
+    }
   }
 
   const safePercent = Math.max(1, Math.min(100, Number(percent || 1)));
@@ -8486,9 +8542,9 @@ const mascotePromo = document.querySelector('[data-product="mascote_uniforme"]')
 if(mascotePromo){
   const label = mascotePromo.querySelector(".optLabel");
 
-  if(label){
-    label.innerHTML = brindeMascoteDisponivel
-      ? `Mascote<br>do seu Time<br><span style="font-size:13px;color:#777;">Veja antes de pagar</span><br><span style="color:#1fbf63;font-weight:900;">Boas-vindas R$1</span>`
+    if(label){
+      label.innerHTML = brindeMascoteDisponivel
+      ? `Mascote<br>do seu Time<br><span style="font-size:13px;color:#777;">Veja antes de pagar</span><br><span style="color:#1fbf63;font-weight:900;">R$18,00</span>`
       : `Mascote<br>do seu Time<br><span style="color:#1fbf63;font-weight:900;">R$18,00</span>`;
   }
 }
@@ -8767,7 +8823,7 @@ function abrirCadastroVisitanteModal(){
 
   if(authCriarContaBtn){
     authCriarContaBtn.style.display = "block";
-    authCriarContaBtn.textContent = "Ver minha arte de boas-vindas por R$1 🚀";
+    authCriarContaBtn.textContent = "Criar conta e continuar 🚀";
     authCriarContaBtn.style.width = "100%";
     authCriarContaBtn.style.marginTop = "14px";
   }
@@ -9297,7 +9353,7 @@ authCriarContaToggle?.addEventListener("click", ()=>{
   if(authCriarContaToggle) authCriarContaToggle.style.display = "none";
   if(authCriarContaBtn){
     authCriarContaBtn.style.display = "block";
-    authCriarContaBtn.textContent = "Ver minha arte de boas-vindas por R$1 🚀";
+    authCriarContaBtn.textContent = "Criar conta e continuar 🚀";
   }
 
   setTimeout(()=>document.getElementById("authNomeTime")?.focus(), 120);
@@ -11318,14 +11374,9 @@ function ia4ContaAutoPendente(){
   return localStorage.getItem("ia4tube_conta_auto_pendente") === "1";
 }
 
-function isPedidoBoasVindasFrontend(p){
-  return p?.oferta_boas_vindas === true || p?.motivo_pagamento_pendente === "boas_vindas_1_real";
-}
-
 function ia4FinalizarContaBox(p){
   if(!ia4ContaAutoPendente()) return "";
   const id = typeof p === "object" ? p.id : p;
-  if(typeof p === "object" && isPedidoBoasVindasFrontend(p)) return "";
 
   return `
     <div style="margin-top:12px;padding:14px;border-radius:16px;background:#ecfdf3;border:1px solid #bbf7d0;color:#14532d;text-align:left;">
@@ -11349,11 +11400,8 @@ function ia4FinalizarContaBox(p){
 
 function cardPagamentoPendente(p) {
   const valor = Number(p.valor_pendente || 0).toFixed(2).replace(".", ",");
-  const boasVindas = isPedidoBoasVindasFrontend(p);
-  const titulo = boasVindas ? "Sua arte de boas-vindas está pronta ✅" : "Sua prévia está pronta ✅";
-  const texto = boasVindas
-    ? "Você viu como ficou. Agora pague R$1 para baixar em alta qualidade."
-    : `Desbloqueie a imagem em alta qualidade por R$ ${valor}`;
+  const titulo = "Sua prévia está pronta ✅";
+  const texto = `Desbloqueie a imagem em alta qualidade por R$ ${valor}`;
   return `
     <div class="pagamentoPendenteBox">
       <div class="pagamentoPendenteTitulo">${titulo}</div>
@@ -11592,6 +11640,64 @@ async function ia4FinalizarContaAuto(id){
   }
 }
 
+async function finalizarCadastroDuranteProgresso(ev){
+  ev?.preventDefault?.();
+  ev?.stopPropagation?.();
+
+  const box = ev?.target?.closest?.(".cleanProgressCadastro");
+  const login = box?.querySelector("[data-progress-login]")?.value?.trim() || "";
+  const senha = box?.querySelector("[data-progress-senha]")?.value || "";
+
+  if(login.length < 3){
+    alert("Digite um login com pelo menos 3 caracteres.");
+    return;
+  }
+
+  if(senha.length < 3){
+    alert("Digite uma senha com pelo menos 3 caracteres.");
+    return;
+  }
+
+  try{
+    const r = await fetch(`${API_BASE}/auth/finalizar-conta-auto`, {
+      method:"POST",
+      headers:{
+        "Authorization":"Bearer " + token,
+        "Content-Type":"application/json"
+      },
+      body:JSON.stringify({ login, senha })
+    });
+
+    const data = await r.json().catch(()=>({}));
+
+    if(!r.ok || !data.ok || !data.token){
+      if(String(data.error || "").includes("já foi finalizada")){
+        localStorage.removeItem("ia4tube_conta_auto_pendente");
+        box?.remove();
+        await refreshMe();
+        await carregarHistorico();
+        return;
+      }
+
+      alert(data.error || "Não foi possível salvar seu cadastro.");
+      return;
+    }
+
+    token = data.token;
+    localStorage.setItem("omascote_token", data.token);
+    localStorage.setItem("omascote_nome_time", data.nome_time || login);
+    localStorage.removeItem("ia4tube_conta_auto_pendente");
+    document.body.classList.remove("visitanteNaoLogado");
+    box?.remove();
+    applyLocal();
+    await refreshMe();
+    await carregarHistorico();
+    alert("Cadastro salvo. Seu pedido continua em produção.");
+  }catch(e){
+    alert("Erro de rede ao salvar cadastro.");
+  }
+}
+
 function atualizarMenuPedidosTopo(pedidos){
   const menu = document.getElementById("menuPedidosTopo");
   if(!menu) return;
@@ -11609,7 +11715,6 @@ function atualizarMenuPedidosTopo(pedidos){
     const aprovado = p.aprovado_cliente === true;
     const pagamentoPendente = p.pagamento_pendente === true;
     const mostrarPagamentoPendente = pagamentoPendente && !!p.imagem_url;
-    const boasVindas = isPedidoBoasVindasFrontend(p);
     const usouAjuste = p.ajuste_automatico_usado === true;
 
     return `
@@ -11647,7 +11752,7 @@ function atualizarMenuPedidosTopo(pedidos){
 </div>
 
 ${pagamentoPendente ? `
-` : ia4ContaAutoPendente() && !boasVindas ? `
+` : ia4ContaAutoPendente() ? `
 ` : aprovado ? `
 <button type="button" class="menuPedidoBtn" onclick="baixarPedido('${p.id}')">Baixar novamente</button>
 ` : `
@@ -11730,7 +11835,6 @@ async function carregarHistorico(){
       pagamento_pendente: p.pagamento_pendente,
       valor_pendente: p.valor_pendente,
       motivo_pagamento_pendente: p.motivo_pagamento_pendente,
-      oferta_boas_vindas: p.oferta_boas_vindas,
       ajuste_automatico_usado: p.ajuste_automatico_usado,
       motivo_ajuste: p.motivo_ajuste
     })));
@@ -11772,7 +11876,6 @@ async function carregarHistorico(){
       const aprovado = p.aprovado_cliente === true;
       const pagamentoPendente = p.pagamento_pendente === true;
       const mostrarPagamentoPendente = pagamentoPendente && !!p.imagem_url;
-      const boasVindas = isPedidoBoasVindasFrontend(p);
       const usouAjuste = p.ajuste_automatico_usado === true;
 
       return `
@@ -11810,7 +11913,7 @@ ${p.status === "pronto" ? `
 </div>
 
 ${pagamentoPendente ? `
-` : ia4ContaAutoPendente() && !boasVindas ? `
+` : ia4ContaAutoPendente() ? `
 ${ia4FinalizarContaBox(p)}
 ` : aprovado ? `
         <button onclick="baixarPedido('${p.id}')" style="margin-top:8px;padding:8px 12px;border-radius:10px;border:none;background:#2ecc71;color:#fff;font-weight:900;cursor:pointer;width:100%;">
