@@ -2042,6 +2042,8 @@
   border:1px solid rgba(255,255,255,.12);
   box-shadow:0 24px 60px rgba(15,23,42,.38);
   z-index:9999;
+  box-sizing:border-box;
+  overflow-x:hidden;
 }
 
 .saldoMenu.open{
@@ -2052,6 +2054,8 @@
   display:grid;
   gap:9px;
   padding:16px;
+  width:100%;
+  box-sizing:border-box;
   border-radius:22px;
   background:
     radial-gradient(circle at top right, rgba(34,197,94,.24), transparent 42%),
@@ -2101,6 +2105,7 @@
   box-shadow:0 12px 24px rgba(22,163,74,.26);
   cursor:pointer;
   text-align:center;
+  box-sizing:border-box;
 }
 
 .saldoPagamentoBtn:hover{
@@ -4259,6 +4264,34 @@ textarea.campoObrigatorioErro,
 }
 
 @media (max-width:680px){
+  .saldoMenu{
+    left:50%;
+    right:auto;
+    transform:translateX(-50%);
+    width:calc(100vw - 24px);
+    max-width:420px;
+    margin:0 auto;
+    grid-template-columns:1fr;
+    overflow-x:hidden;
+    box-sizing:border-box;
+    padding:12px;
+  }
+
+  .saldoPacote{
+    width:100%;
+    box-sizing:border-box;
+  }
+
+  .saldoPagamentoBtn{
+    width:100%;
+    justify-content:center;
+    align-items:center;
+    text-align:center;
+    gap:8px;
+    padding-left:12px;
+    padding-right:12px;
+  }
+
   .ia4SupportBtn{
     right:12px;
     bottom:12px;
@@ -5309,7 +5342,7 @@ body:not(.modeChosen) .builderArea,
                   <div class="saldoCardKicker">Ideal para começar</div>
                   <div class="saldoCardValor">R$8</div>
                   <div class="saldoCardDesc">Crédito rápido para testar o fluxo completo.</div>
-                  <button type="button" class="saldoPagamentoBtn" data-pacote="saldo_800" data-metodo="pix" data-label="Pix R$8,00"><span class="saldoPagamentoIcon">🟢</span><span>Pix R$8,00</span></button>
+                  <button type="button" class="saldoPagamentoBtn" data-pacote="saldo_800" data-metodo="pix" data-label="Gerar Pix R$8,00"><span class="saldoPagamentoIcon">🟢</span><span>Gerar Pix R$8,00</span></button>
                   <button type="button" class="saldoPagamentoBtn" data-pacote="saldo_800" data-metodo="cartao" data-label="Cartão R$8,00"><span class="saldoPagamentoIcon">💳</span><span>Cartão R$8,00</span></button>
                 </div>
 
@@ -5317,7 +5350,7 @@ body:not(.modeChosen) .builderArea,
                   <div class="saldoCardKicker">Mais escolhido</div>
                   <div class="saldoCardValor">R$18</div>
                   <div class="saldoCardDesc">Boa opção para criar mais de uma arte.</div>
-                  <button type="button" class="saldoPagamentoBtn" data-pacote="saldo_1800" data-metodo="pix" data-label="Pix R$18,00"><span class="saldoPagamentoIcon">🟢</span><span>Pix R$18,00</span></button>
+                  <button type="button" class="saldoPagamentoBtn" data-pacote="saldo_1800" data-metodo="pix" data-label="Gerar Pix R$18,00"><span class="saldoPagamentoIcon">🟢</span><span>Gerar Pix R$18,00</span></button>
                   <button type="button" class="saldoPagamentoBtn" data-pacote="saldo_1800" data-metodo="cartao" data-label="Cartão R$18,00"><span class="saldoPagamentoIcon">💳</span><span>Cartão R$18,00</span></button>
                 </div>
 
@@ -5325,7 +5358,7 @@ body:not(.modeChosen) .builderArea,
                   <div class="saldoCardKicker">Para times ativos</div>
                   <div class="saldoCardValor">R$28</div>
                   <div class="saldoCardDesc">Mais saldo para manter o Instagram em movimento.</div>
-                  <button type="button" class="saldoPagamentoBtn" data-pacote="saldo_2800" data-metodo="pix" data-label="Pix R$28,00"><span class="saldoPagamentoIcon">🟢</span><span>Pix R$28,00</span></button>
+                  <button type="button" class="saldoPagamentoBtn" data-pacote="saldo_2800" data-metodo="pix" data-label="Gerar Pix R$28,00"><span class="saldoPagamentoIcon">🟢</span><span>Gerar Pix R$28,00</span></button>
                   <button type="button" class="saldoPagamentoBtn" data-pacote="saldo_2800" data-metodo="cartao" data-label="Cartão R$28,00"><span class="saldoPagamentoIcon">💳</span><span>Cartão R$28,00</span></button>
                 </div>
 
@@ -5333,7 +5366,7 @@ body:not(.modeChosen) .builderArea,
                   <div class="saldoCardKicker">Melhor custo-benefício</div>
                   <div class="saldoCardValor">R$48</div>
                   <div class="saldoCardDesc">Pacote premium para criar com frequência.</div>
-                  <button type="button" class="saldoPagamentoBtn" data-pacote="saldo_4800" data-metodo="pix" data-label="Pix R$48,00"><span class="saldoPagamentoIcon">🟢</span><span>Pix R$48,00</span></button>
+                  <button type="button" class="saldoPagamentoBtn" data-pacote="saldo_4800" data-metodo="pix" data-label="Gerar Pix R$48,00"><span class="saldoPagamentoIcon">🟢</span><span>Gerar Pix R$48,00</span></button>
                   <button type="button" class="saldoPagamentoBtn" data-pacote="saldo_4800" data-metodo="cartao" data-label="Cartão R$48,00"><span class="saldoPagamentoIcon">💳</span><span>Cartão R$48,00</span></button>
                 </div>
               </div>
