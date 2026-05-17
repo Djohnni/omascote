@@ -2764,11 +2764,13 @@ body{
   display:none;
   margin:2px auto 8px;
   padding:0 14px;
-  color:#111827;
+  color:#0f172a;
   text-align:center;
-  font-size:22px;
+  font-size:clamp(18px, 4.8vw, 24px);
   line-height:1.15;
   font-weight:950;
+  letter-spacing:0;
+  max-width:760px;
 }
 
 body.visitanteNaoLogado .preTempoHeadline{
@@ -5269,7 +5271,7 @@ body:not(.modeChosen) .builderArea,
           </p>
         </section>
 
-        <div class="preTempoHeadline">Veja como ficou antes de pagar.</div>
+        <div class="preTempoHeadline">👀 Primeiro você vê sua arte pronta. Depois decide se quer desbloquear.</div>
 
         <div id="tempoEstimadoBox" class="tempoEstimadoBox">
           ⏱ Calculando tempo estimado...
@@ -5317,33 +5319,33 @@ body:not(.modeChosen) .builderArea,
           <div class="optionsRow productGroup productGroupTime">
             <button type="button" class="optionBtn" data-product="resultado">
               <img src="produtos/resultado.jpg" class="imgProduto" loading="lazy" decoding="async" alt="Resultado do jogo">
-              <div class="optLabel">Resultado<br>do Jogo<br><span style="color:#1fbf63;font-weight:900;">R$8,00</span></div>
+              <div class="optLabel">Poste o resultado<br>do jogo<br><span style="color:#1fbf63;font-weight:900;">R$8,00</span></div>
             </button>
 
             <button type="button" class="optionBtn" data-product="escalacao">
               <img src="produtos/escalacao.jpg" class="imgProduto" loading="lazy" decoding="async" alt="Escalação">
-              <div class="optLabel">Escalação<br><span style="color:#1fbf63;font-weight:900;">R$8,00</span></div>
+              <div class="optLabel">Poste sua<br>escalação<br><span style="color:#1fbf63;font-weight:900;">R$8,00</span></div>
             </button>
 
             <button type="button" class="optionBtn" data-product="contratacao">
               <img src="produtos/contratacao.jpg" class="imgProduto" loading="lazy" decoding="async" alt="Contratação">
-              <div class="optLabel">Contratação<br><span style="color:#1fbf63;font-weight:900;">R$7,00</span></div>
+              <div class="optLabel">Anuncie sua<br>contratação<br><span style="color:#1fbf63;font-weight:900;">R$7,00</span></div>
             </button>
 
             <button type="button" class="optionBtn" data-product="proximo_jogo">
               <img src="produtos/proximo_jogo.jpg" class="imgProduto" loading="lazy" decoding="async" alt="Próximo jogo">
-              <div class="optLabel">Próximo Jogo<br><span style="color:#1fbf63;font-weight:900;">R$7,00</span></div>
+              <div class="optLabel">Poste o<br>próximo jogo<br><span style="color:#1fbf63;font-weight:900;">R$7,00</span></div>
             </button>
 
             <button type="button" class="optionBtn" data-product="patrocinador">
               <img src="produtos/patrocinador.jpg" class="imgProduto" loading="lazy" decoding="async" alt="Patrocinador">
-              <div class="optLabel">Patrocinador<br>/ Apoio<br><span style="color:#1fbf63;font-weight:900;">R$8,00</span></div>
+              <div class="optLabel">Mostre quem apoia<br>seu time<br><span style="color:#1fbf63;font-weight:900;">R$8,00</span></div>
             </button>
 
             <button type="button" class="optionBtn" data-product="escudo3d">
               <img src="produtos/escudo3d.jpg" class="imgProduto" loading="lazy" decoding="async" alt="Escudo 3D">
               <div class="optLabel">
-                Primeira arte<br>Escudo 3D<br>
+                Faça seu escudo<br>em 3D<br>
                 <span style="font-size:11px;color:#777;text-decoration:line-through;">R$18</span>
                 <span style="color:#1fbf63;font-weight:900;"> R$4</span>
               </div>
@@ -5352,7 +5354,7 @@ body:not(.modeChosen) .builderArea,
 
           <div class="optionsRow productGroup productGroupBrinde">
             <button type="button" class="optionBtn" data-product="mascote_uniforme">
-              <div class="optLabel">Mascote<br>do seu Time<br><span style="color:#1fbf63;font-weight:900;">R$18,00</span></div>
+              <div class="optLabel">Faça o mascote<br>do seu time<br><span style="color:#1fbf63;font-weight:900;">R$18,00</span></div>
               <img src="produtos/mascote_uniforme.jpg" class="imgProduto" fetchpriority="high" loading="eager" alt="Mascote com uniforme">
             </button>
           </div>
@@ -5370,7 +5372,7 @@ body:not(.modeChosen) .builderArea,
             </button>
 
             <button type="button" class="optionBtn" data-product="jogador_escudo">
-              <div class="optLabel">Jogador<br>+ Escudo<br><span style="color:#1fbf63;font-weight:900;">R$6,00</span></div>
+              <div class="optLabel">Poste como jogador<br>profissional<br><span style="color:#1fbf63;font-weight:900;">R$6,00</span></div>
               <img src="produtos/jogador_escudo.jpg" class="imgProduto" fetchpriority="high" loading="eager" alt="Jogador mais escudo">
             </button>
           </div>
@@ -6306,7 +6308,7 @@ const ESCALACAO_JOGADORES_KEY = "omascote_escalacao_jogadores";
 const PRODUCTS = {
   resultado: {
     mode: "resultado",
-    title: "Resultado do jogo",
+    title: "Poste o resultado do jogo",
     hint: "Envie a competição, a foto do jogo, os escudos dos dois times, o placar e a frase para montar a arte pós-jogo.",
     flyerTipo: "",
     labels: {
@@ -6330,7 +6332,7 @@ const PRODUCTS = {
 
   escalacao: {
     mode: "flyer",
-    title: "Escalação",
+    title: "Poste sua escalação",
     hint: "Preencha o confronto, data do jogo, jogadores e envie o escudo do time para criar uma escalação profissional.",
     flyerTipo: "zz1fs",
     labels: {
@@ -6359,7 +6361,7 @@ const PRODUCTS = {
 
   contratacao: {
     mode: "flyer",
-    title: "Contratação",
+    title: "Anuncie sua contratação",
     hint: "Preencha só o essencial para anunciar o novo jogador.",
     flyerTipo: "zz1fm",
     labels: {
@@ -6384,7 +6386,7 @@ const PRODUCTS = {
 
   proximo_jogo: {
     mode: "flyer",
-    title: "Próximo jogo",
+    title: "Poste o próximo jogo",
     hint: "Preencha o confronto, a competição e os escudos para criar a arte.",
     flyerTipo: "zz1ft",
     labels: {
@@ -6411,7 +6413,7 @@ const PRODUCTS = {
 
   patrocinador: {
     mode: "flyer",
-    title: "Patrocinador / Apoio",
+    title: "Mostre quem apoia seu time",
     hint: "Envie o escudo do time e os patrocinadores de uma vez.",
     flyerTipo: "zz1fj",
     labels: {
@@ -6434,7 +6436,7 @@ const PRODUCTS = {
 
   proximo_jogo_jogador: {
     mode: "flyer",
-    title: "Próximo jogo jogador",
+    title: "Poste o próximo jogo",
     hint: "Crie uma arte focada em um jogador para divulgar o próximo jogo.",
     flyerTipo: "jog_proximo",
     labels: {
@@ -6463,7 +6465,7 @@ const PRODUCTS = {
 
   resultado_jogo_jogador: {
     mode: "resultado",
-    title: "Resultado jogador",
+    title: "Poste o resultado do jogo",
     hint: "Crie uma arte de resultado com foco no jogador.",
     flyerTipo: "jog_resultado",
     labels: {
@@ -6488,7 +6490,7 @@ const PRODUCTS = {
 
   jogador_escudo: {
     mode: "flyer",
-    title: "Jogador + escudo",
+    title: "Poste como jogador profissional",
     hint: "Envie a foto do jogador e o escudo do time para criar uma arte simples e forte.",
     flyerTipo: "jog_escudo",
     labels: {
@@ -6509,7 +6511,7 @@ const PRODUCTS = {
 
   mascote_uniforme: {
     mode: "flyer",
-    title: "Mascote + uniforme",
+    title: "Faça o mascote do seu time",
     hint: "Envie o animal que deseja transformar em mascote, o escudo/brasão do time e a camiseta/uniforme para criar o mascote profissional.",
     flyerTipo: "mascote_uniforme",
     labels: {
@@ -6533,7 +6535,7 @@ const PRODUCTS = {
 const PRODUCT_CONFIG_DETAILS = {
   resultado: {
     id: "resultado",
-    name: "Resultado do jogo",
+    name: "Poste o resultado do jogo",
     price: 8,
     visualCategory: "time",
     image: "produtos/resultado.jpg",
@@ -6563,7 +6565,7 @@ const PRODUCT_CONFIG_DETAILS = {
 
   escalacao: {
     id: "escalacao",
-    name: "Escalacao",
+    name: "Poste sua escalação",
     price: 8,
     visualCategory: "time",
     image: "produtos/escalacao.jpg",
@@ -6595,7 +6597,7 @@ const PRODUCT_CONFIG_DETAILS = {
 
   contratacao: {
     id: "contratacao",
-    name: "Contratação",
+    name: "Anuncie sua contratação",
     price: 7,
     visualCategory: "time",
     image: "produtos/contratacao.jpg",
@@ -6623,7 +6625,7 @@ const PRODUCT_CONFIG_DETAILS = {
 
   proximo_jogo: {
     id: "proximo_jogo",
-    name: "Próximo jogo",
+    name: "Poste o próximo jogo",
     price: 7,
     visualCategory: "time",
     image: "produtos/proximo_jogo.jpg",
@@ -6652,7 +6654,7 @@ const PRODUCT_CONFIG_DETAILS = {
 
   patrocinador: {
     id: "patrocinador",
-    name: "Patrocinador / Apoio",
+    name: "Mostre quem apoia seu time",
     price: 8,
     visualCategory: "time",
     image: "produtos/patrocinador.jpg",
@@ -6679,7 +6681,7 @@ const PRODUCT_CONFIG_DETAILS = {
 
   escudo3d: {
     id: "escudo3d",
-    name: "Escudo 3D",
+    name: "Faça seu escudo em 3D",
     price: 4,
     visualCategory: "time",
     image: "produtos/escudo3d.jpg",
@@ -6703,7 +6705,7 @@ const PRODUCT_CONFIG_DETAILS = {
 
   proximo_jogo_jogador: {
     id: "proximo_jogo_jogador",
-    name: "Próximo jogo jogador",
+    name: "Poste o próximo jogo",
     price: 7,
     visualCategory: "jogador",
     image: "produtos/proximo_jogo_jogador.jpg",
@@ -6733,7 +6735,7 @@ const PRODUCT_CONFIG_DETAILS = {
 
   resultado_jogo_jogador: {
     id: "resultado_jogo_jogador",
-    name: "Resultado jogador",
+    name: "Poste o resultado do jogo",
     price: 8,
     visualCategory: "jogador",
     image: "produtos/resultado_jogador.jpg",
@@ -6762,7 +6764,7 @@ const PRODUCT_CONFIG_DETAILS = {
 
   jogador_escudo: {
     id: "jogador_escudo",
-    name: "Jogador + escudo",
+    name: "Poste como jogador profissional",
     price: 6,
     visualCategory: "jogador",
     image: "produtos/jogador_escudo.jpg",
@@ -6788,7 +6790,7 @@ const PRODUCT_CONFIG_DETAILS = {
 
   mascote_uniforme: {
     id: "mascote_uniforme",
-    name: "Mascote + uniforme",
+    name: "Faça o mascote do seu time",
     price: 18,
     visualCategory: "time",
     image: "produtos/mascote_uniforme.jpg",
