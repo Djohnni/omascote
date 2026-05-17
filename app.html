@@ -2031,9 +2031,9 @@
   left:auto;
   transform:none;
   display:none;
-  grid-template-columns:repeat(2, minmax(90px, 1fr));
-  gap:10px;
-  width:min(260px, calc(100vw - 28px));
+  grid-template-columns:1fr;
+  gap:12px;
+  width:min(320px, calc(100vw - 28px));
   padding:12px;
   border-radius:18px;
   background:#ffffff;
@@ -2046,51 +2046,48 @@
   display:grid;
 }
 
-.saldoOpcao{
-  background:#f8fff9;
-  color:#159947;
-  border:1px solid #dcfce7;
-  border-radius:16px;
-  padding:16px 12px;
-  font-size:20px;
-  font-weight:950;
-  box-shadow:none;
+.saldoPacote{
+  display:grid;
+  gap:8px;
+}
+
+.saldoPagamentoBtn{
+  width:100%;
   display:flex;
-  flex-direction:column;
   align-items:center;
   justify-content:center;
-  gap:6px;
+  gap:9px;
+  min-height:46px;
+  padding:12px 14px;
+  border:0;
+  border-radius:14px;
+  background:linear-gradient(135deg,#16a34a,#15803d);
+  color:#ffffff;
+  font-size:15px;
+  font-weight:950;
+  box-shadow:0 12px 24px rgba(22,163,74,.22);
+  cursor:pointer;
   text-align:center;
-  min-height:118px;
 }
 
-.saldoValor{
-  font-size:34px;
+.saldoPagamentoBtn:hover{
+  filter:brightness(1.04);
+}
+
+.saldoPagamentoBtn:disabled{
+  cursor:wait;
+  opacity:.82;
+}
+
+.saldoPagamentoIcon{
+  display:inline-grid;
+  place-items:center;
+  width:24px;
+  height:24px;
+  border-radius:9px;
+  background:rgba(255,255,255,.18);
+  font-size:15px;
   line-height:1;
-  font-weight:950;
-  color:#16a34a;
-}
-
-.saldoTexto{
-  font-size:12px;
-  line-height:1.2;
-  font-weight:900;
-  color:#334155;
-}
-
-.saldoTextoBonus{
-  font-size:12px;
-  line-height:1.2;
-  font-weight:950;
-  color:#16a34a;
-}
-
-.saldoOpcaoPrimeira{
-  background:linear-gradient(180deg,#ffffff,#f8fafc);
-}
-
-.saldoOpcao:hover{
-  background:#ecfdf3;
 }
 
 /* ===== IA4TUBE UI SIMPLES - TESTE VISUAL ===== */
@@ -5275,25 +5272,25 @@ body:not(.modeChosen) .builderArea,
               <button class="btnGreen" id="btnAbrirSaldo">Adicionar saldo</button>
 
               <div class="saldoMenu" id="saldoMenu">
-                <button type="button" class="saldoOpcao saldoOpcaoPrimeira" data-pacote="saldo_800">
-                  <span class="saldoValor">R$8</span>
-                  <span class="saldoTexto">Ideal para começar<br>Pix ou cartão</span>
-                </button>
+                <div class="saldoPacote">
+                  <button type="button" class="saldoPagamentoBtn" data-pacote="saldo_800" data-metodo="pix" data-label="Pix R$8,00"><span class="saldoPagamentoIcon">◆</span><span>Pix R$8,00</span></button>
+                  <button type="button" class="saldoPagamentoBtn" data-pacote="saldo_800" data-metodo="cartao" data-label="Cartão R$8,00"><span class="saldoPagamentoIcon">💳</span><span>Cartão R$8,00</span></button>
+                </div>
 
-                <button type="button" class="saldoOpcao" data-pacote="saldo_1800">
-                  <span class="saldoValor">R$18</span>
-                  <span class="saldoTextoBonus">Mais escolhido<br>Pix ou cartão</span>
-                </button>
+                <div class="saldoPacote">
+                  <button type="button" class="saldoPagamentoBtn" data-pacote="saldo_1800" data-metodo="pix" data-label="Pix R$18,00"><span class="saldoPagamentoIcon">◆</span><span>Pix R$18,00</span></button>
+                  <button type="button" class="saldoPagamentoBtn" data-pacote="saldo_1800" data-metodo="cartao" data-label="Cartão R$18,00"><span class="saldoPagamentoIcon">💳</span><span>Cartão R$18,00</span></button>
+                </div>
 
-                <button type="button" class="saldoOpcao" data-pacote="saldo_2800">
-                  <span class="saldoValor">R$28</span>
-                  <span class="saldoTextoBonus">Para times ativos<br>Pix ou cartão</span>
-                </button>
+                <div class="saldoPacote">
+                  <button type="button" class="saldoPagamentoBtn" data-pacote="saldo_2800" data-metodo="pix" data-label="Pix R$28,00"><span class="saldoPagamentoIcon">◆</span><span>Pix R$28,00</span></button>
+                  <button type="button" class="saldoPagamentoBtn" data-pacote="saldo_2800" data-metodo="cartao" data-label="Cartão R$28,00"><span class="saldoPagamentoIcon">💳</span><span>Cartão R$28,00</span></button>
+                </div>
 
-                <button type="button" class="saldoOpcao" data-pacote="saldo_4800">
-                  <span class="saldoValor">R$48</span>
-                  <span class="saldoTextoBonus">Melhor custo-benefício<br>Pix ou cartão</span>
-                </button>
+                <div class="saldoPacote">
+                  <button type="button" class="saldoPagamentoBtn" data-pacote="saldo_4800" data-metodo="pix" data-label="Pix R$48,00"><span class="saldoPagamentoIcon">◆</span><span>Pix R$48,00</span></button>
+                  <button type="button" class="saldoPagamentoBtn" data-pacote="saldo_4800" data-metodo="cartao" data-label="Cartão R$48,00"><span class="saldoPagamentoIcon">💳</span><span>Cartão R$48,00</span></button>
+                </div>
               </div>
             </div>
 
@@ -8724,16 +8721,33 @@ async function carregarTempoEstimado(){
 let acaoDepoisDoCadastro = null;
 let fluxoEscudo3dCadastro = false;
 let escudo3dCadastroFile = null;
+let saldoPixAtual = null;
 
-async function comprarCreditos(pacote){
+const SALDO_PIX_LABELS = {
+  saldo_800: "R$8,00",
+  saldo_1800: "R$18,00",
+  saldo_2800: "R$28,00",
+  saldo_4800: "R$48,00"
+};
+
+async function comprarCreditos(pacote, metodo = "checkout", triggerBtn = null){
   if(!token){
-    acaoDepoisDoCadastro = () => comprarCreditos(pacote);
+    acaoDepoisDoCadastro = () => comprarCreditos(pacote, metodo);
     abrirCadastroVisitanteModal();
     return;
   }
 
+  const originalHtml = triggerBtn?.innerHTML || "";
+  if(triggerBtn){
+    triggerBtn.disabled = true;
+    triggerBtn.innerHTML = metodo === "pix"
+      ? `<span class="saldoPagamentoIcon">⚡</span><span>Gerando Pix instantâneo...</span>`
+      : `<span class="saldoPagamentoIcon">💳</span><span>Abrindo pagamento seguro...</span>`;
+  }
+
   try{
-    const r = await fetch(`${API_BASE}/comprar-creditos`, {
+    const endpoint = metodo === "pix" ? "/comprar-creditos-pix" : "/comprar-creditos";
+    const r = await fetch(`${API_BASE}${endpoint}`, {
       method:"POST",
       headers:{
         "Authorization": "Bearer " + token,
@@ -8744,19 +8758,32 @@ async function comprarCreditos(pacote){
 
     const data = await r.json();
 
-    if(!data.ok || !data.init_point){
-    alert(data.error || "Erro ao iniciar pagamento.");
-    return;
-  }
+    if(!data.ok || (metodo !== "pix" && !data.init_point)){
+      alert(data.error || "Erro ao iniciar pagamento.");
+      return;
+    }
 
-  ia4Track("iniciou_pagamento", {
-    pacote: pacote || "desconhecido"
-  });
+    ia4Track("iniciou_pagamento", {
+      pacote: pacote || "desconhecido",
+      metodo: metodo || "checkout"
+    });
 
-  window.open(data.init_point, "_blank");
+    if(metodo === "pix"){
+      abrirModalPixSaldo(pacote, data);
+      return;
+    }
+
+    window.open(data.init_point, "_blank");
 
   }catch{
     alert("Erro de rede ao iniciar pagamento.");
+  }finally{
+    if(triggerBtn){
+      setTimeout(()=>{
+        triggerBtn.disabled = false;
+        triggerBtn.innerHTML = originalHtml;
+      }, 900);
+    }
   }
 }
 
@@ -11676,6 +11703,49 @@ function abrirModalPixQr(id, data) {
   modal.setAttribute("aria-hidden", "false");
 }
 
+function abrirModalPixSaldo(pacote, data) {
+  const modal = document.getElementById("pixQrModal");
+  const body = document.getElementById("pixQrBody");
+
+  if(!modal || !body) return;
+
+  const valor = SALDO_PIX_LABELS[pacote] || `R$${Number(data.valor_pago || 0).toFixed(2).replace(".", ",")}`;
+  saldoPixAtual = {
+    pix: data.pix_copia_cola || "",
+    pacote,
+    valor
+  };
+
+  const src = data.qr_code_base64 ? `data:image/png;base64,${data.qr_code_base64}` : "";
+
+  body.innerHTML = `
+    ${src ? `<img class="pixQrImagem" src="${src}" alt="QR Code Pix">` : ``}
+    <div class="pixQrTexto">
+      Após o pagamento, o saldo é liberado automaticamente.
+    </div>
+    <button type="button" class="menuPedidoBtn" onclick="copiarPixSaldoAtual()">
+      Copiar Pix ${valor}
+    </button>
+  `;
+
+  modal.classList.add("open");
+  modal.setAttribute("aria-hidden", "false");
+}
+
+async function copiarPixSaldoAtual() {
+  if(!saldoPixAtual?.pix){
+    alert("Pix ainda não disponível.");
+    return;
+  }
+
+  try{
+    await copiarTextoPix(saldoPixAtual.pix);
+    alert("Pix copiado. Após o pagamento, o saldo é liberado automaticamente.");
+  }catch(e){
+    alert("Não foi possível copiar o Pix.");
+  }
+}
+
 function fecharModalPixQr() {
   const modal = document.getElementById("pixQrModal");
   if(!modal) return;
@@ -12510,10 +12580,9 @@ btnAbrirSaldo?.addEventListener("click", (e)=>{
   saldoMenu?.classList.toggle("open");
 });
 
-document.querySelectorAll(".saldoOpcao").forEach((btn)=>{
+document.querySelectorAll(".saldoPagamentoBtn").forEach((btn)=>{
   btn.addEventListener("click", ()=>{
-    saldoMenu?.classList.remove("open");
-    comprarCreditos(btn.dataset.pacote);
+    comprarCreditos(btn.dataset.pacote, btn.dataset.metodo || "checkout", btn);
   });
 });
 
