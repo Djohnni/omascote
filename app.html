@@ -5001,6 +5001,41 @@ body.visitanteNaoLogado .visitanteWelcomeCallout{
   border:1px solid #e5e7eb;
 }
 
+.cleanOptionalDetails{
+  display:grid;
+  gap:10px;
+}
+
+.cleanOptionalDetails summary{
+  list-style:none;
+  cursor:pointer;
+  padding:13px 14px;
+  border-radius:16px;
+  background:#eef2ff;
+  border:1px solid #dbe4ff;
+  color:#1f2a44;
+  font-size:14px;
+  font-weight:950;
+  text-align:center;
+}
+
+.cleanOptionalDetails summary::-webkit-details-marker{
+  display:none;
+}
+
+.cleanOptionalDetails summary::after{
+  content:" +";
+}
+
+.cleanOptionalDetails[open] summary::after{
+  content:" -";
+}
+
+.cleanOptionalFields{
+  display:grid;
+  gap:14px;
+}
+
 .cleanFieldLabel{
   display:flex;
   align-items:center;
@@ -7093,31 +7128,34 @@ const CLEAN_PRODUCT_SCHEMA_VERSION = 2;
 const CLEAN_PRODUCT_FORM_SCHEMAS = {
   resultado: {
     endpoint: "/resultado_do_jogo",
+    validationMessage: "Preencha o placar, campeonato/competição e envie o escudo do Time A.",
     fields: [
       { key: "score", type: "score", label: "Placar", required: true },
-      { key: "competition", type: "text", legacyName: "hora", labelKey: "hora", placeholderKey: "hora", required: false },
+      { key: "competition", type: "text", legacyName: "hora", labelKey: "hora", placeholderKey: "hora", required: true },
       { key: "headline", type: "text", legacyName: "data", labelKey: "data", placeholderKey: "data", required: false, defaultValue: "Resultado do jogo" },
       { key: "home_crest", type: "file", legacyName: "escudo1", labelKey: "esc1", required: true, savedFallback: true },
-      { key: "away_crest", type: "file", legacyName: "escudo2", labelKey: "esc2", required: true },
+      { key: "away_crest", type: "file", legacyName: "escudo2", labelKey: "esc2", required: false },
       { key: "match_photo", type: "file", legacyName: "mascote", labelKey: "mascote", required: false },
       { key: "scorers", type: "scorers", label: "Ver artilheiros", required: false }
     ]
   },
   escalacao: {
     endpoint: "/pedidos",
+    validationMessage: "Preencha o confronto e adicione pelo menos 2 jogadores.",
     fields: [
       { key: "matchup", type: "text", legacyName: "rodada", labelKey: "rodada", placeholderKey: "rodada", required: true },
-      { key: "match_datetime", type: "text", legacyName: "data", labelKey: "data", placeholderKey: "data", required: true },
-      { key: "competition", type: "text", legacyName: "hora", labelKey: "hora", placeholderKey: "hora", required: true },
+      { key: "match_datetime", type: "text", legacyName: "data", labelKey: "data", placeholderKey: "data", required: false },
+      { key: "competition", type: "text", legacyName: "hora", labelKey: "hora", placeholderKey: "hora", required: false },
       { key: "venue", type: "text", legacyName: "arena", labelKey: "arena", placeholderKey: "arena", required: false },
-      { key: "players", type: "players", label: "Nome dos jogadores aqui", required: true },
-      { key: "team_crest", type: "file", legacyName: "escudo1", labelKey: "esc1", required: true, savedFallback: true },
+      { key: "players", type: "players", label: "Nome dos jogadores aqui", required: true, minItems: 2 },
+      { key: "team_crest", type: "file", legacyName: "escudo1", labelKey: "esc1", required: false, savedFallback: true },
       { key: "opponent_crest", type: "file", legacyName: "escudo2", labelKey: "esc2", required: false },
       { key: "team_photo", type: "file", legacyName: "mascote", labelKey: "mascote", required: false }
     ]
   },
   contratacao: {
     endpoint: "/pedidos",
+    validationMessage: "Preencha o título da arte, nome do jogador, envie o escudo do time e a foto do jogador.",
     fields: [
       { key: "title", type: "text", legacyName: "rodada", labelKey: "rodada", placeholderKey: "rodada", required: true },
       { key: "player_name", type: "text", legacyName: "data", labelKey: "data", placeholderKey: "data", required: true },
@@ -7128,17 +7166,19 @@ const CLEAN_PRODUCT_FORM_SCHEMAS = {
   },
   proximo_jogo: {
     endpoint: "/pedidos",
+    validationMessage: "Preencha o confronto, data e horário, campeonato/competição e envie o escudo do Time A.",
     fields: [
       { key: "matchup", type: "matchup", label: "Confronto", required: true },
       { key: "match_datetime", type: "text", legacyName: "data", labelKey: "data", placeholderKey: "data", required: true },
       { key: "competition", type: "text", legacyName: "hora", labelKey: "hora", placeholderKey: "hora", required: true },
       { key: "venue", type: "text", legacyName: "arena", labelKey: "arena", placeholderKey: "arena", required: false },
       { key: "home_crest", type: "file", legacyName: "escudo1", labelKey: "esc1", required: true, savedFallback: true },
-      { key: "away_crest", type: "file", legacyName: "escudo2", labelKey: "esc2", required: true }
+      { key: "away_crest", type: "file", legacyName: "escudo2", labelKey: "esc2", required: false }
     ]
   },
   patrocinador: {
     endpoint: "/pedidos",
+    validationMessage: "Preencha o título da arte, envie o escudo do time e envie os patrocinadores.",
     fields: [
       { key: "title", type: "text", legacyName: "rodada", labelKey: "rodada", placeholderKey: "rodada", required: true },
       { key: "headline", type: "text", legacyName: "data", labelKey: "data", placeholderKey: "data", required: false },
@@ -7148,6 +7188,7 @@ const CLEAN_PRODUCT_FORM_SCHEMAS = {
   },
   proximo_jogo_jogador: {
     endpoint: "/pedidos",
+    validationMessage: "Preencha o confronto, data e horário, campeonato/competição, envie o escudo do time e a foto do jogador.",
     fields: [
       { key: "matchup", type: "matchup", label: "Confronto", required: true },
       { key: "match_datetime", type: "text", legacyName: "data", labelKey: "data", placeholderKey: "data", required: true },
@@ -7160,6 +7201,7 @@ const CLEAN_PRODUCT_FORM_SCHEMAS = {
   },
   resultado_jogo_jogador: {
     endpoint: "/pedidos",
+    validationMessage: "Preencha o placar, envie os escudos dos times e a foto do jogador.",
     fields: [
       { key: "score", type: "score", label: "Placar", required: true },
       { key: "competition", type: "text", legacyName: "hora", labelKey: "hora", placeholderKey: "hora", required: false },
@@ -7171,6 +7213,7 @@ const CLEAN_PRODUCT_FORM_SCHEMAS = {
   },
   jogador_escudo: {
     endpoint: "/pedidos",
+    validationMessage: "Preencha o nome do jogador, envie o escudo do time e a foto do jogador.",
     fields: [
       { key: "player_name", type: "text", legacyName: "data", labelKey: "data", placeholderKey: "data", required: true },
       { key: "team_crest", type: "file", legacyName: "escudo1", labelKey: "esc1", required: true, savedFallback: true },
@@ -7180,10 +7223,11 @@ const CLEAN_PRODUCT_FORM_SCHEMAS = {
   },
   mascote_uniforme: {
     endpoint: "/pedidos",
+    validationMessage: "Preencha qual animal você quer transformar em mascote e envie o escudo ou brasão do time.",
     fields: [
       { key: "mascot_animal", type: "text", legacyName: "data", labelKey: "data", placeholderKey: "data", required: true },
       { key: "team_crest", type: "file", legacyName: "escudo1", labelKey: "esc1", required: true, savedFallback: true },
-      { key: "uniform_image", type: "file", legacyName: "mascote", labelKey: "mascote", required: true }
+      { key: "uniform_image", type: "file", legacyName: "mascote", labelKey: "mascote", required: false }
     ],
     legacyDefaults: { rodada: "Mascote + uniforme" }
   }
@@ -7289,6 +7333,27 @@ function renderCleanProductField(product, field){
   return "";
 }
 
+function renderCleanFieldsGrouped(product, schema){
+  const requiredFields = (schema.fields || []).filter(field => field.required);
+  const optionalFields = (schema.fields || []).filter(field => !field.required);
+  const requiredHtml = requiredFields.map(field => renderCleanProductField(product, field)).join("");
+  const optionalHtml = optionalFields.map(field => renderCleanProductField(product, field)).join("");
+
+  if(!optionalFields.length){
+    return requiredHtml;
+  }
+
+  return `
+    ${requiredHtml}
+    <details class="cleanOptionalDetails">
+      <summary>Campos opcionais — clique para preencher mais detalhes</summary>
+      <div class="cleanOptionalFields">
+        ${optionalHtml}
+      </div>
+    </details>
+  `;
+}
+
 function formatCleanProductPrice(product){
   const price = Number(product?.price || 0);
   return price ? `R$${price.toFixed(2).replace(".", ",")}` : "";
@@ -7330,7 +7395,7 @@ function renderCleanProductForms(){
             <h3 class="cleanProductTitle">${htmlEscape(product.title || product.name || productKey)}</h3>
             ${priceLabel ? `<div class="cleanProductPrice">${htmlEscape(priceLabel)}</div>` : ""}
           </div>
-          ${schema.fields.map(field => renderCleanProductField(product, field)).join("")}
+          ${renderCleanFieldsGrouped(product, schema)}
           <button class="btnGreen cleanSubmitBtn" type="submit">Criar minha arte 🚀</button>
           <div class="cleanProductMsg" data-clean-msg></div>
           <div class="cleanResultBox" data-clean-result-box>
@@ -7355,7 +7420,7 @@ function renderCleanProductForms(){
           <h3 class="cleanProductTitle">${htmlEscape(escudo3dProduct.title || escudo3dProduct.name || "Escudo 3D")}</h3>
           ${escudo3dPriceLabel ? `<div class="cleanProductPrice">${htmlEscape(escudo3dPriceLabel)}</div>` : ""}
         </div>
-        <div class="cleanFieldCard cleanEscudo3dUploadCard">
+        <div class="cleanFieldCard cleanEscudo3dUploadCard" data-clean-field-card="escudo3d_crest">
           <label class="cleanFieldLabel">Selecionar escudo</label>
           <div class="cleanFileBox" data-open-escudo3d-file tabindex="0" role="button" aria-label="Selecionar escudo">
             <span data-escudo3d-clean-file-name>Selecionar escudo</span>
@@ -7363,6 +7428,7 @@ function renderCleanProductForms(){
           </div>
         </div>
         <button class="btnGreen cleanSubmitBtn" type="button" data-submit-escudo3d>Criar minha arte 🚀</button>
+        <div class="cleanProductMsg" data-clean-msg></div>
       </div>
     </section>
   ` : "";
@@ -7402,14 +7468,14 @@ function collectCleanPeople(form, key, type){
 function validateCleanProductForm(productKey, form){
   const schema = getCleanProductSchema(productKey);
   const product = PRODUCTS[productKey];
-  const errors = [];
+  let hasError = false;
 
   if(!schema) return ["Produto sem configuração."];
 
   form.querySelectorAll(".campoObrigatorioErro").forEach(el => el.classList.remove("campoObrigatorioErro"));
 
-  const markError = (field, message) => {
-    errors.push(message);
+  const markError = (field) => {
+    hasError = true;
     const card = form.querySelector(`[data-clean-field-card="${CSS.escape(field.key)}"]`);
     if(card) card.classList.add("campoObrigatorioErro");
   };
@@ -7417,37 +7483,35 @@ function validateCleanProductForm(productKey, form){
   schema.fields.forEach(field => {
     if(!field.required) return;
 
-    const label = String(getCleanFieldLabel(product, field)).replace(/<br\s*\/?>/gi, " ");
-
     if(field.type === "text" && !getCleanFieldValue(form, field.key)){
-      markError(field, `${label} e obrigatorio.`);
+      markError(field);
     }
 
     if(field.type === "score"){
       const required = ["home_team", "home_score", "away_score", "away_team"];
       const missing = required.some(key => !getCleanFieldValue(form, key));
-      if(missing) markError(field, `${label} e obrigatorio.`);
+      if(missing) markError(field);
     }
 
     if(field.type === "matchup"){
       if(!getCleanFieldValue(form, "home_team") || !getCleanFieldValue(form, "away_team")){
-        markError(field, `${label} e obrigatorio.`);
+        markError(field);
       }
     }
 
     if(field.type === "file" || field.type === "multi-file"){
       const hasFiles = getCleanAssetFiles(form, field.key).length > 0;
       const hasSaved = field.savedFallback && typeof getSavedEscudo1File === "function" && !!getSavedEscudo1File();
-      if(!hasFiles && !hasSaved) markError(field, `${label} e obrigatorio.`);
+      if(!hasFiles && !hasSaved) markError(field);
     }
 
     if(field.type === "players" || field.type === "scorers"){
       const people = collectCleanPeople(form, field.key, field.type);
-      if(!people.length) markError(field, `${label} e obrigatorio.`);
+      if(people.length < Number(field.minItems || 1)) markError(field);
     }
   });
 
-  return errors;
+  return hasError ? [schema.validationMessage || "Preencha os campos obrigatórios."] : [];
 }
 
 function serializeCleanProductForm(productKey, form){
@@ -10053,8 +10117,25 @@ async function enviarPedidoEscudo3dComArquivo(file, progressTarget = null){
   }
 
   if(!file){
+    if(progressTarget){
+      progressTarget.querySelector(".cleanEscudo3dUploadCard")?.classList.add("campoObrigatorioErro");
+      const msg = progressTarget.querySelector("[data-clean-msg]");
+      if(msg){
+        msg.textContent = "Selecione o escudo do seu time.";
+        msg.style.color = "#dc2626";
+      }
+    }
     if(escudo3dMsg) escudo3dMsg.textContent = "Selecione o escudo primeiro.";
     return;
+  }
+
+  if(progressTarget){
+    progressTarget.querySelector(".cleanEscudo3dUploadCard")?.classList.remove("campoObrigatorioErro");
+    const msg = progressTarget.querySelector("[data-clean-msg]");
+    if(msg){
+      msg.textContent = "";
+      msg.style.color = "#4b5563";
+    }
   }
 
   if(escudo3dEnviarBtn) escudo3dEnviarBtn.disabled = true;
