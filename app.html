@@ -3886,11 +3886,11 @@ textarea.campoObrigatorioErro,
 }
 
 .productGroupBrinde::before{
-  content:"🎁 Ganhe o mascote do seu time grátis na primeira compra";
+  content:"🎁 Arte de boas-vindas por R$1";
 }
 
 .clienteComBrindeMascote .productGroupBrinde::before{
-  content:"🎁 Brinde primeira compra";
+  content:"🎁 Sem pagar antes de ver";
 }
 
 .productGroupJogador::before{
@@ -4492,6 +4492,35 @@ body.visitanteNaoLogado .optLabel span{
 body.visitanteNaoLogado #productFormsRoot{
   max-width:420px !important;
   margin:0 auto !important;
+}
+
+.visitanteWelcomeCallout{
+  display:none;
+}
+
+body.visitanteNaoLogado .visitanteWelcomeCallout{
+  display:block;
+  width:min(420px, calc(100vw - 28px));
+  margin:4px auto 14px;
+  padding:13px 14px;
+  border-radius:18px;
+  background:linear-gradient(135deg, rgba(17,24,39,.92), rgba(31,41,55,.86));
+  border:1px solid rgba(250,204,21,.34);
+  box-shadow:0 18px 42px rgba(15,23,42,.22);
+  color:#ffffff;
+  text-align:center;
+}
+
+.visitanteWelcomeLine{
+  font-size:15px;
+  line-height:1.28;
+  font-weight:950;
+  letter-spacing:0;
+}
+
+.visitanteWelcomeLine + .visitanteWelcomeLine{
+  margin-top:5px;
+  color:#fde68a;
 }
 
 body.visitanteNaoLogado #productFormsRoot .cleanProductBlock{
@@ -5417,6 +5446,11 @@ body:not(.modeChosen) .builderArea,
 
           <input type="hidden" id="flyerTipo" value="zz1fs">
           <input type="hidden" id="selectedProduct" value="">
+
+          <div class="visitanteWelcomeCallout" aria-hidden="true">
+            <div class="visitanteWelcomeLine">👀 Primeiro você vê como ficou</div>
+            <div class="visitanteWelcomeLine">⚡ Depois desbloqueia por apenas R$1</div>
+          </div>
 
           <div id="productFormsRoot" class="productFormsRoot"></div>
 
@@ -8543,7 +8577,7 @@ if(mascotePromo){
 
   if(label){
     label.innerHTML = brindeMascoteDisponivel
-      ? `Mascote<br>do seu Time<br><span style="font-size:13px;color:#777;">Brinde primeira compra</span><br><span style="color:#1fbf63;font-weight:900;">R$18 → R$0</span>`
+      ? `Mascote<br>do seu Time<br><span style="font-size:13px;color:#777;">Veja antes de pagar</span><br><span style="color:#1fbf63;font-weight:900;">Boas-vindas R$1</span>`
       : `Mascote<br>do seu Time<br><span style="color:#1fbf63;font-weight:900;">R$18,00</span>`;
   }
 }
@@ -8822,7 +8856,7 @@ function abrirCadastroVisitanteModal(){
 
   if(authCriarContaBtn){
     authCriarContaBtn.style.display = "block";
-    authCriarContaBtn.textContent = "Criar conta e receber arte grátis 🚀";
+    authCriarContaBtn.textContent = "Ver minha arte de boas-vindas por R$1 🚀";
     authCriarContaBtn.style.width = "100%";
     authCriarContaBtn.style.marginTop = "14px";
   }
@@ -9308,7 +9342,7 @@ authCriarContaToggle?.addEventListener("click", ()=>{
   if(authCriarContaToggle) authCriarContaToggle.style.display = "none";
   if(authCriarContaBtn){
     authCriarContaBtn.style.display = "block";
-    authCriarContaBtn.textContent = "Criar conta e receber arte grátis 🚀";
+    authCriarContaBtn.textContent = "Ver minha arte de boas-vindas por R$1 🚀";
   }
 
   setTimeout(()=>document.getElementById("authNomeTime")?.focus(), 120);
@@ -11330,8 +11364,14 @@ function ia4ContaAutoPendente(){
   return localStorage.getItem("ia4tube_conta_auto_pendente") === "1";
 }
 
-function ia4FinalizarContaBox(id){
+function isPedidoBoasVindasFrontend(p){
+  return p?.oferta_boas_vindas === true || p?.motivo_pagamento_pendente === "boas_vindas_1_real";
+}
+
+function ia4FinalizarContaBox(p){
   if(!ia4ContaAutoPendente()) return "";
+  const id = typeof p === "object" ? p.id : p;
+  if(typeof p === "object" && isPedidoBoasVindasFrontend(p)) return "";
 
   return `
     <div style="margin-top:12px;padding:14px;border-radius:16px;background:#ecfdf3;border:1px solid #bbf7d0;color:#14532d;text-align:left;">
@@ -11355,10 +11395,15 @@ function ia4FinalizarContaBox(id){
 
 function cardPagamentoPendente(p) {
   const valor = Number(p.valor_pendente || 0).toFixed(2).replace(".", ",");
+  const boasVindas = isPedidoBoasVindasFrontend(p);
+  const titulo = boasVindas ? "Sua arte de boas-vindas está pronta ✅" : "Sua prévia está pronta ✅";
+  const texto = boasVindas
+    ? "Você viu como ficou. Agora pague R$1 para baixar em alta qualidade."
+    : `Desbloqueie a imagem em alta qualidade por R$ ${valor}`;
   return `
     <div class="pagamentoPendenteBox">
-      <div class="pagamentoPendenteTitulo">Sua prévia está pronta ✅</div>
-      <div class="pagamentoPendenteTexto">Desbloqueie a imagem em alta qualidade por R$ ${valor}</div>
+      <div class="pagamentoPendenteTitulo">${titulo}</div>
+      <div class="pagamentoPendenteTexto">${texto}</div>
       <button type="button" class="menuPedidoBtn" onclick="copiarPixPedido('${p.id}')">
         Copiar Pix
       </button>
@@ -11609,6 +11654,7 @@ function atualizarMenuPedidosTopo(pedidos){
     const ajustePendente = statusPedido === "ajuste_pendente";
     const aprovado = p.aprovado_cliente === true;
     const pagamentoPendente = p.pagamento_pendente === true;
+    const boasVindas = isPedidoBoasVindasFrontend(p);
     const usouAjuste = p.ajuste_automatico_usado === true;
 
     return `
@@ -11616,7 +11662,7 @@ function atualizarMenuPedidosTopo(pedidos){
       ${p.imagem_url ? `
         <div>
           <img class="menuPedidoThumb" src="${p.imagem_url}" alt="Arte pronta" oncontextmenu="return false;" draggable="false">
-          ${ia4FinalizarContaBox(p.id)}
+          ${ia4FinalizarContaBox(p)}
           <div class="previewAviso">
             👇 Esta é apenas a prévia da imagem abaixo.<br>
             Você pode baixar a imagem final<br>
@@ -11644,7 +11690,7 @@ function atualizarMenuPedidosTopo(pedidos){
 
 ${pagamentoPendente ? `
 ${cardPagamentoPendente(p)}
-` : ia4ContaAutoPendente() ? `
+` : ia4ContaAutoPendente() && !boasVindas ? `
 ` : aprovado ? `
 <button type="button" class="menuPedidoBtn" onclick="baixarPedido('${p.id}')">Baixar novamente</button>
 ` : `
@@ -11726,6 +11772,8 @@ async function carregarHistorico(){
       aprovado_cliente: p.aprovado_cliente,
       pagamento_pendente: p.pagamento_pendente,
       valor_pendente: p.valor_pendente,
+      motivo_pagamento_pendente: p.motivo_pagamento_pendente,
+      oferta_boas_vindas: p.oferta_boas_vindas,
       ajuste_automatico_usado: p.ajuste_automatico_usado,
       motivo_ajuste: p.motivo_ajuste
     })));
@@ -11766,6 +11814,7 @@ async function carregarHistorico(){
       const ajustePendente = statusPedido === "ajuste_pendente";
       const aprovado = p.aprovado_cliente === true;
       const pagamentoPendente = p.pagamento_pendente === true;
+      const boasVindas = isPedidoBoasVindasFrontend(p);
       const usouAjuste = p.ajuste_automatico_usado === true;
 
       return `
@@ -11803,8 +11852,8 @@ ${p.status === "pronto" ? `
 
 ${pagamentoPendente ? `
 ${cardPagamentoPendente(p)}
-` : ia4ContaAutoPendente() ? `
-${ia4FinalizarContaBox(p.id)}
+` : ia4ContaAutoPendente() && !boasVindas ? `
+${ia4FinalizarContaBox(p)}
 ` : aprovado ? `
         <button onclick="baixarPedido('${p.id}')" style="margin-top:8px;padding:8px 12px;border-radius:10px;border:none;background:#2ecc71;color:#fff;font-weight:900;cursor:pointer;width:100%;">
           Baixar novamente
