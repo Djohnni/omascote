@@ -11398,7 +11398,7 @@ function cardPagamentoPendente(p) {
   const boasVindas = isPedidoBoasVindasFrontend(p);
   const titulo = boasVindas ? "Sua arte de boas-vindas está pronta ✅" : "Sua prévia está pronta ✅";
   const texto = boasVindas
-    ? "Gostou da arte? ⚡ Agora desbloqueie sem a previa escrita e em alta qualidade por apenas R$1."
+    ? "Você viu como ficou. Agora pague R$1 para baixar em alta qualidade."
     : `Desbloqueie a imagem em alta qualidade por R$ ${valor}`;
   return `
     <div class="pagamentoPendenteBox">
@@ -11663,11 +11663,13 @@ function atualizarMenuPedidosTopo(pedidos){
         <div>
           <img class="menuPedidoThumb" src="${p.imagem_url}" alt="Arte pronta" oncontextmenu="return false;" draggable="false">
           ${ia4FinalizarContaBox(p)}
+          ${pagamentoPendente ? `` : `
           <div class="previewAviso">
             👇 Esta é apenas a prévia da imagem abaixo.<br>
             Você pode baixar a imagem final<br>
             ou pedir 1 edição gratuita antes de baixar 🚀
           </div>
+          `}
         </div>
       ` : `
         <div class="menuPedidoThumb" style="display:flex;align-items:center;justify-content:center;padding:18px;text-align:center;color:#ffffff;font-size:16px;font-weight:950;line-height:1.35;background:#0f172a;">
@@ -11829,11 +11831,11 @@ async function carregarHistorico(){
         ${p.imagem_url ? `
           <div style="margin-top:10px;text-align:center;">
             <img src="${p.imagem_url}" class="previewProtegida" alt="Prévia da arte" oncontextmenu="return false;" draggable="false">
-            <div class="previewAviso">
+            ${pagamentoPendente ? `` : `<div class="previewAviso">
   👇 Esta é apenas a prévia da sua arte.<br>
   Você pode baixar a imagem final em alta qualidade<br>
   ou pedir 1 edição gratuita antes de baixar 🚀
-</div>
+</div>`}
           </div>
         ` : `
           <div style="margin-top:10px;text-align:center;">
