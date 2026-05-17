@@ -2748,7 +2748,7 @@ body{
   display:block;
   width:max-content;
   max-width:calc(100% - 28px);
-  margin:4px auto 34px;
+  margin:4px auto 10px;
   padding:10px 16px;
   border-radius:999px;
   background:#ecfdf3;
@@ -4805,7 +4805,7 @@ body.visitanteNaoLogado .visitanteWelcomeCallout{
   gap:28px;
   width:100%;
   max-width:860px;
-  margin:18px auto 0;
+  margin:6px auto 0;
 }
 
 .cleanProductBlock{
@@ -11608,6 +11608,7 @@ function atualizarMenuPedidosTopo(pedidos){
     const ajustePendente = statusPedido === "ajuste_pendente";
     const aprovado = p.aprovado_cliente === true;
     const pagamentoPendente = p.pagamento_pendente === true;
+    const mostrarPagamentoPendente = pagamentoPendente && !!p.imagem_url;
     const boasVindas = isPedidoBoasVindasFrontend(p);
     const usouAjuste = p.ajuste_automatico_usado === true;
 
@@ -11617,7 +11618,7 @@ function atualizarMenuPedidosTopo(pedidos){
         <div>
           <img class="menuPedidoThumb" src="${p.imagem_url}" alt="Arte pronta" oncontextmenu="return false;" draggable="false">
           ${ia4FinalizarContaBox(p)}
-          ${pagamentoPendente ? `` : `
+          ${mostrarPagamentoPendente ? `` : `
           <div class="previewAviso">
             👇 Esta é apenas a prévia da imagem abaixo.<br>
             Você pode baixar a imagem final<br>
@@ -11635,7 +11636,7 @@ function atualizarMenuPedidosTopo(pedidos){
       <div class="menuPedidoInfo">
         <div class="menuPedidoTipo">${p.tipo || "Arte"}</div>
         <div class="menuPedidoStatus">${ajustePendente ? "⏳ Ajustando sua arte..." : textoStatusPedido(p.status)}</div>
-        ${pagamentoPendente ? cardPagamentoPendente(p) : ``}
+        ${mostrarPagamentoPendente ? cardPagamentoPendente(p) : pagamentoPendente ? `<div class="ajustePedidoBox">Sua arte está sendo criada. Assim que a prévia ficar pronta, o pagamento Pix aparecerá aqui.</div>` : ``}
         ${p.status === "pronto" ? `<div class="descLabelInstagram">Sugestão de descrição para Instagram</div>` : ``}
         ${barraProducaoPedido(p)}
         ${p.status === "pronto" ? `
@@ -11770,6 +11771,7 @@ async function carregarHistorico(){
       const ajustePendente = statusPedido === "ajuste_pendente";
       const aprovado = p.aprovado_cliente === true;
       const pagamentoPendente = p.pagamento_pendente === true;
+      const mostrarPagamentoPendente = pagamentoPendente && !!p.imagem_url;
       const boasVindas = isPedidoBoasVindasFrontend(p);
       const usouAjuste = p.ajuste_automatico_usado === true;
 
@@ -11778,14 +11780,14 @@ async function carregarHistorico(){
         <b>${p.tipo}</b><br>
         ID: ${p.id}<br>
         Status: ${ajustePendente ? "⏳ Ajustando sua arte..." : textoStatusPedido(p.status)}<br>
-        ${pagamentoPendente ? cardPagamentoPendente(p) : ``}
+        ${mostrarPagamentoPendente ? cardPagamentoPendente(p) : pagamentoPendente ? `<div class="ajustePedidoBox">Sua arte está sendo criada. Assim que a prévia ficar pronta, o pagamento Pix aparecerá aqui.</div>` : ``}
         ${p.status === "pronto" ? `<div class="descLabelInstagram">Sugestão de descrição para Instagram</div>` : ``}
         ${barraProducaoPedido(p)}
 
         ${p.imagem_url ? `
           <div style="margin-top:10px;text-align:center;">
             <img src="${p.imagem_url}" class="previewProtegida" alt="Prévia da arte" oncontextmenu="return false;" draggable="false">
-            ${pagamentoPendente ? `` : `<div class="previewAviso">
+            ${mostrarPagamentoPendente ? `` : `<div class="previewAviso">
   👇 Esta é apenas a prévia da sua arte.<br>
   Você pode baixar a imagem final em alta qualidade<br>
   ou pedir 1 edição gratuita antes de baixar 🚀
