@@ -3991,7 +3991,7 @@ textarea.campoObrigatorioErro,
 .ia4WhatsappBtn{
   position:fixed;
   right:18px;
-  bottom:92px;
+  bottom:18px;
   z-index:9997;
   display:flex;
   align-items:center;
@@ -4237,7 +4237,7 @@ textarea.campoObrigatorioErro,
 
   .ia4WhatsappBtn{
     right:12px;
-    bottom:82px;
+    bottom:14px;
     padding:8px 12px 8px 8px;
   }
 
@@ -5003,20 +5003,35 @@ body.visitanteNaoLogado .visitanteWelcomeCallout{
 
 .cleanOptionalDetails{
   display:grid;
-  gap:10px;
+  gap:14px;
 }
 
 .cleanOptionalDetails summary{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
   list-style:none;
   cursor:pointer;
-  padding:13px 14px;
-  border-radius:16px;
-  background:#eef2ff;
-  border:1px solid #dbe4ff;
-  color:#1f2a44;
+  padding:14px;
+  border-radius:20px;
+  background:#ffffff;
+  border:1px solid #d1d5db;
+  color:#111827;
   font-size:14px;
   font-weight:950;
-  text-align:center;
+  text-align:left;
+  box-shadow:0 10px 24px rgba(15,23,42,.08);
+}
+
+.cleanOptionalDetails summary::before{
+  content:"";
+  flex:0 0 16px;
+  width:16px;
+  height:16px;
+  border-radius:6px;
+  background:linear-gradient(135deg,#16a34a,#8bd450);
+  box-shadow:inset 0 0 0 4px rgba(255,255,255,.70);
 }
 
 .cleanOptionalDetails summary::-webkit-details-marker{
@@ -5024,11 +5039,23 @@ body.visitanteNaoLogado .visitanteWelcomeCallout{
 }
 
 .cleanOptionalDetails summary::after{
-  content:" +";
+  content:"+";
+  display:grid;
+  place-items:center;
+  flex:0 0 32px;
+  width:32px;
+  height:32px;
+  border-radius:12px;
+  background:#16a34a;
+  color:#ffffff;
+  font-size:22px;
+  line-height:1;
+  font-weight:950;
+  box-shadow:0 8px 18px rgba(22,163,74,.22);
 }
 
 .cleanOptionalDetails[open] summary::after{
-  content:" -";
+  content:"−";
 }
 
 .cleanOptionalFields{
@@ -7346,7 +7373,7 @@ function renderCleanFieldsGrouped(product, schema){
   return `
     ${requiredHtml}
     <details class="cleanOptionalDetails">
-      <summary>Campos opcionais — clique para preencher mais detalhes</summary>
+      <summary>Campos opcionais — clique para deixar mais completo</summary>
       <div class="cleanOptionalFields">
         ${optionalHtml}
       </div>
