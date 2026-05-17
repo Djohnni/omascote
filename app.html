@@ -2889,6 +2889,11 @@ body{
   display:none !important;
 }
 
+body.mode-result #dynamicHint,
+body.mode-flyer #dynamicHint{
+  display:none !important;
+}
+
 .card{
   padding:0 !important;
   background:transparent !important;
@@ -5114,6 +5119,7 @@ body:not(.modeChosen) .builderArea,
   <div class="wrap">
     <div class="logoutTopBar logoutOnlyTop">
       <button id="btnSair" type="button">Sair</button>
+      <button id="btnCadastroTopo" type="button">Cadastro</button>
     </div>
 
     <div class="topbar">
@@ -8442,6 +8448,9 @@ function applyLocal(){
   if(saldoEl){
     saldoEl.textContent = "Saldo disponível: —";
   }
+  if(typeof atualizarTopoAuth === "function"){
+    atualizarTopoAuth();
+  }
 }
 
 async function refreshMe(){
@@ -8777,6 +8786,50 @@ function abrirCadastroVisitanteModal(){
     authBtnsRow.parentNode.insertBefore(authCriarContaBtn, authBtnsRow);
   }
 
+  if(authVisitanteMsg){
+    authVisitanteMsg.textContent = "";
+    authVisitanteMsg.className = "authVisitanteMsg";
+  }
+
+  authVisitanteModal.classList.add("open");
+  authVisitanteModal.setAttribute("aria-hidden", "false");
+  setTimeout(()=>document.getElementById("authWhatsapp")?.focus(), 120);
+}
+
+function abrirLoginVisitanteModal(){
+  inicializarLoginGoogle();
+  fluxoEscudo3dCadastro = false;
+  escudo3dCadastroFile = null;
+  clearInterval(authProgressTimer);
+
+  if(!authVisitanteModal) return;
+
+  modoCadastro = false;
+  document.querySelector(".authPromoBox h2").textContent = "Entrar na sua conta";
+  document.querySelector(".authPromoBox p").textContent = "Digite seu WhatsApp ou nome do time e senha para acessar seus pedidos.";
+  document.getElementById("authProgressWrap")?.style.setProperty("display", "none", "important");
+  document.getElementById("authProgressText")?.style.setProperty("display", "none", "important");
+  document.getElementById("authSenha")?.setAttribute("placeholder", "Digite sua senha");
+
+  if(labelNomeTime) labelNomeTime.style.display = "none";
+  if(document.getElementById("authNomeTime")) document.getElementById("authNomeTime").style.display = "none";
+  if(labelSenha) labelSenha.style.display = "block";
+  if(document.getElementById("authSenha")) document.getElementById("authSenha").style.display = "block";
+  if(authEscudo3dArea) authEscudo3dArea.style.display = "none";
+  if(authBtnsRow){
+    authBtnsRow.style.display = "flex";
+    authBtnsRow.style.flexDirection = "column";
+    authBtnsRow.style.gap = "10px";
+  }
+  if(authCriarContaBtn) authCriarContaBtn.style.display = "none";
+  if(authEntrarBtn){
+    authEntrarBtn.textContent = "Entrar 🚀";
+    authEntrarBtn.style.width = "100%";
+  }
+  if(authCriarContaToggle){
+    authCriarContaToggle.style.display = "block";
+    authCriarContaToggle.textContent = "Criar conta";
+  }
   if(authVisitanteMsg){
     authVisitanteMsg.textContent = "";
     authVisitanteMsg.className = "authVisitanteMsg";
@@ -9915,9 +9968,8 @@ if(escudo3dUploadBtn && escudo3dFile){
 
 async function enviarPedidoEscudo3dComArquivo(file, progressTarget = null){
   if(!token){
-    escudo3dCadastroFile = file || null;
-    abrirCadastroEscudo3dModal();
-    return;
+    const okAuto = await criarContaAutomaticaAntesPedido();
+    if(!okAuto) return;
   }
 
   if(!file){
@@ -12160,27 +12212,41 @@ function destacarMeusPedidos(){
 }
 
 const btnSairEl = document.getElementById("btnSair");
+const btnCadastroTopoEl = document.getElementById("btnCadastroTopo");
 
-if(!token){
-  if(btnSairEl){
-    btnSairEl.textContent = "Entrar";
-    btnSairEl.style.background = "#ffffff";
+function atualizarTopoAuth(){
+  const btnEntrarTopo = document.getElementById("btnSair");
+  const btnCadastroTopo = document.getElementById("btnCadastroTopo");
+
+  if(btnEntrarTopo){
+    btnEntrarTopo.textContent = token ? "Sair" : "Entrar";
+    btnEntrarTopo.style.background = "#ffffff";
   }
-}else{
-  if(btnSairEl){
-    btnSairEl.textContent = "Sair";
-    btnSairEl.style.background = "#ffffff";
+
+  if(btnCadastroTopo){
+    const nomeTopo = localStorage.getItem("omascote_nome_time") || "Minha conta";
+    btnCadastroTopo.textContent = token ? nomeTopo : "Cadastro";
+    btnCadastroTopo.style.background = "#ffffff";
+    btnCadastroTopo.style.cursor = token ? "default" : "pointer";
   }
 }
 
+atualizarTopoAuth();
+
 document.getElementById("btnSair")?.addEventListener("click", ()=>{
   if(!token){
-    abrirCadastroVisitanteModal();
+    abrirLoginVisitanteModal();
     return;
   }
 
   localStorage.removeItem("omascote_token");
   window.location.href = "app.html";
+});
+
+btnCadastroTopoEl?.addEventListener("click", ()=>{
+  if(!token){
+    abrirCadastroVisitanteModal();
+  }
 });
 
 document.getElementById("btnAtualizar")?.addEventListener("click", refreshMe);
