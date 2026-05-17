@@ -5449,7 +5449,7 @@ body:not(.modeChosen) .builderArea,
 
           <div class="visitanteWelcomeCallout" aria-hidden="true">
             <div class="visitanteWelcomeLine">👀 Primeiro você vê como ficou</div>
-            <div class="visitanteWelcomeLine">⚡ Depois desbloqueia sua arte de: R$6,00 por apenas: R$1,00</div>
+            <div class="visitanteWelcomeLine">⚡ Depois desbloqueia por apenas R$1</div>
           </div>
 
           <div id="productFormsRoot" class="productFormsRoot"></div>
@@ -11679,6 +11679,7 @@ function atualizarMenuPedidosTopo(pedidos){
       <div class="menuPedidoInfo">
         <div class="menuPedidoTipo">${p.tipo || "Arte"}</div>
         <div class="menuPedidoStatus">${ajustePendente ? "⏳ Ajustando sua arte..." : textoStatusPedido(p.status)}</div>
+        ${pagamentoPendente ? cardPagamentoPendente(p) : ``}
         ${p.status === "pronto" ? `<div class="descLabelInstagram">Sugestão de descrição para Instagram</div>` : ``}
         ${barraProducaoPedido(p)}
         ${p.status === "pronto" ? `
@@ -11689,7 +11690,6 @@ function atualizarMenuPedidosTopo(pedidos){
 </div>
 
 ${pagamentoPendente ? `
-${cardPagamentoPendente(p)}
 ` : ia4ContaAutoPendente() && !boasVindas ? `
 ` : aprovado ? `
 <button type="button" class="menuPedidoBtn" onclick="baixarPedido('${p.id}')">Baixar novamente</button>
@@ -11822,6 +11822,7 @@ async function carregarHistorico(){
         <b>${p.tipo}</b><br>
         ID: ${p.id}<br>
         Status: ${ajustePendente ? "⏳ Ajustando sua arte..." : textoStatusPedido(p.status)}<br>
+        ${pagamentoPendente ? cardPagamentoPendente(p) : ``}
         ${p.status === "pronto" ? `<div class="descLabelInstagram">Sugestão de descrição para Instagram</div>` : ``}
         ${barraProducaoPedido(p)}
 
@@ -11851,7 +11852,6 @@ ${p.status === "pronto" ? `
 </div>
 
 ${pagamentoPendente ? `
-${cardPagamentoPendente(p)}
 ` : ia4ContaAutoPendente() && !boasVindas ? `
 ${ia4FinalizarContaBox(p)}
 ` : aprovado ? `
