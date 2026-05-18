@@ -7357,7 +7357,7 @@ function getCleanFieldLabel(product, field){
 }
 
 function getCleanFieldPlaceholder(product, field){
-  return field.placeholder || product?.placeholders?.[field.placeholderKey] || "";
+  return "";
 }
 
 function renderCleanTextField(product, field){
@@ -7388,11 +7388,11 @@ function renderCleanScoreField(field){
     <div class="cleanFieldCard" data-clean-field-card="${htmlEscape(field.key)}">
       <label class="cleanFieldLabel">${htmlEscape(field.label || "Placar")}</label>
       <div class="cleanScoreGrid" data-field="${htmlEscape(field.key)}">
-        <input name="home_team" data-field="home_team" placeholder="Time A">
-        <input name="home_score" data-field="home_score" type="number" min="0" placeholder="0">
+        <input name="home_team" data-field="home_team" placeholder="">
+        <input name="home_score" data-field="home_score" type="number" min="0" placeholder="">
         <div class="cleanScoreX">x</div>
-        <input name="away_score" data-field="away_score" type="number" min="0" placeholder="0">
-        <input name="away_team" data-field="away_team" placeholder="Time B">
+        <input name="away_score" data-field="away_score" type="number" min="0" placeholder="">
+        <input name="away_team" data-field="away_team" placeholder="">
       </div>
     </div>
   `;
@@ -7403,11 +7403,11 @@ function renderCleanMatchupField(field){
     <div class="cleanFieldCard" data-clean-field-card="${htmlEscape(field.key)}">
       <label class="cleanFieldLabel">${htmlEscape(field.label || "Confronto")}</label>
       <div class="cleanScoreGrid" data-field="${htmlEscape(field.key)}">
-        <input name="home_team" data-field="home_team" placeholder="Time A">
+        <input name="home_team" data-field="home_team" placeholder="">
         <div></div>
         <div class="cleanScoreX">x</div>
         <div></div>
-        <input name="away_team" data-field="away_team" placeholder="Time B">
+        <input name="away_team" data-field="away_team" placeholder="">
       </div>
     </div>
   `;
@@ -7421,8 +7421,8 @@ function renderCleanPeopleField(field){
       <label class="cleanFieldLabel">${htmlEscape(field.label || "Jogadores")}</label>
       <div class="cleanPlayerRows" data-clean-people="${htmlEscape(field.key)}" data-clean-people-type="${htmlEscape(field.type)}">
         <div class="cleanPlayerRow">
-          <input data-player-name placeholder="Nome do jogador">
-          <input data-player-extra type="${scoreType}" min="0" placeholder="${scorePlaceholder}">
+          <input data-player-name placeholder="">
+          <input data-player-extra type="${scoreType}" min="0" placeholder="">
         </div>
       </div>
       <button type="button" class="escActionBtn escActionSave" data-add-clean-people="${htmlEscape(field.key)}">Adicionar jogador</button>
