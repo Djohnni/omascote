@@ -6532,7 +6532,8 @@ const PRODUCTS = {
       hora: "Campeonato / competição",
       arena: "Local (opcional)",
       esc1: "Escudo<br>Time A",
-      esc2: "Escudo<br>Time B"
+      esc2: "Escudo<br>Time B",
+      mascote: "Foto do time ou jogador"
     },
     placeholders: {
       rodada: "Ex: Semifinal • Próximo jogo",
@@ -6545,7 +6546,7 @@ const PRODUCTS = {
       esc2: false
     },
     phraseMenu: false,
-    hiddenFields: ["mascote", "patro"]
+    hiddenFields: ["patro"]
   },
 
   patrocinador: {
@@ -6772,7 +6773,8 @@ const PRODUCT_CONFIG_DETAILS = {
       hora: { visible: true, required: true },
       arena: { visible: true, required: false },
       esc1: { visible: true, required: true },
-      esc2: { visible: true, required: true }
+      esc2: { visible: true, required: true },
+      mascote: { visible: true, required: false }
     },
     validation: {
       requiredInputs: ["timePrincipal", "timeAdv", "dataJogo", "hora"],
@@ -6781,7 +6783,7 @@ const PRODUCT_CONFIG_DETAILS = {
     uploads: {
       escudo1: { used: true, required: true, formField: "escudo1", outputName: "escudo1.png" },
       escudo2: { used: true, required: true, formField: "escudo2", outputName: "escudo2.png" },
-      mascote: { used: false, required: false, formField: "mascote", outputName: "mascote.png" },
+      mascote: { used: true, required: false, formField: "mascote", outputName: "mascote.png" },
       patrocinadores: { used: false, required: false, formField: "patrocinadores" }
     },
     serializer: "proximo_jogo",
@@ -7104,7 +7106,7 @@ const PRODUCT_SERIALIZERS = {
   },
 
   proximo_jogo(ctx){
-    const { fd, product, val, campoAtivo, appendTextoAtivo, appendEscudo1, appendEscudo2 } = ctx;
+    const { fd, product, val, campoAtivo, appendTextoAtivo, appendArquivoAtivo, appendEscudo1, appendEscudo2 } = ctx;
     const t1 = val("timePrincipal");
     const t2 = val("timeAdv");
 
@@ -7125,6 +7127,7 @@ const PRODUCT_SERIALIZERS = {
 
     appendEscudo1();
     appendEscudo2();
+    appendArquivoAtivo("mascote", "mascote", "mascote");
   },
 
   resultado(ctx){
@@ -7275,7 +7278,8 @@ const CLEAN_PRODUCT_FORM_SCHEMAS = {
       { key: "competition", type: "text", legacyName: "hora", labelKey: "hora", placeholderKey: "hora", required: true },
       { key: "venue", type: "text", legacyName: "arena", labelKey: "arena", placeholderKey: "arena", required: false },
       { key: "home_crest", type: "file", legacyName: "escudo1", labelKey: "esc1", required: true, savedFallback: true },
-      { key: "away_crest", type: "file", legacyName: "escudo2", labelKey: "esc2", required: false }
+      { key: "away_crest", type: "file", legacyName: "escudo2", labelKey: "esc2", required: false },
+      { key: "match_photo", type: "file", legacyName: "mascote", labelKey: "mascote", required: false }
     ]
   },
   patrocinador: {
@@ -10006,7 +10010,7 @@ function arrangeFieldSequence(productKey){
     resultado: ["placar", "esc1", "esc2", "optionalDivider", "hora", "artilheiros", "data", "mascote", "submit", "msg"],
     escalacao: ["rodada", "data", "hora", "esc1", "artilheiros", "optionalDivider", "arena", "esc2", "mascote", "submit", "msg"],
     contratacao: ["rodada", "data", "esc1", "esc2", "optionalDivider", "hora", "submit", "msg"],
-    proximo_jogo: ["placar", "esc1", "esc2", "data", "hora", "optionalDivider", "arena", "submit", "msg"],
+    proximo_jogo: ["placar", "esc1", "esc2", "data", "hora", "optionalDivider", "arena", "mascote", "submit", "msg"],
     patrocinador: ["rodada", "esc1", "patro", "optionalDivider", "data", "submit", "msg"],
     proximo_jogo_jogador: ["placar", "esc1", "esc2", "mascote", "data", "hora", "optionalDivider", "arena", "submit", "msg"],
     resultado_jogo_jogador: ["placar", "esc1", "esc2", "mascote", "optionalDivider", "hora", "data", "submit", "msg"],
