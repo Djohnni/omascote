@@ -7271,14 +7271,14 @@ const CLEAN_PRODUCT_FORM_SCHEMAS = {
   },
   proximo_jogo: {
     endpoint: "/pedidos",
-    validationMessage: "Preencha o confronto, data e horário, campeonato/competição e envie o escudo do Time A.",
+    validationMessage: "Preencha o confronto, data e horário, campeonato/competição e envie os escudos dos dois times.",
     fields: [
       { key: "matchup", type: "matchup", label: "Confronto", required: true },
       { key: "match_datetime", type: "text", legacyName: "data", labelKey: "data", placeholderKey: "data", required: true },
       { key: "competition", type: "text", legacyName: "hora", labelKey: "hora", placeholderKey: "hora", required: true },
       { key: "venue", type: "text", legacyName: "arena", labelKey: "arena", placeholderKey: "arena", required: false },
       { key: "home_crest", type: "file", legacyName: "escudo1", labelKey: "esc1", required: true, savedFallback: true },
-      { key: "away_crest", type: "file", legacyName: "escudo2", labelKey: "esc2", required: false },
+      { key: "away_crest", type: "file", legacyName: "escudo2", labelKey: "esc2", required: true },
       { key: "match_photo", type: "file", legacyName: "mascote", labelKey: "mascote", required: false }
     ]
   },
