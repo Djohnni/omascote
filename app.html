@@ -4919,8 +4919,9 @@ body.visitanteNaoLogado .visitanteWelcomeCallout{
   line-height:1.08;
   font-weight:950;
   letter-spacing:0;
-  color:#ffffff;
-  text-shadow:0 2px 16px rgba(255,255,255,.18);
+  color:#ffffff !important;
+  opacity:1 !important;
+  text-shadow:0 2px 8px rgba(0,0,0,.55), 0 0 22px rgba(255,255,255,.22);
 }
 
 .productChooserText{
@@ -13221,7 +13222,7 @@ ia4ChatClose?.addEventListener("click", ()=>{
   ia4ChatBox?.classList.remove("open");
 });
 
-ia4ChatSend?.addEventListener("click", ia4EnviarSuporte);
+ia4ChatSend?.addEventListener("click", ia4EnviarSuporte);a
 
 function ia4ResponderOpcaoPosIA(valor){
   valor = String(valor || "");
