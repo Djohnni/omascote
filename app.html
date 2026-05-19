@@ -7647,6 +7647,22 @@ const PRODUCT_CHOOSER_COPY = {
 
 let cleanProductPickerSelected = "";
 
+function setCleanProductPickerSelected(productKey){
+  if(!productKey) return;
+  cleanProductPickerSelected = productKey;
+  try{ sessionStorage.setItem("ia4tube_clean_product_selected", productKey); }catch(e){}
+}
+
+function getCleanProductPickerSelected(){
+  try{
+    const saved = sessionStorage.getItem("ia4tube_clean_product_selected") || "";
+    if(saved && PRODUCTS[saved]) return saved;
+  }catch(e){}
+
+  if(cleanProductPickerSelected && PRODUCTS[cleanProductPickerSelected]) return cleanProductPickerSelected;
+  return "jogador_escudo";
+}
+
 function getProductChooserOrder(){
   return ["escudo3d", ...CLEAN_PRODUCT_RENDER_ORDER].filter(productKey => PRODUCTS[productKey]);
 }
@@ -7696,7 +7712,7 @@ function selectCleanProductForPicker(productKey, options = {}){
   const target = document.querySelector(`[data-clean-product-block="${CSS.escape(productKey)}"]`);
   if(!target) return;
 
-  cleanProductPickerSelected = productKey;
+  setCleanProductPickerSelected(productKey);
 
   document.querySelectorAll("[data-clean-product-block]").forEach(block => {
     block.classList.toggle("is-picker-hidden", block.dataset.cleanProductBlock !== productKey);
@@ -7792,7 +7808,7 @@ function renderCleanProductForms(){
   root.innerHTML = escudo3dHtml + formsHtml;
   bindCleanProductForms(root);
   renderProductChooser();
-  selectCleanProductForPicker(cleanProductPickerSelected || getProductChooserOrder()[0], { scroll: false });
+  selectCleanProductForPicker(getCleanProductPickerSelected(), { scroll: false });
 }
 
 function getCleanFormField(form, key){
