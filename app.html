@@ -4893,6 +4893,116 @@ body.visitanteNaoLogado .visitanteWelcomeCallout{
   margin:6px auto 0;
 }
 
+.productChooser{
+  width:100%;
+  max-width:860px;
+  margin:0 auto 18px;
+  padding:16px;
+  border-radius:26px;
+  background:linear-gradient(135deg,#07111f,#0f172a 58%,#11221a);
+  border:1px solid rgba(255,255,255,.12);
+  box-shadow:0 20px 46px rgba(15,23,42,.18);
+  color:#fff;
+  overflow:hidden;
+}
+
+.productChooserHeader{
+  display:flex;
+  flex-direction:column;
+  gap:4px;
+  margin-bottom:14px;
+}
+
+.productChooserTitle{
+  margin:0;
+  font-size:clamp(20px,4vw,30px);
+  line-height:1.08;
+  font-weight:950;
+  letter-spacing:0;
+}
+
+.productChooserText{
+  margin:0;
+  color:rgba(255,255,255,.74);
+  font-size:14px;
+  font-weight:750;
+}
+
+.productChooserRail{
+  display:flex;
+  gap:12px;
+  overflow-x:auto;
+  overscroll-behavior-x:contain;
+  scroll-snap-type:x proximity;
+  padding:2px 2px 10px;
+  scrollbar-width:thin;
+}
+
+.productChooserCard{
+  appearance:none;
+  border:1px solid rgba(255,255,255,.12);
+  background:rgba(255,255,255,.08);
+  color:#fff;
+  border-radius:18px;
+  padding:10px;
+  display:grid;
+  grid-template-columns:58px minmax(132px,1fr);
+  align-items:center;
+  gap:10px;
+  min-width:236px;
+  max-width:260px;
+  text-align:left;
+  cursor:pointer;
+  scroll-snap-align:start;
+  transition:transform .18s ease, border-color .18s ease, background .18s ease, box-shadow .18s ease;
+}
+
+.productChooserCard:hover,
+.productChooserCard:focus-visible{
+  transform:translateY(-1px);
+  border-color:rgba(34,197,94,.72);
+  outline:none;
+}
+
+.productChooserCard.is-selected{
+  background:linear-gradient(135deg,rgba(34,197,94,.24),rgba(255,255,255,.11));
+  border-color:rgba(34,197,94,.88);
+  box-shadow:0 14px 28px rgba(34,197,94,.18);
+}
+
+.productChooserThumb{
+  width:58px;
+  height:76px;
+  border-radius:14px;
+  overflow:hidden;
+  background:#111827;
+  border:1px solid rgba(255,255,255,.14);
+}
+
+.productChooserThumb img{
+  display:block;
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  object-position:top center;
+}
+
+.productChooserName{
+  display:block;
+  font-size:14px;
+  font-weight:950;
+  line-height:1.15;
+}
+
+.productChooserDesc{
+  display:block;
+  margin-top:4px;
+  color:rgba(255,255,255,.7);
+  font-size:12px;
+  font-weight:750;
+  line-height:1.25;
+}
+
 .cleanProductBlock{
   display:grid;
   grid-template-columns:1fr;
@@ -4903,6 +5013,10 @@ body.visitanteNaoLogado .visitanteWelcomeCallout{
   background:#ffffff;
   border:1px solid #e5e7eb;
   box-shadow:0 18px 38px rgba(15,23,42,.08);
+}
+
+.cleanProductBlock.is-picker-hidden{
+  display:none !important;
 }
 
 .cleanProductBlock.is-active{
@@ -5562,6 +5676,8 @@ body:not(.modeChosen) .builderArea,
             <div class="visitanteWelcomeLine">👀 Primeiro você vê como ficou</div>
             <div class="visitanteWelcomeLine">⚡ Depois desbloqueia pelo preço do produto</div>
           </div>
+
+          <section id="productChooser" class="productChooser" aria-label="Escolha o tipo de arte"></section>
 
           <div id="productFormsRoot" class="productFormsRoot"></div>
 
@@ -7475,6 +7591,120 @@ const CLEAN_PRODUCT_RENDER_ORDER = [
   "contratacao"
 ];
 
+const PRODUCT_CHOOSER_COPY = {
+  escudo3d: {
+    name: "Escudo 3D",
+    desc: "Seu escudo com presença premium"
+  },
+  jogador_escudo: {
+    name: "Jogador + Escudo",
+    desc: "Poste como jogador profissional"
+  },
+  mascote_uniforme: {
+    name: "Mascote do Time",
+    desc: "Crie o mascote do seu time"
+  },
+  proximo_jogo: {
+    name: "Próximo Jogo",
+    desc: "Divulgue a próxima partida"
+  },
+  resultado: {
+    name: "Resultado do Jogo",
+    desc: "Mostre o placar com estilo"
+  },
+  escalacao: {
+    name: "Escalação",
+    desc: "Mostre quem vai para o jogo"
+  },
+  patrocinador: {
+    name: "Patrocinadores",
+    desc: "Valorize quem apoia seu time"
+  },
+  contratacao: {
+    name: "Poste como Profissional",
+    desc: "Anuncie reforços e destaques"
+  }
+};
+
+let cleanProductPickerSelected = "";
+
+function getProductChooserOrder(){
+  return ["escudo3d", ...CLEAN_PRODUCT_RENDER_ORDER].filter(productKey => PRODUCTS[productKey]);
+}
+
+function renderProductChooser(){
+  const chooser = document.getElementById("productChooser");
+  if(!chooser) return;
+
+  const options = getProductChooserOrder();
+  chooser.innerHTML = `
+    <div class="productChooserHeader">
+      <h2 class="productChooserTitle">O que você quer criar hoje?</h2>
+      <p class="productChooserText">Escolha uma opção e veja o formulário completo logo abaixo.</p>
+    </div>
+    <div class="productChooserRail" role="list">
+      ${options.map(productKey => {
+        const product = PRODUCTS[productKey] || {};
+        const copy = PRODUCT_CHOOSER_COPY[productKey] || {};
+        const name = copy.name || product.title || product.name || productKey;
+        const desc = copy.desc || product.hint || "Crie uma arte profissional.";
+        return `
+          <button type="button" class="productChooserCard" data-product-picker="${htmlEscape(productKey)}" role="listitem" aria-pressed="false">
+            <span class="productChooserThumb" aria-hidden="true">
+              <img src="${htmlEscape(product.image || "")}" alt="">
+            </span>
+            <span>
+              <span class="productChooserName">${htmlEscape(name)}</span>
+              <span class="productChooserDesc">${htmlEscape(desc)}</span>
+            </span>
+          </button>
+        `;
+      }).join("")}
+    </div>
+  `;
+
+  chooser.querySelectorAll("[data-product-picker]").forEach(btn => {
+    btn.addEventListener("click", () => {
+      selectCleanProductForPicker(btn.dataset.productPicker || "", { scroll: true, track: true });
+    });
+  });
+}
+
+function selectCleanProductForPicker(productKey, options = {}){
+  if(!productKey) return;
+
+  const target = document.querySelector(`[data-clean-product-block="${CSS.escape(productKey)}"]`);
+  if(!target) return;
+
+  cleanProductPickerSelected = productKey;
+
+  document.querySelectorAll("[data-clean-product-block]").forEach(block => {
+    block.classList.toggle("is-picker-hidden", block.dataset.cleanProductBlock !== productKey);
+  });
+
+  document.querySelectorAll("[data-product-picker]").forEach(btn => {
+    const selected = btn.dataset.productPicker === productKey;
+    btn.classList.toggle("is-selected", selected);
+    btn.setAttribute("aria-pressed", selected ? "true" : "false");
+    if(selected && options.scroll !== false){
+      btn.scrollIntoView({ behavior:"smooth", block:"nearest", inline:"center" });
+    }
+  });
+
+  activateCleanProductBlock(productKey);
+
+  if(options.scroll){
+    target.scrollIntoView({ behavior:"smooth", block:"start" });
+  }
+
+  if(options.track){
+    ia4Track("selecionou_produto_home", {
+      produto: productKey,
+      categoria: PRODUCTS[productKey]?.visualCategory || PRODUCTS[productKey]?.mode || ""
+    });
+  }
+}
+
 function setEscudo3dCleanFileLabel(text){
   document.querySelectorAll("[data-escudo3d-clean-file-name]").forEach(el => {
     el.textContent = text || "Selecionar escudo";
@@ -7541,6 +7771,8 @@ function renderCleanProductForms(){
 
   root.innerHTML = escudo3dHtml + formsHtml;
   bindCleanProductForms(root);
+  renderProductChooser();
+  selectCleanProductForPicker(cleanProductPickerSelected || getProductChooserOrder()[0], { scroll: false });
 }
 
 function getCleanFormField(form, key){
@@ -8067,6 +8299,7 @@ function restaurarPedidosAtivos(pedidos){
   const ativos = listarPedidosAtivosLocal()
     .sort((a, b) => Number(b.criado_em || 0) - Number(a.criado_em || 0));
   const produtosRestaurados = new Set();
+  let produtoAtivoSelecionado = false;
 
   for(const ativo of ativos){
     const pedido = pedidosPorId.get(String(ativo.pedido_id || ""));
@@ -8092,6 +8325,10 @@ function restaurarPedidosAtivos(pedidos){
     if(!form) continue;
 
     produtosRestaurados.add(ativo.product_id);
+    if(!produtoAtivoSelecionado){
+      selectCleanProductForPicker(ativo.product_id, { scroll: false });
+      produtoAtivoSelecionado = true;
+    }
 
     if(pedido.imagem_pronta === true){
       const imageBox = getCleanProductImageFromForm(form);
