@@ -12352,6 +12352,12 @@ async function enviarAjustePedido(){
 }
 
 async function aprovarPedido(id){
+  ia4Track("clicou_esta_boa_baixar", {
+    pedido_id: id || "",
+    produto: selectedProductInput?.value || "",
+    categoria: categoriaSelecionada || ""
+  });
+
   try{
     await fetch(`${API_BASE}/pedidos/${id}/aprovar`, {
       method:"POST",
@@ -12366,13 +12372,6 @@ async function aprovarPedido(id){
 }
 
 async function baixarPedido(id){
-  ia4RegistrarAcao("baixou_imagem", {
-    pedido_id: id || ""
-  });
-
-  marcarPedidoBaixado(id);
-  carregarHistorico();
-
   try{
     const r = await fetch(`${API_BASE}/pedidos/${id}/download-resultado`, {
       headers: { "Authorization": "Bearer " + token }
@@ -12394,6 +12393,15 @@ async function baixarPedido(id){
     a.remove();
 
     window.URL.revokeObjectURL(url);
+
+    ia4Track("baixou_imagem", {
+      pedido_id: id || "",
+      produto: selectedProductInput?.value || "",
+      categoria: categoriaSelecionada || ""
+    });
+
+    marcarPedidoBaixado(id);
+    carregarHistorico();
 
   }catch{
     alert("Erro de rede ao baixar");
