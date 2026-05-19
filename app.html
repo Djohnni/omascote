@@ -7663,6 +7663,16 @@ function getCleanProductPickerSelected(){
   return "jogador_escudo";
 }
 
+function getCleanProductPickerSelectedRaw(){
+  try{
+    const saved = sessionStorage.getItem("ia4tube_clean_product_selected") || "";
+    if(saved && PRODUCTS[saved]) return saved;
+  }catch(e){}
+
+  if(cleanProductPickerSelected && PRODUCTS[cleanProductPickerSelected]) return cleanProductPickerSelected;
+  return "";
+}
+
 function getProductChooserOrder(){
   return ["escudo3d", ...CLEAN_PRODUCT_RENDER_ORDER].filter(productKey => PRODUCTS[productKey]);
 }
@@ -8336,6 +8346,7 @@ function restaurarPedidosAtivos(pedidos){
     .sort((a, b) => Number(b.criado_em || 0) - Number(a.criado_em || 0));
   const produtosRestaurados = new Set();
   let produtoAtivoSelecionado = false;
+  const produtoAtualSelecionado = getCleanProductPickerSelectedRaw();
 
   for(const ativo of ativos){
     const pedido = pedidosPorId.get(String(ativo.pedido_id || ""));
@@ -8361,7 +8372,7 @@ function restaurarPedidosAtivos(pedidos){
     if(!form) continue;
 
     produtosRestaurados.add(ativo.product_id);
-    if(!produtoAtivoSelecionado){
+    if(!produtoAtivoSelecionado && !produtoAtualSelecionado){
       selectCleanProductForPicker(ativo.product_id, { scroll: false });
       produtoAtivoSelecionado = true;
     }
