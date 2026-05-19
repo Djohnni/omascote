@@ -4919,6 +4919,8 @@ body.visitanteNaoLogado .visitanteWelcomeCallout{
   line-height:1.08;
   font-weight:950;
   letter-spacing:0;
+  color:#ffffff;
+  text-shadow:0 2px 16px rgba(255,255,255,.18);
 }
 
 .productChooserText{
@@ -4992,6 +4994,22 @@ body.visitanteNaoLogado .visitanteWelcomeCallout{
   font-size:14px;
   font-weight:950;
   line-height:1.15;
+}
+
+.productChooserBadge{
+  display:inline-flex;
+  align-items:center;
+  width:max-content;
+  margin-bottom:6px;
+  padding:4px 8px;
+  border-radius:999px;
+  background:linear-gradient(135deg,#facc15,#22c55e);
+  color:#052e16;
+  box-shadow:0 8px 18px rgba(250,204,21,.22);
+  font-size:10px;
+  font-weight:950;
+  text-transform:uppercase;
+  line-height:1;
 }
 
 .productChooserDesc{
@@ -7654,6 +7672,7 @@ function renderProductChooser(){
               <img src="${htmlEscape(product.image || "")}" alt="">
             </span>
             <span>
+              ${productKey === "proximo_jogo" ? `<span class="productChooserBadge">Produto do anúncio</span>` : ""}
               <span class="productChooserName">${htmlEscape(name)}</span>
               <span class="productChooserDesc">${htmlEscape(desc)}</span>
             </span>
