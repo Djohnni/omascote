@@ -8461,6 +8461,8 @@ function bindCleanProductForms(root){
     box.addEventListener("click", () => {
       const form = box.closest("[data-product-form]");
       const key = box.dataset.cleanFileFor;
+      const productKey = form?.dataset?.productForm || "";
+      if(productKey) selectCleanProductForPicker(productKey, { scroll:false });
       getCleanFormAsset(form, key)?.click();
     });
     box.addEventListener("keydown", (e) => {
@@ -8474,6 +8476,8 @@ function bindCleanProductForms(root){
   root.querySelectorAll("[data-asset]").forEach(input => {
     input.addEventListener("change", () => {
       const form = input.closest("[data-product-form]");
+      const productKey = form?.dataset?.productForm || "";
+      if(productKey) selectCleanProductForPicker(productKey, { scroll:false });
       const label = form?.querySelector(`[data-clean-file-name="${CSS.escape(input.dataset.asset)}"]`);
       if(!label) return;
       const files = Array.from(input.files || []);
@@ -8504,6 +8508,7 @@ function bindCleanProductForms(root){
 
   root.querySelectorAll("[data-open-escudo3d-file]").forEach(box => {
     box.addEventListener("click", () => {
+      selectCleanProductForPicker("escudo3d", { scroll:false });
       escudo3dFile?.click();
     });
     box.addEventListener("keydown", (e) => {
@@ -13222,7 +13227,7 @@ ia4ChatClose?.addEventListener("click", ()=>{
   ia4ChatBox?.classList.remove("open");
 });
 
-ia4ChatSend?.addEventListener("click", ia4EnviarSuporte);a
+ia4ChatSend?.addEventListener("click", ia4EnviarSuporte);
 
 function ia4ResponderOpcaoPosIA(valor){
   valor = String(valor || "");
