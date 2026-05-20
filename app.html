@@ -4932,11 +4932,11 @@ body.visitanteNaoLogado .visitanteWelcomeCallout{
 }
 
 .productChooserRail{
-  display:flex;
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
   gap:12px;
-  overflow-x:auto;
-  overscroll-behavior-x:contain;
-  scroll-snap-type:x proximity;
+  overflow-x:visible;
+  scroll-snap-type:none;
   padding:2px 2px 10px;
   scrollbar-width:thin;
 }
@@ -4952,11 +4952,12 @@ body.visitanteNaoLogado .visitanteWelcomeCallout{
   grid-template-columns:58px minmax(132px,1fr);
   align-items:center;
   gap:10px;
-  min-width:236px;
-  max-width:260px;
+  min-width:0;
+  max-width:none;
+  width:100%;
   text-align:left;
   cursor:pointer;
-  scroll-snap-align:start;
+  scroll-snap-align:none;
   transition:transform .18s ease, border-color .18s ease, background .18s ease, box-shadow .18s ease;
 }
 
@@ -5020,6 +5021,12 @@ body.visitanteNaoLogado .visitanteWelcomeCallout{
   font-size:12px;
   font-weight:750;
   line-height:1.25;
+}
+
+@media (min-width:760px){
+  .productChooserRail{
+    grid-template-columns:repeat(4,minmax(0,1fr));
+  }
 }
 
 .cleanProductBlock{
