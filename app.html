@@ -6219,6 +6219,18 @@ body:not(.modeChosen) .builderArea,
 
 <script>
 const API_BASE = "https://api.omascote.com.br";
+const IA4_MAX_UPLOAD_BYTES = 50 * 1024 * 1024;
+const IA4_MAX_UPLOAD_MB = 50;
+
+function ia4MensagemArquivoGrande(file){
+  const nome = file?.name || "imagem";
+  return `O arquivo "${nome}" tem mais de ${IA4_MAX_UPLOAD_MB}MB. Envie uma imagem menor para continuar.`;
+}
+
+function ia4ValidarTamanhoArquivos(files){
+  const arquivoGrande = Array.from(files || []).find(file => file && file.size > IA4_MAX_UPLOAD_BYTES);
+  return arquivoGrande ? ia4MensagemArquivoGrande(arquivoGrande) : "";
+}
 
 let token = localStorage.getItem("omascote_token");
 
@@ -7853,6 +7865,7 @@ function validateCleanProductForm(productKey, form){
   const schema = getCleanProductSchema(productKey);
   const product = PRODUCTS[productKey];
   let hasError = false;
+  let fileSizeError = "";
 
   if(!schema) return ["Produto sem configuração."];
 
@@ -7865,6 +7878,14 @@ function validateCleanProductForm(productKey, form){
   };
 
   schema.fields.forEach(field => {
+    if(field.type === "file" || field.type === "multi-file"){
+      const sizeMsg = ia4ValidarTamanhoArquivos(getCleanAssetFiles(form, field.key));
+      if(sizeMsg && !fileSizeError){
+        fileSizeError = sizeMsg;
+        markError(field);
+      }
+    }
+
     if(!field.required) return;
 
     if(field.type === "text" && !getCleanFieldValue(form, field.key)){
@@ -7895,6 +7916,7 @@ function validateCleanProductForm(productKey, form){
     }
   });
 
+  if(fileSizeError) return [fileSizeError];
   return hasError ? [schema.validationMessage || "Preencha os campos obrigatórios."] : [];
 }
 
@@ -8508,6 +8530,18 @@ function bindCleanProductForms(root){
       const label = form?.querySelector(`[data-clean-file-name="${CSS.escape(input.dataset.asset)}"]`);
       if(!label) return;
       const files = Array.from(input.files || []);
+      const sizeMsg = ia4ValidarTamanhoArquivos(files);
+      if(sizeMsg){
+        input.value = "";
+        label.textContent = "Nenhum arquivo";
+        const card = form?.querySelector(`[data-clean-field-card="${CSS.escape(input.dataset.asset)}"]`);
+        if(card) card.classList.add("campoObrigatorioErro");
+        setCleanProductMsg(form, sizeMsg, true);
+        return;
+      }
+      const card = form?.querySelector(`[data-clean-field-card="${CSS.escape(input.dataset.asset)}"]`);
+      if(card) card.classList.remove("campoObrigatorioErro");
+      setCleanProductMsg(form, "");
       label.textContent = files.length ? files.map(file => file.name).join(", ") : "Nenhum arquivo";
     });
   });
@@ -8957,6 +8991,13 @@ function bindPlusUpload(inputId, chosenId){
       else if(inputId === "mascote") chosen.textContent = currentProduct?.labels?.mascote || "Nenhum arquivo";
       else if(inputId === "patrocinadores") chosen.textContent = currentProduct?.labels?.patro || "Nenhum arquivo";
       else chosen.textContent = "Nenhum arquivo";
+      return;
+    }
+    const sizeMsg = ia4ValidarTamanhoArquivos(input.files);
+    if(sizeMsg){
+      input.value = "";
+      chosen.textContent = "Nenhum arquivo";
+      if(msgPedidoEl) msgPedidoEl.textContent = sizeMsg;
       return;
     }
     if(input.multiple){
@@ -10551,6 +10592,20 @@ async function enviarPedidoEscudo3dComArquivo(file, progressTarget = null){
       }
     }
     if(escudo3dMsg) escudo3dMsg.textContent = "Selecione o escudo primeiro.";
+    return;
+  }
+
+  const sizeMsg = ia4ValidarTamanhoArquivos([file]);
+  if(sizeMsg){
+    if(progressTarget){
+      progressTarget.querySelector(".cleanEscudo3dUploadCard")?.classList.add("campoObrigatorioErro");
+      const msg = progressTarget.querySelector("[data-clean-msg]");
+      if(msg){
+        msg.textContent = sizeMsg;
+        msg.style.color = "#dc2626";
+      }
+    }
+    if(escudo3dMsg) escudo3dMsg.textContent = sizeMsg;
     return;
   }
 
