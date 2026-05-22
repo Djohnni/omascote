@@ -22,6 +22,11 @@
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <meta name="description" content="Crie artes esportivas automáticas para seu time em menos de 2 minutos. Resultado do jogo, escalação, contratação, escudo 3D e posts prontos para Instagram.">
   <meta name="theme-color" content="#111827">
+  <link rel="manifest" href="/manifest.json">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="IA4Tube">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta property="og:site_name" content="IA4Tube">
   <meta property="og:title" content="IA4Tube — Artes esportivas automáticas para times de futebol">
   <meta property="og:description" content="Crie artes profissionais para seu time em poucos minutos. Resultado do jogo, escalação, contratação, próximo jogo, jogador, patrocinador e escudo 3D prontos para Instagram.">
@@ -13341,6 +13346,12 @@ if(token){
     ia4ChatBox?.classList.add("open");
     ia4SupportBtn?.classList.add("ia4SupportPulse");
   }
+}
+
+if("serviceWorker" in navigator){
+  window.addEventListener("load", () => {
+    navigator.serviceWorker.register("/sw.js").catch(() => {});
+  });
 }
 </script>
   </main>
