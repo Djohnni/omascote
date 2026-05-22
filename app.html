@@ -4565,6 +4565,10 @@ body.visitanteNaoLogado .visitanteWelcomeCallout{
   box-shadow:0 10px 24px rgba(15,23,42,.14) !important;
 }
 
+.instalarAppBtn[hidden]{
+  display:none !important;
+}
+
 .instalarAppModalBody{
   padding:18px;
   background:#f8fafc;
@@ -5448,6 +5452,7 @@ body:not(.modeChosen) .builderArea,
     <div class="logoutTopBar logoutOnlyTop">
       <button id="btnSair" type="button">Sair</button>
       <button id="btnCadastroTopo" type="button">Cadastro</button>
+      <button id="btnInstalarApp" class="instalarAppBtn" type="button" hidden>📲 Instalar app</button>
     </div>
 
     <div class="topbar">
@@ -13353,6 +13358,81 @@ if("serviceWorker" in navigator){
     navigator.serviceWorker.register("/sw.js").catch(() => {});
   });
 }
+
+let deferredInstallPrompt = null;
+const btnInstalarApp = document.getElementById("btnInstalarApp");
+const instalarAppModal = document.getElementById("instalarAppModal");
+const instalarAppCloseBtn = document.getElementById("instalarAppCloseBtn");
+
+function ia4EstaEmModoApp(){
+  return window.matchMedia?.("(display-mode: standalone)")?.matches || window.navigator.standalone === true;
+}
+
+function ia4MostrarBotaoInstalarApp(){
+  if(!btnInstalarApp || ia4EstaEmModoApp()) return;
+  btnInstalarApp.hidden = false;
+}
+
+function ia4EsconderBotaoInstalarApp(){
+  if(btnInstalarApp) btnInstalarApp.hidden = true;
+}
+
+function ia4AbrirModalInstalarApp(){
+  if(!instalarAppModal) return;
+  instalarAppModal.classList.add("open");
+  instalarAppModal.setAttribute("aria-hidden", "false");
+}
+
+function ia4FecharModalInstalarApp(){
+  if(!instalarAppModal) return;
+  instalarAppModal.classList.remove("open");
+  instalarAppModal.setAttribute("aria-hidden", "true");
+}
+
+if(ia4EstaEmModoApp()){
+  ia4EsconderBotaoInstalarApp();
+}else{
+  ia4MostrarBotaoInstalarApp();
+}
+
+window.addEventListener("beforeinstallprompt", (event) => {
+  event.preventDefault();
+  deferredInstallPrompt = event;
+  ia4MostrarBotaoInstalarApp();
+});
+
+btnInstalarApp?.addEventListener("click", async () => {
+  if(ia4EstaEmModoApp()){
+    ia4EsconderBotaoInstalarApp();
+    return;
+  }
+
+  if(deferredInstallPrompt){
+    const promptEvent = deferredInstallPrompt;
+    deferredInstallPrompt = null;
+    promptEvent.prompt();
+    try{
+      await promptEvent.userChoice;
+    }catch(e){}
+    return;
+  }
+
+  ia4AbrirModalInstalarApp();
+});
+
+window.addEventListener("appinstalled", () => {
+  deferredInstallPrompt = null;
+  if(btnInstalarApp) btnInstalarApp.textContent = "App instalado";
+  ia4EsconderBotaoInstalarApp();
+});
+
+instalarAppCloseBtn?.addEventListener("click", ia4FecharModalInstalarApp);
+
+instalarAppModal?.addEventListener("click", (event) => {
+  if(event.target === instalarAppModal){
+    ia4FecharModalInstalarApp();
+  }
+});
 </script>
   </main>
 </body>
