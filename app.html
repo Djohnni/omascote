@@ -4569,6 +4569,27 @@ body.visitanteNaoLogado .visitanteWelcomeCallout{
   display:none !important;
 }
 
+.instalarAppCentralBox{
+  display:flex;
+  justify-content:center;
+  width:100%;
+  margin:10px auto 18px;
+}
+
+.instalarAppCentralBox[hidden]{
+  display:none !important;
+}
+
+.instalarAppCentralBox .instalarAppBtn{
+  width:min(100%, 340px) !important;
+  justify-content:center !important;
+  padding:14px 20px !important;
+  border-radius:999px !important;
+  background:linear-gradient(135deg,#16a34a,#22c55e) !important;
+  color:#ffffff !important;
+  box-shadow:0 16px 34px rgba(22,163,74,.25) !important;
+}
+
 .instalarAppModalBody{
   padding:18px;
   background:#f8fafc;
@@ -5557,6 +5578,8 @@ body:not(.modeChosen) .builderArea,
         <div id="tempoEstimadoBox" class="tempoEstimadoBox">
           ⏱ Calculando tempo estimado...
         </div>
+
+        <div id="instalarAppCentralBox" class="instalarAppCentralBox" hidden></div>
 
 <!-- removido: escudo3d oculto que carregava icons/escudo3d.png -->
 
@@ -13361,6 +13384,7 @@ if("serviceWorker" in navigator){
 
 let deferredInstallPrompt = null;
 const btnInstalarApp = document.getElementById("btnInstalarApp");
+const instalarAppCentralBox = document.getElementById("instalarAppCentralBox");
 const instalarAppModal = document.getElementById("instalarAppModal");
 const instalarAppCloseBtn = document.getElementById("instalarAppCloseBtn");
 
@@ -13370,11 +13394,16 @@ function ia4EstaEmModoApp(){
 
 function ia4MostrarBotaoInstalarApp(){
   if(!btnInstalarApp || ia4EstaEmModoApp()) return;
+  if(instalarAppCentralBox && btnInstalarApp.parentElement !== instalarAppCentralBox){
+    instalarAppCentralBox.appendChild(btnInstalarApp);
+  }
+  if(instalarAppCentralBox) instalarAppCentralBox.hidden = false;
   btnInstalarApp.hidden = false;
 }
 
 function ia4EsconderBotaoInstalarApp(){
   if(btnInstalarApp) btnInstalarApp.hidden = true;
+  if(instalarAppCentralBox) instalarAppCentralBox.hidden = true;
 }
 
 function ia4AbrirModalInstalarApp(){
@@ -13402,6 +13431,12 @@ window.addEventListener("beforeinstallprompt", (event) => {
 });
 
 btnInstalarApp?.addEventListener("click", async () => {
+  ia4Track("clicou_instalar_app", {
+    origem: "botao_pwa",
+    modo: deferredInstallPrompt ? "prompt_oficial" : "fallback_manual",
+    standalone: ia4EstaEmModoApp() ? "sim" : "nao"
+  });
+
   if(ia4EstaEmModoApp()){
     ia4EsconderBotaoInstalarApp();
     return;
@@ -13412,15 +13447,25 @@ btnInstalarApp?.addEventListener("click", async () => {
     deferredInstallPrompt = null;
     promptEvent.prompt();
     try{
-      await promptEvent.userChoice;
+      const choiceResult = await promptEvent.userChoice;
+      ia4Track("resultado_instalar_app", {
+        resultado: choiceResult?.outcome || "",
+        origem: "prompt_oficial"
+      });
     }catch(e){}
     return;
   }
 
+  ia4Track("abriu_modal_instalar_app", {
+    origem: "fallback_manual"
+  });
   ia4AbrirModalInstalarApp();
 });
 
 window.addEventListener("appinstalled", () => {
+  ia4Track("app_instalado", {
+    origem: "pwa"
+  });
   deferredInstallPrompt = null;
   if(btnInstalarApp) btnInstalarApp.textContent = "App instalado";
   ia4EsconderBotaoInstalarApp();
