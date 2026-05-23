@@ -13489,7 +13489,45 @@ function ia4FecharModalInstalarApp(){
   instalarAppModal.setAttribute("aria-hidden", "true");
 }
 
+function ia4RegistrarAppInstaladoUmaVez(){
+  try{
+    const hoje = new Date().toISOString().slice(0, 10);
+    const chave = "ia4tube_app_instalado_registrado_" + hoje;
+
+    if(localStorage.getItem(chave) === "1") return;
+
+    ia4Track("app_instalado", {
+      origem: "modo_standalone",
+      standalone: "sim"
+    });
+
+    localStorage.setItem(chave, "1");
+  }catch(e){}
+}
+
+function ia4RegistrarUsoAppPwa(){
+  try{
+    if(!ia4EstaEmModoApp()) return;
+
+    const agora = Date.now();
+    const ultimo = Number(localStorage.getItem("ia4tube_uso_app_pwa_ultimo") || 0);
+    const intervalo = 5 * 60 * 1000;
+
+    if(ultimo && agora - ultimo < intervalo) return;
+
+    ia4Track("uso_app_pwa", {
+      origem: "standalone",
+      standalone: "sim"
+    });
+
+    localStorage.setItem("ia4tube_uso_app_pwa_ultimo", String(agora));
+  }catch(e){}
+}
+
 if(ia4EstaEmModoApp()){
+  ia4RegistrarAppInstaladoUmaVez();
+  ia4RegistrarUsoAppPwa();
+  setInterval(ia4RegistrarUsoAppPwa, 60 * 1000);
   ia4EsconderBotaoInstalarApp();
 }else{
   ia4MostrarBotaoInstalarApp();
