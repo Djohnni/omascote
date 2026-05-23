@@ -12419,6 +12419,7 @@ ${pagamentoPendente ? `
 <button type="button" class="menuPedidoBtn" onclick="compartilharImagemPedido('${p.id}')">Compartilhar imagem</button>
 ` : `
 <button type="button" class="menuPedidoBtn" onclick="aprovarPedido('${p.id}')">✅ Está boa, baixar</button>
+<button type="button" class="menuPedidoBtn" onclick="aprovarECompartilharPedido('${p.id}')">Compartilhar imagem</button>
 ${usouAjuste ? `
 <div class="ajustePedidoBox">Esse pedido já utilizou o ajuste automático.</div>
 ` : `
@@ -12588,6 +12589,9 @@ ${ia4FinalizarContaBox(p)}
         <button onclick="aprovarPedido('${p.id}')" style="margin-top:8px;padding:8px 12px;border-radius:10px;border:none;background:#16a34a;color:#fff;font-weight:900;cursor:pointer;width:100%;">
           ✅ Está boa, baixar imagem
         </button>
+        <button onclick="aprovarECompartilharPedido('${p.id}')" style="margin-top:8px;padding:8px 12px;border-radius:10px;border:none;background:#0f172a;color:#fff;font-weight:900;cursor:pointer;width:100%;">
+          Compartilhar imagem
+        </button>
 
         ${usouAjuste ? `
           <div class="ajustePedidoBox">Esse pedido já utilizou o ajuste automático.</div>
@@ -12747,6 +12751,28 @@ async function aprovarPedido(id){
   }catch(e){}
 
   await baixarPedido(id);
+}
+
+async function aprovarECompartilharPedido(id){
+  try{
+    const r = await fetch(`${API_BASE}/pedidos/${id}/aprovar`, {
+      method:"POST",
+      headers:{
+        "Authorization":"Bearer " + token,
+        "Content-Type":"application/json"
+      }
+    });
+
+    if(!r.ok){
+      alert("Erro ao aprovar pedido");
+      return;
+    }
+
+    await compartilharImagemPedido(id);
+    carregarHistorico();
+  }catch{
+    alert("Erro de rede ao aprovar pedido");
+  }
 }
 
 async function baixarPedido(id){
