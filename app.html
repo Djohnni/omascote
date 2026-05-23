@@ -192,6 +192,7 @@
       box-shadow:0 20px 60px rgba(81,97,86,.12);
       backdrop-filter: blur(4px);
       -webkit-backdrop-filter: blur(4px);
+      contain:layout paint;
       overflow:hidden;
     }
 
@@ -5008,6 +5009,7 @@ body.visitanteNaoLogado .visitanteWelcomeCallout{
   gap:28px;
   width:100%;
   max-width:860px;
+  min-height:520px;
   margin:6px auto 0;
 }
 
@@ -5021,6 +5023,7 @@ body.visitanteNaoLogado .visitanteWelcomeCallout{
   border:1px solid rgba(255,255,255,.12);
   box-shadow:0 20px 46px rgba(15,23,42,.18);
   color:#fff;
+  min-height:180px;
   overflow:hidden;
 }
 
@@ -5150,6 +5153,7 @@ body.visitanteNaoLogado .visitanteWelcomeCallout{
   background:#ffffff;
   border:1px solid #e5e7eb;
   box-shadow:0 18px 38px rgba(15,23,42,.08);
+  min-height:640px;
 }
 
 .cleanProductBlock.is-picker-hidden{
@@ -7658,21 +7662,23 @@ function getCleanFieldPlaceholder(product, field){
 }
 
 function renderCleanTextField(product, field, step){
+  const label = getCleanFieldLabel(product, field);
   return `
     <div class="cleanFieldCard" data-clean-field-card="${htmlEscape(field.key)}">
-      <label class="cleanFieldLabel" data-step="${htmlEscape(step)}">${getCleanFieldLabel(product, field)}</label>
-      <input name="${htmlEscape(field.key)}" data-field="${htmlEscape(field.key)}" placeholder="${htmlEscape(getCleanFieldPlaceholder(product, field))}">
+      <label class="cleanFieldLabel" data-step="${htmlEscape(step)}">${label}</label>
+      <input name="${htmlEscape(field.key)}" data-field="${htmlEscape(field.key)}" placeholder="${htmlEscape(getCleanFieldPlaceholder(product, field))}" aria-label="${htmlEscape(label)}">
     </div>
   `;
 }
 
 function renderCleanFileField(product, field, step){
   const multiple = field.type === "multi-file" ? " multiple" : "";
+  const label = getCleanFieldLabel(product, field);
   return `
     <div class="cleanFieldCard" data-clean-field-card="${htmlEscape(field.key)}">
-      <label class="cleanFieldLabel" data-step="${htmlEscape(step)}">${getCleanFieldLabel(product, field)}</label>
-      <input class="fileHidden" type="file" name="${htmlEscape(field.key)}" data-asset="${htmlEscape(field.key)}"${multiple} accept="image/png,image/jpeg,image/jpg,image/webp">
-      <div class="cleanFileBox" data-clean-file-for="${htmlEscape(field.key)}" tabindex="0" role="button">
+      <label class="cleanFieldLabel" data-step="${htmlEscape(step)}">${label}</label>
+      <input class="fileHidden" type="file" name="${htmlEscape(field.key)}" data-asset="${htmlEscape(field.key)}"${multiple} accept="image/png,image/jpeg,image/jpg,image/webp" aria-label="${htmlEscape(label)}">
+      <div class="cleanFileBox" data-clean-file-for="${htmlEscape(field.key)}" tabindex="0" role="button" aria-label="${htmlEscape(label)}">
         <span data-clean-file-name="${htmlEscape(field.key)}">Nenhum arquivo</span>
         <span class="cleanFilePlus">+</span>
       </div>
@@ -7685,11 +7691,11 @@ function renderCleanScoreField(field, step){
     <div class="cleanFieldCard" data-clean-field-card="${htmlEscape(field.key)}">
       <label class="cleanFieldLabel" data-step="${htmlEscape(step)}">${htmlEscape(field.label || "Placar")}</label>
       <div class="cleanScoreGrid" data-field="${htmlEscape(field.key)}">
-        <input name="home_team" data-field="home_team" placeholder="">
-        <input name="home_score" data-field="home_score" type="number" min="0" placeholder="">
+        <input name="home_team" data-field="home_team" placeholder="" aria-label="Time A">
+        <input name="home_score" data-field="home_score" type="number" min="0" placeholder="" aria-label="Gols Time A">
         <div class="cleanScoreX">x</div>
-        <input name="away_score" data-field="away_score" type="number" min="0" placeholder="">
-        <input name="away_team" data-field="away_team" placeholder="">
+        <input name="away_score" data-field="away_score" type="number" min="0" placeholder="" aria-label="Gols Time B">
+        <input name="away_team" data-field="away_team" placeholder="" aria-label="Time B">
       </div>
     </div>
   `;
@@ -7700,11 +7706,11 @@ function renderCleanMatchupField(field, step){
     <div class="cleanFieldCard" data-clean-field-card="${htmlEscape(field.key)}">
       <label class="cleanFieldLabel" data-step="${htmlEscape(step)}">${htmlEscape(field.label || "Confronto")}</label>
       <div class="cleanScoreGrid" data-field="${htmlEscape(field.key)}">
-        <input name="home_team" data-field="home_team" placeholder="">
+        <input name="home_team" data-field="home_team" placeholder="" aria-label="Time A">
         <div></div>
         <div class="cleanScoreX">x</div>
         <div></div>
-        <input name="away_team" data-field="away_team" placeholder="">
+        <input name="away_team" data-field="away_team" placeholder="" aria-label="Time B">
       </div>
     </div>
   `;
@@ -7718,8 +7724,8 @@ function renderCleanPeopleField(field, step){
       <label class="cleanFieldLabel" data-step="${htmlEscape(step)}">${htmlEscape(field.label || "Jogadores")}</label>
       <div class="cleanPlayerRows" data-clean-people="${htmlEscape(field.key)}" data-clean-people-type="${htmlEscape(field.type)}">
         <div class="cleanPlayerRow">
-          <input data-player-name placeholder="">
-          <input data-player-extra type="${scoreType}" min="0" placeholder="">
+          <input data-player-name placeholder="" aria-label="Nome do jogador">
+          <input data-player-extra type="${scoreType}" min="0" placeholder="" aria-label="Informação adicional do jogador">
         </div>
       </div>
       <button type="button" class="escActionBtn escActionSave" data-add-clean-people="${htmlEscape(field.key)}">Adicionar jogador</button>
@@ -7839,6 +7845,10 @@ function getProductChooserOrder(){
   return ["escudo3d", ...CLEAN_PRODUCT_RENDER_ORDER].filter(productKey => PRODUCTS[productKey]);
 }
 
+function getProductChooserImage(product){
+  return product?.thumb || product?.image || "";
+}
+
 function renderProductChooser(){
   const chooser = document.getElementById("productChooser");
   if(!chooser) return;
@@ -7849,7 +7859,7 @@ function renderProductChooser(){
       <h2 class="productChooserTitle">O que você quer criar hoje?</h2>
       <p class="productChooserText">Escolha uma opção e veja o formulário completo logo abaixo.</p>
     </div>
-    <div class="productChooserRail" role="list">
+    <div class="productChooserRail">
       ${options.map(productKey => {
         const product = PRODUCTS[productKey] || {};
         const copy = PRODUCT_CHOOSER_COPY[productKey] || {};
@@ -7858,7 +7868,7 @@ function renderProductChooser(){
         return `
           <button type="button" class="productChooserCard" data-product-picker="${htmlEscape(productKey)}" aria-pressed="false">
             <span class="productChooserThumb" aria-hidden="true">
-              <img src="${htmlEscape(product.image || "")}" alt="" width="58" height="76" loading="lazy" decoding="async">
+              <img src="${htmlEscape(getProductChooserImage(product))}" alt="" width="58" height="76" loading="lazy" decoding="async">
             </span>
             <span>
               ${productKey === "proximo_jogo" ? `<span class="productChooserBadge">Produto do anúncio</span>` : ""}
