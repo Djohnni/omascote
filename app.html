@@ -4590,6 +4590,94 @@ body.visitanteNaoLogado .visitanteWelcomeCallout{
   box-shadow:0 16px 34px rgba(22,163,74,.25) !important;
 }
 
+.cartasAppBox[hidden]{
+  display:none !important;
+}
+
+.cartasAppBox{
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  width:100%;
+  margin:10px auto 18px;
+}
+
+.cartaAppEnvelopeBtn{
+  position:relative;
+  width:54px;
+  height:54px;
+  border:1px solid rgba(255,255,255,.18);
+  border-radius:18px;
+  background:linear-gradient(145deg,rgba(15,23,42,.92),rgba(30,41,59,.78));
+  color:#ffffff;
+  box-shadow:0 14px 28px rgba(15,23,42,.2);
+  cursor:pointer;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:27px;
+}
+
+.cartaAppEnvelopeBtn:hover,
+.cartaAppEnvelopeBtn:focus-visible{
+  transform:translateY(-1px);
+  outline:none;
+  box-shadow:0 18px 36px rgba(15,23,42,.28);
+}
+
+.cartaAppBadge{
+  position:absolute;
+  top:-6px;
+  right:-6px;
+  min-width:19px;
+  height:19px;
+  padding:0 5px;
+  border-radius:999px;
+  background:#ef4444;
+  color:#ffffff;
+  border:2px solid #ffffff;
+  font-size:11px;
+  font-weight:900;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+
+.cartaAppTextoCurto{
+  margin-top:7px;
+  max-width:280px;
+  color:#e5e7eb;
+  font-size:13px;
+  font-weight:800;
+  line-height:1.25;
+  text-align:center;
+  display:-webkit-box;
+  -webkit-line-clamp:2;
+  -webkit-box-orient:vertical;
+  overflow:hidden;
+}
+
+.cartaAppModalBody{
+  padding:18px;
+  background:#f8fafc;
+  color:#111827;
+}
+
+.cartaAppTextoCompleto{
+  color:#1f2937;
+  font-size:15px;
+  line-height:1.55;
+  white-space:pre-wrap;
+}
+
+.cartaAppAcoes{
+  display:flex;
+  gap:10px;
+  margin-top:16px;
+  flex-wrap:wrap;
+}
+
 .instalarAppModalBody{
   padding:18px;
   background:#f8fafc;
@@ -5597,6 +5685,8 @@ body:not(.modeChosen) .builderArea,
 
         <div id="instalarAppCentralBox" class="instalarAppCentralBox" hidden></div>
 
+        <div id="cartasAppBox" class="cartasAppBox" hidden></div>
+
 <!-- removido: escudo3d oculto que carregava icons/escudo3d.png -->
 
 
@@ -6067,7 +6157,21 @@ body:not(.modeChosen) .builderArea,
         <button class="btnOk" id="cropOkBtn" type="button">Usar recorte</button>
       </div>
     </div>
+</div>
+
+<div class="modalMask" id="cartaAppModal" aria-hidden="true">
+  <div class="modalCard" role="dialog" aria-modal="true" aria-label="Mensagem IA4Tube">
+    <div class="modalTop">
+      <div class="modalTitle" id="cartaAppModalTitulo">Mensagem da IA4Tube</div>
+      <button class="modalClose btnGhost" id="cartaAppCloseBtn" type="button">×</button>
+    </div>
+
+    <div class="cartaAppModalBody">
+      <div class="cartaAppTextoCompleto" id="cartaAppModalTexto"></div>
+      <div class="cartaAppAcoes" id="cartaAppModalAcoes"></div>
+    </div>
   </div>
+</div>
 
 <div class="modalMask" id="instalarAppModal" aria-hidden="true">
   <div class="modalCard" role="dialog" aria-modal="true" aria-label="Adicionar app à tela inicial">
@@ -13458,6 +13562,13 @@ const btnInstalarApp = document.getElementById("btnInstalarApp");
 const instalarAppCentralBox = document.getElementById("instalarAppCentralBox");
 const instalarAppModal = document.getElementById("instalarAppModal");
 const instalarAppCloseBtn = document.getElementById("instalarAppCloseBtn");
+const cartasAppBox = document.getElementById("cartasAppBox");
+const cartaAppModal = document.getElementById("cartaAppModal");
+const cartaAppCloseBtn = document.getElementById("cartaAppCloseBtn");
+const cartaAppModalTitulo = document.getElementById("cartaAppModalTitulo");
+const cartaAppModalTexto = document.getElementById("cartaAppModalTexto");
+const cartaAppModalAcoes = document.getElementById("cartaAppModalAcoes");
+let cartasAppAtivas = [];
 
 function ia4EstaEmModoApp(){
   return window.matchMedia?.("(display-mode: standalone)")?.matches || window.navigator.standalone === true;
@@ -13465,6 +13576,10 @@ function ia4EstaEmModoApp(){
 
 function ia4MostrarBotaoInstalarApp(){
   if(!btnInstalarApp || ia4EstaEmModoApp()) return;
+  if(cartasAppBox){
+    cartasAppBox.hidden = true;
+    cartasAppBox.innerHTML = "";
+  }
   if(instalarAppCentralBox && btnInstalarApp.parentElement !== instalarAppCentralBox){
     instalarAppCentralBox.appendChild(btnInstalarApp);
   }
@@ -13487,6 +13602,122 @@ function ia4FecharModalInstalarApp(){
   if(!instalarAppModal) return;
   instalarAppModal.classList.remove("open");
   instalarAppModal.setAttribute("aria-hidden", "true");
+}
+
+function fecharCartaAppModal(){
+  if(!cartaAppModal) return;
+  cartaAppModal.classList.remove("open");
+  cartaAppModal.setAttribute("aria-hidden", "true");
+}
+
+function cartaAppJsArg(value){
+  return htmlEscape(JSON.stringify(String(value || "")));
+}
+
+function renderizarCartasApp(cartas){
+  if(!cartasAppBox) return;
+
+  if(!ia4EstaEmModoApp() || !Array.isArray(cartas) || !cartas.length){
+    cartasAppBox.hidden = true;
+    cartasAppBox.innerHTML = "";
+    return;
+  }
+
+  cartasAppAtivas = cartas;
+  const novas = cartas.filter(carta => carta && carta.lida !== true).length;
+  const carta = cartas.find(item => item && item.lida !== true) || cartas[0];
+
+  cartasAppBox.hidden = false;
+  cartasAppBox.innerHTML = `
+    <button type="button" class="cartaAppEnvelopeBtn" onclick="abrirCartaApp(${cartaAppJsArg(carta.id)})" aria-label="Abrir mensagem IA4Tube">
+      ✉️
+      ${novas > 0 ? `<span class="cartaAppBadge">${novas > 9 ? "9+" : novas}</span>` : ""}
+    </button>
+    ${carta.texto_curto ? `<div class="cartaAppTextoCurto">${htmlEscape(carta.texto_curto)}</div>` : ""}
+  `;
+}
+
+async function carregarCartasApp(){
+  try{
+    if(!ia4EstaEmModoApp() || !token){
+      renderizarCartasApp([]);
+      return;
+    }
+
+    const r = await fetch(`${API_BASE}/cartas-app/ativas?ts=${Date.now()}`, {
+      headers:{ "Authorization":"Bearer " + token }
+    });
+    const data = await r.json().catch(() => ({}));
+
+    if(!r.ok || !data.ok){
+      renderizarCartasApp([]);
+      return;
+    }
+
+    renderizarCartasApp(Array.isArray(data.cartas) ? data.cartas : []);
+  }catch(e){
+    renderizarCartasApp([]);
+  }
+}
+
+async function marcarCartaAppLida(id){
+  try{
+    if(!token || !id) return;
+    await fetch(`${API_BASE}/cartas-app/${encodeURIComponent(id)}/lida`, {
+      method:"POST",
+      headers:{ "Authorization":"Bearer " + token }
+    });
+    const carta = cartasAppAtivas.find(item => String(item.id) === String(id));
+    if(carta) carta.lida = true;
+    renderizarCartasApp(cartasAppAtivas);
+  }catch(e){}
+}
+
+async function baixarCartaAppImagem(id){
+  try{
+    if(!token || !id) return;
+    const carta = cartasAppAtivas.find(item => String(item.id) === String(id));
+
+    if(carta?.imagem_url){
+      window.location.href = carta.imagem_url;
+      return;
+    }
+
+    const r = await fetch(`${API_BASE}/cartas-app/${encodeURIComponent(id)}/imagem`, {
+      headers:{ "Authorization":"Bearer " + token }
+    });
+
+    if(!r.ok) throw new Error("imagem_indisponivel");
+
+    const blob = await r.blob();
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `${id}_ia4tube.png`;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
+  }catch(e){
+    alert("Imagem indisponível no momento.");
+  }
+}
+
+function abrirCartaApp(id){
+  const carta = cartasAppAtivas.find(item => String(item.id) === String(id));
+  if(!carta || !cartaAppModal) return;
+
+  if(cartaAppModalTitulo) cartaAppModalTitulo.textContent = carta.titulo || "Mensagem da IA4Tube";
+  if(cartaAppModalTexto) cartaAppModalTexto.textContent = carta.texto || carta.texto_curto || "";
+  if(cartaAppModalAcoes){
+    cartaAppModalAcoes.innerHTML = carta.tem_imagem
+      ? `<button type="button" class="menuPedidoBtn" onclick="baixarCartaAppImagem(${cartaAppJsArg(carta.id)})">Baixar imagem</button>`
+      : `<button type="button" class="menuPedidoBtn" onclick="fecharCartaAppModal()">Ler mensagem</button>`;
+  }
+
+  cartaAppModal.classList.add("open");
+  cartaAppModal.setAttribute("aria-hidden", "false");
+  marcarCartaAppLida(carta.id);
 }
 
 function ia4RegistrarAppInstaladoUmaVez(){
@@ -13529,6 +13760,7 @@ if(ia4EstaEmModoApp()){
   ia4RegistrarUsoAppPwa();
   setInterval(ia4RegistrarUsoAppPwa, 60 * 1000);
   ia4EsconderBotaoInstalarApp();
+  carregarCartasApp();
 }else{
   ia4MostrarBotaoInstalarApp();
 }
@@ -13581,10 +13813,17 @@ window.addEventListener("appinstalled", () => {
 });
 
 instalarAppCloseBtn?.addEventListener("click", ia4FecharModalInstalarApp);
+cartaAppCloseBtn?.addEventListener("click", fecharCartaAppModal);
 
 instalarAppModal?.addEventListener("click", (event) => {
   if(event.target === instalarAppModal){
     ia4FecharModalInstalarApp();
+  }
+});
+
+cartaAppModal?.addEventListener("click", (event) => {
+  if(event.target === cartaAppModal){
+    fecharCartaAppModal();
   }
 });
 </script>
