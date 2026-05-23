@@ -6067,7 +6067,8 @@ body:not(.modeChosen) .builderArea,
         </div>
 
         <div class="instalarPasso">
-          Qualquer dúvida clique no ícone do WhatsApp.
+          Está querendo baixar ou com algum problema?<br>
+          Nos envie mensagem no WhatsApp aqui ao lado.
         </div>
       </div>
     </div>
@@ -6247,6 +6248,7 @@ body:not(.modeChosen) .builderArea,
 
 <script>
 const API_BASE = "https://api.omascote.com.br";
+const isInstagram = /Instagram/i.test(navigator.userAgent);
 const IA4_MAX_UPLOAD_BYTES = 50 * 1024 * 1024;
 const IA4_MAX_UPLOAD_MB = 50;
 
@@ -9213,7 +9215,7 @@ async function comprarCreditos(pacote, metodo = "checkout", triggerBtn = null){
       return;
     }
 
-    window.open(data.init_point, "_blank");
+    window.location.href = data.init_point;
 
   }catch{
     alert("Erro de rede ao iniciar pagamento.");
@@ -12414,6 +12416,7 @@ ${pagamentoPendente ? `
 ` : ia4ContaAutoPendente() ? `
 ` : aprovado ? `
 <button type="button" class="menuPedidoBtn" onclick="baixarPedido('${p.id}')">Baixar novamente</button>
+<button type="button" class="menuPedidoBtn" onclick="compartilharImagemPedido('${p.id}')">Compartilhar imagem</button>
 ` : `
 <button type="button" class="menuPedidoBtn" onclick="aprovarPedido('${p.id}')">✅ Está boa, baixar</button>
 ${usouAjuste ? `
@@ -12577,6 +12580,9 @@ ${ia4FinalizarContaBox(p)}
 ` : aprovado ? `
         <button onclick="baixarPedido('${p.id}')" style="margin-top:8px;padding:8px 12px;border-radius:10px;border:none;background:#2ecc71;color:#fff;font-weight:900;cursor:pointer;width:100%;">
           Baixar novamente
+        </button>
+        <button onclick="compartilharImagemPedido('${p.id}')" style="margin-top:8px;padding:8px 12px;border-radius:10px;border:none;background:#0f172a;color:#fff;font-weight:900;cursor:pointer;width:100%;">
+          Compartilhar imagem
         </button>
 ` : `
         <button onclick="aprovarPedido('${p.id}')" style="margin-top:8px;padding:8px 12px;border-radius:10px;border:none;background:#16a34a;color:#fff;font-weight:900;cursor:pointer;width:100%;">
@@ -12777,6 +12783,35 @@ async function baixarPedido(id){
 
   }catch{
     alert("Erro de rede ao baixar");
+  }
+}
+
+async function compartilharImagemPedido(id){
+  try{
+    const r = await fetch(`${API_BASE}/pedidos/${id}/download-resultado`, {
+      headers: { "Authorization": "Bearer " + token }
+    });
+
+    if(!r.ok){
+      await baixarPedido(id);
+      return;
+    }
+
+    const blob = await r.blob();
+    const file = new File([blob], id + "_resultado.png", { type: blob.type || "image/png" });
+
+    if(navigator.canShare?.({ files:[file] }) && navigator.share){
+      await navigator.share({
+        title: "Minha arte IA4Tube",
+        text: "Minha arte criada na IA4Tube",
+        files: [file]
+      });
+      return;
+    }
+
+    await baixarPedido(id);
+  }catch{
+    await baixarPedido(id);
   }
 }
 
