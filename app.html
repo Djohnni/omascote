@@ -13599,7 +13599,11 @@ const cartaAppModalAcoes = document.getElementById("cartaAppModalAcoes");
 let cartasAppAtivas = [];
 
 function ia4EstaEmModoApp(){
-  return window.matchMedia?.("(display-mode: standalone)")?.matches || window.navigator.standalone === true;
+  return (
+    window.matchMedia?.("(display-mode: standalone)")?.matches === true ||
+    window.navigator.standalone === true ||
+    document.referrer.startsWith("android-app://")
+  );
 }
 
 function ia4MostrarBotaoInstalarApp(){
