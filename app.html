@@ -8639,7 +8639,23 @@ async function submitCleanProductForm(e){
       body:fd
     });
 
-    const out = await r.json();
+    const rawText = await r.text();
+    let out = {};
+
+    try{
+      out = rawText ? JSON.parse(rawText) : {};
+    }catch(parseError){
+      out = {
+        ok: false,
+        error: rawText
+          ? `Resposta inesperada do servidor (${r.status}). ${rawText.slice(0, 220)}`
+          : `Resposta inesperada do servidor (${r.status}).`
+      };
+    }
+
+    if(!r.ok && !out.error && !out.mensagem && !out.erro){
+      out.error = `Erro HTTP ${r.status} ao enviar pedido.`;
+    }
 
     if(out.ok){
       setCleanProductMsg(form, "");
@@ -8669,14 +8685,20 @@ async function submitCleanProductForm(e){
       ia4Track("erro_envio_pedido", {
         produto: productKey,
         categoria: product.visualCategory || categoriaSelecionada || "",
-        erro: out.error || "Erro ao enviar"
+        erro: out.error || out.mensagem || out.erro || "Erro ao enviar"
       });
       cancelarProgressoNoProduto(form);
-      setCleanProductMsg(form, out.error || "Erro ao enviar", true);
+      setCleanProductMsg(form, out.error || out.mensagem || out.erro || "Erro ao enviar", true);
     }
-  }catch{
+  }catch(err){
+    console.error("[submitCleanProductForm] erro ao enviar pedido", {
+      produto: productKey,
+      endpoint: schema.endpoint,
+      erro: err?.message || String(err),
+      stack: err?.stack || ""
+    });
     cancelarProgressoNoProduto(form);
-    setCleanProductMsg(form, "Erro de rede ao enviar.", true);
+    setCleanProductMsg(form, "Não foi possível enviar agora. Verifique a conexão e tente novamente.", true);
   }
 }
 
