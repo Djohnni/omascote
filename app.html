@@ -83,7 +83,7 @@
 
     *{box-sizing:border-box}
 
-    {
+    body{
       font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, Helvetica, sans-serif;
       color:var(--txt);
       margin:0;
@@ -553,7 +553,7 @@
       margin-top:18px;
     }
 
-    .modeChosen .switchModeRow{display:flex}
+    body.modeChosen .switchModeRow{display:flex}
 
     .hiddenTabs{
       position:absolute;
@@ -562,7 +562,7 @@
       pointer-events:none;
     }
 
-    :not(.modeChosen) .builderArea{
+    body:not(.modeChosen) .builderArea{
       display:none;
     }
 
@@ -686,8 +686,8 @@
       display:none;
     }
 
-    .mode-result #dynamicHint,
-    .mode-flyer #dynamicHint{
+    body.mode-result #dynamicHint,
+    body.mode-flyer #dynamicHint{
       display:block !important;
       width:max-content;
       max-width:min(420px, calc(100% - 28px));
@@ -707,8 +707,8 @@
       word-break:break-word;
     }
 
-    .mode-result #dynamicHint::after,
-    .mode-flyer #dynamicHint::after{
+    body.mode-result #dynamicHint::after,
+    body.mode-flyer #dynamicHint::after{
       content:"";
       position:absolute;
       right:-10px;
@@ -742,14 +742,14 @@
       align-items:center;
     }
 
-    .mode-flyer .formGrid{
+    body.mode-flyer .formGrid{
       display:flex;
       flex-direction:column;
       gap:18px;
       margin-top:0;
     }
 
-    .mode-result .formGrid{
+    body.mode-result .formGrid{
       grid-template-areas:
         "hora hora"
         "placar placar"
@@ -761,14 +761,14 @@
         "msg msg";
     }
 
-    .mode-result .field-placar,
-    .mode-result .field-artilheiros,
-    .mode-result .field-hora,
-    .mode-result .field-mascote{
+    body.mode-result .field-placar,
+    body.mode-result .field-artilheiros,
+    body.mode-result .field-hora,
+    body.mode-result .field-mascote{
       display:block;
     }
 
-    .mode-proximo-jogo .field-placar{
+    body.mode-proximo-jogo .field-placar{
       display:flex;
       flex-direction:column;
       align-items:stretch;
@@ -8141,6 +8141,20 @@ function appendCleanAssetLegacy(fd, cleanOrder, fieldKey, legacyName, fallbackFi
   if(fallbackFile) fd.append(legacyName, fallbackFile);
 }
 
+function getIa4AccessContext(){
+  const standalone = typeof ia4EstaEmModoApp === "function" && ia4EstaEmModoApp();
+  return {
+    origem_acesso: standalone ? "pwa" : "navegador",
+    display_mode: standalone ? "standalone" : "browser"
+  };
+}
+
+function appendIa4AccessContext(fd){
+  const ctx = getIa4AccessContext();
+  fd.append("origem_acesso", ctx.origem_acesso);
+  fd.append("display_mode", ctx.display_mode);
+}
+
 function buildLegacyFormDataFromClean(productKey, cleanOrder){
   const product = PRODUCTS[productKey];
   const schema = getCleanProductSchema(productKey);
@@ -8223,6 +8237,7 @@ function buildLegacyFormDataFromClean(productKey, cleanOrder){
 
   if(!fd.has("rodada")) appendCleanTextLegacy(fd, "rodada", product?.title || productKey);
   if(!fd.has("data")) appendCleanTextLegacy(fd, "data", product?.title || productKey);
+  appendIa4AccessContext(fd);
 
   return fd;
 }
@@ -10786,6 +10801,7 @@ async function enviarPedidoEscudo3dComArquivo(file, progressTarget = null){
   fd.append("rodada", "Escudo 3D");
   fd.append("data", "Escudo 3D");
   fd.append("escudo1", file);
+  appendIa4AccessContext(fd);
 
   try{
     const r = await fetch(`${API_BASE}/pedidos`, {
@@ -11688,6 +11704,8 @@ document.getElementById("pedidoForm").addEventListener("submit", async (e)=>{
       coletarArtilheiros
     });
   }
+
+  appendIa4AccessContext(fd);
 
   try{
     const endpoint = isResultado ? "/resultado_do_jogo" : "/pedidos";
