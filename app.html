@@ -13649,15 +13649,20 @@ function cartaAppJsArg(value){
 function renderizarCartasApp(cartas){
   if(!cartasAppBox) return;
 
-  if(!ia4EstaEmModoApp() || !Array.isArray(cartas) || !cartas.length){
+  const cartasNaoLidas = Array.isArray(cartas)
+    ? cartas.filter(carta => carta && carta.lida !== true)
+    : [];
+
+  if(!ia4EstaEmModoApp() || !cartasNaoLidas.length){
     cartasAppBox.hidden = true;
     cartasAppBox.innerHTML = "";
+    cartasAppAtivas = Array.isArray(cartas) ? cartas : [];
     return;
   }
 
   cartasAppAtivas = cartas;
-  const novas = cartas.filter(carta => carta && carta.lida !== true).length;
-  const carta = cartas.find(item => item && item.lida !== true) || cartas[0];
+  const novas = cartasNaoLidas.length;
+  const carta = cartasNaoLidas[0];
 
   cartasAppBox.hidden = false;
   cartasAppBox.innerHTML = `
@@ -13695,10 +13700,11 @@ async function carregarCartasApp(){
 async function marcarCartaAppLida(id){
   try{
     if(!token || !id) return;
-    await fetch(`${API_BASE}/cartas-app/${encodeURIComponent(id)}/lida`, {
+    const r = await fetch(`${API_BASE}/cartas-app/${encodeURIComponent(id)}/lida`, {
       method:"POST",
       headers:{ "Authorization":"Bearer " + token }
     });
+    if(!r.ok) return;
     const carta = cartasAppAtivas.find(item => String(item.id) === String(id));
     if(carta) carta.lida = true;
     renderizarCartasApp(cartasAppAtivas);
@@ -13709,6 +13715,7 @@ async function baixarCartaAppImagem(id){
   try{
     if(!token || !id) return;
     const carta = cartasAppAtivas.find(item => String(item.id) === String(id));
+    await marcarCartaAppLida(id);
 
     if(carta?.imagem_url){
       window.location.href = carta.imagem_url;
@@ -13749,7 +13756,9 @@ function abrirCartaApp(id){
 
   cartaAppModal.classList.add("open");
   cartaAppModal.setAttribute("aria-hidden", "false");
-  marcarCartaAppLida(carta.id);
+  if(!carta.tem_imagem){
+    marcarCartaAppLida(carta.id);
+  }
 }
 
 function ia4RegistrarAppInstaladoUmaVez(){
