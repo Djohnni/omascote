@@ -5220,48 +5220,6 @@ body.visitanteNaoLogado .visitanteWelcomeCallout{
   font-weight:900;
 }
 
-.cleanProgressCadastro{
-  margin-top:14px;
-  padding:12px;
-  border-radius:16px;
-  background:rgba(255,255,255,.94);
-  color:#111827;
-  box-shadow:0 16px 36px rgba(15,23,42,.28);
-  pointer-events:auto;
-}
-
-.cleanProgressCadastroText{
-  font-size:12px;
-  font-weight:900;
-  line-height:1.3;
-  margin-bottom:8px;
-}
-
-.cleanProgressCadastro input{
-  width:100%;
-  margin-top:6px;
-  padding:9px 10px;
-  border-radius:10px;
-  border:1px solid #d1d5db;
-  background:#ffffff;
-  color:#111827;
-  font-size:13px;
-  font-weight:800;
-}
-
-.cleanProgressCadastro button{
-  width:100%;
-  margin-top:8px;
-  padding:10px 12px;
-  border:0;
-  border-radius:12px;
-  background:#16a34a;
-  color:#ffffff;
-  font-size:13px;
-  font-weight:950;
-  cursor:pointer;
-}
-
 .cleanProgressBar{
   width:100%;
   height:9px;
@@ -8352,14 +8310,6 @@ function renderCleanProgressOverlay(imageBox, percent, text){
   if(!imageBox) return null;
 
   let overlay = imageBox.querySelector(".cleanProgressOverlay");
-  const cadastroHtml = ia4ContaAutoPendente() ? `
-        <div class="cleanProgressCadastro">
-          <div class="cleanProgressCadastroText">Aproveite enquanto sua arte está sendo criada e salve seu cadastro para receber sua imagem.</div>
-          <input data-progress-login placeholder="Crie seu login">
-          <input data-progress-senha type="password" placeholder="Crie sua senha">
-          <button type="button" onclick="finalizarCadastroDuranteProgresso(event)">Salvar cadastro</button>
-        </div>
-  ` : "";
 
   if(!overlay){
     overlay = document.createElement("div");
@@ -8371,15 +8321,9 @@ function renderCleanProgressOverlay(imageBox, percent, text){
           <div class="cleanProgressFill" data-clean-progress-fill></div>
         </div>
         <div class="cleanProgressText" data-clean-progress-text>Criando sua arte...</div>
-        <div data-clean-progress-cadastro>${cadastroHtml}</div>
       </div>
     `;
     imageBox.appendChild(overlay);
-  } else {
-    const cadastroEl = overlay.querySelector("[data-clean-progress-cadastro]");
-    if(cadastroEl && !cadastroEl.querySelector("input:focus")){
-      cadastroEl.innerHTML = cadastroHtml;
-    }
   }
 
   const safePercent = Math.max(1, Math.min(100, Number(percent || 1)));
@@ -12159,30 +12103,6 @@ function ia4ContaAutoPendente(){
   return localStorage.getItem("ia4tube_conta_auto_pendente") === "1";
 }
 
-function ia4FinalizarContaBox(p){
-  if(!ia4ContaAutoPendente()) return "";
-  const id = typeof p === "object" ? p.id : p;
-
-  return `
-    <div style="margin-top:12px;padding:14px;border-radius:16px;background:#ecfdf3;border:1px solid #bbf7d0;color:#14532d;text-align:left;">
-      <div style="font-size:16px;font-weight:950;text-align:center;margin-bottom:10px;">
-        🎉 Sua arte está pronta!
-      </div>
-
-      <div style="font-size:13px;font-weight:900;line-height:1.35;text-align:center;margin-bottom:12px;">
-        Para liberar o download, crie seu acesso grátis:
-      </div>
-
-      <input id="login_auto_${id}" placeholder="Crie seu login" style="margin-bottom:8px;background:#fff!important;color:#111827!important;border:1px solid #bbf7d0!important;">
-      <input id="senha_auto_${id}" type="password" placeholder="Crie sua senha" style="margin-bottom:10px;background:#fff!important;color:#111827!important;border:1px solid #bbf7d0!important;">
-
-      <button type="button" class="menuPedidoBtn" onclick="ia4FinalizarContaAuto('${id}')">
-        Liberar download 🚀
-      </button>
-    </div>
-  `;
-}
-
 function cardPagamentoPendente(p) {
   const valorNumero = Number(p.valor_pendente || 0);
   const valor = Number.isInteger(valorNumero)
@@ -12415,118 +12335,6 @@ async function abrirPedidoDireto(pedidoId) {
       pedidoEl.classList.remove("pedidoHighlight");
     }, 3200);
   }, 120);
-}
-
-async function ia4FinalizarContaAuto(id){
-  const login = document.getElementById("login_auto_" + id)?.value?.trim() || "";
-  const senha = document.getElementById("senha_auto_" + id)?.value || "";
-
-  if(login.length < 3){
-    alert("Digite um login com pelo menos 3 caracteres.");
-    return;
-  }
-
-  if(senha.length < 3){
-    alert("Digite uma senha com pelo menos 3 caracteres.");
-    return;
-  }
-
-  try{
-    const r = await fetch(`${API_BASE}/auth/finalizar-conta-auto`, {
-      method:"POST",
-      headers:{
-        "Authorization":"Bearer " + token,
-        "Content-Type":"application/json"
-      },
-      body:JSON.stringify({ login, senha })
-    });
-
-    const data = await r.json().catch(()=>({}));
-
-    if(!r.ok || !data.ok || !data.token){
-      if(String(data.error || "").includes("já foi finalizada")){
-        localStorage.removeItem("ia4tube_conta_auto_pendente");
-        await carregarHistorico();
-        await aprovarPedido(id);
-        return;
-      }
-
-      alert(data.error || "Não foi possível liberar o download.");
-      return;
-    }
-
-    token = data.token;
-
-    localStorage.setItem("omascote_token", data.token);
-    localStorage.setItem("omascote_nome_time", data.nome_time || login);
-    localStorage.setItem("ia4tube_conta_auto_pendente", "0");
-
-    applyLocal();
-    refreshMe();
-    await carregarHistorico();
-
-    await aprovarPedido(id);
-  }catch(e){
-    alert("Erro de rede ao liberar download.");
-  }
-}
-
-async function finalizarCadastroDuranteProgresso(ev){
-  ev?.preventDefault?.();
-  ev?.stopPropagation?.();
-
-  const box = ev?.target?.closest?.(".cleanProgressCadastro");
-  const login = box?.querySelector("[data-progress-login]")?.value?.trim() || "";
-  const senha = box?.querySelector("[data-progress-senha]")?.value || "";
-
-  if(login.length < 3){
-    alert("Digite um login com pelo menos 3 caracteres.");
-    return;
-  }
-
-  if(senha.length < 3){
-    alert("Digite uma senha com pelo menos 3 caracteres.");
-    return;
-  }
-
-  try{
-    const r = await fetch(`${API_BASE}/auth/finalizar-conta-auto`, {
-      method:"POST",
-      headers:{
-        "Authorization":"Bearer " + token,
-        "Content-Type":"application/json"
-      },
-      body:JSON.stringify({ login, senha })
-    });
-
-    const data = await r.json().catch(()=>({}));
-
-    if(!r.ok || !data.ok || !data.token){
-      if(String(data.error || "").includes("já foi finalizada")){
-        localStorage.removeItem("ia4tube_conta_auto_pendente");
-        box?.remove();
-        await refreshMe();
-        await carregarHistorico();
-        return;
-      }
-
-      alert(data.error || "Não foi possível salvar seu cadastro.");
-      return;
-    }
-
-    token = data.token;
-    localStorage.setItem("omascote_token", data.token);
-    localStorage.setItem("omascote_nome_time", data.nome_time || login);
-    localStorage.removeItem("ia4tube_conta_auto_pendente");
-    document.body.classList.remove("visitanteNaoLogado");
-    box?.remove();
-    applyLocal();
-    await refreshMe();
-    await carregarHistorico();
-    alert("Cadastro salvo. Seu pedido continua em produção.");
-  }catch(e){
-    alert("Erro de rede ao salvar cadastro.");
-  }
 }
 
 async function ia4RenomearContaAutoTopo(){
