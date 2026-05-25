@@ -7814,8 +7814,8 @@ function renderProductChooser(){
   const options = getProductChooserOrder();
   chooser.innerHTML = `
     <div class="productChooserHeader">
-      <h2 class="productChooserTitle">Escolha uma opção! arraste o dedo para o lado para ver mais</h2>
-      <p class="productChooserText"></p>
+      <h2 class="productChooserTitle">O que você quer criar hoje?</h2>
+      <p class="productChooserText">Escolha uma opção e veja o formulário completo logo abaixo.</p>
     </div>
     <div class="productChooserRail">
       ${options.map(productKey => {
@@ -13646,9 +13646,7 @@ function abrirCartaApp(id){
 
   cartaAppModal.classList.add("open");
   cartaAppModal.setAttribute("aria-hidden", "false");
-  if(!carta.tem_imagem){
-    marcarCartaAppLida(carta.id);
-  }
+  marcarCartaAppLida(carta.id);
 }
 
 function ia4RegistrarAppInstaladoUmaVez(){
