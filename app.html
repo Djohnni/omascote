@@ -12529,6 +12529,64 @@ async function finalizarCadastroDuranteProgresso(ev){
   }
 }
 
+async function ia4RenomearContaAutoTopo(){
+  if(!token || !ia4ContaAutoPendente()){
+    return;
+  }
+
+  const loginAtual = localStorage.getItem("omascote_nome_time") || "";
+  const login = prompt("Renomear meu time / alterar login", loginAtual)?.trim() || "";
+  if(!login) return;
+
+  if(login.length < 3){
+    alert("Digite um login com pelo menos 3 caracteres.");
+    return;
+  }
+
+  const senha = prompt("Crie uma senha para acessar depois") || "";
+  if(senha.length < 3){
+    alert("Digite uma senha com pelo menos 3 caracteres.");
+    return;
+  }
+
+  try{
+    const r = await fetch(`${API_BASE}/auth/finalizar-conta-auto`, {
+      method:"POST",
+      headers:{
+        "Authorization":"Bearer " + token,
+        "Content-Type":"application/json"
+      },
+      body:JSON.stringify({ login, senha })
+    });
+
+    const data = await r.json().catch(()=>({}));
+
+    if(!r.ok || !data.ok || !data.token){
+      if(String(data.error || "").includes("já foi finalizada")){
+        localStorage.removeItem("ia4tube_conta_auto_pendente");
+        atualizarTopoAuth();
+        await refreshMe();
+        return;
+      }
+
+      alert(data.error || "Não foi possível renomear sua conta.");
+      return;
+    }
+
+    token = data.token;
+    localStorage.setItem("omascote_token", data.token);
+    localStorage.setItem("omascote_nome_time", data.nome_time || login);
+    localStorage.removeItem("ia4tube_conta_auto_pendente");
+
+    applyLocal();
+    await refreshMe();
+    await carregarHistorico();
+    alert("Conta atualizada com sucesso.");
+  }catch(e){
+    alert("Erro de rede ao renomear sua conta.");
+  }
+}
+
 function atualizarMenuPedidosTopo(pedidos){
   const menu = document.getElementById("menuPedidosTopo");
   if(!menu) return;
@@ -12553,7 +12611,6 @@ function atualizarMenuPedidosTopo(pedidos){
       ${p.imagem_url ? `
         <div>
           <img class="menuPedidoThumb" src="${p.imagem_url}" alt="Arte pronta" oncontextmenu="return false;" draggable="false">
-          ${ia4FinalizarContaBox(p)}
           ${mostrarPagamentoPendente ? `` : `
           <div class="previewAviso">
             👇 Esta é apenas a prévia da imagem abaixo.<br>
@@ -12583,7 +12640,6 @@ function atualizarMenuPedidosTopo(pedidos){
 </div>
 
 ${pagamentoPendente ? `
-` : ia4ContaAutoPendente() ? `
 ` : aprovado ? `
 <button type="button" class="menuPedidoBtn" onclick="baixarPedido('${p.id}')">Baixar novamente</button>
 <button type="button" class="menuPedidoBtn" onclick="compartilharImagemPedido('${p.id}')">Compartilhar imagem</button>
@@ -12746,8 +12802,6 @@ ${p.status === "pronto" ? `
 </div>
 
 ${pagamentoPendente ? `
-` : ia4ContaAutoPendente() ? `
-${ia4FinalizarContaBox(p)}
 ` : aprovado ? `
         <button onclick="baixarPedido('${p.id}')" style="margin-top:8px;padding:8px 12px;border-radius:10px;border:none;background:#2ecc71;color:#fff;font-weight:900;cursor:pointer;width:100%;">
           Baixar novamente
@@ -13230,7 +13284,8 @@ function atualizarTopoAuth(){
     const nomeTopo = localStorage.getItem("omascote_nome_time") || "Minha conta";
     btnCadastroTopo.textContent = token ? nomeTopo : "Cadastro";
     btnCadastroTopo.style.background = "#ffffff";
-    btnCadastroTopo.style.cursor = token ? "default" : "pointer";
+    btnCadastroTopo.style.cursor = token && !ia4ContaAutoPendente() ? "default" : "pointer";
+    btnCadastroTopo.title = token && ia4ContaAutoPendente() ? "Renomear meu time / alterar login" : "";
   }
 }
 
@@ -13249,6 +13304,11 @@ document.getElementById("btnSair")?.addEventListener("click", ()=>{
 btnCadastroTopoEl?.addEventListener("click", ()=>{
   if(!token){
     abrirCadastroVisitanteModal();
+    return;
+  }
+
+  if(ia4ContaAutoPendente()){
+    ia4RenomearContaAutoTopo();
   }
 });
 
