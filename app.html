@@ -4495,21 +4495,21 @@ body.visitanteNaoLogado #menuPedidosTopo{
   display:none !important;
 }
 
-body.visitanteNaoLogado > main > .wrap > .logoutTopBar.logoutOnlyTop,
-body.visitanteNaoLogado > main > .wrap > .topbar{
+body.visitanteNaoLogado.visitantePrimeiroAcessoReal > main > .wrap > .logoutTopBar.logoutOnlyTop,
+body.visitanteNaoLogado.visitantePrimeiroAcessoReal > main > .wrap > .topbar{
   display:none !important;
 }
 
-body.visitanteNaoLogado > main > .wrap{
+body.visitanteNaoLogado.visitantePrimeiroAcessoReal > main > .wrap{
   padding-top:0 !important;
 }
 
-body.visitanteNaoLogado .panel{
+body.visitanteNaoLogado.visitantePrimeiroAcessoReal .panel{
   margin-top:0 !important;
   padding-top:0 !important;
 }
 
-body.visitanteNaoLogado .cleanProductPrice{
+body.visitanteNaoLogado.visitantePrimeiroAcessoReal .cleanProductPrice{
   display:none !important;
 }
 
@@ -6396,6 +6396,23 @@ function ia4ValidarTamanhoArquivos(files){
 
 let token = localStorage.getItem("omascote_token");
 
+function ia4AtualizarPrimeiroAcessoReal(){
+  try{
+    const semToken = !token && !localStorage.getItem("omascote_token");
+    const semCadastroSalvo = !localStorage.getItem("omascote_nome_time");
+    const semContaAuto = localStorage.getItem("ia4tube_conta_auto_pendente") !== "1";
+    const semInteracaoSeletor = localStorage.getItem("ia4tube_product_chooser_hint_seen") !== "1";
+    const semPedidoAtivo = !localStorage.getItem("ia4tube_pedidos_ativos");
+    const foraDoApp = !(typeof ia4EstaEmModoApp === "function" && ia4EstaEmModoApp());
+    const primeiroAcessoReal = semToken && semCadastroSalvo && semContaAuto && semInteracaoSeletor && semPedidoAtivo && foraDoApp;
+    document.body.classList.toggle("visitantePrimeiroAcessoReal", primeiroAcessoReal);
+  }catch(e){
+    document.body.classList.remove("visitantePrimeiroAcessoReal");
+  }
+}
+
+ia4AtualizarPrimeiroAcessoReal();
+
 // removido: JavaScript dos stories
 
 
@@ -7871,6 +7888,7 @@ function marcarProductChooserVisto(){
   }catch(e){}
   document.getElementById("productChooser")?.classList.remove("is-first-access");
   document.querySelector(".productChooserDragCue")?.remove();
+  ia4AtualizarPrimeiroAcessoReal();
 }
 
 function renderProductChooser(){
@@ -13062,6 +13080,7 @@ applyLocal();
 
 if(token){
   document.body.classList.remove("visitanteNaoLogado");
+  ia4AtualizarPrimeiroAcessoReal();
   document.querySelector(".topRightArea")?.style.setProperty("display", "flex", "important");
 
   if(onboardingEscudo3d) onboardingEscudo3d.style.display = "none";
