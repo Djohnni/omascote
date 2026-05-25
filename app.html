@@ -13695,6 +13695,7 @@ async function marcarCartaAppLida(id){
 
   try{
     if(!token || !id) return false;
+    console.log("POST leitura carta", id);
     const r = await fetch(`${API_BASE}/cartas-app/${encodeURIComponent(id)}/lida`, {
       method:"POST",
       headers:{ "Authorization":"Bearer " + token }
@@ -13754,6 +13755,7 @@ async function baixarCartaAppImagem(id){
 }
 
 function abrirCartaApp(id){
+  console.log("abrindo carta", id);
   const carta = cartasAppAtivas.find(item => String(item.id) === String(id));
   if(!carta || !cartaAppModal) return;
 
@@ -13767,6 +13769,7 @@ function abrirCartaApp(id){
 
   cartaAppModal.classList.add("open");
   cartaAppModal.setAttribute("aria-hidden", "false");
+  console.log("marcando carta como lida", carta.id);
   marcarCartaAppLida(carta.id);
 }
 
