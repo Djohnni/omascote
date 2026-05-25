@@ -4572,8 +4572,6 @@ body.visitanteNaoLogado .visitanteWelcomeCallout{
 
 .instalarAppCentralBox{
   display:flex;
-  flex-direction:column;
-  align-items:center;
   justify-content:center;
   width:100%;
   margin:10px auto 18px;
@@ -4591,72 +4589,6 @@ body.visitanteNaoLogado .visitanteWelcomeCallout{
   background:linear-gradient(135deg,#16a34a,#22c55e) !important;
   color:#ffffff !important;
   box-shadow:0 16px 34px rgba(22,163,74,.25) !important;
-}
-
-.tutorialInstalarBtn{
-  display:block;
-  width:min(100%, 340px);
-  margin:8px auto 0;
-  padding:10px 14px;
-  border:1px solid rgba(255,255,255,.16);
-  border-radius:999px;
-  background:rgba(15,23,42,.72);
-  color:#ffffff;
-  font-size:13px;
-  font-weight:900;
-  cursor:pointer;
-  box-shadow:0 10px 24px rgba(15,23,42,.18);
-}
-
-.tutorialInstalarModal[hidden]{
-  display:none !important;
-}
-
-.tutorialInstalarModal{
-  position:fixed;
-  inset:0;
-  z-index:99999;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  padding:18px;
-  background:rgba(2,6,23,.72);
-}
-
-.tutorialInstalarDialog{
-  position:relative;
-  width:min(94vw, 520px);
-  max-height:92vh;
-  padding:12px;
-  border-radius:18px;
-  background:#0f172a;
-  box-shadow:0 24px 70px rgba(0,0,0,.38);
-}
-
-.tutorialInstalarClose{
-  position:absolute;
-  top:8px;
-  right:8px;
-  z-index:2;
-  width:34px;
-  height:34px;
-  border:0;
-  border-radius:999px;
-  background:rgba(15,23,42,.88);
-  color:#ffffff;
-  font-size:22px;
-  font-weight:900;
-  line-height:1;
-  cursor:pointer;
-}
-
-.tutorialInstalarImg{
-  display:block;
-  width:100%;
-  max-height:84vh;
-  object-fit:contain;
-  border-radius:12px;
-  background:#111827;
 }
 
 .cartasAppBox[hidden]{
@@ -5120,7 +5052,12 @@ body.visitanteNaoLogado .visitanteWelcomeCallout{
   font-weight:750;
 }
 
+.productChooserFirstSub{
+  color:rgba(255,255,255,.82);
+}
+
 .productChooserRail{
+  position:relative;
   display:flex;
   gap:12px;
   overflow-x:auto;
@@ -5128,6 +5065,33 @@ body.visitanteNaoLogado .visitanteWelcomeCallout{
   scroll-snap-type:x proximity;
   padding:2px 2px 10px;
   scrollbar-width:thin;
+}
+
+.productChooserDragCue{
+  position:absolute;
+  right:10px;
+  top:50%;
+  transform:translateY(-50%);
+  z-index:3;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  width:34px;
+  height:34px;
+  border-radius:999px;
+  background:rgba(15,23,42,.72);
+  border:1px solid rgba(255,255,255,.18);
+  color:#ffffff;
+  font-size:22px;
+  font-weight:950;
+  pointer-events:none;
+  box-shadow:0 10px 24px rgba(0,0,0,.22);
+  animation:productChooserArrowPulse 1.25s ease-in-out infinite;
+}
+
+@keyframes productChooserArrowPulse{
+  0%,100%{ transform:translateY(-50%) translateX(0); opacity:.72; }
+  50%{ transform:translateY(-50%) translateX(7px); opacity:1; }
 }
 
 .productChooserCard{
@@ -5713,9 +5677,7 @@ body:not(.modeChosen) .builderArea,
           ⏱ Calculando tempo estimado...
         </div>
 
-        <div id="instalarAppCentralBox" class="instalarAppCentralBox" hidden>
-          <button id="btnTutorialInstalarApp" class="tutorialInstalarBtn" type="button">❓ Quer saber como faz? Clique aqui</button>
-        </div>
+        <div id="instalarAppCentralBox" class="instalarAppCentralBox" hidden></div>
 
         <div id="cartasAppBox" class="cartasAppBox" hidden></div>
 
@@ -6224,13 +6186,6 @@ body:not(.modeChosen) .builderArea,
         </div>
       </div>
     </div>
-  </div>
-</div>
-
-<div class="tutorialInstalarModal" id="tutorialInstalarAppModal" hidden aria-hidden="true">
-  <div class="tutorialInstalarDialog" role="dialog" aria-modal="true" aria-label="Tutorial para instalar app">
-    <button class="tutorialInstalarClose" id="tutorialInstalarAppCloseBtn" type="button" aria-label="Fechar tutorial">×</button>
-    <img class="tutorialInstalarImg" src="produtos/tutorial_instalar_app.jpg" alt="Tutorial para instalar o app" loading="lazy" decoding="async">
   </div>
 </div>
 
@@ -7884,17 +7839,36 @@ function getProductChooserImage(product){
   return product?.thumb || product?.image || "";
 }
 
+function isPrimeiroAcessoProductChooser(){
+  try{
+    return localStorage.getItem("ia4tube_product_chooser_hint_seen") !== "1";
+  }catch(e){
+    return false;
+  }
+}
+
+function marcarProductChooserVisto(){
+  try{
+    localStorage.setItem("ia4tube_product_chooser_hint_seen", "1");
+  }catch(e){}
+  document.getElementById("productChooser")?.classList.remove("is-first-access");
+  document.querySelector(".productChooserDragCue")?.remove();
+}
+
 function renderProductChooser(){
   const chooser = document.getElementById("productChooser");
   if(!chooser) return;
 
   const options = getProductChooserOrder();
+  const primeiroAcesso = isPrimeiroAcessoProductChooser();
+  chooser.classList.toggle("is-first-access", primeiroAcesso);
   chooser.innerHTML = `
     <div class="productChooserHeader">
-      <h2 class="productChooserTitle">O que você quer criar hoje?</h2>
-      <p class="productChooserText">Escolha uma opção e veja o formulário completo logo abaixo.</p>
+      <h2 class="productChooserTitle">${primeiroAcesso ? "👉 Arraste pro lado e veja tudo que você pode criar" : "O que você quer criar hoje?"}</h2>
+      <p class="productChooserText${primeiroAcesso ? " productChooserFirstSub" : ""}">${primeiroAcesso ? "Escolha o produto certo antes de preencher." : "Escolha uma opção e veja o formulário completo logo abaixo."}</p>
     </div>
     <div class="productChooserRail">
+      ${primeiroAcesso ? `<span class="productChooserDragCue" aria-hidden="true">›</span>` : ""}
       ${options.map(productKey => {
         const product = PRODUCTS[productKey] || {};
         const copy = PRODUCT_CHOOSER_COPY[productKey] || {};
@@ -7918,9 +7892,18 @@ function renderProductChooser(){
 
   chooser.querySelectorAll("[data-product-picker]").forEach(btn => {
     btn.addEventListener("click", () => {
+      marcarProductChooserVisto();
       selectCleanProductForPicker(btn.dataset.productPicker || "", { scroll: true, track: true });
     });
   });
+
+  const rail = chooser.querySelector(".productChooserRail");
+  if(rail && primeiroAcesso){
+    const marcarAoInteragir = () => marcarProductChooserVisto();
+    rail.addEventListener("pointerdown", marcarAoInteragir, { once:true, passive:true });
+    rail.addEventListener("touchstart", marcarAoInteragir, { once:true, passive:true });
+    rail.addEventListener("wheel", marcarAoInteragir, { once:true, passive:true });
+  }
 }
 
 function selectCleanProductForPicker(productKey, options = {}){
@@ -13554,12 +13537,9 @@ if("serviceWorker" in navigator){
 
 let deferredInstallPrompt = null;
 const btnInstalarApp = document.getElementById("btnInstalarApp");
-const btnTutorialInstalarApp = document.getElementById("btnTutorialInstalarApp");
 const instalarAppCentralBox = document.getElementById("instalarAppCentralBox");
 const instalarAppModal = document.getElementById("instalarAppModal");
 const instalarAppCloseBtn = document.getElementById("instalarAppCloseBtn");
-const tutorialInstalarAppModal = document.getElementById("tutorialInstalarAppModal");
-const tutorialInstalarAppCloseBtn = document.getElementById("tutorialInstalarAppCloseBtn");
 const cartasAppBox = document.getElementById("cartasAppBox");
 const cartaAppModal = document.getElementById("cartaAppModal");
 const cartaAppCloseBtn = document.getElementById("cartaAppCloseBtn");
@@ -13583,7 +13563,7 @@ function ia4MostrarBotaoInstalarApp(){
     cartasAppBox.innerHTML = "";
   }
   if(instalarAppCentralBox && btnInstalarApp.parentElement !== instalarAppCentralBox){
-    instalarAppCentralBox.insertBefore(btnInstalarApp, btnTutorialInstalarApp || null);
+    instalarAppCentralBox.appendChild(btnInstalarApp);
   }
   if(instalarAppCentralBox) instalarAppCentralBox.hidden = false;
   btnInstalarApp.hidden = false;
@@ -13604,18 +13584,6 @@ function ia4FecharModalInstalarApp(){
   if(!instalarAppModal) return;
   instalarAppModal.classList.remove("open");
   instalarAppModal.setAttribute("aria-hidden", "true");
-}
-
-function abrirTutorialInstalarApp(){
-  if(!tutorialInstalarAppModal) return;
-  tutorialInstalarAppModal.hidden = false;
-  tutorialInstalarAppModal.setAttribute("aria-hidden", "false");
-}
-
-function fecharTutorialInstalarApp(){
-  if(!tutorialInstalarAppModal) return;
-  tutorialInstalarAppModal.hidden = true;
-  tutorialInstalarAppModal.setAttribute("aria-hidden", "true");
 }
 
 function fecharCartaAppModal(){
@@ -13858,8 +13826,6 @@ window.addEventListener("appinstalled", () => {
 });
 
 instalarAppCloseBtn?.addEventListener("click", ia4FecharModalInstalarApp);
-btnTutorialInstalarApp?.addEventListener("click", abrirTutorialInstalarApp);
-tutorialInstalarAppCloseBtn?.addEventListener("click", fecharTutorialInstalarApp);
 cartaAppCloseBtn?.addEventListener("click", fecharCartaAppModal);
 
 instalarAppModal?.addEventListener("click", (event) => {
@@ -13868,21 +13834,9 @@ instalarAppModal?.addEventListener("click", (event) => {
   }
 });
 
-tutorialInstalarAppModal?.addEventListener("click", (event) => {
-  if(event.target === tutorialInstalarAppModal){
-    fecharTutorialInstalarApp();
-  }
-});
-
 cartaAppModal?.addEventListener("click", (event) => {
   if(event.target === cartaAppModal){
     fecharCartaAppModal();
-  }
-});
-
-document.addEventListener("keydown", (event) => {
-  if(event.key === "Escape"){
-    fecharTutorialInstalarApp();
   }
 });
 </script>
