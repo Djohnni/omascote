@@ -13588,17 +13588,41 @@ async function carregarCartasApp(){
 }
 
 async function marcarCartaAppLida(id){
+  const carta = cartasAppAtivas.find(item => String(item.id) === String(id));
+
+  if(carta){
+    carta.lida = true;
+    carta.lida_em = carta.lida_em || new Date().toISOString();
+    renderizarCartasApp(cartasAppAtivas);
+  }
+
   try{
-    if(!token || !id) return;
+    if(!token || !id) return false;
     const r = await fetch(`${API_BASE}/cartas-app/${encodeURIComponent(id)}/lida`, {
       method:"POST",
       headers:{ "Authorization":"Bearer " + token }
     });
-    if(!r.ok) return;
-    const carta = cartasAppAtivas.find(item => String(item.id) === String(id));
-    if(carta) carta.lida = true;
-    renderizarCartasApp(cartasAppAtivas);
-  }catch(e){}
+
+    const data = await r.json().catch(() => ({}));
+
+    if(!r.ok || !data.ok){
+      console.warn("[carta-app] falha ao marcar lida", {
+        id,
+        status: r.status,
+        data
+      });
+      return false;
+    }
+
+    if(carta && data.lida_em){
+      carta.lida_em = data.lida_em;
+    }
+
+    return true;
+  }catch(e){
+    console.error("[carta-app] erro ao marcar lida", e);
+    return false;
+  }
 }
 
 async function baixarCartaAppImagem(id){
