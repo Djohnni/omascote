@@ -4697,6 +4697,32 @@ body.visitanteNaoLogado .visitanteWelcomeCallout{
   flex-wrap:wrap;
 }
 
+.cartaAppAcoes .cartaAppDownloadBtn{
+  width:100%;
+  min-height:56px;
+  justify-content:center;
+  padding:16px 22px !important;
+  border-radius:18px !important;
+  background:linear-gradient(135deg,#16a34a,#22c55e) !important;
+  color:#ffffff !important;
+  border:0 !important;
+  font-size:17px !important;
+  font-weight:950 !important;
+  box-shadow:0 14px 30px rgba(22,163,74,.28) !important;
+}
+
+#cartaAppModal .modalClose{
+  width:46px !important;
+  height:46px !important;
+  min-width:46px !important;
+  border-radius:999px !important;
+  font-size:30px !important;
+  line-height:1 !important;
+  display:inline-flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+}
+
 .instalarAppModalBody{
   padding:18px;
   background:#f8fafc;
@@ -13584,6 +13610,7 @@ const cartaAppModalTitulo = document.getElementById("cartaAppModalTitulo");
 const cartaAppModalTexto = document.getElementById("cartaAppModalTexto");
 const cartaAppModalAcoes = document.getElementById("cartaAppModalAcoes");
 let cartasAppAtivas = [];
+let cartasAppPollingTimer = null;
 
 function ia4EstaEmModoApp(){
   return (
@@ -13684,6 +13711,24 @@ async function carregarCartasApp(){
   }
 }
 
+function iniciarAtualizacaoCartasApp(){
+  if(cartasAppPollingTimer) clearInterval(cartasAppPollingTimer);
+  if(!ia4EstaEmModoApp() || !token){
+    renderizarCartasApp([]);
+    return;
+  }
+  carregarCartasApp();
+  cartasAppPollingTimer = setInterval(() => {
+    if(!ia4EstaEmModoApp() || !token){
+      clearInterval(cartasAppPollingTimer);
+      cartasAppPollingTimer = null;
+      renderizarCartasApp([]);
+      return;
+    }
+    carregarCartasApp();
+  }, 15000);
+}
+
 async function marcarCartaAppLida(id){
   const carta = cartasAppAtivas.find(item => String(item.id) === String(id));
 
@@ -13763,7 +13808,7 @@ function abrirCartaApp(id){
   if(cartaAppModalTexto) cartaAppModalTexto.textContent = carta.texto || carta.texto_curto || "";
   if(cartaAppModalAcoes){
     cartaAppModalAcoes.innerHTML = carta.tem_imagem
-      ? `<button type="button" class="menuPedidoBtn" onclick="baixarCartaAppImagem(${cartaAppJsArg(carta.id)})">Baixar imagem</button>`
+      ? `<button type="button" class="menuPedidoBtn cartaAppDownloadBtn" onclick="baixarCartaAppImagem(${cartaAppJsArg(carta.id)})">⬇️ Baixar imagem</button>`
       : `<button type="button" class="menuPedidoBtn" onclick="fecharCartaAppModal()">Ler mensagem</button>`;
   }
 
@@ -13813,7 +13858,7 @@ if(ia4EstaEmModoApp()){
   ia4RegistrarUsoAppPwa();
   setInterval(ia4RegistrarUsoAppPwa, 60 * 1000);
   ia4EsconderBotaoInstalarApp();
-  carregarCartasApp();
+  iniciarAtualizacaoCartasApp();
 }else{
   ia4MostrarBotaoInstalarApp();
 }
