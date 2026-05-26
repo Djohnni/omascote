@@ -2801,6 +2801,24 @@ body{
   box-shadow:0 8px 18px rgba(22,163,74,.10);
 }
 
+.brindeEscudo3dAppBox{
+  width:min(420px, calc(100% - 28px));
+  margin:0 auto 10px;
+  padding:10px 14px;
+  border-radius:18px;
+  background:linear-gradient(135deg,#052e16,#16a34a);
+  color:#fff;
+  text-align:center;
+  font-weight:950;
+  font-size:14px;
+  line-height:1.25;
+  box-shadow:0 14px 28px rgba(22,163,74,.22);
+}
+
+.brindeEscudo3dAppBox[hidden]{
+  display:none !important;
+}
+
 .preTempoHeadline{
   display:none;
   margin:2px auto 8px;
@@ -5721,6 +5739,8 @@ body:not(.modeChosen) .builderArea,
           ⏱ Calculando tempo estimado...
         </div>
 
+        <div id="brindeEscudo3dAppBox" class="brindeEscudo3dAppBox" hidden></div>
+
         <div id="instalarAppCentralBox" class="instalarAppCentralBox" hidden></div>
 
         <div id="cartasAppBox" class="cartasAppBox" hidden></div>
@@ -6768,6 +6788,7 @@ const msgPedidoEl = document.getElementById("msgPedido");
 const historicoListaEl = document.getElementById("historicoLista");
 const historicoVazioEl = document.getElementById("historicoVazio");
 const tempoEstimadoEl = document.getElementById("tempoEstimadoBox");
+const brindeEscudo3dAppBox = document.getElementById("brindeEscudo3dAppBox");
 
 const dynamicTitleEl = document.getElementById("dynamicTitle");
 const dynamicHintEl = document.getElementById("dynamicHint");
@@ -6779,6 +6800,7 @@ const builderArea = document.getElementById("builderArea");
 const mainCreateBtn = document.getElementById("mainCreateBtn");
 const selectorStage = document.querySelector(".selectorStage");
 let categoriaSelecionada = "";
+let brindeEscudo3dAppDisponivel = false;
 
 const escudo3dModal = document.getElementById("escudo3dModal");
 const escudo3dCloseBtn = document.getElementById("escudo3dCloseBtn");
@@ -7815,8 +7837,42 @@ function renderCleanFieldsGrouped(product, schema){
 }
 
 function formatCleanProductPrice(product){
+  if(product?.id === "escudo3d" && brindeEscudo3dAppDisponivel && typeof ia4EstaEmModoApp === "function" && ia4EstaEmModoApp()){
+    return "Grátis no app";
+  }
   const price = Number(product?.price || 0);
   return price ? `R$${price.toFixed(2).replace(".", ",")}` : "";
+}
+
+function atualizarBrindeEscudo3dAppVisual(){
+  const disponivelNoApp = brindeEscudo3dAppDisponivel && typeof ia4EstaEmModoApp === "function" && ia4EstaEmModoApp();
+
+  document.body.classList.toggle("clienteComBrindeEscudo3dApp", disponivelNoApp);
+
+  document.querySelectorAll('[data-clean-product-block="escudo3d"] .cleanProductPrice').forEach(el => {
+    el.textContent = disponivelNoApp ? "Grátis no app" : "R$4,00";
+  });
+
+  const escudoPromo = document.querySelector('[data-product="escudo3d"] .optLabel');
+  if(escudoPromo && disponivelNoApp){
+    escudoPromo.innerHTML = `Escudo 3D<br><span style="color:#1fbf63;font-weight:900;">Grátis no app</span>`;
+  }
+
+  if(!brindeEscudo3dAppBox) return;
+
+  if(disponivelNoApp){
+    brindeEscudo3dAppBox.textContent = "🎁 Seu Escudo 3D grátis está liberado no app.";
+    brindeEscudo3dAppBox.hidden = false;
+    return;
+  }
+
+  if(!token && !(typeof ia4EstaEmModoApp === "function" && ia4EstaEmModoApp())){
+    brindeEscudo3dAppBox.textContent = "📲 Baixe o app e ganhe seu Escudo 3D grátis.";
+    brindeEscudo3dAppBox.hidden = false;
+    return;
+  }
+
+  brindeEscudo3dAppBox.hidden = true;
 }
 
 const CLEAN_PRODUCT_RENDER_ORDER = [
@@ -9323,6 +9379,8 @@ async function refreshMe(){
       localStorage.setItem("omascote_usados", data.usados_no_ciclo || "");
       localStorage.setItem("omascote_saldo", data.saldo ?? "");
       applyLocal();
+      brindeEscudo3dAppDisponivel = data.brinde_escudo3d_app_disponivel === true;
+      atualizarBrindeEscudo3dAppVisual();
       statusEl.textContent = data.ativo ? "Status: ativo" : "Status: inativo";
       const saldo = Number(data.saldo || 0);
 
@@ -9356,7 +9414,9 @@ const escudoPromo = document.querySelector('[data-product="escudo3d"]');
 if(escudoPromo){
   const label = escudoPromo.querySelector(".optLabel");
   if(label){
-    label.innerHTML = jaComprou
+    label.innerHTML = brindeEscudo3dAppDisponivel && typeof ia4EstaEmModoApp === "function" && ia4EstaEmModoApp()
+      ? `Escudo 3D<br><span style="color:#1fbf63;font-weight:900;">Grátis no app</span>`
+      : jaComprou
       ? `Escudo 3D<br><span style="color:#1fbf63;font-weight:900;">R$18</span>`
       : `Primeira arte<br>Escudo 3D<br><span style="font-size:11px;color:#777;text-decoration:line-through;">R$18</span> <span style="color:#1fbf63;font-weight:900;">R$4</span>`;
   }
@@ -13145,6 +13205,7 @@ if(token){
 
   document.querySelector(".topRightArea")?.style.setProperty("display", "flex", "important");
 }
+atualizarBrindeEscudo3dAppVisual();
 setTimeout(()=>{
   carregarTempoEstimado();
   setInterval(carregarTempoEstimado, 30000);
