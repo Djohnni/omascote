@@ -6241,12 +6241,8 @@ body:not(.modeChosen) .builderArea,
     <div class="instalarAppModalBody">
       <div class="instalarAppImagem">
         <div class="instalarPasso">
-          📲 O app fica disponível após criar sua primeira arte.
-        </div>
-
-        <div class="instalarPasso">
-          Está querendo baixar ou com algum problema?<br>
-          Nos envie mensagem no WhatsApp aqui ao lado.
+          Ops, talvez você não esteja no Chrome e por isso não pode baixar.<br><br>
+          Para baixar, nos envie uma mensagem no WhatsApp aqui ao lado.
         </div>
       </div>
     </div>
@@ -7614,7 +7610,7 @@ const CLEAN_PRODUCT_FORM_SCHEMAS = {
       { key: "headline", type: "text", legacyName: "data", labelKey: "data", placeholderKey: "data", required: false, defaultValue: "Resultado do jogo" },
       { key: "home_crest", type: "file", legacyName: "escudo1", labelKey: "esc1", required: true, savedFallback: true },
       { key: "away_crest", type: "file", legacyName: "escudo2", labelKey: "esc2", required: false },
-      { key: "match_photo", type: "multi-file", legacyName: "mascote", labelKey: "mascote", required: false, maxFiles: 4 },
+      { key: "match_photo", type: "multi-file", legacyName: "mascote", labelKey: "mascote", required: false, maxFiles: 4, visualNormal: true },
       { key: "scorers", type: "scorers", label: "Ver artilheiros", required: false }
     ]
   },
@@ -7653,7 +7649,7 @@ const CLEAN_PRODUCT_FORM_SCHEMAS = {
       { key: "venue", type: "text", legacyName: "arena", labelKey: "arena", placeholderKey: "arena", required: false },
       { key: "home_crest", type: "file", legacyName: "escudo1", labelKey: "esc1", required: true, savedFallback: true },
       { key: "away_crest", type: "file", legacyName: "escudo2", labelKey: "esc2", required: true },
-      { key: "match_photo", type: "multi-file", legacyName: "mascote", labelKey: "mascote", required: false, maxFiles: 4 }
+      { key: "match_photo", type: "multi-file", legacyName: "mascote", labelKey: "mascote", required: false, maxFiles: 4, visualNormal: true }
     ]
   },
   patrocinador: {
@@ -7816,10 +7812,10 @@ function renderCleanProductField(product, field, step){
 }
 
 function renderCleanFieldsGrouped(product, schema){
-  const requiredFields = (schema.fields || []).filter(field => field.required);
-  const optionalFields = (schema.fields || []).filter(field => !field.required);
-  const requiredHtml = requiredFields.map((field, index) => renderCleanProductField(product, field, index + 1)).join("");
-  const optionalHtml = optionalFields.map((field, index) => renderCleanProductField(product, field, requiredFields.length + index + 1)).join("");
+  const mainFields = (schema.fields || []).filter(field => field.required || field.visualNormal);
+  const optionalFields = (schema.fields || []).filter(field => !field.required && !field.visualNormal);
+  const requiredHtml = mainFields.map((field, index) => renderCleanProductField(product, field, index + 1)).join("");
+  const optionalHtml = optionalFields.map((field, index) => renderCleanProductField(product, field, mainFields.length + index + 1)).join("");
 
   if(!optionalFields.length){
     return requiredHtml;
