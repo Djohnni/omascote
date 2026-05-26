@@ -7396,7 +7396,7 @@ const PRODUCT_SERIALIZERS = {
 
     appendEscudo1();
     appendEscudo2();
-    appendArquivoAtivo("mascote", "mascote", "mascote");
+    appendArquivoAtivo("mascote", "mascote", "mascote", 3);
   },
 
   resultado_jogo_jogador(ctx){
@@ -7425,7 +7425,7 @@ const PRODUCT_SERIALIZERS = {
     fd.append("time_adversario", t2);
 
     appendTextoAtivo("hora", "hora", val("hora"));
-    appendArquivoAtivo("mascote", "mascote", "mascote");
+    appendArquivoAtivo("mascote", "mascote", "mascote", 3);
     appendEscudo1();
     appendEscudo2();
 
@@ -7479,7 +7479,7 @@ const PRODUCT_SERIALIZERS = {
 
     appendEscudo1();
     appendEscudo2();
-    appendArquivoAtivo("mascote", "mascote", "mascote");
+    appendArquivoAtivo("mascote", "mascote", "mascote", 4);
   },
 
   resultado(ctx){
@@ -7508,7 +7508,7 @@ const PRODUCT_SERIALIZERS = {
     fd.append("time_adversario", t2);
 
     appendTextoAtivo("hora", "hora", val("hora"));
-    appendArquivoAtivo("mascote", "mascote", "mascote");
+    appendArquivoAtivo("mascote", "mascote", "mascote", 4);
     appendEscudo1();
     appendEscudo2();
 
@@ -7592,7 +7592,7 @@ const CLEAN_PRODUCT_FORM_SCHEMAS = {
       { key: "headline", type: "text", legacyName: "data", labelKey: "data", placeholderKey: "data", required: false, defaultValue: "Resultado do jogo" },
       { key: "home_crest", type: "file", legacyName: "escudo1", labelKey: "esc1", required: true, savedFallback: true },
       { key: "away_crest", type: "file", legacyName: "escudo2", labelKey: "esc2", required: false },
-      { key: "match_photo", type: "file", legacyName: "mascote", labelKey: "mascote", required: false },
+      { key: "match_photo", type: "multi-file", legacyName: "mascote", labelKey: "mascote", required: false, maxFiles: 4 },
       { key: "scorers", type: "scorers", label: "Ver artilheiros", required: false }
     ]
   },
@@ -7631,7 +7631,7 @@ const CLEAN_PRODUCT_FORM_SCHEMAS = {
       { key: "venue", type: "text", legacyName: "arena", labelKey: "arena", placeholderKey: "arena", required: false },
       { key: "home_crest", type: "file", legacyName: "escudo1", labelKey: "esc1", required: true, savedFallback: true },
       { key: "away_crest", type: "file", legacyName: "escudo2", labelKey: "esc2", required: true },
-      { key: "match_photo", type: "file", legacyName: "mascote", labelKey: "mascote", required: false }
+      { key: "match_photo", type: "multi-file", legacyName: "mascote", labelKey: "mascote", required: false, maxFiles: 4 }
     ]
   },
   patrocinador: {
@@ -7654,7 +7654,7 @@ const CLEAN_PRODUCT_FORM_SCHEMAS = {
       { key: "venue", type: "text", legacyName: "arena", labelKey: "arena", placeholderKey: "arena", required: false },
       { key: "team_crest", type: "file", legacyName: "escudo1", labelKey: "esc1", required: true, savedFallback: true },
       { key: "opponent_crest", type: "file", legacyName: "escudo2", labelKey: "esc2", required: true },
-      { key: "player_photo", type: "file", legacyName: "mascote", labelKey: "mascote", required: true }
+      { key: "player_photo", type: "multi-file", legacyName: "mascote", labelKey: "mascote", required: true, maxFiles: 3 }
     ]
   },
   resultado_jogo_jogador: {
@@ -7666,7 +7666,7 @@ const CLEAN_PRODUCT_FORM_SCHEMAS = {
       { key: "headline", type: "text", legacyName: "data", labelKey: "data", placeholderKey: "data", required: false, defaultValue: "Resultado do jogo" },
       { key: "team_crest", type: "file", legacyName: "escudo1", labelKey: "esc1", required: true, savedFallback: true },
       { key: "opponent_crest", type: "file", legacyName: "escudo2", labelKey: "esc2", required: true },
-      { key: "player_photo", type: "file", legacyName: "mascote", labelKey: "mascote", required: true }
+      { key: "player_photo", type: "multi-file", legacyName: "mascote", labelKey: "mascote", required: true, maxFiles: 3 }
     ]
   },
   jogador_escudo: {
@@ -8119,7 +8119,12 @@ function validateCleanProductForm(productKey, form){
 
   schema.fields.forEach(field => {
     if(field.type === "file" || field.type === "multi-file"){
-      const sizeMsg = ia4ValidarTamanhoArquivos(getCleanAssetFiles(form, field.key));
+      const files = getCleanAssetFiles(form, field.key);
+      if(field.maxFiles && files.length > Number(field.maxFiles)){
+        fileSizeError = `Envie no máximo ${field.maxFiles} fotos neste campo.`;
+        markError(field);
+      }
+      const sizeMsg = ia4ValidarTamanhoArquivos(files);
       if(sizeMsg && !fileSizeError){
         fileSizeError = sizeMsg;
         markError(field);
@@ -8793,6 +8798,16 @@ function bindCleanProductForms(root){
       const label = form?.querySelector(`[data-clean-file-name="${CSS.escape(input.dataset.asset)}"]`);
       if(!label) return;
       const files = Array.from(input.files || []);
+      const schema = getCleanProductSchema(productKey);
+      const field = schema?.fields?.find(item => item.key === input.dataset.asset);
+      if(field?.maxFiles && files.length > Number(field.maxFiles)){
+        input.value = "";
+        label.textContent = "Nenhum arquivo";
+        const card = form?.querySelector(`[data-clean-field-card="${CSS.escape(input.dataset.asset)}"]`);
+        if(card) card.classList.add("campoObrigatorioErro");
+        setCleanProductMsg(form, `Envie no máximo ${field.maxFiles} fotos neste campo.`, true);
+        return;
+      }
       const sizeMsg = ia4ValidarTamanhoArquivos(files);
       if(sizeMsg){
         input.value = "";
@@ -10760,6 +10775,10 @@ function selectProduct(productKey){
   setRequired("escudo1", product.required?.esc1);
   setRequired("escudo2", product.required?.esc2);
   setRequired("mascote", product.required?.mascote);
+  const mascoteInput = document.getElementById("mascote");
+  if(mascoteInput){
+    mascoteInput.multiple = ["proximo_jogo", "resultado"].includes(productKey) || ["proximo_jogo_jogador", "resultado_jogo_jogador"].includes(productKey);
+  }
   updateProductFieldVisibility(product);
   updateChosenPlaceholders(product);
   configureOptionalSections(productKey);
@@ -11707,12 +11726,17 @@ document.getElementById("pedidoForm").addEventListener("submit", async (e)=>{
     }
   };
 
-  const appendArquivoAtivo = (field, inputId, nome) => {
+  const appendArquivoAtivo = (field, inputId, nome, maxFiles = 1) => {
     const input = document.getElementById(inputId);
-    const file = input?.files?.[0] || null;
+    const files = Array.from(input?.files || []).slice(0, Math.max(1, Number(maxFiles || 1)));
+    const file = files[0] || null;
 
-    if(file){
+    if(file && maxFiles <= 1){
       fd.append(nome, file);
+    }
+
+    if(maxFiles > 1){
+      files.forEach(item => fd.append(nome, item));
     }
 
     return file;
