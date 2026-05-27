@@ -7842,7 +7842,6 @@ function formatCleanProductPrice(product){
 
 function atualizarBrindeEscudo3dAppVisual(){
   const disponivelNoApp = brindeEscudo3dAppDisponivel && typeof ia4EstaEmModoApp === "function" && ia4EstaEmModoApp();
-  const textoMascoteAnuncio = "🎨 Crie o mascote do seu time e veja antes de pagar.";
 
   document.body.classList.toggle("clienteComBrindeEscudo3dApp", disponivelNoApp);
 
@@ -7857,25 +7856,9 @@ function atualizarBrindeEscudo3dAppVisual(){
 
   if(!brindeEscudo3dAppBox) return;
 
-  brindeEscudo3dAppBox.style.cursor = "pointer";
-  brindeEscudo3dAppBox.onclick = () => {
-    selectCleanProductForPicker("mascote_uniforme", { scroll:true, track:true });
-  };
-
-  if(disponivelNoApp){
-    brindeEscudo3dAppBox.textContent = textoMascoteAnuncio;
-    brindeEscudo3dAppBox.hidden = false;
-    return;
-  }
-
-  if(!token && !(typeof ia4EstaEmModoApp === "function" && ia4EstaEmModoApp())){
-    brindeEscudo3dAppBox.textContent = textoMascoteAnuncio;
-    brindeEscudo3dAppBox.hidden = false;
-    return;
-  }
-
   brindeEscudo3dAppBox.onclick = null;
   brindeEscudo3dAppBox.style.cursor = "";
+  brindeEscudo3dAppBox.textContent = "";
   brindeEscudo3dAppBox.hidden = true;
 }
 
