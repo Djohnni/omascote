@@ -7842,6 +7842,7 @@ function formatCleanProductPrice(product){
 
 function atualizarBrindeEscudo3dAppVisual(){
   const disponivelNoApp = brindeEscudo3dAppDisponivel && typeof ia4EstaEmModoApp === "function" && ia4EstaEmModoApp();
+  const textoMascoteAnuncio = "🎨 Crie o mascote do seu time e veja antes de pagar.";
 
   document.body.classList.toggle("clienteComBrindeEscudo3dApp", disponivelNoApp);
 
@@ -7856,18 +7857,25 @@ function atualizarBrindeEscudo3dAppVisual(){
 
   if(!brindeEscudo3dAppBox) return;
 
+  brindeEscudo3dAppBox.style.cursor = "pointer";
+  brindeEscudo3dAppBox.onclick = () => {
+    selectCleanProductForPicker("mascote_uniforme", { scroll:true, track:true });
+  };
+
   if(disponivelNoApp){
-    brindeEscudo3dAppBox.textContent = "🎁 Seu Escudo 3D grátis está liberado no app.";
+    brindeEscudo3dAppBox.textContent = textoMascoteAnuncio;
     brindeEscudo3dAppBox.hidden = false;
     return;
   }
 
   if(!token && !(typeof ia4EstaEmModoApp === "function" && ia4EstaEmModoApp())){
-    brindeEscudo3dAppBox.textContent = "📲 Baixe o app e ganhe seu Escudo 3D grátis.";
+    brindeEscudo3dAppBox.textContent = textoMascoteAnuncio;
     brindeEscudo3dAppBox.hidden = false;
     return;
   }
 
+  brindeEscudo3dAppBox.onclick = null;
+  brindeEscudo3dAppBox.style.cursor = "";
   brindeEscudo3dAppBox.hidden = true;
 }
 
@@ -7931,7 +7939,7 @@ function getCleanProductPickerSelected(){
   }catch(e){}
 
   if(cleanProductPickerSelected && PRODUCTS[cleanProductPickerSelected]) return cleanProductPickerSelected;
-  return "jogador_escudo";
+  return "mascote_uniforme";
 }
 
 function getCleanProductPickerSelectedRaw(){
@@ -7945,7 +7953,7 @@ function getCleanProductPickerSelectedRaw(){
 }
 
 function getProductChooserOrder(){
-  return ["escudo3d", ...CLEAN_PRODUCT_RENDER_ORDER].filter(productKey => PRODUCTS[productKey]);
+  return ["mascote_uniforme", "escudo3d", ...CLEAN_PRODUCT_RENDER_ORDER.filter(productKey => productKey !== "mascote_uniforme")].filter(productKey => PRODUCTS[productKey]);
 }
 
 function getProductChooserImage(product){
@@ -7967,6 +7975,43 @@ function marcarProductChooserVisto(){
   document.getElementById("productChooser")?.classList.remove("is-first-access");
   document.querySelector(".productChooserDragCue")?.remove();
   ia4AtualizarPrimeiroAcessoReal();
+}
+
+let productChooserAutoScrollFeito = false;
+let productChooserAutoScrollTimer = null;
+
+function iniciarDicaScrollProductChooser(rail){
+  if(!rail || productChooserAutoScrollFeito) return;
+  productChooserAutoScrollFeito = true;
+
+  let cancelado = false;
+  const parar = () => {
+    cancelado = true;
+    if(productChooserAutoScrollTimer){
+      clearTimeout(productChooserAutoScrollTimer);
+      productChooserAutoScrollTimer = null;
+    }
+    try{ rail.scrollTo({ left: rail.scrollLeft, behavior: "auto" }); }catch(e){}
+    rail.removeEventListener("pointerdown", parar);
+    rail.removeEventListener("touchstart", parar);
+    rail.removeEventListener("wheel", parar);
+    rail.removeEventListener("click", parar);
+  };
+
+  rail.addEventListener("pointerdown", parar, { once:true, passive:true });
+  rail.addEventListener("touchstart", parar, { once:true, passive:true });
+  rail.addEventListener("wheel", parar, { once:true, passive:true });
+  rail.addEventListener("click", parar, { once:true, passive:true });
+
+  productChooserAutoScrollTimer = setTimeout(() => {
+    productChooserAutoScrollTimer = null;
+    if(cancelado || rail.scrollWidth <= rail.clientWidth + 8) return;
+    const distancia = Math.min(180, Math.max(110, rail.clientWidth * 0.55));
+    const destino = Math.min(rail.scrollLeft + distancia, rail.scrollWidth - rail.clientWidth);
+    if(destino > rail.scrollLeft){
+      rail.scrollTo({ left: destino, behavior: "smooth" });
+    }
+  }, 1200);
 }
 
 function renderProductChooser(){
@@ -7994,7 +8039,7 @@ function renderProductChooser(){
               <img src="${htmlEscape(getProductChooserImage(product))}" alt="" width="58" height="76" loading="lazy" decoding="async">
             </span>
             <span>
-              ${productKey === "proximo_jogo" ? `<span class="productChooserBadge">Produto do anúncio</span>` : ""}
+              ${productKey === "mascote_uniforme" ? `<span class="productChooserBadge">Produto do anúncio</span>` : ""}
               <span class="productChooserName">${htmlEscape(name)}</span>
               <span class="productChooserDesc">${htmlEscape(desc)}</span>
             </span>
@@ -8012,6 +8057,7 @@ function renderProductChooser(){
   });
 
   const rail = chooser.querySelector(".productChooserRail");
+  iniciarDicaScrollProductChooser(rail);
   if(rail && primeiroAcesso){
     const marcarAoInteragir = () => marcarProductChooserVisto();
     rail.addEventListener("pointerdown", marcarAoInteragir, { once:true, passive:true });
