@@ -7977,43 +7977,6 @@ function marcarProductChooserVisto(){
   ia4AtualizarPrimeiroAcessoReal();
 }
 
-let productChooserAutoScrollFeito = false;
-let productChooserAutoScrollTimer = null;
-
-function iniciarDicaScrollProductChooser(rail){
-  if(!rail || productChooserAutoScrollFeito) return;
-  productChooserAutoScrollFeito = true;
-
-  let cancelado = false;
-  const parar = () => {
-    cancelado = true;
-    if(productChooserAutoScrollTimer){
-      clearTimeout(productChooserAutoScrollTimer);
-      productChooserAutoScrollTimer = null;
-    }
-    try{ rail.scrollTo({ left: rail.scrollLeft, behavior: "auto" }); }catch(e){}
-    rail.removeEventListener("pointerdown", parar);
-    rail.removeEventListener("touchstart", parar);
-    rail.removeEventListener("wheel", parar);
-    rail.removeEventListener("click", parar);
-  };
-
-  rail.addEventListener("pointerdown", parar, { once:true, passive:true });
-  rail.addEventListener("touchstart", parar, { once:true, passive:true });
-  rail.addEventListener("wheel", parar, { once:true, passive:true });
-  rail.addEventListener("click", parar, { once:true, passive:true });
-
-  productChooserAutoScrollTimer = setTimeout(() => {
-    productChooserAutoScrollTimer = null;
-    if(cancelado || rail.scrollWidth <= rail.clientWidth + 8) return;
-    const distancia = Math.min(180, Math.max(110, rail.clientWidth * 0.55));
-    const destino = Math.min(rail.scrollLeft + distancia, rail.scrollWidth - rail.clientWidth);
-    if(destino > rail.scrollLeft){
-      rail.scrollTo({ left: destino, behavior: "smooth" });
-    }
-  }, 1200);
-}
-
 function renderProductChooser(){
   const chooser = document.getElementById("productChooser");
   if(!chooser) return;
@@ -8057,7 +8020,6 @@ function renderProductChooser(){
   });
 
   const rail = chooser.querySelector(".productChooserRail");
-  iniciarDicaScrollProductChooser(rail);
   if(rail && primeiroAcesso){
     const marcarAoInteragir = () => marcarProductChooserVisto();
     rail.addEventListener("pointerdown", marcarAoInteragir, { once:true, passive:true });
