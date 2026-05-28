@@ -7986,7 +7986,7 @@ function getCleanProductPickerSelectedRaw(){
 }
 
 function getProductChooserOrder(){
-  return ["mascote_uniforme", "escudo3d", ...CLEAN_PRODUCT_RENDER_ORDER.filter(productKey => productKey !== "mascote_uniforme")].filter(productKey => PRODUCTS[productKey]);
+  return ["proximo_jogo", "mascote_uniforme", "escudo3d", ...CLEAN_PRODUCT_RENDER_ORDER.filter(productKey => !["proximo_jogo", "mascote_uniforme"].includes(productKey))].filter(productKey => PRODUCTS[productKey]);
 }
 
 function getProductChooserImage(product){
