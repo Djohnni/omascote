@@ -4531,6 +4531,10 @@ body.visitanteNaoLogado.visitantePrimeiroAcessoReal .cleanProductPrice{
   display:none !important;
 }
 
+.selectorStage .productGroupBrinde{
+  display:none !important;
+}
+
 #ia4SupportBtn,
 #ia4ChatBox{
   display:none !important;
@@ -7968,7 +7972,7 @@ function setCleanProductPickerSelected(productKey){
 function getCleanProductPickerSelected(){
   try{
     const saved = sessionStorage.getItem("ia4tube_clean_product_selected") || "";
-    if(saved && PRODUCTS[saved]) return saved;
+    if(saved && saved !== "mascote_uniforme" && PRODUCTS[saved]) return saved;
   }catch(e){}
 
   if(cleanProductPickerSelected && PRODUCTS[cleanProductPickerSelected]) return cleanProductPickerSelected;
@@ -8082,6 +8086,7 @@ function renderProductChooser(){
   });
 
   const rail = chooser.querySelector(".productChooserRail");
+  if(rail) rail.scrollLeft = 0;
   if(rail && primeiroAcesso){
     const marcarAoInteragir = () => marcarProductChooserVisto();
     rail.addEventListener("pointerdown", marcarAoInteragir, { once:true, passive:true });
