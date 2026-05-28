@@ -7970,11 +7970,6 @@ function setCleanProductPickerSelected(productKey){
 }
 
 function getCleanProductPickerSelected(){
-  try{
-    const saved = sessionStorage.getItem("ia4tube_clean_product_selected") || "";
-    if(saved && saved !== "mascote_uniforme" && PRODUCTS[saved]) return saved;
-  }catch(e){}
-
   if(cleanProductPickerSelected && PRODUCTS[cleanProductPickerSelected]) return cleanProductPickerSelected;
   return "proximo_jogo";
 }
