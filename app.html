@@ -5291,6 +5291,152 @@ body.visitanteNaoLogado .visitanteWelcomeCallout{
   }
 }
 
+/* Home visual estilo app: painel premium com atalhos circulares */
+.productChooser{
+  position:relative;
+  padding:22px 16px 18px;
+  border-radius:30px;
+  background:
+    radial-gradient(circle at 18% 14%, rgba(250,204,21,.18) 0 0, transparent 34%),
+    radial-gradient(circle at 86% 76%, rgba(34,197,94,.13) 0 0, transparent 30%),
+    linear-gradient(160deg,#050505 0%,#0f1012 58%,#1b1607 100%);
+  border:1px solid rgba(250,204,21,.24);
+  box-shadow:0 24px 54px rgba(0,0,0,.24), inset 0 1px 0 rgba(255,255,255,.08);
+}
+
+.productChooser::before,
+.productChooser::after{
+  content:"";
+  position:absolute;
+  width:150px;
+  height:150px;
+  border-radius:999px;
+  border:1px solid rgba(250,204,21,.13);
+  pointer-events:none;
+}
+
+.productChooser::before{
+  left:-54px;
+  top:-58px;
+}
+
+.productChooser::after{
+  right:-62px;
+  bottom:-66px;
+}
+
+.productChooserHeader{
+  position:relative;
+  z-index:1;
+  margin-bottom:18px;
+  align-items:center;
+  text-align:center;
+}
+
+.productChooserTitle{
+  font-size:clamp(23px,5vw,34px);
+  color:#f8fafc !important;
+  text-shadow:0 2px 12px rgba(0,0,0,.65);
+}
+
+.productChooserRail{
+  position:relative;
+  z-index:1;
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:14px 12px;
+  overflow:visible;
+  padding:0;
+  scroll-snap-type:none;
+}
+
+.productChooserCard{
+  min-width:0;
+  max-width:none;
+  width:100%;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:flex-start;
+  gap:9px;
+  padding:10px 6px 8px;
+  border:0;
+  border-radius:24px;
+  background:rgba(255,255,255,.045);
+  box-shadow:none;
+  text-align:center;
+  scroll-snap-align:none;
+}
+
+.productChooserCard:hover,
+.productChooserCard:focus-visible{
+  transform:translateY(-2px);
+  background:rgba(250,204,21,.08);
+  border-color:transparent;
+}
+
+.productChooserCard.is-selected{
+  background:rgba(250,204,21,.11);
+  box-shadow:0 14px 30px rgba(250,204,21,.10);
+}
+
+.productChooserThumb{
+  display:grid;
+  place-items:center;
+  width:76px;
+  height:76px;
+  border-radius:999px;
+  background:
+    radial-gradient(circle at 32% 22%, rgba(255,255,255,.28), transparent 36%),
+    linear-gradient(145deg,#2a2109,#d6a51f 50%,#6b4b08);
+  border:1px solid rgba(250,204,21,.42);
+  box-shadow:0 16px 32px rgba(0,0,0,.34), inset 0 1px 0 rgba(255,255,255,.22);
+  overflow:hidden;
+}
+
+.productChooserThumb img{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  object-position:top center;
+}
+
+.productChooserActionIcon{
+  font-size:31px;
+  line-height:1;
+}
+
+.productChooserName{
+  max-width:110px;
+  color:#f8fafc;
+  font-size:12px;
+  line-height:1.16;
+  font-weight:950;
+}
+
+.productChooserDesc,
+.productChooserBadge,
+.productChooserArrow,
+.productChooserProgress{
+  display:none !important;
+}
+
+@media (max-width:420px){
+  .productChooserRail{
+    grid-template-columns:repeat(3,minmax(0,1fr));
+    gap:12px 8px;
+  }
+
+  .productChooserThumb{
+    width:68px;
+    height:68px;
+  }
+
+  .productChooserName{
+    font-size:11px;
+  }
+}
+
 .cleanProductBlock{
   display:grid;
   grid-template-columns:1fr;
@@ -7985,7 +8131,7 @@ function getCleanProductPickerSelectedRaw(){
 }
 
 function getProductChooserOrder(){
-  return ["proximo_jogo", "mascote_uniforme", "escudo3d", ...CLEAN_PRODUCT_RENDER_ORDER.filter(productKey => !["proximo_jogo", "mascote_uniforme"].includes(productKey))].filter(productKey => PRODUCTS[productKey]);
+  return ["mascote_uniforme", "escudo3d", "jogador_escudo", "proximo_jogo", "resultado", "escalacao", "patrocinador"].filter(productKey => PRODUCTS[productKey]);
 }
 
 function getProductChooserImage(product){
@@ -8042,11 +8188,15 @@ function renderProductChooser(){
   if(!chooser) return;
 
   const options = getProductChooserOrder();
+  const actions = [
+    { key: "meus_pedidos", name: "Meus pedidos", icon: "📁" },
+    { key: "adicionar_saldo", name: "Adicionar saldo", icon: "💳" }
+  ];
   const primeiroAcesso = isPrimeiroAcessoProductChooser();
   chooser.classList.toggle("is-first-access", primeiroAcesso);
   chooser.innerHTML = `
     <div class="productChooserHeader">
-      <h2 class="productChooserTitle">Veja os produtos</h2>
+      <h2 class="productChooserTitle">O Mascote</h2>
     </div>
     <button type="button" class="productChooserArrow productChooserArrowLeft" data-product-chooser-prev aria-label="Produto anterior">‹</button>
     <div class="productChooserRail">
@@ -8054,7 +8204,6 @@ function renderProductChooser(){
         const product = PRODUCTS[productKey] || {};
         const copy = PRODUCT_CHOOSER_COPY[productKey] || {};
         const name = copy.name || product.title || product.name || productKey;
-        const desc = copy.desc || product.hint || "Crie uma arte profissional.";
         return `
           <button type="button" class="productChooserCard" data-product-picker="${htmlEscape(productKey)}" aria-pressed="false">
             <span class="productChooserThumb" aria-hidden="true">
@@ -8063,11 +8212,20 @@ function renderProductChooser(){
             <span>
               ${productKey === "mascote_uniforme" ? `<span class="productChooserBadge">Produto do anúncio</span>` : ""}
               <span class="productChooserName">${htmlEscape(name)}</span>
-              <span class="productChooserDesc">${htmlEscape(desc)}</span>
             </span>
           </button>
         `;
       }).join("")}
+      ${actions.map(action => `
+        <button type="button" class="productChooserCard" data-home-action="${htmlEscape(action.key)}" aria-label="${htmlEscape(action.name)}">
+          <span class="productChooserThumb" aria-hidden="true">
+            <span class="productChooserActionIcon">${action.icon}</span>
+          </span>
+          <span>
+            <span class="productChooserName">${htmlEscape(action.name)}</span>
+          </span>
+        </button>
+      `).join("")}
     </div>
     <button type="button" class="productChooserArrow productChooserArrowRight" data-product-chooser-next aria-label="Próximo produto">›</button>
     <div class="productChooserProgress" aria-hidden="true"><span class="productChooserProgressBar"></span></div>
@@ -8077,6 +8235,22 @@ function renderProductChooser(){
     btn.addEventListener("click", () => {
       marcarProductChooserVisto();
       selectCleanProductForPicker(btn.dataset.productPicker || "", { scroll: true, track: true });
+    });
+  });
+
+  chooser.querySelectorAll("[data-home-action]").forEach(btn => {
+    btn.addEventListener("click", (event) => {
+      marcarProductChooserVisto();
+      const action = btn.dataset.homeAction || "";
+      if(action === "meus_pedidos"){
+        const pedidosBtn = document.getElementById("btnMeusPedidos");
+        if(pedidosBtn) pedidosBtn.click();
+      }
+      if(action === "adicionar_saldo"){
+        const saldoBtn = document.getElementById("btnAbrirSaldo");
+        if(saldoBtn) saldoBtn.click();
+      }
+      event.preventDefault();
     });
   });
 
