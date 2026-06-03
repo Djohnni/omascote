@@ -4614,7 +4614,7 @@ body.visitanteNaoLogado .visitanteWelcomeCallout{
   display:flex;
   justify-content:center;
   width:100%;
-  margin:10px auto 18px;
+  margin:8px auto 4px;
 }
 
 .instalarAppCentralBox[hidden]{
@@ -8188,10 +8188,6 @@ function renderProductChooser(){
   if(!chooser) return;
 
   const options = getProductChooserOrder();
-  const actions = [
-    { key: "meus_pedidos", name: "Meus pedidos", icon: "📁" },
-    { key: "adicionar_saldo", name: "Adicionar saldo", icon: "💳" }
-  ];
   const primeiroAcesso = isPrimeiroAcessoProductChooser();
   chooser.classList.toggle("is-first-access", primeiroAcesso);
   chooser.innerHTML = `
@@ -8216,16 +8212,6 @@ function renderProductChooser(){
           </button>
         `;
       }).join("")}
-      ${actions.map(action => `
-        <button type="button" class="productChooserCard" data-home-action="${htmlEscape(action.key)}" aria-label="${htmlEscape(action.name)}">
-          <span class="productChooserThumb" aria-hidden="true">
-            <span class="productChooserActionIcon">${action.icon}</span>
-          </span>
-          <span>
-            <span class="productChooserName">${htmlEscape(action.name)}</span>
-          </span>
-        </button>
-      `).join("")}
     </div>
     <button type="button" class="productChooserArrow productChooserArrowRight" data-product-chooser-next aria-label="Próximo produto">›</button>
     <div class="productChooserProgress" aria-hidden="true"><span class="productChooserProgressBar"></span></div>
@@ -8235,22 +8221,6 @@ function renderProductChooser(){
     btn.addEventListener("click", () => {
       marcarProductChooserVisto();
       selectCleanProductForPicker(btn.dataset.productPicker || "", { scroll: true, track: true });
-    });
-  });
-
-  chooser.querySelectorAll("[data-home-action]").forEach(btn => {
-    btn.addEventListener("click", (event) => {
-      marcarProductChooserVisto();
-      const action = btn.dataset.homeAction || "";
-      if(action === "meus_pedidos"){
-        const pedidosBtn = document.getElementById("btnMeusPedidos");
-        if(pedidosBtn) pedidosBtn.click();
-      }
-      if(action === "adicionar_saldo"){
-        const saldoBtn = document.getElementById("btnAbrirSaldo");
-        if(saldoBtn) saldoBtn.click();
-      }
-      event.preventDefault();
     });
   });
 
