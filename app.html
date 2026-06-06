@@ -5414,6 +5414,15 @@ body.visitanteNaoLogado .visitanteWelcomeCallout{
   font-weight:950;
 }
 
+.productChooserPrice{
+  display:block;
+  margin-top:2px;
+  color:rgba(250,204,21,.92);
+  font-size:12px;
+  line-height:1.1;
+  font-weight:850;
+}
+
 .productChooserDesc,
 .productChooserBadge,
 .productChooserArrow,
@@ -5433,6 +5442,10 @@ body.visitanteNaoLogado .visitanteWelcomeCallout{
   }
 
   .productChooserName{
+    font-size:11px;
+  }
+
+  .productChooserPrice{
     font-size:11px;
   }
 }
@@ -7500,7 +7513,7 @@ const PRODUCT_CONFIG_DETAILS = {
   mascote_uniforme: {
     id: "mascote_uniforme",
     name: "Faça o mascote do seu time",
-    price: 18,
+    price: 9,
     visualCategory: "time",
     image: "produtos/mascote_uniforme.jpg",
     fields: {
@@ -8192,7 +8205,7 @@ function renderProductChooser(){
   chooser.classList.toggle("is-first-access", primeiroAcesso);
   chooser.innerHTML = `
     <div class="productChooserHeader">
-      <h2 class="productChooserTitle">Escolhe o que quer fazer</h2>
+      <h2 class="productChooserTitle">O Mascote</h2>
     </div>
     <button type="button" class="productChooserArrow productChooserArrowLeft" data-product-chooser-prev aria-label="Produto anterior">‹</button>
     <div class="productChooserRail">
@@ -8200,6 +8213,7 @@ function renderProductChooser(){
         const product = PRODUCTS[productKey] || {};
         const copy = PRODUCT_CHOOSER_COPY[productKey] || {};
         const name = copy.name || product.title || product.name || productKey;
+        const priceLabel = formatCleanProductPrice(product);
         return `
           <button type="button" class="productChooserCard" data-product-picker="${htmlEscape(productKey)}" aria-pressed="false">
             <span class="productChooserThumb" aria-hidden="true">
@@ -8208,6 +8222,7 @@ function renderProductChooser(){
             <span>
               ${productKey === "mascote_uniforme" ? `<span class="productChooserBadge">Produto do anúncio</span>` : ""}
               <span class="productChooserName">${htmlEscape(name)}</span>
+              ${priceLabel ? `<span class="productChooserPrice">${htmlEscape(priceLabel)}</span>` : ""}
             </span>
           </button>
         `;
