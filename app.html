@@ -3967,11 +3967,11 @@ textarea.campoObrigatorioErro,
 }
 
 .productGroupBrinde::before{
-  content:"⚡ Pague para gerar";
+  content:"🎁 Veja antes de pagar";
 }
 
 .clienteComBrindeMascote .productGroupBrinde::before{
-  content:"⚡ Pague para gerar";
+  content:"🎁 Sem pagar antes de ver";
 }
 
 .productGroupJogador::before{
@@ -5946,7 +5946,7 @@ body:not(.modeChosen) .builderArea,
           </p>
         </section>
 
-        <div class="preTempoHeadline">⚡ Pague com Pix e sua arte começa a ser criada.</div>
+        <div class="preTempoHeadline">👀 Primeiro você vê sua arte pronta. Depois decide se quer desbloquear.</div>
 
         <div id="tempoEstimadoBox" class="tempoEstimadoBox">
           ⏱ Calculando tempo estimado...
@@ -6103,8 +6103,8 @@ body:not(.modeChosen) .builderArea,
           <input type="hidden" id="selectedProduct" value="">
 
           <div class="visitanteWelcomeCallout" aria-hidden="true">
-            <div class="visitanteWelcomeLine">⚡ Pague com Pix para iniciar sua arte</div>
-            <div class="visitanteWelcomeLine">⏱ Pronta em menos de 2 minutos após o pagamento</div>
+            <div class="visitanteWelcomeLine">👀 Primeiro você vê como ficou</div>
+            <div class="visitanteWelcomeLine">⚡ Depois desbloqueia pelo preço do produto</div>
           </div>
 
           <section id="productChooser" class="productChooser" aria-label="Escolha o tipo de arte"></section>
@@ -9023,28 +9023,14 @@ async function submitCleanProductForm(e){
         pedido_id: out.pedido_id || ""
       });
 
-      if(out.pagamento_pendente === true && out.pedido_id){
-        cancelarProgressoNoProduto(form);
-        setCleanProductMsg(form, "Gerando Pix para iniciar sua arte...");
-        try{
-          const pixData = await gerarPixPedido(out.pedido_id);
-          if(pixData){
-            abrirModalPixQr(out.pedido_id, pixData);
-          }
-          setCleanProductMsg(form, "Pix gerado. Sua arte será criada após a confirmação do pagamento.");
-        }catch(pixError){
-          setCleanProductMsg(form, pixError.message || "Pedido criado. Abra Meus pedidos para gerar o Pix.", true);
-        }
-      }else{
-        atualizarTopoProducao([{ id: out.pedido_id || "novo", status: "processando" }]);
-        iniciarProgressoNoProduto(form, out.pedido_id || "novo");
-        mostrarAvisoPedido();
+      atualizarTopoProducao([{ id: out.pedido_id || "novo", status: "processando" }]);
+      iniciarProgressoNoProduto(form, out.pedido_id || "novo");
+      mostrarAvisoPedido();
 
-        if(out.pedido_id){
-          acompanharResultadoClean(out.pedido_id, form);
-        }
-        setCleanProductMsg(form, "Pedido enviado. Acompanhe em Meus pedidos.");
+      if(out.pedido_id){
+        acompanharResultadoClean(out.pedido_id, form);
       }
+      setCleanProductMsg(form, "Pedido enviado. Acompanhe em Meus pedidos.");
 
       resetCleanFormAfterSend(form);
       refreshMe();
@@ -11229,24 +11215,11 @@ async function enviarPedidoEscudo3dComArquivo(file, progressTarget = null){
         localStorage.removeItem(PRIMEIRO_ESCUDO_INICIO_KEY);
       }
 
-      if(escudo3dMsg) escudo3dMsg.textContent = out.pagamento_pendente === true
-        ? "Gerando Pix para iniciar sua arte..."
-        : `✅ Pedido enviado! ID: ${out.pedido_id}`;
+      if(escudo3dMsg) escudo3dMsg.textContent = `✅ Pedido enviado! ID: ${out.pedido_id}`;
       if(out.pedido_id){
         salvarPedidoAtivoLocal(out.pedido_id, "escudo3d");
       }
-      if(out.pagamento_pendente === true && out.pedido_id){
-        if(progressTarget) cancelarProgressoNoProduto(progressTarget);
-        try{
-          const pixData = await gerarPixPedido(out.pedido_id);
-          if(pixData){
-            abrirModalPixQr(out.pedido_id, pixData);
-          }
-          if(escudo3dMsg) escudo3dMsg.textContent = "Pix gerado. Sua arte será criada após a confirmação do pagamento.";
-        }catch(pixError){
-          if(escudo3dMsg) escudo3dMsg.textContent = pixError.message || "Pedido criado. Abra Meus pedidos para gerar o Pix.";
-        }
-      }else if(progressTarget){
+      if(progressTarget){
         iniciarProgressoNoProduto(progressTarget, out.pedido_id || "novo");
         if(out.pedido_id) acompanharResultadoClean(out.pedido_id, progressTarget);
       }
@@ -11264,9 +11237,7 @@ async function enviarPedidoEscudo3dComArquivo(file, progressTarget = null){
         badge.style.display = "inline-block";
       }
 
-      if(out.pagamento_pendente !== true){
-        mostrarAvisoPedido();
-      }
+      mostrarAvisoPedido();
       refreshMe();
       carregarHistorico();
       destacarMeusPedidos();
@@ -12571,8 +12542,8 @@ function cardPagamentoPendente(p) {
   const valor = Number.isInteger(valorNumero)
     ? String(valorNumero)
     : valorNumero.toFixed(2).replace(".", ",");
-  const titulo = "Pagamento Pix";
-  const texto = `Sua arte estará pronta em menos de 2 minutos após o pagamento. Se esta for sua primeira compra, você recebe R$${valor} de saldo para usar em outra arte.`;
+  const titulo = "Sua prévia está pronta ✅";
+  const texto = `Gostou da arte? Oferta do dia: pague R$${valor} e receba R$${valor} de bônus para criar a próxima arte. ⚽`;
   return `
     <div class="pagamentoPendenteBox">
       <div class="pagamentoPendenteTitulo">${titulo}</div>
@@ -12638,7 +12609,7 @@ async function copiarPixPedido(id) {
     }
 
     await copiarTextoPix(data.pix_copia_cola);
-    alert("Pix copiado. Sua arte estará pronta em menos de 2 minutos após o pagamento.");
+    alert("Pix copiado. Após o pagamento, a imagem será liberada automaticamente.");
     carregarHistorico();
   }catch(e){
     alert(e.message || "Erro ao copiar Pix.");
@@ -12701,7 +12672,7 @@ function abrirModalPixQr(id, data) {
   body.innerHTML = `
     <img class="pixQrImagem" src="${src}" alt="QR Code Pix">
     <div class="pixQrTexto">
-      Sua arte estará pronta em menos de 2 minutos após o pagamento.
+      Escaneie o QR Code ou copie o Pix. Após o pagamento, a imagem será liberada automaticamente.
     </div>
     <button type="button" class="menuPedidoBtn" onclick="copiarPixPedido('${id}')">
       Copiar Pix
@@ -12874,7 +12845,7 @@ function atualizarMenuPedidosTopo(pedidos){
     const ajustePendente = statusPedido === "ajuste_pendente";
     const aprovado = p.aprovado_cliente === true;
     const pagamentoPendente = p.pagamento_pendente === true;
-    const mostrarPagamentoPendente = pagamentoPendente;
+    const mostrarPagamentoPendente = pagamentoPendente && !!p.imagem_url;
     const usouAjuste = p.ajuste_automatico_usado === true;
 
     return `
@@ -12892,16 +12863,15 @@ function atualizarMenuPedidosTopo(pedidos){
         </div>
       ` : `
         <div class="menuPedidoThumb" style="display:flex;align-items:center;justify-content:center;padding:18px;text-align:center;color:#ffffff;font-size:16px;font-weight:950;line-height:1.35;background:#0f172a;">
-          ${pagamentoPendente
-            ? `💳 Aguardando pagamento Pix.<br><br>Sua arte começa a ser criada após a confirmação.`
-            : `🚀 A IA4Tube está criando sua arte profissional.<br><br>Sua imagem já vai com descrição pronta para copiar e postar no Instagram.`}
+          🚀 A IA4Tube está criando sua arte profissional.<br><br>
+          Sua imagem já vai com descrição pronta para copiar e postar no Instagram.
         </div>
       `}
 
       <div class="menuPedidoInfo">
         <div class="menuPedidoTipo">${p.tipo || "Arte"}</div>
         <div class="menuPedidoStatus">${ajustePendente ? "⏳ Ajustando sua arte..." : textoStatusPedido(p.status)}</div>
-        ${mostrarPagamentoPendente ? cardPagamentoPendente(p) : ``}
+        ${mostrarPagamentoPendente ? cardPagamentoPendente(p) : pagamentoPendente ? `<div class="ajustePedidoBox">Sua arte está sendo criada. Assim que a prévia ficar pronta, o pagamento Pix aparecerá aqui.</div>` : ``}
         ${p.status === "pronto" ? `<div class="descLabelInstagram">Sugestão de descrição para Instagram</div>` : ``}
         ${barraProducaoPedido(p)}
         ${p.status === "pronto" ? `
@@ -13036,7 +13006,7 @@ async function carregarHistorico(){
       const ajustePendente = statusPedido === "ajuste_pendente";
       const aprovado = p.aprovado_cliente === true;
       const pagamentoPendente = p.pagamento_pendente === true;
-      const mostrarPagamentoPendente = pagamentoPendente;
+      const mostrarPagamentoPendente = pagamentoPendente && !!p.imagem_url;
       const usouAjuste = p.ajuste_automatico_usado === true;
 
       return `
@@ -13044,7 +13014,7 @@ async function carregarHistorico(){
         <b>${p.tipo}</b><br>
         ID: ${p.id}<br>
         Status: ${ajustePendente ? "⏳ Ajustando sua arte..." : textoStatusPedido(p.status)}<br>
-        ${mostrarPagamentoPendente ? cardPagamentoPendente(p) : ``}
+        ${mostrarPagamentoPendente ? cardPagamentoPendente(p) : pagamentoPendente ? `<div class="ajustePedidoBox">Sua arte está sendo criada. Assim que a prévia ficar pronta, o pagamento Pix aparecerá aqui.</div>` : ``}
         ${p.status === "pronto" ? `<div class="descLabelInstagram">Sugestão de descrição para Instagram</div>` : ``}
         ${barraProducaoPedido(p)}
 
