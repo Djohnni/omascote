@@ -7906,7 +7906,8 @@ const CLEAN_PRODUCT_FORM_SCHEMAS = {
     fields: [
       { key: "player_name", type: "text", legacyName: "data", labelKey: "data", placeholderKey: "data", required: true },
       { key: "team_crest", type: "file", legacyName: "escudo1", labelKey: "esc1", required: true, savedFallback: true },
-      { key: "player_photo", type: "file", legacyName: "mascote", labelKey: "mascote", required: true }
+      { key: "player_photo", type: "file", legacyName: "mascote", labelKey: "mascote", required: true },
+      { key: "coupon_code", type: "text", legacyName: "cupom_codigo", label: "Cupom", required: false, visualNormal: true }
     ],
     legacyDefaults: { rodada: "Jogador + escudo" }
   },
@@ -9036,6 +9037,9 @@ async function submitCleanProductForm(e){
       refreshMe();
       carregarHistorico();
       destacarMeusPedidos();
+      if(out.cupom_aplicado === true){
+        setCleanProductMsg(form, out.mensagem || "Cupom aplicado. Sua arte Jogador + Escudo ficou R$0.");
+      }
     }else{
       ia4Track("erro_envio_pedido", {
         produto: productKey,
