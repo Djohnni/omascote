@@ -5757,6 +5757,14 @@ body.visitanteNaoLogado .visitanteWelcomeCallout{
   text-align:center;
 }
 
+.couponSummary{
+  margin-top:10px;
+  color:#166534;
+  font-size:13px;
+  font-weight:900;
+  line-height:1.35;
+}
+
 .cleanResultBox{
   display:none;
   text-align:center;
@@ -6379,6 +6387,11 @@ body:not(.modeChosen) .builderArea,
 
           <div class="escudo3dUpload" id="escudo3dUploadBtn">
             <div id="escudo3dFileName">Selecionar escudo</div>
+          </div>
+
+          <div class="cleanFieldCard" style="margin-top:14px;">
+            <label class="cleanFieldLabel">Cupom de desconto</label>
+            <input id="escudo3dCupom" placeholder="Digite seu cupom">
           </div>
 
           <button class="btnGreen" id="escudo3dEnviarBtn" type="button" style="margin-top:14px;width:100%;">
@@ -7923,6 +7936,25 @@ const CLEAN_PRODUCT_FORM_SCHEMAS = {
   }
 };
 
+const CLEAN_COUPON_FIELD = {
+  key: "coupon_code",
+  type: "text",
+  legacyName: "cupom_codigo",
+  label: "Cupom de desconto",
+  required: false,
+  visualNormal: true
+};
+
+Object.keys(CLEAN_PRODUCT_FORM_SCHEMAS).forEach(productKey => {
+  const product = PRODUCTS[productKey];
+  const schema = CLEAN_PRODUCT_FORM_SCHEMAS[productKey];
+  const hasCoupon = schema.fields.some(field => field.legacyName === "cupom_codigo");
+
+  if(product && Number(product.price || 0) > 0 && !hasCoupon){
+    schema.fields.push({ ...CLEAN_COUPON_FIELD });
+  }
+});
+
 function getCleanProductSchema(productKey){
   if(productKey === "escudo3d") return null;
   return CLEAN_PRODUCT_FORM_SCHEMAS[productKey] || null;
@@ -7934,6 +7966,27 @@ function htmlEscape(value){
     .replace(/</g, "&lt;")
     .replace(/>/g, "&gt;")
     .replace(/"/g, "&quot;");
+}
+
+function formatMoneyBR(value){
+  return `R$${Number(value || 0).toFixed(2).replace(".", ",")}`;
+}
+
+function couponSummaryText(data){
+  const desconto = data?.desconto || data?.desconto_info || null;
+  const codigoCupom = desconto?.codigo || desconto?.cupom_codigo || data?.cupom_codigo || "";
+  const valorOriginal = Number(data?.valor_original ?? desconto?.valor_original ?? 0);
+  const valorDesconto = Number(data?.valor_desconto ?? desconto?.desconto ?? 0);
+  const valorFinal = Number(data?.valor_final ?? desconto?.valor_final ?? data?.valor_pendente ?? 0);
+
+  if(!desconto && !valorDesconto) return "";
+
+  return [
+    `Cupom ${String(codigoCupom).toUpperCase()} aplicado.`,
+    `Valor original: ${formatMoneyBR(valorOriginal)}.`,
+    `Desconto: ${formatMoneyBR(valorDesconto)}.`,
+    `Valor final: ${formatMoneyBR(valorFinal)}.`
+  ].join(" ");
 }
 
 function getCleanFieldLabel(product, field){
@@ -8344,6 +8397,10 @@ function renderCleanProductForms(){
             <span data-escudo3d-clean-file-name>Selecionar escudo</span>
             <span class="cleanFilePlus">+</span>
           </div>
+        </div>
+        <div class="cleanFieldCard">
+          <label class="cleanFieldLabel">Cupom de desconto</label>
+          <input data-escudo3d-coupon placeholder="Digite seu cupom">
         </div>
         <button class="btnGreen cleanSubmitBtn" type="button" data-submit-escudo3d>Criar minha arte 🚀</button>
         <div class="cleanProductMsg" data-clean-msg></div>
@@ -9031,15 +9088,13 @@ async function submitCleanProductForm(e){
       if(out.pedido_id){
         acompanharResultadoClean(out.pedido_id, form);
       }
-      setCleanProductMsg(form, "Pedido enviado. Acompanhe em Meus pedidos.");
+      const resumoCupom = couponSummaryText(out);
+      setCleanProductMsg(form, resumoCupom || "Pedido enviado. Acompanhe em Meus pedidos.");
 
       resetCleanFormAfterSend(form);
       refreshMe();
       carregarHistorico();
       destacarMeusPedidos();
-      if(out.cupom_aplicado === true){
-        setCleanProductMsg(form, out.mensagem || "Cupom aplicado. Sua arte Jogador + Escudo ficou R$0.");
-      }
     }else{
       ia4Track("erro_envio_pedido", {
         produto: productKey,
@@ -11200,6 +11255,14 @@ async function enviarPedidoEscudo3dComArquivo(file, progressTarget = null){
   fd.append("rodada", "Escudo 3D");
   fd.append("data", "Escudo 3D");
   fd.append("escudo1", file);
+  const escudo3dCupomValor = (
+    progressTarget?.querySelector("[data-escudo3d-coupon]")?.value ||
+    document.getElementById("escudo3dCupom")?.value ||
+    ""
+  ).trim();
+  if(escudo3dCupomValor){
+    fd.append("cupom_codigo", escudo3dCupomValor);
+  }
   appendIa4AccessContext(fd);
 
   try{
@@ -11219,7 +11282,15 @@ async function enviarPedidoEscudo3dComArquivo(file, progressTarget = null){
         localStorage.removeItem(PRIMEIRO_ESCUDO_INICIO_KEY);
       }
 
-      if(escudo3dMsg) escudo3dMsg.textContent = `✅ Pedido enviado! ID: ${out.pedido_id}`;
+      const resumoCupom = couponSummaryText(out);
+      if(escudo3dMsg) escudo3dMsg.textContent = resumoCupom || `✅ Pedido enviado! ID: ${out.pedido_id}`;
+      if(progressTarget && resumoCupom){
+        const msg = progressTarget.querySelector("[data-clean-msg]");
+        if(msg){
+          msg.textContent = resumoCupom;
+          msg.style.color = "#166534";
+        }
+      }
       if(out.pedido_id){
         salvarPedidoAtivoLocal(out.pedido_id, "escudo3d");
       }
@@ -12546,12 +12617,14 @@ function cardPagamentoPendente(p) {
   const valor = Number.isInteger(valorNumero)
     ? String(valorNumero)
     : valorNumero.toFixed(2).replace(".", ",");
+  const resumoCupom = couponSummaryText(p);
   const titulo = "Sua prévia está pronta ✅";
   const texto = `Gostou da arte? Oferta do dia: pague R$${valor} e receba R$${valor} de bônus para criar a próxima arte. ⚽`;
   return `
     <div class="pagamentoPendenteBox">
       <div class="pagamentoPendenteTitulo">${titulo}</div>
       <div class="pagamentoPendenteTexto">${texto}</div>
+      ${resumoCupom ? `<div class="couponSummary">${htmlEscape(resumoCupom)}</div>` : ``}
       <button type="button" class="menuPedidoBtn" onclick="copiarPixPedido('${p.id}')">
         Copiar Pix R$${valor}
       </button>
@@ -12672,9 +12745,11 @@ function abrirModalPixQr(id, data) {
   if(!modal || !body) return;
 
   const src = `data:image/png;base64,${data.qr_code_base64}`;
+  const resumoCupom = couponSummaryText(data);
 
   body.innerHTML = `
     <img class="pixQrImagem" src="${src}" alt="QR Code Pix">
+    ${resumoCupom ? `<div class="couponSummary">${htmlEscape(resumoCupom)}</div>` : ``}
     <div class="pixQrTexto">
       Escaneie o QR Code ou copie o Pix. Após o pagamento, a imagem será liberada automaticamente.
     </div>
