@@ -5809,6 +5809,96 @@ body.visitanteNaoLogado .visitanteWelcomeCallout{
   font-weight:900;
 }
 
+.adminCouponGrid{
+  display:grid;
+  gap:12px;
+}
+
+.adminCouponForm{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:10px;
+}
+
+.adminCouponForm label{
+  display:grid;
+  gap:5px;
+  color:#334155;
+  font-size:12px;
+  font-weight:900;
+}
+
+.adminCouponForm input,
+.adminCouponForm select{
+  width:100%;
+  min-height:42px;
+  border:1px solid #d1d5db;
+  border-radius:8px;
+  padding:9px 10px;
+  font-size:14px;
+  font-weight:800;
+}
+
+.adminCouponForm .full{
+  grid-column:1 / -1;
+}
+
+.adminCouponList{
+  display:grid;
+  gap:8px;
+  max-height:360px;
+  overflow:auto;
+}
+
+.adminCouponItem{
+  display:grid;
+  gap:8px;
+  border:1px solid #e5e7eb;
+  border-radius:8px;
+  padding:10px;
+  background:#fff;
+}
+
+.adminCouponTop{
+  display:flex;
+  justify-content:space-between;
+  gap:8px;
+  align-items:flex-start;
+}
+
+.adminCouponCode{
+  color:#111827;
+  font-size:16px;
+  font-weight:950;
+}
+
+.adminCouponMeta{
+  color:#475569;
+  font-size:12px;
+  font-weight:800;
+  line-height:1.45;
+}
+
+.adminCouponActions{
+  display:flex;
+  flex-wrap:wrap;
+  gap:8px;
+}
+
+.adminCouponActions button{
+  border:0;
+  border-radius:8px;
+  padding:8px 10px;
+  font-weight:900;
+  cursor:pointer;
+}
+
+@media (max-width:680px){
+  .adminCouponForm{
+    grid-template-columns:1fr;
+  }
+}
+
 .cleanResultBox{
   display:none;
   text-align:center;
@@ -5898,6 +5988,7 @@ body:not(.modeChosen) .builderArea,
     <div class="logoutTopBar logoutOnlyTop">
       <button id="btnSair" type="button">Sair</button>
       <button id="btnCadastroTopo" type="button">Cadastro</button>
+      <button id="btnAdminCupons" type="button" style="display:none;">Cupons</button>
       <button id="btnInstalarApp" class="instalarAppBtn" type="button" hidden>📲 Instalar app</button>
     </div>
 
@@ -6516,6 +6607,80 @@ body:not(.modeChosen) .builderArea,
           Para baixar, nos envie uma mensagem no WhatsApp aqui ao lado.
         </div>
       </div>
+    </div>
+  </div>
+</div>
+
+<div class="modalMask" id="adminCuponsModal" aria-hidden="true">
+  <div class="modalCard" role="dialog" aria-modal="true" aria-label="Cupons">
+    <div class="modalTop">
+      <div class="modalTitle">Cupons</div>
+      <button class="modalClose btnGhost" id="adminCuponsCloseBtn" type="button">×</button>
+    </div>
+
+    <div class="adminCouponGrid">
+      <form class="adminCouponForm" id="adminCupomForm">
+        <label>
+          Código manual
+          <input id="adminCupomCodigo" placeholder="PROMO-A7K9Q">
+        </label>
+        <label>
+          Prefixo automático
+          <input id="adminCupomPrefixo" value="PROMO">
+        </label>
+        <label>
+          Quantidade
+          <input id="adminCupomQuantidade" type="number" min="1" max="100" value="1">
+        </label>
+        <label>
+          Tipo de desconto
+          <select id="adminCupomTipo">
+            <option value="percentual">Percentual</option>
+            <option value="valor">Valor fixo</option>
+          </select>
+        </label>
+        <label>
+          Valor do desconto
+          <input id="adminCupomValorDesconto" type="number" min="0" step="0.01" value="50">
+        </label>
+        <label>
+          Produtos
+          <select id="adminCupomProdutos">
+            <option value="todos">Todos</option>
+            <option value="mascote_uniforme">Mascote 3D</option>
+            <option value="escudo3d">Escudo 3D</option>
+            <option value="jogador_escudo">Jogador + Escudo</option>
+            <option value="contratacao">Contratação</option>
+            <option value="resultado">Resultado</option>
+            <option value="escalacao">Escalação</option>
+            <option value="proximo_jogo">Próximo jogo</option>
+            <option value="patrocinador">Patrocinador</option>
+          </select>
+        </label>
+        <label>
+          Limite total de usos
+          <input id="adminCupomLimite" type="number" min="1" value="1">
+        </label>
+        <label>
+          Ativo
+          <select id="adminCupomAtivo">
+            <option value="true">Sim</option>
+            <option value="false">Não</option>
+          </select>
+        </label>
+        <label>
+          Validade inicial
+          <input id="adminCupomValidadeInicio" type="datetime-local">
+        </label>
+        <label>
+          Validade final
+          <input id="adminCupomValidadeFim" type="datetime-local">
+        </label>
+        <button class="btnGreen full" id="adminCupomGerarBtn" type="submit">Gerar cupom</button>
+      </form>
+
+      <div class="cleanProductMsg" id="adminCuponsMsg"></div>
+      <div class="adminCouponList" id="adminCuponsLista"></div>
     </div>
   </div>
 </div>
@@ -9848,6 +10013,192 @@ function applyLocal(){
   }
 }
 
+const btnAdminCupons = document.getElementById("btnAdminCupons");
+const adminCuponsModal = document.getElementById("adminCuponsModal");
+const adminCuponsCloseBtn = document.getElementById("adminCuponsCloseBtn");
+const adminCupomForm = document.getElementById("adminCupomForm");
+const adminCuponsLista = document.getElementById("adminCuponsLista");
+const adminCuponsMsg = document.getElementById("adminCuponsMsg");
+
+function setAdminCuponsMsg(texto, erro = false){
+  if(!adminCuponsMsg) return;
+  adminCuponsMsg.textContent = texto || "";
+  adminCuponsMsg.style.color = erro ? "#dc2626" : "#166534";
+}
+
+function produtoCupomLabel(produtos){
+  if(!produtos || produtos === "todos") return "todos";
+  const lista = Array.isArray(produtos) ? produtos : [produtos];
+  return lista.map(id => PRODUCTS[id]?.title || PRODUCTS[id]?.name || id).join(", ");
+}
+
+function descontoCupomLabel(cupom){
+  if(cupom?.tipo === "valor") return `R$${Number(cupom.valor || 0).toFixed(2).replace(".", ",")}`;
+  return `${Number(cupom?.percentual || 0)}%`;
+}
+
+function validadeCupomLabel(cupom){
+  const inicio = cupom?.validade_inicio ? new Date(cupom.validade_inicio).toLocaleDateString("pt-BR") : "sem início";
+  const fim = cupom?.validade_fim ? new Date(cupom.validade_fim).toLocaleDateString("pt-BR") : "sem fim";
+  return `${inicio} até ${fim}`;
+}
+
+async function adminCuponsFetch(path, options = {}){
+  const r = await fetch(`${API_BASE}${path}`, {
+    ...options,
+    headers:{
+      "Content-Type":"application/json",
+      "Authorization":"Bearer " + token,
+      ...(options.headers || {})
+    }
+  });
+  const data = await r.json().catch(()=>({}));
+  if(!r.ok || data.ok === false){
+    const err = new Error(data.error || "Erro no painel de cupons.");
+    err.status = r.status;
+    throw err;
+  }
+  return data;
+}
+
+function renderAdminCupons(cupons = {}){
+  if(!adminCuponsLista) return;
+  const entries = Object.entries(cupons).sort((a, b) => String(b[1]?.criado_em || "").localeCompare(String(a[1]?.criado_em || "")));
+
+  if(!entries.length){
+    adminCuponsLista.innerHTML = `<div class="adminCouponMeta">Nenhum cupom criado ainda.</div>`;
+    return;
+  }
+
+  adminCuponsLista.innerHTML = entries.map(([codigo, cupom]) => {
+    const usos = Number(cupom.usos_total || 0);
+    const limite = Number(cupom.limite_usos_total || 0);
+    const esgotado = limite > 0 && usos >= limite;
+    return `
+      <div class="adminCouponItem">
+        <div class="adminCouponTop">
+          <div>
+            <div class="adminCouponCode">${htmlEscape(cupom.codigo || codigo.toUpperCase())}</div>
+            <div class="adminCouponMeta">
+              Desconto: ${htmlEscape(descontoCupomLabel(cupom))}<br>
+              Produtos: ${htmlEscape(produtoCupomLabel(cupom.produtos))}<br>
+              Usos: ${usos} / ${limite || "sem limite"} ${esgotado ? "(esgotado)" : ""}<br>
+              Status: ${cupom.ativo === false ? "inativo" : "ativo"}<br>
+              Validade: ${htmlEscape(validadeCupomLabel(cupom))}
+            </div>
+          </div>
+        </div>
+        <div class="adminCouponActions">
+          <button type="button" data-copy-coupon="${htmlEscape(cupom.codigo || codigo.toUpperCase())}">Copiar código</button>
+          <button type="button" data-toggle-coupon="${htmlEscape(codigo)}" data-action="${cupom.ativo === false ? "ativar" : "desativar"}">
+            ${cupom.ativo === false ? "Ativar" : "Desativar"}
+          </button>
+        </div>
+      </div>
+    `;
+  }).join("");
+
+  adminCuponsLista.querySelectorAll("[data-copy-coupon]").forEach(btn => {
+    btn.addEventListener("click", async () => {
+      const codigo = btn.dataset.copyCoupon || "";
+      try{
+        await navigator.clipboard.writeText(codigo);
+        setAdminCuponsMsg(`Cupom ${codigo} copiado.`);
+      }catch{
+        setAdminCuponsMsg(`Código: ${codigo}`);
+      }
+    });
+  });
+
+  adminCuponsLista.querySelectorAll("[data-toggle-coupon]").forEach(btn => {
+    btn.addEventListener("click", async () => {
+      const codigo = btn.dataset.toggleCoupon || "";
+      const action = btn.dataset.action || "desativar";
+      try{
+        await adminCuponsFetch(`/admin/cupons/${encodeURIComponent(codigo)}/${action}`, { method:"POST", body:"{}" });
+        setAdminCuponsMsg(`Cupom ${action === "ativar" ? "ativado" : "desativado"}.`);
+        await carregarAdminCupons();
+      }catch(e){
+        setAdminCuponsMsg(e.message || "Erro ao alterar cupom.", true);
+      }
+    });
+  });
+}
+
+async function carregarAdminCupons({ silencioso = false } = {}){
+  if(!token) return false;
+  try{
+    const data = await adminCuponsFetch("/admin/cupons");
+    if(btnAdminCupons) btnAdminCupons.style.display = "";
+    renderAdminCupons(data.cupons || {});
+    if(!silencioso) setAdminCuponsMsg("");
+    return true;
+  }catch(e){
+    if(btnAdminCupons) btnAdminCupons.style.display = "none";
+    if(!silencioso && e.status !== 403) setAdminCuponsMsg(e.message || "Erro ao carregar cupons.", true);
+    return false;
+  }
+}
+
+function abrirAdminCuponsModal(){
+  if(!adminCuponsModal) return;
+  adminCuponsModal.classList.add("open");
+  adminCuponsModal.setAttribute("aria-hidden", "false");
+  carregarAdminCupons();
+}
+
+function fecharAdminCuponsModal(){
+  if(!adminCuponsModal) return;
+  adminCuponsModal.classList.remove("open");
+  adminCuponsModal.setAttribute("aria-hidden", "true");
+}
+
+function adminDateValue(id){
+  const value = document.getElementById(id)?.value || "";
+  return value ? new Date(value).toISOString() : null;
+}
+
+adminCupomForm?.addEventListener("submit", async (e) => {
+  e.preventDefault();
+
+  const tipo = document.getElementById("adminCupomTipo")?.value || "percentual";
+  const valorDesconto = Number(document.getElementById("adminCupomValorDesconto")?.value || 0);
+  const produtosValue = document.getElementById("adminCupomProdutos")?.value || "todos";
+  const payload = {
+    codigo: document.getElementById("adminCupomCodigo")?.value?.trim() || "",
+    prefixo: document.getElementById("adminCupomPrefixo")?.value?.trim() || "PROMO",
+    quantidade: Number(document.getElementById("adminCupomQuantidade")?.value || 1),
+    descricao: "Cupom gerado no painel",
+    ativo: (document.getElementById("adminCupomAtivo")?.value || "true") === "true",
+    tipo,
+    percentual: tipo === "percentual" ? valorDesconto : null,
+    valor: tipo === "valor" ? valorDesconto : null,
+    produtos: produtosValue === "todos" ? "todos" : [produtosValue],
+    limite_usos_total: Number(document.getElementById("adminCupomLimite")?.value || 1),
+    validade_inicio: adminDateValue("adminCupomValidadeInicio"),
+    validade_fim: adminDateValue("adminCupomValidadeFim")
+  };
+
+  try{
+    setAdminCuponsMsg("Gerando cupom...");
+    const data = await adminCuponsFetch("/admin/cupons/gerar", {
+      method:"POST",
+      body: JSON.stringify(payload)
+    });
+    setAdminCuponsMsg(`${data.quantidade || 0} cupom(ns) gerado(s).`);
+    document.getElementById("adminCupomCodigo").value = "";
+    await carregarAdminCupons({ silencioso:true });
+  }catch(e){
+    setAdminCuponsMsg(e.message || "Erro ao gerar cupom.", true);
+  }
+});
+
+btnAdminCupons?.addEventListener("click", abrirAdminCuponsModal);
+adminCuponsCloseBtn?.addEventListener("click", fecharAdminCuponsModal);
+adminCuponsModal?.addEventListener("click", (e) => {
+  if(e.target === adminCuponsModal) fecharAdminCuponsModal();
+});
+
 async function refreshMe(){
   try{
     const r = await fetch(`${API_BASE}/me`, {
@@ -9860,6 +10211,7 @@ async function refreshMe(){
       localStorage.setItem("omascote_usados", data.usados_no_ciclo || "");
       localStorage.setItem("omascote_saldo", data.saldo ?? "");
       applyLocal();
+      carregarAdminCupons({ silencioso:true });
       brindeEscudo3dAppDisponivel = data.brinde_escudo3d_app_disponivel === true;
       atualizarBrindeEscudo3dAppVisual();
       statusEl.textContent = data.ativo ? "Status: ativo" : "Status: inativo";
@@ -13823,6 +14175,7 @@ document.getElementById("btnSair")?.addEventListener("click", ()=>{
   }
 
   localStorage.removeItem("omascote_token");
+  if(btnAdminCupons) btnAdminCupons.style.display = "none";
   window.location.href = "app.html";
 });
 
