@@ -5765,6 +5765,50 @@ body.visitanteNaoLogado .visitanteWelcomeCallout{
   line-height:1.35;
 }
 
+.pricePreviewBox{
+  margin-top:12px;
+  padding:14px;
+  border:2px solid #d1fae5;
+  border-radius:8px;
+  background:#f0fdf4;
+  color:#14532d;
+  text-align:center;
+}
+
+.pricePreviewBox.has-error{
+  border-color:#fecaca;
+  background:#fef2f2;
+  color:#991b1b;
+}
+
+.pricePreviewTotal{
+  font-size:24px;
+  font-weight:950;
+  line-height:1.15;
+}
+
+.pricePreviewFrom{
+  color:#64748b;
+  font-size:15px;
+  font-weight:900;
+  text-decoration:line-through;
+}
+
+.pricePreviewFinal{
+  margin-top:3px;
+  color:#15803d;
+  font-size:34px;
+  font-weight:950;
+  line-height:1;
+}
+
+.pricePreviewSaving,
+.pricePreviewError{
+  margin-top:7px;
+  font-size:14px;
+  font-weight:900;
+}
+
 .cleanResultBox{
   display:none;
   text-align:center;
@@ -6393,6 +6437,7 @@ body:not(.modeChosen) .builderArea,
             <label class="cleanFieldLabel">Cupom de desconto</label>
             <input id="escudo3dCupom" placeholder="Digite seu cupom">
           </div>
+          <div data-price-preview data-price-product="escudo3d"></div>
 
           <button class="btnGreen" id="escudo3dEnviarBtn" type="button" style="margin-top:14px;width:100%;">
             Enviar escudo 🚀
@@ -7552,6 +7597,7 @@ const PRODUCT_CONFIG_DETAILS = {
 
 Object.keys(PRODUCT_CONFIG_DETAILS).forEach((productKey) => {
   PRODUCTS[productKey] = {
+    id: productKey,
     ...(PRODUCTS[productKey] || {}),
     ...PRODUCT_CONFIG_DETAILS[productKey]
   };
@@ -7972,6 +8018,37 @@ function formatMoneyBR(value){
   return `R$${Number(value || 0).toFixed(2).replace(".", ",")}`;
 }
 
+function pricePreviewHtml(data, errorMessage = ""){
+  const valorOriginal = Number(data?.valor_original ?? data?.valor_final ?? 0);
+  const valorDesconto = Number(data?.valor_desconto ?? 0);
+  const valorFinal = Number(data?.valor_final ?? valorOriginal);
+
+  if(errorMessage){
+    return `
+      <div class="pricePreviewBox has-error">
+        <div class="pricePreviewTotal">Total: ${formatMoneyBR(valorOriginal)}</div>
+        <div class="pricePreviewError">${htmlEscape(errorMessage)}</div>
+      </div>
+    `;
+  }
+
+  if(valorDesconto > 0){
+    return `
+      <div class="pricePreviewBox">
+        <div class="pricePreviewFrom">De ${formatMoneyBR(valorOriginal)}</div>
+        <div class="pricePreviewFinal">Por ${formatMoneyBR(valorFinal)}</div>
+        <div class="pricePreviewSaving">Você economizou ${formatMoneyBR(valorDesconto)}</div>
+      </div>
+    `;
+  }
+
+  return `
+    <div class="pricePreviewBox">
+      <div class="pricePreviewTotal">Total: ${formatMoneyBR(valorFinal)}</div>
+    </div>
+  `;
+}
+
 function couponSummaryText(data){
   const desconto = data?.desconto || data?.desconto_info || null;
   const codigoCupom = desconto?.codigo || desconto?.cupom_codigo || data?.cupom_codigo || "";
@@ -7999,11 +8076,15 @@ function getCleanFieldPlaceholder(product, field){
 
 function renderCleanTextField(product, field, step){
   const label = getCleanFieldLabel(product, field);
+  const pricePreview = field.legacyName === "cupom_codigo"
+    ? `<div data-price-preview data-price-product="${htmlEscape(product?.id || "")}"></div>`
+    : "";
   return `
     <div class="cleanFieldCard" data-clean-field-card="${htmlEscape(field.key)}">
       <label class="cleanFieldLabel" data-step="${htmlEscape(step)}">${label}</label>
       <input name="${htmlEscape(field.key)}" data-field="${htmlEscape(field.key)}" placeholder="${htmlEscape(getCleanFieldPlaceholder(product, field))}" aria-label="${htmlEscape(label)}">
     </div>
+    ${pricePreview}
   `;
 }
 
@@ -8105,6 +8186,97 @@ function formatCleanProductPrice(product){
   }
   const price = Number(product?.price || 0);
   return price ? `R$${price.toFixed(2).replace(".", ",")}` : "";
+}
+
+function getProductBasePrice(productKey){
+  return Number(PRODUCTS[productKey]?.price || 0);
+}
+
+function getPricePreviewProductKey(target){
+  return target?.dataset?.priceProduct || target?.closest("[data-clean-product-block]")?.dataset?.cleanProductBlock || "";
+}
+
+function getPricePreviewCouponValue(block, productKey){
+  if(productKey === "escudo3d"){
+    return (
+      block?.querySelector("[data-escudo3d-coupon]")?.value ||
+      document.getElementById("escudo3dCupom")?.value ||
+      ""
+    ).trim();
+  }
+
+  return block?.querySelector('[data-field="coupon_code"]')?.value?.trim() || "";
+}
+
+function renderLocalPricePreview(target, productKey, errorMessage = ""){
+  if(!target || !productKey) return;
+  const basePrice = getProductBasePrice(productKey);
+  target.innerHTML = pricePreviewHtml({
+    valor_original: basePrice,
+    valor_desconto: 0,
+    valor_final: basePrice
+  }, errorMessage);
+}
+
+const pricePreviewTimers = new WeakMap();
+const pricePreviewAbortControllers = new WeakMap();
+
+function schedulePricePreviewUpdate(target, delay = 250){
+  if(!target) return;
+  clearTimeout(pricePreviewTimers.get(target));
+  pricePreviewTimers.set(target, setTimeout(() => updatePricePreview(target), delay));
+}
+
+async function updatePricePreview(target){
+  if(!target) return;
+
+  const block = target.closest("[data-clean-product-block]") || document;
+  const productKey = getPricePreviewProductKey(target);
+  if(!productKey) return;
+
+  const cupom = getPricePreviewCouponValue(block, productKey);
+  renderLocalPricePreview(target, productKey);
+
+  const controllerAnterior = pricePreviewAbortControllers.get(target);
+  if(controllerAnterior) controllerAnterior.abort();
+
+  const controller = new AbortController();
+  pricePreviewAbortControllers.set(target, controller);
+
+  try{
+    const r = await fetch(`${API_BASE}/cupons/preco`, {
+      method:"POST",
+      headers:{
+        "Content-Type":"application/json",
+        ...(token ? { "Authorization":"Bearer " + token } : {})
+      },
+      body: JSON.stringify({
+        product_id: productKey,
+        cupom_codigo: cupom,
+        ...getIa4AccessContext()
+      }),
+      signal: controller.signal
+    });
+
+    const data = await r.json().catch(()=>({}));
+    if(controller.signal.aborted) return;
+
+    if(!r.ok || !data.ok){
+      renderLocalPricePreview(target, productKey, cupom ? (data.error || "Cupom inválido.") : "");
+      return;
+    }
+
+    target.innerHTML = pricePreviewHtml(data);
+  }catch(e){
+    if(e?.name === "AbortError") return;
+    renderLocalPricePreview(target, productKey);
+  }
+}
+
+function refreshAllPricePreviews(){
+  document.querySelectorAll("[data-price-preview]").forEach(target => {
+    schedulePricePreviewUpdate(target, 0);
+  });
 }
 
 function atualizarBrindeEscudo3dAppVisual(){
@@ -8402,6 +8574,7 @@ function renderCleanProductForms(){
           <label class="cleanFieldLabel">Cupom de desconto</label>
           <input data-escudo3d-coupon placeholder="Digite seu cupom">
         </div>
+        <div data-price-preview data-price-product="escudo3d"></div>
         <button class="btnGreen cleanSubmitBtn" type="button" data-submit-escudo3d>Criar minha arte 🚀</button>
         <div class="cleanProductMsg" data-clean-msg></div>
       </div>
@@ -9186,6 +9359,15 @@ function bindCleanProductForms(root){
 
   root.querySelectorAll("[data-product-form]").forEach(form => {
     form.addEventListener("submit", submitCleanProductForm);
+    const pricePreview = form.querySelector("[data-price-preview]");
+    const couponInput = form.querySelector('[data-field="coupon_code"]');
+    if(pricePreview){
+      updatePricePreview(pricePreview);
+    }
+    if(couponInput && pricePreview){
+      couponInput.addEventListener("input", () => schedulePricePreviewUpdate(pricePreview));
+      couponInput.addEventListener("change", () => schedulePricePreviewUpdate(pricePreview, 0));
+    }
   });
 
   root.querySelectorAll("[data-open-escudo3d-file]").forEach(box => {
@@ -9209,6 +9391,16 @@ function bindCleanProductForms(root){
     });
   });
 
+  root.querySelectorAll("[data-escudo3d-coupon]").forEach(input => {
+    const block = input.closest("[data-clean-product-block]");
+    const pricePreview = block?.querySelector("[data-price-preview]");
+    if(pricePreview){
+      updatePricePreview(pricePreview);
+      input.addEventListener("input", () => schedulePricePreviewUpdate(pricePreview));
+      input.addEventListener("change", () => schedulePricePreviewUpdate(pricePreview, 0));
+    }
+  });
+
   root.querySelectorAll("[data-open-escudo3d]").forEach(btn => {
     btn.addEventListener("click", () => {
       activateCleanProductBlock("escudo3d");
@@ -9225,6 +9417,8 @@ function activateCleanProductBlock(productKey){
   document.querySelectorAll("[data-clean-product-block]").forEach(block => {
     block.classList.toggle("is-active", block.dataset.cleanProductBlock === productKey);
   });
+  const activePreview = document.querySelector(`[data-clean-product-block="${CSS.escape(productKey)}"] [data-price-preview]`);
+  if(activePreview) schedulePricePreviewUpdate(activePreview, 0);
 }
 
 function scrollToCleanProductBlock(productKey){
@@ -11203,6 +11397,14 @@ if(escudo3dUploadBtn && escudo3dFile){
     escudo3dFileName.textContent = selectedEscudo3dFileName;
     setEscudo3dCleanFileLabel(selectedEscudo3dFileName);
   });
+}
+
+const escudo3dModalCouponInput = document.getElementById("escudo3dCupom");
+const escudo3dModalPricePreview = escudo3dModal?.querySelector("[data-price-preview]");
+if(escudo3dModalCouponInput && escudo3dModalPricePreview){
+  updatePricePreview(escudo3dModalPricePreview);
+  escudo3dModalCouponInput.addEventListener("input", () => schedulePricePreviewUpdate(escudo3dModalPricePreview));
+  escudo3dModalCouponInput.addEventListener("change", () => schedulePricePreviewUpdate(escudo3dModalPricePreview, 0));
 }
 
 async function enviarPedidoEscudo3dComArquivo(file, progressTarget = null){
