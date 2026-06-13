@@ -1511,6 +1511,136 @@
       box-shadow:none;
     }
 
+    .perfilTimeBody{
+      padding:18px;
+      background:#f8fafc;
+      color:#111827;
+    }
+
+    .perfilTimeIntro{
+      display:flex;
+      align-items:flex-start;
+      gap:12px;
+      padding:14px;
+      border:1px solid #dbeafe;
+      border-radius:16px;
+      background:linear-gradient(135deg, #eff6ff, #ecfdf5);
+      margin-bottom:16px;
+    }
+
+    .perfilTimeIntro strong{
+      display:block;
+      font-size:16px;
+      color:#0f172a;
+      margin-bottom:3px;
+    }
+
+    .perfilTimeIntro span{
+      display:block;
+      font-size:12px;
+      color:#475569;
+      font-weight:800;
+      line-height:1.35;
+    }
+
+    .perfilTimeIcon{
+      width:42px;
+      height:42px;
+      border-radius:14px;
+      display:grid;
+      place-items:center;
+      background:#111827;
+      color:#ffffff;
+      font-size:22px;
+      flex:0 0 auto;
+    }
+
+    .perfilTimeGrid{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:12px;
+    }
+
+    .perfilTimeField{
+      display:flex;
+      flex-direction:column;
+      gap:6px;
+    }
+
+    .perfilTimeField.full{
+      grid-column:1 / -1;
+    }
+
+    .perfilTimeField label{
+      font-size:12px;
+      font-weight:950;
+      color:#334155;
+    }
+
+    .perfilTimeField input{
+      width:100%;
+      border:1px solid #cbd5e1;
+      border-radius:12px;
+      padding:12px;
+      font-size:15px;
+      font-weight:850;
+      color:#0f172a;
+      background:#ffffff;
+      outline:none;
+    }
+
+    .perfilTimeField input:focus{
+      border-color:#22c55e;
+      box-shadow:0 0 0 3px rgba(34,197,94,.16);
+    }
+
+    .perfilTimeActions{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+      margin-top:16px;
+    }
+
+    .perfilTimePrivado{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding:8px 10px;
+      border-radius:999px;
+      background:#e0f2fe;
+      color:#075985;
+      font-size:12px;
+      font-weight:950;
+      white-space:nowrap;
+    }
+
+    .perfilTimeMsg{
+      min-height:20px;
+      margin-top:10px;
+      font-size:13px;
+      font-weight:900;
+      color:#475569;
+    }
+
+    .perfilTimeMsg.ok{color:#047857}
+    .perfilTimeMsg.erro{color:#b91c1c}
+
+    @media (max-width:640px){
+      .perfilTimeGrid{
+        grid-template-columns:1fr;
+      }
+
+      .perfilTimeActions{
+        flex-direction:column;
+        align-items:stretch;
+      }
+
+      .perfilTimePrivado{
+        justify-content:center;
+      }
+    }
+
     .cropWrap{padding:12px 14px 10px}
 
     .cropHint{
@@ -5898,6 +6028,7 @@ body:not(.modeChosen) .builderArea,
     <div class="logoutTopBar logoutOnlyTop">
       <button id="btnSair" type="button">Sair</button>
       <button id="btnCadastroTopo" type="button">Cadastro</button>
+      <button id="btnPerfilTime" type="button" hidden>Perfil do Time</button>
       <button id="btnInstalarApp" class="instalarAppBtn" type="button" hidden>📲 Instalar app</button>
     </div>
 
@@ -6593,6 +6724,54 @@ body:not(.modeChosen) .builderArea,
   </div>
 </div>
 
+<div class="modalMask" id="perfilTimeModal" aria-hidden="true">
+  <div class="modalCard" role="dialog" aria-modal="true" aria-label="Perfil do Time">
+    <div class="modalTop">
+      <div class="modalTitle">Perfil do Time</div>
+      <button class="modalClose btnGhost" id="perfilTimeCloseBtn" type="button">×</button>
+    </div>
+
+    <div class="perfilTimeBody">
+      <div class="perfilTimeIntro">
+        <div class="perfilTimeIcon" aria-hidden="true">T</div>
+        <div>
+          <strong>Dados privados do seu time</strong>
+          <span>Essas informacoes ficam na sua conta e ajudam a preencher seus pedidos mais rapido.</span>
+        </div>
+      </div>
+
+      <div class="perfilTimeGrid">
+        <div class="perfilTimeField full">
+          <label for="perfilNomeTime">Nome do time</label>
+          <input id="perfilNomeTime" maxlength="80" autocomplete="organization" placeholder="Nome do time">
+        </div>
+
+        <div class="perfilTimeField">
+          <label for="perfilCidade">Cidade</label>
+          <input id="perfilCidade" maxlength="80" autocomplete="address-level2" placeholder="Cidade">
+        </div>
+
+        <div class="perfilTimeField">
+          <label for="perfilEstado">Estado</label>
+          <input id="perfilEstado" maxlength="40" autocomplete="address-level1" placeholder="UF ou estado">
+        </div>
+
+        <div class="perfilTimeField full">
+          <label for="perfilInstagram">Instagram</label>
+          <input id="perfilInstagram" maxlength="80" autocomplete="off" placeholder="@seutime">
+        </div>
+      </div>
+
+      <div class="perfilTimeActions">
+        <span class="perfilTimePrivado">Perfil privado</span>
+        <button class="btnGreen" id="perfilTimeSalvarBtn" type="button">Salvar perfil</button>
+      </div>
+
+      <div class="perfilTimeMsg" id="perfilTimeMsg"></div>
+    </div>
+  </div>
+</div>
+
 <div class="ia4ToastPedido" id="ia4ToastPedido" onclick="fecharAvisoPedido()">
   <div class="ia4ToastPedidoBox">
     <strong>✅ Pedido recebido!</strong>
@@ -6732,6 +6911,7 @@ function ia4LimparSessaoInvalida(out, options = {}){
   try{
     [
       "omascote_token",
+      "omascote_perfil_id",
       "omascote_plano",
       "omascote_usados",
       "omascote_saldo"
@@ -9934,6 +10114,7 @@ async function refreshMe(){
 
     if(data.ok){
       localStorage.setItem("omascote_nome_time", data.nome_time || "");
+      localStorage.setItem("omascote_perfil_id", data.perfil_id || "");
       localStorage.setItem("omascote_plano", data.plano || "");
       localStorage.setItem("omascote_usados", data.usados_no_ciclo || "");
       localStorage.setItem("omascote_saldo", data.saldo ?? "");
@@ -13943,10 +14124,20 @@ function destacarMeusPedidos(){
 
 const btnSairEl = document.getElementById("btnSair");
 const btnCadastroTopoEl = document.getElementById("btnCadastroTopo");
+const btnPerfilTimeEl = document.getElementById("btnPerfilTime");
+const perfilTimeModal = document.getElementById("perfilTimeModal");
+const perfilTimeCloseBtn = document.getElementById("perfilTimeCloseBtn");
+const perfilTimeSalvarBtn = document.getElementById("perfilTimeSalvarBtn");
+const perfilNomeTime = document.getElementById("perfilNomeTime");
+const perfilCidade = document.getElementById("perfilCidade");
+const perfilEstado = document.getElementById("perfilEstado");
+const perfilInstagram = document.getElementById("perfilInstagram");
+const perfilTimeMsg = document.getElementById("perfilTimeMsg");
 
 function atualizarTopoAuth(){
   const btnEntrarTopo = document.getElementById("btnSair");
   const btnCadastroTopo = document.getElementById("btnCadastroTopo");
+  const btnPerfilTime = document.getElementById("btnPerfilTime");
 
   if(btnEntrarTopo){
     btnEntrarTopo.textContent = token ? "Sair" : "Entrar";
@@ -13959,6 +14150,12 @@ function atualizarTopoAuth(){
     btnCadastroTopo.style.background = "#ffffff";
     btnCadastroTopo.style.cursor = token && !ia4ContaAutoPendente() ? "default" : "pointer";
     btnCadastroTopo.title = token && ia4ContaAutoPendente() ? "Renomear meu time / alterar login" : "";
+  }
+
+  if(btnPerfilTime){
+    btnPerfilTime.hidden = !token;
+    btnPerfilTime.style.background = "#ffffff";
+    btnPerfilTime.textContent = "Perfil do Time";
   }
 }
 
@@ -13983,6 +14180,141 @@ btnCadastroTopoEl?.addEventListener("click", ()=>{
   if(ia4ContaAutoPendente()){
     ia4RenomearContaAutoTopo();
   }
+});
+
+function setPerfilTimeMsg(texto, tipo = ""){
+  if(!perfilTimeMsg) return;
+  perfilTimeMsg.textContent = texto || "";
+  perfilTimeMsg.className = `perfilTimeMsg${tipo ? " " + tipo : ""}`;
+}
+
+function preencherPerfilTime(perfil){
+  if(perfilNomeTime) perfilNomeTime.value = perfil?.nome_time || localStorage.getItem("omascote_nome_time") || "";
+  if(perfilCidade) perfilCidade.value = perfil?.cidade || "";
+  if(perfilEstado) perfilEstado.value = perfil?.estado || "";
+  if(perfilInstagram) perfilInstagram.value = perfil?.instagram || "";
+}
+
+function abrirPerfilTimeModal(){
+  if(!token){
+    abrirLoginVisitanteModal();
+    return;
+  }
+
+  preencherPerfilTime({});
+  setPerfilTimeMsg("");
+  perfilTimeModal?.classList.add("open");
+  perfilTimeModal?.setAttribute("aria-hidden", "false");
+  carregarPerfilTime();
+  setTimeout(()=>perfilNomeTime?.focus(), 120);
+}
+
+function fecharPerfilTimeModal(){
+  perfilTimeModal?.classList.remove("open");
+  perfilTimeModal?.setAttribute("aria-hidden", "true");
+}
+
+async function carregarPerfilTime(){
+  if(!token) return;
+
+  try{
+    setPerfilTimeMsg("Carregando perfil...");
+    const r = await fetch(`${API_BASE}/me/perfil`, {
+      headers:{ "Authorization":"Bearer " + token }
+    });
+    const data = await ia4LerJsonSeguro(r);
+    const authMsg = ia4TratarAuthInvalida(r, data);
+
+    if(authMsg){
+      setPerfilTimeMsg(authMsg, "erro");
+      return;
+    }
+
+    if(!r.ok || !data.ok){
+      throw new Error(data.error || data.erro || "Nao foi possivel carregar o perfil.");
+    }
+
+    preencherPerfilTime(data.perfil || {});
+    localStorage.setItem("omascote_perfil_id", data.perfil?.perfil_id || "");
+    if(data.perfil?.nome_time){
+      localStorage.setItem("omascote_nome_time", data.perfil.nome_time);
+      atualizarTopoAuth();
+    }
+    setPerfilTimeMsg("Perfil carregado.", "ok");
+  }catch(err){
+    setPerfilTimeMsg(err?.message || "Erro de rede ao carregar perfil.", "erro");
+  }
+}
+
+async function salvarPerfilTime(){
+  if(!token){
+    abrirLoginVisitanteModal();
+    return;
+  }
+
+  const nomeTime = (perfilNomeTime?.value || "").trim();
+
+  if(!nomeTime){
+    setPerfilTimeMsg("Informe o nome do time.", "erro");
+    perfilNomeTime?.focus();
+    return;
+  }
+
+  const payload = {
+    nome_time: nomeTime,
+    cidade: (perfilCidade?.value || "").trim(),
+    estado: (perfilEstado?.value || "").trim(),
+    instagram: (perfilInstagram?.value || "").trim(),
+    publico: false
+  };
+
+  try{
+    if(perfilTimeSalvarBtn){
+      perfilTimeSalvarBtn.disabled = true;
+      perfilTimeSalvarBtn.textContent = "Salvando...";
+    }
+    setPerfilTimeMsg("Salvando perfil...");
+
+    const r = await fetch(`${API_BASE}/me/perfil`, {
+      method:"PATCH",
+      headers:{
+        "Content-Type":"application/json",
+        "Authorization":"Bearer " + token
+      },
+      body:JSON.stringify(payload)
+    });
+    const data = await ia4LerJsonSeguro(r);
+    const authMsg = ia4TratarAuthInvalida(r, data);
+
+    if(authMsg){
+      setPerfilTimeMsg(authMsg, "erro");
+      return;
+    }
+
+    if(!r.ok || !data.ok){
+      throw new Error(data.error || data.erro || "Nao foi possivel salvar o perfil.");
+    }
+
+    preencherPerfilTime(data.perfil || payload);
+    localStorage.setItem("omascote_perfil_id", data.perfil?.perfil_id || localStorage.getItem("omascote_perfil_id") || "");
+    localStorage.setItem("omascote_nome_time", data.perfil?.nome_time || nomeTime);
+    atualizarTopoAuth();
+    setPerfilTimeMsg("Perfil salvo com sucesso.", "ok");
+  }catch(err){
+    setPerfilTimeMsg(err?.message || "Erro de rede ao salvar perfil.", "erro");
+  }finally{
+    if(perfilTimeSalvarBtn){
+      perfilTimeSalvarBtn.disabled = false;
+      perfilTimeSalvarBtn.textContent = "Salvar perfil";
+    }
+  }
+}
+
+btnPerfilTimeEl?.addEventListener("click", abrirPerfilTimeModal);
+perfilTimeCloseBtn?.addEventListener("click", fecharPerfilTimeModal);
+perfilTimeSalvarBtn?.addEventListener("click", salvarPerfilTime);
+perfilTimeModal?.addEventListener("click", (e)=>{
+  if(e.target === perfilTimeModal) fecharPerfilTimeModal();
 });
 
 document.getElementById("btnAtualizar")?.addEventListener("click", refreshMe);
