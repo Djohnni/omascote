@@ -6709,6 +6709,74 @@ function ia4ValidarTamanhoArquivos(files){
 
 let token = localStorage.getItem("omascote_token");
 
+function ia4MensagemSessaoExpirada(out){
+  const detalhe = out?.error || out?.erro || out?.mensagem || "";
+  const detalheNormalizado = String(detalhe || "").toLowerCase();
+  if(detalhe && !detalheNormalizado.includes("sem token")){
+    return `${detalhe}. Entre novamente para continuar.`;
+  }
+  return "Sua sessão expirou. Entre novamente para continuar.";
+}
+
+function ia4EhErroAuth(r, out){
+  if(!r || r.status !== 401) return false;
+  const mensagem = String(out?.error || out?.erro || out?.mensagem || "").toLowerCase();
+  return !mensagem ||
+    mensagem.includes("token") ||
+    mensagem.includes("jwt") ||
+    mensagem.includes("sess") ||
+    mensagem.includes("sem token");
+}
+
+function ia4LimparSessaoInvalida(out, options = {}){
+  try{
+    [
+      "omascote_token",
+      "omascote_plano",
+      "omascote_usados",
+      "omascote_saldo"
+    ].forEach(chave => localStorage.removeItem(chave));
+  }catch(e){}
+
+  token = "";
+  try{ applyLocal(); }catch(e){}
+  try{ atualizarTopoAuth(); }catch(e){}
+  try{ ia4AtualizarPrimeiroAcessoReal(); }catch(e){}
+
+  const msg = ia4MensagemSessaoExpirada(out);
+  if(options.alert){
+    alert(msg);
+  }
+  return msg;
+}
+
+function ia4TratarAuthInvalida(r, out, options = {}){
+  if(!ia4EhErroAuth(r, out)) return "";
+  return ia4LimparSessaoInvalida(out, options);
+}
+
+async function ia4LerJsonSeguro(r){
+  const rawText = await r.text();
+  let out = {};
+
+  try{
+    out = rawText ? JSON.parse(rawText) : {};
+  }catch(parseError){
+    out = {
+      ok: false,
+      error: rawText
+        ? `Resposta inesperada do servidor (${r.status}). ${rawText.slice(0, 220)}`
+        : `Resposta inesperada do servidor (${r.status}).`
+    };
+  }
+
+  if(!r.ok && !out.error && !out.mensagem && !out.erro){
+    out.error = `Erro HTTP ${r.status}.`;
+  }
+
+  return out;
+}
+
 function ia4AtualizarPrimeiroAcessoReal(){
   try{
     const semToken = !token && !localStorage.getItem("omascote_token");
@@ -9085,7 +9153,15 @@ async function acompanharResultadoClean(pedidoId, form){
       const r = await fetch(`${API_BASE}/pedidos/${pedidoId}/info`, {
         headers: { "Authorization": "Bearer " + token }
       });
-      const data = await r.json();
+      const data = await ia4LerJsonSeguro(r);
+
+      const authMsg = ia4TratarAuthInvalida(r, data);
+      if(authMsg){
+        clearInterval(timer);
+        cleanProductResultWatchers.delete(pedidoId);
+        if(statusElLocal) statusElLocal.textContent = authMsg;
+        return;
+      }
 
       if(data.ok && data.imagem_pronta){
         clearInterval(timer);
@@ -9224,22 +9300,13 @@ async function submitCleanProductForm(e){
       body:fd
     });
 
-    const rawText = await r.text();
-    let out = {};
+    const out = await ia4LerJsonSeguro(r);
+    const authMsg = ia4TratarAuthInvalida(r, out);
 
-    try{
-      out = rawText ? JSON.parse(rawText) : {};
-    }catch(parseError){
-      out = {
-        ok: false,
-        error: rawText
-          ? `Resposta inesperada do servidor (${r.status}). ${rawText.slice(0, 220)}`
-          : `Resposta inesperada do servidor (${r.status}).`
-      };
-    }
-
-    if(!r.ok && !out.error && !out.mensagem && !out.erro){
-      out.error = `Erro HTTP ${r.status} ao enviar pedido.`;
+    if(authMsg){
+      cancelarProgressoNoProduto(form);
+      setCleanProductMsg(form, authMsg, true);
+      return;
     }
 
     if(out.ok){
@@ -9849,11 +9916,22 @@ function applyLocal(){
 }
 
 async function refreshMe(){
+  if(!token){
+    applyLocal();
+    return;
+  }
+
   try{
     const r = await fetch(`${API_BASE}/me`, {
       headers: { "Authorization": "Bearer " + token }
     });
-    const data = await r.json();
+    const data = await ia4LerJsonSeguro(r);
+
+    if(ia4TratarAuthInvalida(r, data)){
+      if(statusEl) statusEl.textContent = "Sessão expirada. Entre novamente.";
+      return;
+    }
+
     if(data.ok){
       localStorage.setItem("omascote_nome_time", data.nome_time || "");
       localStorage.setItem("omascote_plano", data.plano || "");
@@ -11474,7 +11552,15 @@ async function enviarPedidoEscudo3dComArquivo(file, progressTarget = null){
       body:fd
     });
 
-    const out = await r.json();
+    const out = await ia4LerJsonSeguro(r);
+    const authMsg = ia4TratarAuthInvalida(r, out);
+
+    if(authMsg){
+      if(escudo3dMsg) escudo3dMsg.textContent = authMsg;
+      if(progressTarget) cancelarProgressoNoProduto(progressTarget);
+      alert(authMsg);
+      return;
+    }
 
     if(out.ok){
       const inicioPrimeiroEscudo = localStorage.getItem(PRIMEIRO_ESCUDO_INICIO_KEY);
@@ -12393,7 +12479,13 @@ document.getElementById("pedidoForm").addEventListener("submit", async (e)=>{
       body:fd
     });
 
-    const out = await r.json();
+    const out = await ia4LerJsonSeguro(r);
+    const authMsg = ia4TratarAuthInvalida(r, out);
+
+    if(authMsg){
+      msgPedidoEl.textContent = authMsg;
+      return;
+    }
 
     if(out.ok){
       msgPedidoEl.textContent = "";
@@ -12853,7 +12945,12 @@ async function gerarPixPedido(id) {
     }
   });
 
-  const data = await r.json().catch(()=>({}));
+  const data = await ia4LerJsonSeguro(r);
+  const authMsg = ia4TratarAuthInvalida(r, data);
+
+  if(authMsg){
+    throw new Error(authMsg);
+  }
 
   if(!r.ok || !data.ok){
     throw new Error(data.error || "Não foi possível gerar Pix.");
@@ -12925,7 +13022,13 @@ async function usarSaldoPedido(id) {
       }
     });
 
-    const data = await r.json().catch(()=>({}));
+    const data = await ia4LerJsonSeguro(r);
+    const authMsg = ia4TratarAuthInvalida(r, data);
+
+    if(authMsg){
+      alert(authMsg);
+      return;
+    }
 
     if(!r.ok || !data.ok){
       alert(data.error || "Não foi possível desbloquear com saldo.");
@@ -13222,7 +13325,15 @@ async function carregarHistorico(){
       }
     });
 
-    const data = await r.json();
+    const data = await ia4LerJsonSeguro(r);
+
+    const authMsg = ia4TratarAuthInvalida(r, data);
+    if(authMsg){
+      if(!historicoCarregadoUmaVez){
+        historicoVazioEl.textContent = authMsg;
+      }
+      return;
+    }
 
     if(!data.ok){
       if(!historicoCarregadoUmaVez){
@@ -13488,14 +13599,31 @@ async function aprovarPedido(id){
   });
 
   try{
-    await fetch(`${API_BASE}/pedidos/${id}/aprovar`, {
+    const r = await fetch(`${API_BASE}/pedidos/${id}/aprovar`, {
       method:"POST",
       headers:{
         "Authorization":"Bearer " + token,
         "Content-Type":"application/json"
       }
     });
-  }catch(e){}
+
+    const out = await ia4LerJsonSeguro(r);
+    const authMsg = ia4TratarAuthInvalida(r, out);
+
+    if(authMsg){
+      alert(authMsg);
+      return;
+    }
+
+    if(!r.ok || !out.ok || out.pode_baixar === false){
+      alert(out.error || out.mensagem || "Não foi possível liberar o download deste pedido.");
+      carregarHistorico();
+      return;
+    }
+  }catch(e){
+    alert("Erro de rede ao aprovar pedido");
+    return;
+  }
 
   await baixarPedido(id);
 }
@@ -13510,8 +13638,17 @@ async function aprovarECompartilharPedido(id){
       }
     });
 
-    if(!r.ok){
-      alert("Erro ao aprovar pedido");
+    const out = await ia4LerJsonSeguro(r);
+    const authMsg = ia4TratarAuthInvalida(r, out);
+
+    if(authMsg){
+      alert(authMsg);
+      return;
+    }
+
+    if(!r.ok || !out.ok || out.pode_baixar === false){
+      alert(out.error || out.mensagem || "Erro ao aprovar pedido");
+      carregarHistorico();
       return;
     }
 
@@ -13529,7 +13666,9 @@ async function baixarPedido(id){
     });
 
     if(!r.ok){
-      alert("Erro ao baixar imagem");
+      const out = await ia4LerJsonSeguro(r);
+      const authMsg = ia4TratarAuthInvalida(r, out);
+      alert(authMsg || out.error || out.mensagem || "Erro ao baixar imagem");
       return;
     }
 
@@ -13566,7 +13705,9 @@ async function compartilharImagemPedido(id){
     });
 
     if(!r.ok){
-      await baixarPedido(id);
+      const out = await ia4LerJsonSeguro(r);
+      const authMsg = ia4TratarAuthInvalida(r, out);
+      alert(authMsg || out.error || out.mensagem || "Erro ao compartilhar imagem");
       return;
     }
 
@@ -13621,7 +13762,14 @@ async function acompanharResultado(pedidoId){
         headers: { "Authorization": "Bearer " + token }
       });
 
-      const data = await r.json();
+      const data = await ia4LerJsonSeguro(r);
+
+      const authMsg = ia4TratarAuthInvalida(r, data);
+      if(authMsg){
+        clearInterval(timer);
+        statusElLocal.textContent = authMsg;
+        return;
+      }
 
       if(data.ok && data.imagem_pronta){
         clearInterval(timer);
