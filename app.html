@@ -1612,6 +1612,73 @@
       line-height:1.4;
     }
 
+    .perfilTimeUploadGrid{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:12px;
+      margin-bottom:16px;
+    }
+
+    .perfilTimeUploadCard{
+      border:1px solid #d1d5db;
+      border-radius:16px;
+      background:#ffffff;
+      padding:12px;
+      display:flex;
+      gap:12px;
+      align-items:center;
+      min-height:104px;
+    }
+
+    .perfilTimeUploadThumb{
+      width:64px;
+      height:64px;
+      border-radius:14px;
+      background:#0f172a;
+      color:#facc15;
+      display:grid;
+      place-items:center;
+      font-size:22px;
+      font-weight:950;
+      overflow:hidden;
+      flex:0 0 auto;
+    }
+
+    .perfilTimeUploadThumb img{
+      width:100%;
+      height:100%;
+      object-fit:cover;
+      display:block;
+    }
+
+    .perfilTimeUploadCard strong{
+      display:block;
+      color:#0f172a;
+      font-size:14px;
+      font-weight:950;
+      margin-bottom:4px;
+    }
+
+    .perfilTimeUploadCard span{
+      display:block;
+      color:#64748b;
+      font-size:12px;
+      font-weight:850;
+      line-height:1.3;
+      margin-bottom:8px;
+    }
+
+    .perfilTimeUploadBtn{
+      border:0;
+      border-radius:10px;
+      background:#111827;
+      color:#ffffff;
+      padding:9px 11px;
+      font-size:12px;
+      font-weight:950;
+      cursor:pointer;
+    }
+
     .perfilTimeGrid{
       display:grid;
       grid-template-columns:1fr 1fr;
@@ -2459,6 +2526,10 @@
 
     @media (max-width:640px){
       .perfilTimeGrid{
+        grid-template-columns:1fr;
+      }
+
+      .perfilTimeUploadGrid{
         grid-template-columns:1fr;
       }
 
@@ -7637,6 +7708,28 @@ body:not(.modeChosen) .builderArea,
           <span id="perfilTimePreviewLocal">Cidade e estado</span>
           <span id="perfilTimePreviewInstagram">@instagram</span>
           <p id="perfilTimePreviewDescricao">Resumo curto do perfil do time.</p>
+        </div>
+      </div>
+
+      <div class="perfilTimeUploadGrid">
+        <div class="perfilTimeUploadCard">
+          <div class="perfilTimeUploadThumb" id="perfilEscudoPreview">E</div>
+          <div>
+            <strong>Escudo do Time</strong>
+            <span id="perfilEscudoStatus">Envie uma imagem PNG, JPG ou WEBP.</span>
+            <input class="fileHidden" id="perfilEscudoInput" type="file" accept="image/png,image/jpeg,image/jpg,image/webp">
+            <button class="perfilTimeUploadBtn" id="perfilEscudoUploadBtn" type="button">Enviar escudo</button>
+          </div>
+        </div>
+
+        <div class="perfilTimeUploadCard">
+          <div class="perfilTimeUploadThumb" id="perfilMascotePreview">M</div>
+          <div>
+            <strong>Mascote do Time</strong>
+            <span id="perfilMascoteStatus">Envie uma imagem PNG, JPG ou WEBP.</span>
+            <input class="fileHidden" id="perfilMascoteInput" type="file" accept="image/png,image/jpeg,image/jpg,image/webp">
+            <button class="perfilTimeUploadBtn" id="perfilMascoteUploadBtn" type="button">Enviar mascote</button>
+          </div>
         </div>
       </div>
 
@@ -15271,6 +15364,14 @@ const perfilTimePreviewLocal = document.getElementById("perfilTimePreviewLocal")
 const perfilTimePreviewInstagram = document.getElementById("perfilTimePreviewInstagram");
 const perfilTimePreviewDescricao = document.getElementById("perfilTimePreviewDescricao");
 const perfilTimeMsg = document.getElementById("perfilTimeMsg");
+const perfilEscudoInput = document.getElementById("perfilEscudoInput");
+const perfilEscudoUploadBtn = document.getElementById("perfilEscudoUploadBtn");
+const perfilEscudoPreview = document.getElementById("perfilEscudoPreview");
+const perfilEscudoStatus = document.getElementById("perfilEscudoStatus");
+const perfilMascoteInput = document.getElementById("perfilMascoteInput");
+const perfilMascoteUploadBtn = document.getElementById("perfilMascoteUploadBtn");
+const perfilMascotePreview = document.getElementById("perfilMascotePreview");
+const perfilMascoteStatus = document.getElementById("perfilMascoteStatus");
 const perfilTimeVisualModal = document.getElementById("perfilTimeVisualModal");
 const perfilTimeVisualCloseBtn = document.getElementById("perfilTimeVisualCloseBtn");
 const perfilVisualNome = document.getElementById("perfilVisualNome");
@@ -15323,6 +15424,10 @@ const perfilAssistCache = {
   perfil: null,
   jogadores: [],
   jogos: []
+};
+const perfilImagemObjectUrls = {
+  escudo: "",
+  mascote: ""
 };
 
 function perfilAssistInvalidarCache(){
@@ -15900,9 +16005,188 @@ function perfilVisualSetText(el, texto){
   if(el) el.textContent = texto || "";
 }
 
+function perfilImagemEndpoint(tipo){
+  return `/me/time/perfil/${tipo}/imagem`;
+}
+
+function perfilImagemTemValor(perfil, tipo){
+  return !!(perfil?.[`${tipo}_url`] || perfil?.[`${tipo}_path`]);
+}
+
+function perfilImagemStatusEl(tipo){
+  return tipo === "escudo" ? perfilEscudoStatus : perfilMascoteStatus;
+}
+
+function perfilImagemInputEl(tipo){
+  return tipo === "escudo" ? perfilEscudoInput : perfilMascoteInput;
+}
+
+function perfilImagemButtonEl(tipo){
+  return tipo === "escudo" ? perfilEscudoUploadBtn : perfilMascoteUploadBtn;
+}
+
+function perfilImagemTargets(tipo){
+  if(tipo === "escudo"){
+    return [
+      { el: perfilEscudoPreview, fallback: "E", alt: "Escudo do time" },
+      { el: perfilVisualEscudo, fallback: "T", alt: "Escudo do time" },
+      { el: perfilVisualEscudoThumb, fallback: "E", alt: "Escudo do time" }
+    ];
+  }
+
+  return [
+    { el: perfilMascotePreview, fallback: "M", alt: "Mascote do time" },
+    { el: perfilVisualMascoteThumb, fallback: "M", alt: "Mascote do time" }
+  ];
+}
+
+function perfilImagemSetTarget(target, url = ""){
+  if(!target?.el) return;
+  if(url){
+    target.el.innerHTML = `<img src="${htmlEscape(url)}" alt="${htmlEscape(target.alt || "")}">`;
+  }else{
+    target.el.textContent = target.fallback || "";
+  }
+}
+
+function perfilImagemRevoke(tipo){
+  const atual = perfilImagemObjectUrls[tipo];
+  if(atual){
+    try{ URL.revokeObjectURL(atual); }catch(e){}
+    perfilImagemObjectUrls[tipo] = "";
+  }
+}
+
+function perfilImagemReset(tipo){
+  perfilImagemRevoke(tipo);
+  perfilImagemTargets(tipo).forEach(target => perfilImagemSetTarget(target, ""));
+}
+
+async function carregarImagemPerfilPrivada(tipo, perfil = perfilAssistCache.perfil || {}){
+  if(!token || !perfilImagemTemValor(perfil, tipo)){
+    perfilImagemReset(tipo);
+    return "";
+  }
+
+  try{
+    const r = await fetch(`${API_BASE}${perfilImagemEndpoint(tipo)}?ts=${Date.now()}`, {
+      headers:{ "Authorization":"Bearer " + token },
+      cache:"no-store"
+    });
+
+    if(!r.ok){
+      perfilImagemReset(tipo);
+      return "";
+    }
+
+    const blob = await r.blob();
+    perfilImagemRevoke(tipo);
+    const objectUrl = URL.createObjectURL(blob);
+    perfilImagemObjectUrls[tipo] = objectUrl;
+    perfilImagemTargets(tipo).forEach(target => perfilImagemSetTarget(target, objectUrl));
+    return objectUrl;
+  }catch(err){
+    perfilImagemReset(tipo);
+    return "";
+  }
+}
+
+function atualizarPreviewsImagemPerfil(perfil = perfilAssistCache.perfil || {}){
+  const temEscudo = perfilImagemTemValor(perfil, "escudo");
+  const temMascote = perfilImagemTemValor(perfil, "mascote");
+
+  perfilVisualSetText(perfilEscudoStatus, temEscudo ? "Escudo cadastrado." : "Envie uma imagem PNG, JPG ou WEBP.");
+  perfilVisualSetText(perfilMascoteStatus, temMascote ? "Mascote cadastrado." : "Envie uma imagem PNG, JPG ou WEBP.");
+  perfilVisualSetText(perfilVisualEscudoTexto, temEscudo ? "Escudo cadastrado no perfil." : "Complete o perfil do seu time.");
+  perfilVisualSetText(perfilVisualMascoteTexto, temMascote ? "Mascote cadastrado no perfil." : "Complete o perfil do seu time.");
+
+  carregarImagemPerfilPrivada("escudo", perfil);
+  carregarImagemPerfilPrivada("mascote", perfil);
+}
+
+function validarArquivoImagemPerfil(file){
+  if(!file) return "Selecione uma imagem.";
+  const tipos = ["image/png", "image/jpeg", "image/jpg", "image/webp"];
+  if(!tipos.includes(String(file.type || "").toLowerCase())){
+    return "Envie apenas PNG, JPG ou WEBP.";
+  }
+  if(file.size > 8 * 1024 * 1024){
+    return "Imagem muito grande. Envie ate 8MB.";
+  }
+  return "";
+}
+
+async function enviarImagemPerfil(tipo){
+  if(!token){
+    abrirLoginVisitanteModal();
+    return;
+  }
+
+  const input = perfilImagemInputEl(tipo);
+  const btn = perfilImagemButtonEl(tipo);
+  const statusEl = perfilImagemStatusEl(tipo);
+  const file = input?.files?.[0] || null;
+  const erro = validarArquivoImagemPerfil(file);
+
+  if(erro){
+    perfilVisualSetText(statusEl, erro);
+    setPerfilTimeMsg(erro, "erro");
+    return;
+  }
+
+  const formData = new FormData();
+  formData.append("imagem", file);
+
+  const textoOriginal = btn?.textContent || "";
+
+  try{
+    if(btn){
+      btn.disabled = true;
+      btn.textContent = "Enviando...";
+    }
+    perfilVisualSetText(statusEl, "Enviando imagem...");
+    setPerfilTimeMsg("");
+
+    const r = await fetch(`${API_BASE}/me/time/perfil/${tipo}`, {
+      method:"POST",
+      headers:{ "Authorization":"Bearer " + token },
+      body:formData
+    });
+    const data = await ia4LerJsonSeguro(r);
+    const authMsg = ia4TratarAuthInvalida(r, data);
+
+    if(authMsg){
+      perfilVisualSetText(statusEl, authMsg);
+      setPerfilTimeMsg(authMsg, "erro");
+      return;
+    }
+
+    if(!r.ok || !data.ok){
+      throw new Error(data.error || data.erro || "Nao foi possivel enviar a imagem.");
+    }
+
+    perfilAssistCache.perfil = data.perfil || perfilAssistCache.perfil || {};
+    preencherPerfilTime(perfilAssistCache.perfil);
+    atualizarPreviewsImagemPerfil(perfilAssistCache.perfil);
+    atualizarPerfilTimeVisualSeAberto();
+    setPerfilTimeMsg(tipo === "escudo" ? "Escudo enviado." : "Mascote enviado.", "ok");
+  }catch(err){
+    perfilVisualSetText(statusEl, err?.message || "Erro de rede ao enviar imagem.");
+    setPerfilTimeMsg(err?.message || "Erro de rede ao enviar imagem.", "erro");
+  }finally{
+    if(input) input.value = "";
+    if(btn){
+      btn.disabled = false;
+      btn.textContent = textoOriginal || (tipo === "escudo" ? "Enviar escudo" : "Enviar mascote");
+    }
+  }
+}
+
 function perfilVisualAssetUrl(value){
   const raw = String(value || "").trim();
   if(!raw) return "";
+  if(raw.startsWith("/me/time/perfil/")) return "";
+  if(raw.startsWith("assets/")) return "";
   if(/^(https?:|data:|blob:)/i.test(raw)) return raw;
   if(raw.startsWith("/")) return `${API_BASE}${raw}`;
   return raw;
@@ -15996,6 +16280,7 @@ function renderPerfilTimeVisual(data = {}){
   perfilVisualSetAsset(perfilVisualMascoteThumb, "M", mascoteUrl, `Mascote ${nome}`);
   perfilVisualSetText(perfilVisualEscudoTexto, escudoUrl ? "Escudo cadastrado no perfil." : "Complete o perfil do seu time.");
   perfilVisualSetText(perfilVisualMascoteTexto, mascoteUrl ? "Mascote cadastrado no perfil." : "Complete o perfil do seu time.");
+  atualizarPreviewsImagemPerfil(perfil);
 
   if(perfilVisualElencoCounter){
     perfilVisualElencoCounter.textContent = `${jogadores.length} ${jogadores.length === 1 ? "jogador" : "jogadores"}`;
@@ -16046,6 +16331,8 @@ function renderPerfilTimeVisual(data = {}){
 }
 
 function renderPerfilTimeVisualCarregando(){
+  perfilImagemReset("escudo");
+  perfilImagemReset("mascote");
   perfilVisualSetText(perfilVisualNome, "Carregando perfil...");
   perfilVisualSetText(perfilVisualDescricao, "Buscando os dados privados do seu time.");
   if(perfilVisualMeta) perfilVisualMeta.innerHTML = `<span>Perfil privado</span>`;
@@ -16138,6 +16425,7 @@ function preencherPerfilTime(perfil){
   if(perfilInstagram) perfilInstagram.value = perfil?.instagram || "";
   if(perfilDescricaoCurta) perfilDescricaoCurta.value = perfil?.descricao_curta || "";
   atualizarPerfilTimePreview();
+  atualizarPreviewsImagemPerfil(perfil || {});
 }
 
 function perfilJogadoresAtivos(){
@@ -16765,6 +17053,10 @@ perfilVisualEditarBtn?.addEventListener("click", abrirEditorPeloPerfilVisual);
 perfilVisualCriarArteBtn?.addEventListener("click", criarArteComPerfilVisual);
 perfilTimeCloseBtn?.addEventListener("click", fecharPerfilTimeModal);
 perfilTimeSalvarBtn?.addEventListener("click", salvarPerfilTime);
+perfilEscudoUploadBtn?.addEventListener("click", ()=>perfilEscudoInput?.click());
+perfilMascoteUploadBtn?.addEventListener("click", ()=>perfilMascoteInput?.click());
+perfilEscudoInput?.addEventListener("change", ()=>enviarImagemPerfil("escudo"));
+perfilMascoteInput?.addEventListener("change", ()=>enviarImagemPerfil("mascote"));
 perfilJogadorSalvarBtn?.addEventListener("click", salvarPerfilJogador);
 perfilJogadorCancelarBtn?.addEventListener("click", ()=>{
   limparFormJogador();
