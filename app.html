@@ -2173,6 +2173,86 @@
       line-height:1.35;
     }
 
+    .perfilVisualGallerySection,
+    .perfilPublicoGallerySection{
+      grid-column:1 / -1;
+    }
+
+    .perfilVisualGallery,
+    .perfilPublicoGallery{
+      display:grid;
+      grid-template-columns:repeat(auto-fill, minmax(148px, 1fr));
+      gap:10px;
+    }
+
+    .perfilGalleryCard{
+      min-width:0;
+      border:1px solid rgba(255,255,255,.10);
+      border-radius:8px;
+      background:#181818;
+      overflow:hidden;
+    }
+
+    .perfilGalleryMedia{
+      position:relative;
+      width:100%;
+      aspect-ratio:4 / 5;
+      background:linear-gradient(145deg, rgba(250,204,21,.12), rgba(15,23,42,.85));
+      overflow:hidden;
+    }
+
+    .perfilGalleryMedia img{
+      width:100%;
+      height:100%;
+      object-fit:cover;
+      display:block;
+    }
+
+    .perfilGalleryMedia img:not([src]){
+      display:none;
+    }
+
+    .perfilGalleryFallback{
+      position:absolute;
+      inset:0;
+      display:grid;
+      place-items:center;
+      padding:12px;
+      text-align:center;
+      color:#fde68a;
+      font-size:12px;
+      font-weight:950;
+      line-height:1.25;
+    }
+
+    .perfilGalleryMedia img[src] + .perfilGalleryFallback{
+      display:none;
+    }
+
+    .perfilGalleryInfo{
+      padding:10px;
+    }
+
+    .perfilGalleryInfo strong{
+      display:block;
+      color:#ffffff;
+      font-size:13px;
+      font-weight:950;
+      line-height:1.2;
+      overflow:hidden;
+      text-overflow:ellipsis;
+      white-space:nowrap;
+    }
+
+    .perfilGalleryInfo span{
+      display:block;
+      color:#cbd5e1;
+      font-size:11px;
+      font-weight:850;
+      line-height:1.3;
+      margin-top:4px;
+    }
+
     .perfilVisualEmpty{
       border:1px dashed rgba(250,204,21,.28);
       border-radius:8px;
@@ -2490,6 +2570,10 @@
       color:#facc15 !important;
       font-size:18px !important;
       margin:7px 0 4px !important;
+    }
+
+    .perfilPublicoGallery{
+      grid-template-columns:repeat(auto-fill, minmax(164px, 1fr));
     }
 
     .perfilPublicoEmpty,
@@ -7466,6 +7550,14 @@ body:not(.modeChosen) .builderArea,
         </section>
       </div>
 
+      <section class="perfilPublicoSection perfilPublicoGallerySection">
+        <div class="perfilPublicoSectionTop">
+          <h3>Galeria do Time</h3>
+          <span class="perfilPublicoCounter" id="perfilPublicoGaleriaCounter">0 artes</span>
+        </div>
+        <div class="perfilPublicoGallery" id="perfilPublicoGaleria"></div>
+      </section>
+
       <div class="perfilPublicoMsg" id="perfilPublicoMsg"></div>
     </div>
   </section>
@@ -8466,6 +8558,14 @@ body:not(.modeChosen) .builderArea,
           <div class="perfilVisualGameList" id="perfilVisualProximos"></div>
         </section>
       </div>
+
+      <section class="perfilVisualSection perfilVisualGallerySection">
+        <div class="perfilVisualSectionTop">
+          <h3 class="perfilVisualSectionTitle">Galeria do Time</h3>
+          <span class="perfilVisualCounter" id="perfilVisualGaleriaCounter">0 artes</span>
+        </div>
+        <div class="perfilVisualGallery" id="perfilVisualGaleria"></div>
+      </section>
 
       <div class="perfilVisualMsg" id="perfilVisualMsg"></div>
     </div>
@@ -15913,6 +16013,8 @@ const perfilVisualResultadosCounter = document.getElementById("perfilVisualResul
 const perfilVisualProximos = document.getElementById("perfilVisualProximos");
 const perfilVisualProximosCounter = document.getElementById("perfilVisualProximosCounter");
 const perfilVisualStats = document.getElementById("perfilVisualStats");
+const perfilVisualGaleria = document.getElementById("perfilVisualGaleria");
+const perfilVisualGaleriaCounter = document.getElementById("perfilVisualGaleriaCounter");
 const perfilVisualMsg = document.getElementById("perfilVisualMsg");
 const perfilVisualEditarBtn = document.getElementById("perfilVisualEditarBtn");
 const perfilVisualCriarArteBtn = document.getElementById("perfilVisualCriarArteBtn");
@@ -15934,6 +16036,8 @@ const perfilPublicoResultados = document.getElementById("perfilPublicoResultados
 const perfilPublicoResultadosCounter = document.getElementById("perfilPublicoResultadosCounter");
 const perfilPublicoProximos = document.getElementById("perfilPublicoProximos");
 const perfilPublicoProximosCounter = document.getElementById("perfilPublicoProximosCounter");
+const perfilPublicoGaleria = document.getElementById("perfilPublicoGaleria");
+const perfilPublicoGaleriaCounter = document.getElementById("perfilPublicoGaleriaCounter");
 const perfilPublicoMsg = document.getElementById("perfilPublicoMsg");
 const perfilElencoResumo = document.getElementById("perfilElencoResumo");
 const perfilElencoPreview = document.getElementById("perfilElencoPreview");
@@ -15967,12 +16071,14 @@ const perfilAssistCache = {
   loading: null,
   perfil: null,
   jogadores: [],
-  jogos: []
+  jogos: [],
+  galeria: []
 };
 const perfilImagemObjectUrls = {
   escudo: "",
   mascote: ""
 };
+const perfilGaleriaObjectUrls = new Map();
 
 function perfilAssistInvalidarCache(){
   perfilAssistCache.loaded = false;
@@ -16161,7 +16267,8 @@ async function perfilAssistCarregarDados(force = false){
       ok:true,
       perfil: perfilAssistCache.perfil,
       jogadores: perfilAssistCache.jogadores,
-      jogos: perfilAssistCache.jogos
+      jogos: perfilAssistCache.jogos,
+      galeria: perfilAssistCache.galeria
     };
   }
 
@@ -16171,21 +16278,24 @@ async function perfilAssistCarregarDados(force = false){
 
   perfilAssistCache.loading = (async ()=>{
     try{
-      const [perfilResp, jogadoresResp, jogosResp] = await Promise.all([
+      const [perfilResp, jogadoresResp, jogosResp, galeriaResp] = await Promise.all([
         fetch(`${API_BASE}/me/time/perfil`, { headers:{ "Authorization":"Bearer " + token } }),
         fetch(`${API_BASE}/me/time/jogadores`, { headers:{ "Authorization":"Bearer " + token } }),
-        fetch(`${API_BASE}/me/time/jogos`, { headers:{ "Authorization":"Bearer " + token } })
+        fetch(`${API_BASE}/me/time/jogos`, { headers:{ "Authorization":"Bearer " + token } }),
+        fetch(`${API_BASE}/me/time/galeria`, { headers:{ "Authorization":"Bearer " + token } })
       ]);
 
-      const [perfilData, jogadoresData, jogosData] = await Promise.all([
+      const [perfilData, jogadoresData, jogosData, galeriaData] = await Promise.all([
         ia4LerJsonSeguro(perfilResp),
         ia4LerJsonSeguro(jogadoresResp),
-        ia4LerJsonSeguro(jogosResp)
+        ia4LerJsonSeguro(jogosResp),
+        ia4LerJsonSeguro(galeriaResp)
       ]);
 
       const authMsg = ia4TratarAuthInvalida(perfilResp, perfilData) ||
         ia4TratarAuthInvalida(jogadoresResp, jogadoresData) ||
-        ia4TratarAuthInvalida(jogosResp, jogosData);
+        ia4TratarAuthInvalida(jogosResp, jogosData) ||
+        ia4TratarAuthInvalida(galeriaResp, galeriaData);
 
       if(authMsg){
         return { ok:false, error:authMsg };
@@ -16200,10 +16310,14 @@ async function perfilAssistCarregarDados(force = false){
       if(!jogosResp.ok || !jogosData.ok){
         throw new Error(jogosData.error || jogosData.erro || "Nao foi possivel carregar os jogos.");
       }
+      if(!galeriaResp.ok || !galeriaData.ok){
+        throw new Error(galeriaData.error || galeriaData.erro || "Nao foi possivel carregar a galeria.");
+      }
 
       perfilAssistCache.perfil = perfilData.perfil || {};
       perfilAssistCache.jogadores = Array.isArray(jogadoresData.jogadores) ? jogadoresData.jogadores : [];
       perfilAssistCache.jogos = Array.isArray(jogosData.jogos) ? jogosData.jogos : [];
+      perfilAssistCache.galeria = Array.isArray(galeriaData.galeria) ? galeriaData.galeria : [];
       perfilAssistCache.loaded = true;
 
       perfilJogadoresTime = perfilAssistCache.jogadores;
@@ -16218,7 +16332,8 @@ async function perfilAssistCarregarDados(force = false){
         ok:true,
         perfil: perfilAssistCache.perfil,
         jogadores: perfilAssistCache.jogadores,
-        jogos: perfilAssistCache.jogos
+        jogos: perfilAssistCache.jogos,
+        galeria: perfilAssistCache.galeria
       };
     }catch(err){
       return { ok:false, error:err?.message || "Erro de rede ao carregar Perfil do Time." };
@@ -16976,12 +17091,103 @@ function perfilPublicoGameHtml(jogo, nomeTime){
   `;
 }
 
+function perfilGaleriaData(value){
+  const raw = String(value || "").trim();
+  if(!raw) return "";
+  const data = raw.slice(0, 10);
+  return formatarDataPerfilJogo(data) || data;
+}
+
+function perfilGaleriaImagemUrl(item){
+  const raw = String(item?.imagem_url || "").trim();
+  if(!raw) return "";
+  if(raw.startsWith("/")) return `${API_BASE}${raw}`;
+  if(/^https?:/i.test(raw)) return raw;
+  return "";
+}
+
+function perfilGaleriaRevokeUrls(){
+  perfilGaleriaObjectUrls.forEach((url)=>{
+    try{ URL.revokeObjectURL(url); }catch(e){}
+  });
+  perfilGaleriaObjectUrls.clear();
+}
+
+function perfilGaleriaCardHtml(item, publica = false){
+  const id = htmlEscape(item?.pedido_id || item?.id || "");
+  const produto = htmlEscape(item?.produto_nome || item?.produto || "Arte do time");
+  const data = htmlEscape(perfilGaleriaData(item?.criado_em || item?.data));
+  const src = publica ? perfilGaleriaImagemUrl(item) : "";
+  const srcAttr = src ? ` src="${htmlEscape(src)}"` : "";
+
+  return `
+    <article class="perfilGalleryCard" data-galeria-id="${id}">
+      <div class="perfilGalleryMedia">
+        <img${srcAttr} alt="${produto}" loading="lazy" data-galeria-img>
+        <div class="perfilGalleryFallback">Arte liberada</div>
+      </div>
+      <div class="perfilGalleryInfo">
+        <strong>${produto}</strong>
+        <span>${data || "Arte recente"}</span>
+      </div>
+    </article>
+  `;
+}
+
+async function carregarGaleriaPrivada(galeria = []){
+  if(!token || !perfilVisualGaleria) return;
+  perfilGaleriaRevokeUrls();
+
+  const itens = (Array.isArray(galeria) ? galeria : []).slice(0, 50);
+  await Promise.all(itens.map(async (item)=>{
+    const id = String(item?.pedido_id || item?.id || "").trim();
+    const rawUrl = String(item?.imagem_url || "").trim();
+    if(!id || !rawUrl) return;
+
+    const card = perfilVisualGaleria.querySelector(`[data-galeria-id="${CSS.escape(id)}"]`);
+    const img = card?.querySelector("[data-galeria-img]");
+    if(!img) return;
+
+    try{
+      const r = await fetch(`${API_BASE}${rawUrl}?ts=${Date.now()}`, {
+        headers:{ "Authorization":"Bearer " + token },
+        cache:"no-store"
+      });
+
+      if(!r.ok) return;
+
+      const blob = await r.blob();
+      const objectUrl = URL.createObjectURL(blob);
+      perfilGaleriaObjectUrls.set(id, objectUrl);
+      img.src = objectUrl;
+    }catch(e){}
+  }));
+}
+
+function renderPerfilGaleria(container, counter, galeria = [], options = {}){
+  if(!container) return;
+  const itens = (Array.isArray(galeria) ? galeria : []).slice(0, 50);
+  const total = itens.length;
+  const publica = options.publica === true;
+
+  perfilVisualSetText(counter, `${total} ${total === 1 ? "arte" : "artes"}`);
+
+  container.innerHTML = total
+    ? itens.map(item => perfilGaleriaCardHtml(item, publica)).join("")
+    : `<div class="${publica ? "perfilPublicoEmpty" : "perfilVisualEmpty"}">As artes aprovadas do time vao aparecer aqui.</div>`;
+
+  if(!publica){
+    carregarGaleriaPrivada(itens);
+  }
+}
+
 function renderPerfilPublico(data = {}){
   const perfil = data.perfil || {};
   const jogadores = (Array.isArray(data.jogadores) ? data.jogadores : [])
     .filter(jogador => jogador && jogador.ativo !== false);
   const jogos = (Array.isArray(data.jogos) ? data.jogos : [])
     .filter(jogo => jogo && jogo.ativo !== false);
+  const galeria = Array.isArray(data.galeria) ? data.galeria : [];
   const nome = perfilAssistTexto(perfil.nome_time) || "Perfil do Time";
   const local = perfilVisualLocal(perfil);
   const instagram = perfilVisualInstagram(perfil);
@@ -17048,6 +17254,8 @@ function renderPerfilPublico(data = {}){
       : `<div class="perfilPublicoEmpty">Proximos jogos ainda nao cadastrados.</div>`;
   }
 
+  renderPerfilGaleria(perfilPublicoGaleria, perfilPublicoGaleriaCounter, galeria, { publica:true });
+
   perfilVisualSetText(perfilPublicoMsg, "Perfil publico compartilhavel.");
 }
 
@@ -17084,6 +17292,8 @@ async function iniciarPerfilPublicoSeNecessario(){
     if(perfilPublicoElenco) perfilPublicoElenco.innerHTML = `<div class="perfilPublicoEmpty">Nada para mostrar.</div>`;
     if(perfilPublicoResultados) perfilPublicoResultados.innerHTML = `<div class="perfilPublicoEmpty">Nada para mostrar.</div>`;
     if(perfilPublicoProximos) perfilPublicoProximos.innerHTML = `<div class="perfilPublicoEmpty">Nada para mostrar.</div>`;
+    if(perfilPublicoGaleria) perfilPublicoGaleria.innerHTML = `<div class="perfilPublicoEmpty">Nada para mostrar.</div>`;
+    perfilVisualSetText(perfilPublicoGaleriaCounter, "0 artes");
     perfilVisualSetText(perfilPublicoMsg, err?.message || "Nao foi possivel carregar este perfil.");
     return true;
   }
@@ -17095,6 +17305,7 @@ function renderPerfilTimeVisual(data = {}){
     .filter(jogador => jogador && jogador.ativo !== false);
   const jogos = (Array.isArray(data.jogos) ? data.jogos : perfilAssistCache.jogos || [])
     .filter(jogo => jogo && jogo.ativo !== false);
+  const galeria = Array.isArray(data.galeria) ? data.galeria : perfilAssistCache.galeria || [];
 
   const nome = perfilAssistTexto(perfil.nome_time || localStorage.getItem("omascote_nome_time")) || "Seu time";
   const local = perfilVisualLocal(perfil);
@@ -17173,6 +17384,8 @@ function renderPerfilTimeVisual(data = {}){
       : `<div class="perfilVisualEmpty">Cadastre seu proximo jogo.</div>`;
   }
 
+  renderPerfilGaleria(perfilVisualGaleria, perfilVisualGaleriaCounter, galeria, { publica:false });
+
   const precisaCompletar = !descricao || !local || !instagram;
   setPerfilVisualMsg(precisaCompletar ? "Complete o perfil do seu time para deixar esta pagina mais forte." : "");
 }
@@ -17191,9 +17404,11 @@ function renderPerfilTimeVisualCarregando(){
   if(perfilVisualElenco) perfilVisualElenco.innerHTML = `<div class="perfilVisualEmpty">Carregando elenco...</div>`;
   if(perfilVisualResultados) perfilVisualResultados.innerHTML = `<div class="perfilVisualEmpty">Carregando resultados...</div>`;
   if(perfilVisualProximos) perfilVisualProximos.innerHTML = `<div class="perfilVisualEmpty">Carregando proximos jogos...</div>`;
+  if(perfilVisualGaleria) perfilVisualGaleria.innerHTML = `<div class="perfilVisualEmpty">Carregando galeria...</div>`;
   perfilVisualSetText(perfilVisualElencoCounter, "0 jogadores");
   perfilVisualSetText(perfilVisualResultadosCounter, "0 resultados");
   perfilVisualSetText(perfilVisualProximosCounter, "0 jogos");
+  perfilVisualSetText(perfilVisualGaleriaCounter, "0 artes");
   renderPerfilStats(perfilVisualStats, calcularEstatisticasPerfilJogos([]));
   setPerfilVisualMsg("");
 }
@@ -17220,6 +17435,7 @@ async function abrirPerfilTimeVisual(){
 function fecharPerfilTimeVisual(){
   perfilTimeVisualModal?.classList.remove("open");
   perfilTimeVisualModal?.setAttribute("aria-hidden", "true");
+  perfilGaleriaRevokeUrls();
 }
 
 function atualizarPerfilTimeVisualSeAberto(){
@@ -17227,7 +17443,8 @@ function atualizarPerfilTimeVisualSeAberto(){
     renderPerfilTimeVisual({
       perfil: perfilAssistCache.perfil || {},
       jogadores: perfilJogadoresTime,
-      jogos: perfilJogosTime
+      jogos: perfilJogosTime,
+      galeria: perfilAssistCache.galeria || []
     });
   }
 }
