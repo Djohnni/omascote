@@ -1693,6 +1693,119 @@
     .perfilTimeMsg.ok{color:#047857}
     .perfilTimeMsg.erro{color:#b91c1c}
 
+    .perfilAssistBox{
+      grid-column:1 / -1;
+      border:1px solid #bbf7d0;
+      border-radius:16px;
+      background:linear-gradient(135deg, #f0fdf4, #eff6ff);
+      padding:14px;
+      color:#0f172a;
+      box-shadow:0 12px 28px rgba(15,23,42,.08);
+    }
+
+    .perfilAssistHeader{
+      display:flex;
+      align-items:flex-start;
+      justify-content:space-between;
+      gap:12px;
+      margin-bottom:10px;
+    }
+
+    .perfilAssistTitle{
+      display:block;
+      font-size:15px;
+      font-weight:950;
+      color:#0f172a;
+      line-height:1.2;
+    }
+
+    .perfilAssistHint{
+      display:block;
+      margin-top:3px;
+      color:#475569;
+      font-size:12px;
+      font-weight:850;
+      line-height:1.35;
+    }
+
+    .perfilAssistBadge{
+      flex:0 0 auto;
+      border-radius:999px;
+      background:#dcfce7;
+      color:#166534;
+      padding:6px 9px;
+      font-size:11px;
+      font-weight:950;
+      white-space:nowrap;
+    }
+
+    .perfilAssistControls{
+      display:grid;
+      grid-template-columns:repeat(auto-fit, minmax(190px, 1fr));
+      gap:10px;
+      margin-bottom:10px;
+    }
+
+    .perfilAssistControls select{
+      width:100%;
+      min-height:44px;
+      border:1px solid #cbd5e1;
+      border-radius:12px;
+      background:#ffffff;
+      color:#0f172a;
+      padding:10px;
+      font-size:14px;
+      font-weight:850;
+      outline:none;
+    }
+
+    .perfilAssistActions{
+      display:flex;
+      flex-wrap:wrap;
+      gap:8px;
+      align-items:center;
+    }
+
+    .perfilAssistBtn{
+      border:0;
+      border-radius:12px;
+      background:#16a34a;
+      color:#ffffff;
+      padding:11px 13px;
+      font-size:13px;
+      font-weight:950;
+      cursor:pointer;
+      box-shadow:0 10px 20px rgba(22,163,74,.20);
+    }
+
+    .perfilAssistBtn.secondary{
+      background:#ffffff;
+      color:#0f172a;
+      border:1px solid #cbd5e1;
+      box-shadow:none;
+    }
+
+    .perfilAssistBtn:disabled{
+      opacity:.65;
+      cursor:wait;
+    }
+
+    .perfilAssistMsg{
+      min-height:18px;
+      color:#475569;
+      font-size:12px;
+      font-weight:900;
+      line-height:1.35;
+      margin-top:8px;
+    }
+
+    .perfilAssistMsg.ok{color:#047857}
+    .perfilAssistMsg.erro{color:#b91c1c}
+
+    .cleanProductForm .perfilAssistBox{
+      margin-bottom:4px;
+    }
+
     .perfilElencoSection{
       margin-top:18px;
       padding-top:16px;
@@ -1997,6 +2110,15 @@
 
       .perfilTimePrivado{
         justify-content:center;
+      }
+
+      .perfilAssistHeader{
+        flex-direction:column;
+      }
+
+      .perfilAssistActions{
+        flex-direction:column;
+        align-items:stretch;
       }
     }
 
@@ -6693,6 +6815,25 @@ body:not(.modeChosen) .builderArea,
             </div>
 
           <form id="pedidoForm" class="formGrid productFieldsPanel" enctype="multipart/form-data" novalidate>
+            <div class="perfilAssistBox full" id="perfilAssistBox" data-perfil-assist="legacy" hidden>
+              <div class="perfilAssistHeader">
+                <div>
+                  <strong class="perfilAssistTitle">Perfil do Time</strong>
+                  <span class="perfilAssistHint">Preencha alguns campos com dados ja cadastrados. Voce pode editar tudo depois.</span>
+                </div>
+                <span class="perfilAssistBadge">Opcional</span>
+              </div>
+              <div class="perfilAssistControls">
+                <select id="perfilAssistJogoSelect" data-perfil-assist-jogo hidden aria-label="Selecionar jogo do perfil"></select>
+                <select id="perfilAssistJogadorSelect" data-perfil-assist-jogador hidden aria-label="Selecionar jogador do perfil"></select>
+              </div>
+              <div class="perfilAssistActions">
+                <button class="perfilAssistBtn" id="perfilAssistAplicarBtn" type="button" data-perfil-assist-apply>Preencher com perfil</button>
+                <button class="perfilAssistBtn secondary" id="perfilAssistAtualizarBtn" type="button" data-perfil-assist-refresh>Atualizar dados</button>
+              </div>
+              <div class="perfilAssistMsg" id="perfilAssistMsg" data-perfil-assist-msg></div>
+            </div>
+
             <div class="field-placar full">
               <label class="sectionTitle">Placar</label>
               <div class="placarRow">
@@ -9230,6 +9371,9 @@ function selectCleanProductForPicker(productKey, options = {}){
   });
 
   activateCleanProductBlock(productKey);
+  if(window.perfilAssistRuntimeReady){
+    perfilAssistAtualizarProduto(productKey);
+  }
 
   if(options.scroll){
     target.scrollIntoView({ behavior:"smooth", block:"start" });
@@ -9247,6 +9391,35 @@ function setEscudo3dCleanFileLabel(text){
   document.querySelectorAll("[data-escudo3d-clean-file-name]").forEach(el => {
     el.textContent = text || "Selecionar escudo";
   });
+}
+
+function perfilAssistProductEnabled(productKey){
+  return ["resultado", "proximo_jogo", "escalacao", "jogador_escudo"].includes(productKey);
+}
+
+function renderPerfilAssistClean(productKey){
+  if(!perfilAssistProductEnabled(productKey)) return "";
+
+  return `
+    <div class="perfilAssistBox" data-perfil-assist="${htmlEscape(productKey)}">
+      <div class="perfilAssistHeader">
+        <div>
+          <strong class="perfilAssistTitle">Perfil do Time</strong>
+          <span class="perfilAssistHint">Preencha alguns campos com dados ja cadastrados. Voce pode editar tudo depois.</span>
+        </div>
+        <span class="perfilAssistBadge">Opcional</span>
+      </div>
+      <div class="perfilAssistControls">
+        <select data-perfil-assist-jogo hidden aria-label="Selecionar jogo do perfil"></select>
+        <select data-perfil-assist-jogador hidden aria-label="Selecionar jogador do perfil"></select>
+      </div>
+      <div class="perfilAssistActions">
+        <button class="perfilAssistBtn" type="button" data-perfil-assist-apply>Preencher com perfil</button>
+        <button class="perfilAssistBtn secondary" type="button" data-perfil-assist-refresh>Atualizar dados</button>
+      </div>
+      <div class="perfilAssistMsg" data-perfil-assist-msg></div>
+    </div>
+  `;
 }
 
 function renderCleanProductForms(){
@@ -9269,6 +9442,7 @@ function renderCleanProductForms(){
             <h3 class="cleanProductTitle">${htmlEscape(product.title || product.name || productKey)}</h3>
             ${priceLabel ? `<div class="cleanProductPrice">${htmlEscape(priceLabel)}</div>` : ""}
           </div>
+          ${renderPerfilAssistClean(productKey)}
           ${renderCleanFieldsGrouped(product, schema)}
           <button class="btnGreen cleanSubmitBtn" type="submit">Criar minha arte 🚀</button>
           <div class="cleanProductMsg" data-clean-msg></div>
@@ -10098,6 +10272,14 @@ function bindCleanProductForms(root){
       couponInput.addEventListener("input", () => schedulePricePreviewUpdate(pricePreview));
       couponInput.addEventListener("change", () => schedulePricePreviewUpdate(pricePreview, 0));
     }
+  });
+
+  root.querySelectorAll("[data-perfil-assist-apply]").forEach(btn => {
+    btn.addEventListener("click", () => perfilAssistAplicarDoBotao(btn));
+  });
+
+  root.querySelectorAll("[data-perfil-assist-refresh]").forEach(btn => {
+    btn.addEventListener("click", () => perfilAssistAtualizarDoBotao(btn));
   });
 
   root.querySelectorAll("[data-open-escudo3d-file]").forEach(box => {
@@ -11969,6 +12151,7 @@ document.querySelectorAll(".categoryBtn, .categoryMiniBtn").forEach(btn=>{
     updateProductFieldVisibility(null);
     configureOptionalSections("");
     arrangeFieldSequence("resultado");
+    perfilAssistAtualizarProduto("");
     closePhraseMenu();
     ia4Track("selecionou_categoria", {
       categoria: btn.dataset.category || "desconhecida"
@@ -12066,6 +12249,7 @@ function selectProduct(productKey){
   updateChosenPlaceholders(product);
   configureOptionalSections(productKey);
   arrangeFieldSequence(productKey);
+  perfilAssistAtualizarProduto(productKey);
 
   const openPhraseBtn = document.getElementById("openPhraseBtn");
   if(openPhraseBtn){
@@ -14649,6 +14833,526 @@ let perfilJogadoresTime = [];
 let perfilJogadorEditId = "";
 let perfilJogosTime = [];
 let perfilJogoEditId = "";
+const perfilAssistCache = {
+  loaded: false,
+  loading: null,
+  perfil: null,
+  jogadores: [],
+  jogos: []
+};
+
+function perfilAssistInvalidarCache(){
+  perfilAssistCache.loaded = false;
+  perfilAssistCache.loading = null;
+}
+
+function perfilAssistProdutoDoBox(box){
+  const form = box?.closest("[data-product-form]");
+  return form?.dataset?.productForm || selectedProductInput?.value || "";
+}
+
+function perfilAssistNeedsGame(productKey){
+  return ["resultado", "proximo_jogo", "escalacao"].includes(productKey);
+}
+
+function perfilAssistNeedsPlayer(productKey){
+  return productKey === "jogador_escudo";
+}
+
+function perfilAssistTexto(value){
+  if(value === 0) return "0";
+  return String(value ?? "").trim();
+}
+
+function perfilAssistSetMsg(box, texto, tipo = ""){
+  const msg = box?.querySelector("[data-perfil-assist-msg]");
+  if(!msg) return;
+  msg.textContent = texto || "";
+  msg.className = `perfilAssistMsg${tipo ? " " + tipo : ""}`;
+}
+
+function perfilAssistNomeTime(){
+  return perfilAssistTexto(
+    perfilAssistCache.perfil?.nome_time ||
+    perfilNomeTime?.value ||
+    localStorage.getItem("omascote_nome_time") ||
+    "Meu time"
+  );
+}
+
+function perfilAssistJogadoresAtivosLista(){
+  const base = perfilAssistCache.loaded ? perfilAssistCache.jogadores : perfilJogadoresTime;
+  return (Array.isArray(base) ? base : []).filter(jogador => jogador && jogador.ativo !== false);
+}
+
+function perfilAssistJogosAtivosLista(){
+  const base = perfilAssistCache.loaded ? perfilAssistCache.jogos : perfilJogosTime;
+  return (Array.isArray(base) ? base : []).filter(jogo => jogo && jogo.ativo !== false);
+}
+
+function perfilAssistDataOrdem(jogo){
+  return `${jogo?.data || ""} ${jogo?.horario || ""}`.trim();
+}
+
+function perfilAssistDataHora(jogo){
+  const data = typeof formatarDataPerfilJogo === "function"
+    ? formatarDataPerfilJogo(jogo?.data)
+    : perfilAssistTexto(jogo?.data);
+  const horario = perfilAssistTexto(jogo?.horario);
+  return [data, horario].filter(Boolean).join(" - ");
+}
+
+function perfilAssistConfronto(jogo){
+  const nomeTime = perfilAssistNomeTime();
+  const adversario = perfilAssistTexto(jogo?.adversario);
+  return [nomeTime, adversario].filter(Boolean).join(" x ");
+}
+
+function perfilAssistJogosParaProduto(productKey){
+  const jogos = perfilAssistJogosAtivosLista();
+  if(productKey === "resultado"){
+    return jogos
+      .filter(jogo => jogo.tipo === "resultado")
+      .sort((a, b) => perfilAssistDataOrdem(b).localeCompare(perfilAssistDataOrdem(a)));
+  }
+
+  if(productKey === "proximo_jogo" || productKey === "escalacao"){
+    const proximos = jogos
+      .filter(jogo => jogo.tipo === "proximo_jogo")
+      .sort((a, b) => perfilAssistDataOrdem(a).localeCompare(perfilAssistDataOrdem(b)));
+    if(proximos.length || productKey === "proximo_jogo") return proximos;
+    return jogos.sort((a, b) => perfilAssistDataOrdem(b).localeCompare(perfilAssistDataOrdem(a)));
+  }
+
+  return [];
+}
+
+function perfilAssistLabelJogo(jogo){
+  const tipo = jogo?.tipo === "resultado" ? "Resultado" : "Proximo jogo";
+  const confronto = perfilAssistConfronto(jogo) || perfilAssistTexto(jogo?.adversario) || "Jogo";
+  const placar = jogo?.tipo === "resultado" ? ` - ${placarPerfilJogo(jogo)}` : "";
+  const data = perfilAssistDataHora(jogo);
+  return `${tipo}: ${confronto}${placar}${data ? " - " + data : ""}`;
+}
+
+function perfilAssistLabelJogador(jogador){
+  const nome = perfilAssistTexto(jogador?.apelido || jogador?.nome) || "Jogador";
+  const numero = perfilAssistTexto(jogador?.numero);
+  const posicao = perfilAssistTexto(jogador?.posicao);
+  return [numero ? `#${numero}` : "", nome, posicao].filter(Boolean).join(" - ");
+}
+
+function perfilAssistRenderOptionsBox(box, productKey){
+  if(!box || !perfilAssistProductEnabled(productKey)) return;
+
+  const jogoSelect = box.querySelector("[data-perfil-assist-jogo]");
+  const jogadorSelect = box.querySelector("[data-perfil-assist-jogador]");
+  const jogos = perfilAssistJogosParaProduto(productKey);
+  const jogadores = perfilAssistJogadoresAtivosLista();
+  const precisaJogo = perfilAssistNeedsGame(productKey);
+  const precisaJogador = perfilAssistNeedsPlayer(productKey);
+
+  if(jogoSelect){
+    jogoSelect.hidden = !precisaJogo;
+    if(precisaJogo){
+      jogoSelect.innerHTML = jogos.length
+        ? jogos.map(jogo => `<option value="${htmlEscape(jogo.id || "")}">${htmlEscape(perfilAssistLabelJogo(jogo))}</option>`).join("")
+        : `<option value="">Nenhum jogo cadastrado</option>`;
+    }
+  }
+
+  if(jogadorSelect){
+    jogadorSelect.hidden = !precisaJogador;
+    if(precisaJogador){
+      jogadorSelect.innerHTML = jogadores.length
+        ? jogadores.map(jogador => `<option value="${htmlEscape(jogador.id || "")}">${htmlEscape(perfilAssistLabelJogador(jogador))}</option>`).join("")
+        : `<option value="">Nenhum jogador cadastrado</option>`;
+    }
+  }
+
+  if(productKey === "escalacao"){
+    perfilAssistSetMsg(box, `${jogadores.length} jogador(es) no elenco${jogos.length ? ` e ${jogos.length} jogo(s) disponivel(is)` : ""}.`);
+  }else if(precisaJogo){
+    perfilAssistSetMsg(box, `${jogos.length} jogo(s) disponivel(is) no perfil.`);
+  }else if(precisaJogador){
+    perfilAssistSetMsg(box, `${jogadores.length} jogador(es) disponivel(is) no elenco.`);
+  }else{
+    perfilAssistSetMsg(box, "");
+  }
+}
+
+function perfilAssistAtualizarProduto(productKey){
+  const boxes = [];
+  const legacyBox = document.getElementById("perfilAssistBox");
+  if(legacyBox){
+    const visivel = perfilAssistProductEnabled(productKey);
+    legacyBox.hidden = !visivel;
+    if(visivel){
+      legacyBox.dataset.perfilAssistProduct = productKey;
+      perfilAssistRenderOptionsBox(legacyBox, productKey);
+      boxes.push(legacyBox);
+    }else{
+      perfilAssistSetMsg(legacyBox, "");
+    }
+  }
+
+  document.querySelectorAll("[data-product-form] [data-perfil-assist]").forEach(box => {
+    const formProduct = perfilAssistProdutoDoBox(box);
+    perfilAssistRenderOptionsBox(box, formProduct);
+    if(formProduct === productKey){
+      boxes.push(box);
+    }
+  });
+
+  if(token && perfilAssistProductEnabled(productKey) && boxes.length && !perfilAssistCache.loaded && !perfilAssistCache.loading){
+    perfilAssistPrepararBox(boxes[0], false).then((data)=>{
+      if(data?.ok){
+        document.querySelectorAll("[data-perfil-assist]").forEach(box => {
+          const boxProduct = perfilAssistProdutoDoBox(box);
+          if(perfilAssistProductEnabled(boxProduct)){
+            perfilAssistRenderOptionsBox(box, boxProduct);
+          }
+        });
+      }
+    });
+  }
+}
+
+async function perfilAssistCarregarDados(force = false){
+  if(!token){
+    return { ok:false, error:"Entre na sua conta para usar o Perfil do Time." };
+  }
+
+  if(perfilAssistCache.loaded && !force){
+    return {
+      ok:true,
+      perfil: perfilAssistCache.perfil,
+      jogadores: perfilAssistCache.jogadores,
+      jogos: perfilAssistCache.jogos
+    };
+  }
+
+  if(perfilAssistCache.loading && !force){
+    return perfilAssistCache.loading;
+  }
+
+  perfilAssistCache.loading = (async ()=>{
+    try{
+      const [perfilResp, jogadoresResp, jogosResp] = await Promise.all([
+        fetch(`${API_BASE}/me/time/perfil`, { headers:{ "Authorization":"Bearer " + token } }),
+        fetch(`${API_BASE}/me/time/jogadores`, { headers:{ "Authorization":"Bearer " + token } }),
+        fetch(`${API_BASE}/me/time/jogos`, { headers:{ "Authorization":"Bearer " + token } })
+      ]);
+
+      const [perfilData, jogadoresData, jogosData] = await Promise.all([
+        ia4LerJsonSeguro(perfilResp),
+        ia4LerJsonSeguro(jogadoresResp),
+        ia4LerJsonSeguro(jogosResp)
+      ]);
+
+      const authMsg = ia4TratarAuthInvalida(perfilResp, perfilData) ||
+        ia4TratarAuthInvalida(jogadoresResp, jogadoresData) ||
+        ia4TratarAuthInvalida(jogosResp, jogosData);
+
+      if(authMsg){
+        return { ok:false, error:authMsg };
+      }
+
+      if(!perfilResp.ok || !perfilData.ok){
+        throw new Error(perfilData.error || perfilData.erro || "Nao foi possivel carregar o perfil.");
+      }
+      if(!jogadoresResp.ok || !jogadoresData.ok){
+        throw new Error(jogadoresData.error || jogadoresData.erro || "Nao foi possivel carregar o elenco.");
+      }
+      if(!jogosResp.ok || !jogosData.ok){
+        throw new Error(jogosData.error || jogosData.erro || "Nao foi possivel carregar os jogos.");
+      }
+
+      perfilAssistCache.perfil = perfilData.perfil || {};
+      perfilAssistCache.jogadores = Array.isArray(jogadoresData.jogadores) ? jogadoresData.jogadores : [];
+      perfilAssistCache.jogos = Array.isArray(jogosData.jogos) ? jogosData.jogos : [];
+      perfilAssistCache.loaded = true;
+
+      perfilJogadoresTime = perfilAssistCache.jogadores;
+      perfilJogosTime = perfilAssistCache.jogos;
+
+      if(perfilAssistCache.perfil?.nome_time){
+        localStorage.setItem("omascote_nome_time", perfilAssistCache.perfil.nome_time);
+        atualizarTopoAuth();
+      }
+
+      return {
+        ok:true,
+        perfil: perfilAssistCache.perfil,
+        jogadores: perfilAssistCache.jogadores,
+        jogos: perfilAssistCache.jogos
+      };
+    }catch(err){
+      return { ok:false, error:err?.message || "Erro de rede ao carregar Perfil do Time." };
+    }finally{
+      perfilAssistCache.loading = null;
+    }
+  })();
+
+  return perfilAssistCache.loading;
+}
+
+async function perfilAssistPrepararBox(box, force = false){
+  if(!box) return { ok:false, error:"Formulario nao encontrado." };
+  const productKey = perfilAssistProdutoDoBox(box);
+  perfilAssistSetMsg(box, force ? "Atualizando dados..." : "Carregando dados do perfil...");
+  const data = await perfilAssistCarregarDados(force);
+  if(!data.ok){
+    perfilAssistSetMsg(box, data.error || "Nao foi possivel carregar o Perfil do Time.", "erro");
+    if(!token) abrirLoginVisitanteModal();
+    return data;
+  }
+  perfilAssistRenderOptionsBox(box, productKey);
+  return data;
+}
+
+function perfilAssistSetInput(el, value){
+  const texto = perfilAssistTexto(value);
+  if(!el || !texto) return false;
+  el.value = texto;
+  el.dispatchEvent(new Event("input", { bubbles:true }));
+  el.dispatchEvent(new Event("change", { bubbles:true }));
+  return true;
+}
+
+function perfilAssistSetCleanField(form, key, value){
+  return perfilAssistSetInput(getCleanFormField(form, key), value);
+}
+
+function perfilAssistAbrirCleanOpcionais(form){
+  form?.querySelectorAll(".cleanOptionalDetails").forEach(details => {
+    details.open = true;
+  });
+}
+
+function perfilAssistSetCleanPeople(form, key, jogadores){
+  const rows = form?.querySelector(`[data-clean-people="${CSS.escape(key)}"]`);
+  if(!rows || !Array.isArray(jogadores) || !jogadores.length) return false;
+
+  rows.innerHTML = jogadores.map(jogador => `
+    <div class="cleanPlayerRow">
+      <input data-player-name placeholder="Nome do jogador" value="${htmlEscape(jogador.nome || jogador.apelido || "")}">
+      <input data-player-extra type="text" placeholder="Posicao (opcional)" value="${htmlEscape(jogador.posicao || "")}">
+    </div>
+  `).join("");
+  return true;
+}
+
+function perfilAssistJogoSelecionado(box, productKey){
+  const jogos = perfilAssistJogosParaProduto(productKey);
+  if(!jogos.length) return null;
+  const select = box?.querySelector("[data-perfil-assist-jogo]");
+  const selectedId = select?.value || "";
+  return jogos.find(jogo => String(jogo.id || "") === String(selectedId)) || jogos[0];
+}
+
+function perfilAssistJogadorSelecionado(box){
+  const jogadores = perfilAssistJogadoresAtivosLista();
+  if(!jogadores.length) return null;
+  const select = box?.querySelector("[data-perfil-assist-jogador]");
+  const selectedId = select?.value || "";
+  return jogadores.find(jogador => String(jogador.id || "") === String(selectedId)) || jogadores[0];
+}
+
+function perfilAssistAplicarClean(productKey, form, box){
+  if(!form) return { ok:false, message:"Formulario nao encontrado." };
+
+  const jogo = perfilAssistJogoSelecionado(box, productKey);
+  const jogador = perfilAssistJogadorSelecionado(box);
+  const jogadores = perfilAssistJogadoresAtivosLista();
+  const nomeTime = perfilAssistNomeTime();
+  let alterou = false;
+
+  perfilAssistAbrirCleanOpcionais(form);
+
+  if(productKey === "resultado"){
+    if(!jogo) return { ok:false, message:"Cadastre um resultado no Perfil do Time para preencher este produto." };
+    alterou = perfilAssistSetCleanField(form, "home_team", nomeTime) || alterou;
+    alterou = perfilAssistSetCleanField(form, "home_score", jogo.meu_time_gols) || alterou;
+    alterou = perfilAssistSetCleanField(form, "away_score", jogo.adversario_gols) || alterou;
+    alterou = perfilAssistSetCleanField(form, "away_team", jogo.adversario) || alterou;
+    alterou = perfilAssistSetCleanField(form, "competition", jogo.campeonato) || alterou;
+    alterou = perfilAssistSetCleanField(form, "headline", "Resultado do jogo") || alterou;
+  }
+
+  if(productKey === "proximo_jogo"){
+    if(!jogo) return { ok:false, message:"Cadastre um proximo jogo no Perfil do Time para preencher este produto." };
+    alterou = perfilAssistSetCleanField(form, "home_team", nomeTime) || alterou;
+    alterou = perfilAssistSetCleanField(form, "away_team", jogo.adversario) || alterou;
+    alterou = perfilAssistSetCleanField(form, "match_datetime", perfilAssistDataHora(jogo)) || alterou;
+    alterou = perfilAssistSetCleanField(form, "competition", jogo.campeonato) || alterou;
+    alterou = perfilAssistSetCleanField(form, "venue", jogo.local) || alterou;
+  }
+
+  if(productKey === "escalacao"){
+    if(jogo){
+      alterou = perfilAssistSetCleanField(form, "matchup", perfilAssistConfronto(jogo)) || alterou;
+      alterou = perfilAssistSetCleanField(form, "match_datetime", perfilAssistDataHora(jogo)) || alterou;
+      alterou = perfilAssistSetCleanField(form, "competition", jogo.campeonato) || alterou;
+      alterou = perfilAssistSetCleanField(form, "venue", jogo.local) || alterou;
+    }
+    if(jogadores.length){
+      alterou = perfilAssistSetCleanPeople(form, "players", jogadores) || alterou;
+    }
+    if(!alterou) return { ok:false, message:"Cadastre jogadores ou um jogo no Perfil do Time para preencher a escalacao." };
+  }
+
+  if(productKey === "jogador_escudo"){
+    if(!jogador) return { ok:false, message:"Cadastre um jogador no Perfil do Time para preencher este produto." };
+    alterou = perfilAssistSetCleanField(form, "player_name", jogador.apelido || jogador.nome) || alterou;
+  }
+
+  form.querySelectorAll(".campoObrigatorioErro").forEach(el => el.classList.remove("campoObrigatorioErro"));
+  setCleanProductMsg(form, "");
+  return alterou
+    ? { ok:true, message:"Campos preenchidos pelo Perfil do Time. Revise e edite se quiser." }
+    : { ok:false, message:"Nao encontrei dados suficientes no Perfil do Time para este produto." };
+}
+
+function perfilAssistSetLegacyField(id, value){
+  return perfilAssistSetInput(document.getElementById(id), value);
+}
+
+function perfilAssistPreencherLegacyJogadores(jogadores){
+  const wrap = document.getElementById("artilheirosWrap");
+  if(!wrap || !Array.isArray(jogadores) || !jogadores.length) return false;
+
+  setArtilheirosMode("escalacao");
+  wrap.innerHTML = `
+    <div class="playersTitle">Nome dos jogadores aqui</div>
+    ${jogadores.map(jogador => `
+      <div class="artilheiroRow">
+        <input class="artilheiroNome" placeholder="Nome do jogador" value="${htmlEscape(jogador.nome || jogador.apelido || "")}">
+        <input class="artilheiroGols" type="text" placeholder="Posicao (opcional)" value="${htmlEscape(jogador.posicao || "")}">
+      </div>
+    `).join("")}
+  `;
+  return true;
+}
+
+function perfilAssistAplicarLegacy(productKey, box){
+  const jogo = perfilAssistJogoSelecionado(box, productKey);
+  const jogador = perfilAssistJogadorSelecionado(box);
+  const jogadores = perfilAssistJogadoresAtivosLista();
+  const nomeTime = perfilAssistNomeTime();
+  let alterou = false;
+
+  if(productKey === "resultado"){
+    if(!jogo) return { ok:false, message:"Cadastre um resultado no Perfil do Time para preencher este produto." };
+    alterou = perfilAssistSetLegacyField("timePrincipal", nomeTime) || alterou;
+    alterou = perfilAssistSetLegacyField("golsTime", jogo.meu_time_gols) || alterou;
+    alterou = perfilAssistSetLegacyField("golsAdv", jogo.adversario_gols) || alterou;
+    alterou = perfilAssistSetLegacyField("timeAdv", jogo.adversario) || alterou;
+    alterou = perfilAssistSetLegacyField("hora", jogo.campeonato) || alterou;
+    alterou = perfilAssistSetLegacyField("dataJogo", "Resultado do jogo") || alterou;
+    setOptionalSectionState("hora", true);
+    setOptionalSectionState("data", true);
+  }
+
+  if(productKey === "proximo_jogo"){
+    if(!jogo) return { ok:false, message:"Cadastre um proximo jogo no Perfil do Time para preencher este produto." };
+    alterou = perfilAssistSetLegacyField("timePrincipal", nomeTime) || alterou;
+    alterou = perfilAssistSetLegacyField("timeAdv", jogo.adversario) || alterou;
+    alterou = perfilAssistSetLegacyField("dataJogo", perfilAssistDataHora(jogo)) || alterou;
+    alterou = perfilAssistSetLegacyField("hora", jogo.campeonato) || alterou;
+    alterou = perfilAssistSetLegacyField("arena", jogo.local) || alterou;
+    setOptionalSectionState("data", true);
+    setOptionalSectionState("hora", true);
+    setOptionalSectionState("arena", true);
+  }
+
+  if(productKey === "escalacao"){
+    if(jogo){
+      alterou = perfilAssistSetLegacyField("rodada", perfilAssistConfronto(jogo)) || alterou;
+      alterou = perfilAssistSetLegacyField("dataJogo", perfilAssistDataHora(jogo)) || alterou;
+      alterou = perfilAssistSetLegacyField("hora", jogo.campeonato) || alterou;
+      alterou = perfilAssistSetLegacyField("arena", jogo.local) || alterou;
+    }
+    if(jogadores.length){
+      alterou = perfilAssistPreencherLegacyJogadores(jogadores) || alterou;
+    }
+    setOptionalSectionState("rodada", true);
+    setOptionalSectionState("data", true);
+    setOptionalSectionState("hora", true);
+    setOptionalSectionState("artilheiros", true);
+    if(!alterou) return { ok:false, message:"Cadastre jogadores ou um jogo no Perfil do Time para preencher a escalacao." };
+  }
+
+  if(productKey === "jogador_escudo"){
+    if(!jogador) return { ok:false, message:"Cadastre um jogador no Perfil do Time para preencher este produto." };
+    alterou = perfilAssistSetLegacyField("dataJogo", jogador.apelido || jogador.nome) || alterou;
+    setOptionalSectionState("data", true);
+  }
+
+  return alterou
+    ? { ok:true, message:"Campos preenchidos pelo Perfil do Time. Revise e edite se quiser." }
+    : { ok:false, message:"Nao encontrei dados suficientes no Perfil do Time para este produto." };
+}
+
+async function perfilAssistAplicarDoBotao(btn){
+  const box = btn?.closest("[data-perfil-assist]");
+  if(!box) return;
+
+  const original = btn.textContent;
+  btn.disabled = true;
+  btn.textContent = "Carregando...";
+
+  try{
+    const data = await perfilAssistPrepararBox(box, false);
+    if(!data.ok) return;
+
+    const productKey = perfilAssistProdutoDoBox(box);
+    const form = box.closest("[data-product-form]");
+    const resultado = form
+      ? perfilAssistAplicarClean(productKey, form, box)
+      : perfilAssistAplicarLegacy(productKey, box);
+
+    perfilAssistSetMsg(box, resultado.message, resultado.ok ? "ok" : "erro");
+  }finally{
+    btn.disabled = false;
+    btn.textContent = original || "Preencher com perfil";
+  }
+}
+
+async function perfilAssistAtualizarDoBotao(btn){
+  const box = btn?.closest("[data-perfil-assist]");
+  if(!box) return;
+
+  const original = btn.textContent;
+  btn.disabled = true;
+  btn.textContent = "Atualizando...";
+
+  try{
+    perfilAssistInvalidarCache();
+    const data = await perfilAssistPrepararBox(box, true);
+    if(data.ok){
+      perfilAssistSetMsg(box, "Dados atualizados.", "ok");
+    }
+  }finally{
+    btn.disabled = false;
+    btn.textContent = original || "Atualizar dados";
+  }
+}
+
+document.getElementById("perfilAssistAplicarBtn")?.addEventListener("click", (e) => {
+  perfilAssistAplicarDoBotao(e.currentTarget);
+});
+
+document.getElementById("perfilAssistAtualizarBtn")?.addEventListener("click", (e) => {
+  perfilAssistAtualizarDoBotao(e.currentTarget);
+});
+
+window.perfilAssistRuntimeReady = true;
+perfilAssistAtualizarProduto(
+  selectedProductInput?.value ||
+  (typeof getCleanProductPickerSelectedRaw === "function" ? getCleanProductPickerSelectedRaw() : "") ||
+  ""
+);
 
 function atualizarTopoAuth(){
   const btnEntrarTopo = document.getElementById("btnSair");
@@ -14833,6 +15537,7 @@ async function carregarPerfilJogadores(){
     }
 
     perfilJogadoresTime = Array.isArray(data.jogadores) ? data.jogadores : [];
+    perfilAssistCache.jogadores = perfilJogadoresTime;
     renderPerfilElenco();
   }catch(err){
     setPerfilTimeMsg(err?.message || "Erro de rede ao carregar elenco.", "erro");
@@ -14898,6 +15603,8 @@ async function salvarPerfilJogador(){
 
     limparFormJogador();
     renderPerfilElenco();
+    perfilAssistInvalidarCache();
+    perfilAssistAtualizarProduto(selectedProductInput?.value || "");
     setPerfilTimeMsg(editando ? "Jogador atualizado." : "Jogador adicionado.", "ok");
   }catch(err){
     setPerfilTimeMsg(err?.message || "Erro de rede ao salvar jogador.", "erro");
@@ -14936,6 +15643,8 @@ async function removerPerfilJogador(id){
     perfilJogadoresTime = perfilJogadoresTime.map(jogador => jogador.id === id ? { ...jogador, ativo:false } : jogador);
     if(perfilJogadorEditId === id) limparFormJogador();
     renderPerfilElenco();
+    perfilAssistInvalidarCache();
+    perfilAssistAtualizarProduto(selectedProductInput?.value || "");
     setPerfilTimeMsg("Jogador removido.", "ok");
   }catch(err){
     setPerfilTimeMsg(err?.message || "Erro de rede ao remover jogador.", "erro");
@@ -15092,6 +15801,7 @@ async function carregarPerfilJogos(){
     }
 
     perfilJogosTime = Array.isArray(data.jogos) ? data.jogos : [];
+    perfilAssistCache.jogos = perfilJogosTime;
     renderPerfilJogos();
   }catch(err){
     setPerfilTimeMsg(err?.message || "Erro de rede ao carregar jogos.", "erro");
@@ -15168,6 +15878,8 @@ async function salvarPerfilJogo(){
 
     limparFormJogo();
     renderPerfilJogos();
+    perfilAssistInvalidarCache();
+    perfilAssistAtualizarProduto(selectedProductInput?.value || "");
     setPerfilTimeMsg(editando ? "Jogo atualizado." : "Jogo adicionado.", "ok");
   }catch(err){
     setPerfilTimeMsg(err?.message || "Erro de rede ao salvar jogo.", "erro");
@@ -15206,6 +15918,8 @@ async function removerPerfilJogo(id){
     perfilJogosTime = perfilJogosTime.map(jogo => jogo.id === id ? { ...jogo, ativo:false } : jogo);
     if(perfilJogoEditId === id) limparFormJogo();
     renderPerfilJogos();
+    perfilAssistInvalidarCache();
+    perfilAssistAtualizarProduto(selectedProductInput?.value || "");
     setPerfilTimeMsg("Jogo removido.", "ok");
   }catch(err){
     setPerfilTimeMsg(err?.message || "Erro de rede ao remover jogo.", "erro");
@@ -15254,6 +15968,7 @@ async function carregarPerfilTime(){
     }
 
     preencherPerfilTime(data.perfil || {});
+    perfilAssistCache.perfil = data.perfil || {};
     localStorage.setItem("omascote_perfil_id", data.perfil?.perfil_id || "");
     if(data.perfil?.nome_time){
       localStorage.setItem("omascote_nome_time", data.perfil.nome_time);
@@ -15316,9 +16031,12 @@ async function salvarPerfilTime(){
     }
 
     preencherPerfilTime(data.perfil || payload);
+    perfilAssistInvalidarCache();
+    perfilAssistCache.perfil = data.perfil || payload;
     localStorage.setItem("omascote_perfil_id", data.perfil?.perfil_id || localStorage.getItem("omascote_perfil_id") || "");
     localStorage.setItem("omascote_nome_time", data.perfil?.nome_time || nomeTime);
     atualizarTopoAuth();
+    perfilAssistAtualizarProduto(selectedProductInput?.value || "");
     setPerfilTimeMsg("Perfil salvo com sucesso.", "ok");
   }catch(err){
     setPerfilTimeMsg(err?.message || "Erro de rede ao salvar perfil.", "erro");
