@@ -17923,6 +17923,12 @@ async function copiarTextoPerfil(texto){
   }
 }
 
+function mensagemCopiarLinkPerfil(ok, url, sucesso = "Link do perfil copiado"){
+  if(ok) return sucesso;
+  const link = String(url || "").trim();
+  return link ? `Copie o link do perfil: ${link}` : "Nao foi possivel copiar o link.";
+}
+
 function perfilShareUrlAtual(){
   try{
     const url = new URL(location.href);
@@ -17995,7 +18001,7 @@ async function copiarLinkPerfilPrivado(){
   }
 
   const ok = await copiarTextoPerfil(url);
-  setPerfilTimeMsg(ok ? "Link do perfil copiado" : "Nao foi possivel copiar o link.", ok ? "ok" : "erro");
+  setPerfilTimeMsg(mensagemCopiarLinkPerfil(ok, url), ok ? "ok" : "erro");
 }
 
 async function compartilharPerfilVisual(){
@@ -18019,7 +18025,7 @@ async function compartilharPerfilVisual(){
   }catch(e){}
 
   const ok = await copiarTextoPerfil(url);
-  setPerfilVisualMsg(ok ? "Link do perfil copiado" : "Nao foi possivel copiar o link.");
+  setPerfilVisualMsg(mensagemCopiarLinkPerfil(ok, url));
 }
 
 function perfilImagemEndpoint(tipo){
@@ -20431,8 +20437,9 @@ perfilPublicoToggle?.addEventListener("change", ()=>{
   }
 });
 perfilPublicoCopiarBtn?.addEventListener("click", async ()=>{
-  const ok = await copiarTextoPerfil(perfilPublicoUrlPorSlug(perfilPublicoSlugDaUrl()) || perfilShareUrlAtual());
-  perfilVisualSetText(perfilPublicoMsg, ok ? "Link copiado." : "Nao foi possivel copiar o link.");
+  const url = perfilPublicoUrlPorSlug(perfilPublicoSlugDaUrl()) || perfilShareUrlAtual();
+  const ok = await copiarTextoPerfil(url);
+  perfilVisualSetText(perfilPublicoMsg, mensagemCopiarLinkPerfil(ok, url, "Link copiado."));
 });
 perfilPublicoShareCopiarBtn?.addEventListener("click", async ()=>{
   const texto = perfilPublicoShareTexto?.textContent || perfilShareUrlAtual();
