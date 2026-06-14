@@ -1679,6 +1679,55 @@
       cursor:pointer;
     }
 
+    .perfilTimePublicBox{
+      border:1px solid #fde68a;
+      border-radius:16px;
+      background:#fffbeb;
+      padding:12px;
+      margin-bottom:16px;
+      display:grid;
+      gap:10px;
+    }
+
+    .perfilTimePublicToggle{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      color:#111827;
+      font-size:13px;
+      font-weight:950;
+      cursor:pointer;
+    }
+
+    .perfilTimePublicToggle input{
+      width:18px;
+      height:18px;
+      accent-color:#111827;
+    }
+
+    .perfilTimePublicLinkRow{
+      display:grid;
+      grid-template-columns:1fr auto;
+      gap:8px;
+    }
+
+    .perfilTimePublicLinkRow input{
+      border:1px solid #facc15;
+      border-radius:10px;
+      padding:10px 11px;
+      color:#111827;
+      font-size:12px;
+      font-weight:850;
+      min-width:0;
+    }
+
+    .perfilTimePublicHint{
+      color:#854d0e;
+      font-size:12px;
+      font-weight:900;
+      line-height:1.35;
+    }
+
     .perfilTimeGrid{
       display:grid;
       grid-template-columns:1fr 1fr;
@@ -2109,6 +2158,301 @@
       min-height:18px;
     }
 
+    body.publicProfileMode{
+      background:#050505;
+    }
+
+    body.publicProfileMode .wrap{
+      display:none !important;
+    }
+
+    .perfilPublicoPage[hidden]{
+      display:none !important;
+    }
+
+    .perfilPublicoPage{
+      min-height:100vh;
+      background:
+        radial-gradient(circle at 15% 10%, rgba(250,204,21,.18), transparent 28%),
+        linear-gradient(145deg, #050505 0%, #111827 48%, #080808 100%);
+      color:#ffffff;
+      padding:22px;
+    }
+
+    .perfilPublicoShell{
+      width:min(1120px, 100%);
+      margin:0 auto;
+      display:grid;
+      gap:18px;
+    }
+
+    .perfilPublicoHeader{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+      flex-wrap:wrap;
+    }
+
+    .perfilPublicoBrand{
+      font-size:13px;
+      font-weight:950;
+      color:#facc15;
+      text-transform:uppercase;
+      letter-spacing:.08em;
+    }
+
+    .perfilPublicoActions{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+    }
+
+    .perfilPublicoBtn{
+      border:1px solid rgba(250,204,21,.42);
+      border-radius:12px;
+      background:#facc15;
+      color:#111827;
+      padding:11px 14px;
+      font-size:13px;
+      font-weight:950;
+      cursor:pointer;
+      text-decoration:none;
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+    }
+
+    .perfilPublicoBtn.secondary{
+      background:rgba(255,255,255,.08);
+      color:#ffffff;
+      border-color:rgba(255,255,255,.22);
+    }
+
+    .perfilPublicoHero{
+      border:1px solid rgba(255,255,255,.14);
+      border-radius:24px;
+      background:rgba(0,0,0,.36);
+      padding:22px;
+      display:grid;
+      grid-template-columns:minmax(0, 1fr) 310px;
+      gap:20px;
+      box-shadow:0 24px 80px rgba(0,0,0,.35);
+    }
+
+    .perfilPublicoMain{
+      display:flex;
+      gap:16px;
+      align-items:center;
+      min-width:0;
+    }
+
+    .perfilPublicoCrest{
+      width:102px;
+      height:102px;
+      border-radius:24px;
+      background:#facc15;
+      color:#111827;
+      display:grid;
+      place-items:center;
+      font-size:38px;
+      font-weight:950;
+      overflow:hidden;
+      flex:0 0 auto;
+    }
+
+    .perfilPublicoCrest img,
+    .perfilPublicoAssetThumb img{
+      width:100%;
+      height:100%;
+      object-fit:cover;
+      display:block;
+    }
+
+    .perfilPublicoKicker{
+      display:inline-flex;
+      padding:7px 10px;
+      border-radius:999px;
+      background:rgba(250,204,21,.14);
+      color:#fde68a;
+      font-size:11px;
+      font-weight:950;
+      text-transform:uppercase;
+      letter-spacing:.08em;
+      margin-bottom:10px;
+    }
+
+    .perfilPublicoNome{
+      margin:0;
+      color:#ffffff;
+      font-size:clamp(30px, 5vw, 58px);
+      line-height:1;
+      font-weight:950;
+    }
+
+    .perfilPublicoMeta{
+      display:flex;
+      gap:8px;
+      flex-wrap:wrap;
+      margin-top:12px;
+    }
+
+    .perfilPublicoMeta span{
+      border:1px solid rgba(255,255,255,.14);
+      border-radius:999px;
+      padding:7px 10px;
+      background:rgba(255,255,255,.08);
+      color:#e5e7eb;
+      font-size:12px;
+      font-weight:850;
+    }
+
+    .perfilPublicoDescricao{
+      margin:14px 0 0;
+      color:#d1d5db;
+      font-size:15px;
+      line-height:1.5;
+      max-width:720px;
+    }
+
+    .perfilPublicoAside{
+      display:grid;
+      gap:12px;
+    }
+
+    .perfilPublicoAsset{
+      border:1px solid rgba(255,255,255,.14);
+      border-radius:18px;
+      padding:12px;
+      display:flex;
+      align-items:center;
+      gap:12px;
+      background:rgba(255,255,255,.07);
+    }
+
+    .perfilPublicoAssetThumb{
+      width:66px;
+      height:66px;
+      border-radius:16px;
+      background:#111827;
+      color:#facc15;
+      display:grid;
+      place-items:center;
+      overflow:hidden;
+      flex:0 0 auto;
+      font-size:24px;
+      font-weight:950;
+    }
+
+    .perfilPublicoAsset strong{
+      display:block;
+      font-size:13px;
+      font-weight:950;
+      color:#ffffff;
+      margin-bottom:4px;
+    }
+
+    .perfilPublicoAsset span{
+      display:block;
+      color:#d1d5db;
+      font-size:12px;
+      font-weight:800;
+      line-height:1.35;
+    }
+
+    .perfilPublicoGrid{
+      display:grid;
+      grid-template-columns:1.1fr 1fr 1fr;
+      gap:14px;
+    }
+
+    .perfilPublicoSection{
+      border:1px solid rgba(255,255,255,.13);
+      border-radius:20px;
+      background:rgba(0,0,0,.30);
+      padding:16px;
+      min-width:0;
+    }
+
+    .perfilPublicoSectionTop{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+      margin-bottom:12px;
+    }
+
+    .perfilPublicoSection h3{
+      margin:0;
+      color:#ffffff;
+      font-size:17px;
+      font-weight:950;
+    }
+
+    .perfilPublicoCounter{
+      color:#facc15;
+      font-size:12px;
+      font-weight:950;
+    }
+
+    .perfilPublicoPlayers{
+      display:grid;
+      grid-template-columns:repeat(2, minmax(0, 1fr));
+      gap:10px;
+    }
+
+    .perfilPublicoPlayer,
+    .perfilPublicoGame{
+      border:1px solid rgba(255,255,255,.12);
+      border-radius:14px;
+      background:rgba(255,255,255,.07);
+      padding:11px;
+      min-width:0;
+    }
+
+    .perfilPublicoPlayer strong,
+    .perfilPublicoGame strong{
+      color:#ffffff;
+      font-size:13px;
+      font-weight:950;
+      display:block;
+    }
+
+    .perfilPublicoPlayer span,
+    .perfilPublicoGame span{
+      color:#cbd5e1;
+      font-size:12px;
+      font-weight:800;
+      display:block;
+      margin-top:3px;
+    }
+
+    .perfilPublicoNumber{
+      width:34px;
+      height:34px;
+      border-radius:10px;
+      background:#facc15;
+      color:#111827;
+      display:grid;
+      place-items:center;
+      font-weight:950;
+      margin-bottom:8px;
+    }
+
+    .perfilPublicoGameScore{
+      color:#facc15 !important;
+      font-size:18px !important;
+      margin:7px 0 4px !important;
+    }
+
+    .perfilPublicoEmpty,
+    .perfilPublicoMsg{
+      color:#cbd5e1;
+      font-size:13px;
+      font-weight:850;
+      line-height:1.45;
+    }
+
     .perfilAssistBox{
       grid-column:1 / -1;
       border:1px solid #bbf7d0;
@@ -2533,6 +2877,10 @@
         grid-template-columns:1fr;
       }
 
+      .perfilTimePublicLinkRow{
+        grid-template-columns:1fr;
+      }
+
       .perfilJogadorForm,
       .perfilJogoForm,
       .perfilJogosPreviewGrid{
@@ -2580,6 +2928,43 @@
 
       .perfilVisualGameMatch span:last-child{
         text-align:left;
+      }
+
+      .perfilPublicoPage{
+        padding:14px;
+      }
+
+      .perfilPublicoHero,
+      .perfilPublicoGrid{
+        grid-template-columns:1fr;
+      }
+
+      .perfilPublicoHero{
+        padding:16px;
+        border-radius:20px;
+      }
+
+      .perfilPublicoMain{
+        flex-direction:column;
+        align-items:flex-start;
+      }
+
+      .perfilPublicoCrest{
+        width:86px;
+        height:86px;
+        border-radius:20px;
+      }
+
+      .perfilPublicoPlayers{
+        grid-template-columns:1fr;
+      }
+
+      .perfilPublicoActions{
+        width:100%;
+      }
+
+      .perfilPublicoBtn{
+        flex:1 1 160px;
       }
     }
 
@@ -6966,6 +7351,76 @@ body:not(.modeChosen) .builderArea,
 
 <body data-page="home">
   <main>
+  <section class="perfilPublicoPage" id="perfilPublicoPage" hidden>
+    <div class="perfilPublicoShell">
+      <header class="perfilPublicoHeader">
+        <div class="perfilPublicoBrand">O Mascote · Perfil oficial do time</div>
+        <div class="perfilPublicoActions">
+          <button class="perfilPublicoBtn secondary" id="perfilPublicoCopiarBtn" type="button">Copiar link</button>
+          <a class="perfilPublicoBtn" href="/app.html">Criar arte no O Mascote</a>
+        </div>
+      </header>
+
+      <section class="perfilPublicoHero">
+        <div class="perfilPublicoMain">
+          <div class="perfilPublicoCrest" id="perfilPublicoEscudo">T</div>
+          <div>
+            <span class="perfilPublicoKicker">Pagina publica</span>
+            <h1 class="perfilPublicoNome" id="perfilPublicoNome">Perfil do Time</h1>
+            <div class="perfilPublicoMeta" id="perfilPublicoMeta"></div>
+            <p class="perfilPublicoDescricao" id="perfilPublicoDescricao">Carregando dados do time.</p>
+          </div>
+        </div>
+
+        <div class="perfilPublicoAside">
+          <div class="perfilPublicoAsset">
+            <div class="perfilPublicoAssetThumb" id="perfilPublicoEscudoThumb">E</div>
+            <div>
+              <strong>Escudo do time</strong>
+              <span id="perfilPublicoEscudoTexto">Carregando...</span>
+            </div>
+          </div>
+
+          <div class="perfilPublicoAsset">
+            <div class="perfilPublicoAssetThumb" id="perfilPublicoMascoteThumb">M</div>
+            <div>
+              <strong>Mascote oficial</strong>
+              <span id="perfilPublicoMascoteTexto">Carregando...</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <div class="perfilPublicoGrid">
+        <section class="perfilPublicoSection">
+          <div class="perfilPublicoSectionTop">
+            <h3>Elenco</h3>
+            <span class="perfilPublicoCounter" id="perfilPublicoElencoCounter">0 jogadores</span>
+          </div>
+          <div class="perfilPublicoPlayers" id="perfilPublicoElenco"></div>
+        </section>
+
+        <section class="perfilPublicoSection">
+          <div class="perfilPublicoSectionTop">
+            <h3>Ultimos resultados</h3>
+            <span class="perfilPublicoCounter" id="perfilPublicoResultadosCounter">0 resultados</span>
+          </div>
+          <div id="perfilPublicoResultados"></div>
+        </section>
+
+        <section class="perfilPublicoSection">
+          <div class="perfilPublicoSectionTop">
+            <h3>Proximos jogos</h3>
+            <span class="perfilPublicoCounter" id="perfilPublicoProximosCounter">0 jogos</span>
+          </div>
+          <div id="perfilPublicoProximos"></div>
+        </section>
+      </div>
+
+      <div class="perfilPublicoMsg" id="perfilPublicoMsg"></div>
+    </div>
+  </section>
+
   <div class="wrap">
     <div class="logoutTopBar logoutOnlyTop">
       <button id="btnSair" type="button">Sair</button>
@@ -7760,8 +8215,20 @@ body:not(.modeChosen) .builderArea,
         </div>
       </div>
 
+      <div class="perfilTimePublicBox">
+        <label class="perfilTimePublicToggle" for="perfilPublicoToggle">
+          <input id="perfilPublicoToggle" type="checkbox">
+          <span>Ativar página pública compartilhável</span>
+        </label>
+        <div class="perfilTimePublicLinkRow">
+          <input id="perfilPublicoLink" type="text" readonly placeholder="Salve e ative para gerar o link publico">
+          <button class="perfilTimeUploadBtn" id="perfilPublicoCopiarLinkBtn" type="button">Copiar link</button>
+        </div>
+        <span class="perfilTimePublicHint" id="perfilPublicoStatus">Privado por padrão.</span>
+      </div>
+
       <div class="perfilTimeActions">
-        <span class="perfilTimePrivado">Perfil privado</span>
+        <span class="perfilTimePrivado" id="perfilTimePrivacidadeLabel">Perfil privado</span>
         <button class="btnGreen" id="perfilTimeSalvarBtn" type="button">Salvar perfil</button>
       </div>
 
@@ -7919,6 +8386,7 @@ body:not(.modeChosen) .builderArea,
 
       <div class="perfilVisualActions">
         <button class="perfilVisualBtn" id="perfilVisualCriarArteBtn" type="button">Criar arte com este perfil</button>
+        <button class="perfilVisualBtn secondary" id="perfilVisualCompartilharBtn" type="button">Compartilhar pagina</button>
         <button class="perfilVisualBtn secondary" id="perfilVisualEditarBtn" type="button">Editar Perfil do Time</button>
       </div>
 
@@ -15364,6 +15832,11 @@ const perfilTimePreviewLocal = document.getElementById("perfilTimePreviewLocal")
 const perfilTimePreviewInstagram = document.getElementById("perfilTimePreviewInstagram");
 const perfilTimePreviewDescricao = document.getElementById("perfilTimePreviewDescricao");
 const perfilTimeMsg = document.getElementById("perfilTimeMsg");
+const perfilPublicoToggle = document.getElementById("perfilPublicoToggle");
+const perfilPublicoLink = document.getElementById("perfilPublicoLink");
+const perfilPublicoCopiarLinkBtn = document.getElementById("perfilPublicoCopiarLinkBtn");
+const perfilPublicoStatus = document.getElementById("perfilPublicoStatus");
+const perfilTimePrivacidadeLabel = document.getElementById("perfilTimePrivacidadeLabel");
 const perfilEscudoInput = document.getElementById("perfilEscudoInput");
 const perfilEscudoUploadBtn = document.getElementById("perfilEscudoUploadBtn");
 const perfilEscudoPreview = document.getElementById("perfilEscudoPreview");
@@ -15391,6 +15864,24 @@ const perfilVisualProximosCounter = document.getElementById("perfilVisualProximo
 const perfilVisualMsg = document.getElementById("perfilVisualMsg");
 const perfilVisualEditarBtn = document.getElementById("perfilVisualEditarBtn");
 const perfilVisualCriarArteBtn = document.getElementById("perfilVisualCriarArteBtn");
+const perfilVisualCompartilharBtn = document.getElementById("perfilVisualCompartilharBtn");
+const perfilPublicoPage = document.getElementById("perfilPublicoPage");
+const perfilPublicoCopiarBtn = document.getElementById("perfilPublicoCopiarBtn");
+const perfilPublicoNome = document.getElementById("perfilPublicoNome");
+const perfilPublicoMeta = document.getElementById("perfilPublicoMeta");
+const perfilPublicoDescricao = document.getElementById("perfilPublicoDescricao");
+const perfilPublicoEscudo = document.getElementById("perfilPublicoEscudo");
+const perfilPublicoEscudoThumb = document.getElementById("perfilPublicoEscudoThumb");
+const perfilPublicoMascoteThumb = document.getElementById("perfilPublicoMascoteThumb");
+const perfilPublicoEscudoTexto = document.getElementById("perfilPublicoEscudoTexto");
+const perfilPublicoMascoteTexto = document.getElementById("perfilPublicoMascoteTexto");
+const perfilPublicoElenco = document.getElementById("perfilPublicoElenco");
+const perfilPublicoElencoCounter = document.getElementById("perfilPublicoElencoCounter");
+const perfilPublicoResultados = document.getElementById("perfilPublicoResultados");
+const perfilPublicoResultadosCounter = document.getElementById("perfilPublicoResultadosCounter");
+const perfilPublicoProximos = document.getElementById("perfilPublicoProximos");
+const perfilPublicoProximosCounter = document.getElementById("perfilPublicoProximosCounter");
+const perfilPublicoMsg = document.getElementById("perfilPublicoMsg");
 const perfilElencoResumo = document.getElementById("perfilElencoResumo");
 const perfilElencoPreview = document.getElementById("perfilElencoPreview");
 const perfilJogadoresLista = document.getElementById("perfilJogadoresLista");
@@ -16005,6 +16496,82 @@ function perfilVisualSetText(el, texto){
   if(el) el.textContent = texto || "";
 }
 
+function perfilPublicoSlugAtual(perfil = perfilAssistCache.perfil || {}){
+  return perfilAssistTexto(perfil.slug || "");
+}
+
+function perfilPublicoUrl(perfil = perfilAssistCache.perfil || {}){
+  const slug = perfilPublicoSlugAtual(perfil);
+  return slug ? `${location.origin}${location.pathname}?time=${encodeURIComponent(slug)}` : "";
+}
+
+function perfilPublicoAtualizarControles(perfil = perfilAssistCache.perfil || {}){
+  const publico = perfil?.publico === true;
+  const url = publico ? perfilPublicoUrl(perfil) : "";
+
+  if(perfilPublicoToggle) perfilPublicoToggle.checked = publico;
+  if(perfilPublicoLink) perfilPublicoLink.value = url;
+  perfilVisualSetText(perfilTimePrivacidadeLabel, publico ? "Pagina publica ativa" : "Perfil privado");
+  perfilVisualSetText(perfilPublicoStatus, publico
+    ? "Link publico ativo. Qualquer pessoa com o link pode ver esta pagina."
+    : "Privado por padrão. Ative e salve para gerar o link publico.");
+}
+
+async function copiarTextoPerfil(texto){
+  const value = String(texto || "").trim();
+  if(!value) return false;
+
+  try{
+    if(navigator.clipboard?.writeText){
+      await navigator.clipboard.writeText(value);
+      return true;
+    }
+  }catch(e){}
+
+  try{
+    const area = document.createElement("textarea");
+    area.value = value;
+    area.setAttribute("readonly", "readonly");
+    area.style.position = "fixed";
+    area.style.opacity = "0";
+    document.body.appendChild(area);
+    area.select();
+    const ok = document.execCommand("copy");
+    area.remove();
+    return ok;
+  }catch(e){
+    return false;
+  }
+}
+
+async function copiarLinkPerfilPrivado(){
+  if((perfilAssistCache.perfil || {}).publico !== true){
+    setPerfilTimeMsg("Ative a pagina publica e salve o perfil para copiar o link.", "erro");
+    return;
+  }
+
+  const url = perfilPublicoLink?.value || perfilPublicoUrl();
+  if(!url){
+    setPerfilTimeMsg("Ative a pagina publica e salve o perfil para copiar o link.", "erro");
+    return;
+  }
+
+  const ok = await copiarTextoPerfil(url);
+  setPerfilTimeMsg(ok ? "Link publico copiado." : "Nao foi possivel copiar o link.", ok ? "ok" : "erro");
+}
+
+async function compartilharPerfilVisual(){
+  const perfil = perfilAssistCache.perfil || {};
+  if(perfil.publico !== true){
+    setPerfilVisualMsg("Ative a pagina publica em Editar Perfil do Time para compartilhar.");
+    return;
+  }
+
+  const url = perfilPublicoUrl(perfil);
+  const ok = await copiarTextoPerfil(url);
+  setPerfilVisualMsg(ok ? "Link publico copiado." : "Nao foi possivel copiar o link.");
+}
+
 function perfilImagemEndpoint(tipo){
   return `/me/time/perfil/${tipo}/imagem`;
 }
@@ -16243,6 +16810,148 @@ function perfilVisualGameCardHtml(jogo, nomeTime){
   `;
 }
 
+function perfilPublicoAssetUrl(value){
+  const raw = String(value || "").trim();
+  if(!raw) return "";
+  if(raw.startsWith("/")) return `${API_BASE}${raw}`;
+  if(/^https?:/i.test(raw)) return raw;
+  return "";
+}
+
+function perfilPublicoSetAsset(el, fallbackText, url, alt){
+  if(!el) return;
+  const assetUrl = perfilPublicoAssetUrl(url);
+  if(assetUrl){
+    el.innerHTML = `<img src="${htmlEscape(assetUrl)}" alt="${htmlEscape(alt || "")}">`;
+  }else{
+    el.textContent = fallbackText || "";
+  }
+}
+
+function perfilPublicoGameHtml(jogo, nomeTime){
+  const adversario = htmlEscape(jogo?.adversario || "Adversario");
+  const placar = htmlEscape(placarPerfilJogo(jogo));
+  const detalhes = htmlEscape(perfilVisualGameDetails(jogo));
+  return `
+    <div class="perfilPublicoGame">
+      <strong>${htmlEscape(nomeTime || "Meu time")} x ${adversario}</strong>
+      <span class="perfilPublicoGameScore">${placar}</span>
+      ${detalhes ? `<span>${detalhes}</span>` : ""}
+    </div>
+  `;
+}
+
+function renderPerfilPublico(data = {}){
+  const perfil = data.perfil || {};
+  const jogadores = (Array.isArray(data.jogadores) ? data.jogadores : [])
+    .filter(jogador => jogador && jogador.ativo !== false);
+  const jogos = (Array.isArray(data.jogos) ? data.jogos : [])
+    .filter(jogo => jogo && jogo.ativo !== false);
+  const nome = perfilAssistTexto(perfil.nome_time) || "Perfil do Time";
+  const local = perfilVisualLocal(perfil);
+  const instagram = perfilVisualInstagram(perfil);
+  const descricao = perfilAssistTexto(perfil.descricao_curta);
+  const inicial = perfilTimeInicial(nome);
+  const resultados = jogos
+    .filter(jogo => jogo.tipo === "resultado")
+    .sort((a, b) => dataOrdemPerfilJogo(b).localeCompare(dataOrdemPerfilJogo(a)));
+  const proximos = jogos
+    .filter(jogo => jogo.tipo === "proximo_jogo")
+    .sort((a, b) => dataOrdemPerfilJogo(a).localeCompare(dataOrdemPerfilJogo(b)));
+
+  document.title = `${nome} | Perfil do Time`;
+  perfilVisualSetText(perfilPublicoNome, nome);
+  perfilVisualSetText(perfilPublicoDescricao, descricao || "Perfil oficial do time no O Mascote.");
+
+  if(perfilPublicoMeta){
+    const meta = [];
+    if(local) meta.push(`<span>${htmlEscape(local)}</span>`);
+    if(instagram) meta.push(`<span>${htmlEscape(instagram)}</span>`);
+    if(!meta.length) meta.push(`<span>Perfil do Time</span>`);
+    perfilPublicoMeta.innerHTML = meta.join("");
+  }
+
+  perfilPublicoSetAsset(perfilPublicoEscudo, inicial, perfil.escudo_url, `Escudo ${nome}`);
+  perfilPublicoSetAsset(perfilPublicoEscudoThumb, "E", perfil.escudo_url, `Escudo ${nome}`);
+  perfilPublicoSetAsset(perfilPublicoMascoteThumb, "M", perfil.mascote_url, `Mascote ${nome}`);
+  perfilVisualSetText(perfilPublicoEscudoTexto, perfil.escudo_url ? "Escudo oficial do time." : "Escudo ainda nao cadastrado.");
+  perfilVisualSetText(perfilPublicoMascoteTexto, perfil.mascote_url ? "Mascote oficial do time." : "Mascote ainda nao cadastrado.");
+
+  perfilVisualSetText(perfilPublicoElencoCounter, `${jogadores.length} ${jogadores.length === 1 ? "jogador" : "jogadores"}`);
+  if(perfilPublicoElenco){
+    perfilPublicoElenco.innerHTML = jogadores.length
+      ? jogadores.slice(0, 30).map(jogador => {
+          const numero = perfilAssistTexto(jogador.numero) || "-";
+          const nomeJogador = htmlEscape(jogador.apelido || jogador.nome || "Jogador");
+          const detalhe = [jogador.posicao, jogador.nome && jogador.apelido ? jogador.nome : ""]
+            .map(perfilAssistTexto)
+            .filter(Boolean)
+            .join(" · ");
+          return `
+            <div class="perfilPublicoPlayer">
+              <div class="perfilPublicoNumber">${htmlEscape(numero)}</div>
+              <strong>${nomeJogador}</strong>
+              <span>${htmlEscape(detalhe || "Elenco do time")}</span>
+            </div>
+          `;
+        }).join("")
+      : `<div class="perfilPublicoEmpty">Elenco ainda nao cadastrado.</div>`;
+  }
+
+  perfilVisualSetText(perfilPublicoResultadosCounter, `${resultados.length} ${resultados.length === 1 ? "resultado" : "resultados"}`);
+  if(perfilPublicoResultados){
+    perfilPublicoResultados.innerHTML = resultados.length
+      ? resultados.slice(0, 6).map(jogo => perfilPublicoGameHtml(jogo, nome)).join("")
+      : `<div class="perfilPublicoEmpty">Resultados ainda nao cadastrados.</div>`;
+  }
+
+  perfilVisualSetText(perfilPublicoProximosCounter, `${proximos.length} ${proximos.length === 1 ? "jogo" : "jogos"}`);
+  if(perfilPublicoProximos){
+    perfilPublicoProximos.innerHTML = proximos.length
+      ? proximos.slice(0, 6).map(jogo => perfilPublicoGameHtml(jogo, nome)).join("")
+      : `<div class="perfilPublicoEmpty">Proximos jogos ainda nao cadastrados.</div>`;
+  }
+
+  perfilVisualSetText(perfilPublicoMsg, "Perfil publico compartilhavel.");
+}
+
+async function iniciarPerfilPublicoSeNecessario(){
+  const slug = new URLSearchParams(location.search).get("time");
+  if(!slug) return false;
+
+  document.body.classList.add("publicProfileMode");
+  if(perfilPublicoPage) perfilPublicoPage.hidden = false;
+  perfilVisualSetText(perfilPublicoNome, "Carregando perfil...");
+  perfilVisualSetText(perfilPublicoDescricao, "Buscando os dados publicos do time.");
+  perfilVisualSetText(perfilPublicoMsg, "");
+
+  try{
+    const r = await fetch(`${API_BASE}/time/${encodeURIComponent(slug)}`, { cache:"no-store" });
+    const data = await ia4LerJsonSeguro(r);
+
+    if(!r.ok || !data.ok){
+      throw new Error(data.error || data.erro || "Perfil publico nao encontrado.");
+    }
+
+    renderPerfilPublico(data);
+    return true;
+  }catch(err){
+    document.title = "Perfil nao encontrado | O Mascote";
+    perfilVisualSetText(perfilPublicoNome, "Perfil nao encontrado");
+    perfilVisualSetText(perfilPublicoDescricao, "Este perfil nao esta publico ou o link esta incorreto.");
+    perfilPublicoSetAsset(perfilPublicoEscudo, "T", "", "");
+    perfilPublicoSetAsset(perfilPublicoEscudoThumb, "E", "", "");
+    perfilPublicoSetAsset(perfilPublicoMascoteThumb, "M", "", "");
+    perfilVisualSetText(perfilPublicoEscudoTexto, "Indisponivel.");
+    perfilVisualSetText(perfilPublicoMascoteTexto, "Indisponivel.");
+    if(perfilPublicoElenco) perfilPublicoElenco.innerHTML = `<div class="perfilPublicoEmpty">Nada para mostrar.</div>`;
+    if(perfilPublicoResultados) perfilPublicoResultados.innerHTML = `<div class="perfilPublicoEmpty">Nada para mostrar.</div>`;
+    if(perfilPublicoProximos) perfilPublicoProximos.innerHTML = `<div class="perfilPublicoEmpty">Nada para mostrar.</div>`;
+    perfilVisualSetText(perfilPublicoMsg, err?.message || "Nao foi possivel carregar este perfil.");
+    return true;
+  }
+}
+
 function renderPerfilTimeVisual(data = {}){
   const perfil = data.perfil || perfilAssistCache.perfil || {};
   const jogadores = (Array.isArray(data.jogadores) ? data.jogadores : perfilAssistCache.jogadores || [])
@@ -16426,6 +17135,7 @@ function preencherPerfilTime(perfil){
   if(perfilDescricaoCurta) perfilDescricaoCurta.value = perfil?.descricao_curta || "";
   atualizarPerfilTimePreview();
   atualizarPreviewsImagemPerfil(perfil || {});
+  perfilPublicoAtualizarControles(perfil || {});
 }
 
 function perfilJogadoresAtivos(){
@@ -16998,7 +17708,7 @@ async function salvarPerfilTime(){
     estado: (perfilEstado?.value || "").trim(),
     instagram: (perfilInstagram?.value || "").trim(),
     descricao_curta: (perfilDescricaoCurta?.value || "").trim(),
-    publico: false
+    publico: perfilPublicoToggle?.checked === true
   };
 
   try{
@@ -17036,7 +17746,8 @@ async function salvarPerfilTime(){
     atualizarTopoAuth();
     perfilAssistAtualizarProduto(selectedProductInput?.value || "");
     atualizarPerfilTimeVisualSeAberto();
-    setPerfilTimeMsg("Perfil salvo com sucesso.", "ok");
+    perfilPublicoAtualizarControles(data.perfil || payload);
+    setPerfilTimeMsg((data.perfil?.publico === true) ? "Perfil salvo. Link publico ativo." : "Perfil salvo com sucesso.", "ok");
   }catch(err){
     setPerfilTimeMsg(err?.message || "Erro de rede ao salvar perfil.", "erro");
   }finally{
@@ -17051,8 +17762,27 @@ btnPerfilTimeEl?.addEventListener("click", abrirPerfilTimeVisual);
 perfilTimeVisualCloseBtn?.addEventListener("click", fecharPerfilTimeVisual);
 perfilVisualEditarBtn?.addEventListener("click", abrirEditorPeloPerfilVisual);
 perfilVisualCriarArteBtn?.addEventListener("click", criarArteComPerfilVisual);
+perfilVisualCompartilharBtn?.addEventListener("click", compartilharPerfilVisual);
 perfilTimeCloseBtn?.addEventListener("click", fecharPerfilTimeModal);
 perfilTimeSalvarBtn?.addEventListener("click", salvarPerfilTime);
+perfilPublicoCopiarLinkBtn?.addEventListener("click", copiarLinkPerfilPrivado);
+perfilPublicoToggle?.addEventListener("change", ()=>{
+  const perfilAtual = perfilAssistCache.perfil || {};
+  if(perfilPublicoToggle.checked && perfilAtual.publico !== true){
+    if(perfilPublicoLink) perfilPublicoLink.value = perfilPublicoUrl(perfilAtual);
+    perfilVisualSetText(perfilTimePrivacidadeLabel, "Pronto para publicar");
+    perfilVisualSetText(perfilPublicoStatus, "Salve o perfil para ativar este link publico.");
+  }else{
+    perfilPublicoAtualizarControles({
+      ...perfilAtual,
+      publico: perfilPublicoToggle.checked
+    });
+  }
+});
+perfilPublicoCopiarBtn?.addEventListener("click", async ()=>{
+  const ok = await copiarTextoPerfil(location.href);
+  perfilVisualSetText(perfilPublicoMsg, ok ? "Link copiado." : "Nao foi possivel copiar o link.");
+});
 perfilEscudoUploadBtn?.addEventListener("click", ()=>perfilEscudoInput?.click());
 perfilMascoteUploadBtn?.addEventListener("click", ()=>perfilMascoteInput?.click());
 perfilEscudoInput?.addEventListener("change", ()=>enviarImagemPerfil("escudo"));
@@ -17786,6 +18516,8 @@ cartaAppModal?.addEventListener("click", (event) => {
     fecharCartaAppModal();
   }
 });
+
+iniciarPerfilPublicoSeNecessario();
 </script>
   </main>
 </body>
