@@ -2008,6 +2008,40 @@
       padding:16px;
     }
 
+    .perfilStatsGrid{
+      display:grid;
+      grid-template-columns:repeat(auto-fit, minmax(96px, 1fr));
+      gap:10px;
+      padding:14px 18px;
+      background:#0b0b0b;
+      border-bottom:1px solid rgba(255,255,255,.08);
+    }
+
+    .perfilStatsCard{
+      border:1px solid rgba(255,255,255,.12);
+      border-radius:8px;
+      background:#181818;
+      padding:11px;
+      min-height:72px;
+    }
+
+    .perfilStatsCard strong{
+      display:block;
+      color:#facc15;
+      font-size:22px;
+      line-height:1;
+      font-weight:950;
+      margin-bottom:7px;
+    }
+
+    .perfilStatsCard span{
+      display:block;
+      color:#cbd5e1;
+      font-size:11px;
+      line-height:1.25;
+      font-weight:900;
+    }
+
     .perfilVisualSection{
       border:1px solid rgba(255,255,255,.10);
       border-radius:8px;
@@ -2364,6 +2398,19 @@
       display:grid;
       grid-template-columns:1.1fr 1fr 1fr;
       gap:14px;
+    }
+
+    .perfilPublicoStatsGrid{
+      display:grid;
+      grid-template-columns:repeat(auto-fit, minmax(104px, 1fr));
+      gap:12px;
+    }
+
+    .perfilPublicoStatsGrid .perfilStatsCard{
+      background:rgba(0,0,0,.32);
+      border-color:rgba(255,255,255,.13);
+      border-radius:16px;
+      min-height:78px;
     }
 
     .perfilPublicoSection{
@@ -7391,6 +7438,8 @@ body:not(.modeChosen) .builderArea,
         </div>
       </section>
 
+      <div class="perfilPublicoStatsGrid" id="perfilPublicoStats"></div>
+
       <div class="perfilPublicoGrid">
         <section class="perfilPublicoSection">
           <div class="perfilPublicoSectionTop">
@@ -8389,6 +8438,8 @@ body:not(.modeChosen) .builderArea,
         <button class="perfilVisualBtn secondary" id="perfilVisualCompartilharBtn" type="button">Compartilhar pagina</button>
         <button class="perfilVisualBtn secondary" id="perfilVisualEditarBtn" type="button">Editar Perfil do Time</button>
       </div>
+
+      <div class="perfilStatsGrid" id="perfilVisualStats"></div>
 
       <div class="perfilVisualGrid">
         <section class="perfilVisualSection">
@@ -15861,6 +15912,7 @@ const perfilVisualResultados = document.getElementById("perfilVisualResultados")
 const perfilVisualResultadosCounter = document.getElementById("perfilVisualResultadosCounter");
 const perfilVisualProximos = document.getElementById("perfilVisualProximos");
 const perfilVisualProximosCounter = document.getElementById("perfilVisualProximosCounter");
+const perfilVisualStats = document.getElementById("perfilVisualStats");
 const perfilVisualMsg = document.getElementById("perfilVisualMsg");
 const perfilVisualEditarBtn = document.getElementById("perfilVisualEditarBtn");
 const perfilVisualCriarArteBtn = document.getElementById("perfilVisualCriarArteBtn");
@@ -15877,6 +15929,7 @@ const perfilPublicoEscudoTexto = document.getElementById("perfilPublicoEscudoTex
 const perfilPublicoMascoteTexto = document.getElementById("perfilPublicoMascoteTexto");
 const perfilPublicoElenco = document.getElementById("perfilPublicoElenco");
 const perfilPublicoElencoCounter = document.getElementById("perfilPublicoElencoCounter");
+const perfilPublicoStats = document.getElementById("perfilPublicoStats");
 const perfilPublicoResultados = document.getElementById("perfilPublicoResultados");
 const perfilPublicoResultadosCounter = document.getElementById("perfilPublicoResultadosCounter");
 const perfilPublicoProximos = document.getElementById("perfilPublicoProximos");
@@ -16794,6 +16847,88 @@ function perfilVisualGameDetails(jogo){
   return [campeonato, [data, horario].filter(Boolean).join(" - "), local].filter(Boolean).join(" · ");
 }
 
+function perfilStatsNumeroGols(value){
+  const texto = String(value ?? "").trim().replace(",", ".");
+  if(!texto) return null;
+  const numero = Number(texto);
+  if(!Number.isFinite(numero) || numero < 0) return null;
+  return Math.floor(numero);
+}
+
+function calcularEstatisticasPerfilJogos(jogos = []){
+  const stats = {
+    jogos:0,
+    vitorias:0,
+    empates:0,
+    derrotas:0,
+    gols_marcados:0,
+    gols_sofridos:0,
+    saldo_gols:0,
+    pontos:0,
+    aproveitamento:0
+  };
+
+  (Array.isArray(jogos) ? jogos : []).forEach(jogo => {
+    if(!jogo || jogo.ativo === false || jogo.tipo !== "resultado") return;
+    const golsMarcados = perfilStatsNumeroGols(jogo.meu_time_gols);
+    const golsSofridos = perfilStatsNumeroGols(jogo.adversario_gols);
+    if(golsMarcados === null || golsSofridos === null) return;
+
+    stats.jogos += 1;
+    stats.gols_marcados += golsMarcados;
+    stats.gols_sofridos += golsSofridos;
+
+    if(golsMarcados > golsSofridos){
+      stats.vitorias += 1;
+      stats.pontos += 3;
+    }else if(golsMarcados === golsSofridos){
+      stats.empates += 1;
+      stats.pontos += 1;
+    }else{
+      stats.derrotas += 1;
+    }
+  });
+
+  stats.saldo_gols = stats.gols_marcados - stats.gols_sofridos;
+  stats.aproveitamento = stats.jogos ? Math.round((stats.pontos / (stats.jogos * 3)) * 1000) / 10 : 0;
+  return stats;
+}
+
+function perfilStatsValor(value, sufixo = ""){
+  const numero = Number(value || 0);
+  const texto = Number.isInteger(numero) ? String(numero) : String(numero).replace(".", ",");
+  return `${texto}${sufixo}`;
+}
+
+function renderPerfilStats(container, stats = {}){
+  if(!container) return;
+  const base = {
+    jogos:0,
+    vitorias:0,
+    empates:0,
+    derrotas:0,
+    gols_marcados:0,
+    gols_sofridos:0,
+    aproveitamento:0,
+    ...stats
+  };
+  const cards = [
+    ["Jogos", perfilStatsValor(base.jogos)],
+    ["Vitorias", perfilStatsValor(base.vitorias)],
+    ["Empates", perfilStatsValor(base.empates)],
+    ["Derrotas", perfilStatsValor(base.derrotas)],
+    ["Gols marcados", perfilStatsValor(base.gols_marcados)],
+    ["Gols sofridos", perfilStatsValor(base.gols_sofridos)],
+    ["Aproveitamento", perfilStatsValor(base.aproveitamento, "%")]
+  ];
+  container.innerHTML = cards.map(([label, value]) => `
+    <div class="perfilStatsCard">
+      <strong>${htmlEscape(value)}</strong>
+      <span>${htmlEscape(label)}</span>
+    </div>
+  `).join("");
+}
+
 function perfilVisualGameCardHtml(jogo, nomeTime){
   const adversario = htmlEscape(jogo?.adversario || "Adversario");
   const placar = htmlEscape(placarPerfilJogo(jogo));
@@ -16876,6 +17011,7 @@ function renderPerfilPublico(data = {}){
   perfilPublicoSetAsset(perfilPublicoMascoteThumb, "M", perfil.mascote_url, `Mascote ${nome}`);
   perfilVisualSetText(perfilPublicoEscudoTexto, perfil.escudo_url ? "Escudo oficial do time." : "Escudo ainda nao cadastrado.");
   perfilVisualSetText(perfilPublicoMascoteTexto, perfil.mascote_url ? "Mascote oficial do time." : "Mascote ainda nao cadastrado.");
+  renderPerfilStats(perfilPublicoStats, data.estatisticas || calcularEstatisticasPerfilJogos(jogos));
 
   perfilVisualSetText(perfilPublicoElencoCounter, `${jogadores.length} ${jogadores.length === 1 ? "jogador" : "jogadores"}`);
   if(perfilPublicoElenco){
@@ -16944,6 +17080,7 @@ async function iniciarPerfilPublicoSeNecessario(){
     perfilPublicoSetAsset(perfilPublicoMascoteThumb, "M", "", "");
     perfilVisualSetText(perfilPublicoEscudoTexto, "Indisponivel.");
     perfilVisualSetText(perfilPublicoMascoteTexto, "Indisponivel.");
+    renderPerfilStats(perfilPublicoStats, calcularEstatisticasPerfilJogos([]));
     if(perfilPublicoElenco) perfilPublicoElenco.innerHTML = `<div class="perfilPublicoEmpty">Nada para mostrar.</div>`;
     if(perfilPublicoResultados) perfilPublicoResultados.innerHTML = `<div class="perfilPublicoEmpty">Nada para mostrar.</div>`;
     if(perfilPublicoProximos) perfilPublicoProximos.innerHTML = `<div class="perfilPublicoEmpty">Nada para mostrar.</div>`;
@@ -16990,6 +17127,7 @@ function renderPerfilTimeVisual(data = {}){
   perfilVisualSetText(perfilVisualEscudoTexto, escudoUrl ? "Escudo cadastrado no perfil." : "Complete o perfil do seu time.");
   perfilVisualSetText(perfilVisualMascoteTexto, mascoteUrl ? "Mascote cadastrado no perfil." : "Complete o perfil do seu time.");
   atualizarPreviewsImagemPerfil(perfil);
+  renderPerfilStats(perfilVisualStats, data.estatisticas || calcularEstatisticasPerfilJogos(jogos));
 
   if(perfilVisualElencoCounter){
     perfilVisualElencoCounter.textContent = `${jogadores.length} ${jogadores.length === 1 ? "jogador" : "jogadores"}`;
@@ -17056,6 +17194,7 @@ function renderPerfilTimeVisualCarregando(){
   perfilVisualSetText(perfilVisualElencoCounter, "0 jogadores");
   perfilVisualSetText(perfilVisualResultadosCounter, "0 resultados");
   perfilVisualSetText(perfilVisualProximosCounter, "0 jogos");
+  renderPerfilStats(perfilVisualStats, calcularEstatisticasPerfilJogos([]));
   setPerfilVisualMsg("");
 }
 
