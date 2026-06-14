@@ -2181,16 +2181,41 @@
     .perfilVisualGallery,
     .perfilPublicoGallery{
       display:grid;
-      grid-template-columns:repeat(auto-fill, minmax(148px, 1fr));
-      gap:10px;
+      grid-template-columns:repeat(auto-fill, minmax(172px, 1fr));
+      gap:12px;
+    }
+
+    .perfilGalleryFilters{
+      display:flex;
+      gap:8px;
+      flex-wrap:wrap;
+      margin-bottom:12px;
+    }
+
+    .perfilGalleryFilterBtn{
+      border:1px solid rgba(255,255,255,.14);
+      border-radius:999px;
+      background:rgba(255,255,255,.07);
+      color:#e5e7eb;
+      padding:8px 10px;
+      font-size:11px;
+      font-weight:950;
+      cursor:pointer;
+    }
+
+    .perfilGalleryFilterBtn.active{
+      background:#facc15;
+      color:#111827;
+      border-color:#facc15;
     }
 
     .perfilGalleryCard{
       min-width:0;
       border:1px solid rgba(255,255,255,.10);
       border-radius:8px;
-      background:#181818;
+      background:linear-gradient(180deg,#1f1f1f,#111111);
       overflow:hidden;
+      box-shadow:0 16px 34px rgba(0,0,0,.24);
     }
 
     .perfilGalleryMedia{
@@ -2233,6 +2258,20 @@
       padding:10px;
     }
 
+    .perfilGalleryTag{
+      display:inline-flex;
+      align-items:center;
+      max-width:100%;
+      border-radius:999px;
+      background:rgba(250,204,21,.12);
+      color:#fde68a;
+      border:1px solid rgba(250,204,21,.20);
+      padding:5px 7px;
+      font-size:10px;
+      font-weight:950;
+      margin-bottom:8px;
+    }
+
     .perfilGalleryInfo strong{
       display:block;
       color:#ffffff;
@@ -2251,6 +2290,37 @@
       font-weight:850;
       line-height:1.3;
       margin-top:4px;
+    }
+
+    .perfilGalleryActions{
+      display:grid;
+      grid-template-columns:1fr;
+      gap:7px;
+      padding:0 10px 10px;
+    }
+
+    .perfilGalleryActionBtn{
+      width:100%;
+      min-height:38px;
+      border:1px solid rgba(255,255,255,.13);
+      border-radius:8px;
+      background:rgba(255,255,255,.08);
+      color:#ffffff;
+      font-size:12px;
+      font-weight:950;
+      cursor:pointer;
+      text-align:center;
+      text-decoration:none;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding:9px 10px;
+    }
+
+    .perfilGalleryActionBtn.primary{
+      background:#facc15;
+      border-color:#facc15;
+      color:#111827;
     }
 
     .perfilVisualEmpty{
@@ -7688,6 +7758,7 @@ body:not(.modeChosen) .builderArea,
           <h3>Galeria do Time</h3>
           <span class="perfilPublicoCounter" id="perfilPublicoGaleriaCounter">0 artes</span>
         </div>
+        <div class="perfilGalleryFilters" id="perfilPublicoGaleriaFiltros"></div>
         <div class="perfilPublicoGallery" id="perfilPublicoGaleria"></div>
       </section>
 
@@ -8745,6 +8816,7 @@ body:not(.modeChosen) .builderArea,
           <h3 class="perfilVisualSectionTitle">Galeria do Time</h3>
           <span class="perfilVisualCounter" id="perfilVisualGaleriaCounter">0 artes</span>
         </div>
+        <div class="perfilGalleryFilters" id="perfilVisualGaleriaFiltros"></div>
         <div class="perfilVisualGallery" id="perfilVisualGaleria"></div>
       </section>
 
@@ -16196,6 +16268,7 @@ const perfilVisualProximosCounter = document.getElementById("perfilVisualProximo
 const perfilVisualStats = document.getElementById("perfilVisualStats");
 const perfilVisualGaleria = document.getElementById("perfilVisualGaleria");
 const perfilVisualGaleriaCounter = document.getElementById("perfilVisualGaleriaCounter");
+const perfilVisualGaleriaFiltros = document.getElementById("perfilVisualGaleriaFiltros");
 const perfilVisualMsg = document.getElementById("perfilVisualMsg");
 const perfilVisualEditarBtn = document.getElementById("perfilVisualEditarBtn");
 const perfilVisualCriarArteBtn = document.getElementById("perfilVisualCriarArteBtn");
@@ -16219,6 +16292,7 @@ const perfilPublicoProximos = document.getElementById("perfilPublicoProximos");
 const perfilPublicoProximosCounter = document.getElementById("perfilPublicoProximosCounter");
 const perfilPublicoGaleria = document.getElementById("perfilPublicoGaleria");
 const perfilPublicoGaleriaCounter = document.getElementById("perfilPublicoGaleriaCounter");
+const perfilPublicoGaleriaFiltros = document.getElementById("perfilPublicoGaleriaFiltros");
 const perfilPublicoMsg = document.getElementById("perfilPublicoMsg");
 const perfilElencoResumo = document.getElementById("perfilElencoResumo");
 const perfilElencoPreview = document.getElementById("perfilElencoPreview");
@@ -16272,6 +16346,9 @@ const perfilImagemObjectUrls = {
   mascote: ""
 };
 const perfilGaleriaObjectUrls = new Map();
+let perfilGaleriaFiltroPrivada = "todos";
+let perfilGaleriaFiltroPublica = "todos";
+let perfilPublicoGaleriaDadosAtuais = [];
 
 function perfilAssistInvalidarCache(){
   perfilAssistCache.loaded = false;
@@ -17354,22 +17431,63 @@ function perfilGaleriaRevokeUrls(){
   perfilGaleriaObjectUrls.clear();
 }
 
+const PERFIL_GALERIA_FILTROS = [
+  { id:"todos", label:"Todos" },
+  { id:"resultado", label:"Resultado" },
+  { id:"proximo_jogo", label:"Proximo Jogo" },
+  { id:"escalacao", label:"Escalacao" },
+  { id:"jogador_escudo", label:"Jogador + Escudo" },
+  { id:"mascote_uniforme", label:"Mascote" }
+];
+
+function perfilGaleriaProduto(item){
+  return String(item?.produto || item?.product_id || item?.categoria || "").trim().toLowerCase();
+}
+
+function perfilGaleriaProdutoLabel(item){
+  const produto = perfilGaleriaProduto(item);
+  const found = PERFIL_GALERIA_FILTROS.find(filtro => filtro.id === produto);
+  return found?.label || item?.produto_nome || "Arte do time";
+}
+
+function perfilGaleriaProdutoDestino(produto){
+  const key = String(produto || "").trim().toLowerCase();
+  return PRODUCTS[key] ? key : "resultado";
+}
+
+function perfilGaleriaRenderFiltros(container, filtroAtual, publica){
+  if(!container) return;
+  container.innerHTML = PERFIL_GALERIA_FILTROS.map(filtro => `
+    <button class="perfilGalleryFilterBtn${filtro.id === filtroAtual ? " active" : ""}" type="button" data-galeria-filtro="${htmlEscape(filtro.id)}" data-publica="${publica ? "1" : "0"}">
+      ${htmlEscape(filtro.label)}
+    </button>
+  `).join("");
+}
+
 function perfilGaleriaCardHtml(item, publica = false){
   const id = htmlEscape(item?.pedido_id || item?.id || "");
-  const produto = htmlEscape(item?.produto_nome || item?.produto || "Arte do time");
+  const produtoRaw = perfilGaleriaProduto(item);
+  const produto = htmlEscape(perfilGaleriaProdutoLabel(item));
   const data = htmlEscape(perfilGaleriaData(item?.criado_em || item?.data));
   const src = publica ? perfilGaleriaImagemUrl(item) : "";
   const srcAttr = src ? ` src="${htmlEscape(src)}"` : "";
+  const destino = htmlEscape(perfilGaleriaProdutoDestino(produtoRaw));
+  const criarHref = `/app.html?produto=${encodeURIComponent(destino)}`;
 
   return `
-    <article class="perfilGalleryCard" data-galeria-id="${id}">
+    <article class="perfilGalleryCard" data-galeria-id="${id}" data-galeria-produto="${htmlEscape(produtoRaw)}">
       <div class="perfilGalleryMedia">
         <img${srcAttr} alt="${produto}" loading="lazy" data-galeria-img>
         <div class="perfilGalleryFallback">Arte liberada</div>
       </div>
       <div class="perfilGalleryInfo">
+        <span class="perfilGalleryTag">${produto}</span>
         <strong>${produto}</strong>
         <span>${data || "Arte recente"}</span>
+      </div>
+      <div class="perfilGalleryActions">
+        <button class="perfilGalleryActionBtn primary" type="button" data-galeria-ver="${id}">Ver arte</button>
+        <a class="perfilGalleryActionBtn" href="${htmlEscape(criarHref)}" data-galeria-criar="${destino}">Criar uma arte parecida</a>
       </div>
     </article>
   `;
@@ -17407,19 +17525,72 @@ async function carregarGaleriaPrivada(galeria = []){
 
 function renderPerfilGaleria(container, counter, galeria = [], options = {}){
   if(!container) return;
-  const itens = (Array.isArray(galeria) ? galeria : []).slice(0, 50);
-  const total = itens.length;
   const publica = options.publica === true;
+  const filtro = publica ? perfilGaleriaFiltroPublica : perfilGaleriaFiltroPrivada;
+  perfilGaleriaRenderFiltros(publica ? perfilPublicoGaleriaFiltros : perfilVisualGaleriaFiltros, filtro, publica);
 
-  perfilVisualSetText(counter, `${total} ${total === 1 ? "arte" : "artes"}`);
+  const todos = (Array.isArray(galeria) ? galeria : []).slice(0, 50);
+  const itens = filtro === "todos"
+    ? todos
+    : todos.filter(item => perfilGaleriaProduto(item) === filtro);
+  const total = itens.length;
+
+  perfilVisualSetText(counter, filtro === "todos"
+    ? `${total} ${total === 1 ? "arte" : "artes"}`
+    : `${total} de ${todos.length} artes`);
 
   container.innerHTML = total
     ? itens.map(item => perfilGaleriaCardHtml(item, publica)).join("")
-    : `<div class="${publica ? "perfilPublicoEmpty" : "perfilVisualEmpty"}">As artes aprovadas do time vao aparecer aqui.</div>`;
+    : `<div class="${publica ? "perfilPublicoEmpty" : "perfilVisualEmpty"}">${todos.length ? "Nenhuma arte neste filtro." : "As artes aprovadas do time vao aparecer aqui."}</div>`;
 
   if(!publica){
     carregarGaleriaPrivada(itens);
   }
+}
+
+function perfilGaleriaAbrirArte(btn){
+  const card = btn?.closest?.(".perfilGalleryCard");
+  const img = card?.querySelector?.("[data-galeria-img]");
+  const src = img?.src || "";
+
+  if(src){
+    window.open(src, "_blank", "noopener");
+    return;
+  }
+
+  const publica = !!card?.closest?.("#perfilPublicoGaleria");
+  const msg = "A imagem ainda esta carregando. Tente novamente em instantes.";
+  if(publica) perfilVisualSetText(perfilPublicoMsg, msg);
+  else setPerfilVisualMsg(msg);
+}
+
+function perfilGaleriaAbrirProduto(productKey){
+  const produto = perfilGaleriaProdutoDestino(productKey);
+
+  if(document.body.classList.contains("publicProfileMode")){
+    window.location.href = `/app.html?produto=${encodeURIComponent(produto)}`;
+    return;
+  }
+
+  fecharPerfilTimeVisual();
+  fecharPerfilTimeModal();
+  showProductCategory(["mascote_uniforme", "jogador_escudo"].includes(produto) ? "jogador" : "time");
+  selectProduct(produto);
+  document.getElementById("productFormsRoot")?.scrollIntoView({ behavior:"smooth", block:"start" });
+}
+
+function inicializarProdutoPorUrl(){
+  const params = new URLSearchParams(location.search);
+  if(params.get("time")) return;
+  const rawProduto = String(params.get("produto") || "").trim().toLowerCase();
+  if(!rawProduto || !PRODUCTS[rawProduto]) return;
+  const produto = perfilGaleriaProdutoDestino(rawProduto);
+
+  setTimeout(()=>{
+    showProductCategory(["mascote_uniforme", "jogador_escudo"].includes(produto) ? "jogador" : "time");
+    selectProduct(produto);
+    document.getElementById("productFormsRoot")?.scrollIntoView({ behavior:"smooth", block:"start" });
+  }, 250);
 }
 
 function renderPerfilPublico(data = {}){
@@ -17429,6 +17600,7 @@ function renderPerfilPublico(data = {}){
   const jogos = (Array.isArray(data.jogos) ? data.jogos : [])
     .filter(jogo => jogo && jogo.ativo !== false);
   const galeria = Array.isArray(data.galeria) ? data.galeria : [];
+  perfilPublicoGaleriaDadosAtuais = galeria;
   const nome = perfilAssistTexto(perfil.nome_time) || "Perfil do Time";
   const local = perfilVisualLocal(perfil);
   const instagram = perfilVisualInstagram(perfil);
@@ -18625,6 +18797,33 @@ perfilPublicoCopiarBtn?.addEventListener("click", async ()=>{
   const ok = await copiarTextoPerfil(location.href);
   perfilVisualSetText(perfilPublicoMsg, ok ? "Link copiado." : "Nao foi possivel copiar o link.");
 });
+document.addEventListener("click", (event)=>{
+  const filtroBtn = event.target?.closest?.("[data-galeria-filtro]");
+  const verBtn = event.target?.closest?.("[data-galeria-ver]");
+  const criarBtn = event.target?.closest?.("[data-galeria-criar]");
+
+  if(filtroBtn){
+    const publica = filtroBtn.getAttribute("data-publica") === "1";
+    const filtro = filtroBtn.getAttribute("data-galeria-filtro") || "todos";
+    if(publica){
+      perfilGaleriaFiltroPublica = filtro;
+      renderPerfilGaleria(perfilPublicoGaleria, perfilPublicoGaleriaCounter, perfilPublicoGaleriaDadosAtuais, { publica:true });
+    }else{
+      perfilGaleriaFiltroPrivada = filtro;
+      renderPerfilGaleria(perfilVisualGaleria, perfilVisualGaleriaCounter, perfilAssistCache.galeria || [], { publica:false });
+    }
+  }
+
+  if(verBtn){
+    event.preventDefault();
+    perfilGaleriaAbrirArte(verBtn);
+  }
+
+  if(criarBtn){
+    event.preventDefault();
+    perfilGaleriaAbrirProduto(criarBtn.getAttribute("data-galeria-criar"));
+  }
+});
 perfilEscudoUploadBtn?.addEventListener("click", ()=>perfilEscudoInput?.click());
 perfilMascoteUploadBtn?.addEventListener("click", ()=>perfilMascoteInput?.click());
 perfilEscudoInput?.addEventListener("change", ()=>enviarImagemPerfil("escudo"));
@@ -19382,6 +19581,7 @@ cartaAppModal?.addEventListener("click", (event) => {
   }
 });
 
+inicializarProdutoPorUrl();
 iniciarPerfilPublicoSeNecessario();
 </script>
   </main>
