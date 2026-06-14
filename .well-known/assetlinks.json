@@ -1,0 +1,14 @@
+[
+  {
+    "relation": [
+      "delegate_permission/common.handle_all_urls"
+    ],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "br.com.omascote.app",
+      "sha256_cert_fingerprints": [
+        "95:E3:2F:63:9B:35:9D:47:7A:5D:47:B5:6F:5F:57:93:5D:21:6A:DF:E4:37:F4:5C:4B:6C:2F:C4:25:31:BC:A4"
+      ]
+    }
+  }
+]
