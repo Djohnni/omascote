@@ -27,8 +27,8 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-title" content="IA4Tube">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <meta property="og:site_name" content="IA4Tube">
-  <meta property="og:title" content="IA4Tube — Artes esportivas automáticas para times de futebol">
+  <meta property="og:site_name" content="O Mascote">
+  <meta property="og:title" content="O Mascote — Artes esportivas automáticas para times de futebol">
   <meta property="og:description" content="Crie artes profissionais para seu time em poucos minutos. Resultado do jogo, escalação, contratação, próximo jogo, jogador, patrocinador e escudo 3D prontos para Instagram.">
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://omascote.com.br/">
@@ -36,12 +36,12 @@
   <meta property="og:image" content="https://omascote.com.br/og-image.jpg">
   <meta property="og:image:width" content="1200">
   <meta property="og:image:height" content="630">
-  <meta property="og:image:alt" content="IA4Tube — artes esportivas automáticas para times de futebol">
+  <meta property="og:image:alt" content="O Mascote — artes esportivas automáticas para times de futebol">
 
   <link rel="canonical" href="https://omascote.com.br/app.html">
 
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="IA4Tube — Artes esportivas automáticas para times de futebol">
+  <meta name="twitter:title" content="O Mascote — Artes esportivas automáticas para times de futebol">
   <meta name="twitter:description" content="Crie artes profissionais para seu time em poucos minutos. Resultado, escalação, contratação, jogador e escudo 3D prontos para Instagram.">
   <meta name="twitter:image" content="https://omascote.com.br/og-image.jpg">
 
@@ -63,7 +63,7 @@
 
       <!-- removido: bloco de story solto dentro do head -->
 
-  <title>IA4Tube — Artes automáticas para times de futebol</title>
+  <title>O Mascote — Artes automáticas para times de futebol</title>
   <link rel="icon" href="/favicon.ico" type="image/x-icon">
   <link rel="shortcut icon" href="/favicon.ico?v=2" type="image/x-icon">
   <link rel="icon" href="/favicon.ico?v=2" sizes="32x32">
@@ -2969,6 +2969,37 @@
       grid-template-columns:repeat(auto-fill, minmax(164px, 1fr));
     }
 
+    .perfilPublicoShareBox{
+      border:1px solid rgba(250,204,21,.24);
+      border-radius:8px;
+      background:rgba(250,204,21,.08);
+      padding:14px;
+      display:grid;
+      gap:12px;
+    }
+
+    .perfilPublicoShareText{
+      margin:0;
+      color:#f8fafc;
+      font-size:14px;
+      font-weight:900;
+      line-height:1.45;
+    }
+
+    .perfilPublicoShareActions{
+      display:flex;
+      gap:9px;
+      flex-wrap:wrap;
+    }
+
+    .perfilPublicoBrandMark{
+      color:#fde68a;
+      font-size:12px;
+      font-weight:950;
+      text-transform:uppercase;
+      letter-spacing:.06em;
+    }
+
     .perfilPublicoEmpty,
     .perfilPublicoMsg,
     .perfilRankingMsg{
@@ -3725,6 +3756,10 @@
 
       .perfilPublicoActions{
         width:100%;
+      }
+
+      .perfilPublicoShareActions{
+        flex-direction:column;
       }
 
       .perfilPublicoBtn{
@@ -8173,6 +8208,7 @@ body:not(.modeChosen) .builderArea,
         <div class="perfilPublicoBrand">O Mascote · Perfil oficial do time</div>
         <div class="perfilPublicoActions">
           <a class="perfilPublicoBtn secondary" href="/app.html?ranking=times">Ranking</a>
+          <a class="perfilPublicoBtn secondary" id="perfilPublicoWhatsappBtn" href="#" target="_blank" rel="noopener">WhatsApp</a>
           <button class="perfilPublicoBtn secondary" id="perfilPublicoCopiarBtn" type="button">Copiar link</button>
           <a class="perfilPublicoBtn" href="/app.html">Criar arte no O Mascote</a>
         </div>
@@ -8259,6 +8295,22 @@ body:not(.modeChosen) .builderArea,
           <span class="perfilPublicoCounter" id="perfilPublicoPatrocinadoresCounter">0 patrocinadores</span>
         </div>
         <div class="perfilSponsorGrid" id="perfilPublicoPatrocinadores"></div>
+      </section>
+
+      <section class="perfilPublicoSection perfilPublicoGallerySection">
+        <div class="perfilPublicoSectionTop">
+          <h3>Compartilhar</h3>
+          <span class="perfilPublicoCounter">Perfil publico</span>
+        </div>
+        <div class="perfilPublicoShareBox">
+          <p class="perfilPublicoShareText" id="perfilPublicoShareTexto">Conheca este time no O Mascote.</p>
+          <div class="perfilPublicoShareActions">
+            <a class="perfilPublicoBtn" id="perfilPublicoShareWhatsappBtn" href="#" target="_blank" rel="noopener">Enviar no WhatsApp</a>
+            <button class="perfilPublicoBtn secondary" id="perfilPublicoShareCopiarBtn" type="button">Copiar texto pronto</button>
+            <a class="perfilPublicoBtn secondary" href="/app.html">Crie o perfil do seu time tambem</a>
+          </div>
+          <div class="perfilPublicoBrandMark">Criado no O Mascote</div>
+        </div>
       </section>
 
       <div class="perfilPublicoMsg" id="perfilPublicoMsg"></div>
@@ -16844,6 +16896,10 @@ const rankingArtesCount = document.getElementById("rankingArtesCount");
 const rankingTimesMsg = document.getElementById("rankingTimesMsg");
 const perfilPublicoPage = document.getElementById("perfilPublicoPage");
 const perfilPublicoCopiarBtn = document.getElementById("perfilPublicoCopiarBtn");
+const perfilPublicoWhatsappBtn = document.getElementById("perfilPublicoWhatsappBtn");
+const perfilPublicoShareWhatsappBtn = document.getElementById("perfilPublicoShareWhatsappBtn");
+const perfilPublicoShareCopiarBtn = document.getElementById("perfilPublicoShareCopiarBtn");
+const perfilPublicoShareTexto = document.getElementById("perfilPublicoShareTexto");
 const perfilPublicoNome = document.getElementById("perfilPublicoNome");
 const perfilPublicoMeta = document.getElementById("perfilPublicoMeta");
 const perfilPublicoDescricao = document.getElementById("perfilPublicoDescricao");
@@ -17638,6 +17694,70 @@ async function copiarTextoPerfil(texto){
   }
 }
 
+function perfilShareUrlAtual(){
+  try{
+    const url = new URL(location.href);
+    [...url.searchParams.keys()].forEach((key)=>{
+      if(/^phase\d*/.test(key) || ["validate_coupon_preview", "coupon_admin_validate", "t"].includes(key)){
+        url.searchParams.delete(key);
+      }
+    });
+    return url.toString();
+  }catch(e){
+    return location.href;
+  }
+}
+
+function perfilShareTextoPublico(perfil = {}){
+  const nome = perfilAssistTexto(perfil.nome_time) || "este time";
+  const local = perfilVisualLocal(perfil);
+  const url = perfil.url || perfilShareUrlAtual();
+  return `Conheca o perfil do ${nome}${local ? " de " + local : ""} no O Mascote: ${url}`;
+}
+
+function perfilWhatsappHref(texto){
+  return `https://wa.me/?text=${encodeURIComponent(texto || "")}`;
+}
+
+function atualizarMetaTag(seletor, attr, valor){
+  const texto = String(valor || "").trim();
+  if(!texto) return;
+  let el = document.head.querySelector(seletor);
+  if(!el){
+    el = document.createElement("meta");
+    const propertyMatch = seletor.match(/meta\[property="([^"]+)"\]/);
+    const nameMatch = seletor.match(/meta\[name="([^"]+)"\]/);
+    if(propertyMatch) el.setAttribute("property", propertyMatch[1]);
+    if(nameMatch) el.setAttribute("name", nameMatch[1]);
+    document.head.appendChild(el);
+  }
+  el.setAttribute(attr, texto);
+}
+
+function atualizarMetasCompartilhamento({ title, description, url, image } = {}){
+  const finalUrl = url || perfilShareUrlAtual();
+  const finalTitle = title || "O Mascote";
+  const finalDescription = description || "Perfil de time criado no O Mascote.";
+  const finalImage = image || "https://omascote.com.br/og-image.jpg";
+
+  atualizarMetaTag('meta[property="og:site_name"]', "content", "O Mascote");
+  atualizarMetaTag('meta[property="og:title"]', "content", finalTitle);
+  atualizarMetaTag('meta[property="og:description"]', "content", finalDescription);
+  atualizarMetaTag('meta[property="og:url"]', "content", finalUrl);
+  atualizarMetaTag('meta[property="og:image"]', "content", finalImage);
+  atualizarMetaTag('meta[name="twitter:title"]', "content", finalTitle);
+  atualizarMetaTag('meta[name="twitter:description"]', "content", finalDescription);
+  atualizarMetaTag('meta[name="twitter:image"]', "content", finalImage);
+
+  let canonical = document.head.querySelector('link[rel="canonical"]');
+  if(!canonical){
+    canonical = document.createElement("link");
+    canonical.setAttribute("rel", "canonical");
+    document.head.appendChild(canonical);
+  }
+  canonical.setAttribute("href", finalUrl);
+}
+
 async function copiarLinkPerfilPrivado(){
   if((perfilAssistCache.perfil || {}).publico !== true){
     setPerfilTimeMsg("Ative a pagina publica e salve o perfil para copiar o link.", "erro");
@@ -17662,8 +17782,22 @@ async function compartilharPerfilVisual(){
   }
 
   const url = perfilPublicoUrl(perfil);
-  const ok = await copiarTextoPerfil(url);
-  setPerfilVisualMsg(ok ? "Link publico copiado." : "Nao foi possivel copiar o link.");
+  const texto = perfilShareTextoPublico({ ...perfil, url });
+
+  try{
+    if(navigator.share){
+      await navigator.share({
+        title:`${perfilAssistTexto(perfil.nome_time) || "Perfil do Time"} | O Mascote`,
+        text:texto,
+        url
+      });
+      setPerfilVisualMsg("Compartilhamento aberto.");
+      return;
+    }
+  }catch(e){}
+
+  const ok = await copiarTextoPerfil(texto);
+  setPerfilVisualMsg(ok ? "Texto do perfil copiado." : "Nao foi possivel copiar o link.");
 }
 
 function perfilImagemEndpoint(tipo){
@@ -18444,6 +18578,12 @@ function iniciarRankingSeNecessario(){
   if(params.get("ranking") !== "times") return false;
 
   document.title = "Ranking dos Times | O Mascote";
+  atualizarMetasCompartilhamento({
+    title:"Ranking dos Times | O Mascote",
+    description:"Veja os times publicos com mais vitorias, gols, aproveitamento e artes no O Mascote.",
+    url: perfilShareUrlAtual(),
+    image:"https://omascote.com.br/og-image.jpg"
+  });
   document.body.classList.add("publicProfileMode");
   if(perfilRankingPage) perfilRankingPage.hidden = false;
   carregarRankingTimes();
@@ -18473,6 +18613,17 @@ function renderPerfilPublico(data = {}){
     .sort((a, b) => dataOrdemPerfilJogo(a).localeCompare(dataOrdemPerfilJogo(b)));
 
   document.title = `${nome} | Perfil do Time`;
+  const shareTexto = perfilShareTextoPublico({ ...perfil, nome_time:nome });
+  const shareHref = perfilWhatsappHref(shareTexto);
+  if(perfilPublicoShareTexto) perfilPublicoShareTexto.textContent = shareTexto;
+  if(perfilPublicoWhatsappBtn) perfilPublicoWhatsappBtn.href = shareHref;
+  if(perfilPublicoShareWhatsappBtn) perfilPublicoShareWhatsappBtn.href = shareHref;
+  atualizarMetasCompartilhamento({
+    title:`${nome} | Perfil do Time no O Mascote`,
+    description: descricao || `Conheca o perfil do ${nome} no O Mascote.`,
+    url: perfilShareUrlAtual(),
+    image: perfilPublicoAssetUrl(perfil.escudo_url) || "https://omascote.com.br/og-image.jpg"
+  });
   perfilVisualSetText(perfilPublicoNome, nome);
   perfilVisualSetText(perfilPublicoDescricao, descricao || "Perfil oficial do time no O Mascote.");
 
@@ -19950,8 +20101,13 @@ perfilPublicoToggle?.addEventListener("change", ()=>{
   }
 });
 perfilPublicoCopiarBtn?.addEventListener("click", async ()=>{
-  const ok = await copiarTextoPerfil(location.href);
+  const ok = await copiarTextoPerfil(perfilShareUrlAtual());
   perfilVisualSetText(perfilPublicoMsg, ok ? "Link copiado." : "Nao foi possivel copiar o link.");
+});
+perfilPublicoShareCopiarBtn?.addEventListener("click", async ()=>{
+  const texto = perfilPublicoShareTexto?.textContent || perfilShareUrlAtual();
+  const ok = await copiarTextoPerfil(texto);
+  perfilVisualSetText(perfilPublicoMsg, ok ? "Texto pronto copiado." : "Nao foi possivel copiar o texto.");
 });
 document.addEventListener("click", (event)=>{
   const filtroBtn = event.target?.closest?.("[data-galeria-filtro]");
