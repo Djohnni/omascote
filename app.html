@@ -2173,6 +2173,84 @@
       line-height:1.35;
     }
 
+    .perfilLineupGrid{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:12px;
+    }
+
+    .perfilLineupGroup{
+      border:1px solid rgba(255,255,255,.10);
+      border-radius:8px;
+      background:#181818;
+      padding:12px;
+      min-width:0;
+    }
+
+    .perfilLineupTitle{
+      display:flex;
+      justify-content:space-between;
+      gap:10px;
+      color:#ffffff;
+      font-size:13px;
+      font-weight:950;
+      margin-bottom:10px;
+    }
+
+    .perfilLineupTitle span{
+      color:#facc15;
+      font-size:12px;
+    }
+
+    .perfilLineupList{
+      display:flex;
+      flex-direction:column;
+      gap:8px;
+    }
+
+    .perfilLineupCard{
+      display:grid;
+      grid-template-columns:34px minmax(0, 1fr);
+      gap:9px;
+      align-items:center;
+      border:1px solid rgba(255,255,255,.08);
+      border-radius:8px;
+      background:#101010;
+      padding:9px;
+    }
+
+    .perfilLineupNumber{
+      width:34px;
+      height:34px;
+      border-radius:8px;
+      display:grid;
+      place-items:center;
+      background:#facc15;
+      color:#111827;
+      font-size:12px;
+      font-weight:950;
+    }
+
+    .perfilLineupCard strong{
+      display:block;
+      color:#ffffff;
+      font-size:13px;
+      font-weight:950;
+      overflow:hidden;
+      text-overflow:ellipsis;
+      white-space:nowrap;
+    }
+
+    .perfilLineupCard span{
+      display:block;
+      color:#cbd5e1;
+      font-size:11px;
+      font-weight:850;
+      overflow:hidden;
+      text-overflow:ellipsis;
+      white-space:nowrap;
+    }
+
     .perfilSponsorGrid{
       display:grid;
       grid-template-columns:repeat(auto-fit, minmax(150px, 1fr));
@@ -2967,6 +3045,11 @@
       cursor:pointer;
     }
 
+    .perfilMiniBtn:disabled{
+      opacity:.45;
+      cursor:not-allowed;
+    }
+
     .perfilMiniBtn.danger{
       color:#b91c1c;
       border-color:#fecaca;
@@ -3354,6 +3437,10 @@
       }
 
       .perfilTimePublicLinkRow{
+        grid-template-columns:1fr;
+      }
+
+      .perfilLineupGrid{
         grid-template-columns:1fr;
       }
 
@@ -7883,6 +7970,14 @@ body:not(.modeChosen) .builderArea,
 
         <section class="perfilPublicoSection">
           <div class="perfilPublicoSectionTop">
+            <h3>Escalacao Oficial</h3>
+            <span class="perfilPublicoCounter" id="perfilPublicoEscalacaoCounter">0 atletas</span>
+          </div>
+          <div class="perfilLineupGrid" id="perfilPublicoEscalacao"></div>
+        </section>
+
+        <section class="perfilPublicoSection">
+          <div class="perfilPublicoSectionTop">
             <h3>Ultimos resultados</h3>
             <span class="perfilPublicoCounter" id="perfilPublicoResultadosCounter">0 resultados</span>
           </div>
@@ -8985,6 +9080,14 @@ body:not(.modeChosen) .builderArea,
             <span class="perfilVisualCounter" id="perfilVisualElencoCounter">0 jogadores</span>
           </div>
           <div class="perfilVisualPlayers" id="perfilVisualElenco"></div>
+        </section>
+
+        <section class="perfilVisualSection">
+          <div class="perfilVisualSectionTop">
+            <h3 class="perfilVisualSectionTitle">Escalacao Oficial</h3>
+            <span class="perfilVisualCounter" id="perfilVisualEscalacaoCounter">0 atletas</span>
+          </div>
+          <div class="perfilLineupGrid" id="perfilVisualEscalacao"></div>
         </section>
 
         <section class="perfilVisualSection">
@@ -16462,6 +16565,8 @@ const perfilVisualMascoteThumb = document.getElementById("perfilVisualMascoteThu
 const perfilVisualMascoteTexto = document.getElementById("perfilVisualMascoteTexto");
 const perfilVisualElenco = document.getElementById("perfilVisualElenco");
 const perfilVisualElencoCounter = document.getElementById("perfilVisualElencoCounter");
+const perfilVisualEscalacao = document.getElementById("perfilVisualEscalacao");
+const perfilVisualEscalacaoCounter = document.getElementById("perfilVisualEscalacaoCounter");
 const perfilVisualResultados = document.getElementById("perfilVisualResultados");
 const perfilVisualResultadosCounter = document.getElementById("perfilVisualResultadosCounter");
 const perfilVisualProximos = document.getElementById("perfilVisualProximos");
@@ -16488,6 +16593,8 @@ const perfilPublicoEscudoTexto = document.getElementById("perfilPublicoEscudoTex
 const perfilPublicoMascoteTexto = document.getElementById("perfilPublicoMascoteTexto");
 const perfilPublicoElenco = document.getElementById("perfilPublicoElenco");
 const perfilPublicoElencoCounter = document.getElementById("perfilPublicoElencoCounter");
+const perfilPublicoEscalacao = document.getElementById("perfilPublicoEscalacao");
+const perfilPublicoEscalacaoCounter = document.getElementById("perfilPublicoEscalacaoCounter");
 const perfilPublicoStats = document.getElementById("perfilPublicoStats");
 const perfilPublicoResultados = document.getElementById("perfilPublicoResultados");
 const perfilPublicoResultadosCounter = document.getElementById("perfilPublicoResultadosCounter");
@@ -16624,8 +16731,17 @@ function perfilEscalacaoNormalizar(escalacao = {}){
   };
 }
 
-function perfilEscalacaoItens(escalacao = perfilEscalacaoTime){
+function perfilEscalacaoComOrdem(escalacao = {}){
   const base = perfilEscalacaoNormalizar(escalacao);
+  return {
+    titulares: base.titulares.map((item, index) => ({ ...item, tipo:"titular", ordem:index + 1 })),
+    reservas: base.reservas.map((item, index) => ({ ...item, tipo:"reserva", ordem:index + 1 })),
+    atualizado_em: base.atualizado_em || ""
+  };
+}
+
+function perfilEscalacaoItens(escalacao = perfilEscalacaoTime){
+  const base = perfilEscalacaoComOrdem(escalacao);
   return [
     ...base.titulares.map(item => ({ ...item, tipo:"titular" })),
     ...base.reservas.map(item => ({ ...item, tipo:"reserva" }))
@@ -17593,6 +17709,51 @@ function renderPerfilStats(container, stats = {}){
   `).join("");
 }
 
+function perfilLineupCardHtml(item){
+  const numero = htmlEscape(item?.numero || "-");
+  const nome = htmlEscape(item?.apelido || item?.nome || "Jogador");
+  const posicao = htmlEscape(item?.posicao || "Sem posicao");
+  return `
+    <div class="perfilLineupCard">
+      <div class="perfilLineupNumber">${numero}</div>
+      <div>
+        <strong>${nome}</strong>
+        <span>${posicao}</span>
+      </div>
+    </div>
+  `;
+}
+
+function perfilLineupGroupHtml(label, itens){
+  return `
+    <div class="perfilLineupGroup">
+      <div class="perfilLineupTitle">
+        <strong>${htmlEscape(label)}</strong>
+        <span>${itens.length}</span>
+      </div>
+      <div class="perfilLineupList">
+        ${itens.length ? itens.map(perfilLineupCardHtml).join("") : `<div class="perfilPublicoEmpty">Ainda nao definido.</div>`}
+      </div>
+    </div>
+  `;
+}
+
+function renderPerfilLineup(container, counter, escalacao = {}){
+  if(!container) return;
+  const base = perfilEscalacaoComOrdem(escalacao);
+  const titulares = base.titulares;
+  const reservas = base.reservas;
+  const total = titulares.length + reservas.length;
+
+  perfilVisualSetText(counter, `${total} ${total === 1 ? "atleta" : "atletas"}`);
+  container.innerHTML = total
+    ? [
+        perfilLineupGroupHtml("Titulares", titulares),
+        perfilLineupGroupHtml("Reservas", reservas)
+      ].join("")
+    : `<div class="perfilPublicoEmpty">Monte a escalação oficial do time.</div>`;
+}
+
 function perfilVisualGameCardHtml(jogo, nomeTime){
   const adversario = htmlEscape(jogo?.adversario || "Adversario");
   const placar = htmlEscape(placarPerfilJogo(jogo));
@@ -17943,6 +18104,7 @@ function renderPerfilPublico(data = {}){
     .filter(jogador => jogador && jogador.ativo !== false);
   const jogos = (Array.isArray(data.jogos) ? data.jogos : [])
     .filter(jogo => jogo && jogo.ativo !== false);
+  const escalacao = perfilEscalacaoComOrdem(data.escalacao || {});
   const galeria = Array.isArray(data.galeria) ? data.galeria : [];
   const patrocinadores = Array.isArray(data.patrocinadores) ? data.patrocinadores : [];
   perfilPublicoGaleriaDadosAtuais = galeria;
@@ -17976,6 +18138,7 @@ function renderPerfilPublico(data = {}){
   perfilVisualSetText(perfilPublicoEscudoTexto, perfil.escudo_url ? "Escudo oficial do time." : "Escudo ainda nao cadastrado.");
   perfilVisualSetText(perfilPublicoMascoteTexto, perfil.mascote_url ? "Mascote oficial do time." : "Mascote ainda nao cadastrado.");
   renderPerfilStats(perfilPublicoStats, data.estatisticas || calcularEstatisticasPerfilJogos(jogos));
+  renderPerfilLineup(perfilPublicoEscalacao, perfilPublicoEscalacaoCounter, escalacao);
 
   perfilVisualSetText(perfilPublicoElencoCounter, `${jogadores.length} ${jogadores.length === 1 ? "jogador" : "jogadores"}`);
   if(perfilPublicoElenco){
@@ -18049,10 +18212,12 @@ async function iniciarPerfilPublicoSeNecessario(){
     perfilVisualSetText(perfilPublicoMascoteTexto, "Indisponivel.");
     renderPerfilStats(perfilPublicoStats, calcularEstatisticasPerfilJogos([]));
     if(perfilPublicoElenco) perfilPublicoElenco.innerHTML = `<div class="perfilPublicoEmpty">Nada para mostrar.</div>`;
+    if(perfilPublicoEscalacao) perfilPublicoEscalacao.innerHTML = `<div class="perfilPublicoEmpty">Nada para mostrar.</div>`;
     if(perfilPublicoResultados) perfilPublicoResultados.innerHTML = `<div class="perfilPublicoEmpty">Nada para mostrar.</div>`;
     if(perfilPublicoProximos) perfilPublicoProximos.innerHTML = `<div class="perfilPublicoEmpty">Nada para mostrar.</div>`;
     if(perfilPublicoGaleria) perfilPublicoGaleria.innerHTML = `<div class="perfilPublicoEmpty">Nada para mostrar.</div>`;
     if(perfilPublicoPatrocinadores) perfilPublicoPatrocinadores.innerHTML = `<div class="perfilPublicoEmpty">Nada para mostrar.</div>`;
+    perfilVisualSetText(perfilPublicoEscalacaoCounter, "0 atletas");
     perfilVisualSetText(perfilPublicoGaleriaCounter, "0 artes");
     perfilVisualSetText(perfilPublicoPatrocinadoresCounter, "0 patrocinadores");
     perfilVisualSetText(perfilPublicoMsg, err?.message || "Nao foi possivel carregar este perfil.");
@@ -18066,6 +18231,7 @@ function renderPerfilTimeVisual(data = {}){
     .filter(jogador => jogador && jogador.ativo !== false);
   const jogos = (Array.isArray(data.jogos) ? data.jogos : perfilAssistCache.jogos || [])
     .filter(jogo => jogo && jogo.ativo !== false);
+  const escalacao = perfilEscalacaoComOrdem(data.escalacao || perfilAssistCache.escalacao || perfilEscalacaoTime);
   const galeria = Array.isArray(data.galeria) ? data.galeria : perfilAssistCache.galeria || [];
   const patrocinadores = Array.isArray(data.patrocinadores) ? data.patrocinadores : perfilAssistCache.patrocinadores || [];
 
@@ -18101,6 +18267,7 @@ function renderPerfilTimeVisual(data = {}){
   perfilVisualSetText(perfilVisualMascoteTexto, mascoteUrl ? "Mascote cadastrado no perfil." : "Complete o perfil do seu time.");
   atualizarPreviewsImagemPerfil(perfil);
   renderPerfilStats(perfilVisualStats, data.estatisticas || calcularEstatisticasPerfilJogos(jogos));
+  renderPerfilLineup(perfilVisualEscalacao, perfilVisualEscalacaoCounter, escalacao);
 
   if(perfilVisualElencoCounter){
     perfilVisualElencoCounter.textContent = `${jogadores.length} ${jogadores.length === 1 ? "jogador" : "jogadores"}`;
@@ -18165,11 +18332,13 @@ function renderPerfilTimeVisualCarregando(){
   perfilVisualSetText(perfilVisualEscudoTexto, "Carregando...");
   perfilVisualSetText(perfilVisualMascoteTexto, "Carregando...");
   if(perfilVisualElenco) perfilVisualElenco.innerHTML = `<div class="perfilVisualEmpty">Carregando elenco...</div>`;
+  if(perfilVisualEscalacao) perfilVisualEscalacao.innerHTML = `<div class="perfilVisualEmpty">Carregando escalacao...</div>`;
   if(perfilVisualResultados) perfilVisualResultados.innerHTML = `<div class="perfilVisualEmpty">Carregando resultados...</div>`;
   if(perfilVisualProximos) perfilVisualProximos.innerHTML = `<div class="perfilVisualEmpty">Carregando proximos jogos...</div>`;
   if(perfilVisualGaleria) perfilVisualGaleria.innerHTML = `<div class="perfilVisualEmpty">Carregando galeria...</div>`;
   if(perfilVisualPatrocinadores) perfilVisualPatrocinadores.innerHTML = `<div class="perfilVisualEmpty">Carregando patrocinadores...</div>`;
   perfilVisualSetText(perfilVisualElencoCounter, "0 jogadores");
+  perfilVisualSetText(perfilVisualEscalacaoCounter, "0 atletas");
   perfilVisualSetText(perfilVisualResultadosCounter, "0 resultados");
   perfilVisualSetText(perfilVisualProximosCounter, "0 jogos");
   perfilVisualSetText(perfilVisualGaleriaCounter, "0 artes");
@@ -18210,6 +18379,7 @@ function atualizarPerfilTimeVisualSeAberto(){
       perfil: perfilAssistCache.perfil || {},
       jogadores: perfilJogadoresTime,
       jogos: perfilJogosTime,
+      escalacao: perfilEscalacaoTime,
       galeria: perfilAssistCache.galeria || [],
       patrocinadores: perfilPatrocinadoresTime
     });
@@ -18643,8 +18813,8 @@ function renderPerfilEscalacao(){
 
   if(perfilEscalacaoLista){
     const itens = [
-      ...titulares.map(item => ({ ...item, grupo:"titulares", label:"Titular" })),
-      ...reservas.map(item => ({ ...item, grupo:"reservas", label:"Reserva" }))
+      ...titulares.map((item, index) => ({ ...item, grupo:"titulares", label:"Titular", index, total:titulares.length })),
+      ...reservas.map((item, index) => ({ ...item, grupo:"reservas", label:"Reserva", index, total:reservas.length }))
     ];
 
     perfilEscalacaoLista.innerHTML = itens.length
@@ -18655,6 +18825,8 @@ function renderPerfilEscalacao(){
               <span>${htmlEscape([item.numero ? "#" + item.numero : "", item.posicao || "Sem posicao"].filter(Boolean).join(" · "))}</span>
             </div>
             <div class="perfilJogadorRowActions">
+              <button class="perfilMiniBtn" type="button" data-mover-escalacao="${htmlEscape(item.jogador_id || "")}" data-direcao="-1" ${item.index <= 0 ? "disabled" : ""}>Subir</button>
+              <button class="perfilMiniBtn" type="button" data-mover-escalacao="${htmlEscape(item.jogador_id || "")}" data-direcao="1" ${item.index >= item.total - 1 ? "disabled" : ""}>Descer</button>
               <button class="perfilMiniBtn" type="button" data-editar-escalacao="${htmlEscape(item.jogador_id || "")}">Editar</button>
               <button class="perfilMiniBtn danger" type="button" data-remover-escalacao="${htmlEscape(item.jogador_id || "")}">Remover</button>
             </div>
@@ -18731,13 +18903,14 @@ function perfilEscalacaoSemJogador(escalacao, jogadorId){
 }
 
 async function salvarPerfilEscalacaoRemota(proxima){
+  const payload = perfilEscalacaoComOrdem(proxima);
   const r = await fetch(`${API_BASE}/me/time/escalacao`, {
     method:"PATCH",
     headers:{
       "Content-Type":"application/json",
       "Authorization":"Bearer " + token
     },
-    body:JSON.stringify(proxima)
+    body:JSON.stringify(payload)
   });
   const data = await ia4LerJsonSeguro(r);
   const authMsg = ia4TratarAuthInvalida(r, data);
@@ -18818,6 +18991,38 @@ async function removerPerfilEscalacaoItem(jogadorId){
     setPerfilTimeMsg("Jogador removido da escalacao.", "ok");
   }catch(err){
     setPerfilTimeMsg(err?.message || "Erro de rede ao remover da escalacao.", "erro");
+  }
+}
+
+async function moverPerfilEscalacaoItem(jogadorId, direcao){
+  if(!token || !jogadorId) return;
+
+  const encontrado = perfilEscalacaoEncontrarItem(jogadorId);
+  if(!encontrado) return;
+
+  const grupo = encontrado.grupo;
+  const lista = [...(perfilEscalacaoTime[grupo] || [])];
+  const index = lista.findIndex(item => String(item.jogador_id || "") === String(jogadorId || ""));
+  const destino = index + Number(direcao || 0);
+
+  if(index < 0 || destino < 0 || destino >= lista.length){
+    return;
+  }
+
+  const itemAtual = lista[index];
+  lista[index] = lista[destino];
+  lista[destino] = itemAtual;
+
+  const proxima = {
+    titulares: grupo === "titulares" ? lista : perfilEscalacaoTime.titulares,
+    reservas: grupo === "reservas" ? lista : perfilEscalacaoTime.reservas
+  };
+
+  try{
+    await salvarPerfilEscalacaoRemota(proxima);
+    setPerfilTimeMsg("Ordem da escalacao atualizada.", "ok");
+  }catch(err){
+    setPerfilTimeMsg(err?.message || "Erro de rede ao ordenar escalacao.", "erro");
   }
 }
 
@@ -19492,6 +19697,14 @@ perfilPatrocinadoresLista?.addEventListener("click", (e)=>{
 perfilEscalacaoLista?.addEventListener("click", (e)=>{
   const editarBtn = e.target?.closest?.("[data-editar-escalacao]");
   const removerBtn = e.target?.closest?.("[data-remover-escalacao]");
+  const moverBtn = e.target?.closest?.("[data-mover-escalacao]");
+
+  if(moverBtn){
+    moverPerfilEscalacaoItem(
+      moverBtn.getAttribute("data-mover-escalacao"),
+      moverBtn.getAttribute("data-direcao")
+    );
+  }
 
   if(editarBtn){
     preencherFormEscalacao(editarBtn.getAttribute("data-editar-escalacao"));
