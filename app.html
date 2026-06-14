@@ -2855,6 +2855,137 @@
       border-top:1px solid #e2e8f0;
     }
 
+    .perfilEscalacaoSection{
+      margin-top:18px;
+      padding-top:16px;
+      border-top:1px solid #e2e8f0;
+    }
+
+    .perfilEscalacaoPreviewGrid{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:12px;
+      margin-bottom:14px;
+    }
+
+    .perfilEscalacaoGroup{
+      border:1px solid #dbe3ef;
+      border-radius:16px;
+      background:#ffffff;
+      padding:12px;
+      min-height:132px;
+    }
+
+    .perfilEscalacaoGroupTitle{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      color:#0f172a;
+      font-size:13px;
+      font-weight:950;
+      margin-bottom:10px;
+    }
+
+    .perfilEscalacaoCards{
+      display:flex;
+      flex-direction:column;
+      gap:8px;
+    }
+
+    .perfilEscalacaoCard{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      border:1px solid #e2e8f0;
+      border-radius:14px;
+      background:#f8fafc;
+      padding:10px;
+    }
+
+    .perfilEscalacaoCard.titular{
+      background:#f0fdf4;
+      border-color:#bbf7d0;
+    }
+
+    .perfilEscalacaoCard.reserva{
+      background:#eff6ff;
+      border-color:#bfdbfe;
+    }
+
+    .perfilEscalacaoNumber{
+      width:36px;
+      height:36px;
+      border-radius:12px;
+      display:grid;
+      place-items:center;
+      background:#0f172a;
+      color:#ffffff;
+      font-size:13px;
+      font-weight:950;
+      flex:0 0 auto;
+    }
+
+    .perfilEscalacaoCard strong{
+      display:block;
+      color:#0f172a;
+      font-size:13px;
+      line-height:1.15;
+      margin-bottom:2px;
+    }
+
+    .perfilEscalacaoCard span{
+      display:block;
+      color:#64748b;
+      font-size:11px;
+      font-weight:900;
+      line-height:1.25;
+    }
+
+    .perfilEscalacaoForm{
+      display:grid;
+      grid-template-columns:1.3fr .8fr 1fr;
+      gap:10px;
+      align-items:end;
+      margin-bottom:12px;
+    }
+
+    .perfilEscalacaoActions{
+      display:flex;
+      gap:8px;
+      grid-column:1 / -1;
+    }
+
+    .perfilEscalacaoLista{
+      display:flex;
+      flex-direction:column;
+      gap:8px;
+    }
+
+    .perfilEscalacaoRow{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+      border:1px solid #e2e8f0;
+      border-radius:12px;
+      background:#ffffff;
+      padding:10px;
+    }
+
+    .perfilEscalacaoInfo strong{
+      display:block;
+      color:#0f172a;
+      font-size:13px;
+      margin-bottom:2px;
+    }
+
+    .perfilEscalacaoInfo span{
+      display:block;
+      color:#64748b;
+      font-size:11px;
+      font-weight:850;
+    }
+
     .perfilJogosPreviewGrid{
       display:grid;
       grid-template-columns:1fr 1fr;
@@ -3013,6 +3144,8 @@
       }
 
       .perfilJogadorForm,
+      .perfilEscalacaoForm,
+      .perfilEscalacaoPreviewGrid,
       .perfilJogoForm,
       .perfilJogosPreviewGrid{
         grid-template-columns:1fr;
@@ -8409,6 +8542,54 @@ body:not(.modeChosen) .builderArea,
         </div>
 
         <div class="perfilJogadorLista" id="perfilJogadoresLista"></div>
+      </div>
+
+      <div class="perfilEscalacaoSection">
+        <div class="perfilElencoTop">
+          <strong>Escalacao Oficial</strong>
+          <span id="perfilEscalacaoResumo">0 titulares / 0 reservas</span>
+        </div>
+
+        <div class="perfilEscalacaoPreviewGrid">
+          <div class="perfilEscalacaoGroup">
+            <div class="perfilEscalacaoGroupTitle">Titulares</div>
+            <div class="perfilEscalacaoCards" id="perfilEscalacaoTitularesPreview"></div>
+          </div>
+
+          <div class="perfilEscalacaoGroup">
+            <div class="perfilEscalacaoGroupTitle">Reservas</div>
+            <div class="perfilEscalacaoCards" id="perfilEscalacaoReservasPreview"></div>
+          </div>
+        </div>
+
+        <div class="perfilEscalacaoForm">
+          <div class="perfilTimeField">
+            <label for="perfilEscalacaoJogador">Jogador</label>
+            <select id="perfilEscalacaoJogador">
+              <option value="">Cadastre jogadores no elenco</option>
+            </select>
+          </div>
+
+          <div class="perfilTimeField">
+            <label for="perfilEscalacaoTipo">Grupo</label>
+            <select id="perfilEscalacaoTipo">
+              <option value="titulares">Titular</option>
+              <option value="reservas">Reserva</option>
+            </select>
+          </div>
+
+          <div class="perfilTimeField">
+            <label for="perfilEscalacaoPosicao">Posicao</label>
+            <input id="perfilEscalacaoPosicao" maxlength="40" autocomplete="off" placeholder="Ex: Goleiro">
+          </div>
+
+          <div class="perfilEscalacaoActions">
+            <button class="btnGreen" id="perfilEscalacaoSalvarBtn" type="button">Adicionar a escalacao</button>
+            <button class="perfilMiniBtn" id="perfilEscalacaoCancelarBtn" type="button" hidden>Cancelar</button>
+          </div>
+        </div>
+
+        <div class="perfilEscalacaoLista" id="perfilEscalacaoLista"></div>
       </div>
 
       <div class="perfilJogosSection">
@@ -16048,6 +16229,15 @@ const perfilJogadorNumero = document.getElementById("perfilJogadorNumero");
 const perfilJogadorPosicao = document.getElementById("perfilJogadorPosicao");
 const perfilJogadorSalvarBtn = document.getElementById("perfilJogadorSalvarBtn");
 const perfilJogadorCancelarBtn = document.getElementById("perfilJogadorCancelarBtn");
+const perfilEscalacaoResumo = document.getElementById("perfilEscalacaoResumo");
+const perfilEscalacaoTitularesPreview = document.getElementById("perfilEscalacaoTitularesPreview");
+const perfilEscalacaoReservasPreview = document.getElementById("perfilEscalacaoReservasPreview");
+const perfilEscalacaoJogador = document.getElementById("perfilEscalacaoJogador");
+const perfilEscalacaoTipo = document.getElementById("perfilEscalacaoTipo");
+const perfilEscalacaoPosicao = document.getElementById("perfilEscalacaoPosicao");
+const perfilEscalacaoSalvarBtn = document.getElementById("perfilEscalacaoSalvarBtn");
+const perfilEscalacaoCancelarBtn = document.getElementById("perfilEscalacaoCancelarBtn");
+const perfilEscalacaoLista = document.getElementById("perfilEscalacaoLista");
 const perfilJogosResumo = document.getElementById("perfilJogosResumo");
 const perfilResultadosPreview = document.getElementById("perfilResultadosPreview");
 const perfilProximosPreview = document.getElementById("perfilProximosPreview");
@@ -16064,6 +16254,8 @@ const perfilJogoSalvarBtn = document.getElementById("perfilJogoSalvarBtn");
 const perfilJogoCancelarBtn = document.getElementById("perfilJogoCancelarBtn");
 let perfilJogadoresTime = [];
 let perfilJogadorEditId = "";
+let perfilEscalacaoTime = { titulares: [], reservas: [] };
+let perfilEscalacaoEditId = "";
 let perfilJogosTime = [];
 let perfilJogoEditId = "";
 const perfilAssistCache = {
@@ -16072,7 +16264,8 @@ const perfilAssistCache = {
   perfil: null,
   jogadores: [],
   jogos: [],
-  galeria: []
+  galeria: [],
+  escalacao: { titulares: [], reservas: [] }
 };
 const perfilImagemObjectUrls = {
   escudo: "",
@@ -16122,6 +16315,39 @@ function perfilAssistNomeTime(){
 function perfilAssistJogadoresAtivosLista(){
   const base = perfilAssistCache.loaded ? perfilAssistCache.jogadores : perfilJogadoresTime;
   return (Array.isArray(base) ? base : []).filter(jogador => jogador && jogador.ativo !== false);
+}
+
+function perfilEscalacaoNormalizar(escalacao = {}){
+  const base = escalacao && typeof escalacao === "object" && !Array.isArray(escalacao) ? escalacao : {};
+  return {
+    titulares: Array.isArray(base.titulares) ? base.titulares.filter(Boolean) : [],
+    reservas: Array.isArray(base.reservas) ? base.reservas.filter(Boolean) : [],
+    atualizado_em: base.atualizado_em || ""
+  };
+}
+
+function perfilEscalacaoItens(escalacao = perfilEscalacaoTime){
+  const base = perfilEscalacaoNormalizar(escalacao);
+  return [
+    ...base.titulares.map(item => ({ ...item, tipo:"titular" })),
+    ...base.reservas.map(item => ({ ...item, tipo:"reserva" }))
+  ];
+}
+
+function perfilAssistJogadoresParaEscalacao(){
+  const itens = perfilEscalacaoItens(perfilAssistCache.loaded ? perfilAssistCache.escalacao : perfilEscalacaoTime);
+  if(itens.length){
+    return itens.map(item => ({
+      id: item.jogador_id || item.id || "",
+      nome: item.nome || item.apelido || "Jogador",
+      apelido: item.apelido || "",
+      numero: item.numero || "",
+      posicao: [item.posicao, item.tipo === "titular" ? "Titular" : "Reserva"].filter(Boolean).join(" - "),
+      ativo: true
+    }));
+  }
+
+  return perfilAssistJogadoresAtivosLista();
 }
 
 function perfilAssistJogosAtivosLista(){
@@ -16188,6 +16414,7 @@ function perfilAssistRenderOptionsBox(box, productKey){
   const jogadorSelect = box.querySelector("[data-perfil-assist-jogador]");
   const jogos = perfilAssistJogosParaProduto(productKey);
   const jogadores = perfilAssistJogadoresAtivosLista();
+  const jogadoresEscalacao = productKey === "escalacao" ? perfilAssistJogadoresParaEscalacao() : jogadores;
   const precisaJogo = perfilAssistNeedsGame(productKey);
   const precisaJogador = perfilAssistNeedsPlayer(productKey);
 
@@ -16210,7 +16437,9 @@ function perfilAssistRenderOptionsBox(box, productKey){
   }
 
   if(productKey === "escalacao"){
-    perfilAssistSetMsg(box, `${jogadores.length} jogador(es) no elenco${jogos.length ? ` e ${jogos.length} jogo(s) disponivel(is)` : ""}.`);
+    const escalacaoAtual = perfilAssistCache.loaded ? perfilAssistCache.escalacao : perfilEscalacaoTime;
+    const oficial = perfilEscalacaoItens(escalacaoAtual).length > 0;
+    perfilAssistSetMsg(box, `${jogadoresEscalacao.length} jogador(es) ${oficial ? "na escalacao oficial" : "no elenco"}${jogos.length ? ` e ${jogos.length} jogo(s) disponivel(is)` : ""}.`);
   }else if(precisaJogo){
     perfilAssistSetMsg(box, `${jogos.length} jogo(s) disponivel(is) no perfil.`);
   }else if(precisaJogador){
@@ -16268,7 +16497,8 @@ async function perfilAssistCarregarDados(force = false){
       perfil: perfilAssistCache.perfil,
       jogadores: perfilAssistCache.jogadores,
       jogos: perfilAssistCache.jogos,
-      galeria: perfilAssistCache.galeria
+      galeria: perfilAssistCache.galeria,
+      escalacao: perfilAssistCache.escalacao
     };
   }
 
@@ -16278,24 +16508,27 @@ async function perfilAssistCarregarDados(force = false){
 
   perfilAssistCache.loading = (async ()=>{
     try{
-      const [perfilResp, jogadoresResp, jogosResp, galeriaResp] = await Promise.all([
+      const [perfilResp, jogadoresResp, jogosResp, galeriaResp, escalacaoResp] = await Promise.all([
         fetch(`${API_BASE}/me/time/perfil`, { headers:{ "Authorization":"Bearer " + token } }),
         fetch(`${API_BASE}/me/time/jogadores`, { headers:{ "Authorization":"Bearer " + token } }),
         fetch(`${API_BASE}/me/time/jogos`, { headers:{ "Authorization":"Bearer " + token } }),
-        fetch(`${API_BASE}/me/time/galeria`, { headers:{ "Authorization":"Bearer " + token } })
+        fetch(`${API_BASE}/me/time/galeria`, { headers:{ "Authorization":"Bearer " + token } }),
+        fetch(`${API_BASE}/me/time/escalacao`, { headers:{ "Authorization":"Bearer " + token } })
       ]);
 
-      const [perfilData, jogadoresData, jogosData, galeriaData] = await Promise.all([
+      const [perfilData, jogadoresData, jogosData, galeriaData, escalacaoData] = await Promise.all([
         ia4LerJsonSeguro(perfilResp),
         ia4LerJsonSeguro(jogadoresResp),
         ia4LerJsonSeguro(jogosResp),
-        ia4LerJsonSeguro(galeriaResp)
+        ia4LerJsonSeguro(galeriaResp),
+        ia4LerJsonSeguro(escalacaoResp)
       ]);
 
       const authMsg = ia4TratarAuthInvalida(perfilResp, perfilData) ||
         ia4TratarAuthInvalida(jogadoresResp, jogadoresData) ||
         ia4TratarAuthInvalida(jogosResp, jogosData) ||
-        ia4TratarAuthInvalida(galeriaResp, galeriaData);
+        ia4TratarAuthInvalida(galeriaResp, galeriaData) ||
+        ia4TratarAuthInvalida(escalacaoResp, escalacaoData);
 
       if(authMsg){
         return { ok:false, error:authMsg };
@@ -16313,15 +16546,20 @@ async function perfilAssistCarregarDados(force = false){
       if(!galeriaResp.ok || !galeriaData.ok){
         throw new Error(galeriaData.error || galeriaData.erro || "Nao foi possivel carregar a galeria.");
       }
+      if(!escalacaoResp.ok || !escalacaoData.ok){
+        throw new Error(escalacaoData.error || escalacaoData.erro || "Nao foi possivel carregar a escalacao.");
+      }
 
       perfilAssistCache.perfil = perfilData.perfil || {};
       perfilAssistCache.jogadores = Array.isArray(jogadoresData.jogadores) ? jogadoresData.jogadores : [];
       perfilAssistCache.jogos = Array.isArray(jogosData.jogos) ? jogosData.jogos : [];
       perfilAssistCache.galeria = Array.isArray(galeriaData.galeria) ? galeriaData.galeria : [];
+      perfilAssistCache.escalacao = perfilEscalacaoNormalizar(escalacaoData.escalacao || {});
       perfilAssistCache.loaded = true;
 
       perfilJogadoresTime = perfilAssistCache.jogadores;
       perfilJogosTime = perfilAssistCache.jogos;
+      perfilEscalacaoTime = perfilAssistCache.escalacao;
 
       if(perfilAssistCache.perfil?.nome_time){
         localStorage.setItem("omascote_nome_time", perfilAssistCache.perfil.nome_time);
@@ -16333,7 +16571,8 @@ async function perfilAssistCarregarDados(force = false){
         perfil: perfilAssistCache.perfil,
         jogadores: perfilAssistCache.jogadores,
         jogos: perfilAssistCache.jogos,
-        galeria: perfilAssistCache.galeria
+        galeria: perfilAssistCache.galeria,
+        escalacao: perfilAssistCache.escalacao
       };
     }catch(err){
       return { ok:false, error:err?.message || "Erro de rede ao carregar Perfil do Time." };
@@ -16413,6 +16652,7 @@ function perfilAssistAplicarClean(productKey, form, box){
   const jogo = perfilAssistJogoSelecionado(box, productKey);
   const jogador = perfilAssistJogadorSelecionado(box);
   const jogadores = perfilAssistJogadoresAtivosLista();
+  const jogadoresEscalacao = productKey === "escalacao" ? perfilAssistJogadoresParaEscalacao() : jogadores;
   const nomeTime = perfilAssistNomeTime();
   let alterou = false;
 
@@ -16444,8 +16684,8 @@ function perfilAssistAplicarClean(productKey, form, box){
       alterou = perfilAssistSetCleanField(form, "competition", jogo.campeonato) || alterou;
       alterou = perfilAssistSetCleanField(form, "venue", jogo.local) || alterou;
     }
-    if(jogadores.length){
-      alterou = perfilAssistSetCleanPeople(form, "players", jogadores) || alterou;
+    if(jogadoresEscalacao.length){
+      alterou = perfilAssistSetCleanPeople(form, "players", jogadoresEscalacao) || alterou;
     }
     if(!alterou) return { ok:false, message:"Cadastre jogadores ou um jogo no Perfil do Time para preencher a escalacao." };
   }
@@ -16487,6 +16727,7 @@ function perfilAssistAplicarLegacy(productKey, box){
   const jogo = perfilAssistJogoSelecionado(box, productKey);
   const jogador = perfilAssistJogadorSelecionado(box);
   const jogadores = perfilAssistJogadoresAtivosLista();
+  const jogadoresEscalacao = productKey === "escalacao" ? perfilAssistJogadoresParaEscalacao() : jogadores;
   const nomeTime = perfilAssistNomeTime();
   let alterou = false;
 
@@ -16521,8 +16762,8 @@ function perfilAssistAplicarLegacy(productKey, box){
       alterou = perfilAssistSetLegacyField("hora", jogo.campeonato) || alterou;
       alterou = perfilAssistSetLegacyField("arena", jogo.local) || alterou;
     }
-    if(jogadores.length){
-      alterou = perfilAssistPreencherLegacyJogadores(jogadores) || alterou;
+    if(jogadoresEscalacao.length){
+      alterou = perfilAssistPreencherLegacyJogadores(jogadoresEscalacao) || alterou;
     }
     setOptionalSectionState("rodada", true);
     setOptionalSectionState("data", true);
@@ -17570,6 +17811,247 @@ function renderPerfilElenco(){
   }
 }
 
+function perfilEscalacaoJogadorLabel(jogador){
+  const numero = perfilAssistTexto(jogador?.numero);
+  const nome = perfilAssistTexto(jogador?.apelido || jogador?.nome) || "Jogador";
+  const posicao = perfilAssistTexto(jogador?.posicao);
+  return [numero ? `#${numero}` : "", nome, posicao].filter(Boolean).join(" - ");
+}
+
+function renderPerfilEscalacaoOptions(){
+  if(!perfilEscalacaoJogador) return;
+  const jogadores = perfilJogadoresAtivos();
+  const valorAtual = perfilEscalacaoJogador.value || "";
+
+  perfilEscalacaoJogador.innerHTML = jogadores.length
+    ? jogadores.map(jogador => `<option value="${htmlEscape(jogador.id)}">${htmlEscape(perfilEscalacaoJogadorLabel(jogador))}</option>`).join("")
+    : `<option value="">Cadastre jogadores no elenco</option>`;
+
+  if(valorAtual && jogadores.some(jogador => jogador.id === valorAtual)){
+    perfilEscalacaoJogador.value = valorAtual;
+  }
+}
+
+function perfilEscalacaoCardHtml(item, grupo){
+  const numero = htmlEscape(item?.numero || "-");
+  const nome = htmlEscape(item?.apelido || item?.nome || "Jogador");
+  const posicao = htmlEscape(item?.posicao || "Sem posicao");
+  const classe = grupo === "titulares" ? "titular" : "reserva";
+
+  return `
+    <div class="perfilEscalacaoCard ${classe}">
+      <div class="perfilEscalacaoNumber">${numero}</div>
+      <div>
+        <strong>${nome}</strong>
+        <span>${posicao}</span>
+      </div>
+    </div>
+  `;
+}
+
+function renderPerfilEscalacao(){
+  perfilEscalacaoTime = perfilEscalacaoNormalizar(perfilEscalacaoTime);
+  const titulares = perfilEscalacaoTime.titulares;
+  const reservas = perfilEscalacaoTime.reservas;
+
+  renderPerfilEscalacaoOptions();
+
+  if(perfilEscalacaoResumo){
+    perfilEscalacaoResumo.textContent = `${titulares.length} titulares / ${reservas.length} reservas`;
+  }
+
+  if(perfilEscalacaoTitularesPreview){
+    perfilEscalacaoTitularesPreview.innerHTML = titulares.length
+      ? titulares.map(item => perfilEscalacaoCardHtml(item, "titulares")).join("")
+      : `<div class="perfilEmptyList">Nenhum titular definido.</div>`;
+  }
+
+  if(perfilEscalacaoReservasPreview){
+    perfilEscalacaoReservasPreview.innerHTML = reservas.length
+      ? reservas.map(item => perfilEscalacaoCardHtml(item, "reservas")).join("")
+      : `<div class="perfilEmptyList">Nenhum reserva definido.</div>`;
+  }
+
+  if(perfilEscalacaoLista){
+    const itens = [
+      ...titulares.map(item => ({ ...item, grupo:"titulares", label:"Titular" })),
+      ...reservas.map(item => ({ ...item, grupo:"reservas", label:"Reserva" }))
+    ];
+
+    perfilEscalacaoLista.innerHTML = itens.length
+      ? itens.map(item => `
+          <div class="perfilEscalacaoRow" data-escalacao-jogador="${htmlEscape(item.jogador_id || "")}">
+            <div class="perfilEscalacaoInfo">
+              <strong>${htmlEscape(item.label)}: ${htmlEscape(item.apelido || item.nome || "Jogador")}</strong>
+              <span>${htmlEscape([item.numero ? "#" + item.numero : "", item.posicao || "Sem posicao"].filter(Boolean).join(" · "))}</span>
+            </div>
+            <div class="perfilJogadorRowActions">
+              <button class="perfilMiniBtn" type="button" data-editar-escalacao="${htmlEscape(item.jogador_id || "")}">Editar</button>
+              <button class="perfilMiniBtn danger" type="button" data-remover-escalacao="${htmlEscape(item.jogador_id || "")}">Remover</button>
+            </div>
+          </div>
+        `).join("")
+      : `<div class="perfilEmptyList">Monte a escalação oficial usando jogadores do elenco.</div>`;
+  }
+}
+
+async function carregarPerfilEscalacao(){
+  if(!token) return;
+
+  try{
+    const r = await fetch(`${API_BASE}/me/time/escalacao`, {
+      headers:{ "Authorization":"Bearer " + token }
+    });
+    const data = await ia4LerJsonSeguro(r);
+    const authMsg = ia4TratarAuthInvalida(r, data);
+
+    if(authMsg){
+      setPerfilTimeMsg(authMsg, "erro");
+      return;
+    }
+
+    if(!r.ok || !data.ok){
+      throw new Error(data.error || data.erro || "Nao foi possivel carregar a escalacao.");
+    }
+
+    perfilEscalacaoTime = perfilEscalacaoNormalizar(data.escalacao || {});
+    perfilAssistCache.escalacao = perfilEscalacaoTime;
+    renderPerfilEscalacao();
+    perfilAssistAtualizarProduto(selectedProductInput?.value || "");
+  }catch(err){
+    setPerfilTimeMsg(err?.message || "Erro de rede ao carregar escalacao.", "erro");
+  }
+}
+
+function limparFormEscalacao(){
+  perfilEscalacaoEditId = "";
+  if(perfilEscalacaoTipo) perfilEscalacaoTipo.value = "titulares";
+  if(perfilEscalacaoPosicao) perfilEscalacaoPosicao.value = "";
+  if(perfilEscalacaoSalvarBtn) perfilEscalacaoSalvarBtn.textContent = "Adicionar a escalacao";
+  if(perfilEscalacaoCancelarBtn) perfilEscalacaoCancelarBtn.hidden = true;
+}
+
+function perfilEscalacaoEncontrarItem(jogadorId){
+  const id = String(jogadorId || "");
+  const titular = perfilEscalacaoTime.titulares.find(item => String(item.jogador_id || "") === id);
+  if(titular) return { item:titular, grupo:"titulares" };
+  const reserva = perfilEscalacaoTime.reservas.find(item => String(item.jogador_id || "") === id);
+  if(reserva) return { item:reserva, grupo:"reservas" };
+  return null;
+}
+
+function preencherFormEscalacao(jogadorId){
+  const encontrado = perfilEscalacaoEncontrarItem(jogadorId);
+  if(!encontrado) return;
+
+  perfilEscalacaoEditId = jogadorId;
+  if(perfilEscalacaoJogador) perfilEscalacaoJogador.value = jogadorId;
+  if(perfilEscalacaoTipo) perfilEscalacaoTipo.value = encontrado.grupo;
+  if(perfilEscalacaoPosicao) perfilEscalacaoPosicao.value = encontrado.item.posicao || "";
+  if(perfilEscalacaoSalvarBtn) perfilEscalacaoSalvarBtn.textContent = "Salvar escalacao";
+  if(perfilEscalacaoCancelarBtn) perfilEscalacaoCancelarBtn.hidden = false;
+  perfilEscalacaoPosicao?.focus();
+}
+
+function perfilEscalacaoSemJogador(escalacao, jogadorId){
+  const id = String(jogadorId || "");
+  return {
+    titulares: (escalacao.titulares || []).filter(item => String(item.jogador_id || "") !== id),
+    reservas: (escalacao.reservas || []).filter(item => String(item.jogador_id || "") !== id)
+  };
+}
+
+async function salvarPerfilEscalacaoRemota(proxima){
+  const r = await fetch(`${API_BASE}/me/time/escalacao`, {
+    method:"PATCH",
+    headers:{
+      "Content-Type":"application/json",
+      "Authorization":"Bearer " + token
+    },
+    body:JSON.stringify(proxima)
+  });
+  const data = await ia4LerJsonSeguro(r);
+  const authMsg = ia4TratarAuthInvalida(r, data);
+
+  if(authMsg){
+    throw new Error(authMsg);
+  }
+
+  if(!r.ok || !data.ok){
+    throw new Error(data.error || data.erro || "Nao foi possivel salvar a escalacao.");
+  }
+
+  perfilEscalacaoTime = perfilEscalacaoNormalizar(data.escalacao || {});
+  perfilAssistInvalidarCache();
+  perfilAssistCache.escalacao = perfilEscalacaoTime;
+  renderPerfilEscalacao();
+  perfilAssistAtualizarProduto(selectedProductInput?.value || "");
+  atualizarPerfilTimeVisualSeAberto();
+}
+
+async function salvarPerfilEscalacaoItem(){
+  if(!token){
+    abrirLoginVisitanteModal();
+    return;
+  }
+
+  const jogadorId = perfilEscalacaoJogador?.value || "";
+  const jogador = perfilJogadoresAtivos().find(item => item.id === jogadorId);
+
+  if(!jogador){
+    setPerfilTimeMsg("Cadastre e selecione um jogador do elenco.", "erro");
+    return;
+  }
+
+  const grupo = perfilEscalacaoTipo?.value === "reservas" ? "reservas" : "titulares";
+  const editando = !!perfilEscalacaoEditId;
+  let baseAtual = perfilEscalacaoSemJogador(perfilEscalacaoTime, perfilEscalacaoEditId || jogadorId);
+  if(perfilEscalacaoEditId && perfilEscalacaoEditId !== jogadorId){
+    baseAtual = perfilEscalacaoSemJogador(baseAtual, jogadorId);
+  }
+  const item = {
+    jogador_id: jogador.id,
+    nome: jogador.nome || "",
+    apelido: jogador.apelido || "",
+    numero: jogador.numero || "",
+    posicao: (perfilEscalacaoPosicao?.value || jogador.posicao || "").trim()
+  };
+  baseAtual[grupo].push(item);
+
+  try{
+    if(perfilEscalacaoSalvarBtn){
+      perfilEscalacaoSalvarBtn.disabled = true;
+      perfilEscalacaoSalvarBtn.textContent = editando ? "Salvando..." : "Adicionando...";
+    }
+    await salvarPerfilEscalacaoRemota(baseAtual);
+    limparFormEscalacao();
+    setPerfilTimeMsg(editando ? "Escalacao atualizada." : "Jogador adicionado a escalacao.", "ok");
+  }catch(err){
+    setPerfilTimeMsg(err?.message || "Erro de rede ao salvar escalacao.", "erro");
+  }finally{
+    if(perfilEscalacaoSalvarBtn){
+      perfilEscalacaoSalvarBtn.disabled = false;
+      perfilEscalacaoSalvarBtn.textContent = perfilEscalacaoEditId ? "Salvar escalacao" : "Adicionar a escalacao";
+    }
+  }
+}
+
+async function removerPerfilEscalacaoItem(jogadorId){
+  if(!token || !jogadorId) return;
+
+  if(!confirm("Remover jogador da escalacao oficial?")){
+    return;
+  }
+
+  try{
+    await salvarPerfilEscalacaoRemota(perfilEscalacaoSemJogador(perfilEscalacaoTime, jogadorId));
+    if(perfilEscalacaoEditId === jogadorId) limparFormEscalacao();
+    setPerfilTimeMsg("Jogador removido da escalacao.", "ok");
+  }catch(err){
+    setPerfilTimeMsg(err?.message || "Erro de rede ao remover da escalacao.", "erro");
+  }
+}
+
 async function carregarPerfilJogadores(){
   if(!token) return;
 
@@ -17592,6 +18074,7 @@ async function carregarPerfilJogadores(){
     perfilJogadoresTime = Array.isArray(data.jogadores) ? data.jogadores : [];
     perfilAssistCache.jogadores = perfilJogadoresTime;
     renderPerfilElenco();
+    renderPerfilEscalacao();
     atualizarPerfilTimeVisualSeAberto();
   }catch(err){
     setPerfilTimeMsg(err?.message || "Erro de rede ao carregar elenco.", "erro");
@@ -17657,6 +18140,7 @@ async function salvarPerfilJogador(){
 
     limparFormJogador();
     renderPerfilElenco();
+    renderPerfilEscalacao();
     perfilAssistInvalidarCache();
     perfilAssistCache.jogadores = perfilJogadoresTime;
     perfilAssistAtualizarProduto(selectedProductInput?.value || "");
@@ -17699,6 +18183,7 @@ async function removerPerfilJogador(id){
     perfilJogadoresTime = perfilJogadoresTime.map(jogador => jogador.id === id ? { ...jogador, ativo:false } : jogador);
     if(perfilJogadorEditId === id) limparFormJogador();
     renderPerfilElenco();
+    renderPerfilEscalacao();
     perfilAssistInvalidarCache();
     perfilAssistCache.jogadores = perfilJogadoresTime;
     perfilAssistAtualizarProduto(selectedProductInput?.value || "");
@@ -18001,6 +18486,7 @@ function abrirPerfilTimeModal(){
   perfilTimeModal?.setAttribute("aria-hidden", "false");
   carregarPerfilTime();
   carregarPerfilJogadores();
+  carregarPerfilEscalacao();
   carregarPerfilJogos();
   setTimeout(()=>perfilNomeTime?.focus(), 120);
 }
@@ -18148,6 +18634,17 @@ perfilJogadorCancelarBtn?.addEventListener("click", ()=>{
   limparFormJogador();
   setPerfilTimeMsg("");
 });
+perfilEscalacaoSalvarBtn?.addEventListener("click", salvarPerfilEscalacaoItem);
+perfilEscalacaoCancelarBtn?.addEventListener("click", ()=>{
+  limparFormEscalacao();
+  setPerfilTimeMsg("");
+});
+perfilEscalacaoJogador?.addEventListener("change", ()=>{
+  const jogador = perfilJogadoresAtivos().find(item => item.id === perfilEscalacaoJogador.value);
+  if(jogador && perfilEscalacaoPosicao && !perfilEscalacaoPosicao.value){
+    perfilEscalacaoPosicao.value = jogador.posicao || "";
+  }
+});
 perfilJogoSalvarBtn?.addEventListener("click", salvarPerfilJogo);
 perfilJogoCancelarBtn?.addEventListener("click", ()=>{
   limparFormJogo();
@@ -18168,6 +18665,18 @@ perfilJogadoresLista?.addEventListener("click", (e)=>{
 
   if(removerBtn){
     removerPerfilJogador(removerBtn.getAttribute("data-remover-jogador"));
+  }
+});
+perfilEscalacaoLista?.addEventListener("click", (e)=>{
+  const editarBtn = e.target?.closest?.("[data-editar-escalacao]");
+  const removerBtn = e.target?.closest?.("[data-remover-escalacao]");
+
+  if(editarBtn){
+    preencherFormEscalacao(editarBtn.getAttribute("data-editar-escalacao"));
+  }
+
+  if(removerBtn){
+    removerPerfilEscalacaoItem(removerBtn.getAttribute("data-remover-escalacao"));
   }
 });
 perfilJogosLista?.addEventListener("click", (e)=>{
