@@ -18026,7 +18026,14 @@ function perfilAssistAssetEscudoKey(productKey){
 
 function perfilAssistSetCleanAssetFile(form, key, file){
   const input = getCleanFormAsset(form, key);
-  if(!input || !file || typeof DataTransfer === "undefined") return false;
+  if(!input || !file) return false;
+
+  if(typeof DataTransfer === "undefined"){
+    setCleanFilePreview(form, key, [file]);
+    const card = form?.querySelector(`[data-clean-field-card="${CSS.escape(key)}"]`);
+    if(card) card.classList.remove("campoObrigatorioErro");
+    return false;
+  }
 
   const dt = new DataTransfer();
   dt.items.add(file);
