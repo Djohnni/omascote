@@ -7711,6 +7711,38 @@ body.visitanteNaoLogado .visitanteWelcomeCallout{
   font-weight:850;
 }
 
+.productChooserProfileHint{
+  display:none;
+  margin:8px auto 0;
+  max-width:560px;
+  color:rgba(255,255,255,.82);
+  font-size:13px;
+  line-height:1.35;
+  font-weight:800;
+}
+
+.productChooser.is-profile-mode{
+  border-color:rgba(250,204,21,.58);
+  box-shadow:0 24px 54px rgba(0,0,0,.26), 0 0 0 2px rgba(250,204,21,.14), inset 0 1px 0 rgba(255,255,255,.08);
+}
+
+.productChooser.is-profile-mode .productChooserProfileHint{
+  display:block;
+}
+
+.productChooser.is-profile-mode .productChooserCard{
+  opacity:.62;
+}
+
+.productChooser.is-profile-mode [data-product-picker="resultado"],
+.productChooser.is-profile-mode [data-product-picker="proximo_jogo"],
+.productChooser.is-profile-mode [data-product-picker="escalacao"],
+.productChooser.is-profile-mode [data-product-picker="jogador_escudo"]{
+  opacity:1;
+  outline:1px solid rgba(250,204,21,.28);
+  background:rgba(250,204,21,.075);
+}
+
 .productChooserDesc,
 .productChooserBadge,
 .productChooserArrow,
@@ -11397,6 +11429,7 @@ function renderProductChooser(){
   chooser.innerHTML = `
     <div class="productChooserHeader">
       <h2 class="productChooserTitle">O Mascote</h2>
+      <p class="productChooserProfileHint" data-product-chooser-profile-hint>Escolha qual arte voce quer criar com os dados do Perfil do Time. Resultado, Proximo Jogo, Escalacao e Jogador + Escudo preenchem automaticamente.</p>
     </div>
     <button type="button" class="productChooserArrow productChooserArrowLeft" data-product-chooser-prev aria-label="Produto anterior">‹</button>
     <div class="productChooserRail">
@@ -11440,6 +11473,13 @@ function renderProductChooser(){
   }
 
   configurarProductChooserNavegacao(chooser);
+  atualizarProductChooserModoPerfil();
+}
+
+function atualizarProductChooserModoPerfil(){
+  const chooser = document.getElementById("productChooser");
+  if(!chooser) return;
+  chooser.classList.toggle("is-profile-mode", !!perfilCriarArteModoAtivo);
 }
 
 function selectCleanProductForPicker(productKey, options = {}){
@@ -17815,15 +17855,29 @@ function perfilPublicoSlugAtual(perfil = perfilAssistCache.perfil || {}){
   return perfilAssistTexto(perfil.slug || "");
 }
 
+function perfilPublicoSlugDaUrl(){
+  try{
+    return perfilAssistTexto(new URLSearchParams(location.search).get("time") || "");
+  }catch(e){
+    return "";
+  }
+}
+
+function perfilPublicoUrlPorSlug(slug){
+  const cleanSlug = perfilAssistTexto(slug);
+  if(!cleanSlug) return "";
+  return `${location.origin}/app.html?time=${encodeURIComponent(cleanSlug)}`;
+}
+
 function perfilPublicoUrl(perfil = perfilAssistCache.perfil || {}){
-  const slug = perfilPublicoSlugAtual(perfil);
-  return slug ? `${location.origin}${location.pathname}?time=${encodeURIComponent(slug)}` : "";
+  return perfilPublicoUrlPorSlug(perfilPublicoSlugAtual(perfil));
 }
 
 function perfilPublicoUrlCompartilhavel(perfil = perfilAssistCache.perfil || {}){
-  if(perfil?.publico !== true) return "";
-  const url = perfilPublicoUrl(perfil);
-  return url && url.includes("?time=") ? url : "";
+  const slug = perfilPublicoSlugAtual(perfil) || perfilPublicoSlugDaUrl();
+  const publico = perfil?.publico === true || document.body.classList.contains("publicProfileMode");
+  if(!publico || !slug) return "";
+  return perfilPublicoUrlPorSlug(slug);
 }
 
 function perfilPublicoAtualizarControles(perfil = perfilAssistCache.perfil || {}){
@@ -17855,8 +17909,12 @@ async function copiarTextoPerfil(texto){
     area.setAttribute("readonly", "readonly");
     area.style.position = "fixed";
     area.style.opacity = "0";
+    area.style.left = "-9999px";
+    area.style.top = "0";
     document.body.appendChild(area);
+    area.focus();
     area.select();
+    area.setSelectionRange(0, value.length);
     const ok = document.execCommand("copy");
     area.remove();
     return ok;
@@ -17949,15 +18007,13 @@ async function compartilharPerfilVisual(){
   }
 
   const texto = perfilShareTextoPublico({ ...perfil, url });
+  const titulo = `${perfilAssistTexto(perfil.nome_time) || "Perfil do Time"} | O Mascote`;
+  const payload = { title:titulo, text:texto, url };
 
   try{
-    if(navigator.share){
-      await navigator.share({
-        title:`${perfilAssistTexto(perfil.nome_time) || "Perfil do Time"} | O Mascote`,
-        text:texto,
-        url
-      });
-      setPerfilVisualMsg("Link do perfil copiado");
+    if(navigator.share && (!navigator.canShare || navigator.canShare(payload))){
+      await navigator.share(payload);
+      setPerfilVisualMsg("Perfil compartilhado");
       return;
     }
   }catch(e){}
@@ -18876,9 +18932,10 @@ function renderPerfilPublico(data = {}){
   const proximos = jogos
     .filter(jogo => jogo.tipo === "proximo_jogo")
     .sort((a, b) => dataOrdemPerfilJogo(a).localeCompare(dataOrdemPerfilJogo(b)));
+  const urlCompartilhar = perfilPublicoUrlPorSlug(perfil.slug || perfilPublicoSlugDaUrl()) || perfilShareUrlAtual();
 
   document.title = `${nome} | Perfil do Time`;
-  const shareTexto = perfilShareTextoPublico({ ...perfil, nome_time:nome });
+  const shareTexto = perfilShareTextoPublico({ ...perfil, nome_time:nome, url:urlCompartilhar });
   const shareHref = perfilWhatsappHref(shareTexto);
   if(perfilPublicoShareTexto) perfilPublicoShareTexto.textContent = shareTexto;
   if(perfilPublicoWhatsappBtn) perfilPublicoWhatsappBtn.href = shareHref;
@@ -18886,7 +18943,7 @@ function renderPerfilPublico(data = {}){
   atualizarMetasCompartilhamento({
     title:`${nome} | Perfil do Time no O Mascote`,
     description: descricao || `Conheca o perfil do ${nome} no O Mascote.`,
-    url: perfilShareUrlAtual(),
+    url: urlCompartilhar,
     image: perfilPublicoAssetUrl(perfil.escudo_url) || "https://omascote.com.br/og-image.jpg"
   });
   perfilVisualSetText(perfilPublicoNome, nome);
@@ -19159,13 +19216,16 @@ function abrirEditorPeloPerfilVisual(){
   abrirPerfilTimeModal();
 }
 
-async function criarArteComPerfilVisual(){
+function criarArteComPerfilVisual(){
   perfilCriarArteModoAtivo = true;
   fecharPerfilTimeVisual();
-  const atual = getCleanProductPickerSelected();
-  const produtoInicial = perfilAssistProductEnabled(atual) ? atual : "resultado";
-  selectCleanProductForPicker(produtoInicial, { scroll:true, track:false, perfilAuto:false });
-  await perfilAssistAutoAplicarProduto(produtoInicial);
+  atualizarProductChooserModoPerfil();
+  const chooser = document.getElementById("productChooser");
+  chooser?.scrollIntoView({ behavior:"smooth", block:"start" });
+  setTimeout(()=>{
+    const btn = document.querySelector('[data-product-picker="resultado"]');
+    try{ btn?.focus({ preventScroll:true }); }catch(e){}
+  }, 350);
 }
 
 function perfilTimeInicial(nome){
@@ -20371,7 +20431,7 @@ perfilPublicoToggle?.addEventListener("change", ()=>{
   }
 });
 perfilPublicoCopiarBtn?.addEventListener("click", async ()=>{
-  const ok = await copiarTextoPerfil(perfilShareUrlAtual());
+  const ok = await copiarTextoPerfil(perfilPublicoUrlPorSlug(perfilPublicoSlugDaUrl()) || perfilShareUrlAtual());
   perfilVisualSetText(perfilPublicoMsg, ok ? "Link copiado." : "Nao foi possivel copiar o link.");
 });
 perfilPublicoShareCopiarBtn?.addEventListener("click", async ()=>{
