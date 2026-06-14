@@ -1,4 +1,4 @@
-const IA4_SW_VERSION = "ia4tube-sw-v1";
+const OMASCOTE_SW_VERSION = "omascote-sw-v1";
 
 self.addEventListener("install", () => {
   self.skipWaiting();

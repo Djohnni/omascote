@@ -1,7 +1,7 @@
 {
-  "name": "IA4Tube",
-  "short_name": "IA4Tube",
-  "description": "Crie artes esportivas automáticas para seu time.",
+  "name": "O Mascote",
+  "short_name": "O Mascote",
+  "description": "Crie artes esportivas profissionais e perfis para seu time.",
   "start_url": "/app.html",
   "scope": "/",
   "display": "standalone",

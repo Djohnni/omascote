@@ -1511,6 +1511,110 @@
       box-shadow:none;
     }
 
+    .legalBody{
+      padding:18px;
+      background:#f8fafc;
+      color:#111827;
+      max-height:min(72vh, 640px);
+      overflow-y:auto;
+      overscroll-behavior:contain;
+    }
+
+    .legalBody h3{
+      margin:18px 0 8px;
+      color:#111827;
+      font-size:18px;
+      line-height:1.2;
+    }
+
+    .legalBody h3:first-child{margin-top:0}
+
+    .legalBody p,
+    .legalBody li{
+      color:#334155;
+      font-size:14px;
+      line-height:1.48;
+    }
+
+    .legalBody ul{
+      margin:8px 0 16px;
+      padding-left:20px;
+    }
+
+    .legalForm{
+      display:grid;
+      gap:10px;
+    }
+
+    .legalForm label{
+      display:grid;
+      gap:6px;
+      color:#111827;
+      font-size:12px;
+      font-weight:900;
+      text-transform:uppercase;
+      letter-spacing:.08em;
+    }
+
+    .legalForm input,
+    .legalForm select,
+    .legalForm textarea{
+      width:100%;
+      border:1px solid #d7dde8;
+      border-radius:14px;
+      padding:12px;
+      color:#111827;
+      background:#fff;
+      font:inherit;
+      text-transform:none;
+      letter-spacing:0;
+      font-weight:700;
+    }
+
+    .legalForm textarea{
+      min-height:100px;
+      resize:vertical;
+    }
+
+    .legalActions{
+      display:flex;
+      flex-wrap:wrap;
+      justify-content:flex-end;
+      gap:10px;
+      margin-top:12px;
+    }
+
+    .legalMsg{
+      min-height:18px;
+      margin-top:10px;
+      color:#334155;
+      font-size:13px;
+      font-weight:900;
+    }
+
+    .legalMsg.ok{color:#047857}
+    .legalMsg.erro{color:#b91c1c}
+
+    .legalLinksBar{
+      display:flex;
+      flex-wrap:wrap;
+      justify-content:center;
+      gap:8px;
+      width:100%;
+      margin-top:14px;
+    }
+
+    .legalLinkBtn{
+      background:#ffffff;
+      border:1px solid #d7dde8;
+      color:#111827;
+      box-shadow:none;
+      border-radius:999px;
+      padding:8px 10px;
+      font-size:12px;
+      font-weight:900;
+    }
+
     .perfilTimeBody{
       padding:18px;
       background:#f8fafc;
@@ -8410,14 +8514,18 @@ body:not(.modeChosen) .builderArea,
       <button id="btnSair" type="button">Sair</button>
       <button id="btnCadastroTopo" type="button">Cadastro</button>
       <button id="btnPerfilTime" type="button" hidden>Perfil do Time</button>
+      <button id="btnAbrirPrivacidade" type="button">Privacidade</button>
+      <button id="btnAbrirTermos" type="button">Termos</button>
+      <button id="btnDenunciarIa" type="button">Denunciar IA</button>
+      <button id="btnExcluirConta" type="button">Excluir conta</button>
       <button id="btnInstalarApp" class="instalarAppBtn" type="button" hidden>📲 Instalar app</button>
     </div>
 
     <div class="topbar">
       <!-- removido: stories da barra superior -->
 
-      <div class="ia4Brand logoTopoText" aria-label="IA4Tube">
-        <strong><span class="c1">i</span><span class="c2">A</span><span class="c3">4</span><span class="c4">Tube</span></strong>
+      <div class="ia4Brand logoTopoText" aria-label="O Mascote">
+        <strong><span class="c1">O</span><span class="c2"> </span><span class="c3">Mas</span><span class="c4">cote</span></strong>
         <small>ARTES ESPORTIVAS</small>
       </div>
 
@@ -8494,7 +8602,7 @@ body:not(.modeChosen) .builderArea,
 
       <div class="hero">
         <div class="heroBrand">
-          <span class="c1">i</span><span class="c2">A</span><span class="c3">4</span><span class="c4">Tube</span>
+          <span class="c1">O</span><span class="c2"> </span><span class="c3">Mas</span><span class="c4">cote</span>
         </div>
 
         <h2 class="heroTitle">Crie Posts Profissionais</h2>
@@ -8504,7 +8612,7 @@ body:not(.modeChosen) .builderArea,
         </div>
 
         <section class="seoHomeText">
-          <h1>IA4Tube</h1>
+          <h1>O Mascote</h1>
           <p>
             Artes automáticas para times de futebol. Resultado do jogo, escalação, contratação, próximo jogo, patrocinador, jogador e escudo 3D.
           </p>
@@ -8704,6 +8812,12 @@ body:not(.modeChosen) .builderArea,
                   <small>100% seguros</small>
                 </div>
               </div>
+            </div>
+            <div class="legalLinksBar" aria-label="Informações legais e segurança">
+              <button class="legalLinkBtn" id="btnAbrirPrivacidadeFooter" type="button">Política de privacidade</button>
+              <button class="legalLinkBtn" id="btnAbrirTermosFooter" type="button">Termos de uso</button>
+              <button class="legalLinkBtn" id="btnDenunciarIaFooter" type="button">Denunciar conteúdo IA</button>
+              <button class="legalLinkBtn" id="btnExcluirContaFooter" type="button">Excluir minha conta</button>
             </div>
           </div>
 
@@ -9020,9 +9134,9 @@ body:not(.modeChosen) .builderArea,
 </div>
 
 <div class="modalMask" id="cartaAppModal" aria-hidden="true">
-  <div class="modalCard" role="dialog" aria-modal="true" aria-label="Mensagem IA4Tube">
+  <div class="modalCard" role="dialog" aria-modal="true" aria-label="Mensagem O Mascote">
     <div class="modalTop">
-      <div class="modalTitle" id="cartaAppModalTitulo">Mensagem da IA4Tube</div>
+      <div class="modalTitle" id="cartaAppModalTitulo">Mensagem do O Mascote</div>
       <button class="modalClose btnGhost" id="cartaAppCloseBtn" type="button">×</button>
     </div>
 
@@ -9564,18 +9678,104 @@ body:not(.modeChosen) .builderArea,
   </div>
 </div>
 
+<div class="modalMask" id="legalInfoModal" aria-hidden="true">
+  <div class="modalCard" role="dialog" aria-modal="true" aria-label="Informacoes legais">
+    <div class="modalTop">
+      <div class="modalTitle" id="legalInfoTitle">Informacoes legais</div>
+      <button class="modalClose btnGhost" id="legalInfoCloseBtn" type="button">×</button>
+    </div>
+    <div class="legalBody" id="legalInfoBody"></div>
+  </div>
+</div>
+
+<div class="modalMask" id="excluirContaModal" aria-hidden="true">
+  <div class="modalCard" role="dialog" aria-modal="true" aria-label="Excluir minha conta">
+    <div class="modalTop">
+      <div class="modalTitle">Excluir minha conta</div>
+      <button class="modalClose btnGhost" id="excluirContaCloseBtn" type="button">×</button>
+    </div>
+    <div class="legalBody">
+      <h3>Solicitar exclusao da conta e dos dados</h3>
+      <p>Para sua seguranca, esta acao registra uma solicitacao autenticada. O suporte do O Mascote revisa a conta, pedidos, imagens e dados vinculados antes de concluir a exclusao.</p>
+      <p>Pedidos, pagamentos e comprovantes podem precisar ser mantidos pelo prazo legal aplicavel.</p>
+      <div class="legalForm">
+        <label>
+          Motivo opcional
+          <textarea id="excluirContaMotivo" maxlength="1000" placeholder="Conte rapidamente por que deseja excluir sua conta."></textarea>
+        </label>
+        <div class="legalActions">
+          <button class="btnGhost" id="excluirContaCancelarBtn" type="button">Cancelar</button>
+          <button class="btnRed" id="excluirContaConfirmarBtn" type="button">Solicitar exclusao</button>
+        </div>
+        <div class="legalMsg" id="excluirContaMsg"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modalMask" id="denunciaIaModal" aria-hidden="true">
+  <div class="modalCard" role="dialog" aria-modal="true" aria-label="Denunciar conteudo gerado por IA">
+    <div class="modalTop">
+      <div class="modalTitle">Denunciar conteudo IA</div>
+      <button class="modalClose btnGhost" id="denunciaIaCloseBtn" type="button">×</button>
+    </div>
+    <div class="legalBody">
+      <h3>Denunciar conteudo gerado por IA</h3>
+      <p>Use este canal para avisar sobre imagem, perfil, arte ou texto ofensivo, inadequado, enganoso ou que viole direitos de terceiros.</p>
+      <div class="legalForm">
+        <label>
+          Tipo de conteudo
+          <select id="denunciaIaTipo">
+            <option value="arte">Arte gerada</option>
+            <option value="perfil_publico">Perfil publico</option>
+            <option value="galeria">Galeria</option>
+            <option value="outro">Outro</option>
+          </select>
+        </label>
+        <label>
+          Link relacionado
+          <input id="denunciaIaUrl" maxlength="500" placeholder="https://omascote.com.br/app.html">
+        </label>
+        <label>
+          Motivo
+          <select id="denunciaIaMotivo">
+            <option value="ofensivo">Conteudo ofensivo</option>
+            <option value="direitos">Uso indevido de imagem/marca</option>
+            <option value="enganoso">Conteudo enganoso</option>
+            <option value="privacidade">Privacidade ou dados pessoais</option>
+            <option value="outro">Outro motivo</option>
+          </select>
+        </label>
+        <label>
+          Descricao
+          <textarea id="denunciaIaDescricao" maxlength="2000" placeholder="Explique o que precisa ser revisado."></textarea>
+        </label>
+        <label>
+          Contato opcional
+          <input id="denunciaIaContato" maxlength="160" placeholder="WhatsApp ou e-mail para retorno">
+        </label>
+        <div class="legalActions">
+          <button class="btnGhost" id="denunciaIaCancelarBtn" type="button">Cancelar</button>
+          <button class="btnGreen" id="denunciaIaEnviarBtn" type="button">Enviar denuncia</button>
+        </div>
+        <div class="legalMsg" id="denunciaIaMsg"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
 <!-- removido: modal de stories -->
 
-<div class="ia4SupportBtn" id="ia4SupportBtn" title="Suporte IA4Tube">
+<div class="ia4SupportBtn" id="ia4SupportBtn" title="Suporte O Mascote">
   <div class="ia4SupportIcon">🎬</div>
   <div class="ia4SupportText">
     <strong>Suporte</strong>
-    <span>IA4Tube</span>
+    <span>O Mascote</span>
   </div>
 </div>
 
 <a
-  href="https://wa.me/5547992536917?text=Ol%C3%A1%20IA4Tube%2C%20estou%20precisando%20de%20ajuda"
+  href="https://wa.me/5547992536917?text=Ol%C3%A1%20O%20Mascote%2C%20estou%20precisando%20de%20ajuda"
   target="_blank"
   class="ia4WhatsappBtn"
   title="Falar no WhatsApp"
@@ -9592,7 +9792,7 @@ body:not(.modeChosen) .builderArea,
     <div class="ia4ChatTopTitle">
       <div class="ia4ChatMiniIcon">🎬</div>
       <div>
-        <div>Suporte IA4Tube</div>
+        <div>Suporte O Mascote</div>
         <div style="font-size:11px;color:#d1d5db;font-weight:800;">Atendimento automático</div>
       </div>
     </div>
@@ -9600,7 +9800,7 @@ body:not(.modeChosen) .builderArea,
   </div>
 
   <div class="ia4ChatMessages" id="ia4ChatMessages">
-    <div class="ia4Msg ia4MsgBot">Olá! Sou o suporte da IA4Tube. Escolha uma opção:</div>
+    <div class="ia4Msg ia4MsgBot">Olá! Sou o suporte do O Mascote. Escolha uma opção:</div>
 
     <div class="ia4QuickOptions">
       <button type="button" class="ia4QuickBtn" onclick="ia4MostrarProdutosSuporte()">📘 Dúvida sobre produto</button>
@@ -9635,6 +9835,210 @@ function ia4ValidarTamanhoArquivos(files){
 }
 
 let token = localStorage.getItem("omascote_token");
+
+const legalInfoModal = document.getElementById("legalInfoModal");
+const legalInfoTitle = document.getElementById("legalInfoTitle");
+const legalInfoBody = document.getElementById("legalInfoBody");
+const legalInfoCloseBtn = document.getElementById("legalInfoCloseBtn");
+const excluirContaModal = document.getElementById("excluirContaModal");
+const excluirContaCloseBtn = document.getElementById("excluirContaCloseBtn");
+const excluirContaCancelarBtn = document.getElementById("excluirContaCancelarBtn");
+const excluirContaConfirmarBtn = document.getElementById("excluirContaConfirmarBtn");
+const excluirContaMotivo = document.getElementById("excluirContaMotivo");
+const excluirContaMsg = document.getElementById("excluirContaMsg");
+const denunciaIaModal = document.getElementById("denunciaIaModal");
+const denunciaIaCloseBtn = document.getElementById("denunciaIaCloseBtn");
+const denunciaIaCancelarBtn = document.getElementById("denunciaIaCancelarBtn");
+const denunciaIaEnviarBtn = document.getElementById("denunciaIaEnviarBtn");
+const denunciaIaTipo = document.getElementById("denunciaIaTipo");
+const denunciaIaUrl = document.getElementById("denunciaIaUrl");
+const denunciaIaMotivo = document.getElementById("denunciaIaMotivo");
+const denunciaIaDescricao = document.getElementById("denunciaIaDescricao");
+const denunciaIaContato = document.getElementById("denunciaIaContato");
+const denunciaIaMsg = document.getElementById("denunciaIaMsg");
+
+const LEGAL_PRIVACIDADE_HTML = `
+  <h3>Politica de privacidade</h3>
+  <p>O Mascote usa seus dados para criar e entregar artes esportivas, manter sua conta, liberar downloads, oferecer suporte e melhorar a experiencia do app.</p>
+  <h3>Dados que podemos coletar</h3>
+  <ul>
+    <li>Dados de cadastro, como nome do time, login, WhatsApp ou identificador de conta.</li>
+    <li>Imagens enviadas pelo cliente, como escudo, uniforme, foto de jogador, patrocinadores e referencias.</li>
+    <li>Dados de pedidos, pagamentos, cupons, saldo e historico necessario para entrega e suporte.</li>
+    <li>Eventos de uso do app, como criacao de pedido, download, erros e navegacao.</li>
+  </ul>
+  <h3>Como usamos esses dados</h3>
+  <p>Usamos os dados para processar pedidos, gerar artes com IA, confirmar pagamento, entregar arquivos, manter seguranca, prevenir fraude e responder solicitacoes de suporte.</p>
+  <h3>Compartilhamento</h3>
+  <p>Podemos usar provedores de infraestrutura, autenticacao, pagamentos, analytics e IA para operar o servico. Nao vendemos dados pessoais.</p>
+  <h3>Controle do cliente</h3>
+  <p>Voce pode solicitar exclusao da conta e dos dados pelo botao "Excluir minha conta" dentro do app. Alguns registros podem ser mantidos pelo prazo legal aplicavel.</p>
+`;
+
+const LEGAL_TERMOS_HTML = `
+  <h3>Termos de uso</h3>
+  <p>Ao usar O Mascote, voce confirma que tem permissao para enviar imagens, escudos, marcas, fotos e informacoes usadas nas artes.</p>
+  <h3>Conteudo enviado</h3>
+  <ul>
+    <li>Nao envie conteudo ofensivo, ilegal, enganoso ou que viole direitos de terceiros.</li>
+    <li>Voce e responsavel pelas informacoes e imagens enviadas.</li>
+    <li>Artes geradas por IA podem exigir revisao humana antes de uso publico.</li>
+  </ul>
+  <h3>Pedidos, pagamento e download</h3>
+  <p>A previa pode ser exibida antes do desbloqueio. O download final fica disponivel conforme as regras do pedido, pagamento e saldo aplicaveis.</p>
+  <h3>Conteudo gerado por IA</h3>
+  <p>Se uma arte ou perfil parecer inadequado, use "Denunciar IA" para solicitar analise.</p>
+  <h3>Disponibilidade</h3>
+  <p>O servico pode passar por manutencao, instabilidade de rede ou indisponibilidade temporaria de provedores externos.</p>
+`;
+
+function abrirLegalInfo(tipo){
+  if(!legalInfoModal || !legalInfoTitle || !legalInfoBody) return;
+  const privacidade = tipo === "privacidade";
+  legalInfoTitle.textContent = privacidade ? "Politica de privacidade" : "Termos de uso";
+  legalInfoBody.innerHTML = privacidade ? LEGAL_PRIVACIDADE_HTML : LEGAL_TERMOS_HTML;
+  legalInfoModal.classList.add("open");
+  legalInfoModal.setAttribute("aria-hidden", "false");
+  legalInfoBody.scrollTo({ top:0 });
+}
+
+function fecharLegalInfo(){
+  legalInfoModal?.classList.remove("open");
+  legalInfoModal?.setAttribute("aria-hidden", "true");
+}
+
+function setLegalMsg(el, texto, tipo = ""){
+  if(!el) return;
+  el.textContent = texto || "";
+  el.className = `legalMsg${tipo ? " " + tipo : ""}`;
+}
+
+function abrirExcluirConta(){
+  if(!excluirContaModal) return;
+  setLegalMsg(excluirContaMsg, token ? "" : "Entre na sua conta para solicitar a exclusao.", token ? "" : "erro");
+  excluirContaModal.classList.add("open");
+  excluirContaModal.setAttribute("aria-hidden", "false");
+  setTimeout(()=>excluirContaMotivo?.focus(), 120);
+}
+
+function fecharExcluirConta(){
+  excluirContaModal?.classList.remove("open");
+  excluirContaModal?.setAttribute("aria-hidden", "true");
+}
+
+function abrirDenunciaIa(){
+  if(!denunciaIaModal) return;
+  if(denunciaIaUrl && !denunciaIaUrl.value){
+    denunciaIaUrl.value = location.href;
+  }
+  setLegalMsg(denunciaIaMsg, "");
+  denunciaIaModal.classList.add("open");
+  denunciaIaModal.setAttribute("aria-hidden", "false");
+  setTimeout(()=>denunciaIaDescricao?.focus(), 120);
+}
+
+function fecharDenunciaIa(){
+  denunciaIaModal?.classList.remove("open");
+  denunciaIaModal?.setAttribute("aria-hidden", "true");
+}
+
+async function solicitarExclusaoConta(){
+  if(!token){
+    setLegalMsg(excluirContaMsg, "Entre na sua conta para solicitar a exclusao.", "erro");
+    return;
+  }
+
+  const original = excluirContaConfirmarBtn?.textContent || "Solicitar exclusao";
+  try{
+    if(excluirContaConfirmarBtn){
+      excluirContaConfirmarBtn.disabled = true;
+      excluirContaConfirmarBtn.textContent = "Enviando...";
+    }
+
+    const r = await fetch(`${API_BASE}/me/conta/exclusao`, {
+      method:"POST",
+      headers:{
+        "Content-Type":"application/json",
+        "Authorization":"Bearer " + token
+      },
+      body:JSON.stringify({
+        motivo: excluirContaMotivo?.value || ""
+      })
+    });
+
+    const data = await ia4LerJsonSeguro(r);
+    const authMsg = ia4TratarAuthInvalida(r, data);
+
+    if(authMsg){
+      setLegalMsg(excluirContaMsg, authMsg, "erro");
+      return;
+    }
+
+    if(!r.ok || !data.ok){
+      setLegalMsg(excluirContaMsg, data.error || "Nao foi possivel registrar a solicitacao.", "erro");
+      return;
+    }
+
+    setLegalMsg(excluirContaMsg, data.mensagem || "Solicitacao registrada. O suporte vai revisar sua conta.", "ok");
+  }catch(e){
+    setLegalMsg(excluirContaMsg, "Erro de rede ao solicitar exclusao.", "erro");
+  }finally{
+    if(excluirContaConfirmarBtn){
+      excluirContaConfirmarBtn.disabled = false;
+      excluirContaConfirmarBtn.textContent = original;
+    }
+  }
+}
+
+async function enviarDenunciaIa(){
+  const descricao = (denunciaIaDescricao?.value || "").trim();
+  const motivo = denunciaIaMotivo?.value || "";
+
+  if(!descricao && !motivo){
+    setLegalMsg(denunciaIaMsg, "Informe o motivo da denuncia.", "erro");
+    return;
+  }
+
+  const original = denunciaIaEnviarBtn?.textContent || "Enviar denuncia";
+  try{
+    if(denunciaIaEnviarBtn){
+      denunciaIaEnviarBtn.disabled = true;
+      denunciaIaEnviarBtn.textContent = "Enviando...";
+    }
+
+    const headers = { "Content-Type":"application/json" };
+    if(token) headers.Authorization = "Bearer " + token;
+
+    const r = await fetch(`${API_BASE}/denuncias/conteudo-ia`, {
+      method:"POST",
+      headers,
+      body:JSON.stringify({
+        tipo: denunciaIaTipo?.value || "arte",
+        url: denunciaIaUrl?.value || location.href,
+        motivo,
+        descricao,
+        contato: denunciaIaContato?.value || ""
+      })
+    });
+
+    const data = await ia4LerJsonSeguro(r);
+
+    if(!r.ok || !data.ok){
+      setLegalMsg(denunciaIaMsg, data.error || "Nao foi possivel enviar a denuncia.", "erro");
+      return;
+    }
+
+    setLegalMsg(denunciaIaMsg, data.mensagem || "Denuncia registrada para analise.", "ok");
+    if(denunciaIaDescricao) denunciaIaDescricao.value = "";
+  }catch(e){
+    setLegalMsg(denunciaIaMsg, "Erro de rede ao enviar denuncia.", "erro");
+  }finally{
+    if(denunciaIaEnviarBtn){
+      denunciaIaEnviarBtn.disabled = false;
+      denunciaIaEnviarBtn.textContent = original;
+    }
+  }
+}
 
 function ia4MensagemSessaoExpirada(out){
   const detalhe = out?.error || out?.erro || out?.mensagem || "";
@@ -10119,7 +10523,7 @@ const PRODUCTS = {
       mascote: "Foto do jogador ou do time"
     },
     placeholders: {
-      rodada: "Ex: IA4Tube FC x Unidos FC",
+      rodada: "Ex: O Mascote FC x Unidos FC",
       data: "Ex: Domingo • 15h30",
       hora: "Ex: Campeonato municipal",
       arena: "Ex: Arena Central"
@@ -13564,7 +13968,7 @@ if(modoCadastro){
               color:#334155;
               line-height:1.4;
             ">
-              Você desbloqueou todas as artes da IA4Tube.
+              Você desbloqueou todas as artes do O Mascote.
             </div>
 
             <div style="
@@ -15880,7 +16284,7 @@ function barraProducaoPedido(p){
   let texto = "";
 
 if(pct < 10){
-  texto = "🚀 A IA4Tube transforma suas informações em uma arte profissional em poucos minutos.";
+  texto = "🚀 O Mascote transforma suas informações em uma arte profissional em poucos minutos.";
 }
 else if(pct < 20){
   texto = "📲 Sua arte já vai com descrição pronta para copiar e postar no Instagram.";
@@ -15960,7 +16364,7 @@ function cardPagamentoPendente(p) {
         Ver QR Code
       </button>
       <button type="button" class="menuPedidoBtn" onclick="usarSaldoPedido('${p.id}')">
-        Usar saldo IA4Tube
+        Usar saldo O Mascote
       </button>
     </div>
   `;
@@ -16044,7 +16448,7 @@ async function verQrCodePedido(id) {
 
 async function usarSaldoPedido(id) {
   if(!token){
-    alert("Faça login para usar seu saldo IA4Tube.");
+    alert("Faça login para usar seu saldo O Mascote.");
     return;
   }
 
@@ -16069,11 +16473,11 @@ async function usarSaldoPedido(id) {
       return;
     }
 
-    alert("Imagem desbloqueada com saldo IA4Tube.");
+    alert("Imagem desbloqueada com saldo O Mascote.");
     await refreshMe();
     await carregarHistorico();
   }catch(e){
-    alert("Erro de rede ao usar saldo IA4Tube.");
+    alert("Erro de rede ao usar saldo O Mascote.");
   }
 }
 
@@ -16281,7 +16685,7 @@ function atualizarMenuPedidosTopo(pedidos){
         </div>
       ` : `
         <div class="menuPedidoThumb" style="display:flex;align-items:center;justify-content:center;padding:18px;text-align:center;color:#ffffff;font-size:16px;font-weight:950;line-height:1.35;background:#0f172a;">
-          🚀 A IA4Tube está criando sua arte profissional.<br><br>
+          🚀 O Mascote está criando sua arte profissional.<br><br>
           Sua imagem já vai com descrição pronta para copiar e postar no Instagram.
         </div>
       `}
@@ -16457,7 +16861,7 @@ async function carregarHistorico(){
         ` : `
           <div style="margin-top:10px;text-align:center;">
             <div class="previewProtegida" style="aspect-ratio:9/16;display:flex;align-items:center;justify-content:center;padding:24px;background:#0f172a;color:#ffffff;font-size:16px;font-weight:950;line-height:1.5;">
-              🚀 A IA4Tube transforma suas informações em uma arte profissional em poucos minutos.<br><br>
+              🚀 O Mascote transforma suas informações em uma arte profissional em poucos minutos.<br><br>
               📲 Sua arte já vai com descrição pronta para copiar e postar no Instagram.
             </div>
           </div>
@@ -16751,8 +17155,8 @@ async function compartilharImagemPedido(id){
 
     if(navigator.canShare?.({ files:[file] }) && navigator.share){
       await navigator.share({
-        title: "Minha arte IA4Tube",
-        text: "Minha arte criada na IA4Tube",
+        title: "Minha arte O Mascote",
+        text: "Minha arte criada no O Mascote",
         files: [file]
       });
       return;
@@ -20739,7 +21143,7 @@ function ia4RenderMensagensSuporte(mensagens){
   });
 
   if(mensagens.length === 0){
-    ia4AddMsg("Olá! Sou o suporte da IA4Tube. Escolha uma opção:", "bot");
+    ia4AddMsg("Olá! Sou o suporte do O Mascote. Escolha uma opção:", "bot");
   }
 }
 
@@ -21017,7 +21421,7 @@ function renderizarCartasApp(cartas){
 
   cartasAppBox.hidden = false;
   cartasAppBox.innerHTML = `
-    <button type="button" class="cartaAppEnvelopeBtn" onclick="abrirCartaApp(${cartaAppJsArg(carta.id)})" aria-label="Abrir mensagem IA4Tube">
+    <button type="button" class="cartaAppEnvelopeBtn" onclick="abrirCartaApp(${cartaAppJsArg(carta.id)})" aria-label="Abrir mensagem O Mascote">
       ✉️
       ${novas > 0 ? `<span class="cartaAppBadge">${novas > 9 ? "9+" : novas}</span>` : ""}
     </button>
@@ -21126,7 +21530,7 @@ async function baixarCartaAppImagem(id){
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
-    a.download = `${id}_ia4tube.png`;
+    a.download = `${id}_omascote.png`;
     document.body.appendChild(a);
     a.click();
     a.remove();
@@ -21141,7 +21545,7 @@ function abrirCartaApp(id){
   const carta = cartasAppAtivas.find(item => String(item.id) === String(id));
   if(!carta || !cartaAppModal) return;
 
-  if(cartaAppModalTitulo) cartaAppModalTitulo.textContent = carta.titulo || "Mensagem da IA4Tube";
+  if(cartaAppModalTitulo) cartaAppModalTitulo.textContent = carta.titulo || "Mensagem do O Mascote";
   if(cartaAppModalTexto) cartaAppModalTexto.textContent = carta.texto || carta.texto_curto || "";
   if(cartaAppModalAcoes){
     cartaAppModalAcoes.innerHTML = carta.tem_imagem
@@ -21260,6 +21664,46 @@ cartaAppModal?.addEventListener("click", (event) => {
   if(event.target === cartaAppModal){
     fecharCartaAppModal();
   }
+});
+
+[
+  "btnAbrirPrivacidade",
+  "btnAbrirPrivacidadeFooter"
+].forEach(id => document.getElementById(id)?.addEventListener("click", () => abrirLegalInfo("privacidade")));
+
+[
+  "btnAbrirTermos",
+  "btnAbrirTermosFooter"
+].forEach(id => document.getElementById(id)?.addEventListener("click", () => abrirLegalInfo("termos")));
+
+[
+  "btnDenunciarIa",
+  "btnDenunciarIaFooter"
+].forEach(id => document.getElementById(id)?.addEventListener("click", abrirDenunciaIa));
+
+[
+  "btnExcluirConta",
+  "btnExcluirContaFooter"
+].forEach(id => document.getElementById(id)?.addEventListener("click", abrirExcluirConta));
+
+legalInfoCloseBtn?.addEventListener("click", fecharLegalInfo);
+excluirContaCloseBtn?.addEventListener("click", fecharExcluirConta);
+excluirContaCancelarBtn?.addEventListener("click", fecharExcluirConta);
+excluirContaConfirmarBtn?.addEventListener("click", solicitarExclusaoConta);
+denunciaIaCloseBtn?.addEventListener("click", fecharDenunciaIa);
+denunciaIaCancelarBtn?.addEventListener("click", fecharDenunciaIa);
+denunciaIaEnviarBtn?.addEventListener("click", enviarDenunciaIa);
+
+legalInfoModal?.addEventListener("click", (event) => {
+  if(event.target === legalInfoModal) fecharLegalInfo();
+});
+
+excluirContaModal?.addEventListener("click", (event) => {
+  if(event.target === excluirContaModal) fecharExcluirConta();
+});
+
+denunciaIaModal?.addEventListener("click", (event) => {
+  if(event.target === denunciaIaModal) fecharDenunciaIa();
 });
 
 inicializarProdutoPorUrl();
