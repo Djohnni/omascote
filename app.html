@@ -2506,6 +2506,186 @@
       padding:22px;
     }
 
+    .perfilRankingPage[hidden]{
+      display:none !important;
+    }
+
+    .perfilRankingPage{
+      min-height:100vh;
+      background:
+        radial-gradient(circle at 15% 8%, rgba(250,204,21,.20), transparent 28%),
+        linear-gradient(145deg, #050505 0%, #111827 48%, #080808 100%);
+      color:#ffffff;
+      padding:22px;
+    }
+
+    .perfilRankingShell{
+      width:min(1120px, 100%);
+      margin:0 auto;
+      display:grid;
+      gap:18px;
+    }
+
+    .perfilRankingHero{
+      border:1px solid rgba(255,255,255,.10);
+      border-radius:8px;
+      background:#111111;
+      padding:18px;
+      display:flex;
+      align-items:flex-end;
+      justify-content:space-between;
+      gap:16px;
+      flex-wrap:wrap;
+    }
+
+    .perfilRankingHero h1{
+      margin:6px 0;
+      color:#ffffff;
+      font-size:clamp(26px, 4vw, 46px);
+      line-height:1;
+      letter-spacing:0;
+    }
+
+    .perfilRankingHero p{
+      margin:0;
+      color:#cbd5e1;
+      max-width:680px;
+      font-size:14px;
+      font-weight:850;
+      line-height:1.45;
+    }
+
+    .perfilRankingGrid{
+      display:grid;
+      grid-template-columns:repeat(2, minmax(0, 1fr));
+      gap:14px;
+    }
+
+    .perfilRankingBoard{
+      border:1px solid rgba(255,255,255,.10);
+      border-radius:8px;
+      background:#111111;
+      padding:14px;
+      min-width:0;
+    }
+
+    .perfilRankingBoardTop{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+      margin-bottom:12px;
+    }
+
+    .perfilRankingBoardTop h2{
+      margin:0;
+      color:#ffffff;
+      font-size:17px;
+      letter-spacing:0;
+    }
+
+    .perfilRankingBoardTop span{
+      color:#facc15;
+      font-size:12px;
+      font-weight:950;
+    }
+
+    .perfilRankingList{
+      display:grid;
+      gap:9px;
+    }
+
+    .perfilRankingCard{
+      display:grid;
+      grid-template-columns:34px 44px minmax(0, 1fr) auto;
+      align-items:center;
+      gap:10px;
+      border:1px solid rgba(255,255,255,.08);
+      border-radius:8px;
+      background:#181818;
+      padding:10px;
+      min-width:0;
+    }
+
+    .perfilRankingPos{
+      width:34px;
+      height:34px;
+      border-radius:8px;
+      display:grid;
+      place-items:center;
+      background:#facc15;
+      color:#111827;
+      font-size:13px;
+      font-weight:950;
+    }
+
+    .perfilRankingCrest{
+      width:44px;
+      height:44px;
+      border-radius:8px;
+      background:#27272a;
+      color:#facc15;
+      display:grid;
+      place-items:center;
+      overflow:hidden;
+      font-size:16px;
+      font-weight:950;
+    }
+
+    .perfilRankingCrest img{
+      width:100%;
+      height:100%;
+      object-fit:cover;
+      display:block;
+    }
+
+    .perfilRankingInfo{
+      min-width:0;
+    }
+
+    .perfilRankingInfo strong{
+      display:block;
+      color:#ffffff;
+      font-size:13px;
+      font-weight:950;
+      overflow:hidden;
+      text-overflow:ellipsis;
+      white-space:nowrap;
+    }
+
+    .perfilRankingInfo span{
+      display:block;
+      color:#cbd5e1;
+      font-size:11px;
+      font-weight:850;
+      overflow:hidden;
+      text-overflow:ellipsis;
+      white-space:nowrap;
+    }
+
+    .perfilRankingMetric{
+      display:grid;
+      gap:4px;
+      justify-items:end;
+      color:#facc15;
+      font-size:15px;
+      font-weight:950;
+      white-space:nowrap;
+    }
+
+    .perfilRankingMetric small{
+      color:#cbd5e1;
+      font-size:10px;
+      font-weight:850;
+    }
+
+    .perfilRankingActions{
+      display:flex;
+      gap:8px;
+      flex-wrap:wrap;
+      justify-content:flex-end;
+    }
+
     .perfilPublicoShell{
       width:min(1120px, 100%);
       margin:0 auto;
@@ -2790,7 +2970,8 @@
     }
 
     .perfilPublicoEmpty,
-    .perfilPublicoMsg{
+    .perfilPublicoMsg,
+    .perfilRankingMsg{
       color:#cbd5e1;
       font-size:13px;
       font-weight:850;
@@ -3442,6 +3623,23 @@
 
       .perfilLineupGrid{
         grid-template-columns:1fr;
+      }
+
+      .perfilRankingPage{
+        padding:14px;
+      }
+
+      .perfilRankingGrid{
+        grid-template-columns:1fr;
+      }
+
+      .perfilRankingCard{
+        grid-template-columns:30px 38px minmax(0, 1fr);
+      }
+
+      .perfilRankingMetric{
+        grid-column:3;
+        justify-items:start;
       }
 
       .perfilJogadorForm,
@@ -7917,11 +8115,64 @@ body:not(.modeChosen) .builderArea,
 
 <body data-page="home">
   <main>
+  <section class="perfilRankingPage" id="perfilRankingPage" hidden>
+    <div class="perfilRankingShell">
+      <header class="perfilRankingHero">
+        <div>
+          <div class="perfilPublicoBrand">O Mascote</div>
+          <h1>Ranking dos Times</h1>
+          <p>Times com perfil publico aparecem aqui por desempenho, gols e artes liberadas no O Mascote.</p>
+        </div>
+        <div class="perfilRankingActions">
+          <a class="perfilPublicoBtn" href="/app.html">Criar perfil do meu time</a>
+          <a class="perfilPublicoBtn secondary" href="/app.html">Criar arte</a>
+        </div>
+      </header>
+
+      <div class="perfilRankingGrid">
+        <section class="perfilRankingBoard">
+          <div class="perfilRankingBoardTop">
+            <h2>Mais vitorias</h2>
+            <span id="rankingVitoriasCount">0 times</span>
+          </div>
+          <div class="perfilRankingList" id="rankingVitoriasLista"></div>
+        </section>
+
+        <section class="perfilRankingBoard">
+          <div class="perfilRankingBoardTop">
+            <h2>Mais gols marcados</h2>
+            <span id="rankingGolsCount">0 times</span>
+          </div>
+          <div class="perfilRankingList" id="rankingGolsLista"></div>
+        </section>
+
+        <section class="perfilRankingBoard">
+          <div class="perfilRankingBoardTop">
+            <h2>Melhor aproveitamento</h2>
+            <span id="rankingAproveitamentoCount">0 times</span>
+          </div>
+          <div class="perfilRankingList" id="rankingAproveitamentoLista"></div>
+        </section>
+
+        <section class="perfilRankingBoard">
+          <div class="perfilRankingBoardTop">
+            <h2>Mais artes na galeria</h2>
+            <span id="rankingArtesCount">0 times</span>
+          </div>
+          <div class="perfilRankingList" id="rankingArtesLista"></div>
+        </section>
+      </div>
+
+      <div class="perfilRankingMsg" id="rankingTimesMsg">Carregando ranking...</div>
+    </div>
+  </section>
+
   <section class="perfilPublicoPage" id="perfilPublicoPage" hidden>
     <div class="perfilPublicoShell">
       <header class="perfilPublicoHeader">
         <div class="perfilPublicoBrand">O Mascote · Perfil oficial do time</div>
         <div class="perfilPublicoActions">
+          <a class="perfilPublicoBtn secondary" href="/app.html?ranking=times">Ranking</a>
           <button class="perfilPublicoBtn secondary" id="perfilPublicoCopiarBtn" type="button">Copiar link</button>
           <a class="perfilPublicoBtn" href="/app.html">Criar arte no O Mascote</a>
         </div>
@@ -16581,6 +16832,16 @@ const perfilVisualMsg = document.getElementById("perfilVisualMsg");
 const perfilVisualEditarBtn = document.getElementById("perfilVisualEditarBtn");
 const perfilVisualCriarArteBtn = document.getElementById("perfilVisualCriarArteBtn");
 const perfilVisualCompartilharBtn = document.getElementById("perfilVisualCompartilharBtn");
+const perfilRankingPage = document.getElementById("perfilRankingPage");
+const rankingVitoriasLista = document.getElementById("rankingVitoriasLista");
+const rankingGolsLista = document.getElementById("rankingGolsLista");
+const rankingAproveitamentoLista = document.getElementById("rankingAproveitamentoLista");
+const rankingArtesLista = document.getElementById("rankingArtesLista");
+const rankingVitoriasCount = document.getElementById("rankingVitoriasCount");
+const rankingGolsCount = document.getElementById("rankingGolsCount");
+const rankingAproveitamentoCount = document.getElementById("rankingAproveitamentoCount");
+const rankingArtesCount = document.getElementById("rankingArtesCount");
+const rankingTimesMsg = document.getElementById("rankingTimesMsg");
 const perfilPublicoPage = document.getElementById("perfilPublicoPage");
 const perfilPublicoCopiarBtn = document.getElementById("perfilPublicoCopiarBtn");
 const perfilPublicoNome = document.getElementById("perfilPublicoNome");
@@ -18087,6 +18348,7 @@ function perfilGaleriaAbrirProduto(productKey){
 function inicializarProdutoPorUrl(){
   const params = new URLSearchParams(location.search);
   if(params.get("time")) return;
+  if(params.get("ranking") === "times") return;
   const rawProduto = String(params.get("produto") || "").trim().toLowerCase();
   if(!rawProduto || !PRODUCTS[rawProduto]) return;
   const produto = perfilGaleriaProdutoDestino(rawProduto);
@@ -18096,6 +18358,96 @@ function inicializarProdutoPorUrl(){
     selectProduct(produto);
     document.getElementById("productFormsRoot")?.scrollIntoView({ behavior:"smooth", block:"start" });
   }, 250);
+}
+
+function rankingMetricValue(item, tipo){
+  const stats = item?.estatisticas || {};
+  if(tipo === "vitorias") return perfilStatsValor(stats.vitorias || 0);
+  if(tipo === "gols") return perfilStatsValor(stats.gols_marcados || 0);
+  if(tipo === "aproveitamento") return perfilStatsValor(stats.aproveitamento || 0, "%");
+  if(tipo === "artes") return perfilStatsValor(item?.artes_total || 0);
+  return "0";
+}
+
+function rankingMetricLabel(tipo){
+  if(tipo === "vitorias") return "vitorias";
+  if(tipo === "gols") return "gols";
+  if(tipo === "aproveitamento") return "aproveit.";
+  if(tipo === "artes") return "artes";
+  return "pontos";
+}
+
+function rankingTimeCardHtml(item, tipo){
+  const slug = String(item?.slug || "").trim();
+  const nome = perfilAssistTexto(item?.nome_time) || "Time";
+  const local = [item?.cidade, item?.estado].map(perfilAssistTexto).filter(Boolean).join(" - ") || "Perfil publico";
+  const escudo = perfilPublicoAssetUrl(item?.escudo_url || "");
+  const inicial = perfilTimeInicial(nome);
+  const href = slug ? `/app.html?time=${encodeURIComponent(slug)}` : "/app.html";
+  const escudoHtml = escudo
+    ? `<img src="${htmlEscape(escudo)}" alt="Escudo ${htmlEscape(nome)}" loading="lazy">`
+    : htmlEscape(inicial);
+
+  return `
+    <a class="perfilRankingCard" href="${htmlEscape(href)}">
+      <div class="perfilRankingPos">${htmlEscape(item?.posicao || "-")}</div>
+      <div class="perfilRankingCrest">${escudoHtml}</div>
+      <div class="perfilRankingInfo">
+        <strong>${htmlEscape(nome)}</strong>
+        <span>${htmlEscape(local)}</span>
+      </div>
+      <div class="perfilRankingMetric">
+        ${htmlEscape(rankingMetricValue(item, tipo))}
+        <small>${htmlEscape(rankingMetricLabel(tipo))}</small>
+      </div>
+    </a>
+  `;
+}
+
+function renderRankingLista(container, counter, itens = [], tipo = ""){
+  const lista = Array.isArray(itens) ? itens : [];
+  perfilVisualSetText(counter, `${lista.length} ${lista.length === 1 ? "time" : "times"}`);
+  if(!container) return;
+  container.innerHTML = lista.length
+    ? lista.map(item => rankingTimeCardHtml(item, tipo)).join("")
+    : `<div class="perfilPublicoEmpty">Nenhum time publico neste ranking ainda.</div>`;
+}
+
+async function carregarRankingTimes(){
+  perfilVisualSetText(rankingTimesMsg, "Carregando ranking...");
+  renderRankingLista(rankingVitoriasLista, rankingVitoriasCount, [], "vitorias");
+  renderRankingLista(rankingGolsLista, rankingGolsCount, [], "gols");
+  renderRankingLista(rankingAproveitamentoLista, rankingAproveitamentoCount, [], "aproveitamento");
+  renderRankingLista(rankingArtesLista, rankingArtesCount, [], "artes");
+
+  try{
+    const r = await fetch(`${API_BASE}/ranking/times?ts=${Date.now()}`, { cache:"no-store" });
+    const data = await ia4LerJsonSeguro(r);
+
+    if(!r.ok || !data.ok){
+      throw new Error(data.error || data.erro || "Nao foi possivel carregar o ranking.");
+    }
+
+    const rankings = data.rankings || {};
+    renderRankingLista(rankingVitoriasLista, rankingVitoriasCount, rankings.vitorias, "vitorias");
+    renderRankingLista(rankingGolsLista, rankingGolsCount, rankings.gols_marcados, "gols");
+    renderRankingLista(rankingAproveitamentoLista, rankingAproveitamentoCount, rankings.aproveitamento, "aproveitamento");
+    renderRankingLista(rankingArtesLista, rankingArtesCount, rankings.artes, "artes");
+    perfilVisualSetText(rankingTimesMsg, `${data.total_times || 0} time(s) publico(s) no ranking.`);
+  }catch(err){
+    perfilVisualSetText(rankingTimesMsg, err?.message || "Erro de rede ao carregar ranking.");
+  }
+}
+
+function iniciarRankingSeNecessario(){
+  const params = new URLSearchParams(location.search);
+  if(params.get("ranking") !== "times") return false;
+
+  document.title = "Ranking dos Times | O Mascote";
+  document.body.classList.add("publicProfileMode");
+  if(perfilRankingPage) perfilRankingPage.hidden = false;
+  carregarRankingTimes();
+  return true;
 }
 
 function renderPerfilPublico(data = {}){
@@ -20418,6 +20770,7 @@ cartaAppModal?.addEventListener("click", (event) => {
 });
 
 inicializarProdutoPorUrl();
+iniciarRankingSeNecessario();
 iniciarPerfilPublicoSeNecessario();
 </script>
   </main>
