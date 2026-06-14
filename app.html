@@ -1517,6 +1517,23 @@
       color:#111827;
     }
 
+    #perfilTimeModal .modalCard{
+      width:min(920px, 96vw);
+      max-height:92vh;
+      display:flex;
+      flex-direction:column;
+    }
+
+    #perfilTimeModal .modalTop{
+      flex:0 0 auto;
+    }
+
+    #perfilTimeModal .perfilTimeBody{
+      max-height:calc(92vh - 58px);
+      overflow-y:auto;
+      overscroll-behavior:contain;
+    }
+
     .perfilTimeIntro{
       display:flex;
       align-items:flex-start;
@@ -3685,6 +3702,21 @@
       .perfilTimeActions{
         flex-direction:column;
         align-items:stretch;
+      }
+
+      #perfilTimeModal{
+        align-items:stretch;
+        padding:8px;
+      }
+
+      #perfilTimeModal .modalCard{
+        width:100%;
+        max-height:calc(100vh - 16px);
+      }
+
+      #perfilTimeModal .perfilTimeBody{
+        max-height:calc(100vh - 74px);
+        padding:14px;
       }
 
       .perfilTimePrivado{
@@ -7983,6 +8015,30 @@ body.visitanteNaoLogado .visitanteWelcomeCallout{
   background:#f0fdf4;
 }
 
+.cleanFileBox.has-preview{
+  border-color:#16a34a;
+  background:#f0fdf4;
+}
+
+.cleanFileThumb{
+  display:none;
+  width:42px;
+  height:42px;
+  flex:0 0 42px;
+  border-radius:14px;
+  border:1px solid rgba(22,163,74,.35);
+  background:#ffffff center / cover no-repeat;
+  box-shadow:0 8px 18px rgba(15,23,42,.12);
+}
+
+.cleanFileBox.has-preview .cleanFileThumb{
+  display:block;
+}
+
+.cleanFileBox.has-preview .cleanFilePlus{
+  display:none;
+}
+
 .cleanFilePlus{
   display:grid;
   place-items:center;
@@ -11004,6 +11060,7 @@ function renderCleanFileField(product, field, step){
       <label class="cleanFieldLabel" data-step="${htmlEscape(step)}">${label}</label>
       <input class="fileHidden" type="file" name="${htmlEscape(field.key)}" data-asset="${htmlEscape(field.key)}"${multiple} accept="image/png,image/jpeg,image/jpg,image/webp" aria-label="${htmlEscape(label)}">
       <div class="cleanFileBox" data-clean-file-for="${htmlEscape(field.key)}" tabindex="0" role="button" aria-label="${htmlEscape(label)}">
+        <span class="cleanFileThumb" data-clean-file-thumb="${htmlEscape(field.key)}" aria-hidden="true"></span>
         <span data-clean-file-name="${htmlEscape(field.key)}">Nenhum arquivo</span>
         <span class="cleanFilePlus">+</span>
       </div>
@@ -11411,6 +11468,10 @@ function selectCleanProductForPicker(productKey, options = {}){
     perfilAssistAtualizarProduto(productKey);
   }
 
+  if(options.perfilAuto !== false && !perfilAssistAplicandoArquivo && perfilCriarArteModoAtivo && perfilAssistProductEnabled(productKey)){
+    setTimeout(() => perfilAssistAutoAplicarProduto(productKey), 0);
+  }
+
   if(options.scroll){
     target.scrollIntoView({ behavior:"smooth", block:"start" });
   }
@@ -11542,6 +11603,55 @@ function getCleanFieldValue(form, key){
 
 function getCleanAssetFiles(form, key){
   return Array.from(getCleanFormAsset(form, key)?.files || []);
+}
+
+function clearCleanFilePreview(form, key){
+  const box = form?.querySelector(`[data-clean-file-for="${CSS.escape(key)}"]`);
+  const thumb = form?.querySelector(`[data-clean-file-thumb="${CSS.escape(key)}"]`);
+  const label = form?.querySelector(`[data-clean-file-name="${CSS.escape(key)}"]`);
+
+  if(thumb?.dataset?.objectUrl){
+    try{ URL.revokeObjectURL(thumb.dataset.objectUrl); }catch(e){}
+    delete thumb.dataset.objectUrl;
+  }
+
+  if(thumb) thumb.style.backgroundImage = "";
+  if(box) box.classList.remove("has-preview");
+  if(label) label.textContent = "Nenhum arquivo";
+}
+
+function setCleanFilePreview(form, key, files){
+  const lista = Array.from(files || []);
+  const box = form?.querySelector(`[data-clean-file-for="${CSS.escape(key)}"]`);
+  const thumb = form?.querySelector(`[data-clean-file-thumb="${CSS.escape(key)}"]`);
+  const label = form?.querySelector(`[data-clean-file-name="${CSS.escape(key)}"]`);
+  const imageFile = lista.find(file => String(file?.type || "").startsWith("image/"));
+
+  if(!lista.length){
+    clearCleanFilePreview(form, key);
+    return;
+  }
+
+  if(label) label.textContent = lista.map(file => file.name).join(", ");
+
+  if(!box || !thumb || !imageFile){
+    if(thumb?.dataset?.objectUrl){
+      try{ URL.revokeObjectURL(thumb.dataset.objectUrl); }catch(e){}
+      delete thumb.dataset.objectUrl;
+      thumb.style.backgroundImage = "";
+    }
+    if(box) box.classList.remove("has-preview");
+    return;
+  }
+
+  if(thumb.dataset.objectUrl){
+    try{ URL.revokeObjectURL(thumb.dataset.objectUrl); }catch(e){}
+  }
+
+  const objectUrl = URL.createObjectURL(imageFile);
+  thumb.dataset.objectUrl = objectUrl;
+  thumb.style.backgroundImage = `url("${objectUrl}")`;
+  box.classList.add("has-preview");
 }
 
 function collectCleanPeople(form, key, type){
@@ -12258,7 +12368,7 @@ function bindCleanProductForms(root){
       const field = schema?.fields?.find(item => item.key === input.dataset.asset);
       if(field?.maxFiles && files.length > Number(field.maxFiles)){
         input.value = "";
-        label.textContent = "Nenhum arquivo";
+        clearCleanFilePreview(form, input.dataset.asset);
         const card = form?.querySelector(`[data-clean-field-card="${CSS.escape(input.dataset.asset)}"]`);
         if(card) card.classList.add("campoObrigatorioErro");
         setCleanProductMsg(form, `Envie no máximo ${field.maxFiles} fotos neste campo.`, true);
@@ -12267,7 +12377,7 @@ function bindCleanProductForms(root){
       const sizeMsg = ia4ValidarTamanhoArquivos(files);
       if(sizeMsg){
         input.value = "";
-        label.textContent = "Nenhum arquivo";
+        clearCleanFilePreview(form, input.dataset.asset);
         const card = form?.querySelector(`[data-clean-field-card="${CSS.escape(input.dataset.asset)}"]`);
         if(card) card.classList.add("campoObrigatorioErro");
         setCleanProductMsg(form, sizeMsg, true);
@@ -12276,7 +12386,7 @@ function bindCleanProductForms(root){
       const card = form?.querySelector(`[data-clean-field-card="${CSS.escape(input.dataset.asset)}"]`);
       if(card) card.classList.remove("campoObrigatorioErro");
       setCleanProductMsg(form, "");
-      label.textContent = files.length ? files.map(file => file.name).join(", ") : "Nenhum arquivo";
+      setCleanFilePreview(form, input.dataset.asset, files);
     });
   });
 
@@ -16975,6 +17085,10 @@ let perfilEscalacaoTime = { titulares: [], reservas: [] };
 let perfilEscalacaoEditId = "";
 let perfilJogosTime = [];
 let perfilJogoEditId = "";
+var perfilCriarArteModoAtivo = false;
+var perfilEscudoFileCache = null;
+var perfilEscudoFileCacheKey = "";
+var perfilAssistAplicandoArquivo = false;
 const perfilAssistCache = {
   loaded: false,
   loading: null,
@@ -17387,7 +17501,7 @@ function perfilAssistJogadorSelecionado(box){
   return jogadores.find(jogador => String(jogador.id || "") === String(selectedId)) || jogadores[0];
 }
 
-function perfilAssistAplicarClean(productKey, form, box){
+async function perfilAssistAplicarClean(productKey, form, box){
   if(!form) return { ok:false, message:"Formulario nao encontrado." };
 
   const jogo = perfilAssistJogoSelecionado(box, productKey);
@@ -17400,25 +17514,32 @@ function perfilAssistAplicarClean(productKey, form, box){
   perfilAssistAbrirCleanOpcionais(form);
 
   if(productKey === "resultado"){
-    if(!jogo) return { ok:false, message:"Cadastre um resultado no Perfil do Time para preencher este produto." };
     alterou = perfilAssistSetCleanField(form, "home_team", nomeTime) || alterou;
-    alterou = perfilAssistSetCleanField(form, "home_score", jogo.meu_time_gols) || alterou;
-    alterou = perfilAssistSetCleanField(form, "away_score", jogo.adversario_gols) || alterou;
-    alterou = perfilAssistSetCleanField(form, "away_team", jogo.adversario) || alterou;
-    alterou = perfilAssistSetCleanField(form, "competition", jogo.campeonato) || alterou;
-    alterou = perfilAssistSetCleanField(form, "headline", "Resultado do jogo") || alterou;
+    alterou = await perfilAssistAplicarEscudoClean(productKey, form) || alterou;
+    if(jogo){
+      alterou = perfilAssistSetCleanField(form, "home_score", jogo.meu_time_gols) || alterou;
+      alterou = perfilAssistSetCleanField(form, "away_score", jogo.adversario_gols) || alterou;
+      alterou = perfilAssistSetCleanField(form, "away_team", jogo.adversario) || alterou;
+      alterou = perfilAssistSetCleanField(form, "competition", jogo.campeonato) || alterou;
+      alterou = perfilAssistSetCleanField(form, "headline", "Resultado do jogo") || alterou;
+    }
+    if(!jogo && !alterou) return { ok:false, message:"Cadastre o time, escudo ou um resultado no Perfil do Time para preencher este produto." };
   }
 
   if(productKey === "proximo_jogo"){
-    if(!jogo) return { ok:false, message:"Cadastre um proximo jogo no Perfil do Time para preencher este produto." };
     alterou = perfilAssistSetCleanField(form, "home_team", nomeTime) || alterou;
-    alterou = perfilAssistSetCleanField(form, "away_team", jogo.adversario) || alterou;
-    alterou = perfilAssistSetCleanField(form, "match_datetime", perfilAssistDataHora(jogo)) || alterou;
-    alterou = perfilAssistSetCleanField(form, "competition", jogo.campeonato) || alterou;
-    alterou = perfilAssistSetCleanField(form, "venue", jogo.local) || alterou;
+    alterou = await perfilAssistAplicarEscudoClean(productKey, form) || alterou;
+    if(jogo){
+      alterou = perfilAssistSetCleanField(form, "away_team", jogo.adversario) || alterou;
+      alterou = perfilAssistSetCleanField(form, "match_datetime", perfilAssistDataHora(jogo)) || alterou;
+      alterou = perfilAssistSetCleanField(form, "competition", jogo.campeonato) || alterou;
+      alterou = perfilAssistSetCleanField(form, "venue", jogo.local) || alterou;
+    }
+    if(!jogo && !alterou) return { ok:false, message:"Cadastre o time, escudo ou um proximo jogo no Perfil do Time para preencher este produto." };
   }
 
   if(productKey === "escalacao"){
+    alterou = await perfilAssistAplicarEscudoClean(productKey, form) || alterou;
     if(jogo){
       alterou = perfilAssistSetCleanField(form, "matchup", perfilAssistConfronto(jogo)) || alterou;
       alterou = perfilAssistSetCleanField(form, "match_datetime", perfilAssistDataHora(jogo)) || alterou;
@@ -17432,8 +17553,11 @@ function perfilAssistAplicarClean(productKey, form, box){
   }
 
   if(productKey === "jogador_escudo"){
-    if(!jogador) return { ok:false, message:"Cadastre um jogador no Perfil do Time para preencher este produto." };
-    alterou = perfilAssistSetCleanField(form, "player_name", jogador.apelido || jogador.nome) || alterou;
+    alterou = await perfilAssistAplicarEscudoClean(productKey, form) || alterou;
+    if(jogador){
+      alterou = perfilAssistSetCleanField(form, "player_name", jogador.apelido || jogador.nome) || alterou;
+    }
+    if(!jogador && !alterou) return { ok:false, message:"Cadastre um jogador ou escudo no Perfil do Time para preencher este produto." };
   }
 
   form.querySelectorAll(".campoObrigatorioErro").forEach(el => el.classList.remove("campoObrigatorioErro"));
@@ -17464,7 +17588,7 @@ function perfilAssistPreencherLegacyJogadores(jogadores){
   return true;
 }
 
-function perfilAssistAplicarLegacy(productKey, box){
+async function perfilAssistAplicarLegacy(productKey, box){
   const jogo = perfilAssistJogoSelecionado(box, productKey);
   const jogador = perfilAssistJogadorSelecionado(box);
   const jogadores = perfilAssistJogadoresAtivosLista();
@@ -17473,30 +17597,37 @@ function perfilAssistAplicarLegacy(productKey, box){
   let alterou = false;
 
   if(productKey === "resultado"){
-    if(!jogo) return { ok:false, message:"Cadastre um resultado no Perfil do Time para preencher este produto." };
     alterou = perfilAssistSetLegacyField("timePrincipal", nomeTime) || alterou;
-    alterou = perfilAssistSetLegacyField("golsTime", jogo.meu_time_gols) || alterou;
-    alterou = perfilAssistSetLegacyField("golsAdv", jogo.adversario_gols) || alterou;
-    alterou = perfilAssistSetLegacyField("timeAdv", jogo.adversario) || alterou;
-    alterou = perfilAssistSetLegacyField("hora", jogo.campeonato) || alterou;
-    alterou = perfilAssistSetLegacyField("dataJogo", "Resultado do jogo") || alterou;
+    alterou = await perfilAssistAplicarEscudoLegacy() || alterou;
+    if(jogo){
+      alterou = perfilAssistSetLegacyField("golsTime", jogo.meu_time_gols) || alterou;
+      alterou = perfilAssistSetLegacyField("golsAdv", jogo.adversario_gols) || alterou;
+      alterou = perfilAssistSetLegacyField("timeAdv", jogo.adversario) || alterou;
+      alterou = perfilAssistSetLegacyField("hora", jogo.campeonato) || alterou;
+      alterou = perfilAssistSetLegacyField("dataJogo", "Resultado do jogo") || alterou;
+    }
     setOptionalSectionState("hora", true);
     setOptionalSectionState("data", true);
+    if(!jogo && !alterou) return { ok:false, message:"Cadastre o time, escudo ou um resultado no Perfil do Time para preencher este produto." };
   }
 
   if(productKey === "proximo_jogo"){
-    if(!jogo) return { ok:false, message:"Cadastre um proximo jogo no Perfil do Time para preencher este produto." };
     alterou = perfilAssistSetLegacyField("timePrincipal", nomeTime) || alterou;
-    alterou = perfilAssistSetLegacyField("timeAdv", jogo.adversario) || alterou;
-    alterou = perfilAssistSetLegacyField("dataJogo", perfilAssistDataHora(jogo)) || alterou;
-    alterou = perfilAssistSetLegacyField("hora", jogo.campeonato) || alterou;
-    alterou = perfilAssistSetLegacyField("arena", jogo.local) || alterou;
+    alterou = await perfilAssistAplicarEscudoLegacy() || alterou;
+    if(jogo){
+      alterou = perfilAssistSetLegacyField("timeAdv", jogo.adversario) || alterou;
+      alterou = perfilAssistSetLegacyField("dataJogo", perfilAssistDataHora(jogo)) || alterou;
+      alterou = perfilAssistSetLegacyField("hora", jogo.campeonato) || alterou;
+      alterou = perfilAssistSetLegacyField("arena", jogo.local) || alterou;
+    }
     setOptionalSectionState("data", true);
     setOptionalSectionState("hora", true);
     setOptionalSectionState("arena", true);
+    if(!jogo && !alterou) return { ok:false, message:"Cadastre o time, escudo ou um proximo jogo no Perfil do Time para preencher este produto." };
   }
 
   if(productKey === "escalacao"){
+    alterou = await perfilAssistAplicarEscudoLegacy() || alterou;
     if(jogo){
       alterou = perfilAssistSetLegacyField("rodada", perfilAssistConfronto(jogo)) || alterou;
       alterou = perfilAssistSetLegacyField("dataJogo", perfilAssistDataHora(jogo)) || alterou;
@@ -17514,9 +17645,12 @@ function perfilAssistAplicarLegacy(productKey, box){
   }
 
   if(productKey === "jogador_escudo"){
-    if(!jogador) return { ok:false, message:"Cadastre um jogador no Perfil do Time para preencher este produto." };
-    alterou = perfilAssistSetLegacyField("dataJogo", jogador.apelido || jogador.nome) || alterou;
+    alterou = await perfilAssistAplicarEscudoLegacy() || alterou;
+    if(jogador){
+      alterou = perfilAssistSetLegacyField("dataJogo", jogador.apelido || jogador.nome) || alterou;
+    }
     setOptionalSectionState("data", true);
+    if(!jogador && !alterou) return { ok:false, message:"Cadastre um jogador ou escudo no Perfil do Time para preencher este produto." };
   }
 
   return alterou
@@ -17539,13 +17673,44 @@ async function perfilAssistAplicarDoBotao(btn){
     const productKey = perfilAssistProdutoDoBox(box);
     const form = box.closest("[data-product-form]");
     const resultado = form
-      ? perfilAssistAplicarClean(productKey, form, box)
-      : perfilAssistAplicarLegacy(productKey, box);
+      ? await perfilAssistAplicarClean(productKey, form, box)
+      : await perfilAssistAplicarLegacy(productKey, box);
 
     perfilAssistSetMsg(box, resultado.message, resultado.ok ? "ok" : "erro");
   }finally{
     btn.disabled = false;
     btn.textContent = original || "Preencher com perfil";
+  }
+}
+
+function perfilAssistBoxDoProduto(productKey){
+  const form = document.querySelector(`[data-product-form="${CSS.escape(productKey)}"]`);
+  return form?.querySelector("[data-perfil-assist]") || null;
+}
+
+async function perfilAssistAutoAplicarProduto(productKey){
+  if(!perfilCriarArteModoAtivo || !token || !perfilAssistProductEnabled(productKey)) return;
+  if(getCleanProductPickerSelected() !== productKey) return;
+
+  const form = document.querySelector(`[data-product-form="${CSS.escape(productKey)}"]`);
+  const box = perfilAssistBoxDoProduto(productKey);
+  if(!form || !box) return;
+
+  perfilAssistSetMsg(box, "Preenchendo com o Perfil do Time...");
+
+  try{
+    const data = await perfilAssistPrepararBox(box, false);
+    if(!data.ok){
+      perfilAssistSetMsg(box, data.error || "Nao foi possivel carregar o Perfil do Time.", "erro");
+      return;
+    }
+
+    if(getCleanProductPickerSelected() !== productKey) return;
+
+    const resultado = await perfilAssistAplicarClean(productKey, form, box);
+    perfilAssistSetMsg(box, resultado.message, resultado.ok ? "ok" : "erro");
+  }catch(err){
+    perfilAssistSetMsg(box, err?.message || "Nao foi possivel preencher com o Perfil do Time.", "erro");
   }
 }
 
@@ -17655,6 +17820,12 @@ function perfilPublicoUrl(perfil = perfilAssistCache.perfil || {}){
   return slug ? `${location.origin}${location.pathname}?time=${encodeURIComponent(slug)}` : "";
 }
 
+function perfilPublicoUrlCompartilhavel(perfil = perfilAssistCache.perfil || {}){
+  if(perfil?.publico !== true) return "";
+  const url = perfilPublicoUrl(perfil);
+  return url && url.includes("?time=") ? url : "";
+}
+
 function perfilPublicoAtualizarControles(perfil = perfilAssistCache.perfil || {}){
   const publico = perfil?.publico === true;
   const url = publico ? perfilPublicoUrl(perfil) : "";
@@ -17759,29 +17930,24 @@ function atualizarMetasCompartilhamento({ title, description, url, image } = {})
 }
 
 async function copiarLinkPerfilPrivado(){
-  if((perfilAssistCache.perfil || {}).publico !== true){
-    setPerfilTimeMsg("Ative a pagina publica e salve o perfil para copiar o link.", "erro");
-    return;
-  }
-
-  const url = perfilPublicoLink?.value || perfilPublicoUrl();
+  const url = perfilPublicoUrlCompartilhavel();
   if(!url){
-    setPerfilTimeMsg("Ative a pagina publica e salve o perfil para copiar o link.", "erro");
+    setPerfilTimeMsg("Ative a página pública para compartilhar", "erro");
     return;
   }
 
   const ok = await copiarTextoPerfil(url);
-  setPerfilTimeMsg(ok ? "Link publico copiado." : "Nao foi possivel copiar o link.", ok ? "ok" : "erro");
+  setPerfilTimeMsg(ok ? "Link do perfil copiado" : "Nao foi possivel copiar o link.", ok ? "ok" : "erro");
 }
 
 async function compartilharPerfilVisual(){
   const perfil = perfilAssistCache.perfil || {};
-  if(perfil.publico !== true){
-    setPerfilVisualMsg("Ative a pagina publica em Editar Perfil do Time para compartilhar.");
+  const url = perfilPublicoUrlCompartilhavel(perfil);
+  if(!url){
+    setPerfilVisualMsg("Ative a página pública para compartilhar");
     return;
   }
 
-  const url = perfilPublicoUrl(perfil);
   const texto = perfilShareTextoPublico({ ...perfil, url });
 
   try{
@@ -17791,13 +17957,13 @@ async function compartilharPerfilVisual(){
         text:texto,
         url
       });
-      setPerfilVisualMsg("Compartilhamento aberto.");
+      setPerfilVisualMsg("Link do perfil copiado");
       return;
     }
   }catch(e){}
 
-  const ok = await copiarTextoPerfil(texto);
-  setPerfilVisualMsg(ok ? "Texto do perfil copiado." : "Nao foi possivel copiar o link.");
+  const ok = await copiarTextoPerfil(url);
+  setPerfilVisualMsg(ok ? "Link do perfil copiado" : "Nao foi possivel copiar o link.");
 }
 
 function perfilImagemEndpoint(tipo){
@@ -17806,6 +17972,94 @@ function perfilImagemEndpoint(tipo){
 
 function perfilImagemTemValor(perfil, tipo){
   return !!(perfil?.[`${tipo}_url`] || perfil?.[`${tipo}_path`]);
+}
+
+function perfilImagemCacheKey(perfil, tipo){
+  return [
+    perfil?.[`${tipo}_url`] || "",
+    perfil?.[`${tipo}_path`] || "",
+    perfil?.atualizado_em || ""
+  ].join("|");
+}
+
+function perfilImagemExtPorMime(mime){
+  const tipo = String(mime || "").toLowerCase();
+  if(tipo.includes("webp")) return "webp";
+  if(tipo.includes("jpeg") || tipo.includes("jpg")) return "jpg";
+  return "png";
+}
+
+async function perfilEscudoComoFile(){
+  const perfil = perfilAssistCache.perfil || {};
+  if(!token || !perfilImagemTemValor(perfil, "escudo")) return null;
+
+  const cacheKey = perfilImagemCacheKey(perfil, "escudo");
+  if(perfilEscudoFileCache && perfilEscudoFileCacheKey === cacheKey){
+    return perfilEscudoFileCache;
+  }
+
+  try{
+    const r = await fetch(`${API_BASE}${perfilImagemEndpoint("escudo")}?t=${Date.now()}`, {
+      headers:{ "Authorization":"Bearer " + token },
+      cache:"no-store"
+    });
+    if(!r.ok) return null;
+
+    const blob = await r.blob();
+    if(!String(blob.type || "").startsWith("image/")) return null;
+
+    const ext = perfilImagemExtPorMime(blob.type);
+    const file = new File([blob], `escudo_perfil_time.${ext}`, { type: blob.type || "image/png" });
+    perfilEscudoFileCache = file;
+    perfilEscudoFileCacheKey = cacheKey;
+    return file;
+  }catch(e){
+    return null;
+  }
+}
+
+function perfilAssistAssetEscudoKey(productKey){
+  if(productKey === "resultado" || productKey === "proximo_jogo") return "home_crest";
+  if(productKey === "escalacao" || productKey === "jogador_escudo") return "team_crest";
+  return "";
+}
+
+function perfilAssistSetCleanAssetFile(form, key, file){
+  const input = getCleanFormAsset(form, key);
+  if(!input || !file || typeof DataTransfer === "undefined") return false;
+
+  const dt = new DataTransfer();
+  dt.items.add(file);
+  input.files = dt.files;
+  perfilAssistAplicandoArquivo = true;
+  try{
+    input.dispatchEvent(new Event("change", { bubbles:true }));
+  }finally{
+    perfilAssistAplicandoArquivo = false;
+  }
+
+  const card = form?.querySelector(`[data-clean-field-card="${CSS.escape(key)}"]`);
+  if(card) card.classList.remove("campoObrigatorioErro");
+  return true;
+}
+
+async function perfilAssistAplicarEscudoClean(productKey, form){
+  const key = perfilAssistAssetEscudoKey(productKey);
+  if(!key) return false;
+
+  const file = await perfilEscudoComoFile();
+  if(!file) return false;
+
+  return perfilAssistSetCleanAssetFile(form, key, file);
+}
+
+async function perfilAssistAplicarEscudoLegacy(){
+  const file = await perfilEscudoComoFile();
+  if(!file || typeof setInputFile !== "function") return false;
+
+  setInputFile("escudo1", file);
+  await saveEscudo1ToLocalFromFile(file);
+  return true;
 }
 
 function perfilImagemStatusEl(tipo){
@@ -17961,6 +18215,10 @@ async function enviarImagemPerfil(tipo){
     }
 
     perfilAssistCache.perfil = data.perfil || perfilAssistCache.perfil || {};
+    if(tipo === "escudo"){
+      perfilEscudoFileCache = null;
+      perfilEscudoFileCacheKey = "";
+    }
     preencherPerfilTime(perfilAssistCache.perfil);
     atualizarPreviewsImagemPerfil(perfilAssistCache.perfil);
     atualizarPerfilTimeVisualSeAberto();
@@ -18894,9 +19152,13 @@ function abrirEditorPeloPerfilVisual(){
   abrirPerfilTimeModal();
 }
 
-function criarArteComPerfilVisual(){
+async function criarArteComPerfilVisual(){
+  perfilCriarArteModoAtivo = true;
   fecharPerfilTimeVisual();
-  document.getElementById("productFormsRoot")?.scrollIntoView({ behavior:"smooth", block:"start" });
+  const atual = getCleanProductPickerSelected();
+  const produtoInicial = perfilAssistProductEnabled(atual) ? atual : "resultado";
+  selectCleanProductForPicker(produtoInicial, { scroll:true, track:false, perfilAuto:false });
+  await perfilAssistAutoAplicarProduto(produtoInicial);
 }
 
 function perfilTimeInicial(nome){
@@ -19961,6 +20223,7 @@ function abrirPerfilTimeModal(){
   setPerfilTimeMsg("");
   perfilTimeModal?.classList.add("open");
   perfilTimeModal?.setAttribute("aria-hidden", "false");
+  perfilTimeModal?.querySelector(".perfilTimeBody")?.scrollTo({ top:0 });
   carregarPerfilTime();
   carregarPerfilJogadores();
   carregarPerfilEscalacao();
