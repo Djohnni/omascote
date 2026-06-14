@@ -2173,6 +2173,71 @@
       line-height:1.35;
     }
 
+    .perfilSponsorGrid{
+      display:grid;
+      grid-template-columns:repeat(auto-fit, minmax(150px, 1fr));
+      gap:10px;
+    }
+
+    .perfilSponsorCard{
+      border:1px solid rgba(255,255,255,.10);
+      border-radius:8px;
+      background:#181818;
+      padding:12px;
+      min-width:0;
+      display:flex;
+      gap:10px;
+      align-items:center;
+    }
+
+    .perfilSponsorLogo{
+      width:54px;
+      height:54px;
+      border-radius:8px;
+      background:#facc15;
+      color:#111827;
+      display:grid;
+      place-items:center;
+      overflow:hidden;
+      font-size:18px;
+      font-weight:950;
+      flex:0 0 auto;
+    }
+
+    .perfilSponsorLogo img{
+      width:100%;
+      height:100%;
+      object-fit:cover;
+      display:block;
+    }
+
+    .perfilSponsorInfo{
+      min-width:0;
+    }
+
+    .perfilSponsorInfo strong{
+      display:block;
+      color:#ffffff;
+      font-size:13px;
+      font-weight:950;
+      overflow:hidden;
+      text-overflow:ellipsis;
+      white-space:nowrap;
+    }
+
+    .perfilSponsorInfo span,
+    .perfilSponsorInfo a{
+      display:block;
+      margin-top:3px;
+      color:#cbd5e1;
+      font-size:11px;
+      font-weight:850;
+      text-decoration:none;
+      overflow:hidden;
+      text-overflow:ellipsis;
+      white-space:nowrap;
+    }
+
     .perfilVisualGallerySection,
     .perfilPublicoGallerySection{
       grid-column:1 / -1;
@@ -2931,6 +2996,85 @@
       border-top:1px solid #e2e8f0;
     }
 
+    .perfilPatrocinadoresSection{
+      margin-top:18px;
+      padding-top:16px;
+      border-top:1px solid #e2e8f0;
+    }
+
+    .perfilPatrocinadorPreview{
+      display:grid;
+      grid-template-columns:repeat(auto-fill, minmax(150px, 1fr));
+      gap:10px;
+      margin-bottom:14px;
+    }
+
+    .perfilPatrocinadorPreview .perfilSponsorCard{
+      background:#ffffff;
+      border-color:#e2e8f0;
+    }
+
+    .perfilPatrocinadorPreview .perfilSponsorInfo strong{
+      color:#0f172a;
+    }
+
+    .perfilPatrocinadorPreview .perfilSponsorInfo span,
+    .perfilPatrocinadorPreview .perfilSponsorInfo a{
+      color:#64748b;
+    }
+
+    .perfilPatrocinadorForm{
+      display:grid;
+      grid-template-columns:1fr 1fr 1fr;
+      gap:10px;
+      align-items:end;
+      margin-bottom:12px;
+    }
+
+    .perfilPatrocinadorActions{
+      display:flex;
+      gap:8px;
+      align-items:center;
+      flex-wrap:wrap;
+      grid-column:1 / -1;
+    }
+
+    .perfilPatrocinadorLista{
+      display:flex;
+      flex-direction:column;
+      gap:8px;
+    }
+
+    .perfilPatrocinadorRow{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+      border:1px solid #e2e8f0;
+      border-radius:12px;
+      background:#ffffff;
+      padding:10px;
+    }
+
+    .perfilPatrocinadorRow.inativo{
+      opacity:.68;
+      background:#f8fafc;
+    }
+
+    .perfilPatrocinadorInfo strong{
+      display:block;
+      color:#0f172a;
+      font-size:13px;
+      margin-bottom:2px;
+    }
+
+    .perfilPatrocinadorInfo span{
+      display:block;
+      color:#64748b;
+      font-size:11px;
+      font-weight:850;
+    }
+
     .perfilEscalacaoPreviewGrid{
       display:grid;
       grid-template-columns:1fr 1fr;
@@ -3214,6 +3358,7 @@
       }
 
       .perfilJogadorForm,
+      .perfilPatrocinadorForm,
       .perfilEscalacaoForm,
       .perfilEscalacaoPreviewGrid,
       .perfilJogoForm,
@@ -7762,6 +7907,14 @@ body:not(.modeChosen) .builderArea,
         <div class="perfilPublicoGallery" id="perfilPublicoGaleria"></div>
       </section>
 
+      <section class="perfilPublicoSection perfilPublicoGallerySection">
+        <div class="perfilPublicoSectionTop">
+          <h3>Patrocinadores</h3>
+          <span class="perfilPublicoCounter" id="perfilPublicoPatrocinadoresCounter">0 patrocinadores</span>
+        </div>
+        <div class="perfilSponsorGrid" id="perfilPublicoPatrocinadores"></div>
+      </section>
+
       <div class="perfilPublicoMsg" id="perfilPublicoMsg"></div>
     </div>
   </section>
@@ -8577,6 +8730,46 @@ body:not(.modeChosen) .builderArea,
         <button class="btnGreen" id="perfilTimeSalvarBtn" type="button">Salvar perfil</button>
       </div>
 
+      <div class="perfilPatrocinadoresSection">
+        <div class="perfilElencoTop">
+          <strong>Patrocinadores</strong>
+          <span id="perfilPatrocinadoresResumo">0 patrocinadores</span>
+        </div>
+
+        <div class="perfilPatrocinadorPreview" id="perfilPatrocinadoresPreview"></div>
+
+        <div class="perfilPatrocinadorForm">
+          <div class="perfilTimeField">
+            <label for="perfilPatrocinadorNome">Nome</label>
+            <input id="perfilPatrocinadorNome" maxlength="80" autocomplete="off" placeholder="Nome do patrocinador">
+          </div>
+
+          <div class="perfilTimeField">
+            <label for="perfilPatrocinadorInstagram">Instagram</label>
+            <input id="perfilPatrocinadorInstagram" maxlength="80" autocomplete="off" placeholder="@patrocinador">
+          </div>
+
+          <div class="perfilTimeField">
+            <label for="perfilPatrocinadorSite">Site</label>
+            <input id="perfilPatrocinadorSite" maxlength="220" autocomplete="off" placeholder="site.com.br">
+          </div>
+
+          <div class="perfilPatrocinadorActions">
+            <input class="fileHidden" id="perfilPatrocinadorLogoInput" type="file" accept="image/png,image/jpeg,image/jpg,image/webp">
+            <button class="perfilMiniBtn" id="perfilPatrocinadorLogoBtn" type="button">Selecionar logo</button>
+            <span class="perfilTimePublicHint" id="perfilPatrocinadorLogoStatus">Logo opcional.</span>
+            <label class="perfilTimePublicToggle" for="perfilPatrocinadorAtivo" style="margin-left:auto;">
+              <input id="perfilPatrocinadorAtivo" type="checkbox" checked>
+              <span>Ativo</span>
+            </label>
+            <button class="btnGreen" id="perfilPatrocinadorSalvarBtn" type="button">Adicionar patrocinador</button>
+            <button class="perfilMiniBtn" id="perfilPatrocinadorCancelarBtn" type="button" hidden>Cancelar</button>
+          </div>
+        </div>
+
+        <div class="perfilPatrocinadorLista" id="perfilPatrocinadoresLista"></div>
+      </div>
+
       <div class="perfilElencoSection">
         <div class="perfilElencoTop">
           <strong>Elenco</strong>
@@ -8818,6 +9011,14 @@ body:not(.modeChosen) .builderArea,
         </div>
         <div class="perfilGalleryFilters" id="perfilVisualGaleriaFiltros"></div>
         <div class="perfilVisualGallery" id="perfilVisualGaleria"></div>
+      </section>
+
+      <section class="perfilVisualSection perfilVisualGallerySection">
+        <div class="perfilVisualSectionTop">
+          <h3 class="perfilVisualSectionTitle">Patrocinadores</h3>
+          <span class="perfilVisualCounter" id="perfilVisualPatrocinadoresCounter">0 patrocinadores</span>
+        </div>
+        <div class="perfilSponsorGrid" id="perfilVisualPatrocinadores"></div>
       </section>
 
       <div class="perfilVisualMsg" id="perfilVisualMsg"></div>
@@ -16269,6 +16470,8 @@ const perfilVisualStats = document.getElementById("perfilVisualStats");
 const perfilVisualGaleria = document.getElementById("perfilVisualGaleria");
 const perfilVisualGaleriaCounter = document.getElementById("perfilVisualGaleriaCounter");
 const perfilVisualGaleriaFiltros = document.getElementById("perfilVisualGaleriaFiltros");
+const perfilVisualPatrocinadores = document.getElementById("perfilVisualPatrocinadores");
+const perfilVisualPatrocinadoresCounter = document.getElementById("perfilVisualPatrocinadoresCounter");
 const perfilVisualMsg = document.getElementById("perfilVisualMsg");
 const perfilVisualEditarBtn = document.getElementById("perfilVisualEditarBtn");
 const perfilVisualCriarArteBtn = document.getElementById("perfilVisualCriarArteBtn");
@@ -16293,6 +16496,8 @@ const perfilPublicoProximosCounter = document.getElementById("perfilPublicoProxi
 const perfilPublicoGaleria = document.getElementById("perfilPublicoGaleria");
 const perfilPublicoGaleriaCounter = document.getElementById("perfilPublicoGaleriaCounter");
 const perfilPublicoGaleriaFiltros = document.getElementById("perfilPublicoGaleriaFiltros");
+const perfilPublicoPatrocinadores = document.getElementById("perfilPublicoPatrocinadores");
+const perfilPublicoPatrocinadoresCounter = document.getElementById("perfilPublicoPatrocinadoresCounter");
 const perfilPublicoMsg = document.getElementById("perfilPublicoMsg");
 const perfilElencoResumo = document.getElementById("perfilElencoResumo");
 const perfilElencoPreview = document.getElementById("perfilElencoPreview");
@@ -16303,6 +16508,18 @@ const perfilJogadorNumero = document.getElementById("perfilJogadorNumero");
 const perfilJogadorPosicao = document.getElementById("perfilJogadorPosicao");
 const perfilJogadorSalvarBtn = document.getElementById("perfilJogadorSalvarBtn");
 const perfilJogadorCancelarBtn = document.getElementById("perfilJogadorCancelarBtn");
+const perfilPatrocinadoresResumo = document.getElementById("perfilPatrocinadoresResumo");
+const perfilPatrocinadoresPreview = document.getElementById("perfilPatrocinadoresPreview");
+const perfilPatrocinadoresLista = document.getElementById("perfilPatrocinadoresLista");
+const perfilPatrocinadorNome = document.getElementById("perfilPatrocinadorNome");
+const perfilPatrocinadorInstagram = document.getElementById("perfilPatrocinadorInstagram");
+const perfilPatrocinadorSite = document.getElementById("perfilPatrocinadorSite");
+const perfilPatrocinadorLogoInput = document.getElementById("perfilPatrocinadorLogoInput");
+const perfilPatrocinadorLogoBtn = document.getElementById("perfilPatrocinadorLogoBtn");
+const perfilPatrocinadorLogoStatus = document.getElementById("perfilPatrocinadorLogoStatus");
+const perfilPatrocinadorAtivo = document.getElementById("perfilPatrocinadorAtivo");
+const perfilPatrocinadorSalvarBtn = document.getElementById("perfilPatrocinadorSalvarBtn");
+const perfilPatrocinadorCancelarBtn = document.getElementById("perfilPatrocinadorCancelarBtn");
 const perfilEscalacaoResumo = document.getElementById("perfilEscalacaoResumo");
 const perfilEscalacaoTitularesPreview = document.getElementById("perfilEscalacaoTitularesPreview");
 const perfilEscalacaoReservasPreview = document.getElementById("perfilEscalacaoReservasPreview");
@@ -16328,6 +16545,8 @@ const perfilJogoSalvarBtn = document.getElementById("perfilJogoSalvarBtn");
 const perfilJogoCancelarBtn = document.getElementById("perfilJogoCancelarBtn");
 let perfilJogadoresTime = [];
 let perfilJogadorEditId = "";
+let perfilPatrocinadoresTime = [];
+let perfilPatrocinadorEditId = "";
 let perfilEscalacaoTime = { titulares: [], reservas: [] };
 let perfilEscalacaoEditId = "";
 let perfilJogosTime = [];
@@ -16339,13 +16558,15 @@ const perfilAssistCache = {
   jogadores: [],
   jogos: [],
   galeria: [],
-  escalacao: { titulares: [], reservas: [] }
+  escalacao: { titulares: [], reservas: [] },
+  patrocinadores: []
 };
 const perfilImagemObjectUrls = {
   escudo: "",
   mascote: ""
 };
 const perfilGaleriaObjectUrls = new Map();
+const perfilPatrocinadorLogoObjectUrls = new Map();
 let perfilGaleriaFiltroPrivada = "todos";
 let perfilGaleriaFiltroPublica = "todos";
 let perfilPublicoGaleriaDadosAtuais = [];
@@ -16575,7 +16796,8 @@ async function perfilAssistCarregarDados(force = false){
       jogadores: perfilAssistCache.jogadores,
       jogos: perfilAssistCache.jogos,
       galeria: perfilAssistCache.galeria,
-      escalacao: perfilAssistCache.escalacao
+      escalacao: perfilAssistCache.escalacao,
+      patrocinadores: perfilAssistCache.patrocinadores
     };
   }
 
@@ -16585,27 +16807,30 @@ async function perfilAssistCarregarDados(force = false){
 
   perfilAssistCache.loading = (async ()=>{
     try{
-      const [perfilResp, jogadoresResp, jogosResp, galeriaResp, escalacaoResp] = await Promise.all([
+      const [perfilResp, jogadoresResp, jogosResp, galeriaResp, escalacaoResp, patrocinadoresResp] = await Promise.all([
         fetch(`${API_BASE}/me/time/perfil`, { headers:{ "Authorization":"Bearer " + token } }),
         fetch(`${API_BASE}/me/time/jogadores`, { headers:{ "Authorization":"Bearer " + token } }),
         fetch(`${API_BASE}/me/time/jogos`, { headers:{ "Authorization":"Bearer " + token } }),
         fetch(`${API_BASE}/me/time/galeria`, { headers:{ "Authorization":"Bearer " + token } }),
-        fetch(`${API_BASE}/me/time/escalacao`, { headers:{ "Authorization":"Bearer " + token } })
+        fetch(`${API_BASE}/me/time/escalacao`, { headers:{ "Authorization":"Bearer " + token } }),
+        fetch(`${API_BASE}/me/time/patrocinadores`, { headers:{ "Authorization":"Bearer " + token } })
       ]);
 
-      const [perfilData, jogadoresData, jogosData, galeriaData, escalacaoData] = await Promise.all([
+      const [perfilData, jogadoresData, jogosData, galeriaData, escalacaoData, patrocinadoresData] = await Promise.all([
         ia4LerJsonSeguro(perfilResp),
         ia4LerJsonSeguro(jogadoresResp),
         ia4LerJsonSeguro(jogosResp),
         ia4LerJsonSeguro(galeriaResp),
-        ia4LerJsonSeguro(escalacaoResp)
+        ia4LerJsonSeguro(escalacaoResp),
+        ia4LerJsonSeguro(patrocinadoresResp)
       ]);
 
       const authMsg = ia4TratarAuthInvalida(perfilResp, perfilData) ||
         ia4TratarAuthInvalida(jogadoresResp, jogadoresData) ||
         ia4TratarAuthInvalida(jogosResp, jogosData) ||
         ia4TratarAuthInvalida(galeriaResp, galeriaData) ||
-        ia4TratarAuthInvalida(escalacaoResp, escalacaoData);
+        ia4TratarAuthInvalida(escalacaoResp, escalacaoData) ||
+        ia4TratarAuthInvalida(patrocinadoresResp, patrocinadoresData);
 
       if(authMsg){
         return { ok:false, error:authMsg };
@@ -16626,17 +16851,22 @@ async function perfilAssistCarregarDados(force = false){
       if(!escalacaoResp.ok || !escalacaoData.ok){
         throw new Error(escalacaoData.error || escalacaoData.erro || "Nao foi possivel carregar a escalacao.");
       }
+      if(!patrocinadoresResp.ok || !patrocinadoresData.ok){
+        throw new Error(patrocinadoresData.error || patrocinadoresData.erro || "Nao foi possivel carregar os patrocinadores.");
+      }
 
       perfilAssistCache.perfil = perfilData.perfil || {};
       perfilAssistCache.jogadores = Array.isArray(jogadoresData.jogadores) ? jogadoresData.jogadores : [];
       perfilAssistCache.jogos = Array.isArray(jogosData.jogos) ? jogosData.jogos : [];
       perfilAssistCache.galeria = Array.isArray(galeriaData.galeria) ? galeriaData.galeria : [];
       perfilAssistCache.escalacao = perfilEscalacaoNormalizar(escalacaoData.escalacao || {});
+      perfilAssistCache.patrocinadores = Array.isArray(patrocinadoresData.patrocinadores) ? patrocinadoresData.patrocinadores : [];
       perfilAssistCache.loaded = true;
 
       perfilJogadoresTime = perfilAssistCache.jogadores;
       perfilJogosTime = perfilAssistCache.jogos;
       perfilEscalacaoTime = perfilAssistCache.escalacao;
+      perfilPatrocinadoresTime = perfilAssistCache.patrocinadores;
 
       if(perfilAssistCache.perfil?.nome_time){
         localStorage.setItem("omascote_nome_time", perfilAssistCache.perfil.nome_time);
@@ -16649,7 +16879,8 @@ async function perfilAssistCarregarDados(force = false){
         jogadores: perfilAssistCache.jogadores,
         jogos: perfilAssistCache.jogos,
         galeria: perfilAssistCache.galeria,
-        escalacao: perfilAssistCache.escalacao
+        escalacao: perfilAssistCache.escalacao,
+        patrocinadores: perfilAssistCache.patrocinadores
       };
     }catch(err){
       return { ok:false, error:err?.message || "Erro de rede ao carregar Perfil do Time." };
@@ -17548,6 +17779,119 @@ function renderPerfilGaleria(container, counter, galeria = [], options = {}){
   }
 }
 
+function perfilPatrocinadoresAtivos(lista = perfilPatrocinadoresTime){
+  return (Array.isArray(lista) ? lista : []).filter(patrocinador => patrocinador && patrocinador.ativo !== false);
+}
+
+function perfilSponsorInicial(nome){
+  const base = String(nome || "P").trim();
+  return (base[0] || "P").toUpperCase();
+}
+
+function perfilSponsorLogoUrl(value, options = {}){
+  const raw = String(value || "").trim();
+  if(!raw) return "";
+  if(raw.startsWith("/me/time/")) return "";
+  if(raw.startsWith("/")) return `${API_BASE}${raw}`;
+  if(/^(https?:|data:|blob:)/i.test(raw)) return raw;
+  return "";
+}
+
+function perfilSponsorLinksHtml(patrocinador){
+  const partes = [];
+  const instagram = perfilVisualInstagram(patrocinador);
+  const site = perfilAssistTexto(patrocinador?.site);
+
+  if(instagram){
+    partes.push(`<span>${htmlEscape(instagram)}</span>`);
+  }
+
+  if(site){
+    const href = /^https?:\/\//i.test(site) ? site : `https://${site}`;
+    partes.push(`<a href="${htmlEscape(href)}" target="_blank" rel="noopener">${htmlEscape(site.replace(/^https?:\/\//i, ""))}</a>`);
+  }
+
+  return partes.length ? partes.join("") : `<span>Apoiador oficial</span>`;
+}
+
+function perfilSponsorCardHtml(patrocinador, options = {}){
+  const publica = options.publica === true;
+  const id = htmlEscape(patrocinador?.id || "");
+  const nome = htmlEscape(patrocinador?.nome || "Patrocinador");
+  const logoUrl = publica ? perfilSponsorLogoUrl(patrocinador?.logo_url, { publica:true }) : "";
+  const logoHtml = logoUrl
+    ? `<img src="${htmlEscape(logoUrl)}" alt="Logo ${nome}" loading="lazy">`
+    : `<span>${htmlEscape(perfilSponsorInicial(patrocinador?.nome))}</span>`;
+
+  return `
+    <article class="perfilSponsorCard" data-patrocinador-id="${id}">
+      <div class="perfilSponsorLogo" data-patrocinador-logo>${logoHtml}</div>
+      <div class="perfilSponsorInfo">
+        <strong>${nome}</strong>
+        ${perfilSponsorLinksHtml(patrocinador)}
+      </div>
+    </article>
+  `;
+}
+
+function perfilPatrocinadorLogoKey(scope, id){
+  return `${scope || "sponsor"}:${id || ""}`;
+}
+
+function perfilPatrocinadorLogoRevokeScope(scope){
+  const prefix = `${scope || "sponsor"}:`;
+  perfilPatrocinadorLogoObjectUrls.forEach((url, key)=>{
+    if(!key.startsWith(prefix)) return;
+    try{ URL.revokeObjectURL(url); }catch(e){}
+    perfilPatrocinadorLogoObjectUrls.delete(key);
+  });
+}
+
+async function carregarLogosPatrocinadoresPrivados(patrocinadores = [], container, scope = "visual"){
+  if(!token || !container) return;
+  perfilPatrocinadorLogoRevokeScope(scope);
+
+  await Promise.all((Array.isArray(patrocinadores) ? patrocinadores : []).map(async (patrocinador)=>{
+    const id = String(patrocinador?.id || "").trim();
+    const rawUrl = String(patrocinador?.logo_url || "").trim();
+    if(!id || !rawUrl) return;
+
+    const logoBox = container.querySelector(`[data-patrocinador-id="${CSS.escape(id)}"] [data-patrocinador-logo]`);
+    if(!logoBox) return;
+
+    try{
+      const r = await fetch(`${API_BASE}${rawUrl}?ts=${Date.now()}`, {
+        headers:{ "Authorization":"Bearer " + token },
+        cache:"no-store"
+      });
+
+      if(!r.ok) return;
+
+      const blob = await r.blob();
+      const objectUrl = URL.createObjectURL(blob);
+      perfilPatrocinadorLogoObjectUrls.set(perfilPatrocinadorLogoKey(scope, id), objectUrl);
+      logoBox.innerHTML = `<img src="${htmlEscape(objectUrl)}" alt="Logo ${htmlEscape(patrocinador.nome || "patrocinador")}">`;
+    }catch(e){}
+  }));
+}
+
+function renderPerfilSponsors(container, counter, patrocinadores = [], options = {}){
+  if(!container) return;
+  const publica = options.publica === true;
+  const scope = options.scope || (publica ? "publico" : "visual");
+  const itens = perfilPatrocinadoresAtivos(patrocinadores).slice(0, 50);
+  const total = itens.length;
+
+  perfilVisualSetText(counter, `${total} ${total === 1 ? "patrocinador" : "patrocinadores"}`);
+  container.innerHTML = total
+    ? itens.map(patrocinador => perfilSponsorCardHtml(patrocinador, { publica })).join("")
+    : `<div class="${publica ? "perfilPublicoEmpty" : "perfilVisualEmpty"}">Cadastre patrocinadores do time.</div>`;
+
+  if(!publica){
+    carregarLogosPatrocinadoresPrivados(itens, container, scope);
+  }
+}
+
 function perfilGaleriaAbrirArte(btn){
   const card = btn?.closest?.(".perfilGalleryCard");
   const img = card?.querySelector?.("[data-galeria-img]");
@@ -17600,6 +17944,7 @@ function renderPerfilPublico(data = {}){
   const jogos = (Array.isArray(data.jogos) ? data.jogos : [])
     .filter(jogo => jogo && jogo.ativo !== false);
   const galeria = Array.isArray(data.galeria) ? data.galeria : [];
+  const patrocinadores = Array.isArray(data.patrocinadores) ? data.patrocinadores : [];
   perfilPublicoGaleriaDadosAtuais = galeria;
   const nome = perfilAssistTexto(perfil.nome_time) || "Perfil do Time";
   const local = perfilVisualLocal(perfil);
@@ -17668,6 +18013,7 @@ function renderPerfilPublico(data = {}){
   }
 
   renderPerfilGaleria(perfilPublicoGaleria, perfilPublicoGaleriaCounter, galeria, { publica:true });
+  renderPerfilSponsors(perfilPublicoPatrocinadores, perfilPublicoPatrocinadoresCounter, patrocinadores, { publica:true, scope:"publico" });
 
   perfilVisualSetText(perfilPublicoMsg, "Perfil publico compartilhavel.");
 }
@@ -17706,7 +18052,9 @@ async function iniciarPerfilPublicoSeNecessario(){
     if(perfilPublicoResultados) perfilPublicoResultados.innerHTML = `<div class="perfilPublicoEmpty">Nada para mostrar.</div>`;
     if(perfilPublicoProximos) perfilPublicoProximos.innerHTML = `<div class="perfilPublicoEmpty">Nada para mostrar.</div>`;
     if(perfilPublicoGaleria) perfilPublicoGaleria.innerHTML = `<div class="perfilPublicoEmpty">Nada para mostrar.</div>`;
+    if(perfilPublicoPatrocinadores) perfilPublicoPatrocinadores.innerHTML = `<div class="perfilPublicoEmpty">Nada para mostrar.</div>`;
     perfilVisualSetText(perfilPublicoGaleriaCounter, "0 artes");
+    perfilVisualSetText(perfilPublicoPatrocinadoresCounter, "0 patrocinadores");
     perfilVisualSetText(perfilPublicoMsg, err?.message || "Nao foi possivel carregar este perfil.");
     return true;
   }
@@ -17719,6 +18067,7 @@ function renderPerfilTimeVisual(data = {}){
   const jogos = (Array.isArray(data.jogos) ? data.jogos : perfilAssistCache.jogos || [])
     .filter(jogo => jogo && jogo.ativo !== false);
   const galeria = Array.isArray(data.galeria) ? data.galeria : perfilAssistCache.galeria || [];
+  const patrocinadores = Array.isArray(data.patrocinadores) ? data.patrocinadores : perfilAssistCache.patrocinadores || [];
 
   const nome = perfilAssistTexto(perfil.nome_time || localStorage.getItem("omascote_nome_time")) || "Seu time";
   const local = perfilVisualLocal(perfil);
@@ -17798,6 +18147,7 @@ function renderPerfilTimeVisual(data = {}){
   }
 
   renderPerfilGaleria(perfilVisualGaleria, perfilVisualGaleriaCounter, galeria, { publica:false });
+  renderPerfilSponsors(perfilVisualPatrocinadores, perfilVisualPatrocinadoresCounter, patrocinadores, { publica:false, scope:"visual" });
 
   const precisaCompletar = !descricao || !local || !instagram;
   setPerfilVisualMsg(precisaCompletar ? "Complete o perfil do seu time para deixar esta pagina mais forte." : "");
@@ -17818,10 +18168,12 @@ function renderPerfilTimeVisualCarregando(){
   if(perfilVisualResultados) perfilVisualResultados.innerHTML = `<div class="perfilVisualEmpty">Carregando resultados...</div>`;
   if(perfilVisualProximos) perfilVisualProximos.innerHTML = `<div class="perfilVisualEmpty">Carregando proximos jogos...</div>`;
   if(perfilVisualGaleria) perfilVisualGaleria.innerHTML = `<div class="perfilVisualEmpty">Carregando galeria...</div>`;
+  if(perfilVisualPatrocinadores) perfilVisualPatrocinadores.innerHTML = `<div class="perfilVisualEmpty">Carregando patrocinadores...</div>`;
   perfilVisualSetText(perfilVisualElencoCounter, "0 jogadores");
   perfilVisualSetText(perfilVisualResultadosCounter, "0 resultados");
   perfilVisualSetText(perfilVisualProximosCounter, "0 jogos");
   perfilVisualSetText(perfilVisualGaleriaCounter, "0 artes");
+  perfilVisualSetText(perfilVisualPatrocinadoresCounter, "0 patrocinadores");
   renderPerfilStats(perfilVisualStats, calcularEstatisticasPerfilJogos([]));
   setPerfilVisualMsg("");
 }
@@ -17849,6 +18201,7 @@ function fecharPerfilTimeVisual(){
   perfilTimeVisualModal?.classList.remove("open");
   perfilTimeVisualModal?.setAttribute("aria-hidden", "true");
   perfilGaleriaRevokeUrls();
+  perfilPatrocinadorLogoRevokeScope("visual");
 }
 
 function atualizarPerfilTimeVisualSeAberto(){
@@ -17857,7 +18210,8 @@ function atualizarPerfilTimeVisualSeAberto(){
       perfil: perfilAssistCache.perfil || {},
       jogadores: perfilJogadoresTime,
       jogos: perfilJogosTime,
-      galeria: perfilAssistCache.galeria || []
+      galeria: perfilAssistCache.galeria || [],
+      patrocinadores: perfilPatrocinadoresTime
     });
   }
 }
@@ -17905,6 +18259,249 @@ function preencherPerfilTime(perfil){
   atualizarPerfilTimePreview();
   atualizarPreviewsImagemPerfil(perfil || {});
   perfilPublicoAtualizarControles(perfil || {});
+}
+
+function renderPerfilPatrocinadores(){
+  const ativos = perfilPatrocinadoresAtivos();
+  const total = perfilPatrocinadoresTime.length;
+
+  if(perfilPatrocinadoresResumo){
+    perfilPatrocinadoresResumo.textContent = `${ativos.length} ativo(s) / ${total} cadastrado(s)`;
+  }
+
+  if(perfilPatrocinadoresPreview){
+    perfilPatrocinadoresPreview.innerHTML = ativos.length
+      ? ativos.slice(0, 6).map(patrocinador => perfilSponsorCardHtml(patrocinador, { publica:false })).join("")
+      : `<div class="perfilEmptyList">Nenhum patrocinador ativo.</div>`;
+    carregarLogosPatrocinadoresPrivados(ativos.slice(0, 6), perfilPatrocinadoresPreview, "editor-preview");
+  }
+
+  if(perfilPatrocinadoresLista){
+    perfilPatrocinadoresLista.innerHTML = total
+      ? perfilPatrocinadoresTime.map((patrocinador)=>{
+          const status = patrocinador.ativo === false ? "Inativo" : "Ativo";
+          const detalhe = [
+            patrocinador.instagram ? `@${String(patrocinador.instagram).replace(/^@+/, "")}` : "",
+            patrocinador.site || "",
+            status
+          ].filter(Boolean).join(" · ");
+          return `
+            <div class="perfilPatrocinadorRow${patrocinador.ativo === false ? " inativo" : ""}" data-patrocinador-id="${htmlEscape(patrocinador.id)}">
+              <div class="perfilPatrocinadorInfo">
+                <strong>${htmlEscape(patrocinador.nome || "Patrocinador")}</strong>
+                <span>${htmlEscape(detalhe || status)}</span>
+              </div>
+              <div class="perfilJogadorRowActions">
+                <button class="perfilMiniBtn" type="button" data-editar-patrocinador="${htmlEscape(patrocinador.id)}">Editar</button>
+                <button class="perfilMiniBtn danger" type="button" data-remover-patrocinador="${htmlEscape(patrocinador.id)}">Desativar</button>
+              </div>
+            </div>
+          `;
+        }).join("")
+      : `<div class="perfilEmptyList">Nenhum patrocinador cadastrado.</div>`;
+  }
+}
+
+function limparFormPatrocinador(){
+  perfilPatrocinadorEditId = "";
+  if(perfilPatrocinadorNome) perfilPatrocinadorNome.value = "";
+  if(perfilPatrocinadorInstagram) perfilPatrocinadorInstagram.value = "";
+  if(perfilPatrocinadorSite) perfilPatrocinadorSite.value = "";
+  if(perfilPatrocinadorLogoInput) perfilPatrocinadorLogoInput.value = "";
+  if(perfilPatrocinadorAtivo) perfilPatrocinadorAtivo.checked = true;
+  if(perfilPatrocinadorLogoStatus) perfilPatrocinadorLogoStatus.textContent = "Logo opcional.";
+  if(perfilPatrocinadorSalvarBtn) perfilPatrocinadorSalvarBtn.textContent = "Adicionar patrocinador";
+  if(perfilPatrocinadorCancelarBtn) perfilPatrocinadorCancelarBtn.hidden = true;
+}
+
+function preencherFormPatrocinador(patrocinador){
+  perfilPatrocinadorEditId = patrocinador?.id || "";
+  if(perfilPatrocinadorNome) perfilPatrocinadorNome.value = patrocinador?.nome || "";
+  if(perfilPatrocinadorInstagram) perfilPatrocinadorInstagram.value = patrocinador?.instagram || "";
+  if(perfilPatrocinadorSite) perfilPatrocinadorSite.value = patrocinador?.site || "";
+  if(perfilPatrocinadorLogoInput) perfilPatrocinadorLogoInput.value = "";
+  if(perfilPatrocinadorAtivo) perfilPatrocinadorAtivo.checked = patrocinador?.ativo !== false;
+  if(perfilPatrocinadorLogoStatus) perfilPatrocinadorLogoStatus.textContent = patrocinador?.logo_url ? "Logo cadastrado. Selecione outro arquivo para trocar." : "Logo opcional.";
+  if(perfilPatrocinadorSalvarBtn) perfilPatrocinadorSalvarBtn.textContent = "Salvar patrocinador";
+  if(perfilPatrocinadorCancelarBtn) perfilPatrocinadorCancelarBtn.hidden = false;
+  perfilPatrocinadorNome?.focus();
+}
+
+async function carregarPerfilPatrocinadores(){
+  if(!token) return;
+
+  try{
+    const r = await fetch(`${API_BASE}/me/time/patrocinadores`, {
+      headers:{ "Authorization":"Bearer " + token }
+    });
+    const data = await ia4LerJsonSeguro(r);
+    const authMsg = ia4TratarAuthInvalida(r, data);
+
+    if(authMsg){
+      setPerfilTimeMsg(authMsg, "erro");
+      return;
+    }
+
+    if(!r.ok || !data.ok){
+      throw new Error(data.error || data.erro || "Nao foi possivel carregar os patrocinadores.");
+    }
+
+    perfilPatrocinadoresTime = Array.isArray(data.patrocinadores) ? data.patrocinadores : [];
+    perfilAssistCache.patrocinadores = perfilPatrocinadoresTime;
+    renderPerfilPatrocinadores();
+    atualizarPerfilTimeVisualSeAberto();
+  }catch(err){
+    setPerfilTimeMsg(err?.message || "Erro de rede ao carregar patrocinadores.", "erro");
+  }
+}
+
+async function enviarLogoPatrocinador(patrocinadorId){
+  const file = perfilPatrocinadorLogoInput?.files?.[0] || null;
+  if(!file) return null;
+
+  const erro = validarArquivoImagemPerfil(file);
+  if(erro) throw new Error(erro);
+
+  const formData = new FormData();
+  formData.append("logo", file);
+
+  const r = await fetch(`${API_BASE}/me/time/patrocinadores/${encodeURIComponent(patrocinadorId)}/logo`, {
+    method:"POST",
+    headers:{ "Authorization":"Bearer " + token },
+    body:formData
+  });
+  const data = await ia4LerJsonSeguro(r);
+  const authMsg = ia4TratarAuthInvalida(r, data);
+
+  if(authMsg) throw new Error(authMsg);
+  if(!r.ok || !data.ok){
+    throw new Error(data.error || data.erro || "Nao foi possivel enviar o logo.");
+  }
+
+  return data.patrocinador || null;
+}
+
+async function salvarPerfilPatrocinador(){
+  if(!token){
+    abrirLoginVisitanteModal();
+    return;
+  }
+
+  const nome = (perfilPatrocinadorNome?.value || "").trim();
+  if(!nome){
+    setPerfilTimeMsg("Informe o nome do patrocinador.", "erro");
+    perfilPatrocinadorNome?.focus();
+    return;
+  }
+
+  const editando = !!perfilPatrocinadorEditId;
+  const payload = {
+    nome,
+    instagram: (perfilPatrocinadorInstagram?.value || "").trim(),
+    site: (perfilPatrocinadorSite?.value || "").trim(),
+    ativo: perfilPatrocinadorAtivo?.checked !== false
+  };
+  const url = editando
+    ? `${API_BASE}/me/time/patrocinadores/${encodeURIComponent(perfilPatrocinadorEditId)}`
+    : `${API_BASE}/me/time/patrocinadores`;
+
+  try{
+    if(perfilPatrocinadorSalvarBtn){
+      perfilPatrocinadorSalvarBtn.disabled = true;
+      perfilPatrocinadorSalvarBtn.textContent = editando ? "Salvando..." : "Adicionando...";
+    }
+    if(perfilPatrocinadorLogoStatus && perfilPatrocinadorLogoInput?.files?.[0]){
+      perfilPatrocinadorLogoStatus.textContent = "Logo selecionado.";
+    }
+
+    const r = await fetch(url, {
+      method: editando ? "PATCH" : "POST",
+      headers:{
+        "Content-Type":"application/json",
+        "Authorization":"Bearer " + token
+      },
+      body:JSON.stringify(payload)
+    });
+    const data = await ia4LerJsonSeguro(r);
+    const authMsg = ia4TratarAuthInvalida(r, data);
+
+    if(authMsg){
+      setPerfilTimeMsg(authMsg, "erro");
+      return;
+    }
+
+    if(!r.ok || !data.ok){
+      throw new Error(data.error || data.erro || "Nao foi possivel salvar o patrocinador.");
+    }
+
+    let patrocinadorSalvo = data.patrocinador || null;
+    let avisoLogo = "";
+
+    if(patrocinadorSalvo?.id && perfilPatrocinadorLogoInput?.files?.[0]){
+      try{
+        if(perfilPatrocinadorLogoStatus) perfilPatrocinadorLogoStatus.textContent = "Enviando logo...";
+        patrocinadorSalvo = await enviarLogoPatrocinador(patrocinadorSalvo.id) || patrocinadorSalvo;
+      }catch(errLogo){
+        avisoLogo = ` ${errLogo?.message || "O patrocinador foi salvo, mas o logo nao foi enviado."}`;
+      }
+    }
+
+    if(editando){
+      perfilPatrocinadoresTime = perfilPatrocinadoresTime.map(item => item.id === patrocinadorSalvo?.id ? patrocinadorSalvo : item);
+    }else if(patrocinadorSalvo){
+      perfilPatrocinadoresTime.push(patrocinadorSalvo);
+    }
+
+    limparFormPatrocinador();
+    renderPerfilPatrocinadores();
+    perfilAssistInvalidarCache();
+    perfilAssistCache.patrocinadores = perfilPatrocinadoresTime;
+    atualizarPerfilTimeVisualSeAberto();
+    setPerfilTimeMsg(`${editando ? "Patrocinador atualizado." : "Patrocinador adicionado."}${avisoLogo}`, avisoLogo ? "erro" : "ok");
+  }catch(err){
+    setPerfilTimeMsg(err?.message || "Erro de rede ao salvar patrocinador.", "erro");
+  }finally{
+    if(perfilPatrocinadorSalvarBtn){
+      perfilPatrocinadorSalvarBtn.disabled = false;
+      perfilPatrocinadorSalvarBtn.textContent = perfilPatrocinadorEditId ? "Salvar patrocinador" : "Adicionar patrocinador";
+    }
+  }
+}
+
+async function removerPerfilPatrocinador(id){
+  if(!token || !id) return;
+
+  if(!confirm("Desativar patrocinador do perfil?")){
+    return;
+  }
+
+  try{
+    const r = await fetch(`${API_BASE}/me/time/patrocinadores/${encodeURIComponent(id)}`, {
+      method:"DELETE",
+      headers:{ "Authorization":"Bearer " + token }
+    });
+    const data = await ia4LerJsonSeguro(r);
+    const authMsg = ia4TratarAuthInvalida(r, data);
+
+    if(authMsg){
+      setPerfilTimeMsg(authMsg, "erro");
+      return;
+    }
+
+    if(!r.ok || !data.ok){
+      throw new Error(data.error || data.erro || "Nao foi possivel desativar o patrocinador.");
+    }
+
+    perfilPatrocinadoresTime = perfilPatrocinadoresTime.map(item => item.id === id ? (data.patrocinador || { ...item, ativo:false }) : item);
+    if(perfilPatrocinadorEditId === id) limparFormPatrocinador();
+    renderPerfilPatrocinadores();
+    perfilAssistInvalidarCache();
+    perfilAssistCache.patrocinadores = perfilPatrocinadoresTime;
+    atualizarPerfilTimeVisualSeAberto();
+    setPerfilTimeMsg("Patrocinador desativado.", "ok");
+  }catch(err){
+    setPerfilTimeMsg(err?.message || "Erro de rede ao desativar patrocinador.", "erro");
+  }
 }
 
 function perfilJogadoresAtivos(){
@@ -18659,6 +19256,7 @@ function abrirPerfilTimeModal(){
   carregarPerfilTime();
   carregarPerfilJogadores();
   carregarPerfilEscalacao();
+  carregarPerfilPatrocinadores();
   carregarPerfilJogos();
   setTimeout(()=>perfilNomeTime?.focus(), 120);
 }
@@ -18666,6 +19264,7 @@ function abrirPerfilTimeModal(){
 function fecharPerfilTimeModal(){
   perfilTimeModal?.classList.remove("open");
   perfilTimeModal?.setAttribute("aria-hidden", "true");
+  perfilPatrocinadorLogoRevokeScope("editor-preview");
 }
 
 async function carregarPerfilTime(){
@@ -18828,6 +19427,16 @@ perfilEscudoUploadBtn?.addEventListener("click", ()=>perfilEscudoInput?.click())
 perfilMascoteUploadBtn?.addEventListener("click", ()=>perfilMascoteInput?.click());
 perfilEscudoInput?.addEventListener("change", ()=>enviarImagemPerfil("escudo"));
 perfilMascoteInput?.addEventListener("change", ()=>enviarImagemPerfil("mascote"));
+perfilPatrocinadorLogoBtn?.addEventListener("click", ()=>perfilPatrocinadorLogoInput?.click());
+perfilPatrocinadorLogoInput?.addEventListener("change", ()=>{
+  const file = perfilPatrocinadorLogoInput?.files?.[0] || null;
+  perfilVisualSetText(perfilPatrocinadorLogoStatus, file ? `Logo selecionado: ${file.name}` : "Logo opcional.");
+});
+perfilPatrocinadorSalvarBtn?.addEventListener("click", salvarPerfilPatrocinador);
+perfilPatrocinadorCancelarBtn?.addEventListener("click", ()=>{
+  limparFormPatrocinador();
+  setPerfilTimeMsg("");
+});
 perfilJogadorSalvarBtn?.addEventListener("click", salvarPerfilJogador);
 perfilJogadorCancelarBtn?.addEventListener("click", ()=>{
   limparFormJogador();
@@ -18864,6 +19473,20 @@ perfilJogadoresLista?.addEventListener("click", (e)=>{
 
   if(removerBtn){
     removerPerfilJogador(removerBtn.getAttribute("data-remover-jogador"));
+  }
+});
+perfilPatrocinadoresLista?.addEventListener("click", (e)=>{
+  const editarBtn = e.target?.closest?.("[data-editar-patrocinador]");
+  const removerBtn = e.target?.closest?.("[data-remover-patrocinador]");
+
+  if(editarBtn){
+    const id = editarBtn.getAttribute("data-editar-patrocinador");
+    const patrocinador = perfilPatrocinadoresTime.find(item => item.id === id);
+    if(patrocinador) preencherFormPatrocinador(patrocinador);
+  }
+
+  if(removerBtn){
+    removerPerfilPatrocinador(removerBtn.getAttribute("data-remover-patrocinador"));
   }
 });
 perfilEscalacaoLista?.addEventListener("click", (e)=>{
