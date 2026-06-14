@@ -14154,7 +14154,8 @@ async function carregarHistorico(){
   if(!historicoListaEl || !historicoVazioEl) return;
 
   const produtoAtualOnline = selectedProductInput?.value || "";
-  const chatAbertoOnline = ia4ChatBox?.classList?.contains("open") ? "true" : "false";
+  const chatBoxOnline = document.getElementById("ia4ChatBox");
+  const chatAbertoOnline = chatBoxOnline?.classList?.contains("open") ? "true" : "false";
 
   if(!historicoCarregadoUmaVez){
     historicoVazioEl.textContent = "Carregando...";
