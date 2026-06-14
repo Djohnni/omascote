@@ -1555,6 +1555,63 @@
       flex:0 0 auto;
     }
 
+    .perfilTimePreview{
+      display:flex;
+      align-items:flex-start;
+      gap:14px;
+      border:1px solid #d1d5db;
+      border-radius:18px;
+      background:#ffffff;
+      padding:14px;
+      margin-bottom:16px;
+      box-shadow:0 10px 24px rgba(15,23,42,.08);
+    }
+
+    .perfilTimeAvatar{
+      width:58px;
+      height:58px;
+      border-radius:18px;
+      background:linear-gradient(135deg, #0f172a, #16a34a);
+      color:#ffffff;
+      display:grid;
+      place-items:center;
+      font-size:26px;
+      font-weight:950;
+      flex:0 0 auto;
+      overflow:hidden;
+    }
+
+    .perfilTimeAvatar img{
+      width:100%;
+      height:100%;
+      object-fit:cover;
+      display:block;
+    }
+
+    .perfilTimePreview strong{
+      display:block;
+      color:#0f172a;
+      font-size:18px;
+      line-height:1.1;
+      margin-bottom:4px;
+    }
+
+    .perfilTimePreview span{
+      display:block;
+      color:#475569;
+      font-size:12px;
+      font-weight:900;
+      line-height:1.35;
+    }
+
+    .perfilTimePreview p{
+      margin:8px 0 0;
+      color:#334155;
+      font-size:13px;
+      font-weight:800;
+      line-height:1.4;
+    }
+
     .perfilTimeGrid{
       display:grid;
       grid-template-columns:1fr 1fr;
@@ -1577,7 +1634,9 @@
       color:#334155;
     }
 
-    .perfilTimeField input{
+    .perfilTimeField input,
+    .perfilTimeField select,
+    .perfilTimeField textarea{
       width:100%;
       border:1px solid #cbd5e1;
       border-radius:12px;
@@ -1587,9 +1646,17 @@
       color:#0f172a;
       background:#ffffff;
       outline:none;
+      resize:vertical;
     }
 
-    .perfilTimeField input:focus{
+    .perfilTimeField textarea{
+      min-height:86px;
+      line-height:1.35;
+    }
+
+    .perfilTimeField input:focus,
+    .perfilTimeField select:focus,
+    .perfilTimeField textarea:focus{
       border-color:#22c55e;
       box-shadow:0 0 0 3px rgba(34,197,94,.16);
     }
@@ -1626,8 +1693,300 @@
     .perfilTimeMsg.ok{color:#047857}
     .perfilTimeMsg.erro{color:#b91c1c}
 
+    .perfilElencoSection{
+      margin-top:18px;
+      padding-top:16px;
+      border-top:1px solid #e2e8f0;
+    }
+
+    .perfilElencoTop{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+      margin-bottom:12px;
+    }
+
+    .perfilElencoTop strong{
+      color:#0f172a;
+      font-size:15px;
+      font-weight:950;
+    }
+
+    .perfilElencoTop span{
+      color:#64748b;
+      font-size:12px;
+      font-weight:900;
+    }
+
+    .perfilElencoPreview{
+      display:grid;
+      grid-template-columns:repeat(auto-fill, minmax(132px, 1fr));
+      gap:10px;
+      margin-bottom:14px;
+    }
+
+    .perfilJogadorCard{
+      border:1px solid #dbe3ef;
+      border-radius:14px;
+      background:#ffffff;
+      padding:10px;
+      min-height:82px;
+      display:flex;
+      align-items:center;
+      gap:10px;
+    }
+
+    .perfilJogadorNumero{
+      width:38px;
+      height:38px;
+      border-radius:12px;
+      display:grid;
+      place-items:center;
+      background:#0f172a;
+      color:#ffffff;
+      font-size:14px;
+      font-weight:950;
+      flex:0 0 auto;
+    }
+
+    .perfilJogadorCard strong{
+      display:block;
+      color:#0f172a;
+      font-size:13px;
+      line-height:1.15;
+      margin-bottom:3px;
+    }
+
+    .perfilJogadorCard span{
+      display:block;
+      color:#64748b;
+      font-size:11px;
+      font-weight:900;
+      line-height:1.2;
+    }
+
+    .perfilJogadorForm{
+      display:grid;
+      grid-template-columns:1.4fr 1fr .7fr 1fr;
+      gap:10px;
+      align-items:end;
+      margin-bottom:12px;
+    }
+
+    .perfilJogadorActions{
+      display:flex;
+      gap:8px;
+      grid-column:1 / -1;
+    }
+
+    .perfilJogadorLista{
+      display:flex;
+      flex-direction:column;
+      gap:8px;
+    }
+
+    .perfilJogadorRow{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+      border:1px solid #e2e8f0;
+      border-radius:12px;
+      background:#ffffff;
+      padding:10px;
+    }
+
+    .perfilJogadorInfo strong{
+      display:block;
+      color:#0f172a;
+      font-size:13px;
+      margin-bottom:2px;
+    }
+
+    .perfilJogadorInfo span{
+      display:block;
+      color:#64748b;
+      font-size:11px;
+      font-weight:850;
+    }
+
+    .perfilJogadorRowActions{
+      display:flex;
+      gap:6px;
+      flex:0 0 auto;
+    }
+
+    .perfilMiniBtn{
+      border:1px solid #cbd5e1;
+      background:#f8fafc;
+      color:#0f172a;
+      border-radius:10px;
+      padding:8px 10px;
+      font-size:12px;
+      font-weight:950;
+      cursor:pointer;
+    }
+
+    .perfilMiniBtn.danger{
+      color:#b91c1c;
+      border-color:#fecaca;
+      background:#fff1f2;
+    }
+
+    .perfilEmptyList{
+      border:1px dashed #cbd5e1;
+      border-radius:14px;
+      padding:14px;
+      color:#64748b;
+      font-size:13px;
+      font-weight:900;
+      text-align:center;
+      background:#f8fafc;
+    }
+
+    .perfilJogosSection{
+      margin-top:18px;
+      padding-top:16px;
+      border-top:1px solid #e2e8f0;
+    }
+
+    .perfilJogosPreviewGrid{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:12px;
+      margin-bottom:14px;
+    }
+
+    .perfilJogoPreviewGroup{
+      border:1px solid #dbe3ef;
+      border-radius:16px;
+      background:#ffffff;
+      padding:12px;
+      min-height:132px;
+    }
+
+    .perfilJogoGroupTitle{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      color:#0f172a;
+      font-size:13px;
+      font-weight:950;
+      margin-bottom:10px;
+    }
+
+    .perfilJogoCards{
+      display:flex;
+      flex-direction:column;
+      gap:8px;
+    }
+
+    .perfilJogoCard{
+      border:1px solid #e2e8f0;
+      border-radius:14px;
+      background:#f8fafc;
+      padding:10px;
+    }
+
+    .perfilJogoCard.resultado{
+      background:#f0fdf4;
+      border-color:#bbf7d0;
+    }
+
+    .perfilJogoCard.proximo{
+      background:#eff6ff;
+      border-color:#bfdbfe;
+    }
+
+    .perfilJogoCard small{
+      display:block;
+      color:#64748b;
+      font-size:11px;
+      font-weight:900;
+      margin-top:4px;
+    }
+
+    .perfilJogoPlacar{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:8px;
+      color:#0f172a;
+      font-size:13px;
+      font-weight:950;
+    }
+
+    .perfilJogoPlacar span{
+      min-width:0;
+      overflow:hidden;
+      text-overflow:ellipsis;
+      white-space:nowrap;
+    }
+
+    .perfilJogoScore{
+      flex:0 0 auto;
+      border-radius:999px;
+      background:#0f172a;
+      color:#ffffff;
+      padding:5px 9px;
+      font-size:12px;
+      font-weight:950;
+    }
+
+    .perfilJogoForm{
+      display:grid;
+      grid-template-columns:1fr 1.2fr .7fr .7fr;
+      gap:10px;
+      align-items:end;
+      margin-bottom:12px;
+    }
+
+    .perfilJogoActions{
+      display:flex;
+      gap:8px;
+      grid-column:1 / -1;
+    }
+
+    .perfilJogosLista{
+      display:flex;
+      flex-direction:column;
+      gap:8px;
+    }
+
+    .perfilJogoRow{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+      border:1px solid #e2e8f0;
+      border-radius:12px;
+      background:#ffffff;
+      padding:10px;
+    }
+
+    .perfilJogoInfo strong{
+      display:block;
+      color:#0f172a;
+      font-size:13px;
+      margin-bottom:2px;
+    }
+
+    .perfilJogoInfo span{
+      display:block;
+      color:#64748b;
+      font-size:11px;
+      font-weight:850;
+    }
+
     @media (max-width:640px){
       .perfilTimeGrid{
+        grid-template-columns:1fr;
+      }
+
+      .perfilJogadorForm,
+      .perfilJogoForm,
+      .perfilJogosPreviewGrid{
         grid-template-columns:1fr;
       }
 
@@ -6740,6 +7099,16 @@ body:not(.modeChosen) .builderArea,
         </div>
       </div>
 
+      <div class="perfilTimePreview" id="perfilTimePreview">
+        <div class="perfilTimeAvatar" id="perfilTimePreviewAvatar" aria-hidden="true">T</div>
+        <div>
+          <strong id="perfilTimePreviewNome">Seu time</strong>
+          <span id="perfilTimePreviewLocal">Cidade e estado</span>
+          <span id="perfilTimePreviewInstagram">@instagram</span>
+          <p id="perfilTimePreviewDescricao">Resumo curto do perfil do time.</p>
+        </div>
+      </div>
+
       <div class="perfilTimeGrid">
         <div class="perfilTimeField full">
           <label for="perfilNomeTime">Nome do time</label>
@@ -6760,11 +7129,125 @@ body:not(.modeChosen) .builderArea,
           <label for="perfilInstagram">Instagram</label>
           <input id="perfilInstagram" maxlength="80" autocomplete="off" placeholder="@seutime">
         </div>
+
+        <div class="perfilTimeField full">
+          <label for="perfilDescricaoCurta">Descricao curta</label>
+          <textarea id="perfilDescricaoCurta" maxlength="240" placeholder="Ex: Time amador de futebol, fundado por amigos e apaixonado por competicao."></textarea>
+        </div>
       </div>
 
       <div class="perfilTimeActions">
         <span class="perfilTimePrivado">Perfil privado</span>
         <button class="btnGreen" id="perfilTimeSalvarBtn" type="button">Salvar perfil</button>
+      </div>
+
+      <div class="perfilElencoSection">
+        <div class="perfilElencoTop">
+          <strong>Elenco</strong>
+          <span id="perfilElencoResumo">0 jogadores</span>
+        </div>
+
+        <div class="perfilElencoPreview" id="perfilElencoPreview"></div>
+
+        <div class="perfilJogadorForm">
+          <div class="perfilTimeField">
+            <label for="perfilJogadorNome">Nome</label>
+            <input id="perfilJogadorNome" maxlength="80" autocomplete="off" placeholder="Nome">
+          </div>
+
+          <div class="perfilTimeField">
+            <label for="perfilJogadorApelido">Apelido</label>
+            <input id="perfilJogadorApelido" maxlength="60" autocomplete="off" placeholder="Apelido">
+          </div>
+
+          <div class="perfilTimeField">
+            <label for="perfilJogadorNumero">Numero</label>
+            <input id="perfilJogadorNumero" maxlength="12" autocomplete="off" placeholder="10">
+          </div>
+
+          <div class="perfilTimeField">
+            <label for="perfilJogadorPosicao">Posicao</label>
+            <input id="perfilJogadorPosicao" maxlength="40" autocomplete="off" placeholder="Atacante">
+          </div>
+
+          <div class="perfilJogadorActions">
+            <button class="btnGreen" id="perfilJogadorSalvarBtn" type="button">Adicionar jogador</button>
+            <button class="perfilMiniBtn" id="perfilJogadorCancelarBtn" type="button" hidden>Cancelar</button>
+          </div>
+        </div>
+
+        <div class="perfilJogadorLista" id="perfilJogadoresLista"></div>
+      </div>
+
+      <div class="perfilJogosSection">
+        <div class="perfilElencoTop">
+          <strong>Jogos</strong>
+          <span id="perfilJogosResumo">0 jogos</span>
+        </div>
+
+        <div class="perfilJogosPreviewGrid">
+          <div class="perfilJogoPreviewGroup">
+            <div class="perfilJogoGroupTitle">Ultimos resultados</div>
+            <div class="perfilJogoCards" id="perfilResultadosPreview"></div>
+          </div>
+
+          <div class="perfilJogoPreviewGroup">
+            <div class="perfilJogoGroupTitle">Proximos jogos</div>
+            <div class="perfilJogoCards" id="perfilProximosPreview"></div>
+          </div>
+        </div>
+
+        <div class="perfilJogoForm">
+          <div class="perfilTimeField">
+            <label for="perfilJogoTipo">Tipo</label>
+            <select id="perfilJogoTipo">
+              <option value="proximo_jogo">Proximo jogo</option>
+              <option value="resultado">Resultado</option>
+            </select>
+          </div>
+
+          <div class="perfilTimeField">
+            <label for="perfilJogoAdversario">Adversario</label>
+            <input id="perfilJogoAdversario" maxlength="80" autocomplete="off" placeholder="Nome do adversario">
+          </div>
+
+          <div class="perfilTimeField">
+            <label for="perfilJogoMeuGols">Meus gols</label>
+            <input id="perfilJogoMeuGols" maxlength="8" inputmode="numeric" autocomplete="off" placeholder="2">
+          </div>
+
+          <div class="perfilTimeField">
+            <label for="perfilJogoAdvGols">Gols adv.</label>
+            <input id="perfilJogoAdvGols" maxlength="8" inputmode="numeric" autocomplete="off" placeholder="1">
+          </div>
+
+          <div class="perfilTimeField">
+            <label for="perfilJogoData">Data</label>
+            <input id="perfilJogoData" type="date">
+          </div>
+
+          <div class="perfilTimeField">
+            <label for="perfilJogoHorario">Horario</label>
+            <input id="perfilJogoHorario" type="time">
+          </div>
+
+          <div class="perfilTimeField">
+            <label for="perfilJogoLocal">Local</label>
+            <input id="perfilJogoLocal" maxlength="80" autocomplete="off" placeholder="Estadio ou cidade">
+          </div>
+
+          <div class="perfilTimeField">
+            <label for="perfilJogoCampeonato">Campeonato</label>
+            <input id="perfilJogoCampeonato" maxlength="80" autocomplete="off" placeholder="Campeonato">
+          </div>
+
+          <div class="perfilJogoActions">
+            <button class="btnGreen" id="perfilJogoSalvarBtn" type="button">Adicionar jogo</button>
+            <button class="perfilMiniBtn" id="perfilJogoCancelarBtn" type="button" hidden>Cancelar</button>
+          </div>
+        </div>
+
+        <div class="perfilJogosLista" id="perfilJogosLista"></div>
       </div>
 
       <div class="perfilTimeMsg" id="perfilTimeMsg"></div>
@@ -14132,7 +14615,40 @@ const perfilNomeTime = document.getElementById("perfilNomeTime");
 const perfilCidade = document.getElementById("perfilCidade");
 const perfilEstado = document.getElementById("perfilEstado");
 const perfilInstagram = document.getElementById("perfilInstagram");
+const perfilDescricaoCurta = document.getElementById("perfilDescricaoCurta");
+const perfilTimePreviewAvatar = document.getElementById("perfilTimePreviewAvatar");
+const perfilTimePreviewNome = document.getElementById("perfilTimePreviewNome");
+const perfilTimePreviewLocal = document.getElementById("perfilTimePreviewLocal");
+const perfilTimePreviewInstagram = document.getElementById("perfilTimePreviewInstagram");
+const perfilTimePreviewDescricao = document.getElementById("perfilTimePreviewDescricao");
 const perfilTimeMsg = document.getElementById("perfilTimeMsg");
+const perfilElencoResumo = document.getElementById("perfilElencoResumo");
+const perfilElencoPreview = document.getElementById("perfilElencoPreview");
+const perfilJogadoresLista = document.getElementById("perfilJogadoresLista");
+const perfilJogadorNome = document.getElementById("perfilJogadorNome");
+const perfilJogadorApelido = document.getElementById("perfilJogadorApelido");
+const perfilJogadorNumero = document.getElementById("perfilJogadorNumero");
+const perfilJogadorPosicao = document.getElementById("perfilJogadorPosicao");
+const perfilJogadorSalvarBtn = document.getElementById("perfilJogadorSalvarBtn");
+const perfilJogadorCancelarBtn = document.getElementById("perfilJogadorCancelarBtn");
+const perfilJogosResumo = document.getElementById("perfilJogosResumo");
+const perfilResultadosPreview = document.getElementById("perfilResultadosPreview");
+const perfilProximosPreview = document.getElementById("perfilProximosPreview");
+const perfilJogosLista = document.getElementById("perfilJogosLista");
+const perfilJogoTipo = document.getElementById("perfilJogoTipo");
+const perfilJogoAdversario = document.getElementById("perfilJogoAdversario");
+const perfilJogoMeuGols = document.getElementById("perfilJogoMeuGols");
+const perfilJogoAdvGols = document.getElementById("perfilJogoAdvGols");
+const perfilJogoData = document.getElementById("perfilJogoData");
+const perfilJogoHorario = document.getElementById("perfilJogoHorario");
+const perfilJogoLocal = document.getElementById("perfilJogoLocal");
+const perfilJogoCampeonato = document.getElementById("perfilJogoCampeonato");
+const perfilJogoSalvarBtn = document.getElementById("perfilJogoSalvarBtn");
+const perfilJogoCancelarBtn = document.getElementById("perfilJogoCancelarBtn");
+let perfilJogadoresTime = [];
+let perfilJogadorEditId = "";
+let perfilJogosTime = [];
+let perfilJogoEditId = "";
 
 function atualizarTopoAuth(){
   const btnEntrarTopo = document.getElementById("btnSair");
@@ -14188,11 +14704,512 @@ function setPerfilTimeMsg(texto, tipo = ""){
   perfilTimeMsg.className = `perfilTimeMsg${tipo ? " " + tipo : ""}`;
 }
 
+function perfilTimeInicial(nome){
+  const base = String(nome || "T").trim();
+  return (base[0] || "T").toUpperCase();
+}
+
+function atualizarPerfilTimePreview(){
+  const nome = (perfilNomeTime?.value || localStorage.getItem("omascote_nome_time") || "Seu time").trim();
+  const cidade = (perfilCidade?.value || "").trim();
+  const estado = (perfilEstado?.value || "").trim();
+  const instagram = (perfilInstagram?.value || "").trim().replace(/^@+/, "");
+  const descricao = (perfilDescricaoCurta?.value || "").trim();
+  const local = [cidade, estado].filter(Boolean).join(" - ") || "Cidade e estado";
+
+  if(perfilTimePreviewAvatar){
+    perfilTimePreviewAvatar.textContent = perfilTimeInicial(nome);
+  }
+  if(perfilTimePreviewNome) perfilTimePreviewNome.textContent = nome || "Seu time";
+  if(perfilTimePreviewLocal) perfilTimePreviewLocal.textContent = local;
+  if(perfilTimePreviewInstagram) perfilTimePreviewInstagram.textContent = instagram ? `@${instagram}` : "@instagram";
+  if(perfilTimePreviewDescricao){
+    perfilTimePreviewDescricao.textContent = descricao || "Resumo curto do perfil do time.";
+  }
+}
+
 function preencherPerfilTime(perfil){
   if(perfilNomeTime) perfilNomeTime.value = perfil?.nome_time || localStorage.getItem("omascote_nome_time") || "";
   if(perfilCidade) perfilCidade.value = perfil?.cidade || "";
   if(perfilEstado) perfilEstado.value = perfil?.estado || "";
   if(perfilInstagram) perfilInstagram.value = perfil?.instagram || "";
+  if(perfilDescricaoCurta) perfilDescricaoCurta.value = perfil?.descricao_curta || "";
+  atualizarPerfilTimePreview();
+}
+
+function perfilJogadoresAtivos(){
+  return perfilJogadoresTime.filter(jogador => jogador && jogador.ativo !== false);
+}
+
+function limparFormJogador(){
+  perfilJogadorEditId = "";
+  if(perfilJogadorNome) perfilJogadorNome.value = "";
+  if(perfilJogadorApelido) perfilJogadorApelido.value = "";
+  if(perfilJogadorNumero) perfilJogadorNumero.value = "";
+  if(perfilJogadorPosicao) perfilJogadorPosicao.value = "";
+  if(perfilJogadorSalvarBtn) perfilJogadorSalvarBtn.textContent = "Adicionar jogador";
+  if(perfilJogadorCancelarBtn) perfilJogadorCancelarBtn.hidden = true;
+}
+
+function preencherFormJogador(jogador){
+  perfilJogadorEditId = jogador?.id || "";
+  if(perfilJogadorNome) perfilJogadorNome.value = jogador?.nome || "";
+  if(perfilJogadorApelido) perfilJogadorApelido.value = jogador?.apelido || "";
+  if(perfilJogadorNumero) perfilJogadorNumero.value = jogador?.numero || "";
+  if(perfilJogadorPosicao) perfilJogadorPosicao.value = jogador?.posicao || "";
+  if(perfilJogadorSalvarBtn) perfilJogadorSalvarBtn.textContent = "Salvar jogador";
+  if(perfilJogadorCancelarBtn) perfilJogadorCancelarBtn.hidden = false;
+  perfilJogadorNome?.focus();
+}
+
+function renderPerfilElenco(){
+  const jogadores = perfilJogadoresAtivos();
+  const total = jogadores.length;
+
+  if(perfilElencoResumo){
+    perfilElencoResumo.textContent = `${total} ${total === 1 ? "jogador" : "jogadores"}`;
+  }
+
+  if(perfilElencoPreview){
+    perfilElencoPreview.innerHTML = total
+      ? jogadores.map((jogador)=>{
+          const numero = jogador.numero ? htmlEscape(jogador.numero) : "-";
+          const nome = htmlEscape(jogador.apelido || jogador.nome || "Jogador");
+          const posicao = htmlEscape(jogador.posicao || "Posicao");
+          return `
+            <div class="perfilJogadorCard">
+              <div class="perfilJogadorNumero">${numero}</div>
+              <div>
+                <strong>${nome}</strong>
+                <span>${posicao}</span>
+              </div>
+            </div>
+          `;
+        }).join("")
+      : `<div class="perfilEmptyList">Nenhum jogador cadastrado.</div>`;
+  }
+
+  if(perfilJogadoresLista){
+    perfilJogadoresLista.innerHTML = total
+      ? jogadores.map((jogador)=>{
+          const nome = htmlEscape(jogador.nome || "Jogador");
+          const apelido = jogador.apelido ? ` · ${htmlEscape(jogador.apelido)}` : "";
+          const numero = jogador.numero ? `#${htmlEscape(jogador.numero)}` : "Sem numero";
+          const posicao = htmlEscape(jogador.posicao || "Sem posicao");
+          return `
+            <div class="perfilJogadorRow" data-jogador-id="${htmlEscape(jogador.id)}">
+              <div class="perfilJogadorInfo">
+                <strong>${nome}${apelido}</strong>
+                <span>${numero} · ${posicao}</span>
+              </div>
+              <div class="perfilJogadorRowActions">
+                <button class="perfilMiniBtn" type="button" data-editar-jogador="${htmlEscape(jogador.id)}">Editar</button>
+                <button class="perfilMiniBtn danger" type="button" data-remover-jogador="${htmlEscape(jogador.id)}">Remover</button>
+              </div>
+            </div>
+          `;
+        }).join("")
+      : `<div class="perfilEmptyList">Nenhum jogador cadastrado.</div>`;
+  }
+}
+
+async function carregarPerfilJogadores(){
+  if(!token) return;
+
+  try{
+    const r = await fetch(`${API_BASE}/me/time/jogadores`, {
+      headers:{ "Authorization":"Bearer " + token }
+    });
+    const data = await ia4LerJsonSeguro(r);
+    const authMsg = ia4TratarAuthInvalida(r, data);
+
+    if(authMsg){
+      setPerfilTimeMsg(authMsg, "erro");
+      return;
+    }
+
+    if(!r.ok || !data.ok){
+      throw new Error(data.error || data.erro || "Nao foi possivel carregar o elenco.");
+    }
+
+    perfilJogadoresTime = Array.isArray(data.jogadores) ? data.jogadores : [];
+    renderPerfilElenco();
+  }catch(err){
+    setPerfilTimeMsg(err?.message || "Erro de rede ao carregar elenco.", "erro");
+  }
+}
+
+async function salvarPerfilJogador(){
+  if(!token){
+    abrirLoginVisitanteModal();
+    return;
+  }
+
+  const nome = (perfilJogadorNome?.value || "").trim();
+
+  if(!nome){
+    setPerfilTimeMsg("Informe o nome do jogador.", "erro");
+    perfilJogadorNome?.focus();
+    return;
+  }
+
+  const payload = {
+    nome,
+    apelido: (perfilJogadorApelido?.value || "").trim(),
+    numero: (perfilJogadorNumero?.value || "").trim(),
+    posicao: (perfilJogadorPosicao?.value || "").trim()
+  };
+  const editando = !!perfilJogadorEditId;
+  const url = editando
+    ? `${API_BASE}/me/time/jogadores/${encodeURIComponent(perfilJogadorEditId)}`
+    : `${API_BASE}/me/time/jogadores`;
+
+  try{
+    if(perfilJogadorSalvarBtn){
+      perfilJogadorSalvarBtn.disabled = true;
+      perfilJogadorSalvarBtn.textContent = editando ? "Salvando..." : "Adicionando...";
+    }
+
+    const r = await fetch(url, {
+      method: editando ? "PATCH" : "POST",
+      headers:{
+        "Content-Type":"application/json",
+        "Authorization":"Bearer " + token
+      },
+      body:JSON.stringify(payload)
+    });
+    const data = await ia4LerJsonSeguro(r);
+    const authMsg = ia4TratarAuthInvalida(r, data);
+
+    if(authMsg){
+      setPerfilTimeMsg(authMsg, "erro");
+      return;
+    }
+
+    if(!r.ok || !data.ok){
+      throw new Error(data.error || data.erro || "Nao foi possivel salvar o jogador.");
+    }
+
+    if(editando){
+      perfilJogadoresTime = perfilJogadoresTime.map(jogador => jogador.id === data.jogador?.id ? data.jogador : jogador);
+    }else if(data.jogador){
+      perfilJogadoresTime.push(data.jogador);
+    }
+
+    limparFormJogador();
+    renderPerfilElenco();
+    setPerfilTimeMsg(editando ? "Jogador atualizado." : "Jogador adicionado.", "ok");
+  }catch(err){
+    setPerfilTimeMsg(err?.message || "Erro de rede ao salvar jogador.", "erro");
+  }finally{
+    if(perfilJogadorSalvarBtn){
+      perfilJogadorSalvarBtn.disabled = false;
+      perfilJogadorSalvarBtn.textContent = perfilJogadorEditId ? "Salvar jogador" : "Adicionar jogador";
+    }
+  }
+}
+
+async function removerPerfilJogador(id){
+  if(!token || !id) return;
+
+  if(!confirm("Remover jogador do elenco?")){
+    return;
+  }
+
+  try{
+    const r = await fetch(`${API_BASE}/me/time/jogadores/${encodeURIComponent(id)}`, {
+      method:"DELETE",
+      headers:{ "Authorization":"Bearer " + token }
+    });
+    const data = await ia4LerJsonSeguro(r);
+    const authMsg = ia4TratarAuthInvalida(r, data);
+
+    if(authMsg){
+      setPerfilTimeMsg(authMsg, "erro");
+      return;
+    }
+
+    if(!r.ok || !data.ok){
+      throw new Error(data.error || data.erro || "Nao foi possivel remover o jogador.");
+    }
+
+    perfilJogadoresTime = perfilJogadoresTime.map(jogador => jogador.id === id ? { ...jogador, ativo:false } : jogador);
+    if(perfilJogadorEditId === id) limparFormJogador();
+    renderPerfilElenco();
+    setPerfilTimeMsg("Jogador removido.", "ok");
+  }catch(err){
+    setPerfilTimeMsg(err?.message || "Erro de rede ao remover jogador.", "erro");
+  }
+}
+
+function perfilJogosAtivos(){
+  return perfilJogosTime.filter(jogo => jogo && jogo.ativo !== false);
+}
+
+function formatarDataPerfilJogo(value){
+  const data = String(value || "").trim();
+  const match = data.match(/^(\d{4})-(\d{2})-(\d{2})$/);
+  if(match) return `${match[3]}/${match[2]}/${match[1]}`;
+  return data;
+}
+
+function dataOrdemPerfilJogo(jogo){
+  return `${jogo?.data || ""} ${jogo?.horario || ""}`.trim();
+}
+
+function nomeTipoPerfilJogo(tipo){
+  return tipo === "resultado" ? "Resultado" : "Proximo jogo";
+}
+
+function placarPerfilJogo(jogo){
+  if(jogo?.tipo !== "resultado") return "x";
+  const meu = String(jogo?.meu_time_gols || "-").trim() || "-";
+  const adv = String(jogo?.adversario_gols || "-").trim() || "-";
+  return `${meu} x ${adv}`;
+}
+
+function limparFormJogo(){
+  perfilJogoEditId = "";
+  if(perfilJogoTipo) perfilJogoTipo.value = "proximo_jogo";
+  if(perfilJogoAdversario) perfilJogoAdversario.value = "";
+  if(perfilJogoMeuGols) perfilJogoMeuGols.value = "";
+  if(perfilJogoAdvGols) perfilJogoAdvGols.value = "";
+  if(perfilJogoData) perfilJogoData.value = "";
+  if(perfilJogoHorario) perfilJogoHorario.value = "";
+  if(perfilJogoLocal) perfilJogoLocal.value = "";
+  if(perfilJogoCampeonato) perfilJogoCampeonato.value = "";
+  if(perfilJogoSalvarBtn) perfilJogoSalvarBtn.textContent = "Adicionar jogo";
+  if(perfilJogoCancelarBtn) perfilJogoCancelarBtn.hidden = true;
+}
+
+function preencherFormJogo(jogo){
+  perfilJogoEditId = jogo?.id || "";
+  if(perfilJogoTipo) perfilJogoTipo.value = jogo?.tipo || "proximo_jogo";
+  if(perfilJogoAdversario) perfilJogoAdversario.value = jogo?.adversario || "";
+  if(perfilJogoMeuGols) perfilJogoMeuGols.value = jogo?.meu_time_gols || "";
+  if(perfilJogoAdvGols) perfilJogoAdvGols.value = jogo?.adversario_gols || "";
+  if(perfilJogoData) perfilJogoData.value = jogo?.data || "";
+  if(perfilJogoHorario) perfilJogoHorario.value = jogo?.horario || "";
+  if(perfilJogoLocal) perfilJogoLocal.value = jogo?.local || "";
+  if(perfilJogoCampeonato) perfilJogoCampeonato.value = jogo?.campeonato || "";
+  if(perfilJogoSalvarBtn) perfilJogoSalvarBtn.textContent = "Salvar jogo";
+  if(perfilJogoCancelarBtn) perfilJogoCancelarBtn.hidden = false;
+  perfilJogoAdversario?.focus();
+}
+
+function jogoCardHtml(jogo){
+  const nomeTime = htmlEscape((perfilNomeTime?.value || localStorage.getItem("omascote_nome_time") || "Meu time").trim());
+  const adversario = htmlEscape(jogo?.adversario || "Adversario");
+  const placar = htmlEscape(placarPerfilJogo(jogo));
+  const data = formatarDataPerfilJogo(jogo?.data);
+  const horario = jogo?.horario ? ` ${htmlEscape(jogo.horario)}` : "";
+  const campeonato = jogo?.campeonato ? htmlEscape(jogo.campeonato) : "";
+  const local = jogo?.local ? htmlEscape(jogo.local) : "";
+  const detalhes = [campeonato, `${htmlEscape(data)}${horario}`.trim(), local].filter(Boolean).join(" · ");
+  const classe = jogo?.tipo === "resultado" ? "resultado" : "proximo";
+
+  return `
+    <div class="perfilJogoCard ${classe}">
+      <div class="perfilJogoPlacar">
+        <span>${nomeTime}</span>
+        <strong class="perfilJogoScore">${placar}</strong>
+        <span>${adversario}</span>
+      </div>
+      ${detalhes ? `<small>${detalhes}</small>` : ""}
+    </div>
+  `;
+}
+
+function renderPerfilJogos(){
+  const jogos = perfilJogosAtivos();
+  const resultados = jogos
+    .filter(jogo => jogo.tipo === "resultado")
+    .sort((a, b) => dataOrdemPerfilJogo(b).localeCompare(dataOrdemPerfilJogo(a)));
+  const proximos = jogos
+    .filter(jogo => jogo.tipo === "proximo_jogo")
+    .sort((a, b) => dataOrdemPerfilJogo(a).localeCompare(dataOrdemPerfilJogo(b)));
+  const total = jogos.length;
+
+  if(perfilJogosResumo){
+    perfilJogosResumo.textContent = `${total} ${total === 1 ? "jogo" : "jogos"}`;
+  }
+
+  if(perfilResultadosPreview){
+    perfilResultadosPreview.innerHTML = resultados.length
+      ? resultados.slice(0, 3).map(jogoCardHtml).join("")
+      : `<div class="perfilEmptyList">Nenhum resultado cadastrado.</div>`;
+  }
+
+  if(perfilProximosPreview){
+    perfilProximosPreview.innerHTML = proximos.length
+      ? proximos.slice(0, 3).map(jogoCardHtml).join("")
+      : `<div class="perfilEmptyList">Nenhum proximo jogo cadastrado.</div>`;
+  }
+
+  if(perfilJogosLista){
+    perfilJogosLista.innerHTML = total
+      ? jogos.map((jogo)=>{
+          const tipo = htmlEscape(nomeTipoPerfilJogo(jogo.tipo));
+          const adversario = htmlEscape(jogo.adversario || "Adversario");
+          const placar = htmlEscape(placarPerfilJogo(jogo));
+          const data = formatarDataPerfilJogo(jogo.data);
+          const horario = jogo.horario ? ` ${htmlEscape(jogo.horario)}` : "";
+          const campeonato = jogo.campeonato ? ` · ${htmlEscape(jogo.campeonato)}` : "";
+          return `
+            <div class="perfilJogoRow" data-jogo-id="${htmlEscape(jogo.id)}">
+              <div class="perfilJogoInfo">
+                <strong>${tipo}: ${adversario} · ${placar}</strong>
+                <span>${htmlEscape(data)}${horario}${campeonato}</span>
+              </div>
+              <div class="perfilJogadorRowActions">
+                <button class="perfilMiniBtn" type="button" data-editar-jogo="${htmlEscape(jogo.id)}">Editar</button>
+                <button class="perfilMiniBtn danger" type="button" data-remover-jogo="${htmlEscape(jogo.id)}">Remover</button>
+              </div>
+            </div>
+          `;
+        }).join("")
+      : `<div class="perfilEmptyList">Nenhum jogo cadastrado.</div>`;
+  }
+}
+
+async function carregarPerfilJogos(){
+  if(!token) return;
+
+  try{
+    const r = await fetch(`${API_BASE}/me/time/jogos`, {
+      headers:{ "Authorization":"Bearer " + token }
+    });
+    const data = await ia4LerJsonSeguro(r);
+    const authMsg = ia4TratarAuthInvalida(r, data);
+
+    if(authMsg){
+      setPerfilTimeMsg(authMsg, "erro");
+      return;
+    }
+
+    if(!r.ok || !data.ok){
+      throw new Error(data.error || data.erro || "Nao foi possivel carregar os jogos.");
+    }
+
+    perfilJogosTime = Array.isArray(data.jogos) ? data.jogos : [];
+    renderPerfilJogos();
+  }catch(err){
+    setPerfilTimeMsg(err?.message || "Erro de rede ao carregar jogos.", "erro");
+  }
+}
+
+async function salvarPerfilJogo(){
+  if(!token){
+    abrirLoginVisitanteModal();
+    return;
+  }
+
+  const tipo = perfilJogoTipo?.value || "proximo_jogo";
+  const adversario = (perfilJogoAdversario?.value || "").trim();
+
+  if(!["resultado", "proximo_jogo"].includes(tipo)){
+    setPerfilTimeMsg("Tipo de jogo invalido.", "erro");
+    return;
+  }
+
+  if(!adversario){
+    setPerfilTimeMsg("Informe o adversario.", "erro");
+    perfilJogoAdversario?.focus();
+    return;
+  }
+
+  const payload = {
+    tipo,
+    adversario,
+    meu_time_gols: (perfilJogoMeuGols?.value || "").trim(),
+    adversario_gols: (perfilJogoAdvGols?.value || "").trim(),
+    data: (perfilJogoData?.value || "").trim(),
+    horario: (perfilJogoHorario?.value || "").trim(),
+    local: (perfilJogoLocal?.value || "").trim(),
+    campeonato: (perfilJogoCampeonato?.value || "").trim(),
+    status: tipo === "resultado" ? "encerrado" : "agendado"
+  };
+  const editando = !!perfilJogoEditId;
+  const url = editando
+    ? `${API_BASE}/me/time/jogos/${encodeURIComponent(perfilJogoEditId)}`
+    : `${API_BASE}/me/time/jogos`;
+
+  try{
+    if(perfilJogoSalvarBtn){
+      perfilJogoSalvarBtn.disabled = true;
+      perfilJogoSalvarBtn.textContent = editando ? "Salvando..." : "Adicionando...";
+    }
+
+    const r = await fetch(url, {
+      method: editando ? "PATCH" : "POST",
+      headers:{
+        "Content-Type":"application/json",
+        "Authorization":"Bearer " + token
+      },
+      body:JSON.stringify(payload)
+    });
+    const data = await ia4LerJsonSeguro(r);
+    const authMsg = ia4TratarAuthInvalida(r, data);
+
+    if(authMsg){
+      setPerfilTimeMsg(authMsg, "erro");
+      return;
+    }
+
+    if(!r.ok || !data.ok){
+      throw new Error(data.error || data.erro || "Nao foi possivel salvar o jogo.");
+    }
+
+    if(editando){
+      perfilJogosTime = perfilJogosTime.map(jogo => jogo.id === data.jogo?.id ? data.jogo : jogo);
+    }else if(data.jogo){
+      perfilJogosTime.push(data.jogo);
+    }
+
+    limparFormJogo();
+    renderPerfilJogos();
+    setPerfilTimeMsg(editando ? "Jogo atualizado." : "Jogo adicionado.", "ok");
+  }catch(err){
+    setPerfilTimeMsg(err?.message || "Erro de rede ao salvar jogo.", "erro");
+  }finally{
+    if(perfilJogoSalvarBtn){
+      perfilJogoSalvarBtn.disabled = false;
+      perfilJogoSalvarBtn.textContent = perfilJogoEditId ? "Salvar jogo" : "Adicionar jogo";
+    }
+  }
+}
+
+async function removerPerfilJogo(id){
+  if(!token || !id) return;
+
+  if(!confirm("Remover jogo do perfil?")){
+    return;
+  }
+
+  try{
+    const r = await fetch(`${API_BASE}/me/time/jogos/${encodeURIComponent(id)}`, {
+      method:"DELETE",
+      headers:{ "Authorization":"Bearer " + token }
+    });
+    const data = await ia4LerJsonSeguro(r);
+    const authMsg = ia4TratarAuthInvalida(r, data);
+
+    if(authMsg){
+      setPerfilTimeMsg(authMsg, "erro");
+      return;
+    }
+
+    if(!r.ok || !data.ok){
+      throw new Error(data.error || data.erro || "Nao foi possivel remover o jogo.");
+    }
+
+    perfilJogosTime = perfilJogosTime.map(jogo => jogo.id === id ? { ...jogo, ativo:false } : jogo);
+    if(perfilJogoEditId === id) limparFormJogo();
+    renderPerfilJogos();
+    setPerfilTimeMsg("Jogo removido.", "ok");
+  }catch(err){
+    setPerfilTimeMsg(err?.message || "Erro de rede ao remover jogo.", "erro");
+  }
 }
 
 function abrirPerfilTimeModal(){
@@ -14206,6 +15223,8 @@ function abrirPerfilTimeModal(){
   perfilTimeModal?.classList.add("open");
   perfilTimeModal?.setAttribute("aria-hidden", "false");
   carregarPerfilTime();
+  carregarPerfilJogadores();
+  carregarPerfilJogos();
   setTimeout(()=>perfilNomeTime?.focus(), 120);
 }
 
@@ -14219,7 +15238,7 @@ async function carregarPerfilTime(){
 
   try{
     setPerfilTimeMsg("Carregando perfil...");
-    const r = await fetch(`${API_BASE}/me/perfil`, {
+    const r = await fetch(`${API_BASE}/me/time/perfil`, {
       headers:{ "Authorization":"Bearer " + token }
     });
     const data = await ia4LerJsonSeguro(r);
@@ -14265,6 +15284,7 @@ async function salvarPerfilTime(){
     cidade: (perfilCidade?.value || "").trim(),
     estado: (perfilEstado?.value || "").trim(),
     instagram: (perfilInstagram?.value || "").trim(),
+    descricao_curta: (perfilDescricaoCurta?.value || "").trim(),
     publico: false
   };
 
@@ -14275,7 +15295,7 @@ async function salvarPerfilTime(){
     }
     setPerfilTimeMsg("Salvando perfil...");
 
-    const r = await fetch(`${API_BASE}/me/perfil`, {
+    const r = await fetch(`${API_BASE}/me/time/perfil`, {
       method:"PATCH",
       headers:{
         "Content-Type":"application/json",
@@ -14313,6 +15333,47 @@ async function salvarPerfilTime(){
 btnPerfilTimeEl?.addEventListener("click", abrirPerfilTimeModal);
 perfilTimeCloseBtn?.addEventListener("click", fecharPerfilTimeModal);
 perfilTimeSalvarBtn?.addEventListener("click", salvarPerfilTime);
+perfilJogadorSalvarBtn?.addEventListener("click", salvarPerfilJogador);
+perfilJogadorCancelarBtn?.addEventListener("click", ()=>{
+  limparFormJogador();
+  setPerfilTimeMsg("");
+});
+perfilJogoSalvarBtn?.addEventListener("click", salvarPerfilJogo);
+perfilJogoCancelarBtn?.addEventListener("click", ()=>{
+  limparFormJogo();
+  setPerfilTimeMsg("");
+});
+[perfilNomeTime, perfilCidade, perfilEstado, perfilInstagram, perfilDescricaoCurta].forEach((campo)=>{
+  campo?.addEventListener("input", atualizarPerfilTimePreview);
+});
+perfilJogadoresLista?.addEventListener("click", (e)=>{
+  const editarBtn = e.target?.closest?.("[data-editar-jogador]");
+  const removerBtn = e.target?.closest?.("[data-remover-jogador]");
+
+  if(editarBtn){
+    const id = editarBtn.getAttribute("data-editar-jogador");
+    const jogador = perfilJogadoresTime.find(item => item.id === id);
+    if(jogador) preencherFormJogador(jogador);
+  }
+
+  if(removerBtn){
+    removerPerfilJogador(removerBtn.getAttribute("data-remover-jogador"));
+  }
+});
+perfilJogosLista?.addEventListener("click", (e)=>{
+  const editarBtn = e.target?.closest?.("[data-editar-jogo]");
+  const removerBtn = e.target?.closest?.("[data-remover-jogo]");
+
+  if(editarBtn){
+    const id = editarBtn.getAttribute("data-editar-jogo");
+    const jogo = perfilJogosTime.find(item => item.id === id);
+    if(jogo) preencherFormJogo(jogo);
+  }
+
+  if(removerBtn){
+    removerPerfilJogo(removerBtn.getAttribute("data-remover-jogo"));
+  }
+});
 perfilTimeModal?.addEventListener("click", (e)=>{
   if(e.target === perfilTimeModal) fecharPerfilTimeModal();
 });
