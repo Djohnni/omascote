@@ -17698,7 +17698,7 @@ function perfilShareUrlAtual(){
   try{
     const url = new URL(location.href);
     [...url.searchParams.keys()].forEach((key)=>{
-      if(/^phase\d*/.test(key) || ["validate_coupon_preview", "coupon_admin_validate", "t"].includes(key)){
+      if(/^phase\d*/.test(key) || /^audit\d*/.test(key) || ["validate_coupon_preview", "coupon_admin_validate", "t"].includes(key)){
         url.searchParams.delete(key);
       }
     });
