@@ -6905,6 +6905,24 @@ body.visitanteNaoLogado #menuPedidosTopo{
   display:none !important;
 }
 
+body.omascoteAppMode .saldoTopoArea,
+body.omascoteAppMode .saldoTopoExtra,
+body.omascoteAppMode #btnAbrirSaldo,
+body.omascoteAppMode #saldoMenu,
+body.omascoteAppMode #saldo,
+body.omascoteAppMode .saldoPagamentoBtn,
+body.omascoteAppMode [data-price-preview],
+body.omascoteAppMode [data-clean-field-card="coupon_code"],
+body.omascoteAppMode [data-app-payment-cta]{
+  display:none !important;
+}
+
+body.omascoteAppMode .cleanProductPrice,
+body.omascoteAppMode .productChooserPrice,
+body.omascoteAppMode .optLabel span{
+  display:none !important;
+}
+
 body.visitanteNaoLogado.visitantePrimeiroAcessoReal > main > .wrap > .logoutTopBar.logoutOnlyTop,
 body.visitanteNaoLogado.visitantePrimeiroAcessoReal > main > .wrap > .topbar{
   display:none !important;
@@ -9078,7 +9096,7 @@ body:not(.modeChosen) .builderArea,
             <div id="escudo3dFileName">Selecionar escudo</div>
           </div>
 
-          <div class="cleanFieldCard" style="margin-top:14px;">
+          <div class="cleanFieldCard" data-clean-field-card="coupon_code" style="margin-top:14px;">
             <label class="cleanFieldLabel">Cupom de desconto</label>
             <input id="escudo3dCupom" placeholder="Digite seu cupom">
           </div>
@@ -11594,6 +11612,9 @@ function renderCleanFieldsGrouped(product, schema){
 }
 
 function formatCleanProductPrice(product){
+  if(typeof ia4EstaEmModoApp === "function" && ia4EstaEmModoApp()){
+    return "";
+  }
   if(product?.id === "escudo3d" && brindeEscudo3dAppDisponivel && typeof ia4EstaEmModoApp === "function" && ia4EstaEmModoApp()){
     return "Grátis no app";
   }
@@ -11642,6 +11663,10 @@ function schedulePricePreviewUpdate(target, delay = 250){
 
 async function updatePricePreview(target){
   if(!target) return;
+  if(typeof ia4EstaEmModoApp === "function" && ia4EstaEmModoApp()){
+    target.innerHTML = "";
+    return;
+  }
 
   const block = target.closest("[data-clean-product-block]") || document;
   const productKey = getPricePreviewProductKey(target);
@@ -11984,6 +12009,9 @@ function renderCleanProductForms(){
     const schema = getCleanProductSchema(productKey);
     if(!product || !schema) return "";
     const priceLabel = formatCleanProductPrice(product);
+    const submitLabel = typeof ia4EstaEmModoApp === "function" && ia4EstaEmModoApp()
+      ? "Recurso indisponível no app"
+      : "Criar minha arte 🚀";
 
     return `
       <section class="cleanProductBlock" data-clean-product-block="${htmlEscape(productKey)}">
@@ -11997,7 +12025,7 @@ function renderCleanProductForms(){
           </div>
           ${renderPerfilAssistClean(productKey)}
           ${renderCleanFieldsGrouped(product, schema)}
-          <button class="btnGreen cleanSubmitBtn" type="submit">Criar minha arte 🚀</button>
+          <button class="btnGreen cleanSubmitBtn" type="submit">${htmlEscape(submitLabel)}</button>
           <div class="cleanProductMsg" data-clean-msg></div>
           <div class="cleanResultBox" data-clean-result-box>
             <div class="cleanResultStatus" data-clean-result-status>Estamos montando sua imagem...</div>
@@ -12011,6 +12039,9 @@ function renderCleanProductForms(){
 
   const escudo3dProduct = PRODUCTS.escudo3d;
   const escudo3dPriceLabel = formatCleanProductPrice(escudo3dProduct);
+  const escudo3dSubmitLabel = typeof ia4EstaEmModoApp === "function" && ia4EstaEmModoApp()
+    ? "Recurso indisponível no app"
+    : "Criar minha arte 🚀";
   const escudo3dHtml = escudo3dProduct ? `
     <section class="cleanProductBlock cleanEscudo3dBlock" data-clean-product-block="escudo3d">
       <div class="cleanProductImage" aria-hidden="true">
@@ -12028,12 +12059,12 @@ function renderCleanProductForms(){
             <span class="cleanFilePlus">+</span>
           </div>
         </div>
-        <div class="cleanFieldCard">
+        <div class="cleanFieldCard" data-clean-field-card="coupon_code">
           <label class="cleanFieldLabel">Cupom de desconto</label>
           <input data-escudo3d-coupon placeholder="Digite seu cupom">
         </div>
         <div data-price-preview data-price-product="escudo3d"></div>
-        <button class="btnGreen cleanSubmitBtn" type="button" data-submit-escudo3d>Criar minha arte 🚀</button>
+        <button class="btnGreen cleanSubmitBtn" type="button" data-submit-escudo3d>${htmlEscape(escudo3dSubmitLabel)}</button>
         <div class="cleanProductMsg" data-clean-msg></div>
       </div>
     </section>
@@ -12259,6 +12290,29 @@ function appendIa4AccessContext(fd){
   const ctx = getIa4AccessContext();
   fd.append("origem_acesso", ctx.origem_acesso);
   fd.append("display_mode", ctx.display_mode);
+}
+
+function ia4AppModeHeaders(){
+  return typeof ia4EstaEmModoApp === "function" && ia4EstaEmModoApp()
+    ? { "X-Omascote-App-Mode": "app" }
+    : {};
+}
+
+function ia4MensagemRecursoIndisponivelApp(){
+  return "Este recurso não está disponível no app.";
+}
+
+function ia4BloquearRecursoPagoNoApp(target = null){
+  if(!(typeof ia4EstaEmModoApp === "function" && ia4EstaEmModoApp())) return false;
+
+  const msg = ia4MensagemRecursoIndisponivelApp();
+  if(target && typeof target === "object" && "textContent" in target){
+    target.textContent = msg;
+  }else{
+    alert(msg);
+  }
+
+  return true;
 }
 
 function buildLegacyFormDataFromClean(productKey, cleanOrder){
@@ -12705,6 +12759,11 @@ async function submitCleanProductForm(e){
   flyerTipoInput.value = product.flyerTipo || "";
   activateCleanProductBlock(productKey);
 
+  if(ia4BloquearRecursoPagoNoApp(form.querySelector("[data-clean-msg]"))){
+    cancelarProgressoNoProduto(form);
+    return;
+  }
+
   ia4RegistrarAcao("tentou_enviar_pedido", {
     produto: productKey,
     categoria: product.visualCategory || categoriaSelecionada || ""
@@ -12735,7 +12794,7 @@ async function submitCleanProductForm(e){
   try{
     const r = await fetch(`${API_BASE}${schema.endpoint}`, {
       method:"POST",
-      headers:{ "Authorization": "Bearer " + token },
+      headers:{ "Authorization": "Bearer " + token, ...ia4AppModeHeaders() },
       body:fd
     });
 
@@ -12900,8 +12959,11 @@ function bindCleanProductForms(root){
   root.querySelectorAll("[data-submit-escudo3d]").forEach(btn => {
     btn.addEventListener("click", async () => {
       activateCleanProductBlock("escudo3d");
+      const block = btn.closest(".cleanProductBlock");
+      const msg = block?.querySelector("[data-clean-msg]");
+      if(ia4BloquearRecursoPagoNoApp(msg)) return;
       const file = escudo3dFile?.files && escudo3dFile.files[0] ? escudo3dFile.files[0] : null;
-      await enviarPedidoEscudo3dComArquivo(file, btn.closest(".cleanProductBlock"));
+      await enviarPedidoEscudo3dComArquivo(file, block);
     });
   });
 
@@ -13365,6 +13427,7 @@ function applyLocal(){
 async function refreshMe(){
   if(!token){
     applyLocal();
+    if(typeof ia4AtualizarModoAppUi === "function") ia4AtualizarModoAppUi();
     return;
   }
 
@@ -13428,6 +13491,7 @@ if(escudoPromo){
       : `Primeira arte<br>Escudo 3D<br><span style="font-size:11px;color:#777;text-decoration:line-through;">R$18</span> <span style="color:#1fbf63;font-weight:900;">R$4</span>`;
   }
 }
+if(typeof ia4AtualizarModoAppUi === "function") ia4AtualizarModoAppUi();
     }
   }catch{}
 }
@@ -13488,6 +13552,10 @@ const SALDO_PIX_LABELS = {
 };
 
 async function comprarCreditos(pacote, metodo = "checkout", triggerBtn = null){
+  if(ia4BloquearRecursoPagoNoApp()){
+    return;
+  }
+
   if(!token){
     acaoDepoisDoCadastro = () => comprarCreditos(pacote, metodo);
     abrirCadastroVisitanteModal();
@@ -13508,9 +13576,10 @@ async function comprarCreditos(pacote, metodo = "checkout", triggerBtn = null){
       method:"POST",
       headers:{
         "Authorization": "Bearer " + token,
-        "Content-Type": "application/json"
+        "Content-Type": "application/json",
+        ...ia4AppModeHeaders()
       },
-      body: JSON.stringify({ pacote })
+      body: JSON.stringify({ pacote, ...getIa4AccessContext() })
     });
 
     const data = await r.json();
@@ -14873,6 +14942,7 @@ function selectProduct(productKey){
 
 function abrirEscudo3dModal(){
   if(!escudo3dModal) return;
+  if(ia4BloquearRecursoPagoNoApp(escudo3dMsg)) return;
   escudo3dMsg.textContent = "";
   escudo3dFileName.textContent = "Selecionar escudo";
   setEscudo3dCleanFileLabel("Selecionar escudo");
@@ -14890,6 +14960,7 @@ function fecharEscudo3dModal(){
 document.querySelectorAll(".optionBtn").forEach(btn=>{
   btn.addEventListener("click", ()=>{
     if(btn.dataset.product === "escudo3d"){
+      if(ia4BloquearRecursoPagoNoApp(msgPedidoEl)) return;
       if(!token){
         abrirCadastroEscudo3dModal();
         return;
@@ -14936,6 +15007,12 @@ if(escudo3dModalCouponInput && escudo3dModalPricePreview){
 }
 
 async function enviarPedidoEscudo3dComArquivo(file, progressTarget = null){
+  const targetMsg = progressTarget?.querySelector("[data-clean-msg]") || escudo3dMsg;
+  if(ia4BloquearRecursoPagoNoApp(targetMsg)){
+    if(progressTarget) cancelarProgressoNoProduto(progressTarget);
+    return;
+  }
+
   if(!token){
     const okAuto = await criarContaAutomaticaAntesPedido();
     if(!okAuto) return;
@@ -14998,7 +15075,7 @@ async function enviarPedidoEscudo3dComArquivo(file, progressTarget = null){
   try{
     const r = await fetch(`${API_BASE}/pedidos`, {
       method:"POST",
-      headers:{ "Authorization": "Bearer " + token },
+      headers:{ "Authorization": "Bearer " + token, ...ia4AppModeHeaders() },
       body:fd
     });
 
@@ -15786,6 +15863,10 @@ document.getElementById("pedidoForm").addEventListener("submit", async (e)=>{
     return;
   }
 
+  if(ia4BloquearRecursoPagoNoApp(msgPedidoEl)){
+    return;
+  }
+
   if(!validarPedidoAntesDeEnviar(productKey)){
     ia4RegistrarAcao("erro_validacao_pedido", {
       produto: productKey || "",
@@ -15925,7 +16006,7 @@ document.getElementById("pedidoForm").addEventListener("submit", async (e)=>{
 
     const r = await fetch(`${API_BASE}${endpoint}`, {
       method:"POST",
-      headers:{ "Authorization": "Bearer " + token },
+      headers:{ "Authorization": "Bearer " + token, ...ia4AppModeHeaders() },
       body:fd
     });
 
@@ -16357,6 +16438,15 @@ function ia4ContaAutoPendente(){
 }
 
 function cardPagamentoPendente(p) {
+  if(typeof ia4EstaEmModoApp === "function" && ia4EstaEmModoApp()){
+    return `
+      <div class="pagamentoPendenteBox">
+        <div class="pagamentoPendenteTitulo">Recurso indisponível no app</div>
+        <div class="pagamentoPendenteTexto">${ia4MensagemRecursoIndisponivelApp()}</div>
+      </div>
+    `;
+  }
+
   const valorNumero = Number(p.valor_pendente || 0);
   const valor = Number.isInteger(valorNumero)
     ? String(valorNumero)
@@ -16369,13 +16459,13 @@ function cardPagamentoPendente(p) {
       <div class="pagamentoPendenteTitulo">${titulo}</div>
       <div class="pagamentoPendenteTexto">${texto}</div>
       ${resumoCupom ? `<div class="couponSummary">${htmlEscape(resumoCupom)}</div>` : ``}
-      <button type="button" class="menuPedidoBtn" onclick="copiarPixPedido('${p.id}')">
+      <button type="button" class="menuPedidoBtn" data-app-payment-cta onclick="copiarPixPedido('${p.id}')">
         Copiar Pix R$${valor}
       </button>
-      <button type="button" class="menuPedidoBtn" onclick="verQrCodePedido('${p.id}')">
+      <button type="button" class="menuPedidoBtn" data-app-payment-cta onclick="verQrCodePedido('${p.id}')">
         Ver QR Code
       </button>
-      <button type="button" class="menuPedidoBtn" onclick="usarSaldoPedido('${p.id}')">
+      <button type="button" class="menuPedidoBtn" data-app-payment-cta onclick="usarSaldoPedido('${p.id}')">
         Usar saldo O Mascote
       </button>
     </div>
@@ -16383,6 +16473,10 @@ function cardPagamentoPendente(p) {
 }
 
 async function gerarPixPedido(id) {
+  if(ia4BloquearRecursoPagoNoApp()){
+    return null;
+  }
+
   if(!token){
     alert("Faça login para pagar com Pix.");
     return null;
@@ -16391,7 +16485,8 @@ async function gerarPixPedido(id) {
   const r = await fetch(`${API_BASE}/pedidos/${id}/gerar-pix`, {
     method:"POST",
     headers:{
-      "Authorization":"Bearer " + token
+      "Authorization":"Bearer " + token,
+      ...ia4AppModeHeaders()
     }
   });
 
@@ -16427,6 +16522,10 @@ async function copiarTextoPix(texto) {
 }
 
 async function copiarPixPedido(id) {
+  if(ia4BloquearRecursoPagoNoApp()){
+    return;
+  }
+
   try{
     const data = await gerarPixPedido(id);
     if(!data?.pix_copia_cola){
@@ -16443,6 +16542,10 @@ async function copiarPixPedido(id) {
 }
 
 async function verQrCodePedido(id) {
+  if(ia4BloquearRecursoPagoNoApp()){
+    return;
+  }
+
   try{
     const data = await gerarPixPedido(id);
 
@@ -16459,6 +16562,10 @@ async function verQrCodePedido(id) {
 }
 
 async function usarSaldoPedido(id) {
+  if(ia4BloquearRecursoPagoNoApp()){
+    return;
+  }
+
   if(!token){
     alert("Faça login para usar seu saldo O Mascote.");
     return;
@@ -16468,7 +16575,8 @@ async function usarSaldoPedido(id) {
     const r = await fetch(`${API_BASE}/pedidos/${id}/pagar-com-saldo`, {
       method:"POST",
       headers:{
-        "Authorization":"Bearer " + token
+        "Authorization":"Bearer " + token,
+        ...ia4AppModeHeaders()
       }
     });
 
@@ -16494,6 +16602,10 @@ async function usarSaldoPedido(id) {
 }
 
 function abrirModalPixQr(id, data) {
+  if(ia4BloquearRecursoPagoNoApp()){
+    return;
+  }
+
   const modal = document.getElementById("pixQrModal");
   const body = document.getElementById("pixQrBody");
 
@@ -16518,6 +16630,10 @@ function abrirModalPixQr(id, data) {
 }
 
 function abrirModalPixSaldo(pacote, data) {
+  if(ia4BloquearRecursoPagoNoApp()){
+    return;
+  }
+
   const modal = document.getElementById("pixQrModal");
   const body = document.getElementById("pixQrBody");
 
@@ -16547,6 +16663,10 @@ function abrirModalPixSaldo(pacote, data) {
 }
 
 async function copiarPixSaldoAtual() {
+  if(ia4BloquearRecursoPagoNoApp()){
+    return;
+  }
+
   if(!saldoPixAtual?.pix){
     alert("Pix ainda não disponível.");
     return;
@@ -16705,7 +16825,7 @@ function atualizarMenuPedidosTopo(pedidos){
       <div class="menuPedidoInfo">
         <div class="menuPedidoTipo">${p.tipo || "Arte"}</div>
         <div class="menuPedidoStatus">${ajustePendente ? "⏳ Ajustando sua arte..." : textoStatusPedido(p.status)}</div>
-        ${mostrarPagamentoPendente ? cardPagamentoPendente(p) : pagamentoPendente ? `<div class="ajustePedidoBox">Sua arte está sendo criada. Assim que a prévia ficar pronta, o pagamento Pix aparecerá aqui.</div>` : ``}
+        ${mostrarPagamentoPendente ? cardPagamentoPendente(p) : pagamentoPendente ? `<div class="ajustePedidoBox">${typeof ia4EstaEmModoApp === "function" && ia4EstaEmModoApp() ? ia4MensagemRecursoIndisponivelApp() : "Sua arte está sendo criada. Assim que a prévia ficar pronta, o pagamento Pix aparecerá aqui."}</div>` : ``}
         ${p.status === "pronto" ? `<div class="descLabelInstagram">Sugestão de descrição para Instagram</div>` : ``}
         ${barraProducaoPedido(p)}
         ${p.status === "pronto" ? `
@@ -16857,7 +16977,7 @@ async function carregarHistorico(){
         <b>${p.tipo}</b><br>
         ID: ${p.id}<br>
         Status: ${ajustePendente ? "⏳ Ajustando sua arte..." : textoStatusPedido(p.status)}<br>
-        ${mostrarPagamentoPendente ? cardPagamentoPendente(p) : pagamentoPendente ? `<div class="ajustePedidoBox">Sua arte está sendo criada. Assim que a prévia ficar pronta, o pagamento Pix aparecerá aqui.</div>` : ``}
+        ${mostrarPagamentoPendente ? cardPagamentoPendente(p) : pagamentoPendente ? `<div class="ajustePedidoBox">${typeof ia4EstaEmModoApp === "function" && ia4EstaEmModoApp() ? ia4MensagemRecursoIndisponivelApp() : "Sua arte está sendo criada. Assim que a prévia ficar pronta, o pagamento Pix aparecerá aqui."}</div>` : ``}
         ${p.status === "pronto" ? `<div class="descLabelInstagram">Sugestão de descrição para Instagram</div>` : ``}
         ${barraProducaoPedido(p)}
 
@@ -21366,11 +21486,38 @@ let cartasAppAtivas = [];
 let cartasAppPollingTimer = null;
 
 function ia4EstaEmModoApp(){
+  let modoForcadoTeste = false;
+  try{
+    const params = new URLSearchParams(window.location.search || "");
+    modoForcadoTeste = params.get("omascote_app") === "1" || params.get("modo_app") === "1";
+  }catch(e){
+    modoForcadoTeste = false;
+  }
+
+  // TWA envia referrer android-app://; PWA/TWA usam display-mode standalone.
+  // O parametro omascote_app=1 existe apenas para teste controlado no navegador.
   return (
+    modoForcadoTeste ||
     window.matchMedia?.("(display-mode: standalone)")?.matches === true ||
     window.navigator.standalone === true ||
     document.referrer.startsWith("android-app://")
   );
+}
+
+function ia4AtualizarModoAppUi(){
+  const modoApp = ia4EstaEmModoApp();
+  document.body.classList.toggle("omascoteAppMode", modoApp);
+  if(modoApp){
+    [
+      document.querySelector(".saldoTopoArea"),
+      document.querySelector(".saldoTopoExtra"),
+      document.getElementById("btnAbrirSaldo"),
+      document.getElementById("saldoMenu"),
+      document.getElementById("saldo")
+    ].forEach(el => el?.style?.setProperty("display", "none", "important"));
+    saldoMenu?.classList.remove("open");
+    fecharModalPixQr();
+  }
 }
 
 function ia4MostrarBotaoInstalarApp(){
@@ -21605,6 +21752,12 @@ function ia4RegistrarUsoAppPwa(){
     localStorage.setItem("ia4tube_uso_app_pwa_ultimo", String(agora));
   }catch(e){}
 }
+
+ia4AtualizarModoAppUi();
+
+try{
+  window.matchMedia?.("(display-mode: standalone)")?.addEventListener?.("change", ia4AtualizarModoAppUi);
+}catch(e){}
 
 if(ia4EstaEmModoApp()){
   ia4RegistrarAppInstaladoUmaVez();
