@@ -21494,13 +21494,18 @@ function ia4EstaEmModoApp(){
     modoForcadoTeste = false;
   }
 
-  // TWA envia referrer android-app://; PWA/TWA usam display-mode standalone.
-  // O parametro omascote_app=1 existe apenas para teste controlado no navegador.
+  // Bloqueio de pagamento vale apenas para app Android/TWA com sinal explicito.
+  // PWA instalado tambem usa display-mode standalone, mas deve funcionar como site.
   return (
     modoForcadoTeste ||
-    window.matchMedia?.("(display-mode: standalone)")?.matches === true ||
-    window.navigator.standalone === true ||
     document.referrer.startsWith("android-app://")
+  );
+}
+
+function ia4EstaEmPwa(){
+  return (
+    window.matchMedia?.("(display-mode: standalone)")?.matches === true ||
+    window.navigator.standalone === true
   );
 }
 
