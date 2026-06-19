@@ -1,7 +1,7 @@
 {
-  "name": "O Mascote",
-  "short_name": "O Mascote",
-  "description": "Crie artes esportivas profissionais e perfis para seu time.",
+  "name": "Meu Clube FC",
+  "short_name": "Meu Clube FC",
+  "description": "Plataforma para clubes com perfil do time, elenco, escalação, patrocinadores, ranking, galeria, jogos, resultados e artes automáticas.",
   "start_url": "/app.html",
   "scope": "/",
   "display": "standalone",
