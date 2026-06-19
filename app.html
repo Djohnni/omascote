@@ -11620,17 +11620,20 @@ function renderCleanFieldsGrouped(product, schema){
 }
 
 function formatCleanProductPrice(product){
+  if(product?.id === "escudo3d" && ia4Escudo3dBrindeGratisNoApp()){
+    return "Grátis no app";
+  }
   if(typeof ia4EstaEmModoApp === "function" && ia4EstaEmModoApp()){
     return "";
-  }
-  if(product?.id === "escudo3d" && brindeEscudo3dAppDisponivel && typeof ia4EstaEmModoApp === "function" && ia4EstaEmModoApp()){
-    return "Grátis no app";
   }
   const price = Number(product?.price || 0);
   return price ? `R$${price.toFixed(2).replace(".", ",")}` : "";
 }
 
 function getProductBasePrice(productKey){
+  if(ia4PedidoGratisPermitidoNoApp(productKey)){
+    return 0;
+  }
   return Number(PRODUCTS[productKey]?.price || 0);
 }
 
@@ -12310,8 +12313,37 @@ function ia4MensagemRecursoIndisponivelApp(){
   return "Este recurso não está disponível no app.";
 }
 
-function ia4BloquearRecursoPagoNoApp(target = null){
+function ia4Escudo3dBrindeGratisNoApp(){
+  return (
+    brindeEscudo3dAppDisponivel === true &&
+    typeof ia4EstaEmModoApp === "function" &&
+    ia4EstaEmModoApp()
+  );
+}
+
+function ia4PedidoGratisPermitidoNoApp(productKey = "", dados = {}){
   if(!(typeof ia4EstaEmModoApp === "function" && ia4EstaEmModoApp())) return false;
+
+  const key = String(productKey || dados.productKey || dados.product_id || dados.produto || "");
+  if(key === "escudo3d" && ia4Escudo3dBrindeGratisNoApp()) return true;
+
+  const valorFinalRaw = dados.valor_final ?? dados.valorFinal ?? dados.total ?? null;
+  if(valorFinalRaw !== null && valorFinalRaw !== ""){
+    const valorFinal = Number(valorFinalRaw);
+    if(Number.isFinite(valorFinal) && valorFinal <= 0) return true;
+  }
+
+  const basePrice = Number(PRODUCTS[key]?.price);
+  return !!key && Number.isFinite(basePrice) && basePrice <= 0;
+}
+
+function ia4BloquearRecursoPagoNoApp(target = null, options = {}){
+  if(!(typeof ia4EstaEmModoApp === "function" && ia4EstaEmModoApp())) return false;
+
+  const opcoes = typeof options === "string" ? { productKey: options } : (options || {});
+  if(ia4PedidoGratisPermitidoNoApp(opcoes.productKey || opcoes.product_id || opcoes.produto, opcoes)){
+    return false;
+  }
 
   const msg = ia4MensagemRecursoIndisponivelApp();
   if(target && typeof target === "object" && "textContent" in target){
@@ -12767,7 +12799,7 @@ async function submitCleanProductForm(e){
   flyerTipoInput.value = product.flyerTipo || "";
   activateCleanProductBlock(productKey);
 
-  if(ia4BloquearRecursoPagoNoApp(form.querySelector("[data-clean-msg]"))){
+  if(ia4BloquearRecursoPagoNoApp(form.querySelector("[data-clean-msg]"), { productKey })){
     cancelarProgressoNoProduto(form);
     return;
   }
@@ -12969,7 +13001,7 @@ function bindCleanProductForms(root){
       activateCleanProductBlock("escudo3d");
       const block = btn.closest(".cleanProductBlock");
       const msg = block?.querySelector("[data-clean-msg]");
-      if(ia4BloquearRecursoPagoNoApp(msg)) return;
+      if(ia4BloquearRecursoPagoNoApp(msg, { productKey: "escudo3d" })) return;
       const file = escudo3dFile?.files && escudo3dFile.files[0] ? escudo3dFile.files[0] : null;
       await enviarPedidoEscudo3dComArquivo(file, block);
     });
@@ -14950,7 +14982,7 @@ function selectProduct(productKey){
 
 function abrirEscudo3dModal(){
   if(!escudo3dModal) return;
-  if(ia4BloquearRecursoPagoNoApp(escudo3dMsg)) return;
+  if(ia4BloquearRecursoPagoNoApp(escudo3dMsg, { productKey: "escudo3d" })) return;
   escudo3dMsg.textContent = "";
   escudo3dFileName.textContent = "Selecionar escudo";
   setEscudo3dCleanFileLabel("Selecionar escudo");
@@ -14968,7 +15000,7 @@ function fecharEscudo3dModal(){
 document.querySelectorAll(".optionBtn").forEach(btn=>{
   btn.addEventListener("click", ()=>{
     if(btn.dataset.product === "escudo3d"){
-      if(ia4BloquearRecursoPagoNoApp(msgPedidoEl)) return;
+      if(ia4BloquearRecursoPagoNoApp(msgPedidoEl, { productKey: "escudo3d" })) return;
       if(!token){
         abrirCadastroEscudo3dModal();
         return;
@@ -15016,7 +15048,7 @@ if(escudo3dModalCouponInput && escudo3dModalPricePreview){
 
 async function enviarPedidoEscudo3dComArquivo(file, progressTarget = null){
   const targetMsg = progressTarget?.querySelector("[data-clean-msg]") || escudo3dMsg;
-  if(ia4BloquearRecursoPagoNoApp(targetMsg)){
+  if(ia4BloquearRecursoPagoNoApp(targetMsg, { productKey: "escudo3d" })){
     if(progressTarget) cancelarProgressoNoProduto(progressTarget);
     return;
   }
@@ -15871,7 +15903,7 @@ document.getElementById("pedidoForm").addEventListener("submit", async (e)=>{
     return;
   }
 
-  if(ia4BloquearRecursoPagoNoApp(msgPedidoEl)){
+  if(ia4BloquearRecursoPagoNoApp(msgPedidoEl, { productKey })){
     return;
   }
 
