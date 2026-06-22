@@ -1602,6 +1602,9 @@
     }
 
     .legalLinkBtn{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
       background:#ffffff;
       border:1px solid #d7dde8;
       color:#111827;
@@ -1610,6 +1613,8 @@
       padding:8px 10px;
       font-size:12px;
       font-weight:900;
+      line-height:1.1;
+      text-decoration:none;
     }
 
     .brandFootnote{
@@ -4710,6 +4715,11 @@ body{
 .logoTopoText{
   min-width:118px;
   padding:0 !important;
+  flex-direction:column !important;
+  align-items:center !important;
+  justify-content:center !important;
+  text-align:center !important;
+  gap:4px !important;
 }
 
 .logoTopoText .c1{color:#1e88ff}
@@ -4723,15 +4733,19 @@ body{
   line-height:1;
   font-weight:950;
   letter-spacing:.5px;
+  white-space:nowrap;
 }
 
 .ia4Brand small{
   display:block;
-  margin-top:4px;
+  margin-top:0;
   font-size:12px;
+  line-height:1.1;
   font-weight:900;
   color:#27c35f;
   letter-spacing:.08em;
+  text-align:center;
+  white-space:nowrap;
 }
 
 .logoTopo{
@@ -6923,7 +6937,6 @@ body.omascoteAppMode [data-app-payment-cta]{
 }
 
 body.omascoteAppMode .cleanProductPrice,
-body.omascoteAppMode .productChooserPrice,
 body.omascoteAppMode .optLabel span{
   display:none !important;
 }
@@ -7831,11 +7844,11 @@ body.visitanteNaoLogado .visitanteWelcomeCallout{
 
 .productChooserPrice{
   display:block;
-  margin-top:2px;
+  margin-top:5px;
   color:rgba(250,204,21,.92);
-  font-size:12px;
+  font-size:13px;
   line-height:1.1;
-  font-weight:850;
+  font-weight:950;
 }
 
 .productChooserProfileHint{
@@ -8549,7 +8562,7 @@ body:not(.modeChosen) .builderArea,
 
       <div class="ia4Brand logoTopoText" aria-label="Meu Clube FC">
         <strong><span class="c1">Meu</span><span class="c2"> Clube</span><span class="c3"> FC</span></strong>
-        <small>PLATAFORMA PARA CLUBES</small>
+        <small>Plataforma para Clubes</small>
       </div>
 
       <div id="ia4TopProducaoBox" class="ia4TopProducaoBox">
@@ -8837,10 +8850,11 @@ body:not(.modeChosen) .builderArea,
               </div>
             </div>
             <div class="legalLinksBar" aria-label="Informações legais e segurança">
-              <button class="legalLinkBtn" id="btnAbrirPrivacidadeFooter" type="button">Política de privacidade</button>
-              <button class="legalLinkBtn" id="btnAbrirTermosFooter" type="button">Termos de uso</button>
-              <button class="legalLinkBtn" id="btnDenunciarIaFooter" type="button">Denunciar conteúdo IA</button>
-              <button class="legalLinkBtn" id="btnExcluirContaFooter" type="button">Excluir minha conta</button>
+              <a class="legalLinkBtn" href="/politica-de-privacidade">Política de Privacidade</a>
+              <a class="legalLinkBtn" href="/termos-de-uso">Termos de Uso</a>
+              <button class="legalLinkBtn" id="btnExcluirContaFooter" type="button">Excluir Conta</button>
+              <button class="legalLinkBtn" id="btnDenunciarIaFooter" type="button">Denunciar Conteúdo Gerado por IA</button>
+              <button class="legalLinkBtn" id="btnAbrirSuporteFooter" type="button">Suporte</button>
             </div>
             <div class="brandFootnote">Meu Clube FC é uma plataforma da O Mascote</div>
           </div>
@@ -9746,6 +9760,7 @@ body:not(.modeChosen) .builderArea,
     <div class="legalBody">
       <h3>Denunciar conteudo gerado por IA</h3>
       <p>Use este canal para avisar sobre imagem, perfil, arte ou texto ofensivo, inadequado, enganoso ou que viole direitos de terceiros.</p>
+      <p>As denúncias são encaminhadas para análise e resposta do suporte. O prazo normal de triagem é de até 5 dias úteis.</p>
       <div class="legalForm">
         <label>
           Tipo de conteudo
@@ -9757,8 +9772,8 @@ body:not(.modeChosen) .builderArea,
           </select>
         </label>
         <label>
-          Link relacionado
-          <input id="denunciaIaUrl" maxlength="500" placeholder="https://omascote.com.br/app.html">
+          Link ou ID do conteúdo
+          <input id="denunciaIaUrl" maxlength="500" placeholder="Link público, ID do pedido ou identificação da arte">
         </label>
         <label>
           Motivo
@@ -9775,7 +9790,7 @@ body:not(.modeChosen) .builderArea,
           <textarea id="denunciaIaDescricao" maxlength="2000" placeholder="Explique o que precisa ser revisado."></textarea>
         </label>
         <label>
-          Contato opcional
+          Contato do denunciante
           <input id="denunciaIaContato" maxlength="160" placeholder="WhatsApp ou e-mail para retorno">
         </label>
         <div class="legalActions">
@@ -10031,9 +10046,21 @@ async function solicitarExclusaoConta(){
 async function enviarDenunciaIa(){
   const descricao = (denunciaIaDescricao?.value || "").trim();
   const motivo = denunciaIaMotivo?.value || "";
+  const referencia = (denunciaIaUrl?.value || "").trim();
+  const contato = (denunciaIaContato?.value || "").trim();
 
-  if(!descricao && !motivo){
+  if(!motivo){
     setLegalMsg(denunciaIaMsg, "Informe o motivo da denuncia.", "erro");
+    return;
+  }
+
+  if(!referencia){
+    setLegalMsg(denunciaIaMsg, "Informe o link ou ID do conteudo.", "erro");
+    return;
+  }
+
+  if(!contato){
+    setLegalMsg(denunciaIaMsg, "Informe um contato para retorno.", "erro");
     return;
   }
 
@@ -10052,10 +10079,10 @@ async function enviarDenunciaIa(){
       headers,
       body:JSON.stringify({
         tipo: denunciaIaTipo?.value || "arte",
-        url: denunciaIaUrl?.value || location.href,
+        url: referencia,
         motivo,
         descricao,
-        contato: denunciaIaContato?.value || ""
+        contato
       })
     });
 
@@ -11630,6 +11657,11 @@ function formatCleanProductPrice(product){
   return price ? `R$${price.toFixed(2).replace(".", ",")}` : "";
 }
 
+function formatProductCardPrice(product){
+  const price = Number(product?.price || 0);
+  return price ? `R$ ${price.toFixed(2).replace(".", ",")}` : "";
+}
+
 function getProductBasePrice(productKey){
   if(ia4PedidoGratisPermitidoNoApp(productKey)){
     return 0;
@@ -11889,7 +11921,7 @@ function renderProductChooser(){
         const product = PRODUCTS[productKey] || {};
         const copy = PRODUCT_CHOOSER_COPY[productKey] || {};
         const name = copy.name || product.title || product.name || productKey;
-        const priceLabel = formatCleanProductPrice(product);
+        const priceLabel = formatProductCardPrice(product);
         return `
           <button type="button" class="productChooserCard" data-product-picker="${htmlEscape(productKey)}" aria-pressed="false">
             <span class="productChooserThumb" aria-hidden="true">
@@ -12020,9 +12052,7 @@ function renderCleanProductForms(){
     const schema = getCleanProductSchema(productKey);
     if(!product || !schema) return "";
     const priceLabel = formatCleanProductPrice(product);
-    const submitLabel = typeof ia4EstaEmModoApp === "function" && ia4EstaEmModoApp()
-      ? "Recurso indisponível no app"
-      : "Criar minha arte 🚀";
+    const submitLabel = "Criar minha arte 🚀";
 
     return `
       <section class="cleanProductBlock" data-clean-product-block="${htmlEscape(productKey)}">
@@ -12050,9 +12080,7 @@ function renderCleanProductForms(){
 
   const escudo3dProduct = PRODUCTS.escudo3d;
   const escudo3dPriceLabel = formatCleanProductPrice(escudo3dProduct);
-  const escudo3dSubmitLabel = typeof ia4EstaEmModoApp === "function" && ia4EstaEmModoApp()
-    ? "Recurso indisponível no app"
-    : "Criar minha arte 🚀";
+  const escudo3dSubmitLabel = "Criar minha arte 🚀";
   const escudo3dHtml = escudo3dProduct ? `
     <section class="cleanProductBlock cleanEscudo3dBlock" data-clean-product-block="escudo3d">
       <div class="cleanProductImage" aria-hidden="true">
@@ -12310,7 +12338,7 @@ function ia4AppModeHeaders(){
 }
 
 function ia4MensagemRecursoIndisponivelApp(){
-  return "Este recurso não está disponível no app.";
+  return "Pagamentos e desbloqueios pagos não estão disponíveis no app.";
 }
 
 function ia4Escudo3dBrindeGratisNoApp(){
@@ -12799,11 +12827,6 @@ async function submitCleanProductForm(e){
   flyerTipoInput.value = product.flyerTipo || "";
   activateCleanProductBlock(productKey);
 
-  if(ia4BloquearRecursoPagoNoApp(form.querySelector("[data-clean-msg]"), { productKey })){
-    cancelarProgressoNoProduto(form);
-    return;
-  }
-
   ia4RegistrarAcao("tentou_enviar_pedido", {
     produto: productKey,
     categoria: product.visualCategory || categoriaSelecionada || ""
@@ -13000,8 +13023,6 @@ function bindCleanProductForms(root){
     btn.addEventListener("click", async () => {
       activateCleanProductBlock("escudo3d");
       const block = btn.closest(".cleanProductBlock");
-      const msg = block?.querySelector("[data-clean-msg]");
-      if(ia4BloquearRecursoPagoNoApp(msg, { productKey: "escudo3d" })) return;
       const file = escudo3dFile?.files && escudo3dFile.files[0] ? escudo3dFile.files[0] : null;
       await enviarPedidoEscudo3dComArquivo(file, block);
     });
@@ -14982,7 +15003,6 @@ function selectProduct(productKey){
 
 function abrirEscudo3dModal(){
   if(!escudo3dModal) return;
-  if(ia4BloquearRecursoPagoNoApp(escudo3dMsg, { productKey: "escudo3d" })) return;
   escudo3dMsg.textContent = "";
   escudo3dFileName.textContent = "Selecionar escudo";
   setEscudo3dCleanFileLabel("Selecionar escudo");
@@ -15000,7 +15020,6 @@ function fecharEscudo3dModal(){
 document.querySelectorAll(".optionBtn").forEach(btn=>{
   btn.addEventListener("click", ()=>{
     if(btn.dataset.product === "escudo3d"){
-      if(ia4BloquearRecursoPagoNoApp(msgPedidoEl, { productKey: "escudo3d" })) return;
       if(!token){
         abrirCadastroEscudo3dModal();
         return;
@@ -15047,12 +15066,6 @@ if(escudo3dModalCouponInput && escudo3dModalPricePreview){
 }
 
 async function enviarPedidoEscudo3dComArquivo(file, progressTarget = null){
-  const targetMsg = progressTarget?.querySelector("[data-clean-msg]") || escudo3dMsg;
-  if(ia4BloquearRecursoPagoNoApp(targetMsg, { productKey: "escudo3d" })){
-    if(progressTarget) cancelarProgressoNoProduto(progressTarget);
-    return;
-  }
-
   if(!token){
     const okAuto = await criarContaAutomaticaAntesPedido();
     if(!okAuto) return;
@@ -15900,10 +15913,6 @@ document.getElementById("pedidoForm").addEventListener("submit", async (e)=>{
 
   if(!product){
     msgPedidoEl.textContent = "Escolha primeiro o tipo de arte.";
-    return;
-  }
-
-  if(ia4BloquearRecursoPagoNoApp(msgPedidoEl, { productKey })){
     return;
   }
 
@@ -21895,6 +21904,10 @@ cartaAppModal?.addEventListener("click", (event) => {
   "btnExcluirConta",
   "btnExcluirContaFooter"
 ].forEach(id => document.getElementById(id)?.addEventListener("click", abrirExcluirConta));
+
+document.getElementById("btnAbrirSuporteFooter")?.addEventListener("click", () => {
+  ia4SupportBtn?.click();
+});
 
 legalInfoCloseBtn?.addEventListener("click", fecharLegalInfo);
 excluirContaCloseBtn?.addEventListener("click", fecharExcluirConta);
