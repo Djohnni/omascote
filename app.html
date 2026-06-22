@@ -6963,8 +6963,7 @@ body.visitanteNaoLogado.visitantePrimeiroAcessoReal .cleanProductPrice{
   display:none !important;
 }
 
-#ia4SupportBtn,
-#ia4ChatBox{
+#ia4SupportBtn{
   display:none !important;
 }
 
@@ -8550,10 +8549,6 @@ body:not(.modeChosen) .builderArea,
       <button id="btnSair" type="button">Sair</button>
       <button id="btnCadastroTopo" type="button">Cadastro</button>
       <button id="btnPerfilTime" type="button" hidden>Perfil do Time</button>
-      <button id="btnAbrirPrivacidade" type="button">Privacidade</button>
-      <button id="btnAbrirTermos" type="button">Termos</button>
-      <button id="btnDenunciarIa" type="button">Denunciar IA</button>
-      <button id="btnExcluirConta" type="button">Excluir conta</button>
       <button id="btnInstalarApp" class="instalarAppBtn" type="button" hidden>📲 Instalar app</button>
     </div>
 
@@ -8850,8 +8845,8 @@ body:not(.modeChosen) .builderArea,
               </div>
             </div>
             <div class="legalLinksBar" aria-label="Informações legais e segurança">
-              <a class="legalLinkBtn" href="/politica-de-privacidade">Política de Privacidade</a>
-              <a class="legalLinkBtn" href="/termos-de-uso">Termos de Uso</a>
+              <a class="legalLinkBtn" id="btnAbrirPrivacidadeFooter" href="/politica-de-privacidade">Política de Privacidade</a>
+              <a class="legalLinkBtn" id="btnAbrirTermosFooter" href="/termos-de-uso">Termos de Uso</a>
               <button class="legalLinkBtn" id="btnExcluirContaFooter" type="button">Excluir Conta</button>
               <button class="legalLinkBtn" id="btnDenunciarIaFooter" type="button">Denunciar Conteúdo Gerado por IA</button>
               <button class="legalLinkBtn" id="btnAbrirSuporteFooter" type="button">Suporte</button>
@@ -21885,23 +21880,21 @@ cartaAppModal?.addEventListener("click", (event) => {
   }
 });
 
-[
-  "btnAbrirPrivacidade",
-  "btnAbrirPrivacidadeFooter"
-].forEach(id => document.getElementById(id)?.addEventListener("click", () => abrirLegalInfo("privacidade")));
+document.getElementById("btnAbrirPrivacidadeFooter")?.addEventListener("click", (event) => {
+  event.preventDefault();
+  window.location.href = "/politica-de-privacidade";
+});
+
+document.getElementById("btnAbrirTermosFooter")?.addEventListener("click", (event) => {
+  event.preventDefault();
+  window.location.href = "/termos-de-uso";
+});
 
 [
-  "btnAbrirTermos",
-  "btnAbrirTermosFooter"
-].forEach(id => document.getElementById(id)?.addEventListener("click", () => abrirLegalInfo("termos")));
-
-[
-  "btnDenunciarIa",
   "btnDenunciarIaFooter"
 ].forEach(id => document.getElementById(id)?.addEventListener("click", abrirDenunciaIa));
 
 [
-  "btnExcluirConta",
   "btnExcluirContaFooter"
 ].forEach(id => document.getElementById(id)?.addEventListener("click", abrirExcluirConta));
 
