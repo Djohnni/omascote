@@ -3428,6 +3428,278 @@
       border-top:1px solid #e2e8f0;
     }
 
+    /* ===== DIVIDIR TIMES MVP ===== */
+    .dividirTimesSection{
+      margin-top:18px;
+      padding-top:16px;
+      border-top:1px solid #e2e8f0;
+    }
+
+    .dividirTimesIntro{
+      border:1px solid #bbf7d0;
+      border-radius:16px;
+      background:#f0fdf4;
+      padding:12px;
+      margin-bottom:12px;
+      color:#166534;
+      font-size:12px;
+      font-weight:850;
+      line-height:1.4;
+    }
+
+    .dividirTimesForm{
+      display:grid;
+      grid-template-columns:1fr auto;
+      gap:10px;
+      align-items:end;
+      margin-bottom:12px;
+    }
+
+    .dividirTimesPlayers{
+      display:grid;
+      grid-template-columns:repeat(auto-fill, minmax(180px, 1fr));
+      gap:8px;
+      margin-bottom:12px;
+    }
+
+    .dividirTimesPlayerCheck{
+      display:flex;
+      align-items:center;
+      gap:9px;
+      border:1px solid #dbe3ef;
+      border-radius:12px;
+      background:#ffffff;
+      padding:10px;
+      color:#0f172a;
+      font-size:12px;
+      font-weight:900;
+      cursor:pointer;
+      min-height:52px;
+    }
+
+    .dividirTimesPlayerCheck input{
+      width:18px;
+      height:18px;
+      accent-color:#16a34a;
+      flex:0 0 auto;
+    }
+
+    .dividirTimesPlayerCheck span{
+      display:block;
+      min-width:0;
+      overflow-wrap:anywhere;
+    }
+
+    .dividirTimesSession,
+    .dividirTimesResultBox{
+      border:1px solid #dbe3ef;
+      border-radius:16px;
+      background:#ffffff;
+      padding:12px;
+      margin-top:12px;
+      display:grid;
+      gap:10px;
+    }
+
+    .dividirTimesSession[hidden],
+    .dividirTimesResultBox[hidden]{
+      display:none !important;
+    }
+
+    .dividirTimesLinkRow{
+      display:grid;
+      grid-template-columns:1fr auto;
+      gap:8px;
+    }
+
+    .dividirTimesLinkRow input{
+      border:1px solid #cbd5e1;
+      border-radius:10px;
+      padding:10px;
+      font-size:12px;
+      font-weight:850;
+      min-width:0;
+    }
+
+    .dividirTimesStatusLine{
+      display:flex;
+      flex-wrap:wrap;
+      gap:8px;
+      color:#475569;
+      font-size:12px;
+      font-weight:900;
+    }
+
+    .dividirTimesStatusLine span{
+      border-radius:999px;
+      background:#f1f5f9;
+      padding:7px 9px;
+    }
+
+    .dividirTimesActions{
+      display:flex;
+      flex-wrap:wrap;
+      gap:8px;
+    }
+
+    .dividirTimesTeams{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:10px;
+    }
+
+    .dividirTimesTeamCard{
+      border:1px solid #e2e8f0;
+      border-radius:14px;
+      background:#f8fafc;
+      padding:12px;
+    }
+
+    .dividirTimesTeamCard strong{
+      display:block;
+      color:#0f172a;
+      font-size:14px;
+      font-weight:950;
+      margin-bottom:4px;
+    }
+
+    .dividirTimesTeamCard small{
+      display:block;
+      color:#64748b;
+      font-size:11px;
+      font-weight:900;
+      margin-bottom:8px;
+    }
+
+    .dividirTimesTeamCard ul{
+      margin:0;
+      padding-left:18px;
+      color:#334155;
+      font-size:13px;
+      font-weight:850;
+      line-height:1.5;
+    }
+
+    .dividirTimesVotePage{
+      min-height:100vh;
+      background:#f8fafc;
+      color:#111827;
+      padding:18px;
+    }
+
+    .dividirTimesVoteShell{
+      max-width:760px;
+      margin:0 auto;
+      display:grid;
+      gap:14px;
+    }
+
+    .dividirTimesVoteHero,
+    .dividirTimesVoteCard{
+      border:1px solid #dbe3ef;
+      border-radius:18px;
+      background:#ffffff;
+      padding:16px;
+      box-shadow:0 12px 28px rgba(15,23,42,.08);
+    }
+
+    .dividirTimesVoteHero h1{
+      margin:4px 0 8px;
+      color:#0f172a;
+      font-size:28px;
+      line-height:1.05;
+      letter-spacing:0;
+    }
+
+    .dividirTimesVoteHero p{
+      margin:0;
+      color:#475569;
+      font-size:13px;
+      font-weight:850;
+      line-height:1.45;
+    }
+
+    .dividirTimesVoteList{
+      display:grid;
+      gap:8px;
+      margin:12px 0;
+    }
+
+    .dividirTimesVoteRow{
+      display:grid;
+      grid-template-columns:34px minmax(0, 1fr) auto;
+      gap:8px;
+      align-items:center;
+      border:1px solid #e2e8f0;
+      border-radius:14px;
+      background:#f8fafc;
+      padding:9px;
+      min-height:58px;
+    }
+
+    .dividirTimesVotePosition{
+      width:34px;
+      height:34px;
+      border-radius:10px;
+      background:#111827;
+      color:#ffffff;
+      display:grid;
+      place-items:center;
+      font-size:12px;
+      font-weight:950;
+    }
+
+    .dividirTimesVoteName strong{
+      display:block;
+      color:#0f172a;
+      font-size:13px;
+      font-weight:950;
+      line-height:1.15;
+      overflow-wrap:anywhere;
+    }
+
+    .dividirTimesVoteName span{
+      display:block;
+      color:#64748b;
+      font-size:11px;
+      font-weight:850;
+      margin-top:2px;
+    }
+
+    .dividirTimesVoteMove{
+      display:flex;
+      gap:5px;
+    }
+
+    .dividirTimesMoveBtn{
+      width:34px;
+      height:34px;
+      border-radius:10px;
+      border:1px solid #cbd5e1;
+      background:#ffffff;
+      color:#111827;
+      font-size:15px;
+      font-weight:950;
+      cursor:pointer;
+    }
+
+    .dividirTimesMoveBtn:disabled{
+      opacity:.38;
+      cursor:not-allowed;
+    }
+
+    .dividirTimesMsg{
+      min-height:18px;
+      color:#475569;
+      font-size:12px;
+      font-weight:900;
+      line-height:1.35;
+    }
+
+    .dividirTimesMsg.ok{color:#047857}
+    .dividirTimesMsg.erro{color:#b91c1c}
+    /* ===== FIM DIVIDIR TIMES MVP ===== */
+
     .perfilPatrocinadorPreview{
       display:grid;
       grid-template-columns:repeat(auto-fill, minmax(150px, 1fr));
@@ -3806,11 +4078,35 @@
 
       .perfilJogadorForm,
       .perfilPatrocinadorForm,
+      .dividirTimesForm,
       .perfilEscalacaoForm,
       .perfilEscalacaoPreviewGrid,
       .perfilJogoForm,
-      .perfilJogosPreviewGrid{
+      .perfilJogosPreviewGrid,
+      .dividirTimesTeams,
+      .dividirTimesLinkRow{
         grid-template-columns:1fr;
+      }
+
+      .dividirTimesPlayers{
+        grid-template-columns:1fr;
+      }
+
+      .dividirTimesVotePage{
+        padding:10px;
+      }
+
+      .dividirTimesVoteHero h1{
+        font-size:24px;
+      }
+
+      .dividirTimesVoteRow{
+        grid-template-columns:30px minmax(0, 1fr);
+      }
+
+      .dividirTimesVoteMove{
+        grid-column:1 / -1;
+        justify-content:flex-end;
       }
 
       .perfilTimeActions{
@@ -8429,6 +8725,33 @@ body:not(.modeChosen) .builderArea,
     </div>
   </section>
 
+  <!-- ===== DIVIDIR TIMES MVP: PAGINA PUBLICA DE VOTACAO ===== -->
+  <section class="dividirTimesVotePage" id="dividirTimesVotePage" hidden>
+    <div class="dividirTimesVoteShell">
+      <header class="dividirTimesVoteHero">
+        <div class="perfilPublicoBrand">Meu Clube FC</div>
+        <h1>Votacao para dividir times</h1>
+        <p id="dividirTimesVoteIntro">Carregando jogadores presentes...</p>
+      </header>
+
+      <section class="dividirTimesVoteCard">
+        <div class="perfilTimeField full">
+          <label for="dividirTimesVotanteNome">Nome ou apelido de quem esta votando (opcional)</label>
+          <input id="dividirTimesVotanteNome" maxlength="80" autocomplete="name" placeholder="Ex: Joao">
+        </div>
+
+        <div class="dividirTimesVoteList" id="dividirTimesVoteList"></div>
+
+        <div class="dividirTimesActions">
+          <button class="btnGreen" id="dividirTimesEnviarVotoBtn" type="button">Enviar voto</button>
+          <a class="perfilMiniBtn" href="/app.html">Abrir Meu Clube FC</a>
+        </div>
+        <div class="dividirTimesMsg" id="dividirTimesVoteMsg"></div>
+      </section>
+    </div>
+  </section>
+  <!-- ===== FIM DIVIDIR TIMES MVP: PAGINA PUBLICA DE VOTACAO ===== -->
+
   <section class="perfilPublicoPage" id="perfilPublicoPage" hidden>
     <div class="perfilPublicoShell">
       <header class="perfilPublicoHeader">
@@ -9440,6 +9763,70 @@ body:not(.modeChosen) .builderArea,
 
         <div class="perfilJogadorLista" id="perfilJogadoresLista"></div>
       </div>
+
+      <!-- ===== DIVIDIR TIMES MVP ===== -->
+      <div class="dividirTimesSection" id="dividirTimesSection">
+        <div class="perfilElencoTop">
+          <strong>Dividir Times</strong>
+          <span id="dividirTimesResumo">Selecione os presentes</span>
+        </div>
+
+        <div class="dividirTimesIntro">
+          Escolha quem esta presente, gere um link de votacao e depois crie dois times equilibrados pela media dos rankings. O ranking individual nao fica publico.
+        </div>
+
+        <div class="dividirTimesForm">
+          <div class="perfilTimeField">
+            <label for="dividirTimesTitulo">Nome do treino/jogo</label>
+            <input id="dividirTimesTitulo" maxlength="90" autocomplete="off" placeholder="Ex: Treino de hoje">
+          </div>
+          <button class="btnGreen" id="dividirTimesCriarBtn" type="button">Criar votacao</button>
+        </div>
+
+        <div class="dividirTimesPlayers" id="dividirTimesPlayers"></div>
+
+        <div class="dividirTimesSession" id="dividirTimesSessionBox" hidden>
+          <div class="dividirTimesStatusLine">
+            <span id="dividirTimesSessaoTitulo">Votacao criada</span>
+            <span id="dividirTimesVotosCount">0 votos</span>
+            <span id="dividirTimesPresentesCount">0 presentes</span>
+          </div>
+
+          <div class="dividirTimesLinkRow">
+            <input id="dividirTimesLink" type="text" readonly placeholder="Link de votacao">
+            <button class="perfilMiniBtn" id="dividirTimesCopiarLinkBtn" type="button">Copiar link</button>
+          </div>
+
+          <div class="dividirTimesActions">
+            <button class="perfilMiniBtn" id="dividirTimesAtualizarBtn" type="button">Atualizar votos</button>
+            <button class="btnGreen" id="dividirTimesGerarBtn" type="button">Gerar times</button>
+          </div>
+
+          <div class="dividirTimesResultBox" id="dividirTimesResultadoBox" hidden>
+            <div class="dividirTimesStatusLine">
+              <span id="dividirTimesForcaA">Time A: 0</span>
+              <span id="dividirTimesForcaB">Time B: 0</span>
+              <span id="dividirTimesDiferenca">Diferenca: 0</span>
+            </div>
+            <div class="dividirTimesTeams">
+              <div class="dividirTimesTeamCard">
+                <strong>Time A</strong>
+                <small id="dividirTimesTimeAResumo">Forca total 0</small>
+                <ul id="dividirTimesTimeA"></ul>
+              </div>
+              <div class="dividirTimesTeamCard">
+                <strong>Time B</strong>
+                <small id="dividirTimesTimeBResumo">Forca total 0</small>
+                <ul id="dividirTimesTimeB"></ul>
+              </div>
+            </div>
+            <button class="perfilMiniBtn" id="dividirTimesCopiarResultadoBtn" type="button">Copiar para WhatsApp</button>
+          </div>
+        </div>
+
+        <div class="dividirTimesMsg" id="dividirTimesMsg"></div>
+      </div>
+      <!-- ===== FIM DIVIDIR TIMES MVP ===== -->
 
       <div class="perfilEscalacaoSection">
         <div class="perfilElencoTop">
@@ -17624,6 +18011,12 @@ const rankingGolsCount = document.getElementById("rankingGolsCount");
 const rankingAproveitamentoCount = document.getElementById("rankingAproveitamentoCount");
 const rankingArtesCount = document.getElementById("rankingArtesCount");
 const rankingTimesMsg = document.getElementById("rankingTimesMsg");
+const dividirTimesVotePage = document.getElementById("dividirTimesVotePage");
+const dividirTimesVoteIntro = document.getElementById("dividirTimesVoteIntro");
+const dividirTimesVotanteNome = document.getElementById("dividirTimesVotanteNome");
+const dividirTimesVoteList = document.getElementById("dividirTimesVoteList");
+const dividirTimesEnviarVotoBtn = document.getElementById("dividirTimesEnviarVotoBtn");
+const dividirTimesVoteMsg = document.getElementById("dividirTimesVoteMsg");
 const perfilPublicoPage = document.getElementById("perfilPublicoPage");
 const perfilPublicoCopiarBtn = document.getElementById("perfilPublicoCopiarBtn");
 const perfilPublicoWhatsappBtn = document.getElementById("perfilPublicoWhatsappBtn");
@@ -17662,6 +18055,28 @@ const perfilJogadorNumero = document.getElementById("perfilJogadorNumero");
 const perfilJogadorPosicao = document.getElementById("perfilJogadorPosicao");
 const perfilJogadorSalvarBtn = document.getElementById("perfilJogadorSalvarBtn");
 const perfilJogadorCancelarBtn = document.getElementById("perfilJogadorCancelarBtn");
+const dividirTimesResumo = document.getElementById("dividirTimesResumo");
+const dividirTimesTitulo = document.getElementById("dividirTimesTitulo");
+const dividirTimesCriarBtn = document.getElementById("dividirTimesCriarBtn");
+const dividirTimesPlayers = document.getElementById("dividirTimesPlayers");
+const dividirTimesSessionBox = document.getElementById("dividirTimesSessionBox");
+const dividirTimesSessaoTitulo = document.getElementById("dividirTimesSessaoTitulo");
+const dividirTimesVotosCount = document.getElementById("dividirTimesVotosCount");
+const dividirTimesPresentesCount = document.getElementById("dividirTimesPresentesCount");
+const dividirTimesLink = document.getElementById("dividirTimesLink");
+const dividirTimesCopiarLinkBtn = document.getElementById("dividirTimesCopiarLinkBtn");
+const dividirTimesAtualizarBtn = document.getElementById("dividirTimesAtualizarBtn");
+const dividirTimesGerarBtn = document.getElementById("dividirTimesGerarBtn");
+const dividirTimesResultadoBox = document.getElementById("dividirTimesResultadoBox");
+const dividirTimesForcaA = document.getElementById("dividirTimesForcaA");
+const dividirTimesForcaB = document.getElementById("dividirTimesForcaB");
+const dividirTimesDiferenca = document.getElementById("dividirTimesDiferenca");
+const dividirTimesTimeAResumo = document.getElementById("dividirTimesTimeAResumo");
+const dividirTimesTimeBResumo = document.getElementById("dividirTimesTimeBResumo");
+const dividirTimesTimeA = document.getElementById("dividirTimesTimeA");
+const dividirTimesTimeB = document.getElementById("dividirTimesTimeB");
+const dividirTimesCopiarResultadoBtn = document.getElementById("dividirTimesCopiarResultadoBtn");
+const dividirTimesMsg = document.getElementById("dividirTimesMsg");
 const perfilPatrocinadoresResumo = document.getElementById("perfilPatrocinadoresResumo");
 const perfilPatrocinadoresPreview = document.getElementById("perfilPatrocinadoresPreview");
 const perfilPatrocinadoresLista = document.getElementById("perfilPatrocinadoresLista");
@@ -17705,6 +18120,16 @@ let perfilEscalacaoTime = { titulares: [], reservas: [] };
 let perfilEscalacaoEditId = "";
 let perfilJogosTime = [];
 let perfilJogoEditId = "";
+let dividirTimesState = {
+  sessao: null,
+  resultado: null,
+  selecionados: new Set()
+};
+let dividirTimesVoteState = {
+  token: "",
+  sessao: null,
+  ranking: []
+};
 var perfilCriarArteModoAtivo = false;
 var perfilEscudoFileCache = null;
 var perfilEscudoFileCacheKey = "";
@@ -20166,7 +20591,455 @@ function renderPerfilElenco(){
         }).join("")
       : `<div class="perfilEmptyList">Nenhum jogador cadastrado.</div>`;
   }
+
+  renderDividirTimesJogadores();
 }
+
+/* ===== DIVIDIR TIMES MVP ===== */
+function dividirTimesSetMsg(texto, tipo = ""){
+  if(!dividirTimesMsg) return;
+  dividirTimesMsg.textContent = texto || "";
+  dividirTimesMsg.className = `dividirTimesMsg${tipo ? " " + tipo : ""}`;
+}
+
+function dividirTimesVoteSetMsg(texto, tipo = ""){
+  if(!dividirTimesVoteMsg) return;
+  dividirTimesVoteMsg.textContent = texto || "";
+  dividirTimesVoteMsg.className = `dividirTimesMsg${tipo ? " " + tipo : ""}`;
+}
+
+function dividirTimesJogadorNome(jogador = {}){
+  return perfilAssistTexto(jogador.apelido || jogador.nome) || "Jogador";
+}
+
+function dividirTimesJogadorDetalhe(jogador = {}){
+  return [jogador.numero ? `#${jogador.numero}` : "", jogador.posicao || ""]
+    .map(perfilAssistTexto)
+    .filter(Boolean)
+    .join(" - ");
+}
+
+function dividirTimesJogadorLabel(jogador = {}){
+  return [dividirTimesJogadorNome(jogador), dividirTimesJogadorDetalhe(jogador)]
+    .filter(Boolean)
+    .join(" - ");
+}
+
+function dividirTimesSelecionadosLista(){
+  const ids = new Set(dividirTimesState.selecionados || []);
+  return perfilJogadoresAtivos().filter(jogador => ids.has(String(jogador.id || "")));
+}
+
+function renderDividirTimesJogadores(){
+  if(!dividirTimesPlayers) return;
+
+  const jogadores = perfilJogadoresAtivos();
+  const idsAtivos = new Set(jogadores.map(jogador => String(jogador.id || "")));
+  dividirTimesState.selecionados = new Set(
+    [...(dividirTimesState.selecionados || [])].filter(id => idsAtivos.has(String(id)))
+  );
+
+  if(dividirTimesResumo){
+    const selecionados = dividirTimesState.selecionados.size;
+    dividirTimesResumo.textContent = jogadores.length
+      ? `${selecionados} de ${jogadores.length} presentes`
+      : "Cadastre jogadores no elenco";
+  }
+
+  dividirTimesPlayers.innerHTML = jogadores.length
+    ? jogadores.map(jogador => {
+        const id = String(jogador.id || "");
+        const checked = dividirTimesState.selecionados.has(id) ? " checked" : "";
+        return `
+          <label class="dividirTimesPlayerCheck">
+            <input type="checkbox" data-dividir-presente="${htmlEscape(id)}"${checked}>
+            <span>${htmlEscape(dividirTimesJogadorLabel(jogador))}</span>
+          </label>
+        `;
+      }).join("")
+    : `<div class="perfilEmptyList">Cadastre jogadores no elenco antes de dividir times.</div>`;
+}
+
+function dividirTimesNormalizarSessao(sessao = {}){
+  const jogadores = Array.isArray(sessao.jogadores_presentes)
+    ? sessao.jogadores_presentes
+    : Array.isArray(sessao.presentes)
+      ? sessao.presentes
+      : [];
+  return {
+    ...sessao,
+    id: String(sessao.id || ""),
+    titulo: sessao.titulo || "Dividir Times",
+    share_token: sessao.share_token || sessao.token || "",
+    jogadores_presentes: jogadores.filter(Boolean),
+    votos_count: Number(sessao.votos_count ?? sessao.total_votos ?? 0),
+    status: sessao.status || "aberta"
+  };
+}
+
+function dividirTimesUrlVotacao(sessao = dividirTimesState.sessao){
+  const tokenSessao = sessao?.share_token || "";
+  if(!tokenSessao) return "";
+  const url = new URL("/app.html", location.origin);
+  url.searchParams.set("dividir", tokenSessao);
+  return url.toString();
+}
+
+function renderDividirTimesSessao(sessaoRaw, resultadoRaw){
+  const sessao = dividirTimesNormalizarSessao(sessaoRaw || {});
+  dividirTimesState.sessao = sessao;
+  dividirTimesState.resultado = resultadoRaw || sessao.resultado || null;
+
+  if(dividirTimesSessionBox) dividirTimesSessionBox.hidden = !sessao.id;
+  if(dividirTimesSessaoTitulo) dividirTimesSessaoTitulo.textContent = sessao.titulo || "Votacao criada";
+  if(dividirTimesVotosCount) dividirTimesVotosCount.textContent = `${sessao.votos_count || 0} ${sessao.votos_count === 1 ? "voto" : "votos"}`;
+  if(dividirTimesPresentesCount) dividirTimesPresentesCount.textContent = `${sessao.jogadores_presentes.length} presentes`;
+  if(dividirTimesLink) dividirTimesLink.value = dividirTimesUrlVotacao(sessao);
+
+  renderDividirTimesResultado(dividirTimesState.resultado);
+}
+
+async function criarDividirTimesSessao(){
+  if(!token){
+    abrirLoginVisitanteModal();
+    return;
+  }
+
+  const selecionados = dividirTimesSelecionadosLista();
+  if(selecionados.length < 2){
+    dividirTimesSetMsg("Selecione pelo menos 2 jogadores presentes.", "erro");
+    return;
+  }
+
+  const titulo = (dividirTimesTitulo?.value || "").trim() || `Treino ${new Date().toLocaleDateString("pt-BR")}`;
+
+  try{
+    if(dividirTimesCriarBtn){
+      dividirTimesCriarBtn.disabled = true;
+      dividirTimesCriarBtn.textContent = "Criando...";
+    }
+    dividirTimesSetMsg("Criando link de votacao...");
+
+    const r = await fetch(`${API_BASE}/me/time/divisoes`, {
+      method:"POST",
+      headers:{
+        "Content-Type":"application/json",
+        "Authorization":"Bearer " + token
+      },
+      body:JSON.stringify({
+        titulo,
+        jogadores_presentes: selecionados.map(jogador => jogador.id)
+      })
+    });
+    const data = await ia4LerJsonSeguro(r);
+    const authMsg = ia4TratarAuthInvalida(r, data);
+
+    if(authMsg){
+      dividirTimesSetMsg(authMsg, "erro");
+      return;
+    }
+
+    if(!r.ok || !data.ok){
+      throw new Error(data.error || data.erro || "Nao foi possivel criar a votacao.");
+    }
+
+    renderDividirTimesSessao(data.sessao, data.resultado);
+    dividirTimesSetMsg("Votacao criada. Compartilhe o link com o grupo.", "ok");
+  }catch(err){
+    dividirTimesSetMsg(err?.message || "Erro de rede ao criar votacao.", "erro");
+  }finally{
+    if(dividirTimesCriarBtn){
+      dividirTimesCriarBtn.disabled = false;
+      dividirTimesCriarBtn.textContent = "Criar votacao";
+    }
+  }
+}
+
+async function atualizarDividirTimesSessao(){
+  if(!token || !dividirTimesState.sessao?.id) return;
+
+  try{
+    dividirTimesSetMsg("Atualizando votos...");
+    const r = await fetch(`${API_BASE}/me/time/divisoes/${encodeURIComponent(dividirTimesState.sessao.id)}?ts=${Date.now()}`, {
+      headers:{ "Authorization":"Bearer " + token },
+      cache:"no-store"
+    });
+    const data = await ia4LerJsonSeguro(r);
+    const authMsg = ia4TratarAuthInvalida(r, data);
+
+    if(authMsg){
+      dividirTimesSetMsg(authMsg, "erro");
+      return;
+    }
+
+    if(!r.ok || !data.ok){
+      throw new Error(data.error || data.erro || "Nao foi possivel atualizar a votacao.");
+    }
+
+    renderDividirTimesSessao(data.sessao, data.resultado);
+    dividirTimesSetMsg("Votos atualizados.", "ok");
+  }catch(err){
+    dividirTimesSetMsg(err?.message || "Erro de rede ao atualizar votacao.", "erro");
+  }
+}
+
+async function gerarDividirTimesResultado(){
+  if(!token || !dividirTimesState.sessao?.id) return;
+
+  try{
+    if(dividirTimesGerarBtn){
+      dividirTimesGerarBtn.disabled = true;
+      dividirTimesGerarBtn.textContent = "Gerando...";
+    }
+    dividirTimesSetMsg("Calculando times equilibrados...");
+
+    const r = await fetch(`${API_BASE}/me/time/divisoes/${encodeURIComponent(dividirTimesState.sessao.id)}/gerar-times`, {
+      method:"POST",
+      headers:{ "Authorization":"Bearer " + token }
+    });
+    const data = await ia4LerJsonSeguro(r);
+    const authMsg = ia4TratarAuthInvalida(r, data);
+
+    if(authMsg){
+      dividirTimesSetMsg(authMsg, "erro");
+      return;
+    }
+
+    if(!r.ok || !data.ok){
+      throw new Error(data.error || data.erro || "Nao foi possivel gerar os times.");
+    }
+
+    renderDividirTimesSessao(data.sessao || dividirTimesState.sessao, data.resultado);
+    dividirTimesSetMsg("Times gerados.", "ok");
+  }catch(err){
+    dividirTimesSetMsg(err?.message || "Erro de rede ao gerar times.", "erro");
+  }finally{
+    if(dividirTimesGerarBtn){
+      dividirTimesGerarBtn.disabled = false;
+      dividirTimesGerarBtn.textContent = "Gerar times";
+    }
+  }
+}
+
+function dividirTimesForcaTexto(value){
+  const numero = Number(value || 0);
+  return numero.toLocaleString("pt-BR", { maximumFractionDigits:2 });
+}
+
+function dividirTimesRenderLista(container, jogadores = []){
+  if(!container) return;
+  container.innerHTML = jogadores.length
+    ? jogadores.map(jogador => `<li>${htmlEscape(dividirTimesJogadorLabel(jogador))}</li>`).join("")
+    : `<li>Nenhum jogador.</li>`;
+}
+
+function renderDividirTimesResultado(resultado){
+  const temResultado = resultado && Array.isArray(resultado.time_a) && Array.isArray(resultado.time_b);
+  if(dividirTimesResultadoBox) dividirTimesResultadoBox.hidden = !temResultado;
+  if(!temResultado) return;
+
+  const forcaA = Number(resultado.forca_a ?? resultado.total_a ?? 0);
+  const forcaB = Number(resultado.forca_b ?? resultado.total_b ?? 0);
+  const diferenca = Number(resultado.diferenca ?? Math.abs(forcaA - forcaB));
+
+  if(dividirTimesForcaA) dividirTimesForcaA.textContent = `Time A: ${dividirTimesForcaTexto(forcaA)}`;
+  if(dividirTimesForcaB) dividirTimesForcaB.textContent = `Time B: ${dividirTimesForcaTexto(forcaB)}`;
+  if(dividirTimesDiferenca) dividirTimesDiferenca.textContent = `Diferenca: ${dividirTimesForcaTexto(diferenca)}`;
+  if(dividirTimesTimeAResumo) dividirTimesTimeAResumo.textContent = `Forca total ${dividirTimesForcaTexto(forcaA)}`;
+  if(dividirTimesTimeBResumo) dividirTimesTimeBResumo.textContent = `Forca total ${dividirTimesForcaTexto(forcaB)}`;
+
+  dividirTimesRenderLista(dividirTimesTimeA, resultado.time_a);
+  dividirTimesRenderLista(dividirTimesTimeB, resultado.time_b);
+}
+
+async function dividirTimesCopiarTexto(texto){
+  const raw = String(texto || "").trim();
+  if(!raw) return false;
+  try{
+    if(navigator.clipboard?.writeText){
+      await navigator.clipboard.writeText(raw);
+      return true;
+    }
+  }catch(e){}
+  try{
+    const input = document.createElement("textarea");
+    input.value = raw;
+    input.setAttribute("readonly", "readonly");
+    input.style.position = "fixed";
+    input.style.opacity = "0";
+    document.body.appendChild(input);
+    input.select();
+    const ok = document.execCommand("copy");
+    input.remove();
+    return ok;
+  }catch(e){
+    return false;
+  }
+}
+
+async function copiarDividirTimesLink(){
+  const ok = await dividirTimesCopiarTexto(dividirTimesLink?.value || dividirTimesUrlVotacao());
+  dividirTimesSetMsg(ok ? "Link copiado." : "Nao foi possivel copiar o link.", ok ? "ok" : "erro");
+}
+
+function dividirTimesResultadoTexto(){
+  const resultado = dividirTimesState.resultado;
+  if(!resultado) return "";
+  const titulo = dividirTimesState.sessao?.titulo || "Dividir Times";
+  const forcaA = Number(resultado.forca_a ?? resultado.total_a ?? 0);
+  const forcaB = Number(resultado.forca_b ?? resultado.total_b ?? 0);
+  const diferenca = Number(resultado.diferenca ?? Math.abs(forcaA - forcaB));
+  const nomes = lista => (Array.isArray(lista) ? lista : []).map(jogador => `- ${dividirTimesJogadorLabel(jogador)}`).join("\n");
+  return [
+    `Meu Clube FC - ${titulo}`,
+    "",
+    `Time A (forca ${dividirTimesForcaTexto(forcaA)}):`,
+    nomes(resultado.time_a),
+    "",
+    `Time B (forca ${dividirTimesForcaTexto(forcaB)}):`,
+    nomes(resultado.time_b),
+    "",
+    `Diferenca: ${dividirTimesForcaTexto(diferenca)}`
+  ].join("\n");
+}
+
+async function copiarDividirTimesResultado(){
+  const ok = await dividirTimesCopiarTexto(dividirTimesResultadoTexto());
+  dividirTimesSetMsg(ok ? "Resultado copiado para compartilhar no WhatsApp." : "Nao foi possivel copiar o resultado.", ok ? "ok" : "erro");
+}
+
+function dividirTimesVoterToken(){
+  const key = "omascote_dividir_times_voter_token";
+  let value = "";
+  try{ value = localStorage.getItem(key) || ""; }catch(e){}
+  if(!value){
+    value = (window.crypto?.randomUUID?.() || `votante_${Date.now()}_${Math.random().toString(16).slice(2)}`);
+    try{ localStorage.setItem(key, value); }catch(e){}
+  }
+  return value;
+}
+
+function dividirTimesVotoJogadores(sessao = dividirTimesVoteState.sessao){
+  return (Array.isArray(sessao?.jogadores_presentes) ? sessao.jogadores_presentes : []).filter(Boolean);
+}
+
+function renderDividirTimesVoteList(){
+  if(!dividirTimesVoteList) return;
+  const ranking = dividirTimesVoteState.ranking || [];
+  dividirTimesVoteList.innerHTML = ranking.length
+    ? ranking.map((jogador, index) => `
+        <div class="dividirTimesVoteRow" data-dividir-vote-player="${htmlEscape(jogador.id || "")}">
+          <div class="dividirTimesVotePosition">${index + 1}o</div>
+          <div class="dividirTimesVoteName">
+            <strong>${htmlEscape(dividirTimesJogadorNome(jogador))}</strong>
+            <span>${htmlEscape(dividirTimesJogadorDetalhe(jogador) || "Jogador presente")}</span>
+          </div>
+          <div class="dividirTimesVoteMove">
+            <button class="dividirTimesMoveBtn" type="button" data-dividir-move="${index}" data-dir="-1" ${index === 0 ? "disabled" : ""}>↑</button>
+            <button class="dividirTimesMoveBtn" type="button" data-dividir-move="${index}" data-dir="1" ${index === ranking.length - 1 ? "disabled" : ""}>↓</button>
+          </div>
+        </div>
+      `).join("")
+    : `<div class="perfilEmptyList">Nenhum jogador para votar.</div>`;
+}
+
+function moverDividirTimesVoto(index, dir){
+  const lista = [...(dividirTimesVoteState.ranking || [])];
+  const origem = Number(index);
+  const destino = origem + Number(dir || 0);
+  if(origem < 0 || destino < 0 || origem >= lista.length || destino >= lista.length) return;
+  const item = lista[origem];
+  lista[origem] = lista[destino];
+  lista[destino] = item;
+  dividirTimesVoteState.ranking = lista;
+  renderDividirTimesVoteList();
+}
+
+async function carregarDividirTimesPublico(tokenSessao){
+  dividirTimesVoteState.token = String(tokenSessao || "").trim();
+  if(!dividirTimesVoteState.token) return false;
+
+  document.title = "Votar para Dividir Times | Meu Clube FC";
+  document.body.classList.add("publicProfileMode");
+  if(dividirTimesVotePage) dividirTimesVotePage.hidden = false;
+  dividirTimesVoteSetMsg("Carregando votacao...");
+
+  try{
+    const voterToken = dividirTimesVoterToken();
+    const r = await fetch(`${API_BASE}/dividir-times/${encodeURIComponent(dividirTimesVoteState.token)}?voter_token=${encodeURIComponent(voterToken)}&ts=${Date.now()}`, { cache:"no-store" });
+    const data = await ia4LerJsonSeguro(r);
+
+    if(!r.ok || !data.ok){
+      throw new Error(data.error || data.erro || "Votacao nao encontrada.");
+    }
+
+    const sessao = dividirTimesNormalizarSessao(data.sessao || {});
+    dividirTimesVoteState.sessao = sessao;
+    dividirTimesVoteState.ranking = dividirTimesVotoJogadores(sessao);
+
+    const total = sessao.jogadores_presentes.length;
+    if(dividirTimesVoteIntro){
+      dividirTimesVoteIntro.textContent = `${sessao.titulo || "Treino"}: ordene ${total} jogador(es) do melhor para o pior.`;
+    }
+    renderDividirTimesVoteList();
+    dividirTimesVoteSetMsg(data.ja_votou ? "Este aparelho ja enviou um voto para esta votacao." : "Use as setas para ordenar e envie seu voto.", data.ja_votou ? "ok" : "");
+    if(dividirTimesEnviarVotoBtn) dividirTimesEnviarVotoBtn.disabled = data.ja_votou === true;
+  }catch(err){
+    if(dividirTimesVoteIntro) dividirTimesVoteIntro.textContent = "Nao foi possivel carregar esta votacao.";
+    dividirTimesVoteSetMsg(err?.message || "Erro de rede ao carregar votacao.", "erro");
+  }
+
+  return true;
+}
+
+async function enviarDividirTimesVoto(){
+  if(!dividirTimesVoteState.token || !dividirTimesVoteState.ranking?.length) return;
+
+  const ranking = dividirTimesVoteState.ranking.map((jogador, index) => ({
+    jogador_id: jogador.id,
+    posicao: index + 1
+  }));
+
+  try{
+    if(dividirTimesEnviarVotoBtn){
+      dividirTimesEnviarVotoBtn.disabled = true;
+      dividirTimesEnviarVotoBtn.textContent = "Enviando...";
+    }
+    dividirTimesVoteSetMsg("Enviando voto...");
+
+    const r = await fetch(`${API_BASE}/dividir-times/${encodeURIComponent(dividirTimesVoteState.token)}/votos`, {
+      method:"POST",
+      headers:{ "Content-Type":"application/json" },
+      body:JSON.stringify({
+        voter_token: dividirTimesVoterToken(),
+        nome_votante: (dividirTimesVotanteNome?.value || "").trim(),
+        ranking
+      })
+    });
+    const data = await ia4LerJsonSeguro(r);
+
+    if(!r.ok || !data.ok){
+      throw new Error(data.error || data.erro || "Nao foi possivel salvar seu voto.");
+    }
+
+    dividirTimesVoteSetMsg("Voto enviado. Obrigado!", "ok");
+    if(dividirTimesEnviarVotoBtn) dividirTimesEnviarVotoBtn.textContent = "Voto enviado";
+  }catch(err){
+    dividirTimesVoteSetMsg(err?.message || "Erro de rede ao enviar voto.", "erro");
+    if(dividirTimesEnviarVotoBtn){
+      dividirTimesEnviarVotoBtn.disabled = false;
+      dividirTimesEnviarVotoBtn.textContent = "Enviar voto";
+    }
+  }
+}
+
+function iniciarDividirTimesPublicoSeNecessario(){
+  const tokenSessao = new URLSearchParams(location.search).get("dividir");
+  if(!tokenSessao) return false;
+  carregarDividirTimesPublico(tokenSessao);
+  return true;
+}
+/* ===== FIM DIVIDIR TIMES MVP ===== */
 
 function perfilEscalacaoJogadorLabel(jogador){
   const numero = perfilAssistTexto(jogador?.numero);
@@ -21072,6 +21945,23 @@ perfilJogadorCancelarBtn?.addEventListener("click", ()=>{
   limparFormJogador();
   setPerfilTimeMsg("");
 });
+dividirTimesPlayers?.addEventListener("change", (e)=>{
+  const checkbox = e.target?.closest?.("[data-dividir-presente]");
+  if(!checkbox) return;
+  const id = checkbox.getAttribute("data-dividir-presente") || "";
+  if(!id) return;
+  if(checkbox.checked){
+    dividirTimesState.selecionados.add(id);
+  }else{
+    dividirTimesState.selecionados.delete(id);
+  }
+  renderDividirTimesJogadores();
+});
+dividirTimesCriarBtn?.addEventListener("click", criarDividirTimesSessao);
+dividirTimesCopiarLinkBtn?.addEventListener("click", copiarDividirTimesLink);
+dividirTimesAtualizarBtn?.addEventListener("click", atualizarDividirTimesSessao);
+dividirTimesGerarBtn?.addEventListener("click", gerarDividirTimesResultado);
+dividirTimesCopiarResultadoBtn?.addEventListener("click", copiarDividirTimesResultado);
 perfilEscalacaoSalvarBtn?.addEventListener("click", salvarPerfilEscalacaoItem);
 perfilEscalacaoCancelarBtn?.addEventListener("click", ()=>{
   limparFormEscalacao();
@@ -21105,6 +21995,12 @@ perfilJogadoresLista?.addEventListener("click", (e)=>{
     removerPerfilJogador(removerBtn.getAttribute("data-remover-jogador"));
   }
 });
+dividirTimesVoteList?.addEventListener("click", (e)=>{
+  const btn = e.target?.closest?.("[data-dividir-move]");
+  if(!btn) return;
+  moverDividirTimesVoto(btn.getAttribute("data-dividir-move"), btn.getAttribute("data-dir"));
+});
+dividirTimesEnviarVotoBtn?.addEventListener("click", enviarDividirTimesVoto);
 perfilPatrocinadoresLista?.addEventListener("click", (e)=>{
   const editarBtn = e.target?.closest?.("[data-editar-patrocinador]");
   const removerBtn = e.target?.closest?.("[data-remover-patrocinador]");
@@ -21923,6 +22819,7 @@ denunciaIaModal?.addEventListener("click", (event) => {
 });
 
 inicializarProdutoPorUrl();
+iniciarDividirTimesPublicoSeNecessario();
 iniciarRankingSeNecessario();
 iniciarPerfilPublicoSeNecessario();
 </script>
