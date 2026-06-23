@@ -82,6 +82,78 @@ function calculateScores(presentPlayers, votes){
   );
 }
 
+function normalizeComparisonText(value){
+  return String(value || "")
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase()
+    .trim();
+}
+
+function positionGroup(posicao){
+  const text = normalizeComparisonText(posicao);
+  if(!text) return "";
+
+  if(/\b(goleiro|gol|keeper|guarda[\s-]?redes)\b/.test(text)) return "goleiro";
+  if(/\b(zagueiro|zaga|defensor|defesa|lateral|beque|back)\b/.test(text)) return "defesa";
+  if(/\b(meia|meio|volante|armador|central)\b/.test(text)) return "meio";
+  if(/\b(atacante|ataque|ponta|centroavante|avante|ala)\b/.test(text)) return "ataque";
+
+  return "";
+}
+
+function topPenalty(setA, rankedIndexes){
+  const rules = [
+    { size:2, weight:1000 },
+    { size:4, weight:100 },
+    { size:6, weight:50 }
+  ];
+
+  return rules.reduce((total, rule) => {
+    if(rankedIndexes.length < rule.size) return total;
+
+    const group = rankedIndexes.slice(0, rule.size);
+    const countA = group.filter(index => setA.has(index)).length;
+    const countB = rule.size - countA;
+    const idealDiff = rule.size % 2;
+    const excess = Math.max(0, Math.abs(countA - countB) - idealDiff);
+
+    return total + excess * rule.weight;
+  }, 0);
+}
+
+function positionPenalty(players, setA){
+  const groups = new Map();
+
+  players.forEach((player, index) => {
+    const group = positionGroup(player?.posicao);
+    if(!group) return;
+    if(!groups.has(group)) groups.set(group, []);
+    groups.get(group).push(index);
+  });
+
+  let penalty = 0;
+
+  groups.forEach((indexes, group) => {
+    if(indexes.length < 2) return;
+
+    const countA = indexes.filter(index => setA.has(index)).length;
+    const countB = indexes.length - countA;
+    const idealDiff = indexes.length % 2;
+    const excess = Math.max(0, Math.abs(countA - countB) - idealDiff);
+    const weight = group === "goleiro" ? 20 : 4;
+
+    penalty += excess * weight;
+  });
+
+  return penalty;
+}
+
+function quantityPenalty(totalPlayers, teamASize){
+  const teamBSize = totalPlayers - teamASize;
+  return Math.max(0, Math.abs(teamASize - teamBSize) - 1);
+}
+
 function chooseBalancedTeams(players, scores){
   const n = players.length;
   if(n < 2){
@@ -91,6 +163,17 @@ function chooseBalancedTeams(players, scores){
   const targetSizes = [...new Set([Math.floor(n / 2), Math.ceil(n / 2)])].filter(Boolean);
   const values = players.map(player => Number(scores[player.id] || 0));
   const total = values.reduce((sum, value) => sum + value, 0);
+  const rankedIndexes = players
+    .map((player, index) => ({
+      index,
+      nome: normalizeComparisonText(player?.apelido || player?.nome || ""),
+      score: values[index]
+    }))
+    .sort((a, b) => {
+      if(b.score !== a.score) return b.score - a.score;
+      return a.nome.localeCompare(b.nome);
+    })
+    .map(item => item.index);
   let best = null;
 
   function evaluate(indexes){
@@ -98,9 +181,28 @@ function chooseBalancedTeams(players, scores){
     const forcaA = indexes.reduce((sum, index) => sum + values[index], 0);
     const forcaB = total - forcaA;
     const diff = Math.abs(forcaA - forcaB);
+    const penalidadeTop = topPenalty(setA, rankedIndexes);
+    const penalidadePosicao = positionPenalty(players, setA);
+    const penalidadeQuantidade = quantityPenalty(n, indexes.length);
+    const scoreFinal = diff * 10 + penalidadeTop * 20 + penalidadePosicao * 5 + penalidadeQuantidade * 100;
 
-    if(!best || diff < best.diff){
-      best = { indexes:new Set(indexes), diff, forcaA, forcaB };
+    if(
+      !best ||
+      scoreFinal < best.scoreFinal ||
+      scoreFinal === best.scoreFinal && diff < best.diff ||
+      scoreFinal === best.scoreFinal && diff === best.diff && penalidadeTop < best.penalidadeTop ||
+      scoreFinal === best.scoreFinal && diff === best.diff && penalidadeTop === best.penalidadeTop && penalidadePosicao < best.penalidadePosicao
+    ){
+      best = {
+        indexes:setA,
+        diff,
+        forcaA,
+        forcaB,
+        scoreFinal,
+        penalidadeTop,
+        penalidadePosicao,
+        penalidadeQuantidade
+      };
     }
   }
 
