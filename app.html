@@ -2081,7 +2081,10 @@
     #perfilTimeModal.is-section .perfilJogoForm,
     #perfilTimeModal.is-section .dividirTimesSetupBox,
     #perfilTimeModal.is-section .dividirTimesSession,
-    #perfilTimeModal.is-section .dividirTimesResultBox{
+    #perfilTimeModal.is-section .dividirTimesResultBox,
+    #perfilTimeModal.is-section .avaliarJogadoresSetupBox,
+    #perfilTimeModal.is-section .avaliarJogadoresSession,
+    #perfilTimeModal.is-section .avaliarJogadoresResultBox{
       border:1px solid rgba(250,204,21,.18);
       border-radius:8px;
       background:rgba(255,255,255,.06);
@@ -2093,7 +2096,8 @@
     #perfilTimeModal.is-section .perfilPatrocinadorForm,
     #perfilTimeModal.is-section .perfilEscalacaoForm,
     #perfilTimeModal.is-section .perfilJogoForm,
-    #perfilTimeModal.is-section .dividirTimesSetupBox{
+    #perfilTimeModal.is-section .dividirTimesSetupBox,
+    #perfilTimeModal.is-section .avaliarJogadoresSetupBox{
       margin-bottom:12px;
     }
     #perfilTimeModal.is-section .perfilTimeUploadGrid{
@@ -2110,7 +2114,8 @@
     #perfilTimeModal.is-section .perfilPatrocinadorInfo strong,
     #perfilTimeModal.is-section .perfilEscalacaoInfo strong,
     #perfilTimeModal.is-section .perfilJogoInfo strong,
-    #perfilTimeModal.is-section .dividirTimesTeamCard strong{
+    #perfilTimeModal.is-section .dividirTimesTeamCard strong,
+    #perfilTimeModal.is-section .avaliarJogadoresResultTop strong{
       color:#ffffff;
     }
     #perfilTimeModal.is-section .perfilTimeUploadCard span,
@@ -2120,7 +2125,9 @@
     #perfilTimeModal.is-section .perfilJogoInfo span,
     #perfilTimeModal.is-section .perfilTimePublicHint,
     #perfilTimeModal.is-section .dividirTimesIntro,
-    #perfilTimeModal.is-section .dividirTimesMsg{
+    #perfilTimeModal.is-section .dividirTimesMsg,
+    #perfilTimeModal.is-section .avaliarJogadoresIntro,
+    #perfilTimeModal.is-section .avaliarJogadoresMsg{
       color:#d6d3d1;
     }
     #perfilTimeModal.is-section .perfilTimeField label{
@@ -2130,7 +2137,8 @@
     #perfilTimeModal.is-section .perfilTimeField select,
     #perfilTimeModal.is-section .perfilTimeField textarea,
     #perfilTimeModal.is-section .perfilTimePublicLinkRow input,
-    #perfilTimeModal.is-section .dividirTimesLinkRow input{
+    #perfilTimeModal.is-section .dividirTimesLinkRow input,
+    #perfilTimeModal.is-section .avaliarJogadoresLinkRow input{
       border-color:rgba(250,204,21,.24);
       background:rgba(15,23,42,.74);
       color:#f8fafc;
@@ -2144,22 +2152,28 @@
     #perfilTimeModal.is-section .perfilEscalacaoRow,
     #perfilTimeModal.is-section .perfilJogoRow,
     #perfilTimeModal.is-section .dividirTimesPlayerCheck,
-    #perfilTimeModal.is-section .dividirTimesTeamCard{
+    #perfilTimeModal.is-section .dividirTimesTeamCard,
+    #perfilTimeModal.is-section .avaliarJogadoresPlayerCheck,
+    #perfilTimeModal.is-section .avaliarJogadoresResultCard{
       border-color:rgba(250,204,21,.16);
       background:rgba(255,255,255,.055);
       border-radius:8px;
     }
-    #perfilTimeModal.is-section .dividirTimesPlayerCheck{
+    #perfilTimeModal.is-section .dividirTimesPlayerCheck,
+    #perfilTimeModal.is-section .avaliarJogadoresPlayerCheck{
       color:#f8fafc;
     }
-    #perfilTimeModal.is-section .dividirTimesPlayerCheck span{
+    #perfilTimeModal.is-section .dividirTimesPlayerCheck span,
+    #perfilTimeModal.is-section .avaliarJogadoresPlayerCheck span{
       color:#f8fafc;
       font-weight:950;
     }
-    #perfilTimeModal.is-section .dividirTimesPlayerCheck input{
+    #perfilTimeModal.is-section .dividirTimesPlayerCheck input,
+    #perfilTimeModal.is-section .avaliarJogadoresPlayerCheck input{
       accent-color:#facc15;
     }
-    #perfilTimeModal.is-section .dividirTimesPlayerCheck:has(input:checked){
+    #perfilTimeModal.is-section .dividirTimesPlayerCheck:has(input:checked),
+    #perfilTimeModal.is-section .avaliarJogadoresPlayerCheck:has(input:checked){
       border-color:rgba(250,204,21,.62);
       background:rgba(250,204,21,.16);
       box-shadow:0 0 0 1px rgba(250,204,21,.12) inset;
@@ -2195,15 +2209,27 @@
       background:rgba(255,255,255,.045);
       border-radius:8px;
     }
-    #perfilTimeModal.is-section .dividirTimesStatusLine span{
+    #perfilTimeModal.is-section .avaliarJogadoresIntro{
+      border-color:rgba(250,204,21,.18);
+      background:rgba(255,255,255,.045);
+      border-radius:8px;
+    }
+    #perfilTimeModal.is-section .dividirTimesStatusLine span,
+    #perfilTimeModal.is-section .avaliarJogadoresStatusLine span{
       background:rgba(250,204,21,.12);
       color:#fde68a;
     }
     #perfilTimeModal.is-section .dividirTimesTeamCard ul{
       color:#e5e7eb;
     }
-    #perfilTimeModal.is-section .dividirTimesTeamCard small{
+    #perfilTimeModal.is-section .dividirTimesTeamCard small,
+    #perfilTimeModal.is-section .avaliarJogadoresAttrs,
+    #perfilTimeModal.is-section .avaliarJogadoresAttrs span{
       color:#d6d3d1;
+    }
+    #perfilTimeModal.is-section .avaliarJogadoresOverall{
+      background:#facc15;
+      color:#111827;
     }
     .perfilEditorSection{
       display:block;
@@ -3827,6 +3853,12 @@
       border-top:1px solid #e2e8f0;
     }
 
+    .avaliarJogadoresSection{
+      margin-top:18px;
+      padding-top:16px;
+      border-top:1px solid #e2e8f0;
+    }
+
     .dividirTimesIntro{
       border:1px solid #bbf7d0;
       border-radius:16px;
@@ -3834,6 +3866,18 @@
       padding:12px;
       margin-bottom:12px;
       color:#166534;
+      font-size:12px;
+      font-weight:850;
+      line-height:1.4;
+    }
+
+    .avaliarJogadoresIntro{
+      border:1px solid #fde68a;
+      border-radius:16px;
+      background:#fffbeb;
+      padding:12px;
+      margin-bottom:12px;
+      color:#92400e;
       font-size:12px;
       font-weight:850;
       line-height:1.4;
@@ -3847,7 +3891,22 @@
       margin-bottom:12px;
     }
 
+    .avaliarJogadoresForm{
+      display:grid;
+      grid-template-columns:1fr auto;
+      gap:10px;
+      align-items:end;
+      margin-bottom:12px;
+    }
+
     .dividirTimesPlayers{
+      display:grid;
+      grid-template-columns:repeat(auto-fill, minmax(180px, 1fr));
+      gap:8px;
+      margin-bottom:12px;
+    }
+
+    .avaliarJogadoresPlayers{
       display:grid;
       grid-template-columns:repeat(auto-fill, minmax(180px, 1fr));
       gap:8px;
@@ -3869,6 +3928,21 @@
       min-height:52px;
     }
 
+    .avaliarJogadoresPlayerCheck{
+      display:flex;
+      align-items:center;
+      gap:9px;
+      border:1px solid #dbe3ef;
+      border-radius:12px;
+      background:#ffffff;
+      padding:10px;
+      color:#0f172a;
+      font-size:12px;
+      font-weight:900;
+      cursor:pointer;
+      min-height:52px;
+    }
+
     .dividirTimesPlayerCheck input{
       width:18px;
       height:18px;
@@ -3876,7 +3950,20 @@
       flex:0 0 auto;
     }
 
+    .avaliarJogadoresPlayerCheck input{
+      width:18px;
+      height:18px;
+      accent-color:#facc15;
+      flex:0 0 auto;
+    }
+
     .dividirTimesPlayerCheck span{
+      display:block;
+      min-width:0;
+      overflow-wrap:anywhere;
+    }
+
+    .avaliarJogadoresPlayerCheck span{
       display:block;
       min-width:0;
       overflow-wrap:anywhere;
@@ -3893,8 +3980,24 @@
       gap:10px;
     }
 
+    .avaliarJogadoresSession,
+    .avaliarJogadoresResultBox{
+      border:1px solid #dbe3ef;
+      border-radius:16px;
+      background:#ffffff;
+      padding:12px;
+      margin-top:12px;
+      display:grid;
+      gap:10px;
+    }
+
     .dividirTimesSession[hidden],
     .dividirTimesResultBox[hidden]{
+      display:none !important;
+    }
+
+    .avaliarJogadoresSession[hidden],
+    .avaliarJogadoresResultBox[hidden]{
       display:none !important;
     }
 
@@ -3904,7 +4007,22 @@
       gap:8px;
     }
 
+    .avaliarJogadoresLinkRow{
+      display:grid;
+      grid-template-columns:1fr auto;
+      gap:8px;
+    }
+
     .dividirTimesLinkRow input{
+      border:1px solid #cbd5e1;
+      border-radius:10px;
+      padding:10px;
+      font-size:12px;
+      font-weight:850;
+      min-width:0;
+    }
+
+    .avaliarJogadoresLinkRow input{
       border:1px solid #cbd5e1;
       border-radius:10px;
       padding:10px;
@@ -3928,10 +4046,78 @@
       padding:7px 9px;
     }
 
+    .avaliarJogadoresStatusLine{
+      display:flex;
+      flex-wrap:wrap;
+      gap:8px;
+      color:#475569;
+      font-size:12px;
+      font-weight:900;
+    }
+
+    .avaliarJogadoresStatusLine span{
+      border-radius:999px;
+      background:#f1f5f9;
+      padding:7px 9px;
+    }
+
     .dividirTimesActions{
       display:flex;
       flex-wrap:wrap;
       gap:8px;
+    }
+
+    .avaliarJogadoresActions{
+      display:flex;
+      flex-wrap:wrap;
+      gap:8px;
+    }
+
+    .avaliarJogadoresResultList{
+      display:grid;
+      gap:8px;
+    }
+
+    .avaliarJogadoresResultCard{
+      border:1px solid #e2e8f0;
+      border-radius:14px;
+      background:#f8fafc;
+      padding:12px;
+      display:grid;
+      gap:8px;
+    }
+
+    .avaliarJogadoresResultTop{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:8px;
+    }
+
+    .avaliarJogadoresResultTop strong{
+      color:#0f172a;
+      font-size:13px;
+      font-weight:950;
+      overflow-wrap:anywhere;
+    }
+
+    .avaliarJogadoresOverall{
+      border-radius:999px;
+      background:#111827;
+      color:#ffffff;
+      padding:6px 9px;
+      font-size:12px;
+      font-weight:950;
+      white-space:nowrap;
+    }
+
+    .avaliarJogadoresAttrs{
+      display:grid;
+      grid-template-columns:repeat(auto-fit, minmax(120px, 1fr));
+      gap:6px;
+      color:#334155;
+      font-size:11px;
+      font-weight:850;
     }
 
     .dividirTimesTeams{
@@ -3979,6 +4165,13 @@
       padding:18px;
     }
 
+    .avaliarJogadoresVotePage{
+      min-height:100vh;
+      background:#f8fafc;
+      color:#111827;
+      padding:18px;
+    }
+
     .dividirTimesVoteShell{
       max-width:760px;
       margin:0 auto;
@@ -3986,8 +4179,24 @@
       gap:14px;
     }
 
+    .avaliarJogadoresVoteShell{
+      max-width:880px;
+      margin:0 auto;
+      display:grid;
+      gap:14px;
+    }
+
     .dividirTimesVoteHero,
     .dividirTimesVoteCard{
+      border:1px solid #dbe3ef;
+      border-radius:18px;
+      background:#ffffff;
+      padding:16px;
+      box-shadow:0 12px 28px rgba(15,23,42,.08);
+    }
+
+    .avaliarJogadoresVoteHero,
+    .avaliarJogadoresVoteCard{
       border:1px solid #dbe3ef;
       border-radius:18px;
       background:#ffffff;
@@ -4003,7 +4212,23 @@
       letter-spacing:0;
     }
 
+    .avaliarJogadoresVoteHero h1{
+      margin:4px 0 8px;
+      color:#0f172a;
+      font-size:28px;
+      line-height:1.05;
+      letter-spacing:0;
+    }
+
     .dividirTimesVoteHero p{
+      margin:0;
+      color:#475569;
+      font-size:13px;
+      font-weight:850;
+      line-height:1.45;
+    }
+
+    .avaliarJogadoresVoteHero p{
       margin:0;
       color:#475569;
       font-size:13px;
@@ -4017,7 +4242,25 @@
       margin:12px 0;
     }
 
+    .avaliarJogadoresVoteList{
+      display:grid;
+      gap:8px;
+      margin:12px 0;
+    }
+
     .dividirTimesVoteRow{
+      display:grid;
+      grid-template-columns:34px minmax(0, 1fr) auto;
+      gap:8px;
+      align-items:center;
+      border:1px solid #e2e8f0;
+      border-radius:14px;
+      background:#f8fafc;
+      padding:9px;
+      min-height:58px;
+    }
+
+    .avaliarJogadoresVoteRow{
       display:grid;
       grid-template-columns:34px minmax(0, 1fr) auto;
       gap:8px;
@@ -4041,7 +4284,28 @@
       font-weight:950;
     }
 
+    .avaliarJogadoresVoteNumber{
+      width:34px;
+      height:34px;
+      border-radius:10px;
+      background:#111827;
+      color:#ffffff;
+      display:grid;
+      place-items:center;
+      font-size:12px;
+      font-weight:950;
+    }
+
     .dividirTimesVoteName strong{
+      display:block;
+      color:#0f172a;
+      font-size:13px;
+      font-weight:950;
+      line-height:1.15;
+      overflow-wrap:anywhere;
+    }
+
+    .avaliarJogadoresVoteName strong{
       display:block;
       color:#0f172a;
       font-size:13px;
@@ -4056,6 +4320,142 @@
       font-size:11px;
       font-weight:850;
       margin-top:2px;
+    }
+
+    .avaliarJogadoresVoteName span{
+      display:block;
+      color:#64748b;
+      font-size:11px;
+      font-weight:850;
+      margin-top:2px;
+    }
+
+    .avaliarJogadoresOpenBtn{
+      border:1px solid #cbd5e1;
+      border-radius:10px;
+      background:#ffffff;
+      color:#111827;
+      padding:9px 10px;
+      font-size:12px;
+      font-weight:950;
+      cursor:pointer;
+    }
+
+    .avaliarJogadoresEditor{
+      border:1px solid #fde68a;
+      border-radius:16px;
+      background:#fffbeb;
+      padding:12px;
+      display:grid;
+      gap:10px;
+    }
+
+    .avaliarJogadoresEditor[hidden]{
+      display:none !important;
+    }
+
+    .avaliarJogadoresEditorTop{
+      display:flex;
+      justify-content:space-between;
+      gap:10px;
+      align-items:flex-start;
+    }
+
+    .avaliarJogadoresEditorTop strong{
+      color:#111827;
+      font-size:15px;
+      font-weight:950;
+      overflow-wrap:anywhere;
+    }
+
+    .avaliarJogadoresEditorTop span{
+      display:block;
+      color:#78350f;
+      font-size:12px;
+      font-weight:850;
+      margin-top:2px;
+    }
+
+    .avaliarJogadoresPoints{
+      display:flex;
+      gap:8px;
+      flex-wrap:wrap;
+      color:#78350f;
+      font-size:12px;
+      font-weight:950;
+    }
+
+    .avaliarJogadoresPoints span{
+      border-radius:999px;
+      background:#ffffff;
+      border:1px solid #fde68a;
+      padding:7px 9px;
+    }
+
+    .avaliarJogadoresAttrGrid{
+      display:grid;
+      gap:8px;
+    }
+
+    .avaliarJogadoresAttrRow{
+      display:grid;
+      grid-template-columns:minmax(0, 1fr) auto auto;
+      align-items:center;
+      gap:8px;
+      border:1px solid #fde68a;
+      border-radius:12px;
+      background:#ffffff;
+      padding:8px;
+    }
+
+    .avaliarJogadoresAttrName{
+      min-width:0;
+    }
+
+    .avaliarJogadoresAttrName strong{
+      display:block;
+      color:#111827;
+      font-size:13px;
+      font-weight:950;
+    }
+
+    .avaliarJogadoresAttrName span{
+      display:block;
+      color:#64748b;
+      font-size:11px;
+      font-weight:850;
+      margin-top:2px;
+    }
+
+    .avaliarJogadoresStepper{
+      display:flex;
+      align-items:center;
+      gap:5px;
+    }
+
+    .avaliarJogadoresStepBtn{
+      width:30px;
+      height:30px;
+      border-radius:9px;
+      border:1px solid #cbd5e1;
+      background:#111827;
+      color:#ffffff;
+      font-size:15px;
+      font-weight:950;
+      cursor:pointer;
+    }
+
+    .avaliarJogadoresStepBtn:disabled{
+      opacity:.38;
+      cursor:not-allowed;
+    }
+
+    .avaliarJogadoresStepValue{
+      min-width:22px;
+      text-align:center;
+      color:#111827;
+      font-size:12px;
+      font-weight:950;
     }
 
     .dividirTimesVoteMove{
@@ -4505,34 +4905,56 @@
       .perfilJogadorForm,
       .perfilPatrocinadorForm,
       .dividirTimesForm,
+      .avaliarJogadoresForm,
       .perfilEscalacaoForm,
       .perfilEscalacaoPreviewGrid,
       .perfilJogoForm,
       .perfilJogosPreviewGrid,
       .dividirTimesTeams,
-      .dividirTimesLinkRow{
+      .dividirTimesLinkRow,
+      .avaliarJogadoresLinkRow{
         grid-template-columns:1fr;
       }
 
-      .dividirTimesPlayers{
+      .dividirTimesPlayers,
+      .avaliarJogadoresPlayers{
         grid-template-columns:1fr;
       }
 
-      .dividirTimesVotePage{
+      .dividirTimesVotePage,
+      .avaliarJogadoresVotePage{
         padding:10px;
       }
 
-      .dividirTimesVoteHero h1{
+      .dividirTimesVoteHero h1,
+      .avaliarJogadoresVoteHero h1{
         font-size:24px;
       }
 
-      .dividirTimesVoteRow{
+      .dividirTimesVoteRow,
+      .avaliarJogadoresVoteRow{
         grid-template-columns:30px minmax(0, 1fr);
       }
 
-      .dividirTimesVoteMove{
+      .dividirTimesVoteMove,
+      .avaliarJogadoresOpenBtn{
         grid-column:1 / -1;
+      }
+
+      .dividirTimesVoteMove{
         justify-content:flex-end;
+      }
+
+      .avaliarJogadoresEditorTop{
+        flex-direction:column;
+      }
+
+      .avaliarJogadoresAttrRow{
+        grid-template-columns:1fr;
+      }
+
+      .avaliarJogadoresStepper{
+        justify-content:space-between;
       }
 
       .perfilTimeActions{
@@ -9187,6 +9609,51 @@ body:not(.modeChosen) .builderArea,
   </section>
   <!-- ===== FIM DIVIDIR TIMES MVP: PAGINA PUBLICA DE VOTACAO ===== -->
 
+  <!-- ===== AVALIAR JOGADORES MVP: PAGINA PUBLICA ===== -->
+  <section class="avaliarJogadoresVotePage" id="avaliarJogadoresVotePage" hidden>
+    <div class="avaliarJogadoresVoteShell">
+      <header class="avaliarJogadoresVoteHero">
+        <div class="perfilPublicoBrand">Meu Clube FC</div>
+        <h1>Avaliacao de jogadores</h1>
+        <p id="avaliarJogadoresVoteIntro">Carregando jogadores para avaliar...</p>
+      </header>
+
+      <section class="avaliarJogadoresVoteCard">
+        <div class="perfilTimeField full">
+          <label for="avaliarJogadoresVotanteNome">Nome ou apelido de quem esta avaliando (opcional)</label>
+          <input id="avaliarJogadoresVotanteNome" maxlength="80" autocomplete="name" placeholder="Ex: Joao">
+        </div>
+
+        <div class="avaliarJogadoresVoteList" id="avaliarJogadoresVoteList"></div>
+
+        <div class="avaliarJogadoresEditor" id="avaliarJogadoresEditor" hidden>
+          <div class="avaliarJogadoresEditorTop">
+            <div>
+              <strong id="avaliarJogadoresEditorNome">Jogador</strong>
+              <span id="avaliarJogadoresEditorMeta">Distribua os pontos extras deste jogador.</span>
+            </div>
+            <button class="perfilMiniBtn" id="avaliarJogadoresEditorVoltarBtn" type="button">Voltar para lista</button>
+          </div>
+
+          <div class="avaliarJogadoresPoints">
+            <span id="avaliarJogadoresNormaisRestantes">20 pontos normais</span>
+            <span id="avaliarJogadoresEspeciaisRestantes">5 especiais</span>
+          </div>
+
+          <div class="avaliarJogadoresAttrGrid" id="avaliarJogadoresAttrGrid"></div>
+        </div>
+
+        <div class="avaliarJogadoresActions">
+          <button class="btnGreen" id="avaliarJogadoresEnviarVotoBtn" type="button">Enviar avaliacao</button>
+          <button class="btnGreen" id="avaliarJogadoresLoginVoteBtn" type="button" hidden>Entrar ou criar conta</button>
+          <a class="perfilMiniBtn" href="/app.html">Abrir Meu Clube FC</a>
+        </div>
+        <div class="dividirTimesMsg avaliarJogadoresMsg" id="avaliarJogadoresVoteMsg"></div>
+      </section>
+    </div>
+  </section>
+  <!-- ===== FIM AVALIAR JOGADORES MVP: PAGINA PUBLICA ===== -->
+
   <section class="perfilPublicoPage" id="perfilPublicoPage" hidden>
     <div class="perfilPublicoShell">
       <header class="perfilPublicoHeader">
@@ -10061,6 +10528,9 @@ body:not(.modeChosen) .builderArea,
         <button class="perfilCentralCard" type="button" data-perfil-card="elenco">
           <strong>Elenco</strong>
         </button>
+        <button class="perfilCentralCard" type="button" data-perfil-card="avaliar-jogadores">
+          <strong>Avaliar Jogadores</strong>
+        </button>
         <button class="perfilCentralCard" type="button" data-perfil-card="escalacao">
           <strong>Escalacao Oficial</strong>
         </button>
@@ -10333,6 +10803,62 @@ body:not(.modeChosen) .builderArea,
         <div class="dividirTimesMsg" id="dividirTimesMsg"></div>
       </div>
       <!-- ===== FIM DIVIDIR TIMES MVP ===== -->
+
+      <!-- ===== AVALIAR JOGADORES MVP ===== -->
+      <div class="avaliarJogadoresSection" id="avaliarJogadoresSection" data-perfil-section-item="avaliar-jogadores" hidden>
+        <div class="perfilElencoTop">
+          <strong>Avaliar Jogadores</strong>
+          <span id="avaliarJogadoresResumo">Selecione jogadores para avaliar</span>
+        </div>
+
+        <div class="avaliarJogadoresIntro">
+          Gere um link para o grupo distribuir pontos extras por atributo. Todos comecam com 75 e ninguem ve ranking publico dos melhores.
+        </div>
+
+        <div class="perfilSectionActionBar">
+          <button class="perfilSectionPrimaryBtn" id="avaliarJogadoresNovoBtn" type="button">Selecionar jogadores e criar avaliacao</button>
+        </div>
+
+        <div class="avaliarJogadoresSetupBox" id="avaliarJogadoresSetupBox" hidden>
+          <div class="avaliarJogadoresForm">
+            <div class="perfilTimeField">
+              <label for="avaliarJogadoresTitulo">Nome da avaliacao</label>
+              <input id="avaliarJogadoresTitulo" maxlength="90" autocomplete="off" placeholder="Ex: Avaliacao do elenco">
+            </div>
+            <button class="btnGreen" id="avaliarJogadoresCriarBtn" type="button">Criar link</button>
+          </div>
+
+          <div class="avaliarJogadoresPlayers" id="avaliarJogadoresPlayers"></div>
+        </div>
+
+        <div class="avaliarJogadoresSession" id="avaliarJogadoresSessionBox" hidden>
+          <div class="avaliarJogadoresStatusLine">
+            <span id="avaliarJogadoresSessaoTitulo">Avaliacao criada</span>
+            <span id="avaliarJogadoresVotosCount">0 avaliacoes</span>
+            <span id="avaliarJogadoresSelecionadosCount">0 jogadores</span>
+          </div>
+
+          <div class="avaliarJogadoresLinkRow">
+            <input id="avaliarJogadoresLink" type="text" readonly placeholder="Link da avaliacao">
+            <button class="perfilMiniBtn" id="avaliarJogadoresCopiarLinkBtn" type="button">Copiar link</button>
+          </div>
+
+          <div class="avaliarJogadoresActions">
+            <button class="perfilMiniBtn" id="avaliarJogadoresAtualizarBtn" type="button">Atualizar avaliacoes</button>
+          </div>
+
+          <div class="avaliarJogadoresResultBox" id="avaliarJogadoresResultadoBox" hidden>
+            <div class="avaliarJogadoresStatusLine">
+              <span>Medias calculadas</span>
+              <span id="avaliarJogadoresResultadoVotos">0 avaliacoes</span>
+            </div>
+            <div class="avaliarJogadoresResultList" id="avaliarJogadoresResultadoLista"></div>
+          </div>
+        </div>
+
+        <div class="dividirTimesMsg avaliarJogadoresMsg" id="avaliarJogadoresMsg"></div>
+      </div>
+      <!-- ===== FIM AVALIAR JOGADORES MVP ===== -->
 
       <div class="perfilEscalacaoSection" data-perfil-section-item="escalacao" hidden>
         <div class="perfilElencoTop">
@@ -18643,6 +19169,37 @@ const dividirTimesTimeA = document.getElementById("dividirTimesTimeA");
 const dividirTimesTimeB = document.getElementById("dividirTimesTimeB");
 const dividirTimesCopiarResultadoBtn = document.getElementById("dividirTimesCopiarResultadoBtn");
 const dividirTimesMsg = document.getElementById("dividirTimesMsg");
+const avaliarJogadoresVotePage = document.getElementById("avaliarJogadoresVotePage");
+const avaliarJogadoresVoteIntro = document.getElementById("avaliarJogadoresVoteIntro");
+const avaliarJogadoresVotanteNome = document.getElementById("avaliarJogadoresVotanteNome");
+const avaliarJogadoresVoteList = document.getElementById("avaliarJogadoresVoteList");
+const avaliarJogadoresEditor = document.getElementById("avaliarJogadoresEditor");
+const avaliarJogadoresEditorNome = document.getElementById("avaliarJogadoresEditorNome");
+const avaliarJogadoresEditorMeta = document.getElementById("avaliarJogadoresEditorMeta");
+const avaliarJogadoresEditorVoltarBtn = document.getElementById("avaliarJogadoresEditorVoltarBtn");
+const avaliarJogadoresNormaisRestantes = document.getElementById("avaliarJogadoresNormaisRestantes");
+const avaliarJogadoresEspeciaisRestantes = document.getElementById("avaliarJogadoresEspeciaisRestantes");
+const avaliarJogadoresAttrGrid = document.getElementById("avaliarJogadoresAttrGrid");
+const avaliarJogadoresEnviarVotoBtn = document.getElementById("avaliarJogadoresEnviarVotoBtn");
+const avaliarJogadoresLoginVoteBtn = document.getElementById("avaliarJogadoresLoginVoteBtn");
+const avaliarJogadoresVoteMsg = document.getElementById("avaliarJogadoresVoteMsg");
+const avaliarJogadoresResumo = document.getElementById("avaliarJogadoresResumo");
+const avaliarJogadoresNovoBtn = document.getElementById("avaliarJogadoresNovoBtn");
+const avaliarJogadoresSetupBox = document.getElementById("avaliarJogadoresSetupBox");
+const avaliarJogadoresTitulo = document.getElementById("avaliarJogadoresTitulo");
+const avaliarJogadoresCriarBtn = document.getElementById("avaliarJogadoresCriarBtn");
+const avaliarJogadoresPlayers = document.getElementById("avaliarJogadoresPlayers");
+const avaliarJogadoresSessionBox = document.getElementById("avaliarJogadoresSessionBox");
+const avaliarJogadoresSessaoTitulo = document.getElementById("avaliarJogadoresSessaoTitulo");
+const avaliarJogadoresVotosCount = document.getElementById("avaliarJogadoresVotosCount");
+const avaliarJogadoresSelecionadosCount = document.getElementById("avaliarJogadoresSelecionadosCount");
+const avaliarJogadoresLink = document.getElementById("avaliarJogadoresLink");
+const avaliarJogadoresCopiarLinkBtn = document.getElementById("avaliarJogadoresCopiarLinkBtn");
+const avaliarJogadoresAtualizarBtn = document.getElementById("avaliarJogadoresAtualizarBtn");
+const avaliarJogadoresResultadoBox = document.getElementById("avaliarJogadoresResultadoBox");
+const avaliarJogadoresResultadoVotos = document.getElementById("avaliarJogadoresResultadoVotos");
+const avaliarJogadoresResultadoLista = document.getElementById("avaliarJogadoresResultadoLista");
+const avaliarJogadoresMsg = document.getElementById("avaliarJogadoresMsg");
 const perfilPatrocinadoresResumo = document.getElementById("perfilPatrocinadoresResumo");
 const perfilPatrocinadoresPreview = document.getElementById("perfilPatrocinadoresPreview");
 const perfilPatrocinadoresLista = document.getElementById("perfilPatrocinadoresLista");
@@ -18712,6 +19269,16 @@ let dividirTimesVoteState = {
   token: "",
   sessao: null,
   ranking: []
+};
+let avaliarJogadoresState = {
+  sessao: null,
+  selecionados: new Set()
+};
+let avaliarJogadoresVoteState = {
+  token: "",
+  sessao: null,
+  avaliacoes: {},
+  jogadorAbertoId: ""
 };
 var perfilCriarArteModoAtivo = false;
 var perfilEscudoFileCache = null;
@@ -21002,6 +21569,10 @@ const perfilSecoesInfo = {
     titulo:"Elenco",
     subtitulo:"Adicione, edite ou remova jogadores do time."
   },
+  "avaliar-jogadores": {
+    titulo:"Avaliar Jogadores",
+    subtitulo:"Gere um link para o grupo avaliar atributos do elenco."
+  },
   escalacao: {
     titulo:"Escalacao Oficial",
     subtitulo:"Organize titulares, reservas, posicoes e ordem."
@@ -21064,6 +21635,7 @@ function recolherPerfilFormularios(){
   limparFormEscalacao();
   limparFormJogo();
   perfilSetPainelAberto(dividirTimesSetupBox, false);
+  perfilSetPainelAberto(avaliarJogadoresSetupBox, false);
 }
 
 function abrirFormJogadorNovo(){
@@ -21097,6 +21669,11 @@ function abrirFormJogoNovo(){
 function abrirDividirTimesSetup(){
   perfilSetPainelAberto(dividirTimesSetupBox, true);
   dividirTimesTitulo?.focus();
+}
+
+function abrirAvaliarJogadoresSetup(){
+  perfilSetPainelAberto(avaliarJogadoresSetupBox, true);
+  avaliarJogadoresTitulo?.focus();
 }
 
 function perfilResumoQuantidade(total, singular, plural){
@@ -21263,6 +21840,8 @@ async function carregarPerfilSecao(secao){
     await carregarPerfilJogadores();
     await carregarPerfilEscalacao();
   }else if(secaoConteudo === "dividir-times"){
+    await carregarPerfilJogadores();
+  }else if(secaoConteudo === "avaliar-jogadores"){
     await carregarPerfilJogadores();
   }else if(secaoConteudo === "jogos"){
     await carregarPerfilJogos();
@@ -21805,6 +22384,7 @@ function renderPerfilElenco(){
   }
 
   renderDividirTimesJogadores();
+  renderAvaliarJogadoresJogadores();
   atualizarPerfilCentralResumo();
 }
 
@@ -22321,6 +22901,575 @@ function iniciarDividirTimesPublicoSeNecessario(){
   return true;
 }
 /* ===== FIM DIVIDIR TIMES MVP ===== */
+
+/* ===== AVALIAR JOGADORES MVP ===== */
+const AVALIAR_JOGADORES_LOGIN_MSG = "Entre na sua conta ou crie um cadastro para votar.";
+const AVALIAR_JOGADORES_BASE = 75;
+const AVALIAR_JOGADORES_PONTOS_NORMAIS = 20;
+const AVALIAR_JOGADORES_PONTOS_ESPECIAIS = 5;
+const AVALIAR_JOGADORES_VALOR_NORMAL = 0.2;
+const AVALIAR_JOGADORES_VALOR_ESPECIAL = 0.5;
+const AVALIAR_JOGADORES_ATRIBUTOS = [
+  { key:"velocidade", nome:"Velocidade" },
+  { key:"finalizacao", nome:"Finalizacao" },
+  { key:"passe", nome:"Passe" },
+  { key:"drible", nome:"Drible" },
+  { key:"defesa", nome:"Defesa" },
+  { key:"fisico", nome:"Fisico" },
+  { key:"resistencia", nome:"Resistencia" }
+];
+
+function avaliarJogadoresSetMsg(texto, tipo = ""){
+  if(!avaliarJogadoresMsg) return;
+  avaliarJogadoresMsg.textContent = texto || "";
+  avaliarJogadoresMsg.className = `dividirTimesMsg avaliarJogadoresMsg${tipo ? " " + tipo : ""}`;
+}
+
+function avaliarJogadoresVoteSetMsg(texto, tipo = ""){
+  if(!avaliarJogadoresVoteMsg) return;
+  avaliarJogadoresVoteMsg.textContent = texto || "";
+  avaliarJogadoresVoteMsg.className = `dividirTimesMsg avaliarJogadoresMsg${tipo ? " " + tipo : ""}`;
+}
+
+function abrirLoginAvaliarJogadoresVoto(){
+  if(!avaliarJogadoresVoteState.token) return;
+  acaoDepoisDoCadastro = () => carregarAvaliarJogadoresPublico(avaliarJogadoresVoteState.token);
+  abrirLoginVisitanteModal();
+  setAuthVisitanteMsg(AVALIAR_JOGADORES_LOGIN_MSG, "err");
+}
+
+function exigirLoginAvaliarJogadoresVoto(abrirModal = true){
+  if(avaliarJogadoresVotePage) avaliarJogadoresVotePage.hidden = false;
+  avaliarJogadoresVoteState.avaliacoes = {};
+  avaliarJogadoresVoteState.jogadorAbertoId = "";
+
+  if(avaliarJogadoresVoteIntro) avaliarJogadoresVoteIntro.textContent = AVALIAR_JOGADORES_LOGIN_MSG;
+  if(avaliarJogadoresVoteList){
+    avaliarJogadoresVoteList.hidden = false;
+    avaliarJogadoresVoteList.innerHTML = `<div class="perfilEmptyList">${AVALIAR_JOGADORES_LOGIN_MSG}</div>`;
+  }
+  if(avaliarJogadoresEditor) avaliarJogadoresEditor.hidden = true;
+  if(avaliarJogadoresEnviarVotoBtn){
+    avaliarJogadoresEnviarVotoBtn.hidden = true;
+    avaliarJogadoresEnviarVotoBtn.disabled = true;
+    avaliarJogadoresEnviarVotoBtn.textContent = "Enviar avaliacao";
+  }
+  if(avaliarJogadoresLoginVoteBtn){
+    avaliarJogadoresLoginVoteBtn.hidden = false;
+    avaliarJogadoresLoginVoteBtn.disabled = false;
+  }
+
+  avaliarJogadoresVoteSetMsg(AVALIAR_JOGADORES_LOGIN_MSG, "erro");
+
+  if(abrirModal){
+    abrirLoginAvaliarJogadoresVoto();
+  }
+}
+
+function avaliarJogadoresPontosDefault(){
+  return AVALIAR_JOGADORES_ATRIBUTOS.reduce((acc, atributo) => {
+    acc[atributo.key] = 0;
+    return acc;
+  }, {});
+}
+
+function avaliarJogadoresNovoItem(jogadorId){
+  return {
+    jogador_id: String(jogadorId || ""),
+    pontos_normais: avaliarJogadoresPontosDefault(),
+    pontos_especiais: avaliarJogadoresPontosDefault()
+  };
+}
+
+function avaliarJogadoresJogadores(sessao = avaliarJogadoresVoteState.sessao){
+  return (Array.isArray(sessao?.jogadores_avaliados) ? sessao.jogadores_avaliados : []).filter(Boolean);
+}
+
+function avaliarJogadoresGarantirAvaliacao(jogadorId){
+  const id = String(jogadorId || "");
+  if(!id) return null;
+  if(!avaliarJogadoresVoteState.avaliacoes[id]){
+    avaliarJogadoresVoteState.avaliacoes[id] = avaliarJogadoresNovoItem(id);
+  }
+  return avaliarJogadoresVoteState.avaliacoes[id];
+}
+
+function avaliarJogadoresTotalPontos(item, tipo){
+  const pontos = tipo === "especial" ? item?.pontos_especiais : item?.pontos_normais;
+  return Object.values(pontos || {}).reduce((sum, value) => sum + Number(value || 0), 0);
+}
+
+function avaliarJogadoresValorAtributo(item, atributoKey){
+  const normal = Number(item?.pontos_normais?.[atributoKey] || 0);
+  const especial = Number(item?.pontos_especiais?.[atributoKey] || 0);
+  const valor = AVALIAR_JOGADORES_BASE + normal * AVALIAR_JOGADORES_VALOR_NORMAL + especial * AVALIAR_JOGADORES_VALOR_ESPECIAL;
+  return valor.toLocaleString("pt-BR", { minimumFractionDigits:1, maximumFractionDigits:1 });
+}
+
+function avaliarJogadoresSelecionadosLista(){
+  const ids = new Set(avaliarJogadoresState.selecionados || []);
+  return perfilJogadoresAtivos().filter(jogador => ids.has(String(jogador.id || "")));
+}
+
+function renderAvaliarJogadoresJogadores(){
+  if(!avaliarJogadoresPlayers) return;
+
+  const jogadores = perfilJogadoresAtivos();
+  const idsAtivos = new Set(jogadores.map(jogador => String(jogador.id || "")));
+  avaliarJogadoresState.selecionados = new Set(
+    [...(avaliarJogadoresState.selecionados || [])].filter(id => idsAtivos.has(String(id)))
+  );
+
+  if(avaliarJogadoresResumo){
+    const selecionados = avaliarJogadoresState.selecionados.size;
+    avaliarJogadoresResumo.textContent = jogadores.length
+      ? `${selecionados} de ${jogadores.length} selecionados`
+      : "Cadastre jogadores no elenco";
+  }
+
+  avaliarJogadoresPlayers.innerHTML = jogadores.length
+    ? jogadores.map(jogador => {
+        const id = String(jogador.id || "");
+        const checked = avaliarJogadoresState.selecionados.has(id) ? " checked" : "";
+        return `
+          <label class="avaliarJogadoresPlayerCheck">
+            <input type="checkbox" data-avaliar-jogador="${htmlEscape(id)}"${checked}>
+            <span>${htmlEscape(dividirTimesJogadorLabel(jogador))}</span>
+          </label>
+        `;
+      }).join("")
+    : `<div class="perfilEmptyList">Cadastre jogadores no elenco antes de criar uma avaliacao.</div>`;
+  atualizarPerfilCentralResumo();
+}
+
+function avaliarJogadoresNormalizarSessao(sessao = {}){
+  const jogadores = Array.isArray(sessao.jogadores_avaliados)
+    ? sessao.jogadores_avaliados
+    : Array.isArray(sessao.jogadores)
+      ? sessao.jogadores
+      : [];
+  return {
+    ...sessao,
+    id: String(sessao.id || ""),
+    titulo: sessao.titulo || "Avaliar Jogadores",
+    share_token: sessao.share_token || sessao.token || "",
+    jogadores_avaliados: jogadores.filter(Boolean),
+    votos_count: Number(sessao.votos_count ?? sessao.total_votos ?? 0),
+    resultados: Array.isArray(sessao.resultados) ? sessao.resultados : [],
+    status: sessao.status || "aberta"
+  };
+}
+
+function avaliarJogadoresUrlVotacao(sessao = avaliarJogadoresState.sessao){
+  const tokenSessao = sessao?.share_token || "";
+  if(!tokenSessao) return "";
+  const url = new URL("/app.html", location.origin);
+  url.searchParams.set("avaliar", tokenSessao);
+  return url.toString();
+}
+
+function renderAvaliarJogadoresSessao(sessaoRaw){
+  const sessao = avaliarJogadoresNormalizarSessao(sessaoRaw || {});
+  avaliarJogadoresState.sessao = sessao;
+
+  if(avaliarJogadoresSessionBox) avaliarJogadoresSessionBox.hidden = !sessao.id;
+  if(sessao.id) perfilSetPainelAberto(avaliarJogadoresSetupBox, false);
+  if(avaliarJogadoresSessaoTitulo) avaliarJogadoresSessaoTitulo.textContent = sessao.titulo || "Avaliacao criada";
+  if(avaliarJogadoresVotosCount) avaliarJogadoresVotosCount.textContent = `${sessao.votos_count || 0} ${sessao.votos_count === 1 ? "avaliacao" : "avaliacoes"}`;
+  if(avaliarJogadoresSelecionadosCount) avaliarJogadoresSelecionadosCount.textContent = `${sessao.jogadores_avaliados.length} jogadores`;
+  if(avaliarJogadoresLink) avaliarJogadoresLink.value = avaliarJogadoresUrlVotacao(sessao);
+  if(avaliarJogadoresResumo){
+    avaliarJogadoresResumo.textContent = sessao.id
+      ? `${sessao.votos_count || 0} avaliacao(oes) / ${sessao.jogadores_avaliados.length} jogador(es)`
+      : "Selecione jogadores para avaliar";
+  }
+
+  renderAvaliarJogadoresResultados(sessao.resultados || []);
+  atualizarPerfilCentralResumo();
+}
+
+async function criarAvaliarJogadoresSessao(){
+  if(!token){
+    abrirLoginVisitanteModal();
+    return;
+  }
+
+  const selecionados = avaliarJogadoresSelecionadosLista();
+  if(selecionados.length < 1){
+    avaliarJogadoresSetMsg("Selecione pelo menos 1 jogador para avaliar.", "erro");
+    return;
+  }
+
+  const titulo = (avaliarJogadoresTitulo?.value || "").trim() || `Avaliacao ${new Date().toLocaleDateString("pt-BR")}`;
+
+  try{
+    if(avaliarJogadoresCriarBtn){
+      avaliarJogadoresCriarBtn.disabled = true;
+      avaliarJogadoresCriarBtn.textContent = "Criando...";
+    }
+    avaliarJogadoresSetMsg("Criando link de avaliacao...");
+
+    const r = await fetch(`${API_BASE}/me/time/avaliacoes-jogadores`, {
+      method:"POST",
+      headers:{
+        "Content-Type":"application/json",
+        "Authorization":"Bearer " + token
+      },
+      body:JSON.stringify({
+        titulo,
+        jogadores_avaliados: selecionados.map(jogador => jogador.id)
+      })
+    });
+    const data = await ia4LerJsonSeguro(r);
+    const authMsg = ia4TratarAuthInvalida(r, data);
+
+    if(authMsg){
+      avaliarJogadoresSetMsg(authMsg, "erro");
+      return;
+    }
+
+    if(!r.ok || !data.ok){
+      throw new Error(data.error || data.erro || "Nao foi possivel criar a avaliacao.");
+    }
+
+    renderAvaliarJogadoresSessao(data.sessao);
+    avaliarJogadoresSetMsg("Avaliacao criada. Compartilhe o link com o grupo.", "ok");
+  }catch(err){
+    avaliarJogadoresSetMsg(err?.message || "Erro de rede ao criar avaliacao.", "erro");
+  }finally{
+    if(avaliarJogadoresCriarBtn){
+      avaliarJogadoresCriarBtn.disabled = false;
+      avaliarJogadoresCriarBtn.textContent = "Criar link";
+    }
+  }
+}
+
+async function atualizarAvaliarJogadoresSessao(){
+  if(!token || !avaliarJogadoresState.sessao?.id) return;
+
+  try{
+    avaliarJogadoresSetMsg("Atualizando avaliacoes...");
+    const r = await fetch(`${API_BASE}/me/time/avaliacoes-jogadores/${encodeURIComponent(avaliarJogadoresState.sessao.id)}?ts=${Date.now()}`, {
+      headers:{ "Authorization":"Bearer " + token },
+      cache:"no-store"
+    });
+    const data = await ia4LerJsonSeguro(r);
+    const authMsg = ia4TratarAuthInvalida(r, data);
+
+    if(authMsg){
+      avaliarJogadoresSetMsg(authMsg, "erro");
+      return;
+    }
+
+    if(!r.ok || !data.ok){
+      throw new Error(data.error || data.erro || "Nao foi possivel atualizar a avaliacao.");
+    }
+
+    renderAvaliarJogadoresSessao(data.sessao);
+    avaliarJogadoresSetMsg("Avaliacoes atualizadas.", "ok");
+  }catch(err){
+    avaliarJogadoresSetMsg(err?.message || "Erro de rede ao atualizar avaliacao.", "erro");
+  }
+}
+
+async function copiarAvaliarJogadoresLink(){
+  const ok = await dividirTimesCopiarTexto(avaliarJogadoresLink?.value || avaliarJogadoresUrlVotacao());
+  avaliarJogadoresSetMsg(ok ? "Link copiado." : "Nao foi possivel copiar o link.", ok ? "ok" : "erro");
+}
+
+function avaliarJogadoresAttrNome(key){
+  return AVALIAR_JOGADORES_ATRIBUTOS.find(item => item.key === key)?.nome || key;
+}
+
+function renderAvaliarJogadoresResultados(resultados = []){
+  const lista = Array.isArray(resultados) ? resultados : [];
+  if(avaliarJogadoresResultadoBox) avaliarJogadoresResultadoBox.hidden = !lista.length;
+  if(avaliarJogadoresResultadoVotos){
+    avaliarJogadoresResultadoVotos.textContent = `${avaliarJogadoresState.sessao?.votos_count || 0} ${avaliarJogadoresState.sessao?.votos_count === 1 ? "avaliacao" : "avaliacoes"}`;
+  }
+  if(!avaliarJogadoresResultadoLista) return;
+
+  avaliarJogadoresResultadoLista.innerHTML = lista.length
+    ? lista.map(item => {
+        const jogador = item.jogador || {};
+        const nome = dividirTimesJogadorLabel(jogador);
+        const attrs = AVALIAR_JOGADORES_ATRIBUTOS.map(attr => {
+          const valor = Number(item.atributos?.[attr.key] ?? AVALIAR_JOGADORES_BASE);
+          return `<span>${htmlEscape(attr.nome)}: ${valor.toLocaleString("pt-BR", { maximumFractionDigits:1 })}</span>`;
+        }).join("");
+        return `
+          <div class="avaliarJogadoresResultCard">
+            <div class="avaliarJogadoresResultTop">
+              <strong>${htmlEscape(nome)}</strong>
+              <span class="avaliarJogadoresOverall">OVR ${Number(item.overall || AVALIAR_JOGADORES_BASE).toLocaleString("pt-BR", { maximumFractionDigits:1 })}</span>
+            </div>
+            <div class="avaliarJogadoresAttrs">${attrs}</div>
+          </div>
+        `;
+      }).join("")
+    : `<div class="perfilEmptyList">As medias aparecem depois do primeiro voto.</div>`;
+}
+
+function avaliarJogadoresVoterToken(){
+  const key = "omascote_avaliar_jogadores_voter_token";
+  let value = "";
+  try{ value = localStorage.getItem(key) || ""; }catch(e){}
+  if(!value){
+    value = (window.crypto?.randomUUID?.() || `avaliador_${Date.now()}_${Math.random().toString(16).slice(2)}`);
+    try{ localStorage.setItem(key, value); }catch(e){}
+  }
+  return value;
+}
+
+function prepararAvaliacoesJogadoresVoto(sessao){
+  const avaliacoes = {};
+  avaliarJogadoresJogadores(sessao).forEach(jogador => {
+    const id = String(jogador.id || "");
+    if(id) avaliacoes[id] = avaliarJogadoresNovoItem(id);
+  });
+  avaliarJogadoresVoteState.avaliacoes = avaliacoes;
+}
+
+function renderAvaliarJogadoresVoteList(){
+  if(!avaliarJogadoresVoteList) return;
+  const jogadores = avaliarJogadoresJogadores();
+
+  avaliarJogadoresVoteList.hidden = false;
+  avaliarJogadoresVoteList.innerHTML = jogadores.length
+    ? jogadores.map((jogador, index) => {
+        const item = avaliarJogadoresGarantirAvaliacao(jogador.id);
+        const usadosNormais = avaliarJogadoresTotalPontos(item, "normal");
+        const usadosEspeciais = avaliarJogadoresTotalPontos(item, "especial");
+        const detalhe = [
+          dividirTimesJogadorDetalhe(jogador) || "Jogador do elenco",
+          usadosNormais || usadosEspeciais ? `${usadosNormais} normais / ${usadosEspeciais} especiais` : "Ainda sem pontos extras"
+        ].filter(Boolean).join(" - ");
+        return `
+          <div class="avaliarJogadoresVoteRow" data-avaliar-vote-player="${htmlEscape(jogador.id || "")}">
+            <div class="avaliarJogadoresVoteNumber">${index + 1}</div>
+            <div class="avaliarJogadoresVoteName">
+              <strong>${htmlEscape(dividirTimesJogadorNome(jogador))}</strong>
+              <span>${htmlEscape(detalhe)}</span>
+            </div>
+            <button class="avaliarJogadoresOpenBtn" type="button" data-avaliar-open="${htmlEscape(jogador.id || "")}">Avaliar</button>
+          </div>
+        `;
+      }).join("")
+    : `<div class="perfilEmptyList">Nenhum jogador para avaliar.</div>`;
+}
+
+function abrirEditorAvaliarJogador(jogadorId){
+  const id = String(jogadorId || "");
+  const jogador = avaliarJogadoresJogadores().find(item => String(item.id || "") === id);
+  if(!jogador) return;
+
+  avaliarJogadoresVoteState.jogadorAbertoId = id;
+  avaliarJogadoresGarantirAvaliacao(id);
+  if(avaliarJogadoresVoteList) avaliarJogadoresVoteList.hidden = true;
+  if(avaliarJogadoresEditor) avaliarJogadoresEditor.hidden = false;
+  renderEditorAvaliarJogador();
+}
+
+function fecharEditorAvaliarJogador(){
+  avaliarJogadoresVoteState.jogadorAbertoId = "";
+  if(avaliarJogadoresEditor) avaliarJogadoresEditor.hidden = true;
+  renderAvaliarJogadoresVoteList();
+}
+
+function renderEditorAvaliarJogador(){
+  const id = avaliarJogadoresVoteState.jogadorAbertoId;
+  const jogador = avaliarJogadoresJogadores().find(item => String(item.id || "") === id);
+  const item = avaliarJogadoresGarantirAvaliacao(id);
+  if(!jogador || !item) return;
+
+  const usadosNormais = avaliarJogadoresTotalPontos(item, "normal");
+  const usadosEspeciais = avaliarJogadoresTotalPontos(item, "especial");
+  const restantesNormais = Math.max(0, AVALIAR_JOGADORES_PONTOS_NORMAIS - usadosNormais);
+  const restantesEspeciais = Math.max(0, AVALIAR_JOGADORES_PONTOS_ESPECIAIS - usadosEspeciais);
+
+  if(avaliarJogadoresEditorNome) avaliarJogadoresEditorNome.textContent = dividirTimesJogadorNome(jogador);
+  if(avaliarJogadoresEditorMeta) avaliarJogadoresEditorMeta.textContent = dividirTimesJogadorDetalhe(jogador) || "Jogador do elenco";
+  if(avaliarJogadoresNormaisRestantes) avaliarJogadoresNormaisRestantes.textContent = `${restantesNormais} ponto(s) normais restantes`;
+  if(avaliarJogadoresEspeciaisRestantes) avaliarJogadoresEspeciaisRestantes.textContent = `${restantesEspeciais} especial(is) restantes`;
+  if(!avaliarJogadoresAttrGrid) return;
+
+  avaliarJogadoresAttrGrid.innerHTML = AVALIAR_JOGADORES_ATRIBUTOS.map(attr => {
+    const normal = Number(item.pontos_normais?.[attr.key] || 0);
+    const especial = Number(item.pontos_especiais?.[attr.key] || 0);
+    const valor = avaliarJogadoresValorAtributo(item, attr.key);
+    return `
+      <div class="avaliarJogadoresAttrRow">
+        <div class="avaliarJogadoresAttrName">
+          <strong>${htmlEscape(attr.nome)}</strong>
+          <span>Base ${AVALIAR_JOGADORES_BASE} - agora ${valor}</span>
+        </div>
+        <div class="avaliarJogadoresStepper" aria-label="${htmlEscape(attr.nome)} pontos normais">
+          <button class="avaliarJogadoresStepBtn" type="button" data-avaliar-step="${htmlEscape(attr.key)}" data-tipo="normal" data-dir="-1" ${normal <= 0 ? "disabled" : ""}>-</button>
+          <span class="avaliarJogadoresStepValue">${normal}</span>
+          <button class="avaliarJogadoresStepBtn" type="button" data-avaliar-step="${htmlEscape(attr.key)}" data-tipo="normal" data-dir="1" ${restantesNormais <= 0 ? "disabled" : ""}>+</button>
+        </div>
+        <div class="avaliarJogadoresStepper" aria-label="${htmlEscape(attr.nome)} pontos especiais">
+          <button class="avaliarJogadoresStepBtn" type="button" data-avaliar-step="${htmlEscape(attr.key)}" data-tipo="especial" data-dir="-1" ${especial <= 0 ? "disabled" : ""}>-</button>
+          <span class="avaliarJogadoresStepValue">${especial} esp.</span>
+          <button class="avaliarJogadoresStepBtn" type="button" data-avaliar-step="${htmlEscape(attr.key)}" data-tipo="especial" data-dir="1" ${restantesEspeciais <= 0 ? "disabled" : ""}>+</button>
+        </div>
+      </div>
+    `;
+  }).join("");
+}
+
+function alterarPontoAvaliarJogador(atributoKey, tipo, dir){
+  const id = avaliarJogadoresVoteState.jogadorAbertoId;
+  const item = avaliarJogadoresGarantirAvaliacao(id);
+  if(!item) return;
+
+  const pontos = tipo === "especial" ? item.pontos_especiais : item.pontos_normais;
+  const limite = tipo === "especial" ? AVALIAR_JOGADORES_PONTOS_ESPECIAIS : AVALIAR_JOGADORES_PONTOS_NORMAIS;
+  const atual = Number(pontos[atributoKey] || 0);
+  const direcao = Number(dir || 0);
+  const total = avaliarJogadoresTotalPontos(item, tipo);
+
+  if(direcao > 0 && total >= limite) return;
+  if(direcao < 0 && atual <= 0) return;
+
+  pontos[atributoKey] = Math.max(0, atual + direcao);
+  renderEditorAvaliarJogador();
+}
+
+function avaliarJogadoresTemPontosNaoUsados(){
+  return avaliarJogadoresJogadores().some(jogador => {
+    const item = avaliarJogadoresGarantirAvaliacao(jogador.id);
+    return avaliarJogadoresTotalPontos(item, "normal") < AVALIAR_JOGADORES_PONTOS_NORMAIS ||
+      avaliarJogadoresTotalPontos(item, "especial") < AVALIAR_JOGADORES_PONTOS_ESPECIAIS;
+  });
+}
+
+async function carregarAvaliarJogadoresPublico(tokenSessao){
+  avaliarJogadoresVoteState.token = String(tokenSessao || "").trim();
+  if(!avaliarJogadoresVoteState.token) return false;
+
+  document.title = "Avaliar Jogadores | Meu Clube FC";
+  document.body.classList.add("publicProfileMode");
+  if(avaliarJogadoresVotePage) avaliarJogadoresVotePage.hidden = false;
+  avaliarJogadoresVoteSetMsg("Carregando avaliacao...");
+
+  if(!token){
+    exigirLoginAvaliarJogadoresVoto(true);
+    return true;
+  }
+
+  try{
+    const voterToken = avaliarJogadoresVoterToken();
+    const r = await fetch(`${API_BASE}/avaliar-jogadores/${encodeURIComponent(avaliarJogadoresVoteState.token)}?voter_token=${encodeURIComponent(voterToken)}&ts=${Date.now()}`, {
+      headers:{ "Authorization": "Bearer " + token },
+      cache:"no-store"
+    });
+    const data = await ia4LerJsonSeguro(r);
+
+    if(r.status === 401){
+      exigirLoginAvaliarJogadoresVoto(true);
+      return true;
+    }
+
+    if(!r.ok || !data.ok){
+      throw new Error(data.error || data.erro || "Avaliacao nao encontrada.");
+    }
+
+    const sessao = avaliarJogadoresNormalizarSessao(data.sessao || {});
+    avaliarJogadoresVoteState.sessao = sessao;
+    avaliarJogadoresVoteState.jogadorAbertoId = "";
+    prepararAvaliacoesJogadoresVoto(sessao);
+
+    const total = sessao.jogadores_avaliados.length;
+    if(avaliarJogadoresVoteIntro){
+      avaliarJogadoresVoteIntro.textContent = `${sessao.titulo || "Avaliacao"}: distribua pontos extras nos atributos de ${total} jogador(es).`;
+    }
+    if(avaliarJogadoresEditor) avaliarJogadoresEditor.hidden = true;
+    renderAvaliarJogadoresVoteList();
+    avaliarJogadoresVoteSetMsg(data.ja_avaliou ? "Esta conta ja enviou uma avaliacao para esta sessao." : "Abra um jogador por vez e distribua os pontos extras.", data.ja_avaliou ? "ok" : "");
+    if(avaliarJogadoresLoginVoteBtn) avaliarJogadoresLoginVoteBtn.hidden = true;
+    if(avaliarJogadoresEnviarVotoBtn){
+      avaliarJogadoresEnviarVotoBtn.hidden = false;
+      avaliarJogadoresEnviarVotoBtn.textContent = "Enviar avaliacao";
+      avaliarJogadoresEnviarVotoBtn.disabled = data.ja_avaliou === true;
+    }
+  }catch(err){
+    if(avaliarJogadoresVoteIntro) avaliarJogadoresVoteIntro.textContent = "Nao foi possivel carregar esta avaliacao.";
+    avaliarJogadoresVoteSetMsg(err?.message || "Erro de rede ao carregar avaliacao.", "erro");
+  }
+
+  return true;
+}
+
+async function enviarAvaliarJogadoresVoto(){
+  if(!avaliarJogadoresVoteState.token || !avaliarJogadoresJogadores().length) return;
+
+  if(!token){
+    exigirLoginAvaliarJogadoresVoto(true);
+    return;
+  }
+
+  const avaliacoes = avaliarJogadoresJogadores().map(jogador => {
+    const item = avaliarJogadoresGarantirAvaliacao(jogador.id);
+    return {
+      jogador_id: jogador.id,
+      pontos_normais: item.pontos_normais,
+      pontos_especiais: item.pontos_especiais
+    };
+  });
+
+  try{
+    if(avaliarJogadoresEnviarVotoBtn){
+      avaliarJogadoresEnviarVotoBtn.disabled = true;
+      avaliarJogadoresEnviarVotoBtn.textContent = "Enviando...";
+    }
+    avaliarJogadoresVoteSetMsg(
+      avaliarJogadoresTemPontosNaoUsados()
+        ? "Voce esta enviando usando menos pontos em alguns jogadores. Salvando..."
+        : "Enviando avaliacao..."
+    );
+
+    const r = await fetch(`${API_BASE}/avaliar-jogadores/${encodeURIComponent(avaliarJogadoresVoteState.token)}/votos`, {
+      method:"POST",
+      headers:{
+        "Content-Type":"application/json",
+        "Authorization": "Bearer " + token
+      },
+      body:JSON.stringify({
+        voter_token: avaliarJogadoresVoterToken(),
+        nome_votante: (avaliarJogadoresVotanteNome?.value || "").trim(),
+        avaliacoes
+      })
+    });
+    const data = await ia4LerJsonSeguro(r);
+
+    if(r.status === 401){
+      exigirLoginAvaliarJogadoresVoto(true);
+      return;
+    }
+
+    if(!r.ok || !data.ok){
+      throw new Error(data.error || data.erro || "Nao foi possivel salvar sua avaliacao.");
+    }
+
+    avaliarJogadoresVoteSetMsg("Avaliacao enviada. Obrigado!", "ok");
+    if(avaliarJogadoresEnviarVotoBtn) avaliarJogadoresEnviarVotoBtn.textContent = "Avaliacao enviada";
+  }catch(err){
+    avaliarJogadoresVoteSetMsg(err?.message || "Erro de rede ao enviar avaliacao.", "erro");
+    if(avaliarJogadoresEnviarVotoBtn){
+      avaliarJogadoresEnviarVotoBtn.disabled = false;
+      avaliarJogadoresEnviarVotoBtn.textContent = "Enviar avaliacao";
+    }
+  }
+}
+
+function iniciarAvaliarJogadoresPublicoSeNecessario(){
+  const tokenSessao = new URLSearchParams(location.search).get("avaliar");
+  if(!tokenSessao) return false;
+  carregarAvaliarJogadoresPublico(tokenSessao);
+  return true;
+}
+/* ===== FIM AVALIAR JOGADORES MVP ===== */
 
 function perfilEscalacaoJogadorLabel(jogador){
   const numero = perfilAssistTexto(jogador?.numero);
@@ -23275,6 +24424,7 @@ perfilPatrocinadorNovoBtn?.addEventListener("click", abrirFormPatrocinadorNovo);
 perfilEscalacaoNovoBtn?.addEventListener("click", abrirFormEscalacaoNovo);
 perfilJogoNovoBtn?.addEventListener("click", abrirFormJogoNovo);
 dividirTimesNovoBtn?.addEventListener("click", abrirDividirTimesSetup);
+avaliarJogadoresNovoBtn?.addEventListener("click", abrirAvaliarJogadoresSetup);
 perfilPatrocinadorLogoBtn?.addEventListener("click", ()=>perfilPatrocinadorLogoInput?.click());
 perfilPatrocinadorLogoInput?.addEventListener("change", ()=>{
   const file = perfilPatrocinadorLogoInput?.files?.[0] || null;
@@ -23307,6 +24457,21 @@ dividirTimesCopiarLinkBtn?.addEventListener("click", copiarDividirTimesLink);
 dividirTimesAtualizarBtn?.addEventListener("click", atualizarDividirTimesSessao);
 dividirTimesGerarBtn?.addEventListener("click", gerarDividirTimesResultado);
 dividirTimesCopiarResultadoBtn?.addEventListener("click", copiarDividirTimesResultado);
+avaliarJogadoresPlayers?.addEventListener("change", (e)=>{
+  const checkbox = e.target?.closest?.("[data-avaliar-jogador]");
+  if(!checkbox) return;
+  const id = checkbox.getAttribute("data-avaliar-jogador") || "";
+  if(!id) return;
+  if(checkbox.checked){
+    avaliarJogadoresState.selecionados.add(id);
+  }else{
+    avaliarJogadoresState.selecionados.delete(id);
+  }
+  renderAvaliarJogadoresJogadores();
+});
+avaliarJogadoresCriarBtn?.addEventListener("click", criarAvaliarJogadoresSessao);
+avaliarJogadoresCopiarLinkBtn?.addEventListener("click", copiarAvaliarJogadoresLink);
+avaliarJogadoresAtualizarBtn?.addEventListener("click", atualizarAvaliarJogadoresSessao);
 perfilEscalacaoSalvarBtn?.addEventListener("click", salvarPerfilEscalacaoItem);
 perfilEscalacaoCancelarBtn?.addEventListener("click", ()=>{
   limparFormEscalacao();
@@ -23359,6 +24524,23 @@ dividirTimesVoteList?.addEventListener("click", (e)=>{
 });
 dividirTimesEnviarVotoBtn?.addEventListener("click", enviarDividirTimesVoto);
 dividirTimesLoginVoteBtn?.addEventListener("click", abrirLoginDividirTimesVoto);
+avaliarJogadoresVoteList?.addEventListener("click", (e)=>{
+  const btn = e.target?.closest?.("[data-avaliar-open]");
+  if(!btn) return;
+  abrirEditorAvaliarJogador(btn.getAttribute("data-avaliar-open"));
+});
+avaliarJogadoresAttrGrid?.addEventListener("click", (e)=>{
+  const btn = e.target?.closest?.("[data-avaliar-step]");
+  if(!btn) return;
+  alterarPontoAvaliarJogador(
+    btn.getAttribute("data-avaliar-step"),
+    btn.getAttribute("data-tipo"),
+    btn.getAttribute("data-dir")
+  );
+});
+avaliarJogadoresEditorVoltarBtn?.addEventListener("click", fecharEditorAvaliarJogador);
+avaliarJogadoresEnviarVotoBtn?.addEventListener("click", enviarAvaliarJogadoresVoto);
+avaliarJogadoresLoginVoteBtn?.addEventListener("click", abrirLoginAvaliarJogadoresVoto);
 perfilPatrocinadoresLista?.addEventListener("click", (e)=>{
   const editarBtn = e.target?.closest?.("[data-editar-patrocinador]");
   const removerBtn = e.target?.closest?.("[data-remover-patrocinador]");
@@ -24189,6 +25371,7 @@ denunciaIaModal?.addEventListener("click", (event) => {
 
 inicializarProdutoPorUrl();
 iniciarDividirTimesPublicoSeNecessario();
+iniciarAvaliarJogadoresPublicoSeNecessario();
 iniciarRankingSeNecessario();
 iniciarPerfilPublicoSeNecessario();
 </script>
