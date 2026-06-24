@@ -1508,6 +1508,79 @@
       box-shadow:none;
     }
 
+    .appInstallCta{
+      margin-top:14px;
+      padding:14px;
+      border-radius:18px;
+      border:1px solid rgba(245, 183, 51, .34);
+      background:linear-gradient(135deg, rgba(245,183,51,.18), rgba(15,23,42,.92));
+      color:#fff;
+      display:grid;
+      gap:8px;
+      text-align:left;
+    }
+
+    .appInstallCta[hidden]{
+      display:none !important;
+    }
+
+    .appInstallCta strong{
+      font-size:15px;
+      font-weight:950;
+      color:#fff;
+    }
+
+    .appInstallCta p{
+      margin:0;
+      color:rgba(255,255,255,.78);
+      font-size:13px;
+      line-height:1.45;
+    }
+
+    .appInstallCta a,
+    .criarArteAppActions a{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      text-decoration:none;
+    }
+
+    .criarArteAppModalBody{
+      padding:20px;
+      background:linear-gradient(180deg, #101827 0%, #060b14 100%);
+      color:#fff;
+      display:grid;
+      gap:14px;
+    }
+
+    .criarArteAppModalBody h3{
+      margin:0;
+      font-size:21px;
+      line-height:1.15;
+      color:#fff;
+    }
+
+    .criarArteAppModalBody p{
+      margin:0;
+      color:rgba(255,255,255,.78);
+      font-size:14px;
+      line-height:1.5;
+    }
+
+    .criarArteAppActions{
+      display:flex;
+      flex-wrap:wrap;
+      gap:10px;
+    }
+
+    .criarArteAppActions .btnGreen,
+    .criarArteAppActions .btnGhost{
+      flex:1 1 180px;
+      min-height:46px;
+      border-radius:14px;
+      font-weight:950;
+    }
+
     .legalBody{
       padding:18px;
       background:#f8fafc;
@@ -9545,7 +9618,7 @@ body:not(.modeChosen) .builderArea,
         </div>
         <div class="perfilRankingActions">
           <a class="perfilPublicoBtn" href="/app.html">Criar perfil do meu time</a>
-          <a class="perfilPublicoBtn secondary" href="/app.html">Criar arte</a>
+          <a class="perfilPublicoBtn secondary" href="/app.html" data-criar-arte-web="ranking">Criar arte</a>
         </div>
       </header>
 
@@ -9618,6 +9691,11 @@ body:not(.modeChosen) .builderArea,
           <a class="perfilMiniBtn" href="/app.html">Abrir Meu Clube FC</a>
         </div>
         <div class="dividirTimesMsg" id="dividirTimesVoteMsg"></div>
+        <div class="appInstallCta" id="dividirTimesAppCta" hidden>
+          <strong>Quer criar uma arte ou Card Gamer?</strong>
+          <p>Baixe o app Meu Clube FC e crie artes do seu time pelo celular.</p>
+          <a class="btnGreen" data-play-store-link target="_blank" rel="noopener">Baixar na Play Store</a>
+        </div>
       </section>
     </div>
   </section>
@@ -9662,6 +9740,11 @@ body:not(.modeChosen) .builderArea,
           <a class="perfilMiniBtn" href="/app.html">Abrir Meu Clube FC</a>
         </div>
         <div class="dividirTimesMsg avaliarJogadoresMsg" id="avaliarJogadoresVoteMsg"></div>
+        <div class="appInstallCta" id="avaliarJogadoresAppCta" hidden>
+          <strong>Quer criar uma arte ou Card Gamer?</strong>
+          <p>Baixe o app Meu Clube FC e transforme os dados do seu time em artes.</p>
+          <a class="btnGreen" data-play-store-link target="_blank" rel="noopener">Baixar na Play Store</a>
+        </div>
       </section>
     </div>
   </section>
@@ -9675,7 +9758,7 @@ body:not(.modeChosen) .builderArea,
           <a class="perfilPublicoBtn secondary" href="/app.html?ranking=times">Ranking</a>
           <a class="perfilPublicoBtn secondary" id="perfilPublicoWhatsappBtn" href="#" target="_blank" rel="noopener">WhatsApp</a>
           <button class="perfilPublicoBtn secondary" id="perfilPublicoCopiarBtn" type="button">Copiar link</button>
-          <a class="perfilPublicoBtn" href="/app.html">Criar arte no Meu Clube FC</a>
+          <a class="perfilPublicoBtn" href="/app.html" data-criar-arte-web="perfil-publico">Criar arte no Meu Clube FC</a>
         </div>
       </header>
 
@@ -10431,6 +10514,23 @@ body:not(.modeChosen) .builderArea,
           Ops, talvez você não esteja no Chrome e por isso não pode baixar.<br><br>
           Para baixar, nos envie uma mensagem no WhatsApp aqui ao lado.
         </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modalMask" id="criarArteAppModal" aria-hidden="true">
+  <div class="modalCard" role="dialog" aria-modal="true" aria-label="Criar arte no app Meu Clube FC">
+    <div class="modalTop">
+      <div class="modalTitle">Meu Clube FC</div>
+      <button class="modalClose btnGhost" id="criarArteAppCloseBtn" type="button">&times;</button>
+    </div>
+    <div class="criarArteAppModalBody">
+      <h3>Para criar artes, baixe o app Meu Clube FC na Play Store.</h3>
+      <p>Votacoes, avaliacoes e perfis continuam funcionando pela web. A criacao de artes, flyers e Card Gamer fica disponivel no app instalado.</p>
+      <div class="criarArteAppActions">
+        <a class="btnGreen" id="criarArteAppPlayStoreBtn" target="_blank" rel="noopener">Baixar na Play Store</a>
+        <button class="btnGhost" id="criarArteAppContinuarBtn" type="button">Continuar navegando</button>
       </div>
     </div>
   </div>
@@ -11317,6 +11417,8 @@ body:not(.modeChosen) .builderArea,
 
 <script>
 const API_BASE = "https://api.omascote.com.br";
+const MEU_CLUBE_PLAY_STORE_URL = "https://play.google.com/store/apps/details?id=br.com.omascote.app";
+const MEU_CLUBE_ARTE_APP_MSG = "Para criar artes, baixe o app Meu Clube FC na Play Store.";
 const isInstagram = /Instagram/i.test(navigator.userAgent);
 const IA4_MAX_UPLOAD_BYTES = 50 * 1024 * 1024;
 const IA4_MAX_UPLOAD_MB = 50;
@@ -11344,6 +11446,66 @@ function ia4ValidarTamanhoArquivos(files){
 }
 
 let token = localStorage.getItem("omascote_token");
+
+const criarArteAppModal = document.getElementById("criarArteAppModal");
+const criarArteAppCloseBtn = document.getElementById("criarArteAppCloseBtn");
+const criarArteAppContinuarBtn = document.getElementById("criarArteAppContinuarBtn");
+const criarArteAppPlayStoreBtn = document.getElementById("criarArteAppPlayStoreBtn");
+const dividirTimesAppCta = document.getElementById("dividirTimesAppCta");
+const avaliarJogadoresAppCta = document.getElementById("avaliarJogadoresAppCta");
+
+function configurarLinksPlayStore(){
+  document.querySelectorAll("[data-play-store-link]").forEach(link => {
+    link.href = MEU_CLUBE_PLAY_STORE_URL;
+  });
+  if(criarArteAppPlayStoreBtn) criarArteAppPlayStoreBtn.href = MEU_CLUBE_PLAY_STORE_URL;
+}
+
+function estaNoAppMeuClube(){
+  const twa = typeof ia4EstaEmModoApp === "function" && ia4EstaEmModoApp();
+  const pwa = typeof ia4EstaEmPwa === "function" && ia4EstaEmPwa();
+  return !!(twa || pwa);
+}
+
+function fecharBloqueioCriacaoArteApp(){
+  if(!criarArteAppModal) return;
+  criarArteAppModal.classList.remove("open");
+  criarArteAppModal.setAttribute("aria-hidden", "true");
+}
+
+function mostrarBloqueioCriacaoArteApp(contexto = ""){
+  configurarLinksPlayStore();
+  try{
+    ia4Track("bloqueou_criacao_arte_web", {
+      contexto: String(contexto || ""),
+      modo_app: estaNoAppMeuClube() ? "sim" : "nao"
+    });
+  }catch(e){}
+
+  if(criarArteAppModal){
+    criarArteAppModal.classList.add("open");
+    criarArteAppModal.setAttribute("aria-hidden", "false");
+    return;
+  }
+
+  alert(MEU_CLUBE_ARTE_APP_MSG);
+}
+
+function bloquearCriacaoArteForaDoApp(contexto = ""){
+  if(estaNoAppMeuClube()) return false;
+  mostrarBloqueioCriacaoArteApp(contexto);
+  return true;
+}
+
+function mostrarCtaAppDepoisParticipacao(cta){
+  if(!cta || estaNoAppMeuClube()) return;
+  configurarLinksPlayStore();
+  cta.hidden = false;
+}
+
+function esconderCtaAppParticipacao(cta){
+  if(cta) cta.hidden = true;
+}
 
 const legalInfoModal = document.getElementById("legalInfoModal");
 const legalInfoTitle = document.getElementById("legalInfoTitle");
@@ -13400,6 +13562,7 @@ function renderProductChooser(){
 
   chooser.querySelectorAll("[data-product-picker]").forEach(btn => {
     btn.addEventListener("click", () => {
+      if(bloquearCriacaoArteForaDoApp(`produto:${btn.dataset.productPicker || ""}`)) return;
       marcarProductChooserVisto();
       selectCleanProductForPicker(btn.dataset.productPicker || "", { scroll: true, track: true });
     });
@@ -14280,6 +14443,7 @@ async function submitCleanProductForm(e){
   const schema = getCleanProductSchema(productKey);
 
   if(!product || !schema) return;
+  if(bloquearCriacaoArteForaDoApp(`envio:${productKey}`)) return;
 
   selectedProductInput.value = productKey;
   flyerTipoInput.value = product.flyerTipo || "";
@@ -14466,12 +14630,14 @@ function bindCleanProductForms(root){
 
   root.querySelectorAll("[data-open-escudo3d-file]").forEach(box => {
     box.addEventListener("click", () => {
+      if(bloquearCriacaoArteForaDoApp("escudo3d:arquivo")) return;
       selectCleanProductForPicker("escudo3d", { scroll:false });
       escudo3dFile?.click();
     });
     box.addEventListener("keydown", (e) => {
       if(e.key === "Enter" || e.key === " "){
         e.preventDefault();
+        if(bloquearCriacaoArteForaDoApp("escudo3d:arquivo")) return;
         escudo3dFile?.click();
       }
     });
@@ -14479,6 +14645,7 @@ function bindCleanProductForms(root){
 
   root.querySelectorAll("[data-submit-escudo3d]").forEach(btn => {
     btn.addEventListener("click", async () => {
+      if(bloquearCriacaoArteForaDoApp("escudo3d:envio")) return;
       activateCleanProductBlock("escudo3d");
       const block = btn.closest(".cleanProductBlock");
       const file = escudo3dFile?.files && escudo3dFile.files[0] ? escudo3dFile.files[0] : null;
@@ -14498,6 +14665,7 @@ function bindCleanProductForms(root){
 
   root.querySelectorAll("[data-open-escudo3d]").forEach(btn => {
     btn.addEventListener("click", () => {
+      if(bloquearCriacaoArteForaDoApp("escudo3d:modal")) return;
       activateCleanProductBlock("escudo3d");
       if(!token){
         abrirCadastroEscudo3dModal();
@@ -16477,6 +16645,9 @@ function fecharEscudo3dModal(){
 
 document.querySelectorAll(".optionBtn").forEach(btn=>{
   btn.addEventListener("click", ()=>{
+    const productKey = btn.dataset.product || "";
+    if(bloquearCriacaoArteForaDoApp(`produto:${productKey}`)) return;
+
     if(btn.dataset.product === "escudo3d"){
       if(!token){
         abrirCadastroEscudo3dModal();
@@ -16487,7 +16658,7 @@ document.querySelectorAll(".optionBtn").forEach(btn=>{
       return;
     }
 
-    selectProduct(btn.dataset.product);
+    selectProduct(productKey);
   });
 });
 
@@ -16524,6 +16695,8 @@ if(escudo3dModalCouponInput && escudo3dModalPricePreview){
 }
 
 async function enviarPedidoEscudo3dComArquivo(file, progressTarget = null){
+  if(bloquearCriacaoArteForaDoApp("escudo3d:pedido")) return;
+
   if(!token){
     const okAuto = await criarContaAutomaticaAntesPedido();
     if(!okAuto) return;
@@ -16681,6 +16854,8 @@ if(escudo3dEnviarBtn){
 }
 
 mainCreateBtn.addEventListener("click", ()=>{
+  if(bloquearCriacaoArteForaDoApp("botao-principal")) return;
+
   const current = selectedProductInput.value;
 
   if(current){
@@ -17373,6 +17548,8 @@ document.getElementById("pedidoForm").addEventListener("submit", async (e)=>{
     msgPedidoEl.textContent = "Escolha primeiro o tipo de arte.";
     return;
   }
+
+  if(bloquearCriacaoArteForaDoApp(`envio:${productKey}`)) return;
 
   if(!validarPedidoAntesDeEnviar(productKey)){
     ia4RegistrarAcao("erro_validacao_pedido", {
@@ -18989,6 +19166,8 @@ const bannerJogadorEscudoLink = document.getElementById("bannerJogadorEscudoLink
 
 bannerJogadorEscudoLink?.addEventListener("click", (e)=>{
   e.preventDefault();
+
+  if(bloquearCriacaoArteForaDoApp("banner-jogador-escudo")) return;
 
   showProductCategory("jogador");
 
@@ -21129,6 +21308,8 @@ function perfilGaleriaAbrirArte(btn){
 function perfilGaleriaAbrirProduto(productKey){
   const produto = perfilGaleriaProdutoDestino(productKey);
 
+  if(bloquearCriacaoArteForaDoApp(`galeria:${produto}`)) return;
+
   if(document.body.classList.contains("publicProfileMode")){
     window.location.href = `/app.html?produto=${encodeURIComponent(produto)}`;
     return;
@@ -21148,6 +21329,8 @@ function inicializarProdutoPorUrl(){
   const rawProduto = String(params.get("produto") || "").trim().toLowerCase();
   if(!rawProduto || !PRODUCTS[rawProduto]) return;
   const produto = perfilGaleriaProdutoDestino(rawProduto);
+
+  if(bloquearCriacaoArteForaDoApp(`url:${produto}`)) return;
 
   setTimeout(()=>{
     showProductCategory(["mascote_uniforme", "jogador_escudo"].includes(produto) ? "jogador" : "time");
@@ -21918,6 +22101,8 @@ function abrirEditorPeloPerfilVisual(){
 }
 
 function criarArteComPerfilVisual(){
+  if(bloquearCriacaoArteForaDoApp("perfil-visual")) return;
+
   perfilCriarArteModoAtivo = true;
   fecharPerfilTimeVisual();
   atualizarProductChooserModoPerfil();
@@ -21966,6 +22151,8 @@ async function criarArteComDadosDoPerfil(tipo, dados = {}){
     setPerfilTimeMsg("Produto de arte nao encontrado para este atalho.", "erro");
     return;
   }
+
+  if(bloquearCriacaoArteForaDoApp(`perfil:${productKey}`)) return;
 
   if(!token){
     acaoDepoisDoCadastro = () => criarArteComDadosDoPerfil(tipo, dados);
@@ -22804,6 +22991,7 @@ async function carregarDividirTimesPublico(tokenSessao){
   document.title = "Votar para Dividir Times | Meu Clube FC";
   document.body.classList.add("publicProfileMode");
   if(dividirTimesVotePage) dividirTimesVotePage.hidden = false;
+  esconderCtaAppParticipacao(dividirTimesAppCta);
   dividirTimesVoteSetMsg("Carregando votacao...");
 
   if(!token){
@@ -22838,6 +23026,8 @@ async function carregarDividirTimesPublico(tokenSessao){
     }
     renderDividirTimesVoteList();
     dividirTimesVoteSetMsg(data.ja_votou ? "Esta conta ja enviou um voto para esta votacao." : "Use as setas para ordenar e envie seu voto.", data.ja_votou ? "ok" : "");
+    if(data.ja_votou) mostrarCtaAppDepoisParticipacao(dividirTimesAppCta);
+    else esconderCtaAppParticipacao(dividirTimesAppCta);
     if(dividirTimesLoginVoteBtn) dividirTimesLoginVoteBtn.hidden = true;
     if(dividirTimesEnviarVotoBtn){
       dividirTimesEnviarVotoBtn.hidden = false;
@@ -22896,6 +23086,7 @@ async function enviarDividirTimesVoto(){
     }
 
     dividirTimesVoteSetMsg("Voto enviado. Obrigado!", "ok");
+    mostrarCtaAppDepoisParticipacao(dividirTimesAppCta);
     if(dividirTimesEnviarVotoBtn) dividirTimesEnviarVotoBtn.textContent = "Voto enviado";
   }catch(err){
     dividirTimesVoteSetMsg(err?.message || "Erro de rede ao enviar voto.", "erro");
@@ -23407,6 +23598,7 @@ async function carregarAvaliarJogadoresPublico(tokenSessao){
   document.title = "Avaliar Jogadores | Meu Clube FC";
   document.body.classList.add("publicProfileMode");
   if(avaliarJogadoresVotePage) avaliarJogadoresVotePage.hidden = false;
+  esconderCtaAppParticipacao(avaliarJogadoresAppCta);
   avaliarJogadoresVoteSetMsg("Carregando avaliacao...");
 
   if(!token){
@@ -23443,6 +23635,8 @@ async function carregarAvaliarJogadoresPublico(tokenSessao){
     if(avaliarJogadoresEditor) avaliarJogadoresEditor.hidden = true;
     renderAvaliarJogadoresVoteList();
     avaliarJogadoresVoteSetMsg(data.ja_avaliou ? "Esta conta ja enviou uma avaliacao para esta sessao." : "Abra um jogador por vez e distribua os pontos extras.", data.ja_avaliou ? "ok" : "");
+    if(data.ja_avaliou) mostrarCtaAppDepoisParticipacao(avaliarJogadoresAppCta);
+    else esconderCtaAppParticipacao(avaliarJogadoresAppCta);
     if(avaliarJogadoresLoginVoteBtn) avaliarJogadoresLoginVoteBtn.hidden = true;
     if(avaliarJogadoresEnviarVotoBtn){
       avaliarJogadoresEnviarVotoBtn.hidden = false;
@@ -23508,6 +23702,7 @@ async function enviarAvaliarJogadoresVoto(){
     }
 
     avaliarJogadoresVoteSetMsg("Avaliacao enviada. Obrigado!", "ok");
+    mostrarCtaAppDepoisParticipacao(avaliarJogadoresAppCta);
     if(avaliarJogadoresEnviarVotoBtn) avaliarJogadoresEnviarVotoBtn.textContent = "Avaliacao enviada";
   }catch(err){
     avaliarJogadoresVoteSetMsg(err?.message || "Erro de rede ao enviar avaliacao.", "erro");
@@ -24440,9 +24635,15 @@ perfilPublicoShareCopiarBtn?.addEventListener("click", async ()=>{
   perfilVisualSetText(perfilPublicoMsg, ok ? "Texto pronto copiado." : "Nao foi possivel copiar o texto.");
 });
 document.addEventListener("click", (event)=>{
+  const criarArteWebBtn = event.target?.closest?.("[data-criar-arte-web]");
   const filtroBtn = event.target?.closest?.("[data-galeria-filtro]");
   const verBtn = event.target?.closest?.("[data-galeria-ver]");
   const criarBtn = event.target?.closest?.("[data-galeria-criar]");
+
+  if(criarArteWebBtn && bloquearCriacaoArteForaDoApp(criarArteWebBtn.getAttribute("data-criar-arte-web") || "link-web")){
+    event.preventDefault();
+    return;
+  }
 
   if(filtroBtn){
     const publica = filtroBtn.getAttribute("data-publica") === "1";
@@ -25377,6 +25578,8 @@ window.addEventListener("appinstalled", () => {
 
 instalarAppCloseBtn?.addEventListener("click", ia4FecharModalInstalarApp);
 cartaAppCloseBtn?.addEventListener("click", fecharCartaAppModal);
+criarArteAppCloseBtn?.addEventListener("click", fecharBloqueioCriacaoArteApp);
+criarArteAppContinuarBtn?.addEventListener("click", fecharBloqueioCriacaoArteApp);
 
 instalarAppModal?.addEventListener("click", (event) => {
   if(event.target === instalarAppModal){
@@ -25389,6 +25592,14 @@ cartaAppModal?.addEventListener("click", (event) => {
     fecharCartaAppModal();
   }
 });
+
+criarArteAppModal?.addEventListener("click", (event) => {
+  if(event.target === criarArteAppModal){
+    fecharBloqueioCriacaoArteApp();
+  }
+});
+
+configurarLinksPlayStore();
 
 document.getElementById("btnAbrirPrivacidadeFooter")?.addEventListener("click", (event) => {
   event.preventDefault();
