@@ -9650,8 +9650,7 @@ body:not(.modeChosen) .builderArea,
           </div>
 
           <div class="avaliarJogadoresPoints">
-            <span id="avaliarJogadoresNormaisRestantes">20 pontos normais</span>
-            <span id="avaliarJogadoresEspeciaisRestantes">5 especiais</span>
+            <span id="avaliarJogadoresNormaisRestantes">30 pontos restantes</span>
           </div>
 
           <div class="avaliarJogadoresAttrGrid" id="avaliarJogadoresAttrGrid"></div>
@@ -19192,7 +19191,6 @@ const avaliarJogadoresEditorNome = document.getElementById("avaliarJogadoresEdit
 const avaliarJogadoresEditorMeta = document.getElementById("avaliarJogadoresEditorMeta");
 const avaliarJogadoresEditorVoltarBtn = document.getElementById("avaliarJogadoresEditorVoltarBtn");
 const avaliarJogadoresNormaisRestantes = document.getElementById("avaliarJogadoresNormaisRestantes");
-const avaliarJogadoresEspeciaisRestantes = document.getElementById("avaliarJogadoresEspeciaisRestantes");
 const avaliarJogadoresAttrGrid = document.getElementById("avaliarJogadoresAttrGrid");
 const avaliarJogadoresEnviarVotoBtn = document.getElementById("avaliarJogadoresEnviarVotoBtn");
 const avaliarJogadoresLoginVoteBtn = document.getElementById("avaliarJogadoresLoginVoteBtn");
@@ -22920,10 +22918,8 @@ function iniciarDividirTimesPublicoSeNecessario(){
 const AVALIAR_JOGADORES_LOGIN_MSG = "Entre na sua conta ou crie um cadastro para votar.";
 const AVALIAR_JOGADORES_BASE = 75;
 const AVALIAR_JOGADORES_TETO = 99;
-const AVALIAR_JOGADORES_PONTOS_NORMAIS = 20;
-const AVALIAR_JOGADORES_PONTOS_ESPECIAIS = 5;
-const AVALIAR_JOGADORES_VALOR_NORMAL = 2;
-const AVALIAR_JOGADORES_VALOR_ESPECIAL = 5;
+const AVALIAR_JOGADORES_PONTOS_TOTAL = 30;
+const AVALIAR_JOGADORES_VALOR_PONTO = 0.3;
 const AVALIAR_JOGADORES_ATRIBUTOS = [
   { key:"velocidade", nome:"Velocidade" },
   { key:"finalizacao", nome:"Finalizacao" },
@@ -22991,8 +22987,7 @@ function avaliarJogadoresPontosDefault(){
 function avaliarJogadoresNovoItem(jogadorId){
   return {
     jogador_id: String(jogadorId || ""),
-    pontos_normais: avaliarJogadoresPontosDefault(),
-    pontos_especiais: avaliarJogadoresPontosDefault()
+    pontos: avaliarJogadoresPontosDefault()
   };
 }
 
@@ -23009,27 +23004,34 @@ function avaliarJogadoresGarantirAvaliacao(jogadorId){
   return avaliarJogadoresVoteState.avaliacoes[id];
 }
 
-function avaliarJogadoresTotalPontos(item, tipo){
-  const pontos = tipo === "especial" ? item?.pontos_especiais : item?.pontos_normais;
+function avaliarJogadoresPontos(item){
+  if(!item?.pontos){
+    item.pontos = item?.pontos_normais && typeof item.pontos_normais === "object"
+      ? { ...avaliarJogadoresPontosDefault(), ...item.pontos_normais }
+      : avaliarJogadoresPontosDefault();
+  }
+  return item.pontos;
+}
+
+function avaliarJogadoresTotalPontos(item){
+  const pontos = avaliarJogadoresPontos(item);
   return Object.values(pontos || {}).reduce((sum, value) => sum + Number(value || 0), 0);
 }
 
 function avaliarJogadoresValorAtributo(item, atributoKey){
-  const normal = Number(item?.pontos_normais?.[atributoKey] || 0);
-  const especial = Number(item?.pontos_especiais?.[atributoKey] || 0);
+  const pontos = Number(avaliarJogadoresPontos(item)?.[atributoKey] || 0);
   const valor = Math.min(
     AVALIAR_JOGADORES_TETO,
-    AVALIAR_JOGADORES_BASE + normal * AVALIAR_JOGADORES_VALOR_NORMAL + especial * AVALIAR_JOGADORES_VALOR_ESPECIAL
+    AVALIAR_JOGADORES_BASE + pontos * AVALIAR_JOGADORES_VALOR_PONTO
   );
   return valor.toLocaleString("pt-BR", { minimumFractionDigits:1, maximumFractionDigits:1 });
 }
 
 function avaliarJogadoresValorAtributoNumero(item, atributoKey){
-  const normal = Number(item?.pontos_normais?.[atributoKey] || 0);
-  const especial = Number(item?.pontos_especiais?.[atributoKey] || 0);
+  const pontos = Number(avaliarJogadoresPontos(item)?.[atributoKey] || 0);
   return Math.min(
     AVALIAR_JOGADORES_TETO,
-    AVALIAR_JOGADORES_BASE + normal * AVALIAR_JOGADORES_VALOR_NORMAL + especial * AVALIAR_JOGADORES_VALOR_ESPECIAL
+    AVALIAR_JOGADORES_BASE + pontos * AVALIAR_JOGADORES_VALOR_PONTO
   );
 }
 
@@ -23265,12 +23267,11 @@ function renderAvaliarJogadoresVoteList(){
   avaliarJogadoresVoteList.innerHTML = jogadores.length
     ? jogadores.map((jogador, index) => {
         const item = avaliarJogadoresGarantirAvaliacao(jogador.id);
-        const usadosNormais = avaliarJogadoresTotalPontos(item, "normal");
-        const usadosEspeciais = avaliarJogadoresTotalPontos(item, "especial");
+        const usados = avaliarJogadoresTotalPontos(item);
         const aberto = avaliarJogadoresVoteState.jogadorAbertoId === String(jogador.id || "");
         const detalhe = [
           dividirTimesJogadorDetalhe(jogador) || "Jogador do elenco",
-          usadosNormais || usadosEspeciais ? `${usadosNormais} normais / ${usadosEspeciais} especiais` : "Ainda sem pontos extras"
+          usados ? `${usados} de ${AVALIAR_JOGADORES_PONTOS_TOTAL} pontos usados` : "Ainda sem pontos extras"
         ].filter(Boolean).join(" - ");
         return `
           <div class="avaliarJogadoresVoteItem${aberto ? " is-open" : ""}" data-avaliar-vote-player="${htmlEscape(jogador.id || "")}">
@@ -23314,10 +23315,8 @@ function fecharEditorAvaliarJogador(){
 }
 
 function renderEditorAvaliarJogadorHtml(jogador, item){
-  const usadosNormais = avaliarJogadoresTotalPontos(item, "normal");
-  const usadosEspeciais = avaliarJogadoresTotalPontos(item, "especial");
-  const restantesNormais = Math.max(0, AVALIAR_JOGADORES_PONTOS_NORMAIS - usadosNormais);
-  const restantesEspeciais = Math.max(0, AVALIAR_JOGADORES_PONTOS_ESPECIAIS - usadosEspeciais);
+  const usados = avaliarJogadoresTotalPontos(item);
+  const restantes = Math.max(0, AVALIAR_JOGADORES_PONTOS_TOTAL - usados);
 
   return `
     <div class="avaliarJogadoresEditor is-inline" data-avaliar-inline-editor="${htmlEscape(jogador.id || "")}">
@@ -23328,32 +23327,25 @@ function renderEditorAvaliarJogadorHtml(jogador, item){
         </div>
       </div>
       <div class="avaliarJogadoresPoints">
-        <span>${restantesNormais} ponto(s) normais restantes</span>
-        <span>${restantesEspeciais} especial(is) restantes</span>
+        <span>${restantes} ponto(s) restantes</span>
       </div>
       <div class="avaliarJogadoresAttrGrid">
         ${AVALIAR_JOGADORES_ATRIBUTOS.map(attr => {
-    const normal = Number(item.pontos_normais?.[attr.key] || 0);
-    const especial = Number(item.pontos_especiais?.[attr.key] || 0);
+    const pontos = avaliarJogadoresPontos(item);
+    const valorPontos = Number(pontos?.[attr.key] || 0);
     const valor = avaliarJogadoresValorAtributo(item, attr.key);
     const valorNumero = avaliarJogadoresValorAtributoNumero(item, attr.key);
-    const bloqueiaPorTetoNormal = valorNumero + AVALIAR_JOGADORES_VALOR_NORMAL > AVALIAR_JOGADORES_TETO;
-    const bloqueiaPorTetoEspecial = valorNumero + AVALIAR_JOGADORES_VALOR_ESPECIAL > AVALIAR_JOGADORES_TETO;
+    const bloqueiaPorTeto = valorNumero + AVALIAR_JOGADORES_VALOR_PONTO > AVALIAR_JOGADORES_TETO;
     return `
       <div class="avaliarJogadoresAttrRow">
         <div class="avaliarJogadoresAttrName">
           <strong>${htmlEscape(attr.nome)}</strong>
           <span>Base ${AVALIAR_JOGADORES_BASE} - agora ${valor} / teto ${AVALIAR_JOGADORES_TETO}</span>
         </div>
-        <div class="avaliarJogadoresStepper" aria-label="${htmlEscape(attr.nome)} pontos normais">
-          <button class="avaliarJogadoresStepBtn" type="button" data-avaliar-step="${htmlEscape(attr.key)}" data-tipo="normal" data-dir="-1" ${normal <= 0 ? "disabled" : ""}>-</button>
-          <span class="avaliarJogadoresStepValue">${normal}</span>
-          <button class="avaliarJogadoresStepBtn" type="button" data-avaliar-step="${htmlEscape(attr.key)}" data-tipo="normal" data-dir="1" ${restantesNormais <= 0 || bloqueiaPorTetoNormal ? "disabled" : ""}>+</button>
-        </div>
-        <div class="avaliarJogadoresStepper" aria-label="${htmlEscape(attr.nome)} pontos especiais">
-          <button class="avaliarJogadoresStepBtn" type="button" data-avaliar-step="${htmlEscape(attr.key)}" data-tipo="especial" data-dir="-1" ${especial <= 0 ? "disabled" : ""}>-</button>
-          <span class="avaliarJogadoresStepValue">${especial} esp.</span>
-          <button class="avaliarJogadoresStepBtn" type="button" data-avaliar-step="${htmlEscape(attr.key)}" data-tipo="especial" data-dir="1" ${restantesEspeciais <= 0 || bloqueiaPorTetoEspecial ? "disabled" : ""}>+</button>
+        <div class="avaliarJogadoresStepper" aria-label="${htmlEscape(attr.nome)} pontos">
+          <button class="avaliarJogadoresStepBtn" type="button" data-avaliar-step="${htmlEscape(attr.key)}" data-dir="-1" ${valorPontos <= 0 ? "disabled" : ""}>-</button>
+          <span class="avaliarJogadoresStepValue">${valorPontos}</span>
+          <button class="avaliarJogadoresStepBtn" type="button" data-avaliar-step="${htmlEscape(attr.key)}" data-dir="1" ${restantes <= 0 || bloqueiaPorTeto ? "disabled" : ""}>+</button>
         </div>
       </div>
     `;
@@ -23367,17 +23359,17 @@ function renderEditorAvaliarJogador(){
   renderAvaliarJogadoresVoteList();
 }
 
-function alterarPontoAvaliarJogador(atributoKey, tipo, dir){
+function alterarPontoAvaliarJogador(atributoKey, dir){
   const id = avaliarJogadoresVoteState.jogadorAbertoId;
   const item = avaliarJogadoresGarantirAvaliacao(id);
   if(!item) return;
 
-  const pontos = tipo === "especial" ? item.pontos_especiais : item.pontos_normais;
-  const limite = tipo === "especial" ? AVALIAR_JOGADORES_PONTOS_ESPECIAIS : AVALIAR_JOGADORES_PONTOS_NORMAIS;
+  const pontos = avaliarJogadoresPontos(item);
+  const limite = AVALIAR_JOGADORES_PONTOS_TOTAL;
   const atual = Number(pontos[atributoKey] || 0);
   const direcao = Number(dir || 0);
-  const total = avaliarJogadoresTotalPontos(item, tipo);
-  const incremento = tipo === "especial" ? AVALIAR_JOGADORES_VALOR_ESPECIAL : AVALIAR_JOGADORES_VALOR_NORMAL;
+  const total = avaliarJogadoresTotalPontos(item);
+  const incremento = AVALIAR_JOGADORES_VALOR_PONTO;
   const valorAtual = avaliarJogadoresValorAtributoNumero(item, atributoKey);
 
   if(direcao > 0 && total >= limite) return;
@@ -23391,8 +23383,7 @@ function alterarPontoAvaliarJogador(atributoKey, tipo, dir){
 function avaliarJogadoresTemPontosNaoUsados(){
   return avaliarJogadoresJogadores().some(jogador => {
     const item = avaliarJogadoresGarantirAvaliacao(jogador.id);
-    return avaliarJogadoresTotalPontos(item, "normal") < AVALIAR_JOGADORES_PONTOS_NORMAIS ||
-      avaliarJogadoresTotalPontos(item, "especial") < AVALIAR_JOGADORES_PONTOS_ESPECIAIS;
+    return avaliarJogadoresTotalPontos(item) < AVALIAR_JOGADORES_PONTOS_TOTAL;
   });
 }
 
@@ -23465,8 +23456,7 @@ async function enviarAvaliarJogadoresVoto(){
     const item = avaliarJogadoresGarantirAvaliacao(jogador.id);
     return {
       jogador_id: jogador.id,
-      pontos_normais: item.pontos_normais,
-      pontos_especiais: item.pontos_especiais
+      pontos: avaliarJogadoresPontos(item)
     };
   });
 
@@ -24581,7 +24571,6 @@ avaliarJogadoresVoteList?.addEventListener("click", (e)=>{
   if(stepBtn){
     alterarPontoAvaliarJogador(
       stepBtn.getAttribute("data-avaliar-step"),
-      stepBtn.getAttribute("data-tipo"),
       stepBtn.getAttribute("data-dir")
     );
     return;
@@ -24596,7 +24585,6 @@ avaliarJogadoresAttrGrid?.addEventListener("click", (e)=>{
   if(!btn) return;
   alterarPontoAvaliarJogador(
     btn.getAttribute("data-avaliar-step"),
-    btn.getAttribute("data-tipo"),
     btn.getAttribute("data-dir")
   );
 });
