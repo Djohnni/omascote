@@ -1923,44 +1923,83 @@
     .perfilCentralDashboard{
       display:grid;
       grid-template-columns:repeat(3, minmax(0, 1fr));
-      gap:10px;
+      gap:12px;
     }
     .perfilCentralDashboard[hidden]{
       display:none;
     }
+    #perfilTimeModal.is-central .modalCard{
+      border:1px solid rgba(250,204,21,.24);
+      background:linear-gradient(180deg,#17130d,#0f1014);
+      box-shadow:0 26px 80px rgba(0,0,0,.42);
+    }
+    #perfilTimeModal.is-central .perfilTimeBody{
+      background:
+        radial-gradient(circle at top left, rgba(250,204,21,.12), transparent 34%),
+        linear-gradient(180deg,#17130d,#0f1014);
+      color:#f8fafc;
+    }
+    #perfilTimeModal.is-central .perfilTimeIntro{
+      border-color:rgba(250,204,21,.24);
+      background:linear-gradient(135deg, rgba(250,204,21,.14), rgba(255,255,255,.04));
+    }
+    #perfilTimeModal.is-central .perfilTimeIntro strong{
+      color:#ffffff;
+    }
+    #perfilTimeModal.is-central .perfilTimeIntro span{
+      color:#d6d3d1;
+    }
+    #perfilTimeModal.is-central .perfilTimeIcon{
+      background:#facc15;
+      color:#111827;
+    }
     .perfilCentralCard{
-      border:1px solid #e5e7eb;
-      background:#fff;
+      border:1px solid rgba(250,204,21,.18);
+      background:linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.035));
       border-radius:8px;
-      padding:12px;
-      min-height:116px;
+      padding:16px;
+      min-height:74px;
       text-align:left;
       cursor:pointer;
       display:flex;
-      flex-direction:column;
+      align-items:center;
       justify-content:space-between;
-      gap:8px;
-      box-shadow:0 8px 20px rgba(15,23,42,.04);
+      gap:12px;
+      box-shadow:0 14px 30px rgba(0,0,0,.18);
+      color:#ffffff;
+    }
+    .perfilCentralCard::after{
+      content:">";
+      width:26px;
+      height:26px;
+      border-radius:999px;
+      display:grid;
+      place-items:center;
+      flex:0 0 auto;
+      background:rgba(250,204,21,.14);
+      color:#facc15;
+      font-size:22px;
+      font-weight:950;
+      line-height:1;
     }
     .perfilCentralCard:hover{
-      border-color:#86efac;
-      box-shadow:0 12px 26px rgba(22,163,74,.10);
+      border-color:rgba(250,204,21,.58);
+      background:linear-gradient(180deg, rgba(250,204,21,.16), rgba(255,255,255,.045));
+      box-shadow:0 18px 36px rgba(0,0,0,.26);
     }
     .perfilCentralCard:focus-visible{
-      outline:3px solid rgba(34,197,94,.24);
+      outline:3px solid rgba(250,204,21,.28);
       outline-offset:2px;
     }
     .perfilCentralCard strong{
       font-size:15px;
       font-weight:950;
-      color:#111827;
+      color:#ffffff;
       line-height:1.15;
+      letter-spacing:0;
     }
     .perfilCentralCard span{
-      color:#64748b;
-      font-size:12px;
-      font-weight:850;
-      line-height:1.25;
+      display:none;
     }
     .perfilEditorSection{
       display:block;
@@ -4181,7 +4220,7 @@
       }
 
       .perfilCentralCard{
-        min-height:98px;
+        min-height:64px;
       }
 
       .perfilSectionHeader{
@@ -9770,39 +9809,36 @@ body:not(.modeChosen) .builderArea,
       <div class="perfilCentralDashboard" id="perfilCentralDashboard">
         <button class="perfilCentralCard" type="button" data-perfil-card="dados">
           <strong>Dados do Time</strong>
-          <span id="perfilCentralDadosResumo">Nome, cidade e Instagram</span>
         </button>
         <button class="perfilCentralCard" type="button" data-perfil-card="escudo">
           <strong>Escudo</strong>
-          <span id="perfilCentralEscudoResumo">Pendente</span>
         </button>
         <button class="perfilCentralCard" type="button" data-perfil-card="mascote">
           <strong>Mascote</strong>
-          <span id="perfilCentralMascoteResumo">Pendente</span>
         </button>
         <button class="perfilCentralCard" type="button" data-perfil-card="publico">
           <strong>Pagina Publica</strong>
-          <span id="perfilCentralPublicoResumo">Privada</span>
         </button>
         <button class="perfilCentralCard" type="button" data-perfil-card="elenco">
           <strong>Elenco</strong>
-          <span id="perfilCentralElencoResumo">0 jogadores</span>
         </button>
         <button class="perfilCentralCard" type="button" data-perfil-card="escalacao">
           <strong>Escalacao Oficial</strong>
-          <span id="perfilCentralEscalacaoResumo">0 titulares / 0 reservas</span>
         </button>
-        <button class="perfilCentralCard" type="button" data-perfil-card="jogos">
-          <strong>Jogos</strong>
-          <span id="perfilCentralJogosResumo">0 proximos / 0 resultados</span>
+        <button class="perfilCentralCard" type="button" data-perfil-card="resultados">
+          <strong>Ultimos Resultados</strong>
+        </button>
+        <button class="perfilCentralCard" type="button" data-perfil-card="proximos">
+          <strong>Proximos Jogos</strong>
+        </button>
+        <button class="perfilCentralCard" type="button" data-perfil-card="galeria">
+          <strong>Galeria do Time</strong>
         </button>
         <button class="perfilCentralCard" type="button" data-perfil-card="patrocinadores">
           <strong>Patrocinadores</strong>
-          <span id="perfilCentralPatrocinadoresResumo">0 ativos</span>
         </button>
         <button class="perfilCentralCard" type="button" data-perfil-card="dividir-times">
           <strong>Dividir Times</strong>
-          <span id="perfilCentralDividirResumo">Selecione os presentes</span>
         </button>
       </div>
 
@@ -9928,6 +9964,19 @@ body:not(.modeChosen) .builderArea,
         </div>
 
         <div class="perfilPatrocinadorLista" id="perfilPatrocinadoresLista"></div>
+      </div>
+
+      <div class="perfilVisualSection perfilVisualGallerySection" data-perfil-section-item="galeria" hidden>
+        <div class="perfilVisualSectionTop">
+          <span class="perfilVisualSectionText">
+            <span class="perfilVisualSectionTitle">Galeria do Time</span>
+            <span class="perfilVisualCounter" id="perfilEditorGaleriaCounter">0 artes</span>
+          </span>
+        </div>
+        <div class="perfilVisualSectionContent">
+          <div class="perfilGalleryFilters" id="perfilEditorGaleriaFiltros"></div>
+          <div class="perfilVisualGallery" id="perfilEditorGaleria"></div>
+        </div>
       </div>
 
       <div class="perfilElencoSection" data-perfil-section-item="elenco" hidden>
@@ -18238,6 +18287,9 @@ const perfilVisualStats = document.getElementById("perfilVisualStats");
 const perfilVisualGaleria = document.getElementById("perfilVisualGaleria");
 const perfilVisualGaleriaCounter = document.getElementById("perfilVisualGaleriaCounter");
 const perfilVisualGaleriaFiltros = document.getElementById("perfilVisualGaleriaFiltros");
+const perfilEditorGaleria = document.getElementById("perfilEditorGaleria");
+const perfilEditorGaleriaCounter = document.getElementById("perfilEditorGaleriaCounter");
+const perfilEditorGaleriaFiltros = document.getElementById("perfilEditorGaleriaFiltros");
 const perfilVisualPatrocinadores = document.getElementById("perfilVisualPatrocinadores");
 const perfilVisualPatrocinadoresCounter = document.getElementById("perfilVisualPatrocinadoresCounter");
 const perfilVisualMsg = document.getElementById("perfilVisualMsg");
@@ -18373,6 +18425,7 @@ let perfilCentralCarregado = {
   jogadores: false,
   escalacao: false,
   jogos: false,
+  galeria: false,
   patrocinadores: false
 };
 let dividirTimesState = {
@@ -18406,6 +18459,7 @@ const perfilImagemObjectUrls = {
 const perfilGaleriaObjectUrls = new Map();
 const perfilPatrocinadorLogoObjectUrls = new Map();
 let perfilGaleriaFiltroPrivada = "todos";
+let perfilGaleriaFiltroEditor = "todos";
 let perfilGaleriaFiltroPublica = "todos";
 let perfilPublicoGaleriaDadosAtuais = [];
 
@@ -18714,6 +18768,7 @@ async function perfilAssistCarregarDados(force = false){
         jogadores: true,
         escalacao: true,
         jogos: true,
+        galeria: true,
         patrocinadores: true
       };
 
@@ -19860,10 +19915,11 @@ function perfilGaleriaProdutoDestino(produto){
   return PRODUCTS[key] ? key : "resultado";
 }
 
-function perfilGaleriaRenderFiltros(container, filtroAtual, publica){
+function perfilGaleriaRenderFiltros(container, filtroAtual, publica, scope = ""){
   if(!container) return;
+  const escopo = scope || (publica ? "publico" : "visual");
   container.innerHTML = PERFIL_GALERIA_FILTROS.map(filtro => `
-    <button class="perfilGalleryFilterBtn${filtro.id === filtroAtual ? " active" : ""}" type="button" data-galeria-filtro="${htmlEscape(filtro.id)}" data-publica="${publica ? "1" : "0"}">
+    <button class="perfilGalleryFilterBtn${filtro.id === filtroAtual ? " active" : ""}" type="button" data-galeria-filtro="${htmlEscape(filtro.id)}" data-publica="${publica ? "1" : "0"}" data-galeria-scope="${htmlEscape(escopo)}">
       ${htmlEscape(filtro.label)}
     </button>
   `).join("");
@@ -19898,8 +19954,8 @@ function perfilGaleriaCardHtml(item, publica = false){
   `;
 }
 
-async function carregarGaleriaPrivada(galeria = []){
-  if(!token || !perfilVisualGaleria) return;
+async function carregarGaleriaPrivada(galeria = [], container = perfilVisualGaleria){
+  if(!token || !container) return;
   perfilGaleriaRevokeUrls();
 
   const itens = (Array.isArray(galeria) ? galeria : []).slice(0, 50);
@@ -19908,7 +19964,7 @@ async function carregarGaleriaPrivada(galeria = []){
     const rawUrl = String(item?.imagem_url || "").trim();
     if(!id || !rawUrl) return;
 
-    const card = perfilVisualGaleria.querySelector(`[data-galeria-id="${CSS.escape(id)}"]`);
+    const card = container.querySelector(`[data-galeria-id="${CSS.escape(id)}"]`);
     const img = card?.querySelector("[data-galeria-img]");
     if(!img) return;
 
@@ -19931,8 +19987,20 @@ async function carregarGaleriaPrivada(galeria = []){
 function renderPerfilGaleria(container, counter, galeria = [], options = {}){
   if(!container) return;
   const publica = options.publica === true;
-  const filtro = publica ? perfilGaleriaFiltroPublica : perfilGaleriaFiltroPrivada;
-  perfilGaleriaRenderFiltros(publica ? perfilPublicoGaleriaFiltros : perfilVisualGaleriaFiltros, filtro, publica);
+  const scope = options.scope || (publica ? "publico" : "visual");
+  const filtro = scope === "editor"
+    ? perfilGaleriaFiltroEditor
+    : publica
+    ? perfilGaleriaFiltroPublica
+    : perfilGaleriaFiltroPrivada;
+  const filtrosContainer = options.filterContainer || (
+    scope === "editor"
+      ? perfilEditorGaleriaFiltros
+      : publica
+      ? perfilPublicoGaleriaFiltros
+      : perfilVisualGaleriaFiltros
+  );
+  perfilGaleriaRenderFiltros(filtrosContainer, filtro, publica, scope);
 
   const todos = (Array.isArray(galeria) ? galeria : []).slice(0, 50);
   const itens = filtro === "todos"
@@ -19949,7 +20017,7 @@ function renderPerfilGaleria(container, counter, galeria = [], options = {}){
     : `<div class="${publica ? "perfilPublicoEmpty" : "perfilVisualEmpty"}">${todos.length ? "Nenhuma arte neste filtro." : "As artes aprovadas do time vao aparecer aqui."}</div>`;
 
   if(!publica){
-    carregarGaleriaPrivada(itens);
+    carregarGaleriaPrivada(itens, container);
   }
 }
 
@@ -20077,8 +20145,10 @@ function perfilGaleriaAbrirArte(btn){
   }
 
   const publica = !!card?.closest?.("#perfilPublicoGaleria");
+  const editor = !!card?.closest?.("#perfilEditorGaleria");
   const msg = "A imagem ainda esta carregando. Tente novamente em instantes.";
   if(publica) perfilVisualSetText(perfilPublicoMsg, msg);
+  else if(editor) setPerfilTimeMsg(msg);
   else setPerfilVisualMsg(msg);
 }
 
@@ -20545,6 +20615,18 @@ const perfilSecoesInfo = {
     titulo:"Jogos",
     subtitulo:"Cadastre proximos jogos e resultados do time."
   },
+  resultados: {
+    titulo:"Ultimos Resultados",
+    subtitulo:"Cadastre e edite resultados do time."
+  },
+  proximos: {
+    titulo:"Proximos Jogos",
+    subtitulo:"Cadastre e edite os proximos jogos."
+  },
+  galeria: {
+    titulo:"Galeria do Time",
+    subtitulo:"Veja as artes aprovadas e crie novas artes parecidas."
+  },
   patrocinadores: {
     titulo:"Patrocinadores",
     subtitulo:"Cadastre patrocinadores, links e logos."
@@ -20635,15 +20717,69 @@ function atualizarPerfilCentralResumo(){
   ]);
 }
 
+function perfilSecaoConteudo(secao){
+  if(secao === "resultados" || secao === "proximos") return "jogos";
+  return secao;
+}
+
+function renderPerfilGaleriaEditor(galeria = perfilAssistCache.galeria || []){
+  renderPerfilGaleria(perfilEditorGaleria, perfilEditorGaleriaCounter, galeria, {
+    publica:false,
+    scope:"editor",
+    filterContainer:perfilEditorGaleriaFiltros
+  });
+}
+
+async function carregarPerfilGaleria(){
+  if(!token) return;
+
+  if(perfilCentralCarregado.galeria){
+    renderPerfilGaleriaEditor(perfilAssistCache.galeria || []);
+    return;
+  }
+
+  if(perfilEditorGaleria){
+    perfilEditorGaleria.innerHTML = `<div class="perfilVisualEmpty">Carregando galeria...</div>`;
+  }
+
+  try{
+    const r = await fetch(`${API_BASE}/me/time/galeria?ts=${Date.now()}`, {
+      headers:{ "Authorization":"Bearer " + token },
+      cache:"no-store"
+    });
+    const data = await ia4LerJsonSeguro(r);
+    const authMsg = ia4TratarAuthInvalida(r, data);
+
+    if(authMsg){
+      setPerfilTimeMsg(authMsg, "erro");
+      return;
+    }
+
+    if(!r.ok || !data.ok){
+      throw new Error(data.error || data.erro || "Nao foi possivel carregar a galeria.");
+    }
+
+    perfilAssistCache.galeria = Array.isArray(data.galeria) ? data.galeria : [];
+    perfilCentralCarregado.galeria = true;
+    renderPerfilGaleriaEditor(perfilAssistCache.galeria);
+  }catch(err){
+    if(perfilEditorGaleria){
+      perfilEditorGaleria.innerHTML = `<div class="perfilVisualEmpty">${htmlEscape(err?.message || "Erro de rede ao carregar galeria.")}</div>`;
+    }
+  }
+}
+
 function perfilItemPertenceSecao(el, secao){
+  const secaoConteudo = perfilSecaoConteudo(secao);
   return String(el?.dataset?.perfilSectionItem || "")
     .split(/\s+/)
     .filter(Boolean)
-    .includes(secao);
+    .includes(secaoConteudo);
 }
 
 function mostrarPerfilCentral(){
   perfilSecaoAtual = "";
+  perfilTimeModal?.classList.add("is-central");
   if(perfilCentralDashboard) perfilCentralDashboard.hidden = false;
   if(perfilSectionHeader) perfilSectionHeader.hidden = true;
   perfilSectionItems.forEach(item => { item.hidden = true; });
@@ -20653,18 +20789,25 @@ function mostrarPerfilCentral(){
 }
 
 async function carregarPerfilSecao(secao){
-  if(secao === "dados" || secao === "escudo" || secao === "mascote" || secao === "publico"){
+  const secaoConteudo = perfilSecaoConteudo(secao);
+
+  if(secaoConteudo === "dados" || secaoConteudo === "escudo" || secaoConteudo === "mascote" || secaoConteudo === "publico"){
     await carregarPerfilTime();
-  }else if(secao === "elenco"){
+  }else if(secaoConteudo === "elenco"){
     await carregarPerfilJogadores();
-  }else if(secao === "escalacao"){
+  }else if(secaoConteudo === "escalacao"){
     await carregarPerfilJogadores();
     await carregarPerfilEscalacao();
-  }else if(secao === "dividir-times"){
+  }else if(secaoConteudo === "dividir-times"){
     await carregarPerfilJogadores();
-  }else if(secao === "jogos"){
+  }else if(secaoConteudo === "jogos"){
     await carregarPerfilJogos();
-  }else if(secao === "patrocinadores"){
+    if(!perfilJogoEditId && perfilJogoTipo){
+      perfilJogoTipo.value = secao === "resultados" ? "resultado" : "proximo_jogo";
+    }
+  }else if(secaoConteudo === "galeria"){
+    await carregarPerfilGaleria();
+  }else if(secaoConteudo === "patrocinadores"){
     await carregarPerfilPatrocinadores();
   }
 
@@ -20690,6 +20833,8 @@ function abrirPerfilSecao(secao){
   if(!info) return;
 
   perfilSecaoAtual = secao;
+  const secaoConteudo = perfilSecaoConteudo(secao);
+  perfilTimeModal?.classList.remove("is-central");
   if(perfilCentralDashboard) perfilCentralDashboard.hidden = true;
   if(perfilSectionHeader) perfilSectionHeader.hidden = false;
   perfilVisualSetText(perfilSectionTitle, info.titulo);
@@ -20699,7 +20844,7 @@ function abrirPerfilSecao(secao){
   });
   perfilSectionGroups.forEach(group => {
     const grupo = String(group.dataset.perfilSectionGroup || "");
-    group.hidden = !(grupo === "midia" && (secao === "escudo" || secao === "mascote"));
+    group.hidden = !(grupo === "midia" && (secaoConteudo === "escudo" || secaoConteudo === "mascote"));
   });
   if(perfilTimeSalvarBtn){
     perfilTimeSalvarBtn.textContent = secao === "publico" ? "Salvar pagina publica" : "Salvar perfil";
@@ -22421,13 +22566,17 @@ document.addEventListener("click", (event)=>{
 
   if(filtroBtn){
     const publica = filtroBtn.getAttribute("data-publica") === "1";
+    const scope = filtroBtn.getAttribute("data-galeria-scope") || (publica ? "publico" : "visual");
     const filtro = filtroBtn.getAttribute("data-galeria-filtro") || "todos";
-    if(publica){
+    if(scope === "publico"){
       perfilGaleriaFiltroPublica = filtro;
-      renderPerfilGaleria(perfilPublicoGaleria, perfilPublicoGaleriaCounter, perfilPublicoGaleriaDadosAtuais, { publica:true });
+      renderPerfilGaleria(perfilPublicoGaleria, perfilPublicoGaleriaCounter, perfilPublicoGaleriaDadosAtuais, { publica:true, scope:"publico" });
+    }else if(scope === "editor"){
+      perfilGaleriaFiltroEditor = filtro;
+      renderPerfilGaleriaEditor(perfilAssistCache.galeria || []);
     }else{
       perfilGaleriaFiltroPrivada = filtro;
-      renderPerfilGaleria(perfilVisualGaleria, perfilVisualGaleriaCounter, perfilAssistCache.galeria || [], { publica:false });
+      renderPerfilGaleria(perfilVisualGaleria, perfilVisualGaleriaCounter, perfilAssistCache.galeria || [], { publica:false, scope:"visual" });
     }
   }
 
