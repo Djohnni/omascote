@@ -2827,6 +2827,12 @@
       min-width:0;
     }
 
+    .perfilRankingBoardFeatured{
+      grid-column:1 / -1;
+      background:#151515;
+      border-color:rgba(250,204,21,.28);
+    }
+
     .perfilRankingBoardTop{
       display:flex;
       align-items:center;
@@ -2919,6 +2925,10 @@
       overflow:hidden;
       text-overflow:ellipsis;
       white-space:nowrap;
+    }
+
+    .perfilRankingInfo .perfilRankingReason{
+      color:#fde68a;
     }
 
     .perfilRankingMetric{
@@ -8818,7 +8828,7 @@ body:not(.modeChosen) .builderArea,
         <div>
           <div class="perfilPublicoBrand">Meu Clube FC</div>
           <h1>Ranking dos Times</h1>
-          <p>Times com perfil publico aparecem aqui por desempenho, gols e artes liberadas no Meu Clube FC.</p>
+          <p>Times com perfil publico aparecem aqui por atividade no Perfil do Time, desempenho, gols e artes liberadas no Meu Clube FC.</p>
         </div>
         <div class="perfilRankingActions">
           <a class="perfilPublicoBtn" href="/app.html">Criar perfil do meu time</a>
@@ -8827,6 +8837,14 @@ body:not(.modeChosen) .builderArea,
       </header>
 
       <div class="perfilRankingGrid">
+        <section class="perfilRankingBoard perfilRankingBoardFeatured">
+          <div class="perfilRankingBoardTop">
+            <h2>Times mais ativos</h2>
+            <span id="rankingAtividadeCount">0 times</span>
+          </div>
+          <div class="perfilRankingList" id="rankingAtividadeLista"></div>
+        </section>
+
         <section class="perfilRankingBoard">
           <div class="perfilRankingBoardTop">
             <h2>Mais vitorias</h2>
@@ -18229,10 +18247,12 @@ const perfilVisualCompartilharBtn = document.getElementById("perfilVisualCompart
 const perfilVisualSectionToggles = [...document.querySelectorAll("[data-perfil-visual-toggle]")];
 const perfilVisualSections = [...document.querySelectorAll("[data-perfil-visual-section]")];
 const perfilRankingPage = document.getElementById("perfilRankingPage");
+const rankingAtividadeLista = document.getElementById("rankingAtividadeLista");
 const rankingVitoriasLista = document.getElementById("rankingVitoriasLista");
 const rankingGolsLista = document.getElementById("rankingGolsLista");
 const rankingAproveitamentoLista = document.getElementById("rankingAproveitamentoLista");
 const rankingArtesLista = document.getElementById("rankingArtesLista");
+const rankingAtividadeCount = document.getElementById("rankingAtividadeCount");
 const rankingVitoriasCount = document.getElementById("rankingVitoriasCount");
 const rankingGolsCount = document.getElementById("rankingGolsCount");
 const rankingAproveitamentoCount = document.getElementById("rankingAproveitamentoCount");
@@ -20094,6 +20114,7 @@ function inicializarProdutoPorUrl(){
 
 function rankingMetricValue(item, tipo){
   const stats = item?.estatisticas || {};
+  if(tipo === "atividade") return perfilStatsValor(item?.pontos_atividade || 0);
   if(tipo === "vitorias") return perfilStatsValor(stats.vitorias || 0);
   if(tipo === "gols") return perfilStatsValor(stats.gols_marcados || 0);
   if(tipo === "aproveitamento") return perfilStatsValor(stats.aproveitamento || 0, "%");
@@ -20102,6 +20123,7 @@ function rankingMetricValue(item, tipo){
 }
 
 function rankingMetricLabel(tipo){
+  if(tipo === "atividade") return "atividade";
   if(tipo === "vitorias") return "vitorias";
   if(tipo === "gols") return "gols";
   if(tipo === "aproveitamento") return "aproveit.";
@@ -20119,6 +20141,7 @@ function rankingTimeCardHtml(item, tipo){
   const escudoHtml = escudo
     ? `<img src="${htmlEscape(escudo)}" alt="Escudo ${htmlEscape(nome)}" loading="lazy">`
     : htmlEscape(inicial);
+  const motivo = tipo === "atividade" ? perfilAssistTexto(item?.ranking_motivo || "") : "";
 
   return `
     <a class="perfilRankingCard" href="${htmlEscape(href)}">
@@ -20127,6 +20150,7 @@ function rankingTimeCardHtml(item, tipo){
       <div class="perfilRankingInfo">
         <strong>${htmlEscape(nome)}</strong>
         <span>${htmlEscape(local)}</span>
+        ${motivo ? `<span class="perfilRankingReason">${htmlEscape(motivo)}</span>` : ""}
       </div>
       <div class="perfilRankingMetric">
         ${htmlEscape(rankingMetricValue(item, tipo))}
@@ -20147,6 +20171,7 @@ function renderRankingLista(container, counter, itens = [], tipo = ""){
 
 async function carregarRankingTimes(){
   perfilVisualSetText(rankingTimesMsg, "Carregando ranking...");
+  renderRankingLista(rankingAtividadeLista, rankingAtividadeCount, [], "atividade");
   renderRankingLista(rankingVitoriasLista, rankingVitoriasCount, [], "vitorias");
   renderRankingLista(rankingGolsLista, rankingGolsCount, [], "gols");
   renderRankingLista(rankingAproveitamentoLista, rankingAproveitamentoCount, [], "aproveitamento");
@@ -20161,11 +20186,13 @@ async function carregarRankingTimes(){
     }
 
     const rankings = data.rankings || {};
+    renderRankingLista(rankingAtividadeLista, rankingAtividadeCount, rankings.atividade || data.times, "atividade");
     renderRankingLista(rankingVitoriasLista, rankingVitoriasCount, rankings.vitorias, "vitorias");
     renderRankingLista(rankingGolsLista, rankingGolsCount, rankings.gols_marcados, "gols");
     renderRankingLista(rankingAproveitamentoLista, rankingAproveitamentoCount, rankings.aproveitamento, "aproveitamento");
     renderRankingLista(rankingArtesLista, rankingArtesCount, rankings.artes, "artes");
-    perfilVisualSetText(rankingTimesMsg, `${data.total_times || 0} time(s) publico(s) no ranking.`);
+    const geradoEm = data.ranking_gerado_em ? new Date(data.ranking_gerado_em).toLocaleString("pt-BR") : "";
+    perfilVisualSetText(rankingTimesMsg, `${data.total_times || 0} time(s) publico(s) no ranking.${geradoEm ? " Atualizado em " + geradoEm + "." : ""}`);
   }catch(err){
     perfilVisualSetText(rankingTimesMsg, err?.message || "Erro de rede ao carregar ranking.");
   }
