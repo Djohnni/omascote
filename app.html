@@ -18792,9 +18792,21 @@ function perfilAssistJogadoresAtivosLista(){
 
 function perfilEscalacaoNormalizar(escalacao = {}){
   const base = escalacao && typeof escalacao === "object" && !Array.isArray(escalacao) ? escalacao : {};
+  const normalizarItem = (item = {}) => {
+    const posicaoOverride = perfilAssistTexto(item.posicao_override || "");
+    const posicaoElenco = perfilAssistTexto(item.posicao_elenco || "");
+    const posicao = perfilAssistTexto(item.posicao || posicaoOverride || posicaoElenco);
+    return {
+      ...item,
+      jogador_id: perfilAssistTexto(item.jogador_id || item.id),
+      posicao,
+      posicao_elenco: posicaoElenco,
+      posicao_override: posicaoOverride
+    };
+  };
   return {
-    titulares: Array.isArray(base.titulares) ? base.titulares.filter(Boolean) : [],
-    reservas: Array.isArray(base.reservas) ? base.reservas.filter(Boolean) : [],
+    titulares: Array.isArray(base.titulares) ? base.titulares.filter(Boolean).map(normalizarItem) : [],
+    reservas: Array.isArray(base.reservas) ? base.reservas.filter(Boolean).map(normalizarItem) : [],
     atualizado_em: base.atualizado_em || ""
   };
 }
@@ -18816,6 +18828,41 @@ function perfilEscalacaoItens(escalacao = perfilEscalacaoTime){
   ];
 }
 
+function perfilEscalacaoPosicaoExibida(item = {}){
+  return perfilAssistTexto(item.posicao || item.posicao_override || item.posicao_elenco);
+}
+
+function perfilEscalacaoPayloadItem(item = {}, grupo = "titular", index = 0){
+  const jogadorId = perfilAssistTexto(item.jogador_id || item.id);
+  const posicaoElenco = perfilAssistTexto(item.posicao_elenco || "");
+  let posicaoOverride = perfilAssistTexto(item.posicao_override || "");
+  if(!posicaoOverride){
+    const posicaoLegada = perfilAssistTexto(item.posicao || "");
+    if(posicaoLegada && (!posicaoElenco || posicaoLegada !== posicaoElenco)){
+      posicaoOverride = posicaoLegada;
+    }
+  }
+  return {
+    jogador_id: jogadorId,
+    posicao_override: posicaoOverride,
+    tipo: grupo === "reservas" ? "reserva" : "titular",
+    ordem: index + 1
+  };
+}
+
+function perfilEscalacaoPayload(escalacao = {}){
+  const base = perfilEscalacaoNormalizar(escalacao);
+  return {
+    titulares: base.titulares
+      .map((item, index) => perfilEscalacaoPayloadItem(item, "titulares", index))
+      .filter(item => item.jogador_id),
+    reservas: base.reservas
+      .map((item, index) => perfilEscalacaoPayloadItem(item, "reservas", index))
+      .filter(item => item.jogador_id),
+    atualizado_em: base.atualizado_em || ""
+  };
+}
+
 function perfilAssistJogadoresParaEscalacao(){
   const itens = perfilEscalacaoItens(perfilAssistCache.loaded ? perfilAssistCache.escalacao : perfilEscalacaoTime);
   if(itens.length){
@@ -18824,7 +18871,7 @@ function perfilAssistJogadoresParaEscalacao(){
       nome: item.nome || item.apelido || "Jogador",
       apelido: item.apelido || "",
       numero: item.numero || "",
-      posicao: [item.posicao, item.tipo === "titular" ? "Titular" : "Reserva"].filter(Boolean).join(" - "),
+      posicao: [perfilEscalacaoPosicaoExibida(item), item.tipo === "titular" ? "Titular" : "Reserva"].filter(Boolean).join(" - "),
       ativo: true
     }));
   }
@@ -19372,10 +19419,10 @@ async function perfilAssistAplicarDoBotao(btn){
   btn.textContent = "Carregando...";
 
   try{
-    const data = await perfilAssistPrepararBox(box, false);
+    const productKey = perfilAssistProdutoDoBox(box);
+    const data = await perfilAssistPrepararBox(box, productKey === "escalacao");
     if(!data.ok) return;
 
-    const productKey = perfilAssistProdutoDoBox(box);
     const form = box.closest("[data-product-form]");
     const resultado = form
       ? await perfilAssistAplicarClean(productKey, form, box)
@@ -19404,7 +19451,7 @@ async function perfilAssistAutoAplicarProduto(productKey){
   perfilAssistSetMsg(box, "Preenchendo com o Perfil do Time...");
 
   try{
-    const data = await perfilAssistPrepararBox(box, false);
+    const data = await perfilAssistPrepararBox(box, productKey === "escalacao");
     if(!data.ok){
       perfilAssistSetMsg(box, data.error || "Nao foi possivel carregar o Perfil do Time.", "erro");
       return;
@@ -21341,7 +21388,7 @@ async function criarArteComDadosDoPerfil(tipo, dados = {}){
   }
 
   try{
-    const data = await perfilAssistCarregarDados(false);
+    const data = await perfilAssistCarregarDados(productKey === "escalacao");
     if(!data.ok){
       setPerfilTimeMsg(data.error || "Nao foi possivel carregar o Perfil do Time.", "erro");
       return;
@@ -22299,7 +22346,7 @@ function renderPerfilEscalacaoOptions(){
 function perfilEscalacaoCardHtml(item, grupo){
   const numero = htmlEscape(item?.numero || "-");
   const nome = htmlEscape(item?.apelido || item?.nome || "Jogador");
-  const posicao = htmlEscape(item?.posicao || "Sem posicao");
+  const posicao = htmlEscape(perfilEscalacaoPosicaoExibida(item) || "Sem posicao");
   const classe = grupo === "titulares" ? "titular" : "reserva";
 
   return `
@@ -22347,7 +22394,7 @@ function renderPerfilEscalacao(){
           <div class="perfilEscalacaoRow" data-escalacao-jogador="${htmlEscape(item.jogador_id || "")}">
             <div class="perfilEscalacaoInfo">
               <strong>${htmlEscape(item.label)}: ${htmlEscape(item.apelido || item.nome || "Jogador")}</strong>
-              <span>${htmlEscape([item.numero ? "#" + item.numero : "", item.posicao || "Sem posicao"].filter(Boolean).join(" · "))}</span>
+              <span>${htmlEscape([item.numero ? "#" + item.numero : "", perfilEscalacaoPosicaoExibida(item) || "Sem posicao"].filter(Boolean).join(" · "))}</span>
             </div>
             <div class="perfilJogadorRowActions">
               <button class="perfilMiniBtn" type="button" data-mover-escalacao="${htmlEscape(item.jogador_id || "")}" data-direcao="-1" ${item.index <= 0 ? "disabled" : ""}>Subir</button>
@@ -22416,7 +22463,7 @@ function preencherFormEscalacao(jogadorId){
   perfilEscalacaoEditId = jogadorId;
   if(perfilEscalacaoJogador) perfilEscalacaoJogador.value = jogadorId;
   if(perfilEscalacaoTipo) perfilEscalacaoTipo.value = encontrado.grupo;
-  if(perfilEscalacaoPosicao) perfilEscalacaoPosicao.value = encontrado.item.posicao || "";
+  if(perfilEscalacaoPosicao) perfilEscalacaoPosicao.value = encontrado.item.posicao_override || "";
   if(perfilEscalacaoSalvarBtn) perfilEscalacaoSalvarBtn.textContent = "Salvar escalacao";
   if(perfilEscalacaoCancelarBtn) perfilEscalacaoCancelarBtn.hidden = false;
   perfilSetPainelAberto(perfilEscalacaoForm, true);
@@ -22432,7 +22479,7 @@ function perfilEscalacaoSemJogador(escalacao, jogadorId){
 }
 
 async function salvarPerfilEscalacaoRemota(proxima){
-  const payload = perfilEscalacaoComOrdem(proxima);
+  const payload = perfilEscalacaoPayload(proxima);
   const r = await fetch(`${API_BASE}/me/time/escalacao`, {
     method:"PATCH",
     headers:{
@@ -22481,12 +22528,16 @@ async function salvarPerfilEscalacaoItem(){
   if(perfilEscalacaoEditId && perfilEscalacaoEditId !== jogadorId){
     baseAtual = perfilEscalacaoSemJogador(baseAtual, jogadorId);
   }
+  const posicaoElenco = (jogador.posicao || "").trim();
+  const posicaoDigitada = (perfilEscalacaoPosicao?.value || "").trim();
   const item = {
     jogador_id: jogador.id,
     nome: jogador.nome || "",
     apelido: jogador.apelido || "",
     numero: jogador.numero || "",
-    posicao: (perfilEscalacaoPosicao?.value || jogador.posicao || "").trim()
+    posicao: posicaoDigitada || posicaoElenco,
+    posicao_elenco: posicaoElenco,
+    posicao_override: posicaoDigitada && posicaoDigitada !== posicaoElenco ? posicaoDigitada : ""
   };
   baseAtual[grupo].push(item);
 
@@ -22579,11 +22630,16 @@ async function carregarPerfilJogadores(){
     perfilAssistCache.jogadores = perfilJogadoresTime;
     perfilCentralCarregado.jogadores = true;
     renderPerfilElenco();
-    renderPerfilEscalacao();
+    renderPerfilEscalacaoOptions();
     atualizarPerfilTimeVisualSeAberto();
   }catch(err){
     setPerfilTimeMsg(err?.message || "Erro de rede ao carregar elenco.", "erro");
   }
+}
+
+async function sincronizarPerfilEscalacaoComElenco(){
+  if(!token) return;
+  await carregarPerfilEscalacao();
 }
 
 async function salvarPerfilJogador(){
@@ -22645,10 +22701,10 @@ async function salvarPerfilJogador(){
 
     limparFormJogador();
     renderPerfilElenco();
-    renderPerfilEscalacao();
     perfilAssistInvalidarCache();
     perfilAssistCache.jogadores = perfilJogadoresTime;
     perfilCentralCarregado.jogadores = true;
+    await sincronizarPerfilEscalacaoComElenco();
     perfilAssistAtualizarProduto(selectedProductInput?.value || "");
     atualizarPerfilTimeVisualSeAberto();
     setPerfilTimeMsg(editando ? "Jogador atualizado." : "Jogador adicionado.", "ok");
@@ -22689,10 +22745,10 @@ async function removerPerfilJogador(id){
     perfilJogadoresTime = perfilJogadoresTime.map(jogador => jogador.id === id ? { ...jogador, ativo:false } : jogador);
     if(perfilJogadorEditId === id) limparFormJogador();
     renderPerfilElenco();
-    renderPerfilEscalacao();
     perfilAssistInvalidarCache();
     perfilAssistCache.jogadores = perfilJogadoresTime;
     perfilCentralCarregado.jogadores = true;
+    await sincronizarPerfilEscalacaoComElenco();
     perfilAssistAtualizarProduto(selectedProductInput?.value || "");
     atualizarPerfilTimeVisualSeAberto();
     setPerfilTimeMsg("Jogador removido.", "ok");
