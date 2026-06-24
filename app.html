@@ -1933,7 +1933,7 @@
       background:#fff;
       border-radius:8px;
       padding:12px;
-      min-height:96px;
+      min-height:116px;
       text-align:left;
       cursor:pointer;
       display:flex;
@@ -4126,7 +4126,7 @@
       }
 
       .perfilCentralCard{
-        min-height:82px;
+        min-height:98px;
       }
 
       .perfilSectionHeader{
@@ -18279,6 +18279,13 @@ let perfilEscalacaoEditId = "";
 let perfilJogosTime = [];
 let perfilJogoEditId = "";
 let perfilSecaoAtual = "";
+let perfilCentralCarregado = {
+  perfil: false,
+  jogadores: false,
+  escalacao: false,
+  jogos: false,
+  patrocinadores: false
+};
 let dividirTimesState = {
   sessao: null,
   resultado: null,
@@ -18613,6 +18620,13 @@ async function perfilAssistCarregarDados(force = false){
       perfilAssistCache.escalacao = perfilEscalacaoNormalizar(escalacaoData.escalacao || {});
       perfilAssistCache.patrocinadores = Array.isArray(patrocinadoresData.patrocinadores) ? patrocinadoresData.patrocinadores : [];
       perfilAssistCache.loaded = true;
+      perfilCentralCarregado = {
+        perfil: true,
+        jogadores: true,
+        escalacao: true,
+        jogos: true,
+        patrocinadores: true
+      };
 
       perfilJogadoresTime = perfilAssistCache.jogadores;
       perfilJogosTime = perfilAssistCache.jogos;
@@ -19448,6 +19462,7 @@ async function enviarImagemPerfil(tipo){
     }
 
     perfilAssistCache.perfil = data.perfil || perfilAssistCache.perfil || {};
+    perfilCentralCarregado.perfil = true;
     if(tipo === "escudo"){
       perfilEscudoFileCache = null;
       perfilEscudoFileCacheKey = "";
@@ -20424,26 +20439,80 @@ function perfilResumoQuantidade(total, singular, plural){
   return `${total} ${total === 1 ? singular : plural}`;
 }
 
+function perfilCentralSetResumo(el, linhas = []){
+  if(!el) return;
+  const lista = (Array.isArray(linhas) ? linhas : [linhas])
+    .map(item => String(item || "").trim())
+    .filter(Boolean);
+  el.innerHTML = lista.length
+    ? lista.map(item => htmlEscape(item)).join("<br>")
+    : "Carregar";
+}
+
+function perfilCentralResumoJogo(jogo){
+  if(!jogo) return "";
+  const adversario = perfilAssistTexto(jogo.adversario) || "Adversario";
+  const data = formatarDataPerfilJogo(jogo.data);
+  const horario = perfilAssistTexto(jogo.horario);
+  const quando = [data, horario].filter(Boolean).join(" - ");
+  return `Proximo: ${adversario}${quando ? " - " + quando : ""}`;
+}
+
 function atualizarPerfilCentralResumo(){
   const perfil = perfilAssistCache.perfil || {};
+  const todosJogadores = Array.isArray(perfilJogadoresTime) ? perfilJogadoresTime : [];
   const jogadores = perfilJogadoresAtivos();
   const escalacao = perfilEscalacaoNormalizar(perfilEscalacaoTime);
   const jogos = perfilJogosAtivos();
-  const proximos = jogos.filter(jogo => jogo.tipo === "proximo_jogo").length;
+  const proximos = jogos
+    .filter(jogo => jogo.tipo === "proximo_jogo")
+    .sort((a, b) => dataOrdemPerfilJogo(a).localeCompare(dataOrdemPerfilJogo(b)));
   const resultados = jogos.filter(jogo => jogo.tipo === "resultado").length;
   const patrocinadoresAtivos = perfilPatrocinadoresAtivos().length;
   const nome = perfilAssistTexto(perfil.nome_time || localStorage.getItem("omascote_nome_time"));
   const local = [perfil.cidade, perfil.estado].map(perfilAssistTexto).filter(Boolean).join(" - ");
+  const instagram = perfilAssistTexto(perfil.instagram).replace(/^@+/, "");
+  const sessaoDividir = dividirTimesState.sessao || null;
+  const votosDividir = Number(sessaoDividir?.votos_count || 0);
+  const perfilCarregado = perfilCentralCarregado.perfil || !!perfilAssistCache.perfil;
 
-  perfilVisualSetText(perfilCentralDadosResumo, nome ? `${nome}${local ? " - " + local : ""}` : "Nome, cidade e Instagram");
-  perfilVisualSetText(perfilCentralEscudoResumo, perfilImagemTemValor(perfil, "escudo") ? "Cadastrado" : "Pendente");
-  perfilVisualSetText(perfilCentralMascoteResumo, perfilImagemTemValor(perfil, "mascote") ? "Cadastrado" : "Pendente");
-  perfilVisualSetText(perfilCentralPublicoResumo, perfil.publico === true ? "Ativa" : "Privada");
-  perfilVisualSetText(perfilCentralElencoResumo, perfilResumoQuantidade(jogadores.length, "jogador", "jogadores"));
-  perfilVisualSetText(perfilCentralEscalacaoResumo, `${escalacao.titulares.length} titulares / ${escalacao.reservas.length} reservas`);
-  perfilVisualSetText(perfilCentralJogosResumo, `${proximos} proximos / ${resultados} resultados`);
-  perfilVisualSetText(perfilCentralPatrocinadoresResumo, perfilResumoQuantidade(patrocinadoresAtivos, "ativo", "ativos"));
-  perfilVisualSetText(perfilCentralDividirResumo, dividirTimesResumo?.textContent || (jogadores.length ? "Selecione os presentes" : "Cadastre jogadores no elenco"));
+  perfilCentralSetResumo(perfilCentralDadosResumo, [
+    nome || (perfilCarregado ? "Nome pendente" : "Carregar"),
+    local || "Cidade/estado pendente",
+    instagram ? `Instagram: @${instagram}` : "Instagram pendente"
+  ]);
+  perfilCentralSetResumo(perfilCentralEscudoResumo, [
+    perfilImagemTemValor(perfil, "escudo") ? "Cadastrado" : "Pendente"
+  ]);
+  perfilCentralSetResumo(perfilCentralMascoteResumo, [
+    perfilImagemTemValor(perfil, "mascote") ? "Cadastrado" : "Pendente"
+  ]);
+  perfilCentralSetResumo(perfilCentralPublicoResumo, perfilCarregado ? [
+    perfil.publico === true ? "Ativa" : "Privada",
+    perfil.publico === true ? "Link disponivel" : "Link desativado"
+  ] : ["Carregar"]);
+  perfilCentralSetResumo(perfilCentralElencoResumo, perfilCentralCarregado.jogadores ? [
+    `${perfilResumoQuantidade(todosJogadores.length, "jogador cadastrado", "jogadores cadastrados")}`,
+    `${perfilResumoQuantidade(jogadores.length, "ativo", "ativos")}`
+  ] : ["Carregar elenco"]);
+  perfilCentralSetResumo(perfilCentralEscalacaoResumo, perfilCentralCarregado.escalacao ? [
+    `${perfilResumoQuantidade(escalacao.titulares.length, "titular", "titulares")}`,
+    `${perfilResumoQuantidade(escalacao.reservas.length, "reserva", "reservas")}`
+  ] : ["Carregar escalacao"]);
+  perfilCentralSetResumo(perfilCentralJogosResumo, perfilCentralCarregado.jogos ? [
+    perfilCentralResumoJogo(proximos[0]) || "Proximo jogo pendente",
+    `${perfilResumoQuantidade(resultados, "resultado cadastrado", "resultados cadastrados")}`
+  ] : ["Carregar jogos"]);
+  perfilCentralSetResumo(perfilCentralPatrocinadoresResumo, perfilCentralCarregado.patrocinadores ? [
+    `${perfilResumoQuantidade(patrocinadoresAtivos, "patrocinador ativo", "patrocinadores ativos")}`
+  ] : ["Carregar patrocinadores"]);
+  perfilCentralSetResumo(perfilCentralDividirResumo, sessaoDividir?.id ? [
+    `Ultima: ${sessaoDividir.titulo || "Dividir Times"}`,
+    `${perfilResumoQuantidade(votosDividir, "voto", "votos")}`
+  ] : [
+    jogadores.length ? "Nenhuma votacao criada" : "Cadastre jogadores no elenco",
+    dividirTimesResumo?.textContent || "Selecione os presentes"
+  ]);
 }
 
 function perfilItemPertenceSecao(el, secao){
@@ -20662,6 +20731,7 @@ async function carregarPerfilPatrocinadores(){
 
     perfilPatrocinadoresTime = Array.isArray(data.patrocinadores) ? data.patrocinadores : [];
     perfilAssistCache.patrocinadores = perfilPatrocinadoresTime;
+    perfilCentralCarregado.patrocinadores = true;
     renderPerfilPatrocinadores();
     atualizarPerfilTimeVisualSeAberto();
   }catch(err){
@@ -20770,6 +20840,7 @@ async function salvarPerfilPatrocinador(){
     renderPerfilPatrocinadores();
     perfilAssistInvalidarCache();
     perfilAssistCache.patrocinadores = perfilPatrocinadoresTime;
+    perfilCentralCarregado.patrocinadores = true;
     atualizarPerfilTimeVisualSeAberto();
     setPerfilTimeMsg(`${editando ? "Patrocinador atualizado." : "Patrocinador adicionado."}${avisoLogo}`, avisoLogo ? "erro" : "ok");
   }catch(err){
@@ -20811,6 +20882,7 @@ async function removerPerfilPatrocinador(id){
     renderPerfilPatrocinadores();
     perfilAssistInvalidarCache();
     perfilAssistCache.patrocinadores = perfilPatrocinadoresTime;
+    perfilCentralCarregado.patrocinadores = true;
     atualizarPerfilTimeVisualSeAberto();
     setPerfilTimeMsg("Patrocinador desativado.", "ok");
   }catch(err){
@@ -21453,6 +21525,7 @@ async function carregarPerfilEscalacao(){
 
     perfilEscalacaoTime = perfilEscalacaoNormalizar(data.escalacao || {});
     perfilAssistCache.escalacao = perfilEscalacaoTime;
+    perfilCentralCarregado.escalacao = true;
     renderPerfilEscalacao();
     perfilAssistAtualizarProduto(selectedProductInput?.value || "");
   }catch(err){
@@ -21520,6 +21593,7 @@ async function salvarPerfilEscalacaoRemota(proxima){
   }
 
   perfilEscalacaoTime = perfilEscalacaoNormalizar(data.escalacao || {});
+  perfilCentralCarregado.escalacao = true;
   perfilAssistInvalidarCache();
   perfilAssistCache.escalacao = perfilEscalacaoTime;
   renderPerfilEscalacao();
@@ -21643,6 +21717,7 @@ async function carregarPerfilJogadores(){
 
     perfilJogadoresTime = Array.isArray(data.jogadores) ? data.jogadores : [];
     perfilAssistCache.jogadores = perfilJogadoresTime;
+    perfilCentralCarregado.jogadores = true;
     renderPerfilElenco();
     renderPerfilEscalacao();
     atualizarPerfilTimeVisualSeAberto();
@@ -21713,6 +21788,7 @@ async function salvarPerfilJogador(){
     renderPerfilEscalacao();
     perfilAssistInvalidarCache();
     perfilAssistCache.jogadores = perfilJogadoresTime;
+    perfilCentralCarregado.jogadores = true;
     perfilAssistAtualizarProduto(selectedProductInput?.value || "");
     atualizarPerfilTimeVisualSeAberto();
     setPerfilTimeMsg(editando ? "Jogador atualizado." : "Jogador adicionado.", "ok");
@@ -21756,6 +21832,7 @@ async function removerPerfilJogador(id){
     renderPerfilEscalacao();
     perfilAssistInvalidarCache();
     perfilAssistCache.jogadores = perfilJogadoresTime;
+    perfilCentralCarregado.jogadores = true;
     perfilAssistAtualizarProduto(selectedProductInput?.value || "");
     atualizarPerfilTimeVisualSeAberto();
     setPerfilTimeMsg("Jogador removido.", "ok");
@@ -21916,6 +21993,7 @@ async function carregarPerfilJogos(){
 
     perfilJogosTime = Array.isArray(data.jogos) ? data.jogos : [];
     perfilAssistCache.jogos = perfilJogosTime;
+    perfilCentralCarregado.jogos = true;
     renderPerfilJogos();
     atualizarPerfilTimeVisualSeAberto();
   }catch(err){
@@ -21995,6 +22073,7 @@ async function salvarPerfilJogo(){
     renderPerfilJogos();
     perfilAssistInvalidarCache();
     perfilAssistCache.jogos = perfilJogosTime;
+    perfilCentralCarregado.jogos = true;
     perfilAssistAtualizarProduto(selectedProductInput?.value || "");
     atualizarPerfilTimeVisualSeAberto();
     setPerfilTimeMsg(editando ? "Jogo atualizado." : "Jogo adicionado.", "ok");
@@ -22037,6 +22116,7 @@ async function removerPerfilJogo(id){
     renderPerfilJogos();
     perfilAssistInvalidarCache();
     perfilAssistCache.jogos = perfilJogosTime;
+    perfilCentralCarregado.jogos = true;
     perfilAssistAtualizarProduto(selectedProductInput?.value || "");
     atualizarPerfilTimeVisualSeAberto();
     setPerfilTimeMsg("Jogo removido.", "ok");
@@ -22088,6 +22168,7 @@ async function carregarPerfilTime(){
     }
 
     perfilAssistCache.perfil = data.perfil || {};
+    perfilCentralCarregado.perfil = true;
     preencherPerfilTime(data.perfil || {});
     atualizarPerfilTimeVisualSeAberto();
     localStorage.setItem("omascote_perfil_id", data.perfil?.perfil_id || "");
@@ -22153,6 +22234,7 @@ async function salvarPerfilTime(){
 
     perfilAssistInvalidarCache();
     perfilAssistCache.perfil = data.perfil || payload;
+    perfilCentralCarregado.perfil = true;
     preencherPerfilTime(data.perfil || payload);
     localStorage.setItem("omascote_perfil_id", data.perfil?.perfil_id || localStorage.getItem("omascote_perfil_id") || "");
     localStorage.setItem("omascote_nome_time", data.perfil?.nome_time || nomeTime);
