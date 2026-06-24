@@ -2255,15 +2255,35 @@
       border:1px solid rgba(255,255,255,.10);
       border-radius:8px;
       background:#111111;
-      padding:14px;
+      overflow:hidden;
     }
 
     .perfilVisualSectionTop{
+      appearance:none;
+      border:0;
+      background:transparent;
+      color:inherit;
+      width:100%;
       display:flex;
-      align-items:flex-start;
+      align-items:center;
       justify-content:space-between;
       gap:12px;
-      margin-bottom:12px;
+      padding:14px;
+      cursor:pointer;
+      text-align:left;
+      font:inherit;
+      min-height:64px;
+    }
+
+    .perfilVisualSectionTop:focus-visible{
+      outline:3px solid rgba(250,204,21,.45);
+      outline-offset:-3px;
+    }
+
+    .perfilVisualSectionText{
+      display:grid;
+      gap:7px;
+      min-width:0;
     }
 
     .perfilVisualSectionTitle{
@@ -2272,6 +2292,35 @@
       font-size:16px;
       font-weight:950;
       line-height:1.2;
+    }
+
+    .perfilVisualSectionArrow{
+      display:inline-grid;
+      place-items:center;
+      flex:0 0 auto;
+      width:30px;
+      height:30px;
+      border-radius:8px;
+      border:1px solid rgba(255,255,255,.16);
+      background:rgba(255,255,255,.08);
+      color:#facc15;
+      font-size:18px;
+      line-height:1;
+      font-weight:950;
+    }
+
+    .perfilVisualSection.is-open .perfilVisualSectionTop{
+      border-bottom:1px solid rgba(255,255,255,.08);
+    }
+
+    .perfilVisualSection.is-open .perfilVisualSectionArrow{
+      background:#facc15;
+      color:#111827;
+      border-color:#facc15;
+    }
+
+    .perfilVisualSectionContent{
+      padding:14px;
     }
 
     .perfilVisualCounter{
@@ -4113,10 +4162,6 @@
 
       .perfilVisualGrid{
         grid-template-columns:1.15fr .85fr;
-      }
-
-      .perfilVisualGrid .perfilVisualSection:first-child{
-        grid-row:span 2;
       }
     }
 
@@ -10140,54 +10185,84 @@ body:not(.modeChosen) .builderArea,
       <div class="perfilStatsGrid" id="perfilVisualStats"></div>
 
       <div class="perfilVisualGrid">
-        <section class="perfilVisualSection">
-          <div class="perfilVisualSectionTop">
-            <h3 class="perfilVisualSectionTitle">Elenco</h3>
-            <span class="perfilVisualCounter" id="perfilVisualElencoCounter">0 jogadores</span>
+        <section class="perfilVisualSection is-collapsed" data-perfil-visual-section="elenco">
+          <button class="perfilVisualSectionTop" type="button" data-perfil-visual-toggle="elenco" aria-expanded="false" aria-controls="perfilVisualElencoPanel">
+            <span class="perfilVisualSectionText">
+              <span class="perfilVisualSectionTitle">Elenco</span>
+              <span class="perfilVisualCounter" id="perfilVisualElencoCounter">0 jogadores</span>
+            </span>
+            <span class="perfilVisualSectionArrow" aria-hidden="true">&#8964;</span>
+          </button>
+          <div class="perfilVisualSectionContent" id="perfilVisualElencoPanel" hidden>
+            <div class="perfilVisualPlayers" id="perfilVisualElenco"></div>
           </div>
-          <div class="perfilVisualPlayers" id="perfilVisualElenco"></div>
         </section>
 
-        <section class="perfilVisualSection">
-          <div class="perfilVisualSectionTop">
-            <h3 class="perfilVisualSectionTitle">Escalacao Oficial</h3>
-            <span class="perfilVisualCounter" id="perfilVisualEscalacaoCounter">0 atletas</span>
+        <section class="perfilVisualSection is-collapsed" data-perfil-visual-section="escalacao">
+          <button class="perfilVisualSectionTop" type="button" data-perfil-visual-toggle="escalacao" aria-expanded="false" aria-controls="perfilVisualEscalacaoPanel">
+            <span class="perfilVisualSectionText">
+              <span class="perfilVisualSectionTitle">Escalacao Oficial</span>
+              <span class="perfilVisualCounter" id="perfilVisualEscalacaoCounter">0 atletas</span>
+            </span>
+            <span class="perfilVisualSectionArrow" aria-hidden="true">&#8964;</span>
+          </button>
+          <div class="perfilVisualSectionContent" id="perfilVisualEscalacaoPanel" hidden>
+            <div class="perfilLineupGrid" id="perfilVisualEscalacao"></div>
           </div>
-          <div class="perfilLineupGrid" id="perfilVisualEscalacao"></div>
         </section>
 
-        <section class="perfilVisualSection">
-          <div class="perfilVisualSectionTop">
-            <h3 class="perfilVisualSectionTitle">Ultimos resultados</h3>
-            <span class="perfilVisualCounter" id="perfilVisualResultadosCounter">0 resultados</span>
+        <section class="perfilVisualSection is-collapsed" data-perfil-visual-section="resultados">
+          <button class="perfilVisualSectionTop" type="button" data-perfil-visual-toggle="resultados" aria-expanded="false" aria-controls="perfilVisualResultadosPanel">
+            <span class="perfilVisualSectionText">
+              <span class="perfilVisualSectionTitle">Ultimos resultados</span>
+              <span class="perfilVisualCounter" id="perfilVisualResultadosCounter">0 resultados</span>
+            </span>
+            <span class="perfilVisualSectionArrow" aria-hidden="true">&#8964;</span>
+          </button>
+          <div class="perfilVisualSectionContent" id="perfilVisualResultadosPanel" hidden>
+            <div class="perfilVisualGameList" id="perfilVisualResultados"></div>
           </div>
-          <div class="perfilVisualGameList" id="perfilVisualResultados"></div>
         </section>
 
-        <section class="perfilVisualSection">
-          <div class="perfilVisualSectionTop">
-            <h3 class="perfilVisualSectionTitle">Proximos jogos</h3>
-            <span class="perfilVisualCounter" id="perfilVisualProximosCounter">0 jogos</span>
+        <section class="perfilVisualSection is-collapsed" data-perfil-visual-section="proximos">
+          <button class="perfilVisualSectionTop" type="button" data-perfil-visual-toggle="proximos" aria-expanded="false" aria-controls="perfilVisualProximosPanel">
+            <span class="perfilVisualSectionText">
+              <span class="perfilVisualSectionTitle">Proximos jogos</span>
+              <span class="perfilVisualCounter" id="perfilVisualProximosCounter">0 jogos</span>
+            </span>
+            <span class="perfilVisualSectionArrow" aria-hidden="true">&#8964;</span>
+          </button>
+          <div class="perfilVisualSectionContent" id="perfilVisualProximosPanel" hidden>
+            <div class="perfilVisualGameList" id="perfilVisualProximos"></div>
           </div>
-          <div class="perfilVisualGameList" id="perfilVisualProximos"></div>
         </section>
       </div>
 
-      <section class="perfilVisualSection perfilVisualGallerySection">
-        <div class="perfilVisualSectionTop">
-          <h3 class="perfilVisualSectionTitle">Galeria do Time</h3>
-          <span class="perfilVisualCounter" id="perfilVisualGaleriaCounter">0 artes</span>
+      <section class="perfilVisualSection perfilVisualGallerySection is-collapsed" data-perfil-visual-section="galeria">
+        <button class="perfilVisualSectionTop" type="button" data-perfil-visual-toggle="galeria" aria-expanded="false" aria-controls="perfilVisualGaleriaPanel">
+          <span class="perfilVisualSectionText">
+            <span class="perfilVisualSectionTitle">Galeria do Time</span>
+            <span class="perfilVisualCounter" id="perfilVisualGaleriaCounter">0 artes</span>
+          </span>
+          <span class="perfilVisualSectionArrow" aria-hidden="true">&#8964;</span>
+        </button>
+        <div class="perfilVisualSectionContent" id="perfilVisualGaleriaPanel" hidden>
+          <div class="perfilGalleryFilters" id="perfilVisualGaleriaFiltros"></div>
+          <div class="perfilVisualGallery" id="perfilVisualGaleria"></div>
         </div>
-        <div class="perfilGalleryFilters" id="perfilVisualGaleriaFiltros"></div>
-        <div class="perfilVisualGallery" id="perfilVisualGaleria"></div>
       </section>
 
-      <section class="perfilVisualSection perfilVisualGallerySection">
-        <div class="perfilVisualSectionTop">
-          <h3 class="perfilVisualSectionTitle">Patrocinadores</h3>
-          <span class="perfilVisualCounter" id="perfilVisualPatrocinadoresCounter">0 patrocinadores</span>
+      <section class="perfilVisualSection perfilVisualGallerySection is-collapsed" data-perfil-visual-section="patrocinadores">
+        <button class="perfilVisualSectionTop" type="button" data-perfil-visual-toggle="patrocinadores" aria-expanded="false" aria-controls="perfilVisualPatrocinadoresPanel">
+          <span class="perfilVisualSectionText">
+            <span class="perfilVisualSectionTitle">Patrocinadores</span>
+            <span class="perfilVisualCounter" id="perfilVisualPatrocinadoresCounter">0 patrocinadores</span>
+          </span>
+          <span class="perfilVisualSectionArrow" aria-hidden="true">&#8964;</span>
+        </button>
+        <div class="perfilVisualSectionContent" id="perfilVisualPatrocinadoresPanel" hidden>
+          <div class="perfilSponsorGrid" id="perfilVisualPatrocinadores"></div>
         </div>
-        <div class="perfilSponsorGrid" id="perfilVisualPatrocinadores"></div>
       </section>
 
       <div class="perfilVisualMsg" id="perfilVisualMsg"></div>
@@ -18159,6 +18234,8 @@ const perfilVisualMsg = document.getElementById("perfilVisualMsg");
 const perfilVisualEditarBtn = document.getElementById("perfilVisualEditarBtn");
 const perfilVisualCriarArteBtn = document.getElementById("perfilVisualCriarArteBtn");
 const perfilVisualCompartilharBtn = document.getElementById("perfilVisualCompartilharBtn");
+const perfilVisualSectionToggles = [...document.querySelectorAll("[data-perfil-visual-toggle]")];
+const perfilVisualSections = [...document.querySelectorAll("[data-perfil-visual-section]")];
 const perfilRankingPage = document.getElementById("perfilRankingPage");
 const rankingVitoriasLista = document.getElementById("rankingVitoriasLista");
 const rankingGolsLista = document.getElementById("rankingGolsLista");
@@ -19027,6 +19104,29 @@ function setPerfilVisualMsg(texto){
 
 function perfilVisualSetText(el, texto){
   if(el) el.textContent = texto || "";
+}
+
+function perfilVisualSetSecaoAberta(section, aberta){
+  if(!section) return;
+  const panel = section.querySelector(".perfilVisualSectionContent");
+  const toggle = section.querySelector("[data-perfil-visual-toggle]");
+  const arrow = section.querySelector(".perfilVisualSectionArrow");
+  section.classList.toggle("is-open", !!aberta);
+  section.classList.toggle("is-collapsed", !aberta);
+  if(panel) panel.hidden = !aberta;
+  if(toggle) toggle.setAttribute("aria-expanded", aberta ? "true" : "false");
+  if(arrow) arrow.innerHTML = aberta ? "&#8963;" : "&#8964;";
+}
+
+function perfilVisualFecharSecoes(){
+  perfilVisualSections.forEach(section => perfilVisualSetSecaoAberta(section, false));
+}
+
+function perfilVisualAlternarSecao(toggle){
+  const section = toggle?.closest?.("[data-perfil-visual-section]");
+  if(!section) return;
+  const aberta = section.classList.contains("is-open");
+  perfilVisualSetSecaoAberta(section, !aberta);
 }
 
 function perfilPublicoSlugAtual(perfil = perfilAssistCache.perfil || {}){
@@ -20331,6 +20431,7 @@ function renderPerfilTimeVisual(data = {}){
 }
 
 function renderPerfilTimeVisualCarregando(){
+  perfilVisualFecharSecoes();
   perfilImagemReset("escudo");
   perfilImagemReset("mascote");
   perfilVisualSetText(perfilVisualNome, "Carregando perfil...");
@@ -22258,6 +22359,9 @@ perfilTimeVisualCloseBtn?.addEventListener("click", fecharPerfilTimeVisual);
 perfilVisualEditarBtn?.addEventListener("click", abrirEditorPeloPerfilVisual);
 perfilVisualCriarArteBtn?.addEventListener("click", criarArteComPerfilVisual);
 perfilVisualCompartilharBtn?.addEventListener("click", compartilharPerfilVisual);
+perfilVisualSectionToggles.forEach(toggle => {
+  toggle.addEventListener("click", () => perfilVisualAlternarSecao(toggle));
+});
 perfilTimeCloseBtn?.addEventListener("click", fecharPerfilTimeModal);
 perfilCentralCards.forEach(card => {
   card.addEventListener("click", () => abrirPerfilSecao(card.getAttribute("data-perfil-card") || ""));
