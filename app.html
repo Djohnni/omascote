@@ -9178,6 +9178,7 @@ body:not(.modeChosen) .builderArea,
 
         <div class="dividirTimesActions">
           <button class="btnGreen" id="dividirTimesEnviarVotoBtn" type="button">Enviar voto</button>
+          <button class="btnGreen" id="dividirTimesLoginVoteBtn" type="button" hidden>Entrar ou criar conta</button>
           <a class="perfilMiniBtn" href="/app.html">Abrir Meu Clube FC</a>
         </div>
         <div class="dividirTimesMsg" id="dividirTimesVoteMsg"></div>
@@ -18575,6 +18576,7 @@ const dividirTimesVoteIntro = document.getElementById("dividirTimesVoteIntro");
 const dividirTimesVotanteNome = document.getElementById("dividirTimesVotanteNome");
 const dividirTimesVoteList = document.getElementById("dividirTimesVoteList");
 const dividirTimesEnviarVotoBtn = document.getElementById("dividirTimesEnviarVotoBtn");
+const dividirTimesLoginVoteBtn = document.getElementById("dividirTimesLoginVoteBtn");
 const dividirTimesVoteMsg = document.getElementById("dividirTimesVoteMsg");
 const perfilPublicoPage = document.getElementById("perfilPublicoPage");
 const perfilPublicoCopiarBtn = document.getElementById("perfilPublicoCopiarBtn");
@@ -21590,6 +21592,8 @@ function renderPerfilElenco(){
 }
 
 /* ===== DIVIDIR TIMES MVP ===== */
+const DIVIDIR_TIMES_LOGIN_MSG = "Entre na sua conta ou crie um cadastro para votar.";
+
 function dividirTimesSetMsg(texto, tipo = ""){
   if(!dividirTimesMsg) return;
   dividirTimesMsg.textContent = texto || "";
@@ -21600,6 +21604,38 @@ function dividirTimesVoteSetMsg(texto, tipo = ""){
   if(!dividirTimesVoteMsg) return;
   dividirTimesVoteMsg.textContent = texto || "";
   dividirTimesVoteMsg.className = `dividirTimesMsg${tipo ? " " + tipo : ""}`;
+}
+
+function abrirLoginDividirTimesVoto(){
+  if(!dividirTimesVoteState.token) return;
+  acaoDepoisDoCadastro = () => carregarDividirTimesPublico(dividirTimesVoteState.token);
+  abrirLoginVisitanteModal();
+  setAuthVisitanteMsg(DIVIDIR_TIMES_LOGIN_MSG, "err");
+}
+
+function exigirLoginDividirTimesVoto(abrirModal = true){
+  if(dividirTimesVotePage) dividirTimesVotePage.hidden = false;
+  dividirTimesVoteState.ranking = [];
+
+  if(dividirTimesVoteIntro) dividirTimesVoteIntro.textContent = DIVIDIR_TIMES_LOGIN_MSG;
+  if(dividirTimesVoteList){
+    dividirTimesVoteList.innerHTML = `<div class="perfilEmptyList">${DIVIDIR_TIMES_LOGIN_MSG}</div>`;
+  }
+  if(dividirTimesEnviarVotoBtn){
+    dividirTimesEnviarVotoBtn.hidden = true;
+    dividirTimesEnviarVotoBtn.disabled = true;
+    dividirTimesEnviarVotoBtn.textContent = "Enviar voto";
+  }
+  if(dividirTimesLoginVoteBtn){
+    dividirTimesLoginVoteBtn.hidden = false;
+    dividirTimesLoginVoteBtn.disabled = false;
+  }
+
+  dividirTimesVoteSetMsg(DIVIDIR_TIMES_LOGIN_MSG, "erro");
+
+  if(abrirModal){
+    abrirLoginDividirTimesVoto();
+  }
 }
 
 function dividirTimesJogadorNome(jogador = {}){
@@ -21961,10 +21997,23 @@ async function carregarDividirTimesPublico(tokenSessao){
   if(dividirTimesVotePage) dividirTimesVotePage.hidden = false;
   dividirTimesVoteSetMsg("Carregando votacao...");
 
+  if(!token){
+    exigirLoginDividirTimesVoto(true);
+    return true;
+  }
+
   try{
     const voterToken = dividirTimesVoterToken();
-    const r = await fetch(`${API_BASE}/dividir-times/${encodeURIComponent(dividirTimesVoteState.token)}?voter_token=${encodeURIComponent(voterToken)}&ts=${Date.now()}`, { cache:"no-store" });
+    const r = await fetch(`${API_BASE}/dividir-times/${encodeURIComponent(dividirTimesVoteState.token)}?voter_token=${encodeURIComponent(voterToken)}&ts=${Date.now()}`, {
+      headers:{ "Authorization": "Bearer " + token },
+      cache:"no-store"
+    });
     const data = await ia4LerJsonSeguro(r);
+
+    if(r.status === 401){
+      exigirLoginDividirTimesVoto(true);
+      return true;
+    }
 
     if(!r.ok || !data.ok){
       throw new Error(data.error || data.erro || "Votacao nao encontrada.");
@@ -21979,8 +22028,13 @@ async function carregarDividirTimesPublico(tokenSessao){
       dividirTimesVoteIntro.textContent = `${sessao.titulo || "Treino"}: ordene ${total} jogador(es) do melhor para o pior.`;
     }
     renderDividirTimesVoteList();
-    dividirTimesVoteSetMsg(data.ja_votou ? "Este aparelho ja enviou um voto para esta votacao." : "Use as setas para ordenar e envie seu voto.", data.ja_votou ? "ok" : "");
-    if(dividirTimesEnviarVotoBtn) dividirTimesEnviarVotoBtn.disabled = data.ja_votou === true;
+    dividirTimesVoteSetMsg(data.ja_votou ? "Esta conta ja enviou um voto para esta votacao." : "Use as setas para ordenar e envie seu voto.", data.ja_votou ? "ok" : "");
+    if(dividirTimesLoginVoteBtn) dividirTimesLoginVoteBtn.hidden = true;
+    if(dividirTimesEnviarVotoBtn){
+      dividirTimesEnviarVotoBtn.hidden = false;
+      dividirTimesEnviarVotoBtn.textContent = "Enviar voto";
+      dividirTimesEnviarVotoBtn.disabled = data.ja_votou === true;
+    }
   }catch(err){
     if(dividirTimesVoteIntro) dividirTimesVoteIntro.textContent = "Nao foi possivel carregar esta votacao.";
     dividirTimesVoteSetMsg(err?.message || "Erro de rede ao carregar votacao.", "erro");
@@ -21991,6 +22045,11 @@ async function carregarDividirTimesPublico(tokenSessao){
 
 async function enviarDividirTimesVoto(){
   if(!dividirTimesVoteState.token || !dividirTimesVoteState.ranking?.length) return;
+
+  if(!token){
+    exigirLoginDividirTimesVoto(true);
+    return;
+  }
 
   const ranking = dividirTimesVoteState.ranking.map((jogador, index) => ({
     jogador_id: jogador.id,
@@ -22006,7 +22065,10 @@ async function enviarDividirTimesVoto(){
 
     const r = await fetch(`${API_BASE}/dividir-times/${encodeURIComponent(dividirTimesVoteState.token)}/votos`, {
       method:"POST",
-      headers:{ "Content-Type":"application/json" },
+      headers:{
+        "Content-Type":"application/json",
+        "Authorization": "Bearer " + token
+      },
       body:JSON.stringify({
         voter_token: dividirTimesVoterToken(),
         nome_votante: (dividirTimesVotanteNome?.value || "").trim(),
@@ -22014,6 +22076,11 @@ async function enviarDividirTimesVoto(){
       })
     });
     const data = await ia4LerJsonSeguro(r);
+
+    if(r.status === 401){
+      exigirLoginDividirTimesVoto(true);
+      return;
+    }
 
     if(!r.ok || !data.ok){
       throw new Error(data.error || data.erro || "Nao foi possivel salvar seu voto.");
@@ -23051,6 +23118,7 @@ dividirTimesVoteList?.addEventListener("click", (e)=>{
   moverDividirTimesVoto(btn.getAttribute("data-dividir-move"), btn.getAttribute("data-dir"));
 });
 dividirTimesEnviarVotoBtn?.addEventListener("click", enviarDividirTimesVoto);
+dividirTimesLoginVoteBtn?.addEventListener("click", abrirLoginDividirTimesVoto);
 perfilPatrocinadoresLista?.addEventListener("click", (e)=>{
   const editarBtn = e.target?.closest?.("[data-editar-patrocinador]");
   const removerBtn = e.target?.closest?.("[data-remover-patrocinador]");
