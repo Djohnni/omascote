@@ -1916,6 +1916,84 @@
       margin-top:16px;
     }
 
+    .perfilTimeBody [hidden]{
+      display:none !important;
+    }
+
+    .perfilCentralDashboard{
+      display:grid;
+      grid-template-columns:repeat(3, minmax(0, 1fr));
+      gap:10px;
+    }
+    .perfilCentralDashboard[hidden]{
+      display:none;
+    }
+    .perfilCentralCard{
+      border:1px solid #e5e7eb;
+      background:#fff;
+      border-radius:8px;
+      padding:12px;
+      min-height:96px;
+      text-align:left;
+      cursor:pointer;
+      display:flex;
+      flex-direction:column;
+      justify-content:space-between;
+      gap:8px;
+      box-shadow:0 8px 20px rgba(15,23,42,.04);
+    }
+    .perfilCentralCard:hover{
+      border-color:#86efac;
+      box-shadow:0 12px 26px rgba(22,163,74,.10);
+    }
+    .perfilCentralCard:focus-visible{
+      outline:3px solid rgba(34,197,94,.24);
+      outline-offset:2px;
+    }
+    .perfilCentralCard strong{
+      font-size:15px;
+      font-weight:950;
+      color:#111827;
+      line-height:1.15;
+    }
+    .perfilCentralCard span{
+      color:#64748b;
+      font-size:12px;
+      font-weight:850;
+      line-height:1.25;
+    }
+    .perfilEditorSection{
+      display:block;
+    }
+    .perfilEditorSection[hidden]{
+      display:none;
+    }
+    .perfilSectionHeader{
+      display:flex;
+      align-items:flex-start;
+      justify-content:space-between;
+      gap:10px;
+      padding:12px;
+      border:1px solid #e5e7eb;
+      border-radius:8px;
+      background:#f8fafc;
+    }
+    .perfilSectionHeader strong{
+      display:block;
+      font-size:16px;
+      font-weight:950;
+      color:#111827;
+      line-height:1.15;
+    }
+    .perfilSectionHeader span{
+      display:block;
+      margin-top:3px;
+      color:#64748b;
+      font-size:12px;
+      font-weight:850;
+      line-height:1.3;
+    }
+
     .perfilTimePrivado{
       display:inline-flex;
       align-items:center;
@@ -4043,6 +4121,22 @@
     }
 
     @media (max-width:640px){
+      .perfilCentralDashboard{
+        grid-template-columns:1fr;
+      }
+
+      .perfilCentralCard{
+        min-height:82px;
+      }
+
+      .perfilSectionHeader{
+        flex-direction:column;
+      }
+
+      .perfilSectionHeader .perfilMiniBtn{
+        width:100%;
+      }
+
       .perfilTimeGrid{
         grid-template-columns:1fr;
       }
@@ -9610,7 +9704,54 @@ body:not(.modeChosen) .builderArea,
         </div>
       </div>
 
-      <div class="perfilTimePreview" id="perfilTimePreview">
+      <div class="perfilCentralDashboard" id="perfilCentralDashboard">
+        <button class="perfilCentralCard" type="button" data-perfil-card="dados">
+          <strong>Dados do Time</strong>
+          <span id="perfilCentralDadosResumo">Nome, cidade e Instagram</span>
+        </button>
+        <button class="perfilCentralCard" type="button" data-perfil-card="escudo">
+          <strong>Escudo</strong>
+          <span id="perfilCentralEscudoResumo">Pendente</span>
+        </button>
+        <button class="perfilCentralCard" type="button" data-perfil-card="mascote">
+          <strong>Mascote</strong>
+          <span id="perfilCentralMascoteResumo">Pendente</span>
+        </button>
+        <button class="perfilCentralCard" type="button" data-perfil-card="publico">
+          <strong>Pagina Publica</strong>
+          <span id="perfilCentralPublicoResumo">Privada</span>
+        </button>
+        <button class="perfilCentralCard" type="button" data-perfil-card="elenco">
+          <strong>Elenco</strong>
+          <span id="perfilCentralElencoResumo">0 jogadores</span>
+        </button>
+        <button class="perfilCentralCard" type="button" data-perfil-card="escalacao">
+          <strong>Escalacao Oficial</strong>
+          <span id="perfilCentralEscalacaoResumo">0 titulares / 0 reservas</span>
+        </button>
+        <button class="perfilCentralCard" type="button" data-perfil-card="jogos">
+          <strong>Jogos</strong>
+          <span id="perfilCentralJogosResumo">0 proximos / 0 resultados</span>
+        </button>
+        <button class="perfilCentralCard" type="button" data-perfil-card="patrocinadores">
+          <strong>Patrocinadores</strong>
+          <span id="perfilCentralPatrocinadoresResumo">0 ativos</span>
+        </button>
+        <button class="perfilCentralCard" type="button" data-perfil-card="dividir-times">
+          <strong>Dividir Times</strong>
+          <span id="perfilCentralDividirResumo">Selecione os presentes</span>
+        </button>
+      </div>
+
+      <div class="perfilSectionHeader" id="perfilSectionHeader" hidden>
+        <div>
+          <strong id="perfilSectionTitle">Perfil do Time</strong>
+          <span id="perfilSectionSubtitle">Edite apenas esta parte do perfil.</span>
+        </div>
+        <button class="perfilMiniBtn" id="perfilVoltarCentralBtn" type="button">Voltar para Central</button>
+      </div>
+
+      <div class="perfilTimePreview" id="perfilTimePreview" data-perfil-section-item="dados" hidden>
         <div class="perfilTimeAvatar" id="perfilTimePreviewAvatar" aria-hidden="true">T</div>
         <div>
           <strong id="perfilTimePreviewNome">Seu time</strong>
@@ -9620,8 +9761,8 @@ body:not(.modeChosen) .builderArea,
         </div>
       </div>
 
-      <div class="perfilTimeUploadGrid">
-        <div class="perfilTimeUploadCard">
+      <div class="perfilTimeUploadGrid" data-perfil-section-group="midia" hidden>
+        <div class="perfilTimeUploadCard" data-perfil-section-item="escudo" hidden>
           <div class="perfilTimeUploadThumb" id="perfilEscudoPreview">E</div>
           <div>
             <strong>Escudo do Time</strong>
@@ -9631,7 +9772,7 @@ body:not(.modeChosen) .builderArea,
           </div>
         </div>
 
-        <div class="perfilTimeUploadCard">
+        <div class="perfilTimeUploadCard" data-perfil-section-item="mascote" hidden>
           <div class="perfilTimeUploadThumb" id="perfilMascotePreview">M</div>
           <div>
             <strong>Mascote do Time</strong>
@@ -9642,7 +9783,7 @@ body:not(.modeChosen) .builderArea,
         </div>
       </div>
 
-      <div class="perfilTimeGrid">
+      <div class="perfilTimeGrid" data-perfil-section-item="dados" hidden>
         <div class="perfilTimeField full">
           <label for="perfilNomeTime">Nome do time</label>
           <input id="perfilNomeTime" maxlength="80" autocomplete="organization" placeholder="Nome do time">
@@ -9669,7 +9810,7 @@ body:not(.modeChosen) .builderArea,
         </div>
       </div>
 
-      <div class="perfilTimePublicBox">
+      <div class="perfilTimePublicBox" data-perfil-section-item="publico" hidden>
         <label class="perfilTimePublicToggle" for="perfilPublicoToggle">
           <input id="perfilPublicoToggle" type="checkbox">
           <span>Ativar página pública compartilhável</span>
@@ -9681,12 +9822,12 @@ body:not(.modeChosen) .builderArea,
         <span class="perfilTimePublicHint" id="perfilPublicoStatus">Privado por padrão.</span>
       </div>
 
-      <div class="perfilTimeActions">
+      <div class="perfilTimeActions" data-perfil-section-item="dados publico" hidden>
         <span class="perfilTimePrivado" id="perfilTimePrivacidadeLabel">Perfil privado</span>
         <button class="btnGreen" id="perfilTimeSalvarBtn" type="button">Salvar perfil</button>
       </div>
 
-      <div class="perfilPatrocinadoresSection">
+      <div class="perfilPatrocinadoresSection" data-perfil-section-item="patrocinadores" hidden>
         <div class="perfilElencoTop">
           <strong>Patrocinadores</strong>
           <span id="perfilPatrocinadoresResumo">0 patrocinadores</span>
@@ -9726,7 +9867,7 @@ body:not(.modeChosen) .builderArea,
         <div class="perfilPatrocinadorLista" id="perfilPatrocinadoresLista"></div>
       </div>
 
-      <div class="perfilElencoSection">
+      <div class="perfilElencoSection" data-perfil-section-item="elenco" hidden>
         <div class="perfilElencoTop">
           <strong>Elenco</strong>
           <span id="perfilElencoResumo">0 jogadores</span>
@@ -9765,7 +9906,7 @@ body:not(.modeChosen) .builderArea,
       </div>
 
       <!-- ===== DIVIDIR TIMES MVP ===== -->
-      <div class="dividirTimesSection" id="dividirTimesSection">
+      <div class="dividirTimesSection" id="dividirTimesSection" data-perfil-section-item="dividir-times" hidden>
         <div class="perfilElencoTop">
           <strong>Dividir Times</strong>
           <span id="dividirTimesResumo">Selecione os presentes</span>
@@ -9828,7 +9969,7 @@ body:not(.modeChosen) .builderArea,
       </div>
       <!-- ===== FIM DIVIDIR TIMES MVP ===== -->
 
-      <div class="perfilEscalacaoSection">
+      <div class="perfilEscalacaoSection" data-perfil-section-item="escalacao" hidden>
         <div class="perfilElencoTop">
           <strong>Escalacao Oficial</strong>
           <span id="perfilEscalacaoResumo">0 titulares / 0 reservas</span>
@@ -9876,7 +10017,7 @@ body:not(.modeChosen) .builderArea,
         <div class="perfilEscalacaoLista" id="perfilEscalacaoLista"></div>
       </div>
 
-      <div class="perfilJogosSection">
+      <div class="perfilJogosSection" data-perfil-section-item="jogos" hidden>
         <div class="perfilElencoTop">
           <strong>Jogos</strong>
           <span id="perfilJogosResumo">0 jogos</span>
@@ -17948,6 +18089,23 @@ const btnCadastroTopoEl = document.getElementById("btnCadastroTopo");
 const btnPerfilTimeEl = document.getElementById("btnPerfilTime");
 const perfilTimeModal = document.getElementById("perfilTimeModal");
 const perfilTimeCloseBtn = document.getElementById("perfilTimeCloseBtn");
+const perfilCentralDashboard = document.getElementById("perfilCentralDashboard");
+const perfilSectionHeader = document.getElementById("perfilSectionHeader");
+const perfilSectionTitle = document.getElementById("perfilSectionTitle");
+const perfilSectionSubtitle = document.getElementById("perfilSectionSubtitle");
+const perfilVoltarCentralBtn = document.getElementById("perfilVoltarCentralBtn");
+const perfilCentralCards = [...document.querySelectorAll("[data-perfil-card]")];
+const perfilSectionItems = [...document.querySelectorAll("[data-perfil-section-item]")];
+const perfilSectionGroups = [...document.querySelectorAll("[data-perfil-section-group]")];
+const perfilCentralDadosResumo = document.getElementById("perfilCentralDadosResumo");
+const perfilCentralEscudoResumo = document.getElementById("perfilCentralEscudoResumo");
+const perfilCentralMascoteResumo = document.getElementById("perfilCentralMascoteResumo");
+const perfilCentralPublicoResumo = document.getElementById("perfilCentralPublicoResumo");
+const perfilCentralElencoResumo = document.getElementById("perfilCentralElencoResumo");
+const perfilCentralEscalacaoResumo = document.getElementById("perfilCentralEscalacaoResumo");
+const perfilCentralJogosResumo = document.getElementById("perfilCentralJogosResumo");
+const perfilCentralPatrocinadoresResumo = document.getElementById("perfilCentralPatrocinadoresResumo");
+const perfilCentralDividirResumo = document.getElementById("perfilCentralDividirResumo");
 const perfilTimeSalvarBtn = document.getElementById("perfilTimeSalvarBtn");
 const perfilNomeTime = document.getElementById("perfilNomeTime");
 const perfilCidade = document.getElementById("perfilCidade");
@@ -18120,6 +18278,7 @@ let perfilEscalacaoTime = { titulares: [], reservas: [] };
 let perfilEscalacaoEditId = "";
 let perfilJogosTime = [];
 let perfilJogoEditId = "";
+let perfilSecaoAtual = "";
 let dividirTimesState = {
   sessao: null,
   resultado: null,
@@ -20222,6 +20381,145 @@ function atualizarPerfilTimeVisualSeAberto(){
   }
 }
 
+const perfilSecoesInfo = {
+  dados: {
+    titulo:"Dados do Time",
+    subtitulo:"Edite nome, cidade, estado, Instagram e descricao."
+  },
+  escudo: {
+    titulo:"Escudo",
+    subtitulo:"Envie ou troque o escudo usado no perfil e nas artes."
+  },
+  mascote: {
+    titulo:"Mascote",
+    subtitulo:"Envie ou troque o mascote oficial do time."
+  },
+  publico: {
+    titulo:"Pagina Publica",
+    subtitulo:"Ative o perfil publico e copie o link de divulgacao."
+  },
+  elenco: {
+    titulo:"Elenco",
+    subtitulo:"Adicione, edite ou remova jogadores do time."
+  },
+  escalacao: {
+    titulo:"Escalacao Oficial",
+    subtitulo:"Organize titulares, reservas, posicoes e ordem."
+  },
+  jogos: {
+    titulo:"Jogos",
+    subtitulo:"Cadastre proximos jogos e resultados do time."
+  },
+  patrocinadores: {
+    titulo:"Patrocinadores",
+    subtitulo:"Cadastre patrocinadores, links e logos."
+  },
+  "dividir-times": {
+    titulo:"Dividir Times",
+    subtitulo:"Selecione presentes, gere votacao e monte times equilibrados."
+  }
+};
+
+function perfilResumoQuantidade(total, singular, plural){
+  return `${total} ${total === 1 ? singular : plural}`;
+}
+
+function atualizarPerfilCentralResumo(){
+  const perfil = perfilAssistCache.perfil || {};
+  const jogadores = perfilJogadoresAtivos();
+  const escalacao = perfilEscalacaoNormalizar(perfilEscalacaoTime);
+  const jogos = perfilJogosAtivos();
+  const proximos = jogos.filter(jogo => jogo.tipo === "proximo_jogo").length;
+  const resultados = jogos.filter(jogo => jogo.tipo === "resultado").length;
+  const patrocinadoresAtivos = perfilPatrocinadoresAtivos().length;
+  const nome = perfilAssistTexto(perfil.nome_time || localStorage.getItem("omascote_nome_time"));
+  const local = [perfil.cidade, perfil.estado].map(perfilAssistTexto).filter(Boolean).join(" - ");
+
+  perfilVisualSetText(perfilCentralDadosResumo, nome ? `${nome}${local ? " - " + local : ""}` : "Nome, cidade e Instagram");
+  perfilVisualSetText(perfilCentralEscudoResumo, perfilImagemTemValor(perfil, "escudo") ? "Cadastrado" : "Pendente");
+  perfilVisualSetText(perfilCentralMascoteResumo, perfilImagemTemValor(perfil, "mascote") ? "Cadastrado" : "Pendente");
+  perfilVisualSetText(perfilCentralPublicoResumo, perfil.publico === true ? "Ativa" : "Privada");
+  perfilVisualSetText(perfilCentralElencoResumo, perfilResumoQuantidade(jogadores.length, "jogador", "jogadores"));
+  perfilVisualSetText(perfilCentralEscalacaoResumo, `${escalacao.titulares.length} titulares / ${escalacao.reservas.length} reservas`);
+  perfilVisualSetText(perfilCentralJogosResumo, `${proximos} proximos / ${resultados} resultados`);
+  perfilVisualSetText(perfilCentralPatrocinadoresResumo, perfilResumoQuantidade(patrocinadoresAtivos, "ativo", "ativos"));
+  perfilVisualSetText(perfilCentralDividirResumo, dividirTimesResumo?.textContent || (jogadores.length ? "Selecione os presentes" : "Cadastre jogadores no elenco"));
+}
+
+function perfilItemPertenceSecao(el, secao){
+  return String(el?.dataset?.perfilSectionItem || "")
+    .split(/\s+/)
+    .filter(Boolean)
+    .includes(secao);
+}
+
+function mostrarPerfilCentral(){
+  perfilSecaoAtual = "";
+  if(perfilCentralDashboard) perfilCentralDashboard.hidden = false;
+  if(perfilSectionHeader) perfilSectionHeader.hidden = true;
+  perfilSectionItems.forEach(item => { item.hidden = true; });
+  perfilSectionGroups.forEach(group => { group.hidden = true; });
+  atualizarPerfilCentralResumo();
+  perfilTimeModal?.querySelector(".perfilTimeBody")?.scrollTo({ top:0 });
+}
+
+async function carregarPerfilSecao(secao){
+  if(secao === "dados" || secao === "escudo" || secao === "mascote" || secao === "publico"){
+    await carregarPerfilTime();
+  }else if(secao === "elenco"){
+    await carregarPerfilJogadores();
+  }else if(secao === "escalacao"){
+    await carregarPerfilJogadores();
+    await carregarPerfilEscalacao();
+  }else if(secao === "dividir-times"){
+    await carregarPerfilJogadores();
+  }else if(secao === "jogos"){
+    await carregarPerfilJogos();
+  }else if(secao === "patrocinadores"){
+    await carregarPerfilPatrocinadores();
+  }
+
+  atualizarPerfilCentralResumo();
+}
+
+async function carregarPerfilCentralResumo(){
+  await carregarPerfilTime();
+  await carregarPerfilJogadores();
+  await carregarPerfilEscalacao();
+  await carregarPerfilPatrocinadores();
+  await carregarPerfilJogos();
+  atualizarPerfilCentralResumo();
+}
+
+function abrirPerfilSecao(secao){
+  if(!token){
+    abrirLoginVisitanteModal();
+    return;
+  }
+
+  const info = perfilSecoesInfo[secao];
+  if(!info) return;
+
+  perfilSecaoAtual = secao;
+  if(perfilCentralDashboard) perfilCentralDashboard.hidden = true;
+  if(perfilSectionHeader) perfilSectionHeader.hidden = false;
+  perfilVisualSetText(perfilSectionTitle, info.titulo);
+  perfilVisualSetText(perfilSectionSubtitle, info.subtitulo);
+  perfilSectionItems.forEach(item => {
+    item.hidden = !perfilItemPertenceSecao(item, secao);
+  });
+  perfilSectionGroups.forEach(group => {
+    const grupo = String(group.dataset.perfilSectionGroup || "");
+    group.hidden = !(grupo === "midia" && (secao === "escudo" || secao === "mascote"));
+  });
+  if(perfilTimeSalvarBtn){
+    perfilTimeSalvarBtn.textContent = secao === "publico" ? "Salvar pagina publica" : "Salvar perfil";
+  }
+  setPerfilTimeMsg("");
+  perfilTimeModal?.querySelector(".perfilTimeBody")?.scrollTo({ top:0 });
+  carregarPerfilSecao(secao);
+}
+
 function abrirEditorPeloPerfilVisual(){
   fecharPerfilTimeVisual();
   abrirPerfilTimeModal();
@@ -20261,6 +20559,7 @@ function atualizarPerfilTimePreview(){
   if(perfilTimePreviewDescricao){
     perfilTimePreviewDescricao.textContent = descricao || "Resumo curto do perfil do time.";
   }
+  atualizarPerfilCentralResumo();
 }
 
 function preencherPerfilTime(perfil){
@@ -20272,6 +20571,7 @@ function preencherPerfilTime(perfil){
   atualizarPerfilTimePreview();
   atualizarPreviewsImagemPerfil(perfil || {});
   perfilPublicoAtualizarControles(perfil || {});
+  atualizarPerfilCentralResumo();
 }
 
 function renderPerfilPatrocinadores(){
@@ -20313,6 +20613,7 @@ function renderPerfilPatrocinadores(){
         }).join("")
       : `<div class="perfilEmptyList">Nenhum patrocinador cadastrado.</div>`;
   }
+  atualizarPerfilCentralResumo();
 }
 
 function limparFormPatrocinador(){
@@ -20593,6 +20894,7 @@ function renderPerfilElenco(){
   }
 
   renderDividirTimesJogadores();
+  atualizarPerfilCentralResumo();
 }
 
 /* ===== DIVIDIR TIMES MVP ===== */
@@ -20658,6 +20960,7 @@ function renderDividirTimesJogadores(){
         `;
       }).join("")
     : `<div class="perfilEmptyList">Cadastre jogadores no elenco antes de dividir times.</div>`;
+  atualizarPerfilCentralResumo();
 }
 
 function dividirTimesNormalizarSessao(sessao = {}){
@@ -20697,6 +21000,7 @@ function renderDividirTimesSessao(sessaoRaw, resultadoRaw){
   if(dividirTimesLink) dividirTimesLink.value = dividirTimesUrlVotacao(sessao);
 
   renderDividirTimesResultado(dividirTimesState.resultado);
+  atualizarPerfilCentralResumo();
 }
 
 async function criarDividirTimesSessao(){
@@ -21125,6 +21429,7 @@ function renderPerfilEscalacao(){
         `).join("")
       : `<div class="perfilEmptyList">Monte a escalação oficial usando jogadores do elenco.</div>`;
   }
+  atualizarPerfilCentralResumo();
 }
 
 async function carregarPerfilEscalacao(){
@@ -21587,6 +21892,7 @@ function renderPerfilJogos(){
         }).join("")
       : `<div class="perfilEmptyList">Nenhum jogo cadastrado.</div>`;
   }
+  atualizarPerfilCentralResumo();
 }
 
 async function carregarPerfilJogos(){
@@ -21747,15 +22053,12 @@ function abrirPerfilTimeModal(){
 
   preencherPerfilTime({});
   setPerfilTimeMsg("");
+  mostrarPerfilCentral();
   perfilTimeModal?.classList.add("open");
   perfilTimeModal?.setAttribute("aria-hidden", "false");
   perfilTimeModal?.querySelector(".perfilTimeBody")?.scrollTo({ top:0 });
-  carregarPerfilTime();
-  carregarPerfilJogadores();
-  carregarPerfilEscalacao();
-  carregarPerfilPatrocinadores();
-  carregarPerfilJogos();
-  setTimeout(()=>perfilNomeTime?.focus(), 120);
+  carregarPerfilCentralResumo();
+  setTimeout(()=>perfilCentralCards[0]?.focus?.({ preventScroll:true }), 120);
 }
 
 function fecharPerfilTimeModal(){
@@ -21784,8 +22087,8 @@ async function carregarPerfilTime(){
       throw new Error(data.error || data.erro || "Nao foi possivel carregar o perfil.");
     }
 
-    preencherPerfilTime(data.perfil || {});
     perfilAssistCache.perfil = data.perfil || {};
+    preencherPerfilTime(data.perfil || {});
     atualizarPerfilTimeVisualSeAberto();
     localStorage.setItem("omascote_perfil_id", data.perfil?.perfil_id || "");
     if(data.perfil?.nome_time){
@@ -21848,9 +22151,9 @@ async function salvarPerfilTime(){
       throw new Error(data.error || data.erro || "Nao foi possivel salvar o perfil.");
     }
 
-    preencherPerfilTime(data.perfil || payload);
     perfilAssistInvalidarCache();
     perfilAssistCache.perfil = data.perfil || payload;
+    preencherPerfilTime(data.perfil || payload);
     localStorage.setItem("omascote_perfil_id", data.perfil?.perfil_id || localStorage.getItem("omascote_perfil_id") || "");
     localStorage.setItem("omascote_nome_time", data.perfil?.nome_time || nomeTime);
     atualizarTopoAuth();
@@ -21863,7 +22166,7 @@ async function salvarPerfilTime(){
   }finally{
     if(perfilTimeSalvarBtn){
       perfilTimeSalvarBtn.disabled = false;
-      perfilTimeSalvarBtn.textContent = "Salvar perfil";
+      perfilTimeSalvarBtn.textContent = perfilSecaoAtual === "publico" ? "Salvar pagina publica" : "Salvar perfil";
     }
   }
 }
@@ -21874,6 +22177,13 @@ perfilVisualEditarBtn?.addEventListener("click", abrirEditorPeloPerfilVisual);
 perfilVisualCriarArteBtn?.addEventListener("click", criarArteComPerfilVisual);
 perfilVisualCompartilharBtn?.addEventListener("click", compartilharPerfilVisual);
 perfilTimeCloseBtn?.addEventListener("click", fecharPerfilTimeModal);
+perfilCentralCards.forEach(card => {
+  card.addEventListener("click", () => abrirPerfilSecao(card.getAttribute("data-perfil-card") || ""));
+});
+perfilVoltarCentralBtn?.addEventListener("click", () => {
+  setPerfilTimeMsg("");
+  mostrarPerfilCentral();
+});
 perfilTimeSalvarBtn?.addEventListener("click", salvarPerfilTime);
 perfilPublicoCopiarLinkBtn?.addEventListener("click", copiarLinkPerfilPrivado);
 perfilPublicoToggle?.addEventListener("change", ()=>{
