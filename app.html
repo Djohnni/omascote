@@ -9644,13 +9644,13 @@ body:not(.modeChosen) .builderArea,
           <div class="avaliarJogadoresEditorTop">
             <div>
               <strong id="avaliarJogadoresEditorNome">Jogador</strong>
-              <span id="avaliarJogadoresEditorMeta">Distribua os pontos. Cada ponto vale +3 no atributo.</span>
+              <span id="avaliarJogadoresEditorMeta">Voce tem 30 pontos para distribuir. Quanto maior a nota, mais dificil fica aumentar o atributo.</span>
             </div>
             <button class="perfilMiniBtn" id="avaliarJogadoresEditorVoltarBtn" type="button">Voltar para lista</button>
           </div>
 
           <div class="avaliarJogadoresPoints">
-            <span id="avaliarJogadoresNormaisRestantes">30 pontos restantes - cada ponto vale +3</span>
+            <span id="avaliarJogadoresNormaisRestantes">30 pontos restantes. Quanto maior a nota, mais dificil fica aumentar o atributo.</span>
           </div>
 
           <div class="avaliarJogadoresAttrGrid" id="avaliarJogadoresAttrGrid"></div>
@@ -22919,7 +22919,6 @@ const AVALIAR_JOGADORES_LOGIN_MSG = "Entre na sua conta ou crie um cadastro para
 const AVALIAR_JOGADORES_BASE = 75;
 const AVALIAR_JOGADORES_TETO = 99;
 const AVALIAR_JOGADORES_PONTOS_TOTAL = 30;
-const AVALIAR_JOGADORES_VALOR_PONTO = 3;
 const AVALIAR_JOGADORES_ATRIBUTOS = [
   { key:"velocidade", nome:"Velocidade" },
   { key:"finalizacao", nome:"Finalizacao" },
@@ -23018,21 +23017,36 @@ function avaliarJogadoresTotalPontos(item){
   return Object.values(pontos || {}).reduce((sum, value) => sum + Number(value || 0), 0);
 }
 
+function avaliarJogadoresIncrementoPorValor(valor){
+  const atual = Number(valor || AVALIAR_JOGADORES_BASE);
+  if(atual >= AVALIAR_JOGADORES_TETO) return 0;
+  if(atual <= 80) return 4;
+  if(atual <= 88) return 3;
+  if(atual <= 92) return 2;
+  return 1;
+}
+
+function avaliarJogadoresCalcularValorPorPontos(pontos){
+  const total = Math.trunc(Number(pontos || 0));
+  let valor = AVALIAR_JOGADORES_BASE;
+
+  for(let i = 0; i < total; i += 1){
+    if(valor >= AVALIAR_JOGADORES_TETO) return AVALIAR_JOGADORES_TETO;
+    valor += avaliarJogadoresIncrementoPorValor(valor);
+  }
+
+  return Math.min(AVALIAR_JOGADORES_TETO, valor);
+}
+
 function avaliarJogadoresValorAtributo(item, atributoKey){
   const pontos = Number(avaliarJogadoresPontos(item)?.[atributoKey] || 0);
-  const valor = Math.min(
-    AVALIAR_JOGADORES_TETO,
-    AVALIAR_JOGADORES_BASE + pontos * AVALIAR_JOGADORES_VALOR_PONTO
-  );
+  const valor = avaliarJogadoresCalcularValorPorPontos(pontos);
   return valor.toLocaleString("pt-BR", { minimumFractionDigits:1, maximumFractionDigits:1 });
 }
 
 function avaliarJogadoresValorAtributoNumero(item, atributoKey){
   const pontos = Number(avaliarJogadoresPontos(item)?.[atributoKey] || 0);
-  return Math.min(
-    AVALIAR_JOGADORES_TETO,
-    AVALIAR_JOGADORES_BASE + pontos * AVALIAR_JOGADORES_VALOR_PONTO
-  );
+  return avaliarJogadoresCalcularValorPorPontos(pontos);
 }
 
 function avaliarJogadoresSelecionadosLista(){
@@ -23327,7 +23341,7 @@ function renderEditorAvaliarJogadorHtml(jogador, item){
         </div>
       </div>
       <div class="avaliarJogadoresPoints">
-        <span>${restantes} ponto(s) restantes - cada ponto vale +3</span>
+        <span>${restantes} ponto(s) restantes. Quanto maior a nota, mais dificil fica aumentar o atributo.</span>
       </div>
       <div class="avaliarJogadoresAttrGrid">
         ${AVALIAR_JOGADORES_ATRIBUTOS.map(attr => {
@@ -23335,7 +23349,7 @@ function renderEditorAvaliarJogadorHtml(jogador, item){
     const valorPontos = Number(pontos?.[attr.key] || 0);
     const valor = avaliarJogadoresValorAtributo(item, attr.key);
     const valorNumero = avaliarJogadoresValorAtributoNumero(item, attr.key);
-    const bloqueiaPorTeto = valorNumero + AVALIAR_JOGADORES_VALOR_PONTO > AVALIAR_JOGADORES_TETO;
+    const bloqueiaPorTeto = valorNumero >= AVALIAR_JOGADORES_TETO;
     return `
       <div class="avaliarJogadoresAttrRow">
         <div class="avaliarJogadoresAttrName">
@@ -23369,11 +23383,10 @@ function alterarPontoAvaliarJogador(atributoKey, dir){
   const atual = Number(pontos[atributoKey] || 0);
   const direcao = Number(dir || 0);
   const total = avaliarJogadoresTotalPontos(item);
-  const incremento = AVALIAR_JOGADORES_VALOR_PONTO;
   const valorAtual = avaliarJogadoresValorAtributoNumero(item, atributoKey);
 
   if(direcao > 0 && total >= limite) return;
-  if(direcao > 0 && valorAtual + incremento > AVALIAR_JOGADORES_TETO) return;
+  if(direcao > 0 && valorAtual >= AVALIAR_JOGADORES_TETO) return;
   if(direcao < 0 && atual <= 0) return;
 
   pontos[atributoKey] = Math.max(0, atual + direcao);
@@ -23425,7 +23438,7 @@ async function carregarAvaliarJogadoresPublico(tokenSessao){
 
     const total = sessao.jogadores_avaliados.length;
     if(avaliarJogadoresVoteIntro){
-      avaliarJogadoresVoteIntro.textContent = `${sessao.titulo || "Avaliacao"}: distribua ate ${AVALIAR_JOGADORES_PONTOS_TOTAL} pontos por jogador. Cada ponto vale +3 no atributo.`;
+      avaliarJogadoresVoteIntro.textContent = `${sessao.titulo || "Avaliacao"}: voce tem ${AVALIAR_JOGADORES_PONTOS_TOTAL} pontos para distribuir em cada jogador. Quanto maior a nota, mais dificil fica aumentar o atributo.`;
     }
     if(avaliarJogadoresEditor) avaliarJogadoresEditor.hidden = true;
     renderAvaliarJogadoresVoteList();
