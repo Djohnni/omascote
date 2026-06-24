@@ -10342,6 +10342,7 @@ body:not(.modeChosen) .builderArea,
 
         <div class="perfilSectionActionBar">
           <button class="perfilSectionPrimaryBtn" id="perfilEscalacaoNovoBtn" type="button">+ Adicionar jogador a escalacao</button>
+          <button class="perfilMiniBtn" id="perfilEscalacaoCriarArteBtn" type="button">Criar arte</button>
         </div>
 
         <div class="perfilEscalacaoPreviewGrid" hidden>
@@ -18660,6 +18661,7 @@ const perfilEscalacaoResumo = document.getElementById("perfilEscalacaoResumo");
 const perfilEscalacaoTitularesPreview = document.getElementById("perfilEscalacaoTitularesPreview");
 const perfilEscalacaoReservasPreview = document.getElementById("perfilEscalacaoReservasPreview");
 const perfilEscalacaoNovoBtn = document.getElementById("perfilEscalacaoNovoBtn");
+const perfilEscalacaoCriarArteBtn = document.getElementById("perfilEscalacaoCriarArteBtn");
 const perfilEscalacaoForm = document.getElementById("perfilEscalacaoForm");
 const perfilEscalacaoJogador = document.getElementById("perfilEscalacaoJogador");
 const perfilEscalacaoTipo = document.getElementById("perfilEscalacaoTipo");
@@ -18773,6 +18775,14 @@ function perfilAssistNomeTime(){
     localStorage.getItem("omascote_nome_time") ||
     "Meu time"
   );
+}
+
+function perfilAssistLocalTime(){
+  const perfil = perfilAssistCache.perfil || {};
+  return [
+    perfil.cidade || perfilCidade?.value || "",
+    perfil.estado || perfilEstado?.value || ""
+  ].map(perfilAssistTexto).filter(Boolean).join(" - ");
 }
 
 function perfilAssistJogadoresAtivosLista(){
@@ -19120,6 +19130,64 @@ function perfilAssistSetCleanPeople(form, key, jogadores){
   return true;
 }
 
+function perfilAssistLimparCleanPeople(form, field){
+  const rows = form?.querySelector(`[data-clean-people="${CSS.escape(field.key)}"]`);
+  if(!rows) return;
+  rows.innerHTML = `
+    <div class="cleanPlayerRow">
+      <input data-player-name placeholder="Nome do jogador">
+      <input data-player-extra type="text" placeholder="${field.type === "players" ? "Posicao (opcional)" : "Gols"}">
+    </div>
+  `;
+}
+
+function perfilAssistLimparCleanProduto(form, productKey){
+  const schema = getCleanProductSchema(productKey);
+  if(!form || !schema) return;
+
+  schema.fields.forEach(field => {
+    if(field.type === "text"){
+      const input = getCleanFormField(form, field.key);
+      if(input){
+        input.value = "";
+        input.dispatchEvent(new Event("input", { bubbles:true }));
+        input.dispatchEvent(new Event("change", { bubbles:true }));
+      }
+      return;
+    }
+
+    if(field.type === "score"){
+      ["home_team", "home_score", "away_score", "away_team"].forEach(key => {
+        const input = getCleanFormField(form, key);
+        if(input) input.value = "";
+      });
+      return;
+    }
+
+    if(field.type === "matchup"){
+      ["home_team", "away_team"].forEach(key => {
+        const input = getCleanFormField(form, key);
+        if(input) input.value = "";
+      });
+      return;
+    }
+
+    if(field.type === "players" || field.type === "scorers"){
+      perfilAssistLimparCleanPeople(form, field);
+      return;
+    }
+
+    if(field.type === "file" || field.type === "multi-file"){
+      const input = getCleanFormAsset(form, field.key);
+      if(input) input.value = "";
+      clearCleanFilePreview(form, field.key);
+    }
+  });
+
+  form.querySelectorAll(".campoObrigatorioErro").forEach(el => el.classList.remove("campoObrigatorioErro"));
+  setCleanProductMsg(form, "");
+}
+
 function perfilAssistJogoSelecionado(box, productKey){
   const jogos = perfilAssistJogosParaProduto(productKey);
   if(!jogos.length) return null;
@@ -19136,14 +19204,15 @@ function perfilAssistJogadorSelecionado(box){
   return jogadores.find(jogador => String(jogador.id || "") === String(selectedId)) || jogadores[0];
 }
 
-async function perfilAssistAplicarClean(productKey, form, box){
+async function perfilAssistAplicarClean(productKey, form, box, opcoes = {}){
   if(!form) return { ok:false, message:"Formulario nao encontrado." };
 
-  const jogo = perfilAssistJogoSelecionado(box, productKey);
-  const jogador = perfilAssistJogadorSelecionado(box);
+  const jogo = opcoes.jogo || perfilAssistJogoSelecionado(box, productKey);
+  const jogador = opcoes.jogador || perfilAssistJogadorSelecionado(box);
   const jogadores = perfilAssistJogadoresAtivosLista();
   const jogadoresEscalacao = productKey === "escalacao" ? perfilAssistJogadoresParaEscalacao() : jogadores;
   const nomeTime = perfilAssistNomeTime();
+  const localTime = perfilAssistLocalTime();
   let alterou = false;
 
   perfilAssistAbrirCleanOpcionais(form);
@@ -19168,7 +19237,7 @@ async function perfilAssistAplicarClean(productKey, form, box){
       alterou = perfilAssistSetCleanField(form, "away_team", jogo.adversario) || alterou;
       alterou = perfilAssistSetCleanField(form, "match_datetime", perfilAssistDataHora(jogo)) || alterou;
       alterou = perfilAssistSetCleanField(form, "competition", jogo.campeonato) || alterou;
-      alterou = perfilAssistSetCleanField(form, "venue", jogo.local) || alterou;
+      alterou = perfilAssistSetCleanField(form, "venue", jogo.local || localTime) || alterou;
     }
     if(!jogo && !alterou) return { ok:false, message:"Cadastre o time, escudo ou um proximo jogo no Perfil do Time para preencher este produto." };
   }
@@ -19179,7 +19248,7 @@ async function perfilAssistAplicarClean(productKey, form, box){
       alterou = perfilAssistSetCleanField(form, "matchup", perfilAssistConfronto(jogo)) || alterou;
       alterou = perfilAssistSetCleanField(form, "match_datetime", perfilAssistDataHora(jogo)) || alterou;
       alterou = perfilAssistSetCleanField(form, "competition", jogo.campeonato) || alterou;
-      alterou = perfilAssistSetCleanField(form, "venue", jogo.local) || alterou;
+      alterou = perfilAssistSetCleanField(form, "venue", jogo.local || localTime) || alterou;
     }
     if(jogadoresEscalacao.length){
       alterou = perfilAssistSetCleanPeople(form, "players", jogadoresEscalacao) || alterou;
@@ -19223,12 +19292,13 @@ function perfilAssistPreencherLegacyJogadores(jogadores){
   return true;
 }
 
-async function perfilAssistAplicarLegacy(productKey, box){
-  const jogo = perfilAssistJogoSelecionado(box, productKey);
-  const jogador = perfilAssistJogadorSelecionado(box);
+async function perfilAssistAplicarLegacy(productKey, box, opcoes = {}){
+  const jogo = opcoes.jogo || perfilAssistJogoSelecionado(box, productKey);
+  const jogador = opcoes.jogador || perfilAssistJogadorSelecionado(box);
   const jogadores = perfilAssistJogadoresAtivosLista();
   const jogadoresEscalacao = productKey === "escalacao" ? perfilAssistJogadoresParaEscalacao() : jogadores;
   const nomeTime = perfilAssistNomeTime();
+  const localTime = perfilAssistLocalTime();
   let alterou = false;
 
   if(productKey === "resultado"){
@@ -19253,7 +19323,7 @@ async function perfilAssistAplicarLegacy(productKey, box){
       alterou = perfilAssistSetLegacyField("timeAdv", jogo.adversario) || alterou;
       alterou = perfilAssistSetLegacyField("dataJogo", perfilAssistDataHora(jogo)) || alterou;
       alterou = perfilAssistSetLegacyField("hora", jogo.campeonato) || alterou;
-      alterou = perfilAssistSetLegacyField("arena", jogo.local) || alterou;
+      alterou = perfilAssistSetLegacyField("arena", jogo.local || localTime) || alterou;
     }
     setOptionalSectionState("data", true);
     setOptionalSectionState("hora", true);
@@ -19267,7 +19337,7 @@ async function perfilAssistAplicarLegacy(productKey, box){
       alterou = perfilAssistSetLegacyField("rodada", perfilAssistConfronto(jogo)) || alterou;
       alterou = perfilAssistSetLegacyField("dataJogo", perfilAssistDataHora(jogo)) || alterou;
       alterou = perfilAssistSetLegacyField("hora", jogo.campeonato) || alterou;
-      alterou = perfilAssistSetLegacyField("arena", jogo.local) || alterou;
+      alterou = perfilAssistSetLegacyField("arena", jogo.local || localTime) || alterou;
     }
     if(jogadoresEscalacao.length){
       alterou = perfilAssistPreencherLegacyJogadores(jogadoresEscalacao) || alterou;
@@ -21221,6 +21291,105 @@ function criarArteComPerfilVisual(){
   }, 350);
 }
 
+function perfilProdutoCategoriaCriacao(productKey){
+  return ["mascote_uniforme", "proximo_jogo_jogador", "resultado_jogo_jogador", "jogador_escudo"].includes(productKey)
+    ? "jogador"
+    : "time";
+}
+
+function perfilProdutoDestinoPorAtalho(tipo){
+  const mapa = {
+    proximo_jogo: "proximo_jogo",
+    proximo: "proximo_jogo",
+    resultado: "resultado",
+    escalacao: "escalacao",
+    jogador: "jogador_escudo",
+    jogador_escudo: "jogador_escudo"
+  };
+  return mapa[String(tipo || "").trim()] || "";
+}
+
+function perfilAtalhoJogoPorId(id){
+  const jogoId = String(id || "");
+  return perfilJogosAtivos().find(jogo => String(jogo.id || "") === jogoId) || null;
+}
+
+function perfilAtalhoJogadorPorId(id){
+  const jogadorId = String(id || "");
+  return perfilJogadoresAtivos().find(jogador => String(jogador.id || "") === jogadorId) || null;
+}
+
+async function criarArteComDadosDoPerfil(tipo, dados = {}){
+  const productKey = perfilProdutoDestinoPorAtalho(tipo);
+  const botao = dados?.botao || null;
+  const textoOriginal = botao?.textContent || "";
+
+  if(!productKey || !PRODUCTS[productKey]){
+    setPerfilTimeMsg("Produto de arte nao encontrado para este atalho.", "erro");
+    return;
+  }
+
+  if(!token){
+    acaoDepoisDoCadastro = () => criarArteComDadosDoPerfil(tipo, dados);
+    abrirLoginVisitanteModal();
+    return;
+  }
+
+  if(botao){
+    botao.disabled = true;
+    botao.textContent = "Abrindo...";
+  }
+
+  try{
+    const data = await perfilAssistCarregarDados(false);
+    if(!data.ok){
+      setPerfilTimeMsg(data.error || "Nao foi possivel carregar o Perfil do Time.", "erro");
+      return;
+    }
+
+    const jogo = dados?.jogo || perfilAtalhoJogoPorId(dados?.jogoId);
+    const jogador = dados?.jogador || perfilAtalhoJogadorPorId(dados?.jogadorId);
+
+    perfilCriarArteModoAtivo = true;
+    fecharPerfilTimeVisual();
+    fecharPerfilTimeModal();
+    atualizarProductChooserModoPerfil();
+    showProductCategory(perfilProdutoCategoriaCriacao(productKey));
+    selectProduct(productKey);
+    selectCleanProductForPicker(productKey, { scroll:false, perfilAuto:false, track:true });
+
+    const form = document.querySelector(`[data-product-form="${CSS.escape(productKey)}"]`);
+    const box = perfilAssistBoxDoProduto(productKey);
+
+    if(!form){
+      setPerfilTimeMsg("Formulario do produto nao encontrado.", "erro");
+      return;
+    }
+
+    if(box){
+      perfilAssistRenderOptionsBox(box, productKey);
+      const jogoSelect = box.querySelector("[data-perfil-assist-jogo]");
+      const jogadorSelect = box.querySelector("[data-perfil-assist-jogador]");
+      if(jogo?.id && jogoSelect) jogoSelect.value = jogo.id;
+      if(jogador?.id && jogadorSelect) jogadorSelect.value = jogador.id;
+      perfilAssistSetMsg(box, "Preenchendo com dados do Perfil do Time...");
+    }
+
+    perfilAssistLimparCleanProduto(form, productKey);
+    const resultado = await perfilAssistAplicarClean(productKey, form, box, { jogo, jogador });
+    if(box) perfilAssistSetMsg(box, resultado.message, resultado.ok ? "ok" : "erro");
+    setCleanProductMsg(form, resultado.message, !resultado.ok);
+    scrollToCleanProductBlock(productKey);
+  }catch(err){
+    setPerfilTimeMsg(err?.message || "Nao foi possivel criar a arte com dados do perfil.", "erro");
+  }finally{
+    if(botao){
+      botao.disabled = false;
+      botao.textContent = textoOriginal || (productKey === "proximo_jogo" ? "Criar flyer" : "Criar arte");
+    }
+  }
+}
+
 function perfilTimeInicial(nome){
   const base = String(nome || "T").trim();
   return (base[0] || "T").toUpperCase();
@@ -21578,6 +21747,7 @@ function renderPerfilElenco(){
                 </div>
               </div>
               <div class="perfilJogadorRowActions">
+                <button class="perfilMiniBtn" type="button" data-criar-arte-jogador="${htmlEscape(jogador.id)}">Criar arte</button>
                 <button class="perfilMiniBtn" type="button" data-editar-jogador="${htmlEscape(jogador.id)}">Editar</button>
                 <button class="perfilMiniBtn danger" type="button" data-remover-jogador="${htmlEscape(jogador.id)}">Remover</button>
               </div>
@@ -22665,6 +22835,7 @@ function renderPerfilJogos(){
           const data = formatarDataPerfilJogo(jogo.data);
           const horario = jogo.horario ? ` ${htmlEscape(jogo.horario)}` : "";
           const campeonato = jogo.campeonato ? ` · ${htmlEscape(jogo.campeonato)}` : "";
+          const criarLabel = jogo.tipo === "proximo_jogo" ? "Criar flyer" : "Criar arte";
           return `
             <div class="perfilJogoRow" data-jogo-id="${htmlEscape(jogo.id)}">
               <div class="perfilJogoInfo">
@@ -22672,6 +22843,7 @@ function renderPerfilJogos(){
                 <span>${htmlEscape(data)}${horario}${campeonato}</span>
               </div>
               <div class="perfilJogadorRowActions">
+                <button class="perfilMiniBtn" type="button" data-criar-arte-jogo="${htmlEscape(jogo.id)}">${criarLabel}</button>
                 <button class="perfilMiniBtn" type="button" data-editar-jogo="${htmlEscape(jogo.id)}">Editar</button>
                 <button class="perfilMiniBtn danger" type="button" data-remover-jogo="${htmlEscape(jogo.id)}">Remover</button>
               </div>
@@ -23095,12 +23267,24 @@ perfilJogoCancelarBtn?.addEventListener("click", ()=>{
   limparFormJogo();
   setPerfilTimeMsg("");
 });
+perfilEscalacaoCriarArteBtn?.addEventListener("click", (e)=>{
+  criarArteComDadosDoPerfil("escalacao", { botao:e.currentTarget });
+});
 [perfilNomeTime, perfilCidade, perfilEstado, perfilInstagram, perfilDescricaoCurta].forEach((campo)=>{
   campo?.addEventListener("input", atualizarPerfilTimePreview);
 });
 perfilJogadoresLista?.addEventListener("click", (e)=>{
+  const criarBtn = e.target?.closest?.("[data-criar-arte-jogador]");
   const editarBtn = e.target?.closest?.("[data-editar-jogador]");
   const removerBtn = e.target?.closest?.("[data-remover-jogador]");
+
+  if(criarBtn){
+    criarArteComDadosDoPerfil("jogador", {
+      jogadorId: criarBtn.getAttribute("data-criar-arte-jogador"),
+      botao: criarBtn
+    });
+    return;
+  }
 
   if(editarBtn){
     const id = editarBtn.getAttribute("data-editar-jogador");
@@ -23154,8 +23338,19 @@ perfilEscalacaoLista?.addEventListener("click", (e)=>{
   }
 });
 perfilJogosLista?.addEventListener("click", (e)=>{
+  const criarBtn = e.target?.closest?.("[data-criar-arte-jogo]");
   const editarBtn = e.target?.closest?.("[data-editar-jogo]");
   const removerBtn = e.target?.closest?.("[data-remover-jogo]");
+
+  if(criarBtn){
+    const id = criarBtn.getAttribute("data-criar-arte-jogo");
+    const jogo = perfilJogosTime.find(item => item.id === id);
+    criarArteComDadosDoPerfil(jogo?.tipo === "resultado" ? "resultado" : "proximo_jogo", {
+      jogoId: id,
+      botao: criarBtn
+    });
+    return;
+  }
 
   if(editarBtn){
     const id = editarBtn.getAttribute("data-editar-jogo");
