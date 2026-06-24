@@ -2001,6 +2001,192 @@
     .perfilCentralCard span{
       display:none;
     }
+    #perfilTimeModal.is-section .modalCard{
+      border:1px solid rgba(250,204,21,.24);
+      background:linear-gradient(180deg,#17130d,#0f1014);
+      box-shadow:0 26px 80px rgba(0,0,0,.42);
+    }
+    #perfilTimeModal.is-section .perfilTimeBody{
+      background:
+        radial-gradient(circle at top left, rgba(250,204,21,.10), transparent 32%),
+        linear-gradient(180deg,#17130d,#0f1014);
+      color:#f8fafc;
+    }
+    #perfilTimeModal.is-section .perfilTimeIntro,
+    #perfilTimeModal.is-section .perfilTimePreview,
+    #perfilTimeModal.is-section .perfilElencoTop,
+    #perfilTimeModal.is-section .perfilElencoPreview,
+    #perfilTimeModal.is-section .perfilPatrocinadorPreview,
+    #perfilTimeModal.is-section .perfilEscalacaoPreviewGrid,
+    #perfilTimeModal.is-section .perfilJogosPreviewGrid{
+      display:none;
+    }
+    #perfilTimeModal.is-section .perfilSectionHeader{
+      border-color:rgba(250,204,21,.22);
+      background:linear-gradient(135deg, rgba(250,204,21,.12), rgba(255,255,255,.045));
+      color:#f8fafc;
+      margin-bottom:14px;
+    }
+    #perfilTimeModal.is-section .perfilSectionHeader strong{
+      color:#ffffff;
+      font-size:18px;
+    }
+    #perfilTimeModal.is-section .perfilSectionHeader span{
+      color:#d6d3d1;
+      font-weight:800;
+    }
+    #perfilTimeModal.is-section .perfilSectionHeader .perfilMiniBtn,
+    #perfilTimeModal.is-section .perfilMiniBtn{
+      border-color:rgba(250,204,21,.24);
+      background:rgba(255,255,255,.08);
+      color:#f8fafc;
+    }
+    #perfilTimeModal.is-section .perfilMiniBtn:hover{
+      border-color:rgba(250,204,21,.58);
+      background:rgba(250,204,21,.14);
+    }
+    #perfilTimeModal.is-section .perfilMiniBtn.danger{
+      border-color:rgba(248,113,113,.34);
+      background:rgba(127,29,29,.28);
+      color:#fecaca;
+    }
+    .perfilSectionActionBar{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+      margin:0 0 12px;
+      flex-wrap:wrap;
+    }
+    .perfilSectionPrimaryBtn{
+      border:0;
+      border-radius:10px;
+      background:#facc15;
+      color:#111827;
+      padding:11px 13px;
+      font-size:13px;
+      font-weight:950;
+      cursor:pointer;
+      box-shadow:0 12px 24px rgba(250,204,21,.18);
+    }
+    .perfilSectionPrimaryBtn:disabled{
+      opacity:.58;
+      cursor:not-allowed;
+    }
+    #perfilTimeModal.is-section .perfilTimeGrid,
+    #perfilTimeModal.is-section .perfilTimePublicBox,
+    #perfilTimeModal.is-section .perfilJogadorForm,
+    #perfilTimeModal.is-section .perfilPatrocinadorForm,
+    #perfilTimeModal.is-section .perfilEscalacaoForm,
+    #perfilTimeModal.is-section .perfilJogoForm,
+    #perfilTimeModal.is-section .dividirTimesSetupBox,
+    #perfilTimeModal.is-section .dividirTimesSession,
+    #perfilTimeModal.is-section .dividirTimesResultBox{
+      border:1px solid rgba(250,204,21,.18);
+      border-radius:8px;
+      background:rgba(255,255,255,.06);
+      padding:12px;
+      box-shadow:0 12px 30px rgba(0,0,0,.18);
+    }
+    #perfilTimeModal.is-section .perfilTimeGrid,
+    #perfilTimeModal.is-section .perfilJogadorForm,
+    #perfilTimeModal.is-section .perfilPatrocinadorForm,
+    #perfilTimeModal.is-section .perfilEscalacaoForm,
+    #perfilTimeModal.is-section .perfilJogoForm,
+    #perfilTimeModal.is-section .dividirTimesSetupBox{
+      margin-bottom:12px;
+    }
+    #perfilTimeModal.is-section .perfilTimeUploadGrid{
+      grid-template-columns:1fr;
+      margin-bottom:0;
+    }
+    #perfilTimeModal.is-section .perfilTimeUploadCard{
+      border-color:rgba(250,204,21,.18);
+      background:rgba(255,255,255,.06);
+      border-radius:8px;
+    }
+    #perfilTimeModal.is-section .perfilTimeUploadCard strong,
+    #perfilTimeModal.is-section .perfilJogadorInfo strong,
+    #perfilTimeModal.is-section .perfilPatrocinadorInfo strong,
+    #perfilTimeModal.is-section .perfilEscalacaoInfo strong,
+    #perfilTimeModal.is-section .perfilJogoInfo strong,
+    #perfilTimeModal.is-section .dividirTimesTeamCard strong{
+      color:#ffffff;
+    }
+    #perfilTimeModal.is-section .perfilTimeUploadCard span,
+    #perfilTimeModal.is-section .perfilJogadorInfo span,
+    #perfilTimeModal.is-section .perfilPatrocinadorInfo span,
+    #perfilTimeModal.is-section .perfilEscalacaoInfo span,
+    #perfilTimeModal.is-section .perfilJogoInfo span,
+    #perfilTimeModal.is-section .perfilTimePublicHint,
+    #perfilTimeModal.is-section .dividirTimesIntro,
+    #perfilTimeModal.is-section .dividirTimesMsg{
+      color:#d6d3d1;
+    }
+    #perfilTimeModal.is-section .perfilTimeField label{
+      color:#fde68a;
+    }
+    #perfilTimeModal.is-section .perfilTimeField input,
+    #perfilTimeModal.is-section .perfilTimeField select,
+    #perfilTimeModal.is-section .perfilTimeField textarea,
+    #perfilTimeModal.is-section .perfilTimePublicLinkRow input,
+    #perfilTimeModal.is-section .dividirTimesLinkRow input{
+      border-color:rgba(250,204,21,.24);
+      background:rgba(15,23,42,.74);
+      color:#f8fafc;
+    }
+    #perfilTimeModal.is-section .perfilTimeField input::placeholder,
+    #perfilTimeModal.is-section .perfilTimeField textarea::placeholder{
+      color:#94a3b8;
+    }
+    #perfilTimeModal.is-section .perfilJogadorRow,
+    #perfilTimeModal.is-section .perfilPatrocinadorRow,
+    #perfilTimeModal.is-section .perfilEscalacaoRow,
+    #perfilTimeModal.is-section .perfilJogoRow,
+    #perfilTimeModal.is-section .dividirTimesPlayerCheck,
+    #perfilTimeModal.is-section .dividirTimesTeamCard{
+      border-color:rgba(250,204,21,.16);
+      background:rgba(255,255,255,.055);
+      border-radius:8px;
+    }
+    #perfilTimeModal.is-section .perfilPatrocinadorRow.inativo{
+      background:rgba(255,255,255,.035);
+      opacity:.72;
+    }
+    #perfilTimeModal.is-section .perfilJogadorNumero,
+    #perfilTimeModal.is-section .perfilEscalacaoNumber,
+    #perfilTimeModal.is-section .perfilTimeUploadThumb{
+      background:#facc15;
+      color:#111827;
+    }
+    #perfilTimeModal.is-section .perfilEmptyList,
+    #perfilTimeModal.is-section .perfilVisualEmpty{
+      border-color:rgba(250,204,21,.20);
+      background:rgba(255,255,255,.045);
+      color:#d6d3d1;
+      border-radius:8px;
+    }
+    #perfilTimeModal.is-section .perfilTimeActions{
+      border-top:1px solid rgba(250,204,21,.16);
+      padding-top:12px;
+      margin-top:12px;
+    }
+    #perfilTimeModal.is-section .perfilTimePrivado{
+      background:rgba(250,204,21,.14);
+      color:#fde68a;
+    }
+    #perfilTimeModal.is-section .dividirTimesIntro{
+      border-color:rgba(250,204,21,.18);
+      background:rgba(255,255,255,.045);
+      border-radius:8px;
+    }
+    #perfilTimeModal.is-section .dividirTimesStatusLine span{
+      background:rgba(250,204,21,.12);
+      color:#fde68a;
+    }
+    #perfilTimeModal.is-section .dividirTimesTeamCard ul{
+      color:#e5e7eb;
+    }
     .perfilEditorSection{
       display:block;
     }
@@ -3552,6 +3738,18 @@
       gap:6px;
       flex:0 0 auto;
     }
+    .perfilRowMain{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      min-width:0;
+    }
+    .perfilRowMain .perfilJogadorNumero{
+      width:34px;
+      height:34px;
+      border-radius:10px;
+      font-size:13px;
+    }
 
     .perfilMiniBtn{
       border:1px solid #cbd5e1;
@@ -4229,6 +4427,28 @@
 
       .perfilSectionHeader .perfilMiniBtn{
         width:100%;
+      }
+
+      .perfilSectionActionBar,
+      .perfilSectionPrimaryBtn{
+        width:100%;
+      }
+
+      .perfilJogadorRow,
+      .perfilPatrocinadorRow,
+      .perfilEscalacaoRow,
+      .perfilJogoRow{
+        align-items:stretch;
+        flex-direction:column;
+      }
+
+      .perfilJogadorRowActions{
+        width:100%;
+        flex-wrap:wrap;
+      }
+
+      .perfilJogadorRowActions .perfilMiniBtn{
+        flex:1 1 120px;
       }
 
       .perfilTimeGrid{
@@ -9932,9 +10152,13 @@ body:not(.modeChosen) .builderArea,
           <span id="perfilPatrocinadoresResumo">0 patrocinadores</span>
         </div>
 
-        <div class="perfilPatrocinadorPreview" id="perfilPatrocinadoresPreview"></div>
+        <div class="perfilSectionActionBar">
+          <button class="perfilSectionPrimaryBtn" id="perfilPatrocinadorNovoBtn" type="button">+ Adicionar patrocinador</button>
+        </div>
 
-        <div class="perfilPatrocinadorForm">
+        <div class="perfilPatrocinadorPreview" id="perfilPatrocinadoresPreview" hidden></div>
+
+        <div class="perfilPatrocinadorForm" id="perfilPatrocinadorForm" hidden>
           <div class="perfilTimeField">
             <label for="perfilPatrocinadorNome">Nome</label>
             <input id="perfilPatrocinadorNome" maxlength="80" autocomplete="off" placeholder="Nome do patrocinador">
@@ -9985,9 +10209,13 @@ body:not(.modeChosen) .builderArea,
           <span id="perfilElencoResumo">0 jogadores</span>
         </div>
 
-        <div class="perfilElencoPreview" id="perfilElencoPreview"></div>
+        <div class="perfilSectionActionBar">
+          <button class="perfilSectionPrimaryBtn" id="perfilJogadorNovoBtn" type="button">+ Adicionar jogador</button>
+        </div>
 
-        <div class="perfilJogadorForm">
+        <div class="perfilElencoPreview" id="perfilElencoPreview" hidden></div>
+
+        <div class="perfilJogadorForm" id="perfilJogadorForm" hidden>
           <div class="perfilTimeField">
             <label for="perfilJogadorNome">Nome</label>
             <input id="perfilJogadorNome" maxlength="80" autocomplete="off" placeholder="Nome">
@@ -10028,15 +10256,21 @@ body:not(.modeChosen) .builderArea,
           Escolha quem esta presente, gere um link de votacao e depois crie dois times equilibrados pela media dos rankings. O ranking individual nao fica publico.
         </div>
 
-        <div class="dividirTimesForm">
-          <div class="perfilTimeField">
-            <label for="dividirTimesTitulo">Nome do treino/jogo</label>
-            <input id="dividirTimesTitulo" maxlength="90" autocomplete="off" placeholder="Ex: Treino de hoje">
-          </div>
-          <button class="btnGreen" id="dividirTimesCriarBtn" type="button">Criar votacao</button>
+        <div class="perfilSectionActionBar">
+          <button class="perfilSectionPrimaryBtn" id="dividirTimesNovoBtn" type="button">Selecionar presentes e criar votacao</button>
         </div>
 
-        <div class="dividirTimesPlayers" id="dividirTimesPlayers"></div>
+        <div class="dividirTimesSetupBox" id="dividirTimesSetupBox" hidden>
+          <div class="dividirTimesForm">
+            <div class="perfilTimeField">
+              <label for="dividirTimesTitulo">Nome do treino/jogo</label>
+              <input id="dividirTimesTitulo" maxlength="90" autocomplete="off" placeholder="Ex: Treino de hoje">
+            </div>
+            <button class="btnGreen" id="dividirTimesCriarBtn" type="button">Criar votacao</button>
+          </div>
+
+          <div class="dividirTimesPlayers" id="dividirTimesPlayers"></div>
+        </div>
 
         <div class="dividirTimesSession" id="dividirTimesSessionBox" hidden>
           <div class="dividirTimesStatusLine">
@@ -10087,7 +10321,11 @@ body:not(.modeChosen) .builderArea,
           <span id="perfilEscalacaoResumo">0 titulares / 0 reservas</span>
         </div>
 
-        <div class="perfilEscalacaoPreviewGrid">
+        <div class="perfilSectionActionBar">
+          <button class="perfilSectionPrimaryBtn" id="perfilEscalacaoNovoBtn" type="button">+ Adicionar jogador a escalacao</button>
+        </div>
+
+        <div class="perfilEscalacaoPreviewGrid" hidden>
           <div class="perfilEscalacaoGroup">
             <div class="perfilEscalacaoGroupTitle">Titulares</div>
             <div class="perfilEscalacaoCards" id="perfilEscalacaoTitularesPreview"></div>
@@ -10099,7 +10337,7 @@ body:not(.modeChosen) .builderArea,
           </div>
         </div>
 
-        <div class="perfilEscalacaoForm">
+        <div class="perfilEscalacaoForm" id="perfilEscalacaoForm" hidden>
           <div class="perfilTimeField">
             <label for="perfilEscalacaoJogador">Jogador</label>
             <select id="perfilEscalacaoJogador">
@@ -10135,7 +10373,11 @@ body:not(.modeChosen) .builderArea,
           <span id="perfilJogosResumo">0 jogos</span>
         </div>
 
-        <div class="perfilJogosPreviewGrid">
+        <div class="perfilSectionActionBar">
+          <button class="perfilSectionPrimaryBtn" id="perfilJogoNovoBtn" type="button">+ Adicionar jogo</button>
+        </div>
+
+        <div class="perfilJogosPreviewGrid" hidden>
           <div class="perfilJogoPreviewGroup">
             <div class="perfilJogoGroupTitle">Ultimos resultados</div>
             <div class="perfilJogoCards" id="perfilResultadosPreview"></div>
@@ -10147,8 +10389,8 @@ body:not(.modeChosen) .builderArea,
           </div>
         </div>
 
-        <div class="perfilJogoForm">
-          <div class="perfilTimeField">
+        <div class="perfilJogoForm" id="perfilJogoForm" hidden>
+          <div class="perfilTimeField" id="perfilJogoTipoField">
             <label for="perfilJogoTipo">Tipo</label>
             <select id="perfilJogoTipo">
               <option value="proximo_jogo">Proximo jogo</option>
@@ -18348,6 +18590,8 @@ const perfilPublicoMsg = document.getElementById("perfilPublicoMsg");
 const perfilElencoResumo = document.getElementById("perfilElencoResumo");
 const perfilElencoPreview = document.getElementById("perfilElencoPreview");
 const perfilJogadoresLista = document.getElementById("perfilJogadoresLista");
+const perfilJogadorNovoBtn = document.getElementById("perfilJogadorNovoBtn");
+const perfilJogadorForm = document.getElementById("perfilJogadorForm");
 const perfilJogadorNome = document.getElementById("perfilJogadorNome");
 const perfilJogadorApelido = document.getElementById("perfilJogadorApelido");
 const perfilJogadorNumero = document.getElementById("perfilJogadorNumero");
@@ -18355,6 +18599,8 @@ const perfilJogadorPosicao = document.getElementById("perfilJogadorPosicao");
 const perfilJogadorSalvarBtn = document.getElementById("perfilJogadorSalvarBtn");
 const perfilJogadorCancelarBtn = document.getElementById("perfilJogadorCancelarBtn");
 const dividirTimesResumo = document.getElementById("dividirTimesResumo");
+const dividirTimesNovoBtn = document.getElementById("dividirTimesNovoBtn");
+const dividirTimesSetupBox = document.getElementById("dividirTimesSetupBox");
 const dividirTimesTitulo = document.getElementById("dividirTimesTitulo");
 const dividirTimesCriarBtn = document.getElementById("dividirTimesCriarBtn");
 const dividirTimesPlayers = document.getElementById("dividirTimesPlayers");
@@ -18379,6 +18625,8 @@ const dividirTimesMsg = document.getElementById("dividirTimesMsg");
 const perfilPatrocinadoresResumo = document.getElementById("perfilPatrocinadoresResumo");
 const perfilPatrocinadoresPreview = document.getElementById("perfilPatrocinadoresPreview");
 const perfilPatrocinadoresLista = document.getElementById("perfilPatrocinadoresLista");
+const perfilPatrocinadorNovoBtn = document.getElementById("perfilPatrocinadorNovoBtn");
+const perfilPatrocinadorForm = document.getElementById("perfilPatrocinadorForm");
 const perfilPatrocinadorNome = document.getElementById("perfilPatrocinadorNome");
 const perfilPatrocinadorInstagram = document.getElementById("perfilPatrocinadorInstagram");
 const perfilPatrocinadorSite = document.getElementById("perfilPatrocinadorSite");
@@ -18391,6 +18639,8 @@ const perfilPatrocinadorCancelarBtn = document.getElementById("perfilPatrocinado
 const perfilEscalacaoResumo = document.getElementById("perfilEscalacaoResumo");
 const perfilEscalacaoTitularesPreview = document.getElementById("perfilEscalacaoTitularesPreview");
 const perfilEscalacaoReservasPreview = document.getElementById("perfilEscalacaoReservasPreview");
+const perfilEscalacaoNovoBtn = document.getElementById("perfilEscalacaoNovoBtn");
+const perfilEscalacaoForm = document.getElementById("perfilEscalacaoForm");
 const perfilEscalacaoJogador = document.getElementById("perfilEscalacaoJogador");
 const perfilEscalacaoTipo = document.getElementById("perfilEscalacaoTipo");
 const perfilEscalacaoPosicao = document.getElementById("perfilEscalacaoPosicao");
@@ -18401,6 +18651,9 @@ const perfilJogosResumo = document.getElementById("perfilJogosResumo");
 const perfilResultadosPreview = document.getElementById("perfilResultadosPreview");
 const perfilProximosPreview = document.getElementById("perfilProximosPreview");
 const perfilJogosLista = document.getElementById("perfilJogosLista");
+const perfilJogoNovoBtn = document.getElementById("perfilJogoNovoBtn");
+const perfilJogoForm = document.getElementById("perfilJogoForm");
+const perfilJogoTipoField = document.getElementById("perfilJogoTipoField");
 const perfilJogoTipo = document.getElementById("perfilJogoTipo");
 const perfilJogoAdversario = document.getElementById("perfilJogoAdversario");
 const perfilJogoMeuGols = document.getElementById("perfilJogoMeuGols");
@@ -19560,6 +19813,8 @@ function atualizarPreviewsImagemPerfil(perfil = perfilAssistCache.perfil || {}){
 
   perfilVisualSetText(perfilEscudoStatus, temEscudo ? "Escudo cadastrado." : "Envie uma imagem PNG, JPG ou WEBP.");
   perfilVisualSetText(perfilMascoteStatus, temMascote ? "Mascote cadastrado." : "Envie uma imagem PNG, JPG ou WEBP.");
+  perfilVisualSetText(perfilEscudoUploadBtn, temEscudo ? "Trocar escudo" : "Enviar escudo");
+  perfilVisualSetText(perfilMascoteUploadBtn, temMascote ? "Trocar mascote" : "Enviar mascote");
   perfilVisualSetText(perfilVisualEscudoTexto, temEscudo ? "Escudo cadastrado no perfil." : "Complete o perfil do seu time.");
   perfilVisualSetText(perfilVisualMascoteTexto, temMascote ? "Mascote cadastrado no perfil." : "Complete o perfil do seu time.");
 
@@ -19645,7 +19900,10 @@ async function enviarImagemPerfil(tipo){
     if(input) input.value = "";
     if(btn){
       btn.disabled = false;
-      btn.textContent = textoOriginal || (tipo === "escudo" ? "Enviar escudo" : "Enviar mascote");
+      const temImagem = perfilImagemTemValor(perfilAssistCache.perfil || {}, tipo);
+      btn.textContent = temImagem
+        ? (tipo === "escudo" ? "Trocar escudo" : "Trocar mascote")
+        : (textoOriginal || (tipo === "escudo" ? "Enviar escudo" : "Enviar mascote"));
     }
   }
 }
@@ -20637,6 +20895,73 @@ const perfilSecoesInfo = {
   }
 };
 
+function perfilSetPainelAberto(el, aberto){
+  if(el) el.hidden = !aberto;
+}
+
+function perfilTipoJogoDaSecao(secao = perfilSecaoAtual){
+  if(secao === "resultados") return "resultado";
+  return "proximo_jogo";
+}
+
+function perfilJogoNomeAcao(tipo = perfilTipoJogoDaSecao()){
+  return tipo === "resultado" ? "resultado" : "proximo jogo";
+}
+
+function atualizarPerfilJogoModo(){
+  const tipo = perfilTipoJogoDaSecao();
+  const modoFechado = perfilSecaoAtual === "resultados" || perfilSecaoAtual === "proximos";
+  if(perfilJogoTipoField) perfilJogoTipoField.hidden = modoFechado;
+  if(perfilJogoNovoBtn) perfilJogoNovoBtn.textContent = tipo === "resultado" ? "+ Adicionar resultado" : "+ Adicionar proximo jogo";
+  if(perfilJogoSalvarBtn && !perfilJogoEditId){
+    perfilJogoSalvarBtn.textContent = tipo === "resultado" ? "Adicionar resultado" : "Adicionar proximo jogo";
+  }
+  if(perfilJogoTipo && !perfilJogoEditId){
+    perfilJogoTipo.value = tipo;
+  }
+}
+
+function recolherPerfilFormularios(){
+  limparFormJogador();
+  limparFormPatrocinador();
+  limparFormEscalacao();
+  limparFormJogo();
+  perfilSetPainelAberto(dividirTimesSetupBox, false);
+}
+
+function abrirFormJogadorNovo(){
+  limparFormJogador();
+  perfilSetPainelAberto(perfilJogadorForm, true);
+  perfilJogadorNome?.focus();
+}
+
+function abrirFormPatrocinadorNovo(){
+  limparFormPatrocinador();
+  perfilSetPainelAberto(perfilPatrocinadorForm, true);
+  perfilPatrocinadorNome?.focus();
+}
+
+function abrirFormEscalacaoNovo(){
+  limparFormEscalacao();
+  renderPerfilEscalacaoOptions();
+  perfilSetPainelAberto(perfilEscalacaoForm, true);
+  perfilEscalacaoJogador?.focus();
+}
+
+function abrirFormJogoNovo(){
+  limparFormJogo();
+  const tipo = perfilTipoJogoDaSecao();
+  if(perfilJogoTipo) perfilJogoTipo.value = tipo;
+  atualizarPerfilJogoModo();
+  perfilSetPainelAberto(perfilJogoForm, true);
+  perfilJogoAdversario?.focus();
+}
+
+function abrirDividirTimesSetup(){
+  perfilSetPainelAberto(dividirTimesSetupBox, true);
+  dividirTimesTitulo?.focus();
+}
+
 function perfilResumoQuantidade(total, singular, plural){
   return `${total} ${total === 1 ? singular : plural}`;
 }
@@ -20780,6 +21105,8 @@ function perfilItemPertenceSecao(el, secao){
 function mostrarPerfilCentral(){
   perfilSecaoAtual = "";
   perfilTimeModal?.classList.add("is-central");
+  perfilTimeModal?.classList.remove("is-section");
+  recolherPerfilFormularios();
   if(perfilCentralDashboard) perfilCentralDashboard.hidden = false;
   if(perfilSectionHeader) perfilSectionHeader.hidden = true;
   perfilSectionItems.forEach(item => { item.hidden = true; });
@@ -20803,8 +21130,9 @@ async function carregarPerfilSecao(secao){
   }else if(secaoConteudo === "jogos"){
     await carregarPerfilJogos();
     if(!perfilJogoEditId && perfilJogoTipo){
-      perfilJogoTipo.value = secao === "resultados" ? "resultado" : "proximo_jogo";
+      perfilJogoTipo.value = perfilTipoJogoDaSecao(secao);
     }
+    atualizarPerfilJogoModo();
   }else if(secaoConteudo === "galeria"){
     await carregarPerfilGaleria();
   }else if(secaoConteudo === "patrocinadores"){
@@ -20835,6 +21163,8 @@ function abrirPerfilSecao(secao){
   perfilSecaoAtual = secao;
   const secaoConteudo = perfilSecaoConteudo(secao);
   perfilTimeModal?.classList.remove("is-central");
+  perfilTimeModal?.classList.add("is-section");
+  recolherPerfilFormularios();
   if(perfilCentralDashboard) perfilCentralDashboard.hidden = true;
   if(perfilSectionHeader) perfilSectionHeader.hidden = false;
   perfilVisualSetText(perfilSectionTitle, info.titulo);
@@ -20960,6 +21290,7 @@ function limparFormPatrocinador(){
   if(perfilPatrocinadorLogoStatus) perfilPatrocinadorLogoStatus.textContent = "Logo opcional.";
   if(perfilPatrocinadorSalvarBtn) perfilPatrocinadorSalvarBtn.textContent = "Adicionar patrocinador";
   if(perfilPatrocinadorCancelarBtn) perfilPatrocinadorCancelarBtn.hidden = true;
+  perfilSetPainelAberto(perfilPatrocinadorForm, false);
 }
 
 function preencherFormPatrocinador(patrocinador){
@@ -20972,6 +21303,7 @@ function preencherFormPatrocinador(patrocinador){
   if(perfilPatrocinadorLogoStatus) perfilPatrocinadorLogoStatus.textContent = patrocinador?.logo_url ? "Logo cadastrado. Selecione outro arquivo para trocar." : "Logo opcional.";
   if(perfilPatrocinadorSalvarBtn) perfilPatrocinadorSalvarBtn.textContent = "Salvar patrocinador";
   if(perfilPatrocinadorCancelarBtn) perfilPatrocinadorCancelarBtn.hidden = false;
+  perfilSetPainelAberto(perfilPatrocinadorForm, true);
   perfilPatrocinadorNome?.focus();
 }
 
@@ -21167,6 +21499,7 @@ function limparFormJogador(){
   if(perfilJogadorPosicao) perfilJogadorPosicao.value = "";
   if(perfilJogadorSalvarBtn) perfilJogadorSalvarBtn.textContent = "Adicionar jogador";
   if(perfilJogadorCancelarBtn) perfilJogadorCancelarBtn.hidden = true;
+  perfilSetPainelAberto(perfilJogadorForm, false);
 }
 
 function preencherFormJogador(jogador){
@@ -21177,6 +21510,7 @@ function preencherFormJogador(jogador){
   if(perfilJogadorPosicao) perfilJogadorPosicao.value = jogador?.posicao || "";
   if(perfilJogadorSalvarBtn) perfilJogadorSalvarBtn.textContent = "Salvar jogador";
   if(perfilJogadorCancelarBtn) perfilJogadorCancelarBtn.hidden = false;
+  perfilSetPainelAberto(perfilJogadorForm, true);
   perfilJogadorNome?.focus();
 }
 
@@ -21210,15 +21544,18 @@ function renderPerfilElenco(){
   if(perfilJogadoresLista){
     perfilJogadoresLista.innerHTML = total
       ? jogadores.map((jogador)=>{
-          const nome = htmlEscape(jogador.nome || "Jogador");
-          const apelido = jogador.apelido ? ` · ${htmlEscape(jogador.apelido)}` : "";
-          const numero = jogador.numero ? `#${htmlEscape(jogador.numero)}` : "Sem numero";
+          const nome = htmlEscape(jogador.apelido || jogador.nome || "Jogador");
+          const numero = jogador.numero ? htmlEscape(jogador.numero) : "-";
           const posicao = htmlEscape(jogador.posicao || "Sem posicao");
+          const detalhe = htmlEscape([jogador.apelido && jogador.nome ? jogador.nome : "", jogador.posicao || "Sem posicao"].filter(Boolean).join(" - "));
           return `
             <div class="perfilJogadorRow" data-jogador-id="${htmlEscape(jogador.id)}">
-              <div class="perfilJogadorInfo">
-                <strong>${nome}${apelido}</strong>
-                <span>${numero} · ${posicao}</span>
+              <div class="perfilRowMain">
+                <div class="perfilJogadorNumero">${numero}</div>
+                <div class="perfilJogadorInfo">
+                  <strong>${nome}</strong>
+                  <span>${detalhe}</span>
+                </div>
               </div>
               <div class="perfilJogadorRowActions">
                 <button class="perfilMiniBtn" type="button" data-editar-jogador="${htmlEscape(jogador.id)}">Editar</button>
@@ -21331,6 +21668,7 @@ function renderDividirTimesSessao(sessaoRaw, resultadoRaw){
   dividirTimesState.resultado = resultadoRaw || sessao.resultado || null;
 
   if(dividirTimesSessionBox) dividirTimesSessionBox.hidden = !sessao.id;
+  if(sessao.id) perfilSetPainelAberto(dividirTimesSetupBox, false);
   if(dividirTimesSessaoTitulo) dividirTimesSessaoTitulo.textContent = sessao.titulo || "Votacao criada";
   if(dividirTimesVotosCount) dividirTimesVotosCount.textContent = `${sessao.votos_count || 0} ${sessao.votos_count === 1 ? "voto" : "votos"}`;
   if(dividirTimesPresentesCount) dividirTimesPresentesCount.textContent = `${sessao.jogadores_presentes.length} presentes`;
@@ -21804,6 +22142,7 @@ function limparFormEscalacao(){
   if(perfilEscalacaoPosicao) perfilEscalacaoPosicao.value = "";
   if(perfilEscalacaoSalvarBtn) perfilEscalacaoSalvarBtn.textContent = "Adicionar a escalacao";
   if(perfilEscalacaoCancelarBtn) perfilEscalacaoCancelarBtn.hidden = true;
+  perfilSetPainelAberto(perfilEscalacaoForm, false);
 }
 
 function perfilEscalacaoEncontrarItem(jogadorId){
@@ -21825,6 +22164,7 @@ function preencherFormEscalacao(jogadorId){
   if(perfilEscalacaoPosicao) perfilEscalacaoPosicao.value = encontrado.item.posicao || "";
   if(perfilEscalacaoSalvarBtn) perfilEscalacaoSalvarBtn.textContent = "Salvar escalacao";
   if(perfilEscalacaoCancelarBtn) perfilEscalacaoCancelarBtn.hidden = false;
+  perfilSetPainelAberto(perfilEscalacaoForm, true);
   perfilEscalacaoPosicao?.focus();
 }
 
@@ -22134,7 +22474,7 @@ function placarPerfilJogo(jogo){
 
 function limparFormJogo(){
   perfilJogoEditId = "";
-  if(perfilJogoTipo) perfilJogoTipo.value = "proximo_jogo";
+  if(perfilJogoTipo) perfilJogoTipo.value = perfilTipoJogoDaSecao();
   if(perfilJogoAdversario) perfilJogoAdversario.value = "";
   if(perfilJogoMeuGols) perfilJogoMeuGols.value = "";
   if(perfilJogoAdvGols) perfilJogoAdvGols.value = "";
@@ -22142,8 +22482,10 @@ function limparFormJogo(){
   if(perfilJogoHorario) perfilJogoHorario.value = "";
   if(perfilJogoLocal) perfilJogoLocal.value = "";
   if(perfilJogoCampeonato) perfilJogoCampeonato.value = "";
-  if(perfilJogoSalvarBtn) perfilJogoSalvarBtn.textContent = "Adicionar jogo";
+  if(perfilJogoSalvarBtn) perfilJogoSalvarBtn.textContent = `Adicionar ${perfilJogoNomeAcao()}`;
   if(perfilJogoCancelarBtn) perfilJogoCancelarBtn.hidden = true;
+  perfilSetPainelAberto(perfilJogoForm, false);
+  atualizarPerfilJogoModo();
 }
 
 function preencherFormJogo(jogo){
@@ -22158,6 +22500,8 @@ function preencherFormJogo(jogo){
   if(perfilJogoCampeonato) perfilJogoCampeonato.value = jogo?.campeonato || "";
   if(perfilJogoSalvarBtn) perfilJogoSalvarBtn.textContent = "Salvar jogo";
   if(perfilJogoCancelarBtn) perfilJogoCancelarBtn.hidden = false;
+  perfilSetPainelAberto(perfilJogoForm, true);
+  atualizarPerfilJogoModo();
   perfilJogoAdversario?.focus();
 }
 
@@ -22193,9 +22537,21 @@ function renderPerfilJogos(){
     .filter(jogo => jogo.tipo === "proximo_jogo")
     .sort((a, b) => dataOrdemPerfilJogo(a).localeCompare(dataOrdemPerfilJogo(b)));
   const total = jogos.length;
+  const listaSecao = perfilSecaoAtual === "resultados"
+    ? resultados
+    : perfilSecaoAtual === "proximos"
+      ? proximos
+      : jogos;
+  const totalLista = listaSecao.length;
 
   if(perfilJogosResumo){
-    perfilJogosResumo.textContent = `${total} ${total === 1 ? "jogo" : "jogos"}`;
+    if(perfilSecaoAtual === "resultados"){
+      perfilJogosResumo.textContent = `${resultados.length} ${resultados.length === 1 ? "resultado" : "resultados"}`;
+    }else if(perfilSecaoAtual === "proximos"){
+      perfilJogosResumo.textContent = `${proximos.length} ${proximos.length === 1 ? "proximo jogo" : "proximos jogos"}`;
+    }else{
+      perfilJogosResumo.textContent = `${total} ${total === 1 ? "jogo" : "jogos"}`;
+    }
   }
 
   if(perfilResultadosPreview){
@@ -22211,8 +22567,13 @@ function renderPerfilJogos(){
   }
 
   if(perfilJogosLista){
-    perfilJogosLista.innerHTML = total
-      ? jogos.map((jogo)=>{
+    const vazio = perfilSecaoAtual === "resultados"
+      ? "Nenhum resultado cadastrado."
+      : perfilSecaoAtual === "proximos"
+        ? "Nenhum proximo jogo cadastrado."
+        : "Nenhum jogo cadastrado.";
+    perfilJogosLista.innerHTML = totalLista
+      ? listaSecao.map((jogo)=>{
           const tipo = htmlEscape(nomeTipoPerfilJogo(jogo.tipo));
           const adversario = htmlEscape(jogo.adversario || "Adversario");
           const placar = htmlEscape(placarPerfilJogo(jogo));
@@ -22232,8 +22593,9 @@ function renderPerfilJogos(){
             </div>
           `;
         }).join("")
-      : `<div class="perfilEmptyList">Nenhum jogo cadastrado.</div>`;
+      : `<div class="perfilEmptyList">${vazio}</div>`;
   }
+  atualizarPerfilJogoModo();
   atualizarPerfilCentralResumo();
 }
 
@@ -22347,7 +22709,7 @@ async function salvarPerfilJogo(){
   }finally{
     if(perfilJogoSalvarBtn){
       perfilJogoSalvarBtn.disabled = false;
-      perfilJogoSalvarBtn.textContent = perfilJogoEditId ? "Salvar jogo" : "Adicionar jogo";
+      perfilJogoSalvarBtn.textContent = perfilJogoEditId ? "Salvar jogo" : `Adicionar ${perfilJogoNomeAcao()}`;
     }
   }
 }
@@ -22408,6 +22770,7 @@ function abrirPerfilTimeModal(){
 
 function fecharPerfilTimeModal(){
   perfilTimeModal?.classList.remove("open");
+  perfilTimeModal?.classList.remove("is-section");
   perfilTimeModal?.setAttribute("aria-hidden", "true");
   perfilPatrocinadorLogoRevokeScope("editor-preview");
 }
@@ -22594,6 +22957,11 @@ perfilEscudoUploadBtn?.addEventListener("click", ()=>perfilEscudoInput?.click())
 perfilMascoteUploadBtn?.addEventListener("click", ()=>perfilMascoteInput?.click());
 perfilEscudoInput?.addEventListener("change", ()=>enviarImagemPerfil("escudo"));
 perfilMascoteInput?.addEventListener("change", ()=>enviarImagemPerfil("mascote"));
+perfilJogadorNovoBtn?.addEventListener("click", abrirFormJogadorNovo);
+perfilPatrocinadorNovoBtn?.addEventListener("click", abrirFormPatrocinadorNovo);
+perfilEscalacaoNovoBtn?.addEventListener("click", abrirFormEscalacaoNovo);
+perfilJogoNovoBtn?.addEventListener("click", abrirFormJogoNovo);
+dividirTimesNovoBtn?.addEventListener("click", abrirDividirTimesSetup);
 perfilPatrocinadorLogoBtn?.addEventListener("click", ()=>perfilPatrocinadorLogoInput?.click());
 perfilPatrocinadorLogoInput?.addEventListener("change", ()=>{
   const file = perfilPatrocinadorLogoInput?.files?.[0] || null;
