@@ -9644,13 +9644,13 @@ body:not(.modeChosen) .builderArea,
           <div class="avaliarJogadoresEditorTop">
             <div>
               <strong id="avaliarJogadoresEditorNome">Jogador</strong>
-              <span id="avaliarJogadoresEditorMeta">Distribua os pontos extras deste jogador.</span>
+              <span id="avaliarJogadoresEditorMeta">Distribua os pontos. Cada ponto vale +3 no atributo.</span>
             </div>
             <button class="perfilMiniBtn" id="avaliarJogadoresEditorVoltarBtn" type="button">Voltar para lista</button>
           </div>
 
           <div class="avaliarJogadoresPoints">
-            <span id="avaliarJogadoresNormaisRestantes">30 pontos restantes</span>
+            <span id="avaliarJogadoresNormaisRestantes">30 pontos restantes - cada ponto vale +3</span>
           </div>
 
           <div class="avaliarJogadoresAttrGrid" id="avaliarJogadoresAttrGrid"></div>
@@ -22919,7 +22919,7 @@ const AVALIAR_JOGADORES_LOGIN_MSG = "Entre na sua conta ou crie um cadastro para
 const AVALIAR_JOGADORES_BASE = 75;
 const AVALIAR_JOGADORES_TETO = 99;
 const AVALIAR_JOGADORES_PONTOS_TOTAL = 30;
-const AVALIAR_JOGADORES_VALOR_PONTO = 0.3;
+const AVALIAR_JOGADORES_VALOR_PONTO = 3;
 const AVALIAR_JOGADORES_ATRIBUTOS = [
   { key:"velocidade", nome:"Velocidade" },
   { key:"finalizacao", nome:"Finalizacao" },
@@ -23327,7 +23327,7 @@ function renderEditorAvaliarJogadorHtml(jogador, item){
         </div>
       </div>
       <div class="avaliarJogadoresPoints">
-        <span>${restantes} ponto(s) restantes</span>
+        <span>${restantes} ponto(s) restantes - cada ponto vale +3</span>
       </div>
       <div class="avaliarJogadoresAttrGrid">
         ${AVALIAR_JOGADORES_ATRIBUTOS.map(attr => {
@@ -23425,7 +23425,7 @@ async function carregarAvaliarJogadoresPublico(tokenSessao){
 
     const total = sessao.jogadores_avaliados.length;
     if(avaliarJogadoresVoteIntro){
-      avaliarJogadoresVoteIntro.textContent = `${sessao.titulo || "Avaliacao"}: distribua pontos extras nos atributos de ${total} jogador(es).`;
+      avaliarJogadoresVoteIntro.textContent = `${sessao.titulo || "Avaliacao"}: distribua ate ${AVALIAR_JOGADORES_PONTOS_TOTAL} pontos por jogador. Cada ponto vale +3 no atributo.`;
     }
     if(avaliarJogadoresEditor) avaliarJogadoresEditor.hidden = true;
     renderAvaliarJogadoresVoteList();
