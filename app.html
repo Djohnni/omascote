@@ -1548,8 +1548,8 @@
     .avaliarSuccessUnlock{
       position:relative;
       overflow:hidden;
-      gap:16px;
-      padding:20px;
+      gap:18px;
+      padding:22px;
       border-radius:24px;
       border-color:rgba(245, 183, 51, .55);
       background:
@@ -1604,6 +1604,107 @@
       color:rgba(255,255,255,.82) !important;
       font-size:14px !important;
       line-height:1.5 !important;
+    }
+
+    .avaliarSuccessText{
+      margin:0;
+      color:rgba(255,255,255,.78) !important;
+      font-size:14px !important;
+      line-height:1.55 !important;
+    }
+
+    .avaliarSuccessNext{
+      position:relative;
+      z-index:1;
+      display:grid;
+      gap:8px;
+      padding:16px;
+      border-radius:18px;
+      background:rgba(255,255,255,.06);
+      border:1px solid rgba(255,255,255,.11);
+    }
+
+    .avaliarSuccessKicker{
+      color:#fbbf24;
+      font-size:15px;
+      font-weight:950;
+    }
+
+    .avaliarSuccessProfileBox{
+      position:relative;
+      z-index:1;
+      display:grid;
+      gap:10px;
+      padding:16px;
+      border-radius:20px;
+      background:
+        linear-gradient(135deg, rgba(245,183,51,.22), rgba(255,255,255,.06)),
+        rgba(2,6,23,.54);
+      border:1px solid rgba(245,183,51,.35);
+      box-shadow:0 18px 36px rgba(245,183,51,.14);
+    }
+
+    .avaliarSuccessProfileBox span{
+      color:#fde68a;
+      font-size:13px;
+      font-weight:950;
+      text-transform:uppercase;
+      letter-spacing:.04em;
+    }
+
+    .avaliarSuccessProfileBox strong{
+      color:#fff;
+      font-size:18px;
+      line-height:1.25;
+    }
+
+    .avaliarSuccessProfileBtn{
+      min-height:56px;
+      width:100%;
+      border-radius:18px;
+      font-size:16px;
+      font-weight:950;
+      box-shadow:0 16px 38px rgba(34,197,94,.22);
+    }
+
+    .avaliarSuccessProfileBtn[hidden]{
+      display:none !important;
+    }
+
+    .avaliarSuccessDivider{
+      position:relative;
+      z-index:1;
+      display:flex;
+      align-items:center;
+      gap:12px;
+      color:rgba(255,255,255,.48);
+      font-size:12px;
+      font-weight:900;
+      text-transform:uppercase;
+      letter-spacing:.06em;
+    }
+
+    .avaliarSuccessDivider::before,
+    .avaliarSuccessDivider::after{
+      content:"";
+      height:1px;
+      flex:1;
+      background:linear-gradient(90deg, transparent, rgba(245,183,51,.36), transparent);
+    }
+
+    .avaliarSuccessAppBlock{
+      position:relative;
+      z-index:1;
+      display:grid;
+      gap:12px;
+    }
+
+    .avaliarSuccessUnlock .avaliarSuccessAppTitle{
+      margin:0;
+      color:#fff;
+      font-size:21px;
+      line-height:1.18;
+      letter-spacing:0;
     }
 
     .avaliarBenefitGrid{
@@ -1695,6 +1796,10 @@
 
       .avaliarSuccessUnlock h2{
         font-size:22px;
+      }
+
+      .avaliarSuccessUnlock .avaliarSuccessAppTitle{
+        font-size:19px;
       }
 
       .avaliarBenefitGrid{
@@ -9839,7 +9944,7 @@ body:not(.modeChosen) .builderArea,
       </header>
 
       <section class="dividirTimesVoteCard">
-        <div class="perfilTimeField full">
+        <div class="perfilTimeField full" id="avaliarJogadoresVotanteBox">
           <label for="dividirTimesVotanteNome">Nome ou apelido de quem esta votando (opcional)</label>
           <input id="dividirTimesVotanteNome" maxlength="80" autocomplete="name" placeholder="Ex: Joao">
         </div>
@@ -9904,26 +10009,45 @@ body:not(.modeChosen) .builderArea,
         <div class="appInstallCta avaliarSuccessUnlock" id="avaliarJogadoresAppCta" hidden>
           <div class="avaliarSuccessTop">
             <div class="avaliarSuccessBadge">✅ Avaliação enviada!</div>
-            <h2>Agora transforme esses dados em um Card Gamer</h2>
-            <p class="avaliarSuccessLead">Obrigado por ajudar a montar o perfil dos jogadores do seu time.</p>
+            <h2>Obrigado por ajudar a montar o perfil dos jogadores do seu time.</h2>
+            <p class="avaliarSuccessLead">Sua participação foi registrada com sucesso.</p>
           </div>
 
-          <div class="avaliarBenefitGrid" aria-label="Artes disponiveis no app">
-            <div class="avaliarBenefitItem"><span class="avaliarBenefitIcon">🪪</span><span>Card Gamer do jogador</span></div>
-            <div class="avaliarBenefitItem"><span class="avaliarBenefitIcon">⚽</span><span>Flyer de próximo jogo</span></div>
-            <div class="avaliarBenefitItem"><span class="avaliarBenefitIcon">🏆</span><span>Arte de resultado</span></div>
-            <div class="avaliarBenefitItem"><span class="avaliarBenefitIcon">👥</span><span>Escalação oficial</span></div>
-            <div class="avaliarBenefitItem"><span class="avaliarBenefitIcon">🦁</span><span>Mascote do time</span></div>
-            <div class="avaliarBenefitItem"><span class="avaliarBenefitIcon">📢</span><span>Artes para patrocinadores</span></div>
+          <div class="avaliarSuccessNext">
+            <strong class="avaliarSuccessKicker">📊 O que acontece agora?</strong>
+            <p class="avaliarSuccessText">Sua avaliação será combinada com as avaliações dos outros integrantes do time.</p>
+            <p class="avaliarSuccessText">Conforme mais pessoas participarem, os atributos e o overall dos jogadores ficarão cada vez mais precisos.</p>
           </div>
 
-          <div class="avaliarSuccessExclusive">
-            <strong>📲 Exclusivo no aplicativo Meu Clube FC</strong>
-            <div class="avaliarSuccessActions">
-              <a class="btnGreen avaliarSuccessPrimary" data-play-store-link target="_blank" rel="noopener">📲 Baixar Meu Clube FC</a>
-              <a class="perfilMiniBtn avaliarSuccessSecondary" data-open-app-link target="_blank" rel="noopener">Abrir Meu Clube FC</a>
+          <div class="avaliarSuccessProfileBox">
+            <span>👀 Acompanhe a evolução do time</span>
+            <strong id="avaliarJogadoresPerfilNome">Perfil do time</strong>
+            <a class="btnGreen avaliarSuccessProfileBtn" id="avaliarJogadoresPerfilLink" href="/app.html" target="_blank" rel="noopener">👀 Ver Perfil do Time</a>
+          </div>
+
+          <div class="avaliarSuccessDivider">Artes no app</div>
+
+          <div class="avaliarSuccessAppBlock">
+            <h2 class="avaliarSuccessAppTitle">🎮 Quer transformar esses dados em artes profissionais?</h2>
+            <p class="avaliarSuccessLead">No aplicativo você poderá criar:</p>
+
+            <div class="avaliarBenefitGrid" aria-label="Artes disponiveis no app">
+              <div class="avaliarBenefitItem"><span class="avaliarBenefitIcon">🪪</span><span>Card Gamer do jogador</span></div>
+              <div class="avaliarBenefitItem"><span class="avaliarBenefitIcon">⚽</span><span>Flyer de próximo jogo</span></div>
+              <div class="avaliarBenefitItem"><span class="avaliarBenefitIcon">🏆</span><span>Arte de resultado</span></div>
+              <div class="avaliarBenefitItem"><span class="avaliarBenefitIcon">👥</span><span>Escalação oficial</span></div>
+              <div class="avaliarBenefitItem"><span class="avaliarBenefitIcon">🦁</span><span>Mascote do time</span></div>
+              <div class="avaliarBenefitItem"><span class="avaliarBenefitIcon">📢</span><span>Artes para patrocinadores</span></div>
             </div>
-            <p class="avaliarSuccessFoot">Crie artes profissionais em poucos segundos usando os dados do seu time.</p>
+
+            <div class="avaliarSuccessExclusive">
+              <strong>📲 Exclusivo no aplicativo Meu Clube FC</strong>
+              <div class="avaliarSuccessActions">
+                <a class="btnGreen avaliarSuccessPrimary" data-play-store-link target="_blank" rel="noopener">📲 Baixar Meu Clube FC</a>
+                <a class="perfilMiniBtn avaliarSuccessSecondary" data-open-app-link target="_blank" rel="noopener">Abrir Meu Clube FC</a>
+              </div>
+              <p class="avaliarSuccessFoot">Crie artes profissionais em poucos segundos utilizando os dados do seu time.</p>
+            </div>
           </div>
         </div>
       </section>
@@ -19555,6 +19679,7 @@ const dividirTimesCopiarResultadoBtn = document.getElementById("dividirTimesCopi
 const dividirTimesMsg = document.getElementById("dividirTimesMsg");
 const avaliarJogadoresVotePage = document.getElementById("avaliarJogadoresVotePage");
 const avaliarJogadoresVoteIntro = document.getElementById("avaliarJogadoresVoteIntro");
+const avaliarJogadoresVotanteBox = document.getElementById("avaliarJogadoresVotanteBox");
 const avaliarJogadoresVotanteNome = document.getElementById("avaliarJogadoresVotanteNome");
 const avaliarJogadoresVoteList = document.getElementById("avaliarJogadoresVoteList");
 const avaliarJogadoresEditor = document.getElementById("avaliarJogadoresEditor");
@@ -19566,6 +19691,8 @@ const avaliarJogadoresAttrGrid = document.getElementById("avaliarJogadoresAttrGr
 const avaliarJogadoresEnviarVotoBtn = document.getElementById("avaliarJogadoresEnviarVotoBtn");
 const avaliarJogadoresLoginVoteBtn = document.getElementById("avaliarJogadoresLoginVoteBtn");
 const avaliarJogadoresVoteMsg = document.getElementById("avaliarJogadoresVoteMsg");
+const avaliarJogadoresPerfilNome = document.getElementById("avaliarJogadoresPerfilNome");
+const avaliarJogadoresPerfilLink = document.getElementById("avaliarJogadoresPerfilLink");
 const avaliarJogadoresResumo = document.getElementById("avaliarJogadoresResumo");
 const avaliarJogadoresNovoBtn = document.getElementById("avaliarJogadoresNovoBtn");
 const avaliarJogadoresSetupBox = document.getElementById("avaliarJogadoresSetupBox");
@@ -23324,6 +23451,105 @@ function avaliarJogadoresVoteSetMsg(texto, tipo = ""){
   avaliarJogadoresVoteMsg.className = `dividirTimesMsg avaliarJogadoresMsg${tipo ? " " + tipo : ""}`;
 }
 
+function avaliarJogadoresPerfilPublicoDaSessao(sessao = avaliarJogadoresVoteState.sessao || {}){
+  const candidatos = [
+    sessao?.time,
+    sessao?.perfil_publico,
+    sessao?.perfil,
+    sessao?.clube
+  ].filter(item => item && typeof item === "object" && !Array.isArray(item));
+  const info = candidatos[0] || {};
+  const nome = perfilAssistTexto(
+    info.nome_time ||
+    info.nome ||
+    sessao?.nome_time ||
+    sessao?.time_nome ||
+    sessao?.clube_nome ||
+    ""
+  );
+  const slug = perfilAssistTexto(
+    info.slug ||
+    info.perfil_slug ||
+    sessao?.slug ||
+    sessao?.perfil_slug ||
+    sessao?.time_slug ||
+    ""
+  );
+  let url = perfilAssistTexto(
+    info.public_url ||
+    info.url_publica ||
+    info.perfil_url ||
+    sessao?.public_url ||
+    sessao?.url_publica ||
+    sessao?.perfil_publico_url ||
+    ""
+  );
+
+  if(!url && slug) url = perfilPublicoUrlPorSlug(slug);
+  if(url && !/^https?:\/\//i.test(url)){
+    try{
+      url = new URL(url, location.origin).toString();
+    }catch(e){
+      url = "";
+    }
+  }
+
+  return {
+    nome: nome || "seu time",
+    url
+  };
+}
+
+function atualizarConfirmacaoAvaliacaoPerfil(sessao = avaliarJogadoresVoteState.sessao || {}){
+  const perfil = avaliarJogadoresPerfilPublicoDaSessao(sessao);
+  const nomeExibicao = perfil.nome || "seu time";
+  const normalizarNome = value => String(value || "")
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase()
+    .trim();
+  const nomeEhGenerico = normalizarNome(nomeExibicao) === "seu time";
+  const textoBotao = nomeEhGenerico ? "👀 Ver Perfil do Time" : `👀 Ver Perfil do ${nomeExibicao}`;
+
+  if(avaliarJogadoresPerfilNome){
+    avaliarJogadoresPerfilNome.textContent = nomeEhGenerico ? "Perfil do time" : `Perfil do ${nomeExibicao}`;
+  }
+  if(avaliarJogadoresPerfilLink){
+    avaliarJogadoresPerfilLink.textContent = textoBotao;
+    avaliarJogadoresPerfilLink.href = perfil.url || "/app.html";
+    avaliarJogadoresPerfilLink.hidden = !perfil.url;
+  }
+}
+
+function mostrarConfirmacaoAvaliarJogadores(sessao = avaliarJogadoresVoteState.sessao || {}){
+  configurarLinksPlayStore();
+  atualizarConfirmacaoAvaliacaoPerfil(sessao);
+  if(avaliarJogadoresVotanteBox) avaliarJogadoresVotanteBox.hidden = true;
+  if(avaliarJogadoresVoteList) avaliarJogadoresVoteList.hidden = true;
+  if(avaliarJogadoresEditor) avaliarJogadoresEditor.hidden = true;
+  if(avaliarJogadoresEnviarVotoBtn){
+    avaliarJogadoresEnviarVotoBtn.hidden = true;
+    avaliarJogadoresEnviarVotoBtn.disabled = true;
+    avaliarJogadoresEnviarVotoBtn.textContent = "Avaliacao enviada";
+  }
+  if(avaliarJogadoresLoginVoteBtn) avaliarJogadoresLoginVoteBtn.hidden = true;
+  if(avaliarJogadoresAppCta) avaliarJogadoresAppCta.hidden = false;
+  try{
+    avaliarJogadoresAppCta?.scrollIntoView({ behavior:"smooth", block:"start" });
+  }catch(e){}
+}
+
+function esconderConfirmacaoAvaliarJogadores(){
+  esconderCtaAppParticipacao(avaliarJogadoresAppCta);
+  if(avaliarJogadoresVotanteBox) avaliarJogadoresVotanteBox.hidden = false;
+  if(avaliarJogadoresVoteList) avaliarJogadoresVoteList.hidden = false;
+  if(avaliarJogadoresEnviarVotoBtn){
+    avaliarJogadoresEnviarVotoBtn.hidden = false;
+    avaliarJogadoresEnviarVotoBtn.disabled = false;
+    avaliarJogadoresEnviarVotoBtn.textContent = "Enviar avaliacao";
+  }
+}
+
 function abrirLoginAvaliarJogadoresVoto(){
   if(!avaliarJogadoresVoteState.token) return;
   acaoDepoisDoCadastro = () => carregarAvaliarJogadoresPublico(avaliarJogadoresVoteState.token);
@@ -23790,7 +24016,7 @@ async function carregarAvaliarJogadoresPublico(tokenSessao){
   document.title = "Avaliar Jogadores | Meu Clube FC";
   document.body.classList.add("publicProfileMode");
   if(avaliarJogadoresVotePage) avaliarJogadoresVotePage.hidden = false;
-  esconderCtaAppParticipacao(avaliarJogadoresAppCta);
+  esconderConfirmacaoAvaliarJogadores();
   avaliarJogadoresVoteSetMsg("Carregando avaliacao...");
 
   if(!token){
@@ -23826,14 +24052,15 @@ async function carregarAvaliarJogadoresPublico(tokenSessao){
     }
     if(avaliarJogadoresEditor) avaliarJogadoresEditor.hidden = true;
     renderAvaliarJogadoresVoteList();
-    avaliarJogadoresVoteSetMsg(data.ja_avaliou ? "Esta conta ja enviou uma avaliacao para esta sessao." : "Abra um jogador por vez e distribua os pontos extras.", data.ja_avaliou ? "ok" : "");
-    if(data.ja_avaliou) mostrarCtaAppDepoisParticipacao(avaliarJogadoresAppCta);
-    else esconderCtaAppParticipacao(avaliarJogadoresAppCta);
+    const jaAvaliou = data.ja_avaliou === true;
+    avaliarJogadoresVoteSetMsg(jaAvaliou ? "Esta conta ja enviou uma avaliacao para esta sessao." : "Abra um jogador por vez e distribua os pontos extras.", jaAvaliou ? "ok" : "");
+    if(jaAvaliou) mostrarConfirmacaoAvaliarJogadores(sessao);
+    else esconderConfirmacaoAvaliarJogadores();
     if(avaliarJogadoresLoginVoteBtn) avaliarJogadoresLoginVoteBtn.hidden = true;
-    if(avaliarJogadoresEnviarVotoBtn){
+    if(avaliarJogadoresEnviarVotoBtn && !jaAvaliou){
       avaliarJogadoresEnviarVotoBtn.hidden = false;
       avaliarJogadoresEnviarVotoBtn.textContent = "Enviar avaliacao";
-      avaliarJogadoresEnviarVotoBtn.disabled = data.ja_avaliou === true;
+      avaliarJogadoresEnviarVotoBtn.disabled = false;
     }
   }catch(err){
     if(avaliarJogadoresVoteIntro) avaliarJogadoresVoteIntro.textContent = "Nao foi possivel carregar esta avaliacao.";
@@ -23894,7 +24121,7 @@ async function enviarAvaliarJogadoresVoto(){
     }
 
     avaliarJogadoresVoteSetMsg("Avaliacao enviada. Obrigado!", "ok");
-    mostrarCtaAppDepoisParticipacao(avaliarJogadoresAppCta);
+    mostrarConfirmacaoAvaliarJogadores(avaliarJogadoresVoteState.sessao);
     if(avaliarJogadoresEnviarVotoBtn) avaliarJogadoresEnviarVotoBtn.textContent = "Avaliacao enviada";
   }catch(err){
     avaliarJogadoresVoteSetMsg(err?.message || "Erro de rede ao enviar avaliacao.", "erro");
