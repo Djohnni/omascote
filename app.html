@@ -11808,9 +11808,10 @@ function mostrarBloqueioCriacaoArteApp(contexto = ""){
 }
 
 function bloquearCriacaoArteForaDoApp(contexto = ""){
-  if(estaNoAppMeuClube()) return false;
-  mostrarBloqueioCriacaoArteApp(contexto);
-  return true;
+  // Criacao de artes deve funcionar na web, mobile web, PWA e TWA.
+  // O modal da Play Store fica reservado para fluxos futuros realmente exclusivos do app.
+  void contexto;
+  return false;
 }
 
 function mostrarCtaAppDepoisParticipacao(cta){
