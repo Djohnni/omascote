@@ -10118,7 +10118,7 @@ body:not(.modeChosen) .builderArea,
 
         <section class="perfilPublicoSection">
           <div class="perfilPublicoSectionTop">
-            <h3>Ultimos resultados</h3>
+            <h3 id="perfilPublicoResultadosTitulo">Últimos Resultados</h3>
             <span class="perfilPublicoCounter" id="perfilPublicoResultadosCounter">0 resultados</span>
           </div>
           <div id="perfilPublicoResultados"></div>
@@ -10126,7 +10126,7 @@ body:not(.modeChosen) .builderArea,
 
         <section class="perfilPublicoSection">
           <div class="perfilPublicoSectionTop">
-            <h3>Proximos jogos</h3>
+            <h3 id="perfilPublicoProximosTitulo">Próximo Jogo</h3>
             <span class="perfilPublicoCounter" id="perfilPublicoProximosCounter">0 jogos</span>
           </div>
           <div id="perfilPublicoProximos"></div>
@@ -11034,6 +11034,16 @@ body:not(.modeChosen) .builderArea,
           <label for="perfilDescricaoCurta">Descricao curta</label>
           <textarea id="perfilDescricaoCurta" maxlength="240" placeholder="Ex: Time amador de futebol, fundado por amigos e apaixonado por competicao."></textarea>
         </div>
+
+        <div class="perfilTimeField">
+          <label for="perfilTituloSecaoResultados">Título da seção de resultados</label>
+          <input id="perfilTituloSecaoResultados" maxlength="80" autocomplete="off" placeholder="Últimos Resultados">
+        </div>
+
+        <div class="perfilTimeField">
+          <label for="perfilTituloSecaoProximoJogo">Título da seção de próximo jogo</label>
+          <input id="perfilTituloSecaoProximoJogo" maxlength="80" autocomplete="off" placeholder="Próximo Jogo">
+        </div>
       </div>
 
       <div class="perfilTimePublicBox" data-perfil-section-item="publico" hidden>
@@ -11343,12 +11353,12 @@ body:not(.modeChosen) .builderArea,
 
         <div class="perfilJogosPreviewGrid" hidden>
           <div class="perfilJogoPreviewGroup">
-            <div class="perfilJogoGroupTitle">Ultimos resultados</div>
+            <div class="perfilJogoGroupTitle" id="perfilResultadosPreviewTitulo">Últimos Resultados</div>
             <div class="perfilJogoCards" id="perfilResultadosPreview"></div>
           </div>
 
           <div class="perfilJogoPreviewGroup">
-            <div class="perfilJogoGroupTitle">Proximos jogos</div>
+            <div class="perfilJogoGroupTitle" id="perfilProximosPreviewTitulo">Próximo Jogo</div>
             <div class="perfilJogoCards" id="perfilProximosPreview"></div>
           </div>
         </div>
@@ -11479,7 +11489,7 @@ body:not(.modeChosen) .builderArea,
         <section class="perfilVisualSection is-collapsed" data-perfil-visual-section="resultados">
           <button class="perfilVisualSectionTop" type="button" data-perfil-visual-toggle="resultados" aria-expanded="false" aria-controls="perfilVisualResultadosPanel">
             <span class="perfilVisualSectionText">
-              <span class="perfilVisualSectionTitle">Ultimos resultados</span>
+              <span class="perfilVisualSectionTitle" id="perfilVisualResultadosTitulo">Últimos Resultados</span>
               <span class="perfilVisualCounter" id="perfilVisualResultadosCounter">0 resultados</span>
             </span>
             <span class="perfilVisualSectionArrow" aria-hidden="true">&#8964;</span>
@@ -11492,7 +11502,7 @@ body:not(.modeChosen) .builderArea,
         <section class="perfilVisualSection is-collapsed" data-perfil-visual-section="proximos">
           <button class="perfilVisualSectionTop" type="button" data-perfil-visual-toggle="proximos" aria-expanded="false" aria-controls="perfilVisualProximosPanel">
             <span class="perfilVisualSectionText">
-              <span class="perfilVisualSectionTitle">Proximos jogos</span>
+              <span class="perfilVisualSectionTitle" id="perfilVisualProximosTitulo">Próximo Jogo</span>
               <span class="perfilVisualCounter" id="perfilVisualProximosCounter">0 jogos</span>
             </span>
             <span class="perfilVisualSectionArrow" aria-hidden="true">&#8964;</span>
@@ -19543,6 +19553,8 @@ const perfilCidade = document.getElementById("perfilCidade");
 const perfilEstado = document.getElementById("perfilEstado");
 const perfilInstagram = document.getElementById("perfilInstagram");
 const perfilDescricaoCurta = document.getElementById("perfilDescricaoCurta");
+const perfilTituloSecaoResultados = document.getElementById("perfilTituloSecaoResultados");
+const perfilTituloSecaoProximoJogo = document.getElementById("perfilTituloSecaoProximoJogo");
 const perfilTimePreviewAvatar = document.getElementById("perfilTimePreviewAvatar");
 const perfilTimePreviewNome = document.getElementById("perfilTimePreviewNome");
 const perfilTimePreviewLocal = document.getElementById("perfilTimePreviewLocal");
@@ -19576,8 +19588,10 @@ const perfilVisualElenco = document.getElementById("perfilVisualElenco");
 const perfilVisualElencoCounter = document.getElementById("perfilVisualElencoCounter");
 const perfilVisualEscalacao = document.getElementById("perfilVisualEscalacao");
 const perfilVisualEscalacaoCounter = document.getElementById("perfilVisualEscalacaoCounter");
+const perfilVisualResultadosTitulo = document.getElementById("perfilVisualResultadosTitulo");
 const perfilVisualResultados = document.getElementById("perfilVisualResultados");
 const perfilVisualResultadosCounter = document.getElementById("perfilVisualResultadosCounter");
+const perfilVisualProximosTitulo = document.getElementById("perfilVisualProximosTitulo");
 const perfilVisualProximos = document.getElementById("perfilVisualProximos");
 const perfilVisualProximosCounter = document.getElementById("perfilVisualProximosCounter");
 const perfilVisualStats = document.getElementById("perfilVisualStats");
@@ -19633,8 +19647,10 @@ const perfilPublicoElencoCounter = document.getElementById("perfilPublicoElencoC
 const perfilPublicoEscalacao = document.getElementById("perfilPublicoEscalacao");
 const perfilPublicoEscalacaoCounter = document.getElementById("perfilPublicoEscalacaoCounter");
 const perfilPublicoStats = document.getElementById("perfilPublicoStats");
+const perfilPublicoResultadosTitulo = document.getElementById("perfilPublicoResultadosTitulo");
 const perfilPublicoResultados = document.getElementById("perfilPublicoResultados");
 const perfilPublicoResultadosCounter = document.getElementById("perfilPublicoResultadosCounter");
+const perfilPublicoProximosTitulo = document.getElementById("perfilPublicoProximosTitulo");
 const perfilPublicoProximos = document.getElementById("perfilPublicoProximos");
 const perfilPublicoProximosCounter = document.getElementById("perfilPublicoProximosCounter");
 const perfilPublicoGaleria = document.getElementById("perfilPublicoGaleria");
@@ -19738,7 +19754,9 @@ const perfilEscalacaoSalvarBtn = document.getElementById("perfilEscalacaoSalvarB
 const perfilEscalacaoCancelarBtn = document.getElementById("perfilEscalacaoCancelarBtn");
 const perfilEscalacaoLista = document.getElementById("perfilEscalacaoLista");
 const perfilJogosResumo = document.getElementById("perfilJogosResumo");
+const perfilResultadosPreviewTitulo = document.getElementById("perfilResultadosPreviewTitulo");
 const perfilResultadosPreview = document.getElementById("perfilResultadosPreview");
+const perfilProximosPreviewTitulo = document.getElementById("perfilProximosPreviewTitulo");
 const perfilProximosPreview = document.getElementById("perfilProximosPreview");
 const perfilJogosLista = document.getElementById("perfilJogosLista");
 const perfilJogoNovoBtn = document.getElementById("perfilJogoNovoBtn");
@@ -19837,6 +19855,41 @@ function perfilAssistNeedsPlayer(productKey){
 function perfilAssistTexto(value){
   if(value === 0) return "0";
   return String(value ?? "").trim();
+}
+
+function perfilTitulosSecoes(perfil = {}){
+  return {
+    resultados: perfilAssistTexto(perfil?.titulo_secao_resultados) || "Últimos Resultados",
+    proximoJogo: perfilAssistTexto(perfil?.titulo_secao_proximo_jogo) || "Próximo Jogo"
+  };
+}
+
+function atualizarTitulosSecoesPerfil(perfil = {}){
+  const titulos = perfilTitulosSecoes(perfil);
+  [
+    perfilPublicoResultadosTitulo,
+    perfilVisualResultadosTitulo,
+    perfilResultadosPreviewTitulo
+  ].forEach(el => perfilVisualSetText(el, titulos.resultados));
+  [
+    perfilPublicoProximosTitulo,
+    perfilVisualProximosTitulo,
+    perfilProximosPreviewTitulo
+  ].forEach(el => perfilVisualSetText(el, titulos.proximoJogo));
+}
+
+function atualizarTitulosSecoesPerfilDoForm(){
+  atualizarTitulosSecoesPerfil({
+    titulo_secao_resultados: perfilTituloSecaoResultados?.value || "",
+    titulo_secao_proximo_jogo: perfilTituloSecaoProximoJogo?.value || ""
+  });
+}
+
+function tituloPerfilSecaoEditor(secao, tituloPadrao){
+  const titulos = perfilTitulosSecoes(perfilAssistCache.perfil || {});
+  if(secao === "resultados") return titulos.resultados;
+  if(secao === "proximos") return titulos.proximoJogo;
+  return tituloPadrao || "";
 }
 
 function perfilAssistSetMsg(box, texto, tipo = ""){
@@ -21785,6 +21838,7 @@ function renderPerfilPublico(data = {}){
     .sort((a, b) => dataOrdemPerfilJogo(a).localeCompare(dataOrdemPerfilJogo(b)));
   const urlCompartilhar = perfilPublicoUrlPorSlug(perfil.slug || perfilPublicoSlugDaUrl()) || perfilShareUrlAtual();
 
+  atualizarTitulosSecoesPerfil(perfil);
   document.title = `${nome} | Perfil do Time`;
   const shareTexto = perfilShareTextoPublico({ ...perfil, nome_time:nome, url:urlCompartilhar });
   const shareHref = perfilWhatsappHref(shareTexto);
@@ -21879,6 +21933,7 @@ async function iniciarPerfilPublicoSeNecessario(){
     return true;
   }catch(err){
     document.title = "Perfil nao encontrado | Meu Clube FC";
+    atualizarTitulosSecoesPerfil({});
     perfilVisualSetText(perfilPublicoNome, "Perfil nao encontrado");
     perfilVisualSetText(perfilPublicoDescricao, "Este perfil nao esta publico ou o link esta incorreto.");
     perfilPublicoSetAsset(perfilPublicoEscudo, "T", "", "");
@@ -21925,6 +21980,7 @@ function renderPerfilTimeVisual(data = {}){
     .filter(jogo => jogo.tipo === "proximo_jogo")
     .sort((a, b) => dataOrdemPerfilJogo(a).localeCompare(dataOrdemPerfilJogo(b)));
 
+  atualizarTitulosSecoesPerfil(perfil);
   perfilVisualSetText(perfilVisualNome, nome);
   perfilVisualSetText(perfilVisualDescricao, descricao || "Complete o perfil do seu time.");
 
@@ -21998,6 +22054,7 @@ function renderPerfilTimeVisual(data = {}){
 
 function renderPerfilTimeVisualCarregando(){
   perfilVisualFecharSecoes();
+  atualizarTitulosSecoesPerfil({});
   perfilImagemReset("escudo");
   perfilImagemReset("mascote");
   perfilVisualSetText(perfilVisualNome, "Carregando perfil...");
@@ -22398,7 +22455,7 @@ function abrirPerfilSecao(secao){
   recolherPerfilFormularios();
   if(perfilCentralDashboard) perfilCentralDashboard.hidden = true;
   if(perfilSectionHeader) perfilSectionHeader.hidden = false;
-  perfilVisualSetText(perfilSectionTitle, info.titulo);
+  perfilVisualSetText(perfilSectionTitle, tituloPerfilSecaoEditor(secao, info.titulo));
   perfilVisualSetText(perfilSectionSubtitle, info.subtitulo);
   perfilSectionItems.forEach(item => {
     item.hidden = !perfilItemPertenceSecao(item, secao);
@@ -22566,6 +22623,9 @@ function preencherPerfilTime(perfil){
   if(perfilEstado) perfilEstado.value = perfil?.estado || "";
   if(perfilInstagram) perfilInstagram.value = perfil?.instagram || "";
   if(perfilDescricaoCurta) perfilDescricaoCurta.value = perfil?.descricao_curta || "";
+  if(perfilTituloSecaoResultados) perfilTituloSecaoResultados.value = perfil?.titulo_secao_resultados || "";
+  if(perfilTituloSecaoProximoJogo) perfilTituloSecaoProximoJogo.value = perfil?.titulo_secao_proximo_jogo || "";
+  atualizarTitulosSecoesPerfil(perfil || {});
   atualizarPerfilTimePreview();
   atualizarPreviewsImagemPerfil(perfil || {});
   perfilPublicoAtualizarControles(perfil || {});
@@ -24962,6 +25022,8 @@ async function salvarPerfilTime(){
     estado: (perfilEstado?.value || "").trim(),
     instagram: (perfilInstagram?.value || "").trim(),
     descricao_curta: (perfilDescricaoCurta?.value || "").trim(),
+    titulo_secao_resultados: (perfilTituloSecaoResultados?.value || "").trim(),
+    titulo_secao_proximo_jogo: (perfilTituloSecaoProximoJogo?.value || "").trim(),
     publico: perfilPublicoToggle?.checked === true
   };
 
@@ -25169,6 +25231,9 @@ perfilEscalacaoCriarArteBtn?.addEventListener("click", (e)=>{
 });
 [perfilNomeTime, perfilCidade, perfilEstado, perfilInstagram, perfilDescricaoCurta].forEach((campo)=>{
   campo?.addEventListener("input", atualizarPerfilTimePreview);
+});
+[perfilTituloSecaoResultados, perfilTituloSecaoProximoJogo].forEach((campo)=>{
+  campo?.addEventListener("input", atualizarTitulosSecoesPerfilDoForm);
 });
 perfilJogadoresLista?.addEventListener("click", (e)=>{
   const criarBtn = e.target?.closest?.("[data-criar-arte-jogador]");
