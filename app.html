@@ -11034,16 +11034,6 @@ body:not(.modeChosen) .builderArea,
           <label for="perfilDescricaoCurta">Descricao curta</label>
           <textarea id="perfilDescricaoCurta" maxlength="240" placeholder="Ex: Time amador de futebol, fundado por amigos e apaixonado por competicao."></textarea>
         </div>
-
-        <div class="perfilTimeField">
-          <label for="perfilTituloSecaoResultados">Título da seção de resultados</label>
-          <input id="perfilTituloSecaoResultados" maxlength="80" autocomplete="off" placeholder="Últimos Resultados">
-        </div>
-
-        <div class="perfilTimeField">
-          <label for="perfilTituloSecaoProximoJogo">Título da seção de próximo jogo</label>
-          <input id="perfilTituloSecaoProximoJogo" maxlength="80" autocomplete="off" placeholder="Próximo Jogo">
-        </div>
       </div>
 
       <div class="perfilTimePublicBox" data-perfil-section-item="publico" hidden>
@@ -11347,7 +11337,20 @@ body:not(.modeChosen) .builderArea,
           <span id="perfilJogosResumo">0 jogos</span>
         </div>
 
+        <div class="perfilTimeGrid">
+          <div class="perfilTimeField">
+            <label for="perfilTituloSecaoResultados">Título da seção de resultados</label>
+            <input id="perfilTituloSecaoResultados" maxlength="80" autocomplete="off" placeholder="Últimos Resultados">
+          </div>
+
+          <div class="perfilTimeField">
+            <label for="perfilTituloSecaoProximoJogo">Título da seção de próximo jogo</label>
+            <input id="perfilTituloSecaoProximoJogo" maxlength="80" autocomplete="off" placeholder="Próximo Jogo">
+          </div>
+        </div>
+
         <div class="perfilSectionActionBar">
+          <button class="perfilMiniBtn" id="perfilTitulosJogosSalvarBtn" type="button">Salvar títulos</button>
           <button class="perfilSectionPrimaryBtn" id="perfilJogoNovoBtn" type="button">+ Adicionar jogo</button>
         </div>
 
@@ -19759,6 +19762,7 @@ const perfilResultadosPreview = document.getElementById("perfilResultadosPreview
 const perfilProximosPreviewTitulo = document.getElementById("perfilProximosPreviewTitulo");
 const perfilProximosPreview = document.getElementById("perfilProximosPreview");
 const perfilJogosLista = document.getElementById("perfilJogosLista");
+const perfilTitulosJogosSalvarBtn = document.getElementById("perfilTitulosJogosSalvarBtn");
 const perfilJogoNovoBtn = document.getElementById("perfilJogoNovoBtn");
 const perfilJogoForm = document.getElementById("perfilJogoForm");
 const perfilJogoTipoField = document.getElementById("perfilJogoTipoField");
@@ -25002,12 +25006,16 @@ async function carregarPerfilTime(){
   }
 }
 
-async function salvarPerfilTime(){
+async function salvarPerfilTime(event){
   if(!token){
     abrirLoginVisitanteModal();
     return;
   }
 
+  const salvarBtn = event?.currentTarget || perfilTimeSalvarBtn;
+  const textoFinalSalvar = salvarBtn === perfilTitulosJogosSalvarBtn
+    ? "Salvar títulos"
+    : (perfilSecaoAtual === "publico" ? "Salvar pagina publica" : "Salvar perfil");
   const nomeTime = (perfilNomeTime?.value || "").trim();
 
   if(!nomeTime){
@@ -25028,9 +25036,9 @@ async function salvarPerfilTime(){
   };
 
   try{
-    if(perfilTimeSalvarBtn){
-      perfilTimeSalvarBtn.disabled = true;
-      perfilTimeSalvarBtn.textContent = "Salvando...";
+    if(salvarBtn){
+      salvarBtn.disabled = true;
+      salvarBtn.textContent = "Salvando...";
     }
     setPerfilTimeMsg("Salvando perfil...");
 
@@ -25068,9 +25076,9 @@ async function salvarPerfilTime(){
   }catch(err){
     setPerfilTimeMsg(err?.message || "Erro de rede ao salvar perfil.", "erro");
   }finally{
-    if(perfilTimeSalvarBtn){
-      perfilTimeSalvarBtn.disabled = false;
-      perfilTimeSalvarBtn.textContent = perfilSecaoAtual === "publico" ? "Salvar pagina publica" : "Salvar perfil";
+    if(salvarBtn){
+      salvarBtn.disabled = false;
+      salvarBtn.textContent = textoFinalSalvar;
     }
   }
 }
@@ -25160,6 +25168,7 @@ perfilMascoteInput?.addEventListener("change", ()=>enviarImagemPerfil("mascote")
 perfilJogadorNovoBtn?.addEventListener("click", abrirFormJogadorNovo);
 perfilPatrocinadorNovoBtn?.addEventListener("click", abrirFormPatrocinadorNovo);
 perfilEscalacaoNovoBtn?.addEventListener("click", abrirFormEscalacaoNovo);
+perfilTitulosJogosSalvarBtn?.addEventListener("click", salvarPerfilTime);
 perfilJogoNovoBtn?.addEventListener("click", abrirFormJogoNovo);
 dividirTimesNovoBtn?.addEventListener("click", abrirDividirTimesSetup);
 avaliarJogadoresNovoBtn?.addEventListener("click", abrirAvaliarJogadoresSetup);
