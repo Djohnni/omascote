@@ -14350,6 +14350,10 @@ function buildLegacyFormDataFromClean(productKey, cleanOrder){
   Object.keys(defaults).forEach(name => appendCleanTextLegacy(fd, name, defaults[name]));
 
   schema.fields.forEach(field => {
+    if(field.profileTitleKey){
+      fd.append(field.profileTitleKey, cleanOrder.fields[field.key] || "");
+    }
+
     if(field.type === "text" && field.legacyName){
       appendCleanTextLegacy(fd, field.legacyName, cleanOrder.fields[field.key] || field.defaultValue || "");
     }
@@ -14805,6 +14809,15 @@ async function submitCleanProductForm(e){
     if(!okAuto) return;
   }
 
+  if(perfilProdutoTituloSecaoConfig(productKey)){
+    setCleanProductMsg(form, "Salvando título da seção...");
+    const tituloSecaoResultado = await salvarTituloSecaoProduto(productKey, form);
+    if(!tituloSecaoResultado.ok){
+      setCleanProductMsg(form, tituloSecaoResultado.error || "Não foi possível salvar o título da seção.", true);
+      return;
+    }
+  }
+
   setCleanProductMsg(form, "Enviando...");
 
   const cleanOrder = serializeCleanProductForm(productKey, form);
@@ -14827,7 +14840,6 @@ async function submitCleanProductForm(e){
     }
 
     if(out.ok){
-      const tituloSecaoResultado = await salvarTituloSecaoProduto(productKey, form);
       setCleanProductMsg(form, "");
       if(out.pedido_id){
         salvarPedidoAtivoLocal(out.pedido_id, productKey);
@@ -14847,8 +14859,7 @@ async function submitCleanProductForm(e){
         acompanharResultadoClean(out.pedido_id, form);
       }
       const resumoCupom = couponSummaryText(out);
-      const avisoTituloSecao = tituloSecaoResultado.ok ? "" : ` Pedido enviado, mas não foi possível salvar o título da seção: ${tituloSecaoResultado.error || "erro desconhecido"}`;
-      setCleanProductMsg(form, resumoCupom || (avisoTituloSecao.trim() || "Pedido enviado. Acompanhe em Meus pedidos."));
+      setCleanProductMsg(form, resumoCupom || "Pedido enviado. Acompanhe em Meus pedidos.");
 
       resetCleanFormAfterSend(form);
       refreshMe();
