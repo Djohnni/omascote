@@ -14261,7 +14261,7 @@ const CLEAN_PRODUCT_FORM_SCHEMAS = {
       { key: "player_name", type: "text", legacyName: "data", labelKey: "data", placeholderKey: "data", required: true },
       { key: "team_crest", type: "file", legacyName: "escudo1", labelKey: "esc1", required: true, savedFallback: true },
       { key: "player_photo", type: "file", legacyName: "mascote", labelKey: "mascote", required: true },
-      { key: "coupon_code", type: "text", legacyName: "cupom_codigo", label: "Cupom", required: false, visualNormal: true }
+      { key: "coupon_code", type: "text", legacyName: "cupom_codigo", label: "Cupom", placeholder: "Digite seu cupom", required: false, visualNormal: true }
     ],
     legacyDefaults: { rodada: "Jogador + escudo" }
   },
@@ -14282,6 +14282,7 @@ const CLEAN_COUPON_FIELD = {
   type: "text",
   legacyName: "cupom_codigo",
   label: "Cupom de desconto",
+  placeholder: "Digite seu cupom",
   required: false,
   visualNormal: true
 };
@@ -14378,7 +14379,7 @@ function getCleanFieldLabel(product, field){
 }
 
 function getCleanFieldPlaceholder(product, field){
-  return field.placeholder || "";
+  return field.placeholder || product?.placeholders?.[field.placeholderKey] || "";
 }
 
 function renderCleanTextField(product, field, step){
@@ -14418,11 +14419,11 @@ function renderCleanScoreField(field, step){
     <div class="cleanFieldCard" data-clean-field-card="${htmlEscape(field.key)}">
       <label class="cleanFieldLabel" data-step="${htmlEscape(step)}">${htmlEscape(field.label || "Placar")}</label>
       <div class="cleanScoreGrid" data-field="${htmlEscape(field.key)}">
-        <input name="home_team" data-field="home_team" placeholder="" aria-label="Time A">
-        <input name="home_score" data-field="home_score" type="number" min="0" placeholder="" aria-label="Gols Time A">
+        <input name="home_team" data-field="home_team" placeholder="Time A" aria-label="Time A">
+        <input name="home_score" data-field="home_score" type="number" min="0" placeholder="0" aria-label="Gols Time A">
         <div class="cleanScoreX">x</div>
-        <input name="away_score" data-field="away_score" type="number" min="0" placeholder="" aria-label="Gols Time B">
-        <input name="away_team" data-field="away_team" placeholder="" aria-label="Time B">
+        <input name="away_score" data-field="away_score" type="number" min="0" placeholder="0" aria-label="Gols Time B">
+        <input name="away_team" data-field="away_team" placeholder="Time B" aria-label="Time B">
       </div>
     </div>
   `;
@@ -14433,11 +14434,11 @@ function renderCleanMatchupField(field, step){
     <div class="cleanFieldCard" data-clean-field-card="${htmlEscape(field.key)}">
       <label class="cleanFieldLabel" data-step="${htmlEscape(step)}">${htmlEscape(field.label || "Confronto")}</label>
       <div class="cleanScoreGrid" data-field="${htmlEscape(field.key)}">
-        <input name="home_team" data-field="home_team" placeholder="" aria-label="Time A">
+        <input name="home_team" data-field="home_team" placeholder="Time A" aria-label="Time A">
         <div></div>
         <div class="cleanScoreX">x</div>
         <div></div>
-        <input name="away_team" data-field="away_team" placeholder="" aria-label="Time B">
+        <input name="away_team" data-field="away_team" placeholder="Time B" aria-label="Time B">
       </div>
     </div>
   `;
@@ -14451,8 +14452,8 @@ function renderCleanPeopleField(field, step){
       <label class="cleanFieldLabel" data-step="${htmlEscape(step)}">${htmlEscape(field.label || "Jogadores")}</label>
       <div class="cleanPlayerRows" data-clean-people="${htmlEscape(field.key)}" data-clean-people-type="${htmlEscape(field.type)}">
         <div class="cleanPlayerRow">
-          <input data-player-name placeholder="" aria-label="Nome do jogador">
-          <input data-player-extra type="${scoreType}" min="0" placeholder="" aria-label="Informação adicional do jogador">
+          <input data-player-name placeholder="Nome do jogador" aria-label="Nome do jogador">
+          <input data-player-extra type="${scoreType}" min="0" placeholder="${scorePlaceholder}" aria-label="Informação adicional do jogador">
         </div>
       </div>
       <button type="button" class="escActionBtn escActionSave" data-add-clean-people="${htmlEscape(field.key)}">Adicionar jogador</button>
@@ -15024,7 +15025,10 @@ function perfilAssistProductEnabled(productKey){
   return ["resultado", "proximo_jogo", "escalacao", "jogador_escudo"].includes(productKey);
 }
 
+const PERFIL_ASSIST_PRODUCT_FORM_RENDER_ENABLED = false;
+
 function renderPerfilAssistClean(productKey){
+  if(!PERFIL_ASSIST_PRODUCT_FORM_RENDER_ENABLED) return "";
   if(!perfilAssistProductEnabled(productKey)) return "";
 
   return `
@@ -21519,15 +21523,8 @@ function perfilAssistAtualizarProduto(productKey){
   const boxes = [];
   const legacyBox = document.getElementById("perfilAssistBox");
   if(legacyBox){
-    const visivel = perfilAssistProductEnabled(productKey);
-    legacyBox.hidden = !visivel;
-    if(visivel){
-      legacyBox.dataset.perfilAssistProduct = productKey;
-      perfilAssistRenderOptionsBox(legacyBox, productKey);
-      boxes.push(legacyBox);
-    }else{
-      perfilAssistSetMsg(legacyBox, "");
-    }
+    legacyBox.hidden = true;
+    perfilAssistSetMsg(legacyBox, "");
   }
 
   document.querySelectorAll("[data-product-form] [data-perfil-assist]").forEach(box => {
