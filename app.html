@@ -9630,12 +9630,18 @@ body.visitanteNaoLogado .visitanteWelcomeCallout{
   color:#15803d;
   font-size:17px;
   font-weight:950;
-  transition:transform .16s ease, background .16s ease;
+  transition:transform .16s ease, background .16s ease, color .16s ease;
 }
 
-.cleanFieldAccordion.is-open .cleanFieldAccordionArrow{
+.cleanFieldAccordion.is-open:not(.is-complete) .cleanFieldAccordionArrow{
   transform:rotate(180deg);
   background:#dcfce7;
+}
+
+.cleanFieldAccordion.is-complete .cleanFieldAccordionArrow{
+  transform:none;
+  background:#16a34a;
+  color:#ffffff;
 }
 
 .cleanFieldAccordionPanel{
@@ -14513,6 +14519,56 @@ function setCleanAccordionItemOpen(item, open){
   item.classList.toggle("is-open", shouldOpen);
   if(toggle) toggle.setAttribute("aria-expanded", shouldOpen ? "true" : "false");
   if(panel) panel.hidden = !shouldOpen;
+  updateCleanAccordionCompletion(item);
+}
+
+function cleanAccordionControlHasValue(control){
+  if(!control) return false;
+  const tag = String(control.tagName || "").toLowerCase();
+  const type = String(control.type || "").toLowerCase();
+
+  if(type === "hidden") return false;
+  if(type === "file") return Array.from(control.files || []).length > 0;
+  if(type === "checkbox" || type === "radio") return !!control.checked;
+
+  if(tag === "select"){
+    if(control.multiple){
+      return Array.from(control.selectedOptions || []).some(option => String(option.value || "").trim());
+    }
+    return String(control.value || "").trim() !== "";
+  }
+
+  if(tag === "input" || tag === "textarea"){
+    return String(control.value || "").trim() !== "";
+  }
+
+  return false;
+}
+
+function cleanAccordionItemHasValue(item){
+  return Array.from(item?.querySelectorAll?.("input, textarea, select") || [])
+    .some(control => cleanAccordionControlHasValue(control));
+}
+
+function updateCleanAccordionCompletion(item){
+  if(!item) return;
+  const complete = cleanAccordionItemHasValue(item);
+  const arrow = item.querySelector(".cleanFieldAccordionArrow");
+
+  item.classList.toggle("is-complete", complete);
+  if(arrow) arrow.textContent = complete ? "✓" : "v";
+}
+
+function updateCleanAccordionsCompletion(scope){
+  scope?.querySelectorAll?.("[data-clean-accordion-item]").forEach(item => {
+    updateCleanAccordionCompletion(item);
+  });
+}
+
+function updateCleanAccordionForField(form, key){
+  if(!form || !key) return;
+  const item = form.querySelector(`[data-clean-accordion-item][data-clean-field-card="${CSS.escape(key)}"]`);
+  updateCleanAccordionCompletion(item);
 }
 
 function closeCleanAccordions(scope, except = null){
@@ -15164,6 +15220,7 @@ function renderCleanProductForms(){
 
   root.innerHTML = escudo3dHtml + formsHtml;
   bindCleanProductForms(root);
+  updateCleanAccordionsCompletion(root);
   renderProductChooser();
   selectCleanProductForPicker(getCleanProductPickerSelected(), { scroll: false });
 }
@@ -15197,6 +15254,7 @@ function clearCleanFilePreview(form, key){
   if(thumb) thumb.style.backgroundImage = "";
   if(box) box.classList.remove("has-preview");
   if(label) label.textContent = "Nenhum arquivo";
+  updateCleanAccordionForField(form, key);
 }
 
 function setCleanFilePreview(form, key, files){
@@ -15220,6 +15278,7 @@ function setCleanFilePreview(form, key, files){
       thumb.style.backgroundImage = "";
     }
     if(box) box.classList.remove("has-preview");
+    updateCleanAccordionForField(form, key);
     return;
   }
 
@@ -15231,6 +15290,7 @@ function setCleanFilePreview(form, key, files){
   thumb.dataset.objectUrl = objectUrl;
   thumb.style.backgroundImage = `url("${objectUrl}")`;
   box.classList.add("has-preview");
+  updateCleanAccordionForField(form, key);
 }
 
 function collectCleanPeople(form, key, type){
@@ -15557,6 +15617,7 @@ function resetCleanFormAfterSend(form){
     el.textContent = "Nenhum arquivo";
   });
   form.querySelectorAll(".campoObrigatorioErro").forEach(el => el.classList.remove("campoObrigatorioErro"));
+  updateCleanAccordionsCompletion(form);
 }
 
 const cleanProductProgressTimers = new WeakMap();
@@ -16092,6 +16153,7 @@ function bindCleanProductForms(root){
       if(card) card.classList.remove("campoObrigatorioErro");
       setCleanProductMsg(form, "");
       setCleanFilePreview(form, input.dataset.asset, files);
+      updateCleanAccordionForField(form, input.dataset.asset);
     });
   });
 
@@ -16109,6 +16171,7 @@ function bindCleanProductForms(root){
           <input data-player-extra type="${extraType}" min="0" placeholder="${extraPlaceholder}">
         </div>
       `);
+      updateCleanAccordionForField(btn.closest("[data-product-form]"), key);
     });
   });
 
@@ -16116,9 +16179,11 @@ function bindCleanProductForms(root){
     form.addEventListener("submit", submitCleanProductForm);
     form.addEventListener("input", (event) => {
       if(!event.target.closest("[data-clean-review]")) resetCleanReviewState(form);
+      updateCleanAccordionCompletion(event.target.closest("[data-clean-accordion-item]"));
     });
     form.addEventListener("change", (event) => {
       if(!event.target.closest("[data-clean-review]")) resetCleanReviewState(form);
+      updateCleanAccordionCompletion(event.target.closest("[data-clean-accordion-item]"));
     });
 
     const pricePreview = form.querySelector("[data-price-preview]");
