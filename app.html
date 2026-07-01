@@ -9605,6 +9605,20 @@ body.visitanteNaoLogado .visitanteWelcomeCallout{
   overflow-wrap:anywhere;
 }
 
+.cleanFieldOptionalBadge{
+  display:inline-flex;
+  align-items:center;
+  flex:0 0 auto;
+  padding:3px 8px;
+  border-radius:999px;
+  background:#fef3c7;
+  border:1px solid rgba(245,158,11,.35);
+  color:#92400e;
+  font-size:10px;
+  line-height:1;
+  font-weight:950;
+}
+
 .cleanFieldStep{
   display:grid;
   place-items:center;
@@ -14481,6 +14495,9 @@ function renderCleanProductField(product, field, step){
   if(!content) return "";
 
   const label = getCleanFieldLabel(product, field);
+  const optionalBadge = shouldShowCleanFieldOptionalBadge(product, field)
+    ? `<span class="cleanFieldOptionalBadge">Opcional</span>`
+    : "";
 
   return `
     <div class="cleanFieldAccordion" data-clean-accordion-item data-clean-field-card="${htmlEscape(field.key)}">
@@ -14488,6 +14505,7 @@ function renderCleanProductField(product, field, step){
         <span class="cleanFieldAccordionTitle">
           <span class="cleanFieldStep">${htmlEscape(step)}</span>
           <span class="cleanFieldAccordionTitleText">${htmlEscape(label)}</span>
+          ${optionalBadge}
         </span>
         <span class="cleanFieldAccordionArrow" aria-hidden="true">v</span>
       </button>
@@ -14496,6 +14514,10 @@ function renderCleanProductField(product, field, step){
       </div>
     </div>
   `;
+}
+
+function shouldShowCleanFieldOptionalBadge(product, field){
+  return !field?.required && shouldMoveCleanFieldToEnd(product, field);
 }
 
 function shouldMoveCleanFieldToEnd(product, field){
