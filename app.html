@@ -25889,11 +25889,12 @@ if(token){
 
 if("serviceWorker" in navigator){
   window.addEventListener("load", () => {
-    navigator.serviceWorker.register("/sw.js").catch(() => {});
+    navigator.serviceWorker.register("/sw.js?v=20260701-instalar-whatsapp").catch(() => {});
   });
 }
 
 let deferredInstallPrompt = null;
+const IA4_WHATSAPP_INSTALAR_APP_URL = "https://wa.me/5547992536917?text=quero%20instalar%20o%20app";
 const btnInstalarApp = document.getElementById("btnInstalarApp");
 const instalarAppCentralBox = document.getElementById("instalarAppCentralBox");
 const instalarAppModal = document.getElementById("instalarAppModal");
@@ -26202,36 +26203,14 @@ window.addEventListener("beforeinstallprompt", (event) => {
   ia4MostrarBotaoInstalarApp();
 });
 
-btnInstalarApp?.addEventListener("click", async () => {
+btnInstalarApp?.addEventListener("click", () => {
   ia4Track("clicou_instalar_app", {
-    origem: "botao_pwa",
-    modo: deferredInstallPrompt ? "prompt_oficial" : "fallback_manual",
+    origem: "botao_whatsapp",
+    modo: "whatsapp",
     standalone: ia4EstaEmModoApp() ? "sim" : "nao"
   });
 
-  if(ia4EstaEmModoApp()){
-    ia4EsconderBotaoInstalarApp();
-    return;
-  }
-
-  if(deferredInstallPrompt){
-    const promptEvent = deferredInstallPrompt;
-    deferredInstallPrompt = null;
-    promptEvent.prompt();
-    try{
-      const choiceResult = await promptEvent.userChoice;
-      ia4Track("resultado_instalar_app", {
-        resultado: choiceResult?.outcome || "",
-        origem: "prompt_oficial"
-      });
-    }catch(e){}
-    return;
-  }
-
-  ia4Track("abriu_modal_instalar_app", {
-    origem: "fallback_manual"
-  });
-  ia4AbrirModalInstalarApp();
+  window.location.href = IA4_WHATSAPP_INSTALAR_APP_URL;
 });
 
 window.addEventListener("appinstalled", () => {
