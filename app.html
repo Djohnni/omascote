@@ -6033,6 +6033,12 @@
   line-height:1;
 }
 
+.saldoPagamentoBtn span:last-child{
+  min-width:0;
+  line-height:1.15;
+  overflow-wrap:anywhere;
+}
+
 /* ===== IA4TUBE UI SIMPLES - TESTE VISUAL ===== */
 
 body{
@@ -8197,14 +8203,18 @@ textarea.campoObrigatorioErro,
 
 @media (max-width:680px){
   .saldoMenu{
+    position:fixed;
     left:50%;
     right:auto;
     transform:translateX(-50%);
     width:calc(100vw - 24px);
     max-width:420px;
+    top:12px;
+    max-height:calc(100dvh - 24px);
     margin:0 auto;
     grid-template-columns:1fr;
     overflow-x:hidden;
+    overflow-y:auto;
     box-sizing:border-box;
     padding:12px;
   }
@@ -10880,32 +10890,32 @@ body[data-page="home"] .ia4WhatsappIcon{
                 <div class="saldoPacote">
                   <div class="saldoCardKicker">Ideal para começar</div>
                   <div class="saldoCardValor">R$8</div>
-                  <div class="saldoCardDesc">Crédito rápido para testar o fluxo completo.</div>
-                  <button type="button" class="saldoPagamentoBtn" data-pacote="saldo_800" data-metodo="pix" data-label="Gerar Pix R$8,00"><span class="saldoPagamentoIcon">🟢</span><span>Gerar Pix R$8,00</span></button>
+                  <div class="saldoCardDesc">No Pix: pague R$8,00 e receba R$10,00 de saldo.</div>
+                  <button type="button" class="saldoPagamentoBtn" data-pacote="saldo_800" data-metodo="pix" data-label="Pix: pague R$8,00 e receba R$10,00"><span class="saldoPagamentoIcon">🟢</span><span>Pix: pague R$8,00 e receba R$10,00</span></button>
                   <button type="button" class="saldoPagamentoBtn" data-pacote="saldo_800" data-metodo="cartao" data-label="Cartão R$8,00"><span class="saldoPagamentoIcon">💳</span><span>Cartão R$8,00</span></button>
                 </div>
 
                 <div class="saldoPacote">
                   <div class="saldoCardKicker">Mais escolhido</div>
                   <div class="saldoCardValor">R$18</div>
-                  <div class="saldoCardDesc">Boa opção para criar mais de uma arte.</div>
-                  <button type="button" class="saldoPagamentoBtn" data-pacote="saldo_1800" data-metodo="pix" data-label="Gerar Pix R$18,00"><span class="saldoPagamentoIcon">🟢</span><span>Gerar Pix R$18,00</span></button>
+                  <div class="saldoCardDesc">No Pix: pague R$18,00 e receba R$21,00 de saldo.</div>
+                  <button type="button" class="saldoPagamentoBtn" data-pacote="saldo_1800" data-metodo="pix" data-label="Pix: pague R$18,00 e receba R$21,00"><span class="saldoPagamentoIcon">🟢</span><span>Pix: pague R$18,00 e receba R$21,00</span></button>
                   <button type="button" class="saldoPagamentoBtn" data-pacote="saldo_1800" data-metodo="cartao" data-label="Cartão R$18,00"><span class="saldoPagamentoIcon">💳</span><span>Cartão R$18,00</span></button>
                 </div>
 
                 <div class="saldoPacote">
                   <div class="saldoCardKicker">Para times ativos</div>
                   <div class="saldoCardValor">R$28</div>
-                  <div class="saldoCardDesc">Mais saldo para manter o Instagram em movimento.</div>
-                  <button type="button" class="saldoPagamentoBtn" data-pacote="saldo_2800" data-metodo="pix" data-label="Gerar Pix R$28,00"><span class="saldoPagamentoIcon">🟢</span><span>Gerar Pix R$28,00</span></button>
+                  <div class="saldoCardDesc">No Pix: pague R$28,00 e receba R$32,00 de saldo.</div>
+                  <button type="button" class="saldoPagamentoBtn" data-pacote="saldo_2800" data-metodo="pix" data-label="Pix: pague R$28,00 e receba R$32,00"><span class="saldoPagamentoIcon">🟢</span><span>Pix: pague R$28,00 e receba R$32,00</span></button>
                   <button type="button" class="saldoPagamentoBtn" data-pacote="saldo_2800" data-metodo="cartao" data-label="Cartão R$28,00"><span class="saldoPagamentoIcon">💳</span><span>Cartão R$28,00</span></button>
                 </div>
 
                 <div class="saldoPacote">
                   <div class="saldoCardKicker">Melhor custo-benefício</div>
                   <div class="saldoCardValor">R$48</div>
-                  <div class="saldoCardDesc">Pacote premium para criar com frequência.</div>
-                  <button type="button" class="saldoPagamentoBtn" data-pacote="saldo_4800" data-metodo="pix" data-label="Gerar Pix R$48,00"><span class="saldoPagamentoIcon">🟢</span><span>Gerar Pix R$48,00</span></button>
+                  <div class="saldoCardDesc">No Pix: pague R$48,00 e receba R$56,00 de saldo.</div>
+                  <button type="button" class="saldoPagamentoBtn" data-pacote="saldo_4800" data-metodo="pix" data-label="Pix: pague R$48,00 e receba R$56,00"><span class="saldoPagamentoIcon">🟢</span><span>Pix: pague R$48,00 e receba R$56,00</span></button>
                   <button type="button" class="saldoPagamentoBtn" data-pacote="saldo_4800" data-metodo="cartao" data-label="Cartão R$48,00"><span class="saldoPagamentoIcon">💳</span><span>Cartão R$48,00</span></button>
                 </div>
               </div>
@@ -16257,10 +16267,10 @@ let escudo3dCadastroFile = null;
 let saldoPixAtual = null;
 
 const SALDO_PIX_LABELS = {
-  saldo_800: "R$8,00",
-  saldo_1800: "R$18,00",
-  saldo_2800: "R$28,00",
-  saldo_4800: "R$48,00"
+  saldo_800: { pago: "R$8,00", credito: "R$10,00", texto: "Pague R$8,00 e receba R$10,00 de saldo" },
+  saldo_1800: { pago: "R$18,00", credito: "R$21,00", texto: "Pague R$18,00 e receba R$21,00 de saldo" },
+  saldo_2800: { pago: "R$28,00", credito: "R$32,00", texto: "Pague R$28,00 e receba R$32,00 de saldo" },
+  saldo_4800: { pago: "R$48,00", credito: "R$56,00", texto: "Pague R$48,00 e receba R$56,00 de saldo" }
 };
 
 async function comprarCreditos(pacote, metodo = "checkout", triggerBtn = null){
@@ -19348,11 +19358,15 @@ function abrirModalPixSaldo(pacote, data) {
 
   if(!modal || !body) return;
 
-  const valor = SALDO_PIX_LABELS[pacote] || `R$${Number(data.valor_pago || 0).toFixed(2).replace(".", ",")}`;
+  const saldoInfo = SALDO_PIX_LABELS[pacote] || null;
+  const valor = saldoInfo?.pago || `R$${Number(data.valor_pago || 0).toFixed(2).replace(".", ",")}`;
+  const credito = saldoInfo?.credito || `R$${Number(data.credito || data.valor_pago || 0).toFixed(2).replace(".", ",")}`;
+  const textoBonus = saldoInfo?.texto || `Pague ${valor} e receba ${credito} de saldo`;
   saldoPixAtual = {
     pix: data.pix_copia_cola || "",
     pacote,
-    valor
+    valor,
+    credito
   };
 
   const src = data.qr_code_base64 ? `data:image/png;base64,${data.qr_code_base64}` : "";
@@ -19360,7 +19374,7 @@ function abrirModalPixSaldo(pacote, data) {
   body.innerHTML = `
     ${src ? `<img class="pixQrImagem" src="${src}" alt="QR Code Pix">` : ``}
     <div class="pixQrTexto">
-      Após o pagamento, o saldo é liberado automaticamente.
+      ${textoBonus}. Após o pagamento, o saldo é liberado automaticamente.
     </div>
     <button type="button" class="menuPedidoBtn" onclick="copiarPixSaldoAtual()">
       Copiar Pix ${valor}
