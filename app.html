@@ -14498,10 +14498,25 @@ function renderCleanProductField(product, field, step){
   `;
 }
 
+function shouldMoveCleanFieldToEnd(product, field){
+  const productId = product?.id || product?.key || "";
+  return (
+    (productId === "resultado" && field?.key === "titulo_secao_resultados") ||
+    (productId === "proximo_jogo" && field?.key === "titulo_secao_proximo_jogo")
+  );
+}
+
+function orderCleanProductFields(product, schema){
+  const fields = schema.fields || [];
+  const pinnedEndFields = fields.filter(field => shouldMoveCleanFieldToEnd(product, field));
+  const regularFields = fields.filter(field => !shouldMoveCleanFieldToEnd(product, field));
+  const mainFields = regularFields.filter(field => field.required || field.visualNormal);
+  const optionalFields = regularFields.filter(field => !field.required && !field.visualNormal);
+  return mainFields.concat(optionalFields, pinnedEndFields);
+}
+
 function renderCleanFieldsGrouped(product, schema){
-  const mainFields = (schema.fields || []).filter(field => field.required || field.visualNormal);
-  const optionalFields = (schema.fields || []).filter(field => !field.required && !field.visualNormal);
-  const orderedFields = mainFields.concat(optionalFields);
+  const orderedFields = orderCleanProductFields(product, schema);
 
   return `
     <div class="cleanFieldsShell" data-clean-fields-shell>
