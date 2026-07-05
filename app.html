@@ -9834,9 +9834,31 @@ body.cleanReviewModalOpen{
 }
 
 .cleanReviewModalHeader{
+  position:relative;
   padding:18px 18px 12px;
+  padding-right:62px;
   border-bottom:1px solid #e5e7eb;
   background:linear-gradient(180deg,#ffffff,#f8fafc);
+}
+
+.cleanReviewModalClose{
+  position:absolute;
+  top:14px;
+  right:14px;
+  display:grid;
+  place-items:center;
+  width:38px;
+  height:38px;
+  padding:0;
+  color:#111827;
+  background:#ffffff;
+  border:1px solid #d1d5db;
+  box-shadow:0 8px 20px rgba(15,23,42,.10);
+}
+
+.cleanReviewModalClose:focus-visible{
+  outline:3px solid rgba(22,163,74,.26);
+  outline-offset:2px;
 }
 
 .cleanReviewEyebrow{
@@ -14937,6 +14959,7 @@ function ensureCleanReviewModal(){
     <div class="cleanReviewOverlay" data-clean-review-modal aria-hidden="true">
       <div class="cleanReviewModal" role="dialog" aria-modal="true" aria-labelledby="cleanReviewModalTitle" tabindex="-1">
         <div class="cleanReviewModalHeader">
+          <button class="modalClose btnGhost cleanReviewModalClose" type="button" data-clean-review-modal-close aria-label="Fechar revisão">&times;</button>
           <div class="cleanReviewEyebrow">Revisão Final</div>
           <h3 class="cleanReviewModalTitle" id="cleanReviewModalTitle">Revise sua arte</h3>
           <p class="cleanReviewModalText">Confira as informações antes de criar.</p>
@@ -14951,8 +14974,12 @@ function ensureCleanReviewModal(){
   `);
 
   modal = getCleanReviewModal();
+  modal?.querySelector("[data-clean-review-modal-close]")?.addEventListener("click", () => closeCleanReviewModal());
   modal?.querySelector("[data-clean-review-modal-edit]")?.addEventListener("click", () => closeCleanReviewModal());
   modal?.querySelector("[data-clean-review-modal-create]")?.addEventListener("click", confirmCleanReviewModal);
+  modal?.addEventListener("click", (event) => {
+    if(event.target === modal) closeCleanReviewModal();
+  });
 
   if(!cleanReviewModalKeydownBound){
     document.addEventListener("keydown", (event) => {
