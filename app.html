@@ -9552,6 +9552,27 @@ body.visitanteNaoLogado .visitanteWelcomeCallout{
   border:1px solid #e5e7eb;
 }
 
+.cleanCouponExtra{
+  display:grid;
+  gap:10px;
+  padding:14px;
+  border-radius:20px;
+  background:linear-gradient(180deg,#fffbeb,#ffffff);
+  border:1px solid rgba(245,158,11,.38);
+  box-shadow:0 12px 26px rgba(15,23,42,.06);
+}
+
+.cleanCouponExtra .cleanFieldLabel{
+  color:#111827;
+  font-size:14px;
+  line-height:1.2;
+  font-weight:950;
+}
+
+.cleanCouponExtra [data-price-preview]{
+  margin-top:0;
+}
+
 .cleanFieldAccordion{
   border-radius:20px;
   background:linear-gradient(180deg,#ffffff,#f8fafc);
@@ -14323,6 +14344,14 @@ function getCleanProductSchema(productKey){
   return CLEAN_PRODUCT_FORM_SCHEMAS[productKey] || null;
 }
 
+function isCleanCouponField(field){
+  return field?.key === "coupon_code" || field?.legacyName === "cupom_codigo";
+}
+
+function getCleanCouponField(schema){
+  return (schema?.fields || []).find(field => isCleanCouponField(field)) || null;
+}
+
 function htmlEscape(value){
   return String(value ?? "")
     .replace(/&/g, "&amp;")
@@ -14517,6 +14546,22 @@ function renderCleanProductField(product, field, step){
   `;
 }
 
+function renderCleanCouponExtra(product, field){
+  if(!field) return "";
+
+  const label = "Cupom de desconto";
+  const placeholder = getCleanFieldPlaceholder(product, field);
+  const maxLengthAttr = field.maxLength ? ` maxlength="${htmlEscape(field.maxLength)}"` : "";
+
+  return `
+    <div class="cleanCouponExtra" data-clean-coupon-extra data-clean-field-card="${htmlEscape(field.key)}">
+      <label class="cleanFieldLabel">${htmlEscape(label)}</label>
+      <input name="${htmlEscape(field.key)}" data-field="${htmlEscape(field.key)}"${maxLengthAttr} placeholder="${htmlEscape(placeholder)}" aria-label="${htmlEscape(label)}">
+      <div data-price-preview data-price-product="${htmlEscape(product?.id || "")}"></div>
+    </div>
+  `;
+}
+
 function shouldShowCleanFieldOptionalBadge(product, field){
   return !field?.required && shouldMoveCleanFieldToEnd(product, field);
 }
@@ -14530,7 +14575,7 @@ function shouldMoveCleanFieldToEnd(product, field){
 }
 
 function orderCleanProductFields(product, schema){
-  const fields = schema.fields || [];
+  const fields = (schema.fields || []).filter(field => !isCleanCouponField(field));
   const pinnedEndFields = fields.filter(field => shouldMoveCleanFieldToEnd(product, field));
   const regularFields = fields.filter(field => !shouldMoveCleanFieldToEnd(product, field));
   const mainFields = regularFields.filter(field => field.required || field.visualNormal);
@@ -14609,6 +14654,10 @@ function updateCleanAccordionForField(form, key){
   updateCleanAccordionCompletion(item);
 }
 
+function isCleanCouponInputTarget(target){
+  return !!target?.closest?.("[data-clean-coupon-extra]");
+}
+
 function closeCleanAccordions(scope, except = null){
   scope?.querySelectorAll?.("[data-clean-accordion-item]").forEach(item => {
     if(item !== except) setCleanAccordionItemOpen(item, false);
@@ -14679,7 +14728,7 @@ function getCleanReviewItems(productKey, form){
   const product = PRODUCTS[productKey];
   if(!schema || !form) return [];
 
-  return schema.fields.map(field => {
+  return schema.fields.filter(field => !isCleanCouponField(field)).map(field => {
     const label = getCleanFieldLabel(product, field);
     let value = "";
 
@@ -14734,10 +14783,8 @@ function showEscudo3dReview(block){
   if(!form) return;
 
   const file = escudo3dFile?.files && escudo3dFile.files[0] ? escudo3dFile.files[0] : null;
-  const cupom = block.querySelector("[data-escudo3d-coupon]")?.value?.trim() || "";
   showCleanReviewPanel(form, [
-    { label:"Selecionar escudo", value:file ? file.name : "Nenhum arquivo" },
-    { label:"Cupom de desconto", value:cleanReviewEmptyText(cupom) }
+    { label:"Selecionar escudo", value:file ? file.name : "Nenhum arquivo" }
   ]);
 }
 
@@ -15157,6 +15204,7 @@ function renderCleanProductForms(){
     if(!product || !schema) return "";
     const priceLabel = formatCleanProductPrice(product);
     const submitLabel = "Revisar";
+    const couponField = getCleanCouponField(schema);
 
     return `
       <section class="cleanProductBlock" data-clean-product-block="${htmlEscape(productKey)}">
@@ -15170,6 +15218,8 @@ function renderCleanProductForms(){
           </div>
           ${renderPerfilAssistClean(productKey)}
           ${renderCleanFieldsGrouped(product, schema)}
+          <button class="btnGreen cleanSubmitBtn" type="submit">${htmlEscape(submitLabel)}</button>
+          ${renderCleanCouponExtra(product, couponField)}
           <div class="cleanReviewPanel" data-clean-review hidden>
             <h4 class="cleanReviewTitle">Revise antes de criar</h4>
             <p class="cleanReviewText">Confira as informacoes preenchidas.</p>
@@ -15179,7 +15229,6 @@ function renderCleanProductForms(){
               <button class="btnGreen cleanReviewCreateBtn" type="button" data-clean-review-create>Criar arte</button>
             </div>
           </div>
-          <button class="btnGreen cleanSubmitBtn" type="submit">${htmlEscape(submitLabel)}</button>
           <div class="cleanProductMsg" data-clean-msg></div>
           <div class="cleanResultBox" data-clean-result-box>
             <div class="cleanResultStatus" data-clean-result-status>Estamos montando sua imagem...</div>
@@ -15223,23 +15272,12 @@ function renderCleanProductForms(){
               </div>
             </div>
           </div>
-
-          <div class="cleanFieldAccordion" data-clean-accordion-item data-clean-field-card="coupon_code">
-            <button class="cleanFieldAccordionToggle" type="button" data-clean-accordion-toggle aria-expanded="false">
-              <span class="cleanFieldAccordionTitle">
-                <span class="cleanFieldStep">2</span>
-                <span class="cleanFieldAccordionTitleText">Cupom de desconto</span>
-              </span>
-              <span class="cleanFieldAccordionArrow" aria-hidden="true">v</span>
-            </button>
-            <div class="cleanFieldAccordionPanel" data-clean-accordion-panel hidden>
-              <div class="cleanFieldCard" data-clean-field-card="coupon_code">
-                <label class="cleanFieldLabel">Cupom de desconto</label>
-                <input data-escudo3d-coupon placeholder="Digite seu cupom">
-              </div>
-              <div data-price-preview data-price-product="escudo3d"></div>
-            </div>
-          </div>
+        </div>
+        <button class="btnGreen cleanSubmitBtn" type="button" data-submit-escudo3d>${htmlEscape(escudo3dSubmitLabel)}</button>
+        <div class="cleanCouponExtra" data-clean-coupon-extra data-clean-field-card="coupon_code">
+          <label class="cleanFieldLabel">Cupom de desconto</label>
+          <input data-escudo3d-coupon placeholder="Digite seu cupom">
+          <div data-price-preview data-price-product="escudo3d"></div>
         </div>
         <div class="cleanReviewPanel" data-clean-review hidden>
           <h4 class="cleanReviewTitle">Revise antes de criar</h4>
@@ -15250,7 +15288,6 @@ function renderCleanProductForms(){
             <button class="btnGreen cleanReviewCreateBtn" type="button" data-create-escudo3d>Criar arte</button>
           </div>
         </div>
-        <button class="btnGreen cleanSubmitBtn" type="button" data-submit-escudo3d>${htmlEscape(escudo3dSubmitLabel)}</button>
         <div class="cleanProductMsg" data-clean-msg></div>
       </div>
     </section>
@@ -16216,11 +16253,11 @@ function bindCleanProductForms(root){
   root.querySelectorAll("[data-product-form]").forEach(form => {
     form.addEventListener("submit", submitCleanProductForm);
     form.addEventListener("input", (event) => {
-      if(!event.target.closest("[data-clean-review]")) resetCleanReviewState(form);
+      if(!event.target.closest("[data-clean-review]") && !isCleanCouponInputTarget(event.target)) resetCleanReviewState(form);
       updateCleanAccordionCompletion(event.target.closest("[data-clean-accordion-item]"));
     });
     form.addEventListener("change", (event) => {
-      if(!event.target.closest("[data-clean-review]")) resetCleanReviewState(form);
+      if(!event.target.closest("[data-clean-review]") && !isCleanCouponInputTarget(event.target)) resetCleanReviewState(form);
       updateCleanAccordionCompletion(event.target.closest("[data-clean-accordion-item]"));
     });
 
@@ -16337,11 +16374,9 @@ function bindCleanProductForms(root){
     if(pricePreview){
       updatePricePreview(pricePreview);
       input.addEventListener("input", () => {
-        resetCleanReviewState(input.closest(".cleanProductForm"));
         schedulePricePreviewUpdate(pricePreview);
       });
       input.addEventListener("change", () => {
-        resetCleanReviewState(input.closest(".cleanProductForm"));
         schedulePricePreviewUpdate(pricePreview, 0);
       });
     }
