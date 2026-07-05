@@ -5931,66 +5931,216 @@
 
 .saldoMenu{
   position:absolute;
-  top:calc(100% + 10px);
+  top:calc(100% + 12px);
   right:0;
   left:auto;
   transform:none;
   display:none;
   grid-template-columns:1fr;
   gap:14px;
-  width:min(340px, calc(100vw - 28px));
-  max-height:min(76vh, 640px);
+  width:min(392px, calc(100vw - 28px));
+  max-height:min(82vh, 720px);
   overflow:auto;
-  padding:14px;
-  border-radius:24px;
-  background:#0f172a;
-  border:1px solid rgba(255,255,255,.12);
-  box-shadow:0 24px 60px rgba(15,23,42,.38);
+  padding:18px;
+  border-radius:28px;
+  background:#f8fafc;
+  border:1px solid rgba(15,23,42,.08);
+  box-shadow:0 28px 80px rgba(15,23,42,.28);
   z-index:9999;
   box-sizing:border-box;
   overflow-x:hidden;
+  color:#0f172a;
 }
 
 .saldoMenu.open{
   display:grid;
 }
 
-.saldoPacote{
+.saldoPixHeader{
   display:grid;
-  gap:9px;
-  padding:16px;
+  gap:4px;
+  padding:2px 2px 0;
+}
+
+.saldoPixTitle{
+  margin:0;
+  color:#0f172a;
+  font-size:24px;
+  line-height:1.05;
+  font-weight:950;
+  letter-spacing:0;
+}
+
+.saldoPixPaymentLabel{
+  margin-top:4px;
+  color:#16a34a;
+  font-size:12px;
+  line-height:1;
+  font-weight:950;
+  letter-spacing:.08em;
+}
+
+.saldoPixSubtitle{
+  margin:0;
+  color:#64748b;
+  font-size:13px;
+  line-height:1.25;
+  font-weight:800;
+}
+
+.saldoPixOptions{
+  display:grid;
+  gap:10px;
+}
+
+.saldoPacote{
+  position:relative;
+  display:grid;
+  grid-template-columns:auto minmax(0,1fr) auto;
+  align-items:center;
+  gap:14px;
+  min-height:96px;
+  padding:16px 14px;
   width:100%;
   box-sizing:border-box;
   border-radius:22px;
-  background:
-    radial-gradient(circle at top right, rgba(34,197,94,.24), transparent 42%),
-    linear-gradient(180deg, #111827, #0b1220);
-  border:1px solid rgba(187,247,208,.20);
-  box-shadow:inset 0 1px 0 rgba(255,255,255,.06), 0 16px 36px rgba(0,0,0,.18);
+  background:#ffffff;
+  border:1.5px solid #e5e7eb;
+  box-shadow:0 12px 28px rgba(15,23,42,.08);
+  cursor:pointer;
+  transition:border-color .18s ease, box-shadow .18s ease, transform .18s ease, background .18s ease;
 }
 
-.saldoCardKicker{
-  color:#86efac;
-  font-size:12px;
-  font-weight:950;
-  text-transform:uppercase;
-  letter-spacing:.02em;
+.saldoPacote:hover,
+.saldoPacote.is-selected{
+  border-color:#16a34a;
+  background:linear-gradient(180deg,#ffffff,#f7fff9);
+  box-shadow:0 18px 34px rgba(22,163,74,.17), 0 1px 0 rgba(255,255,255,.9) inset;
 }
 
-.saldoCardValor{
-  color:#ffffff;
-  font-size:42px;
+.saldoPacote.is-selected{
+  transform:translateY(-1px);
+}
+
+.saldoPixRadio{
+  position:absolute;
+  opacity:0;
+  pointer-events:none;
+}
+
+.saldoPixRadioVisual{
+  position:relative;
+  width:22px;
+  height:22px;
+  border-radius:999px;
+  border:2px solid #cbd5e1;
+  background:#ffffff;
+  box-sizing:border-box;
+  transition:border-color .18s ease, box-shadow .18s ease;
+}
+
+.saldoPixRadioVisual::after{
+  content:"";
+  position:absolute;
+  inset:4px;
+  border-radius:999px;
+  background:#16a34a;
+  transform:scale(0);
+  transition:transform .18s ease;
+}
+
+.saldoPacote.is-selected .saldoPixRadioVisual{
+  border-color:#16a34a;
+  box-shadow:0 0 0 4px rgba(22,163,74,.12);
+}
+
+.saldoPacote.is-selected .saldoPixRadioVisual::after{
+  transform:scale(1);
+}
+
+.saldoPixContent{
+  display:grid;
+  gap:4px;
+  min-width:0;
+}
+
+.saldoPixLineSmall{
+  color:#64748b;
+  font-size:13px;
+  line-height:1;
+  font-weight:850;
+}
+
+.saldoPixValue{
+  color:#0f172a;
+  font-size:40px;
   line-height:.95;
   font-weight:950;
   letter-spacing:0;
 }
 
-.saldoCardDesc{
-  margin-bottom:4px;
-  color:#cbd5e1;
-  font-size:12px;
-  line-height:1.25;
-  font-weight:800;
+.saldoPixReceive{
+  color:#166534;
+  font-size:14px;
+  line-height:1.15;
+  font-weight:900;
+}
+
+.saldoPixBadge{
+  position:absolute;
+  top:12px;
+  right:12px;
+  padding:5px 8px;
+  border-radius:999px;
+  color:#14532d;
+  background:#dcfce7;
+  border:1px solid #bbf7d0;
+  font-size:10px;
+  line-height:1;
+  font-weight:950;
+  letter-spacing:.04em;
+}
+
+.saldoPacoteMaisEscolhido{
+  min-height:108px;
+  padding-top:24px;
+}
+
+.saldoPacoteMaisEscolhido .saldoPixMark{
+  transform:translateY(10px);
+}
+
+.saldoPixMark{
+  position:relative;
+  align-self:center;
+  justify-self:end;
+  display:grid;
+  place-items:center;
+  width:46px;
+  height:46px;
+  border-radius:16px;
+  color:#047857;
+  background:#ecfdf5;
+  border:1px solid #bbf7d0;
+  font-size:11px;
+  line-height:1;
+  font-weight:950;
+  text-transform:uppercase;
+}
+
+.saldoPixMark::before{
+  content:"";
+  position:absolute;
+  width:18px;
+  height:18px;
+  border-radius:5px;
+  border:2px solid rgba(4,120,87,.22);
+  transform:rotate(45deg);
+}
+
+.saldoPixActions{
+  display:grid;
+  gap:12px;
 }
 
 .saldoPagamentoBtn{
@@ -5999,27 +6149,31 @@
   align-items:center;
   justify-content:center;
   gap:8px;
-  min-height:44px;
-  padding:11px 14px;
+  min-height:54px;
+  padding:14px 18px;
   border:0;
-  border-radius:14px;
+  border-radius:18px;
   background:linear-gradient(135deg,#16a34a,#15803d);
   color:#ffffff;
   font-size:15px;
   font-weight:950;
-  box-shadow:0 12px 24px rgba(22,163,74,.26);
+  letter-spacing:.04em;
+  box-shadow:0 16px 30px rgba(22,163,74,.28);
   cursor:pointer;
   text-align:center;
   box-sizing:border-box;
+  transition:transform .18s ease, filter .18s ease, box-shadow .18s ease;
 }
 
 .saldoPagamentoBtn:hover{
   filter:brightness(1.04);
+  transform:translateY(-1px);
 }
 
 .saldoPagamentoBtn:disabled{
   cursor:wait;
   opacity:.82;
+  transform:none;
 }
 
 .saldoPagamentoIcon{
@@ -6037,6 +6191,29 @@
   min-width:0;
   line-height:1.15;
   overflow-wrap:anywhere;
+}
+
+.saldoPixFooter{
+  display:grid;
+  gap:6px;
+  padding:2px 4px 0;
+  color:#64748b;
+  text-align:center;
+}
+
+.saldoPixSecure{
+  color:#0f172a;
+  font-size:13px;
+  line-height:1.2;
+  font-weight:950;
+}
+
+.saldoPixProtected,
+.saldoPixExpire{
+  margin:0;
+  font-size:12px;
+  line-height:1.25;
+  font-weight:800;
 }
 
 /* ===== IA4TUBE UI SIMPLES - TESTE VISUAL ===== */
@@ -8207,21 +8384,37 @@ textarea.campoObrigatorioErro,
     left:50%;
     right:auto;
     transform:translateX(-50%);
-    width:calc(100vw - 24px);
-    max-width:420px;
-    top:12px;
-    max-height:calc(100dvh - 24px);
+    width:calc(100vw - 22px);
+    max-width:430px;
+    top:10px;
+    max-height:calc(100dvh - 20px);
     margin:0 auto;
     grid-template-columns:1fr;
     overflow-x:hidden;
     overflow-y:auto;
     box-sizing:border-box;
-    padding:12px;
+    padding:16px 14px max(18px, env(safe-area-inset-bottom));
+    border-radius:24px;
   }
 
   .saldoPacote{
     width:100%;
+    min-height:88px;
+    padding:14px 12px;
     box-sizing:border-box;
+  }
+
+  .saldoPacoteMaisEscolhido{
+    min-height:104px;
+    padding-top:22px;
+  }
+
+  .saldoPixTitle{
+    font-size:22px;
+  }
+
+  .saldoPixValue{
+    font-size:36px;
   }
 
   .saldoPagamentoBtn{
@@ -11379,37 +11572,67 @@ body[data-page="home"] .ia4WhatsappIcon{
             <div class="saldoBoxTopo" style="position:relative;">
               <button class="btnGreen" id="btnAbrirSaldo">Adicionar saldo</button>
 
-              <div class="saldoMenu" id="saldoMenu">
-                <div class="saldoPacote">
-                  <div class="saldoCardKicker">Ideal para começar</div>
-                  <div class="saldoCardValor">R$8</div>
-                  <div class="saldoCardDesc">No Pix: pague R$8,00 e receba R$10,00 de saldo.</div>
-                  <button type="button" class="saldoPagamentoBtn" data-pacote="saldo_800" data-metodo="pix" data-label="Pix: pague R$8,00 e receba R$10,00"><span class="saldoPagamentoIcon">🟢</span><span>Pix: pague R$8,00 e receba R$10,00</span></button>
-                  <button type="button" class="saldoPagamentoBtn" data-pacote="saldo_800" data-metodo="cartao" data-label="Cartão R$8,00"><span class="saldoPagamentoIcon">💳</span><span>Cartão R$8,00</span></button>
+              <div class="saldoMenu" id="saldoMenu" role="dialog" aria-label="Adicionar saldo">
+                <div class="saldoPixHeader">
+                  <h3 class="saldoPixTitle">Adicionar saldo</h3>
+                  <div class="saldoPixPaymentLabel">PAGUE COM PIX</div>
+                  <p class="saldoPixSubtitle">Rápido, fácil e seguro.</p>
                 </div>
 
-                <div class="saldoPacote">
-                  <div class="saldoCardKicker">Mais escolhido</div>
-                  <div class="saldoCardValor">R$18</div>
-                  <div class="saldoCardDesc">No Pix: pague R$18,00 e receba R$21,00 de saldo.</div>
-                  <button type="button" class="saldoPagamentoBtn" data-pacote="saldo_1800" data-metodo="pix" data-label="Pix: pague R$18,00 e receba R$21,00"><span class="saldoPagamentoIcon">🟢</span><span>Pix: pague R$18,00 e receba R$21,00</span></button>
-                  <button type="button" class="saldoPagamentoBtn" data-pacote="saldo_1800" data-metodo="cartao" data-label="Cartão R$18,00"><span class="saldoPagamentoIcon">💳</span><span>Cartão R$18,00</span></button>
+                <div class="saldoPixOptions" role="radiogroup" aria-label="Escolha um valor para adicionar saldo">
+                  <label class="saldoPacote" data-saldo-option>
+                    <input class="saldoPixRadio" type="radio" name="saldoPixPacote" value="saldo_800" data-pago="R$ 8" data-credito="R$ 10" data-label="Pix: pague R$8,00 e receba R$10,00">
+                    <span class="saldoPixRadioVisual" aria-hidden="true"></span>
+                    <span class="saldoPixContent">
+                      <span class="saldoPixLineSmall">Pague</span>
+                      <strong class="saldoPixValue">R$ 8</strong>
+                      <span class="saldoPixReceive">e você recebe R$ 10</span>
+                    </span>
+                    <span class="saldoPixMark" aria-hidden="true">Pix</span>
+                  </label>
+
+                  <label class="saldoPacote saldoPacoteMaisEscolhido is-selected" data-saldo-option>
+                    <input class="saldoPixRadio" type="radio" name="saldoPixPacote" value="saldo_1800" data-pago="R$ 18" data-credito="R$ 21" data-label="Pix: pague R$18,00 e receba R$21,00" checked>
+                    <span class="saldoPixBadge">⭐ MAIS ESCOLHIDO</span>
+                    <span class="saldoPixRadioVisual" aria-hidden="true"></span>
+                    <span class="saldoPixContent">
+                      <span class="saldoPixLineSmall">Pague</span>
+                      <strong class="saldoPixValue">R$ 18</strong>
+                      <span class="saldoPixReceive">e você recebe R$ 21</span>
+                    </span>
+                    <span class="saldoPixMark" aria-hidden="true">Pix</span>
+                  </label>
+
+                  <label class="saldoPacote" data-saldo-option>
+                    <input class="saldoPixRadio" type="radio" name="saldoPixPacote" value="saldo_2800" data-pago="R$ 28" data-credito="R$ 32" data-label="Pix: pague R$28,00 e receba R$32,00">
+                    <span class="saldoPixRadioVisual" aria-hidden="true"></span>
+                    <span class="saldoPixContent">
+                      <span class="saldoPixLineSmall">Pague</span>
+                      <strong class="saldoPixValue">R$ 28</strong>
+                      <span class="saldoPixReceive">e você recebe R$ 32</span>
+                    </span>
+                    <span class="saldoPixMark" aria-hidden="true">Pix</span>
+                  </label>
+
+                  <label class="saldoPacote" data-saldo-option>
+                    <input class="saldoPixRadio" type="radio" name="saldoPixPacote" value="saldo_4800" data-pago="R$ 48" data-credito="R$ 56" data-label="Pix: pague R$48,00 e receba R$56,00">
+                    <span class="saldoPixRadioVisual" aria-hidden="true"></span>
+                    <span class="saldoPixContent">
+                      <span class="saldoPixLineSmall">Pague</span>
+                      <strong class="saldoPixValue">R$ 48</strong>
+                      <span class="saldoPixReceive">e você recebe R$ 56</span>
+                    </span>
+                    <span class="saldoPixMark" aria-hidden="true">Pix</span>
+                  </label>
                 </div>
 
-                <div class="saldoPacote">
-                  <div class="saldoCardKicker">Para times ativos</div>
-                  <div class="saldoCardValor">R$28</div>
-                  <div class="saldoCardDesc">No Pix: pague R$28,00 e receba R$32,00 de saldo.</div>
-                  <button type="button" class="saldoPagamentoBtn" data-pacote="saldo_2800" data-metodo="pix" data-label="Pix: pague R$28,00 e receba R$32,00"><span class="saldoPagamentoIcon">🟢</span><span>Pix: pague R$28,00 e receba R$32,00</span></button>
-                  <button type="button" class="saldoPagamentoBtn" data-pacote="saldo_2800" data-metodo="cartao" data-label="Cartão R$28,00"><span class="saldoPagamentoIcon">💳</span><span>Cartão R$28,00</span></button>
-                </div>
-
-                <div class="saldoPacote">
-                  <div class="saldoCardKicker">Melhor custo-benefício</div>
-                  <div class="saldoCardValor">R$48</div>
-                  <div class="saldoCardDesc">No Pix: pague R$48,00 e receba R$56,00 de saldo.</div>
-                  <button type="button" class="saldoPagamentoBtn" data-pacote="saldo_4800" data-metodo="pix" data-label="Pix: pague R$48,00 e receba R$56,00"><span class="saldoPagamentoIcon">🟢</span><span>Pix: pague R$48,00 e receba R$56,00</span></button>
-                  <button type="button" class="saldoPagamentoBtn" data-pacote="saldo_4800" data-metodo="cartao" data-label="Cartão R$48,00"><span class="saldoPagamentoIcon">💳</span><span>Cartão R$48,00</span></button>
+                <div class="saldoPixActions">
+                  <button type="button" class="saldoPagamentoBtn saldoPixGenerateBtn" id="saldoGerarPixBtn" data-pacote="saldo_1800" data-metodo="pix" data-label="Pix: pague R$18,00 e receba R$21,00">GERAR CHAVE PIX</button>
+                  <div class="saldoPixFooter">
+                    <div class="saldoPixSecure">Transação 100% segura</div>
+                    <p class="saldoPixProtected">Seus dados são protegidos com criptografia.</p>
+                    <p class="saldoPixExpire">A chave Pix expira em 30 minutos.</p>
+                  </div>
                 </div>
               </div>
             </div>
@@ -27425,6 +27648,41 @@ btnAbrirSaldo?.addEventListener("click", (e)=>{
 
   saldoMenu?.classList.toggle("open");
 });
+
+function atualizarSelecaoSaldoPix(pacoteSelecionado){
+  if(!saldoMenu) return;
+
+  const radios = [...saldoMenu.querySelectorAll(".saldoPixRadio")];
+  const pacote = pacoteSelecionado || radios.find(radio => radio.checked)?.value || "saldo_1800";
+  const gerarPixBtn = document.getElementById("saldoGerarPixBtn");
+  let radioSelecionado = null;
+
+  radios.forEach((radio)=>{
+    const ativo = radio.value === pacote;
+    radio.checked = ativo;
+    radio.closest("[data-saldo-option]")?.classList.toggle("is-selected", ativo);
+    if(ativo) radioSelecionado = radio;
+  });
+
+  if(gerarPixBtn && radioSelecionado){
+    gerarPixBtn.dataset.pacote = radioSelecionado.value;
+    gerarPixBtn.dataset.metodo = "pix";
+    gerarPixBtn.dataset.label = radioSelecionado.dataset.label || "";
+  }
+}
+
+saldoMenu?.querySelectorAll("[data-saldo-option]").forEach((option)=>{
+  option.addEventListener("click", ()=>{
+    const radio = option.querySelector(".saldoPixRadio");
+    if(radio) atualizarSelecaoSaldoPix(radio.value);
+  });
+});
+
+saldoMenu?.querySelectorAll(".saldoPixRadio").forEach((radio)=>{
+  radio.addEventListener("change", ()=> atualizarSelecaoSaldoPix(radio.value));
+});
+
+atualizarSelecaoSaldoPix();
 
 document.querySelectorAll(".saldoPagamentoBtn").forEach((btn)=>{
   btn.addEventListener("click", ()=>{
