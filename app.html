@@ -9783,6 +9783,227 @@ body.visitanteNaoLogado .visitanteWelcomeCallout{
   min-height:48px;
 }
 
+body.cleanReviewModalOpen{
+  overflow:hidden;
+}
+
+.cleanReviewOverlay{
+  position:fixed;
+  inset:0;
+  z-index:100000;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:max(18px, env(safe-area-inset-top)) 0 max(18px, env(safe-area-inset-bottom));
+  background:rgba(2,6,23,.72);
+  backdrop-filter:blur(4px);
+  opacity:0;
+  visibility:hidden;
+  pointer-events:none;
+  transition:opacity .22s ease, visibility .22s ease;
+}
+
+.cleanReviewOverlay.is-open{
+  opacity:1;
+  visibility:visible;
+  pointer-events:auto;
+}
+
+.cleanReviewModal{
+  width:min(85vw, 560px);
+  max-height:calc(100dvh - 40px);
+  display:flex;
+  flex-direction:column;
+  overflow:hidden;
+  border-radius:24px;
+  background:#ffffff;
+  border:1px solid rgba(226,232,240,.95);
+  box-shadow:0 28px 80px rgba(2,6,23,.42);
+  opacity:0;
+  transform:translateY(18px) scale(.96);
+  transition:opacity .22s ease, transform .22s cubic-bezier(.2,.8,.2,1);
+}
+
+.cleanReviewOverlay.is-open .cleanReviewModal{
+  opacity:1;
+  transform:translateY(0) scale(1);
+}
+
+.cleanReviewModalHeader{
+  padding:18px 18px 12px;
+  border-bottom:1px solid #e5e7eb;
+  background:linear-gradient(180deg,#ffffff,#f8fafc);
+}
+
+.cleanReviewEyebrow{
+  width:max-content;
+  margin-bottom:8px;
+  padding:5px 9px;
+  border-radius:999px;
+  background:#111827;
+  color:#facc15;
+  font-size:11px;
+  line-height:1;
+  font-weight:950;
+}
+
+.cleanReviewModalTitle{
+  margin:0;
+  color:#111827;
+  font-size:24px;
+  line-height:1.08;
+  font-weight:950;
+}
+
+.cleanReviewModalText{
+  margin:7px 0 0;
+  color:#64748b;
+  font-size:13px;
+  line-height:1.35;
+  font-weight:800;
+}
+
+.cleanReviewModalList{
+  min-height:0;
+  overflow:auto;
+  display:grid;
+  gap:12px;
+  padding:14px 18px 16px;
+}
+
+.cleanReviewModalCard{
+  display:grid;
+  gap:9px;
+  padding:13px;
+  border-radius:18px;
+  background:#ffffff;
+  border:1px solid #e5e7eb;
+  box-shadow:0 10px 24px rgba(15,23,42,.06);
+}
+
+.cleanReviewModalLabel{
+  margin:0;
+  color:#111827;
+  font-size:13px;
+  line-height:1.2;
+  font-weight:950;
+}
+
+.cleanReviewModalValue{
+  margin:0;
+  color:#334155;
+  font-size:15px;
+  line-height:1.35;
+  font-weight:850;
+  white-space:pre-wrap;
+  overflow-wrap:anywhere;
+}
+
+.cleanReviewMediaGrid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(118px,1fr));
+  gap:10px;
+}
+
+.cleanReviewMediaGrid.is-versus{
+  grid-template-columns:minmax(0,1fr) 24px minmax(0,1fr);
+  align-items:start;
+}
+
+.cleanReviewMediaCard{
+  min-width:0;
+  display:grid;
+  gap:6px;
+  margin:0;
+}
+
+.cleanReviewMediaThumb{
+  width:100%;
+  aspect-ratio:1 / 1;
+  overflow:hidden;
+  border-radius:14px;
+  background:#f1f5f9;
+  border:1px solid #dbe4ef;
+}
+
+.cleanReviewMediaThumb img{
+  display:block;
+  width:100%;
+  height:100%;
+  object-fit:cover;
+}
+
+.cleanReviewMediaFile{
+  display:grid;
+  place-items:center;
+  width:100%;
+  height:100%;
+  color:#64748b;
+  font-size:12px;
+  font-weight:950;
+}
+
+.cleanReviewMediaName{
+  color:#475569;
+  font-size:11px;
+  line-height:1.25;
+  font-weight:850;
+  overflow-wrap:anywhere;
+}
+
+.cleanReviewVersusMark{
+  display:grid;
+  place-items:center;
+  min-height:84px;
+  color:#94a3b8;
+  font-size:18px;
+  font-weight:950;
+}
+
+.cleanReviewModalActions{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:10px;
+  padding:12px 18px calc(14px + env(safe-area-inset-bottom));
+  border-top:1px solid #e5e7eb;
+  background:#ffffff;
+}
+
+.cleanReviewModalEditBtn{
+  min-height:48px;
+  border:1px solid #d1d5db;
+  border-radius:16px;
+  background:#ffffff;
+  color:#111827;
+  font-size:15px;
+  font-weight:950;
+  cursor:pointer;
+}
+
+.cleanReviewModalCreateBtn{
+  min-height:48px;
+}
+
+@media (max-width:360px){
+  .cleanReviewModal{
+    width:min(90vw, 560px);
+  }
+
+  .cleanReviewModalHeader,
+  .cleanReviewModalList,
+  .cleanReviewModalActions{
+    padding-left:14px;
+    padding-right:14px;
+  }
+}
+
+@media (prefers-reduced-motion:reduce){
+  .cleanReviewOverlay,
+  .cleanReviewModal{
+    transition:none;
+  }
+}
+
 .cleanOptionalDetails{
   display:grid;
   gap:14px;
@@ -14689,8 +14910,74 @@ function openFirstCleanFieldError(form){
   item.scrollIntoView({ behavior:"smooth", block:"center" });
 }
 
+let cleanReviewModalState = null;
+let cleanReviewModalKeydownBound = false;
+const cleanReviewObjectUrls = [];
+
+function cleanupCleanReviewObjectUrls(){
+  while(cleanReviewObjectUrls.length){
+    const url = cleanReviewObjectUrls.pop();
+    try{ URL.revokeObjectURL(url); }catch(e){}
+  }
+}
+
+function getCleanReviewModal(){
+  return document.querySelector("[data-clean-review-modal]");
+}
+
+function ensureCleanReviewModal(){
+  let modal = getCleanReviewModal();
+  if(modal) return modal;
+
+  document.body.insertAdjacentHTML("beforeend", `
+    <div class="cleanReviewOverlay" data-clean-review-modal aria-hidden="true">
+      <div class="cleanReviewModal" role="dialog" aria-modal="true" aria-labelledby="cleanReviewModalTitle">
+        <div class="cleanReviewModalHeader">
+          <div class="cleanReviewEyebrow">Revisão Final</div>
+          <h3 class="cleanReviewModalTitle" id="cleanReviewModalTitle">Revise sua arte</h3>
+          <p class="cleanReviewModalText">Confira as informações antes de criar.</p>
+        </div>
+        <div class="cleanReviewModalList" data-clean-review-modal-list></div>
+        <div class="cleanReviewModalActions">
+          <button class="cleanReviewModalEditBtn" type="button" data-clean-review-modal-edit>Editar</button>
+          <button class="btnGreen cleanReviewModalCreateBtn" type="button" data-clean-review-modal-create>Criar arte</button>
+        </div>
+      </div>
+    </div>
+  `);
+
+  modal = getCleanReviewModal();
+  modal?.querySelector("[data-clean-review-modal-edit]")?.addEventListener("click", () => closeCleanReviewModal());
+  modal?.querySelector("[data-clean-review-modal-create]")?.addEventListener("click", confirmCleanReviewModal);
+
+  if(!cleanReviewModalKeydownBound){
+    document.addEventListener("keydown", (event) => {
+      if(event.key === "Escape" && getCleanReviewModal()?.classList.contains("is-open")){
+        closeCleanReviewModal();
+      }
+    });
+    cleanReviewModalKeydownBound = true;
+  }
+
+  return modal;
+}
+
+function closeCleanReviewModal(){
+  const modal = getCleanReviewModal();
+  if(modal){
+    modal.classList.remove("is-open");
+    modal.setAttribute("aria-hidden", "true");
+  }
+  document.body.classList.remove("cleanReviewModalOpen");
+  cleanupCleanReviewObjectUrls();
+  cleanReviewModalState = null;
+}
+
 function resetCleanReviewState(form){
   if(!form) return;
+  if(cleanReviewModalState?.form === form){
+    closeCleanReviewModal();
+  }
   form.classList.remove("is-reviewing");
   form.querySelectorAll("[data-clean-review]").forEach(panel => {
     panel.hidden = true;
@@ -14698,29 +14985,131 @@ function resetCleanReviewState(form){
 }
 
 function setCleanReviewBusy(form, busy){
-  const createBtn = form?.querySelector?.("[data-clean-review-create], [data-create-escudo3d]");
-  const editBtn = form?.querySelector?.("[data-clean-review-edit]");
-  if(createBtn){
-    createBtn.disabled = !!busy;
-    createBtn.textContent = busy ? "Criando..." : "Criar arte";
+  const buttons = [];
+  const modal = getCleanReviewModal();
+  const modalMatchesForm = !!form && cleanReviewModalState?.form === form && modal?.classList.contains("is-open");
+
+  form?.querySelectorAll?.("[data-clean-review-create], [data-create-escudo3d]").forEach(btn => buttons.push(btn));
+  if(modalMatchesForm){
+    const modalCreateBtn = modal.querySelector("[data-clean-review-modal-create]");
+    if(modalCreateBtn) buttons.push(modalCreateBtn);
   }
-  if(editBtn) editBtn.disabled = !!busy;
+
+  buttons.forEach(btn => {
+    btn.disabled = !!busy;
+    btn.textContent = busy ? "Criando..." : "Criar arte";
+  });
+
+  form?.querySelectorAll?.("[data-clean-review-edit]").forEach(btn => {
+    btn.disabled = !!busy;
+  });
+  if(modalMatchesForm){
+    const modalEditBtn = modal.querySelector("[data-clean-review-modal-edit]");
+    if(modalEditBtn) modalEditBtn.disabled = !!busy;
+  }
 }
 
-function cleanReviewEmptyText(value){
-  const text = String(value ?? "").trim();
-  return text || "Nao informado";
+async function confirmCleanReviewModal(){
+  const state = cleanReviewModalState;
+  const form = state?.form;
+  if(!state || !form) return;
+
+  setCleanReviewBusy(form, true);
+
+  try{
+    if(state.productKey === "escudo3d"){
+      const file = escudo3dFile?.files && escudo3dFile.files[0] ? escudo3dFile.files[0] : null;
+      await enviarPedidoEscudo3dComArquivo(file, state.block);
+    }else{
+      await enviarCleanProductFormConfirmado(form);
+    }
+    closeCleanReviewModal();
+  }finally{
+    if(cleanReviewModalState?.form === form){
+      setCleanReviewBusy(form, false);
+    }
+  }
 }
 
-function getCleanReviewFileText(form, field){
+function cleanReviewTextValue(value){
+  return String(value ?? "").trim();
+}
+
+function cleanReviewHasValue(value){
+  return cleanReviewTextValue(value) !== "";
+}
+
+function getCleanReviewFieldLabel(product, field){
+  const labelsByKey = {
+    matchup: "Confronto",
+    score: "Placar",
+    match_datetime: "Data e horário",
+    competition: "Campeonato",
+    venue: "Local do jogo",
+    home_crest: "Escudo do Time",
+    away_crest: "Escudo do Adversário",
+    team_crest: "Escudo enviado",
+    opponent_crest: "Escudo do Adversário",
+    player_photo: "Foto enviada",
+    match_photo: "Foto enviada",
+    team_photo: "Foto enviada",
+    uniform_image: "Uniforme enviado",
+    mascot_animal: "Animal escolhido",
+    sponsor_logos: "Patrocinadores",
+    coupon_code: "Cupom"
+  };
+
+  return labelsByKey[field?.key] || getCleanFieldLabel(product, field).replace(/\*/g, "").trim();
+}
+
+function getCleanReviewFieldByKey(productKey, key){
+  const schema = getCleanProductSchema(productKey);
+  return (schema?.fields || []).find(field => field.key === key) || null;
+}
+
+function getCleanReviewFilesForField(form, field){
   const files = getCleanAssetFiles(form, field.key);
-  if(files.length) return files.map(file => file.name || "Arquivo").join(", ");
+  if(files.length) return files;
 
-  if(field.savedFallback && typeof getSavedEscudo1File === "function" && getSavedEscudo1File()){
-    return "Escudo salvo no Perfil do Time";
+  if(field.savedFallback && typeof getSavedEscudo1File === "function"){
+    const fallback = getSavedEscudo1File();
+    return fallback ? [fallback] : [];
   }
 
-  return "Nenhum arquivo";
+  return [];
+}
+
+function getCleanReviewMediaForField(form, product, field){
+  const label = getCleanReviewFieldLabel(product, field);
+  return getCleanReviewFilesForField(form, field).map(file => ({
+    file,
+    label,
+    name: file?.name || label || "Arquivo"
+  }));
+}
+
+function getCleanReviewMediaPair(productKey, form){
+  const product = PRODUCTS[productKey];
+  const pairs = [
+    ["home_crest", "away_crest"],
+    ["team_crest", "opponent_crest"]
+  ];
+
+  for(const pair of pairs){
+    const media = pair.flatMap(key => {
+      const field = getCleanReviewFieldByKey(productKey, key);
+      return field ? getCleanReviewMediaForField(form, product, field).slice(0, 1) : [];
+    });
+    if(media.length) return media;
+  }
+
+  return [];
+}
+
+function createCleanReviewTextItem(label, value, extra = {}){
+  const text = cleanReviewTextValue(value);
+  if(!text && !(extra.media || []).length) return null;
+  return { label, value:text, ...extra };
 }
 
 function getCleanReviewItems(productKey, form){
@@ -14728,64 +15117,191 @@ function getCleanReviewItems(productKey, form){
   const product = PRODUCTS[productKey];
   if(!schema || !form) return [];
 
-  return schema.fields.filter(field => !isCleanCouponField(field)).map(field => {
-    const label = getCleanFieldLabel(product, field);
-    let value = "";
+  const items = [];
+  const orderedFields = orderCleanProductFields(product, schema);
+
+  orderedFields.forEach(field => {
+    const label = getCleanReviewFieldLabel(product, field);
 
     if(field.type === "text"){
-      value = cleanReviewEmptyText(getCleanFieldValue(form, field.key));
-    }else if(field.type === "score"){
+      const value = getCleanFieldValue(form, field.key);
+      const item = createCleanReviewTextItem(label, value);
+      if(item) items.push(item);
+      return;
+    }
+
+    if(field.type === "score"){
       const home = getCleanFieldValue(form, "home_team");
       const homeScore = getCleanFieldValue(form, "home_score");
       const awayScore = getCleanFieldValue(form, "away_score");
       const away = getCleanFieldValue(form, "away_team");
-      value = cleanReviewEmptyText(`${home} ${homeScore || "0"} x ${awayScore || "0"} ${away}`.trim());
-    }else if(field.type === "matchup"){
-      const home = getCleanFieldValue(form, "home_team");
-      const away = getCleanFieldValue(form, "away_team");
-      value = cleanReviewEmptyText(`${home} x ${away}`.trim());
-    }else if(field.type === "players" || field.type === "scorers"){
-      const people = collectCleanPeople(form, field.key, field.type);
-      value = people.length
-        ? people.map(item => field.type === "players"
-          ? (item.posicao ? `${item.nome} - ${item.posicao}` : item.nome)
-          : `${item.nome} (${item.gols})`
-        ).join("\n")
-        : "Nenhum jogador informado";
-    }else if(field.type === "file" || field.type === "multi-file"){
-      value = getCleanReviewFileText(form, field);
+      const hasScore = homeScore !== "" || awayScore !== "";
+      const scoreText = hasScore ? `${homeScore || "0"} × ${awayScore || "0"}` : "";
+      const value = [home, scoreText, away].filter(Boolean).join(" ");
+      const media = getCleanReviewMediaPair(productKey, form);
+      const item = createCleanReviewTextItem(label, value, {
+        media,
+        mediaLayout: media.length === 2 ? "versus" : ""
+      });
+      if(item) items.push(item);
+      return;
     }
 
-    return { label, value };
+    if(field.type === "matchup"){
+      const home = getCleanFieldValue(form, "home_team");
+      const away = getCleanFieldValue(form, "away_team");
+      const value = home && away ? `${home} × ${away}` : (home || away);
+      const media = getCleanReviewMediaPair(productKey, form);
+      const item = createCleanReviewTextItem(label, value, {
+        media,
+        mediaLayout: media.length === 2 ? "versus" : ""
+      });
+      if(item) items.push(item);
+      return;
+    }
+
+    if(field.type === "players" || field.type === "scorers"){
+      const people = collectCleanPeople(form, field.key, field.type);
+      if(!people.length) return;
+      const value = people.map(item => field.type === "players"
+        ? (item.posicao ? `${item.nome} - ${item.posicao}` : item.nome)
+        : `${item.nome} (${item.gols})`
+      ).join("\n");
+      items.push({ label, value });
+      return;
+    }
+
+    if(field.type === "file" || field.type === "multi-file"){
+      const media = getCleanReviewMediaForField(form, product, field);
+      if(media.length) items.push({ label, media });
+    }
+  });
+
+  const couponField = getCleanCouponField(schema);
+  if(couponField){
+    const coupon = getCleanFieldValue(form, couponField.key);
+    if(coupon) items.push({ label:"Cupom", value:coupon });
+  }
+
+  return items;
+}
+
+function cleanReviewFileLooksImage(file){
+  const type = String(file?.type || "").toLowerCase();
+  const name = String(file?.name || "").toLowerCase();
+  return type.startsWith("image/") || /\.(png|jpe?g|webp|gif)$/i.test(name);
+}
+
+function createCleanReviewObjectUrl(file){
+  const url = URL.createObjectURL(file);
+  cleanReviewObjectUrls.push(url);
+  return url;
+}
+
+function renderCleanReviewMediaItem(media){
+  const file = media?.file;
+  const name = media?.name || file?.name || "Arquivo";
+  const canPreview = file && cleanReviewFileLooksImage(file);
+  const thumb = canPreview
+    ? `<img src="${htmlEscape(createCleanReviewObjectUrl(file))}" alt="${htmlEscape(name)}">`
+    : `<span class="cleanReviewMediaFile">Arquivo</span>`;
+
+  return `
+    <figure class="cleanReviewMediaCard">
+      <div class="cleanReviewMediaThumb">${thumb}</div>
+      <figcaption class="cleanReviewMediaName">${htmlEscape(name)}</figcaption>
+    </figure>
+  `;
+}
+
+function renderCleanReviewMediaGrid(item){
+  const media = Array.isArray(item?.media) ? item.media : [];
+  if(!media.length) return "";
+
+  if(item.mediaLayout === "versus" && media.length >= 2){
+    return `
+      <div class="cleanReviewMediaGrid is-versus">
+        ${renderCleanReviewMediaItem(media[0])}
+        <div class="cleanReviewVersusMark">×</div>
+        ${renderCleanReviewMediaItem(media[1])}
+      </div>
+    `;
+  }
+
+  return `
+    <div class="cleanReviewMediaGrid">
+      ${media.map(renderCleanReviewMediaItem).join("")}
+    </div>
+  `;
+}
+
+function cleanReviewItemHasContent(item){
+  return cleanReviewHasValue(item?.value) || (Array.isArray(item?.media) && item.media.length > 0);
+}
+
+function renderCleanReviewItem(item){
+  if(!cleanReviewItemHasContent(item)) return "";
+
+  const value = cleanReviewTextValue(item.value);
+  return `
+    <article class="cleanReviewModalCard">
+      <h4 class="cleanReviewModalLabel">${htmlEscape(item.label || "")}</h4>
+      ${value ? `<p class="cleanReviewModalValue">${htmlEscape(value)}</p>` : ""}
+      ${renderCleanReviewMediaGrid(item)}
+    </article>
+  `;
+}
+
+function showCleanReviewPanel(form, items, options = {}){
+  if(!form) return;
+  const modal = ensureCleanReviewModal();
+  const list = modal?.querySelector("[data-clean-review-modal-list]");
+  if(!modal || !list) return;
+
+  cleanupCleanReviewObjectUrls();
+
+  const visibleItems = (items || []).filter(cleanReviewItemHasContent);
+  cleanReviewModalState = {
+    form,
+    productKey: options.productKey || form.dataset.productForm || "",
+    block: options.block || form.closest(".cleanProductBlock")
+  };
+
+  list.innerHTML = visibleItems.map(renderCleanReviewItem).join("");
+  modal.classList.add("is-open");
+  modal.setAttribute("aria-hidden", "false");
+  document.body.classList.add("cleanReviewModalOpen");
+  setCleanReviewBusy(form, false);
+
+  requestAnimationFrame(() => {
+    modal.querySelector("[data-clean-review-modal-create]")?.focus({ preventScroll:true });
   });
 }
 
-function showCleanReviewPanel(form, items){
-  const panel = form?.querySelector?.("[data-clean-review]");
-  const list = form?.querySelector?.("[data-clean-review-list]");
-  if(!panel || !list) return;
+function getEscudo3dReviewItems(block){
+  const items = [];
+  const file = escudo3dFile?.files && escudo3dFile.files[0] ? escudo3dFile.files[0] : null;
+  if(file){
+    items.push({
+      label:"Escudo enviado",
+      media:[{ file, name:file.name || "Escudo enviado" }]
+    });
+  }
 
-  list.innerHTML = (items || []).map(item => `
-    <div class="cleanReviewItem">
-      <strong>${htmlEscape(item.label)}</strong>
-      <span>${htmlEscape(item.value)}</span>
-    </div>
-  `).join("");
+  const coupon = block?.querySelector?.("[data-escudo3d-coupon]")?.value?.trim() || "";
+  if(coupon) items.push({ label:"Cupom", value:coupon });
 
-  panel.hidden = false;
-  form.classList.add("is-reviewing");
-  setCleanReviewBusy(form, false);
-  panel.scrollIntoView({ behavior:"smooth", block:"start" });
+  return items;
 }
 
 function showEscudo3dReview(block){
   const form = block?.querySelector?.(".cleanProductForm");
   if(!form) return;
 
-  const file = escudo3dFile?.files && escudo3dFile.files[0] ? escudo3dFile.files[0] : null;
-  showCleanReviewPanel(form, [
-    { label:"Selecionar escudo", value:file ? file.name : "Nenhum arquivo" }
-  ]);
+  showCleanReviewPanel(form, getEscudo3dReviewItems(block), {
+    productKey:"escudo3d",
+    block
+  });
 }
 
 function formatCleanProductPrice(product){
@@ -15220,15 +15736,6 @@ function renderCleanProductForms(){
           ${renderCleanFieldsGrouped(product, schema)}
           <button class="btnGreen cleanSubmitBtn" type="submit">${htmlEscape(submitLabel)}</button>
           ${renderCleanCouponExtra(product, couponField)}
-          <div class="cleanReviewPanel" data-clean-review hidden>
-            <h4 class="cleanReviewTitle">Revise antes de criar</h4>
-            <p class="cleanReviewText">Confira as informacoes preenchidas.</p>
-            <div class="cleanReviewList" data-clean-review-list></div>
-            <div class="cleanReviewActions">
-              <button class="cleanReviewEditBtn" type="button" data-clean-review-edit>Editar</button>
-              <button class="btnGreen cleanReviewCreateBtn" type="button" data-clean-review-create>Criar arte</button>
-            </div>
-          </div>
           <div class="cleanProductMsg" data-clean-msg></div>
           <div class="cleanResultBox" data-clean-result-box>
             <div class="cleanResultStatus" data-clean-result-status>Estamos montando sua imagem...</div>
@@ -15278,15 +15785,6 @@ function renderCleanProductForms(){
           <label class="cleanFieldLabel">Cupom de desconto</label>
           <input data-escudo3d-coupon placeholder="Digite seu cupom">
           <div data-price-preview data-price-product="escudo3d"></div>
-        </div>
-        <div class="cleanReviewPanel" data-clean-review hidden>
-          <h4 class="cleanReviewTitle">Revise antes de criar</h4>
-          <p class="cleanReviewText">Confira as informacoes preenchidas.</p>
-          <div class="cleanReviewList" data-clean-review-list></div>
-          <div class="cleanReviewActions">
-            <button class="cleanReviewEditBtn" type="button" data-clean-review-edit>Editar</button>
-            <button class="btnGreen cleanReviewCreateBtn" type="button" data-create-escudo3d>Criar arte</button>
-          </div>
         </div>
         <div class="cleanProductMsg" data-clean-msg></div>
       </div>
@@ -16057,7 +16555,7 @@ async function submitCleanProductForm(e){
 
   setCleanProductMsg(form, "");
   closeCleanAccordions(form);
-  showCleanReviewPanel(form, getCleanReviewItems(productKey, form));
+  showCleanReviewPanel(form, getCleanReviewItems(productKey, form), { productKey });
 }
 
 async function enviarCleanProductFormConfirmado(form){
@@ -16272,26 +16770,6 @@ function bindCleanProductForms(root){
     }
   });
 
-  root.querySelectorAll("[data-clean-review-edit]").forEach(btn => {
-    btn.addEventListener("click", () => {
-      const form = btn.closest(".cleanProductForm");
-      resetCleanReviewState(form);
-    });
-  });
-
-  root.querySelectorAll("[data-clean-review-create]").forEach(btn => {
-    btn.addEventListener("click", async () => {
-      const form = btn.closest("[data-product-form]");
-      if(!form) return;
-      setCleanReviewBusy(form, true);
-      try{
-        await enviarCleanProductFormConfirmado(form);
-      }finally{
-        setCleanReviewBusy(form, false);
-      }
-    });
-  });
-
   root.querySelectorAll("[data-profile-section-title]").forEach(input => {
     input.addEventListener("input", () => {
       input.dataset.profileTitleDirty = "1";
@@ -16348,23 +16826,6 @@ function bindCleanProductForms(root){
       setCleanProductMsg(form, "");
       closeCleanAccordions(form);
       showEscudo3dReview(block);
-    });
-  });
-
-  root.querySelectorAll("[data-create-escudo3d]").forEach(btn => {
-    btn.addEventListener("click", async () => {
-      if(bloquearCriacaoArteForaDoApp("escudo3d:envio")) return;
-      activateCleanProductBlock("escudo3d");
-      const block = btn.closest(".cleanProductBlock");
-      const form = block?.querySelector(".cleanProductForm");
-      const file = escudo3dFile?.files && escudo3dFile.files[0] ? escudo3dFile.files[0] : null;
-
-      setCleanReviewBusy(form, true);
-      try{
-        await enviarPedidoEscudo3dComArquivo(file, block);
-      }finally{
-        setCleanReviewBusy(form, false);
-      }
     });
   });
 
