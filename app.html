@@ -8431,11 +8431,8 @@ body.visitanteNaoLogado #menuPedidosTopo{
   display:none !important;
 }
 
-body.omascoteAppMode .saldoTopoArea,
-body.omascoteAppMode .saldoTopoExtra,
 body.omascoteAppMode #btnAbrirSaldo,
 body.omascoteAppMode #saldoMenu,
-body.omascoteAppMode #saldo,
 body.omascoteAppMode .saldoPagamentoBtn,
 body.omascoteAppMode [data-price-preview],
 body.omascoteAppMode [data-clean-field-card="coupon_code"],
@@ -12976,6 +12973,7 @@ function ia4LimparSessaoInvalida(out, options = {}){
   try{
     [
       "omascote_token",
+      "omascote_nome_time",
       "omascote_perfil_id",
       "omascote_plano",
       "omascote_usados",
@@ -12984,6 +12982,10 @@ function ia4LimparSessaoInvalida(out, options = {}){
   }catch(e){}
 
   token = "";
+  document.body.classList.add("visitanteNaoLogado");
+  if(historicoListaEl) historicoListaEl.innerHTML = "";
+  if(historicoVazioEl) historicoVazioEl.textContent = "Sua sessão expirou. Entre novamente para ver seus pedidos.";
+  try{ atualizarMenuPedidosTopo([]); }catch(e){}
   try{ applyLocal(); }catch(e){}
   try{ atualizarTopoAuth(); }catch(e){}
   try{ ia4AtualizarPrimeiroAcessoReal(); }catch(e){}
@@ -16782,12 +16784,20 @@ function applyLocal(){
   const nome = localStorage.getItem("omascote_nome_time") || "";
   const plano = localStorage.getItem("omascote_plano") || "";
   const usados = localStorage.getItem("omascote_usados") || "";
+  const saldoSalvo = localStorage.getItem("omascote_saldo");
+  const saldoNumero = Number(String(saldoSalvo ?? "").replace(",", "."));
+  const saldoTexto = saldoSalvo !== null && saldoSalvo !== "" && Number.isFinite(saldoNumero)
+    ? `Saldo disponível: R$ ${saldoNumero.toFixed(2).replace(".", ",")}`
+    : "Saldo disponível: —";
 
   welcomeEl.textContent = nome || "Seu time";
   planoEl.textContent = `Plano: ${plano || "—"} pedidos/mês`;
   usadosEl.textContent = `Usados no mês: ${usados || "—"}`;
   if(saldoEl){
-    saldoEl.textContent = "Saldo disponível: —";
+    saldoEl.textContent = saldoTexto;
+  }
+  if(saldoHeroEl){
+    saldoHeroEl.textContent = saldoTexto;
   }
   if(typeof atualizarTopoAuth === "function"){
     atualizarTopoAuth();
@@ -27268,11 +27278,8 @@ function ia4AtualizarModoAppUi(){
   document.body.classList.toggle("omascoteAppMode", modoApp);
   if(modoApp){
     [
-      document.querySelector(".saldoTopoArea"),
-      document.querySelector(".saldoTopoExtra"),
       document.getElementById("btnAbrirSaldo"),
-      document.getElementById("saldoMenu"),
-      document.getElementById("saldo")
+      document.getElementById("saldoMenu")
     ].forEach(el => el?.style?.setProperty("display", "none", "important"));
     saldoMenu?.classList.remove("open");
     fecharModalPixQr();
