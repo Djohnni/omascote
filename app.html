@@ -9824,6 +9824,10 @@ body.cleanReviewModalOpen{
   transition:opacity .22s ease, transform .22s cubic-bezier(.2,.8,.2,1);
 }
 
+.cleanReviewModal:focus{
+  outline:none;
+}
+
 .cleanReviewOverlay.is-open .cleanReviewModal{
   opacity:1;
   transform:translateY(0) scale(1);
@@ -14931,7 +14935,7 @@ function ensureCleanReviewModal(){
 
   document.body.insertAdjacentHTML("beforeend", `
     <div class="cleanReviewOverlay" data-clean-review-modal aria-hidden="true">
-      <div class="cleanReviewModal" role="dialog" aria-modal="true" aria-labelledby="cleanReviewModalTitle">
+      <div class="cleanReviewModal" role="dialog" aria-modal="true" aria-labelledby="cleanReviewModalTitle" tabindex="-1">
         <div class="cleanReviewModalHeader">
           <div class="cleanReviewEyebrow">Revisão Final</div>
           <h3 class="cleanReviewModalTitle" id="cleanReviewModalTitle">Revise sua arte</h3>
@@ -15274,7 +15278,7 @@ function showCleanReviewPanel(form, items, options = {}){
   setCleanReviewBusy(form, false);
 
   requestAnimationFrame(() => {
-    modal.querySelector("[data-clean-review-modal-create]")?.focus({ preventScroll:true });
+    modal.querySelector(".cleanReviewModal")?.focus({ preventScroll:true });
   });
 }
 
