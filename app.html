@@ -20764,10 +20764,6 @@ function abrirModalPixQr(id, data) {
 }
 
 function abrirModalPixSaldo(pacote, data) {
-  if(ia4BloquearRecursoPagoNoApp()){
-    return;
-  }
-
   const modal = document.getElementById("pixQrModal");
   const body = document.getElementById("pixQrBody");
 
@@ -20801,10 +20797,6 @@ function abrirModalPixSaldo(pacote, data) {
 }
 
 async function copiarPixSaldoAtual() {
-  if(ia4BloquearRecursoPagoNoApp()){
-    return;
-  }
-
   if(!saldoPixAtual?.pix){
     alert("Pix ainda não disponível.");
     return;
