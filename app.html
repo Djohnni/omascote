@@ -17678,7 +17678,7 @@ const SALDO_PIX_LABELS = {
 };
 
 async function comprarCreditos(pacote, metodo = "checkout", triggerBtn = null){
-  if(ia4BloquearRecursoPagoNoApp()){
+  if(metodo !== "pix" && ia4BloquearRecursoPagoNoApp()){
     return;
   }
 
