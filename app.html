@@ -27681,13 +27681,15 @@ saldoMenu?.querySelectorAll(".saldoPixRadio").forEach((radio)=>{
 
 atualizarSelecaoSaldoPix();
 
-document.querySelectorAll(".saldoPagamentoBtn").forEach((btn)=>{
-  btn.addEventListener("click", ()=>{
-    comprarCreditos(btn.dataset.pacote, btn.dataset.metodo || "checkout", btn);
-  });
-});
-
 document.addEventListener("click", (e)=>{
+  const saldoPagamentoBtn = e.target?.closest?.(".saldoPagamentoBtn");
+  if(saldoPagamentoBtn){
+    e.preventDefault();
+    e.stopPropagation();
+    comprarCreditos(saldoPagamentoBtn.dataset.pacote, saldoPagamentoBtn.dataset.metodo || "checkout", saldoPagamentoBtn);
+    return;
+  }
+
   if(saldoMenu && btnAbrirSaldo && !saldoMenu.contains(e.target) && e.target !== btnAbrirSaldo){
     saldoMenu.classList.remove("open");
   }
