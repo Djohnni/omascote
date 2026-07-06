@@ -17698,6 +17698,11 @@ async function comprarCreditos(pacote, metodo = "checkout", triggerBtn = null){
 
   try{
     const endpoint = metodo === "pix" ? "/comprar-creditos-pix" : "/comprar-creditos";
+    const controller = new AbortController();
+    const timeoutMs = metodo === "pix" ? 30000 : 0;
+    const timeoutId = timeoutMs
+      ? setTimeout(()=>controller.abort(), timeoutMs)
+      : null;
     const r = await fetch(`${API_BASE}${endpoint}`, {
       method:"POST",
       headers:{
@@ -17705,10 +17710,12 @@ async function comprarCreditos(pacote, metodo = "checkout", triggerBtn = null){
         "Content-Type": "application/json",
         ...(metodo === "pix" ? {} : ia4AppModeHeaders())
       },
-      body: JSON.stringify({ pacote, ...getIa4AccessContext() })
+      body: JSON.stringify({ pacote, ...getIa4AccessContext() }),
+      ...(timeoutMs ? { signal: controller.signal } : {})
     });
+    if(timeoutId) clearTimeout(timeoutId);
 
-    const data = await r.json();
+    const data = await ia4LerJsonSeguro(r);
 
     if(!data.ok || (metodo !== "pix" && !data.init_point)){
       alert(data.error || "Erro ao iniciar pagamento.");
@@ -17727,8 +17734,8 @@ async function comprarCreditos(pacote, metodo = "checkout", triggerBtn = null){
 
     window.location.href = data.init_point;
 
-  }catch{
-    alert("Erro de rede ao iniciar pagamento.");
+  }catch(e){
+    alert(e?.name === "AbortError" ? "Tempo esgotado ao gerar Pix. Tente novamente." : "Erro de rede ao iniciar pagamento.");
   }finally{
     if(triggerBtn){
       setTimeout(()=>{
