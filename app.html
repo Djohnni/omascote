@@ -8624,9 +8624,6 @@ body.visitanteNaoLogado #menuPedidosTopo{
   display:none !important;
 }
 
-body.omascoteAppMode #btnAbrirSaldo,
-body.omascoteAppMode #saldoMenu,
-body.omascoteAppMode .saldoPagamentoBtn,
 body.omascoteAppMode [data-price-preview],
 body.omascoteAppMode [data-app-payment-cta]{
   display:none !important;
@@ -28060,14 +28057,6 @@ function ia4EstaEmPwa(){
 function ia4AtualizarModoAppUi(){
   const modoApp = ia4EstaEmModoApp();
   document.body.classList.toggle("omascoteAppMode", modoApp);
-  if(modoApp){
-    [
-      document.getElementById("btnAbrirSaldo"),
-      document.getElementById("saldoMenu")
-    ].forEach(el => el?.style?.setProperty("display", "none", "important"));
-    saldoMenu?.classList.remove("open");
-    fecharModalPixQr();
-  }
 }
 
 function ia4MostrarBotaoInstalarApp(){
