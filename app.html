@@ -8161,6 +8161,13 @@ textarea.campoObrigatorioErro,
   filter:brightness(1.05);
 }
 
+body.saldoMenuAberto .ia4SupportBtn,
+body.saldoMenuAberto .ia4WhatsappBtn{
+  opacity:0;
+  pointer-events:none;
+  transform:translateY(10px);
+}
+
 .ia4WhatsappIcon{
   width:42px;
   height:42px;
@@ -27629,6 +27636,10 @@ document.getElementById("btnAtualizar")?.addEventListener("click", refreshMe);
 const btnAbrirSaldo = document.getElementById("btnAbrirSaldo");
 const saldoMenu = document.getElementById("saldoMenu");
 
+function atualizarEstadoSaldoMenu(){
+  document.body.classList.toggle("saldoMenuAberto", !!saldoMenu?.classList.contains("open"));
+}
+
 btnAbrirSaldo?.addEventListener("click", (e)=>{
   e.stopPropagation();
 
@@ -27643,6 +27654,7 @@ btnAbrirSaldo?.addEventListener("click", (e)=>{
   });
 
   saldoMenu?.classList.toggle("open");
+  atualizarEstadoSaldoMenu();
 });
 
 function atualizarSelecaoSaldoPix(pacoteSelecionado){
@@ -27691,6 +27703,7 @@ document.addEventListener("click", (e)=>{
 
   if(saldoMenu && btnAbrirSaldo && !saldoMenu.contains(e.target) && e.target !== btnAbrirSaldo){
     saldoMenu.classList.remove("open");
+    atualizarEstadoSaldoMenu();
   }
 
   const menuPedidosTopo = document.getElementById("menuPedidosTopo");
