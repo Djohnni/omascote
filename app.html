@@ -17703,7 +17703,7 @@ async function comprarCreditos(pacote, metodo = "checkout", triggerBtn = null){
       headers:{
         "Authorization": "Bearer " + token,
         "Content-Type": "application/json",
-        ...ia4AppModeHeaders()
+        ...(metodo === "pix" ? {} : ia4AppModeHeaders())
       },
       body: JSON.stringify({ pacote, ...getIa4AccessContext() })
     });
