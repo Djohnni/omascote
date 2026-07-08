@@ -16327,6 +16327,54 @@ function ia4BloquearRecursoPagoNoApp(target = null, options = {}){
   return true;
 }
 
+const cleanOrderSubmitInFlight = new WeakSet();
+let escudo3dOrderSubmitInFlight = false;
+let legacyOrderSubmitInFlight = false;
+
+function criarClientRequestId(prefix = "pedido"){
+  const safePrefix = String(prefix || "pedido").replace(/[^a-z0-9_-]/gi, "_").slice(0, 32) || "pedido";
+  const uuid = window.crypto?.randomUUID?.();
+  const random = Math.random().toString(36).slice(2, 10);
+  return `${safePrefix}_${uuid || `${Date.now()}_${random}`}`;
+}
+
+function appendOrderClientRequest(fd, requestId){
+  if(fd && requestId) fd.append("client_request_id", requestId);
+}
+
+function buildOrderCreationHeaders(requestId){
+  const headers = { "Authorization": "Bearer " + token };
+  if(requestId) headers["X-Idempotency-Key"] = requestId;
+  return headers;
+}
+
+function setPedidoButtonBusy(btn, busy, busyLabel = "Enviando..."){
+  if(!btn) return;
+  if(!btn.dataset.idleLabel) btn.dataset.idleLabel = btn.textContent || "";
+  btn.disabled = !!busy;
+  btn.textContent = busy ? busyLabel : btn.dataset.idleLabel;
+}
+
+function isCleanOrderSubmitBusy(form){
+  return !!form && cleanOrderSubmitInFlight.has(form);
+}
+
+function setCleanOrderSubmitBusy(form, busy){
+  if(!form) return;
+  if(busy){
+    cleanOrderSubmitInFlight.add(form);
+  }else{
+    cleanOrderSubmitInFlight.delete(form);
+  }
+
+  setPedidoButtonBusy(form.querySelector(".cleanSubmitBtn"), busy, "Enviando...");
+}
+
+function setEscudo3dOrderSubmitBusy(progressTarget, busy){
+  setPedidoButtonBusy(escudo3dEnviarBtn, busy, "Enviando...");
+  setPedidoButtonBusy(progressTarget?.querySelector?.("[data-submit-escudo3d]"), busy, "Enviando...");
+}
+
 function buildLegacyFormDataFromClean(productKey, cleanOrder){
   const product = PRODUCTS[productKey];
   const schema = getCleanProductSchema(productKey);
@@ -16786,6 +16834,7 @@ async function submitCleanProductForm(e){
   const schema = getCleanProductSchema(productKey);
 
   if(!product || !schema) return;
+  if(isCleanOrderSubmitBusy(form)) return;
   if(bloquearCriacaoArteForaDoApp(`envio:${productKey}`)) return;
 
   selectedProductInput.value = productKey;
@@ -16823,7 +16872,11 @@ async function enviarCleanProductFormConfirmado(form){
 
   if(!product || !schema) return;
   if(bloquearCriacaoArteForaDoApp(`envio:${productKey}`)) return;
+  if(isCleanOrderSubmitBusy(form)) return;
 
+  setCleanOrderSubmitBusy(form, true);
+
+  try{
   selectedProductInput.value = productKey;
   flyerTipoInput.value = product.flyerTipo || "";
   activateCleanProductBlock(productKey);
@@ -16865,11 +16918,13 @@ async function enviarCleanProductFormConfirmado(form){
 
   const cleanOrder = serializeCleanProductForm(productKey, form);
   const fd = buildLegacyFormDataFromClean(productKey, cleanOrder);
+  const clientRequestId = criarClientRequestId(`pedido_${productKey}`);
+  appendOrderClientRequest(fd, clientRequestId);
 
   try{
     const r = await fetch(`${API_BASE}${schema.endpoint}`, {
       method:"POST",
-      headers:{ "Authorization": "Bearer " + token },
+      headers: buildOrderCreationHeaders(clientRequestId),
       body:fd
     });
 
@@ -16926,6 +16981,9 @@ async function enviarCleanProductFormConfirmado(form){
     });
     cancelarProgressoNoProduto(form);
     setCleanProductMsg(form, "Não foi possível enviar agora. Verifique a conexão e tente novamente.", true);
+  }
+  }finally{
+    setCleanOrderSubmitBusy(form, false);
   }
 }
 
@@ -19153,7 +19211,12 @@ if(escudo3dModalCouponInput && escudo3dModalPricePreview){
 
 async function enviarPedidoEscudo3dComArquivo(file, progressTarget = null){
   if(bloquearCriacaoArteForaDoApp("escudo3d:pedido")) return;
+  if(escudo3dOrderSubmitInFlight) return;
 
+  escudo3dOrderSubmitInFlight = true;
+  setEscudo3dOrderSubmitBusy(progressTarget, true);
+
+  try{
   if(!token){
     const okAuto = await criarContaAutomaticaAntesPedido();
     if(!okAuto) return;
@@ -19212,11 +19275,13 @@ async function enviarPedidoEscudo3dComArquivo(file, progressTarget = null){
     fd.append("cupom_codigo", escudo3dCupomValor);
   }
   appendIa4AccessContext(fd);
+  const clientRequestId = criarClientRequestId("pedido_escudo3d");
+  appendOrderClientRequest(fd, clientRequestId);
 
   try{
     const r = await fetch(`${API_BASE}/pedidos`, {
       method:"POST",
-      headers:{ "Authorization": "Bearer " + token },
+      headers: buildOrderCreationHeaders(clientRequestId),
       body:fd
     });
 
@@ -19302,6 +19367,10 @@ async function enviarPedidoEscudo3dComArquivo(file, progressTarget = null){
   }
 
   if(escudo3dEnviarBtn) escudo3dEnviarBtn.disabled = false;
+  }finally{
+    escudo3dOrderSubmitInFlight = false;
+    setEscudo3dOrderSubmitBusy(progressTarget, false);
+  }
 }
 
 if(escudo3dEnviarBtn){
@@ -20017,6 +20086,11 @@ document.getElementById("pedidoForm").addEventListener("submit", async (e)=>{
     return;
   }
 
+  if(legacyOrderSubmitInFlight) return;
+  legacyOrderSubmitInFlight = true;
+  setPedidoButtonBusy(btnEnviar, true, "Enviando...");
+
+  try{
   if(!token){
     const okAuto = await criarContaAutomaticaAntesPedido();
     if(!okAuto) return;
@@ -20141,13 +20215,15 @@ document.getElementById("pedidoForm").addEventListener("submit", async (e)=>{
   }
 
   appendIa4AccessContext(fd);
+  const clientRequestId = criarClientRequestId(`pedido_${productKey || "legado"}`);
+  appendOrderClientRequest(fd, clientRequestId);
 
   try{
     const endpoint = isResultado ? "/resultado_do_jogo" : "/pedidos";
 
     const r = await fetch(`${API_BASE}${endpoint}`, {
       method:"POST",
-      headers:{ "Authorization": "Bearer " + token },
+      headers: buildOrderCreationHeaders(clientRequestId),
       body:fd
     });
 
@@ -20199,6 +20275,10 @@ document.getElementById("pedidoForm").addEventListener("submit", async (e)=>{
     });
 
     msgPedidoEl.textContent = "Erro de rede";
+  }
+  }finally{
+    legacyOrderSubmitInFlight = false;
+    setPedidoButtonBusy(btnEnviar, false);
   }
 });
 
