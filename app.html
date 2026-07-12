@@ -15789,6 +15789,11 @@ function isPrimeiroAcessoProductChooser(){
 
 function marcarProductChooserVisto(){
   try{
+    if(localStorage.getItem("ia4tube_product_chooser_hint_seen") === "1"){
+      document.getElementById("productChooser")?.classList.remove("is-first-access");
+      ia4AtualizarPrimeiroAcessoReal();
+      return;
+    }
     localStorage.setItem("ia4tube_product_chooser_hint_seen", "1");
   }catch(e){}
   document.getElementById("productChooser")?.classList.remove("is-first-access");
@@ -15865,7 +15870,6 @@ function renderProductChooser(){
     btn.addEventListener("click", () => {
       if(bloquearCriacaoArteForaDoApp(`produto:${btn.dataset.productPicker || ""}`)) return;
       selectCleanProductForPicker(btn.dataset.productPicker || "", { scroll: true, track: true });
-      marcarProductChooserVisto();
     });
   });
 
@@ -16939,6 +16943,7 @@ async function enviarCleanProductFormConfirmado(form, options = {}){
 
     if(out.ok){
       setCleanProductMsg(form, "");
+      marcarProductChooserVisto();
       if(out.pedido_id){
         salvarPedidoAtivoLocal(out.pedido_id, productKey);
       }
@@ -19296,6 +19301,7 @@ async function enviarPedidoEscudo3dComArquivo(file, progressTarget = null){
     }
 
     if(out.ok){
+      marcarProductChooserVisto();
       const inicioPrimeiroEscudo = localStorage.getItem(PRIMEIRO_ESCUDO_INICIO_KEY);
 
       if(inicioPrimeiroEscudo && out.pedido_id){
@@ -20237,6 +20243,7 @@ document.getElementById("pedidoForm").addEventListener("submit", async (e)=>{
 
     if(out.ok){
       msgPedidoEl.textContent = "";
+      marcarProductChooserVisto();
       atualizarTopoProducao([{ id: out.pedido_id || "novo", status: "processando" }]);
       mostrarAvisoPedido();
 
