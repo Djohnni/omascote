@@ -15863,8 +15863,8 @@ function renderProductChooser(){
   chooser.querySelectorAll("[data-product-picker]").forEach(btn => {
     btn.addEventListener("click", () => {
       if(bloquearCriacaoArteForaDoApp(`produto:${btn.dataset.productPicker || ""}`)) return;
-      marcarProductChooserVisto();
       selectCleanProductForPicker(btn.dataset.productPicker || "", { scroll: true, track: true });
+      marcarProductChooserVisto();
     });
   });
 
@@ -15872,8 +15872,6 @@ function renderProductChooser(){
   if(rail) rail.scrollLeft = 0;
   if(rail && primeiroAcesso){
     const marcarAoInteragir = () => marcarProductChooserVisto();
-    rail.addEventListener("pointerdown", marcarAoInteragir, { once:true, passive:true });
-    rail.addEventListener("touchstart", marcarAoInteragir, { once:true, passive:true });
     rail.addEventListener("wheel", marcarAoInteragir, { once:true, passive:true });
   }
 
