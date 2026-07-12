@@ -8655,7 +8655,8 @@ body.visitanteNaoLogado.visitantePrimeiroAcessoReal .panel{
   padding-top:0 !important;
 }
 
-body.visitanteNaoLogado.visitantePrimeiroAcessoReal .cleanProductPrice{
+body.visitanteNaoLogado.visitantePrimeiroAcessoReal .cleanProductPrice,
+body.visitanteNaoLogado.visitantePrimeiroAcessoReal .productChooserPrice{
   display:none !important;
 }
 
@@ -15870,11 +15871,6 @@ function renderProductChooser(){
 
   const rail = chooser.querySelector(".productChooserRail");
   if(rail) rail.scrollLeft = 0;
-  if(rail && primeiroAcesso){
-    const marcarAoInteragir = () => marcarProductChooserVisto();
-    rail.addEventListener("wheel", marcarAoInteragir, { once:true, passive:true });
-  }
-
   configurarProductChooserNavegacao(chooser);
   atualizarProductChooserModoPerfil();
 }
