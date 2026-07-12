@@ -8655,8 +8655,8 @@ body.visitanteNaoLogado.visitantePrimeiroAcessoReal .panel{
   padding-top:0 !important;
 }
 
-body.visitanteNaoLogado.visitantePrimeiroAcessoReal .cleanProductPrice,
-body.visitanteNaoLogado.visitantePrimeiroAcessoReal .productChooserPrice{
+body.precosPrimeiroAcessoOcultos .cleanProductPrice,
+body.precosPrimeiroAcessoOcultos .productChooserPrice{
   display:none !important;
 }
 
@@ -13532,9 +13532,14 @@ function ia4AtualizarPrimeiroAcessoReal(){
     const semPedidoAtivo = !localStorage.getItem("ia4tube_pedidos_ativos");
     const foraDoApp = !(typeof ia4EstaEmModoApp === "function" && ia4EstaEmModoApp());
     const primeiroAcessoReal = semToken && semCadastroSalvo && semContaAuto && semInteracaoSeletor && semPedidoAtivo && foraDoApp;
+    const ocultarPrecosPrimeiroAcesso = semInteracaoSeletor && foraDoApp && (
+      primeiroAcessoReal || document.body.classList.contains("precosPrimeiroAcessoOcultos")
+    );
     document.body.classList.toggle("visitantePrimeiroAcessoReal", primeiroAcessoReal);
+    document.body.classList.toggle("precosPrimeiroAcessoOcultos", ocultarPrecosPrimeiroAcesso);
   }catch(e){
     document.body.classList.remove("visitantePrimeiroAcessoReal");
+    document.body.classList.remove("precosPrimeiroAcessoOcultos");
   }
 }
 
