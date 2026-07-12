@@ -15981,7 +15981,7 @@ function renderCleanProductForms(){
     const schema = getCleanProductSchema(productKey);
     if(!product || !schema) return "";
     const priceLabel = formatCleanProductPrice(product);
-    const submitLabel = "Revisar";
+    const submitLabel = "Criar arte";
     const couponField = getCleanCouponField(schema);
 
     return `
@@ -16011,7 +16011,7 @@ function renderCleanProductForms(){
 
   const escudo3dProduct = PRODUCTS.escudo3d;
   const escudo3dPriceLabel = formatCleanProductPrice(escudo3dProduct);
-  const escudo3dSubmitLabel = "Revisar";
+  const escudo3dSubmitLabel = "Criar arte";
   const escudo3dHtml = escudo3dProduct ? `
     <section class="cleanProductBlock cleanEscudo3dBlock" data-clean-product-block="escudo3d">
       <div class="cleanProductImage" aria-hidden="true">
@@ -16845,7 +16845,7 @@ async function submitCleanProductForm(e){
   flyerTipoInput.value = product.flyerTipo || "";
   activateCleanProductBlock(productKey);
 
-  ia4RegistrarAcao("tentou_revisar_pedido", {
+  ia4RegistrarAcao("tentou_enviar_pedido", {
     produto: productKey,
     categoria: product.visualCategory || categoriaSelecionada || ""
   });
@@ -16866,10 +16866,10 @@ async function submitCleanProductForm(e){
 
   setCleanProductMsg(form, "");
   closeCleanAccordions(form);
-  showCleanReviewPanel(form, getCleanReviewItems(productKey, form), { productKey });
+  await enviarCleanProductFormConfirmado(form, { registrarTentativa:false });
 }
 
-async function enviarCleanProductFormConfirmado(form){
+async function enviarCleanProductFormConfirmado(form, options = {}){
   const productKey = form.dataset.productForm || "";
   const product = PRODUCTS[productKey];
   const schema = getCleanProductSchema(productKey);
@@ -16885,10 +16885,12 @@ async function enviarCleanProductFormConfirmado(form){
   flyerTipoInput.value = product.flyerTipo || "";
   activateCleanProductBlock(productKey);
 
-  ia4RegistrarAcao("tentou_enviar_pedido", {
-    produto: productKey,
-    categoria: product.visualCategory || categoriaSelecionada || ""
-  });
+  if(options.registrarTentativa !== false){
+    ia4RegistrarAcao("tentou_enviar_pedido", {
+      produto: productKey,
+      categoria: product.visualCategory || categoriaSelecionada || ""
+    });
+  }
 
   const errors = validateCleanProductForm(productKey, form);
   if(errors.length){
@@ -17145,7 +17147,7 @@ function bindCleanProductForms(root){
       block?.querySelector('[data-clean-field-card="escudo3d_crest"]')?.classList.remove("campoObrigatorioErro");
       setCleanProductMsg(form, "");
       closeCleanAccordions(form);
-      showEscudo3dReview(block);
+      await enviarPedidoEscudo3dComArquivo(file, block);
     });
   });
 
