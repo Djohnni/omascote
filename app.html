@@ -14696,7 +14696,7 @@ const CLEAN_PRODUCT_FORM_SCHEMAS = {
     endpoint: "/resultado_do_jogo",
     validationMessage: "Preencha o placar, campeonato/competição e envie o escudo do Time A.",
     fields: [
-      { key: "titulo_secao_resultados", type: "text", label: "Título da seção de resultados", placeholder: "Últimos Resultados", required: false, visualNormal: true, profileTitleKey: "titulo_secao_resultados", maxLength: 80 },
+      { key: "titulo_secao_resultados", type: "text", label: "Título da seção de resultados", placeholder: "", required: false, visualNormal: true, profileTitleKey: "titulo_secao_resultados", maxLength: 80 },
       { key: "score", type: "score", label: "Placar", required: true },
       { key: "competition", type: "text", legacyName: "hora", labelKey: "hora", placeholderKey: "hora", required: true },
       { key: "headline", type: "text", legacyName: "data", labelKey: "data", placeholderKey: "data", required: false, defaultValue: "Resultado do jogo" },
