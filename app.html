@@ -13452,7 +13452,11 @@ async function enviarDenunciaIa(){
 function ia4MensagemSessaoExpirada(out){
   const detalhe = out?.error || out?.erro || out?.mensagem || "";
   const detalheNormalizado = String(detalhe || "").toLowerCase();
-  if(detalhe && !detalheNormalizado.includes("sem token")){
+  const detalheTecnico = detalheNormalizado.includes("sem token") ||
+    detalheNormalizado.includes("token") ||
+    detalheNormalizado.includes("jwt") ||
+    detalheNormalizado.includes("sess");
+  if(detalhe && !detalheTecnico){
     return `${detalhe}. Entre novamente para continuar.`;
   }
   return "Sua sessão expirou. Entre novamente para continuar.";
@@ -13481,6 +13485,7 @@ function ia4LimparSessaoInvalida(out, options = {}){
   }catch(e){}
 
   token = "";
+  try{ if(typeof pararPollingSaldoPix === "function") pararPollingSaldoPix(); }catch(e){}
   document.body.classList.add("visitanteNaoLogado");
   if(historicoListaEl) historicoListaEl.innerHTML = "";
   if(historicoVazioEl) historicoVazioEl.textContent = "Sua sessão expirou. Entre novamente para ver seus pedidos.";
@@ -13499,6 +13504,17 @@ function ia4LimparSessaoInvalida(out, options = {}){
 function ia4TratarAuthInvalida(r, out, options = {}){
   if(!ia4EhErroAuth(r, out)) return "";
   return ia4LimparSessaoInvalida(out, options);
+}
+
+function ia4EhContaInexistente(r, out){
+  if(!r || r.status !== 404) return false;
+  const mensagem = String(out?.error || out?.erro || out?.mensagem || "").toLowerCase();
+  return mensagem.includes("cliente") || mensagem.includes("conta");
+}
+
+function ia4TratarContaInexistente(r, out, options = {}){
+  if(!ia4EhContaInexistente(r, out)) return "";
+  return ia4LimparSessaoInvalida({}, options);
 }
 
 async function ia4LerJsonSeguro(r){
@@ -13874,6 +13890,57 @@ const msgPedidoEl = document.getElementById("msgPedido");
 const historicoListaEl = document.getElementById("historicoLista");
 const historicoVazioEl = document.getElementById("historicoVazio");
 const tempoEstimadoEl = document.getElementById("tempoEstimadoBox");
+
+function ia4NormalizarSaldoTela(valor, fallback = null){
+  if(valor === null || valor === undefined || valor === "") return fallback;
+  const texto = String(valor).trim();
+  if(!texto) return fallback;
+  const normalizado = texto.includes(",") && !texto.includes(".")
+    ? texto.replace(",", ".")
+    : texto;
+  const numero = Number(normalizado);
+  return Number.isFinite(numero) ? Number(numero.toFixed(2)) : fallback;
+}
+
+function ia4FormatarSaldoTela(valor){
+  const saldo = ia4NormalizarSaldoTela(valor, 0);
+  return `Saldo disponível: R$ ${saldo.toFixed(2).replace(".", ",")}`;
+}
+
+function ia4SaldoCacheNumero(){
+  return ia4NormalizarSaldoTela(localStorage.getItem("omascote_saldo"), null);
+}
+
+function ia4SetSaldoTexto(texto){
+  if(saldoEl) saldoEl.textContent = texto;
+  if(saldoHeroEl) saldoHeroEl.textContent = texto;
+}
+
+function ia4SetSaldoValor(valor){
+  const saldo = ia4NormalizarSaldoTela(valor, 0);
+  localStorage.setItem("omascote_saldo", saldo.toFixed(2));
+  ia4SetSaldoTexto(ia4FormatarSaldoTela(saldo));
+  return saldo;
+}
+
+function ia4SetSaldoCarregando(){
+  const saldoCache = ia4SaldoCacheNumero();
+  if(Number.isFinite(saldoCache)){
+    ia4SetSaldoTexto(ia4FormatarSaldoTela(saldoCache));
+    return;
+  }
+  ia4SetSaldoTexto("Saldo disponível: atualizando...");
+}
+
+function ia4SetSaldoFalhaTemporaria(mensagem = "Não foi possível atualizar a conta agora."){
+  const saldoCache = ia4SaldoCacheNumero();
+  if(Number.isFinite(saldoCache)){
+    ia4SetSaldoTexto(ia4FormatarSaldoTela(saldoCache));
+  }else{
+    ia4SetSaldoTexto("Saldo disponível: falha ao atualizar");
+  }
+  if(statusEl) statusEl.textContent = mensagem;
+}
 const brindeEscudo3dAppBox = document.getElementById("brindeEscudo3dAppBox");
 
 const dynamicTitleEl = document.getElementById("dynamicTitle");
@@ -16268,6 +16335,25 @@ function appendCleanAssetLegacy(fd, cleanOrder, fieldKey, legacyName, fallbackFi
   if(fallbackFile) fd.append(legacyName, fallbackFile);
 }
 
+function splitCleanMatchupText(value){
+  const text = String(value || "").trim();
+  if(!text) return { home:"", away:"" };
+
+  const parts = text
+    .split(/\s+(?:x|vs\.?|versus)\s+/i)
+    .map(part => part.trim())
+    .filter(Boolean);
+
+  if(parts.length >= 2){
+    return {
+      home: parts[0],
+      away: parts.slice(1).join(" x ")
+    };
+  }
+
+  return { home:text, away:"" };
+}
+
 function getIa4AccessContext(){
   const standalone = typeof ia4EstaEmModoApp === "function" && ia4EstaEmModoApp();
   return {
@@ -16336,7 +16422,9 @@ function ia4BloquearRecursoPagoNoApp(target = null, options = {}){
 
 const cleanOrderSubmitInFlight = new WeakSet();
 let escudo3dOrderSubmitInFlight = false;
+let escudo3dOrderRequestState = null;
 let legacyOrderSubmitInFlight = false;
+let legacyOrderRequestState = null;
 
 function criarClientRequestId(prefix = "pedido"){
   const safePrefix = String(prefix || "pedido").replace(/[^a-z0-9_-]/gi, "_").slice(0, 32) || "pedido";
@@ -16353,6 +16441,168 @@ function buildOrderCreationHeaders(requestId){
   const headers = { "Authorization": "Bearer " + token };
   if(requestId) headers["X-Idempotency-Key"] = requestId;
   return headers;
+}
+
+function orderFileFingerprint(file){
+  if(!file) return null;
+  return {
+    name: file.name || "",
+    size: Number(file.size || 0),
+    type: file.type || "",
+    lastModified: Number(file.lastModified || 0)
+  };
+}
+
+function normalizeOrderFingerprintValue(value){
+  if(value instanceof File) return orderFileFingerprint(value);
+  if(Array.isArray(value)) return value.map(item => normalizeOrderFingerprintValue(item));
+  if(value && typeof value === "object"){
+    const out = {};
+    Object.keys(value).sort().forEach(key => {
+      out[key] = normalizeOrderFingerprintValue(value[key]);
+    });
+    return out;
+  }
+  return value;
+}
+
+function buildCleanOrderFingerprint(productKey, cleanOrder){
+  return JSON.stringify(normalizeOrderFingerprintValue({
+    product_id: productKey,
+    fields: cleanOrder?.fields || {},
+    assets: cleanOrder?.assets || {}
+  }));
+}
+
+function getOrCreateCleanOrderRequestState(form, productKey, cleanOrder){
+  const fingerprint = buildCleanOrderFingerprint(productKey, cleanOrder);
+  const current = form.__cleanOrderRequestState;
+
+  if(current && current.fingerprint === fingerprint && current.clientRequestId){
+    return current;
+  }
+
+  const next = {
+    fingerprint,
+    clientRequestId: criarClientRequestId(`pedido_${productKey}`),
+    confirmed: false,
+    pedidoId: ""
+  };
+
+  form.__cleanOrderRequestState = next;
+  return next;
+}
+
+function markCleanOrderRequestConfirmed(form, state, pedidoId){
+  const target = state || form?.__cleanOrderRequestState;
+  if(!target) return;
+  target.confirmed = true;
+  target.pedidoId = pedidoId || target.pedidoId || "";
+}
+
+function clearCleanOrderRequestState(form){
+  if(form) delete form.__cleanOrderRequestState;
+}
+
+function buildEscudo3dOrderFingerprint(file, cupomCodigo = ""){
+  return JSON.stringify(normalizeOrderFingerprintValue({
+    product_id: "escudo3d",
+    cupom_codigo: String(cupomCodigo || "").trim(),
+    file: orderFileFingerprint(file)
+  }));
+}
+
+function getOrCreateEscudo3dOrderRequestState(file, cupomCodigo = ""){
+  const fingerprint = buildEscudo3dOrderFingerprint(file, cupomCodigo);
+
+  if(escudo3dOrderRequestState?.fingerprint === fingerprint && escudo3dOrderRequestState.clientRequestId){
+    return escudo3dOrderRequestState;
+  }
+
+  escudo3dOrderRequestState = {
+    fingerprint,
+    clientRequestId: criarClientRequestId("pedido_escudo3d"),
+    confirmed: false,
+    pedidoId: ""
+  };
+
+  return escudo3dOrderRequestState;
+}
+
+function markEscudo3dOrderRequestConfirmed(state, pedidoId){
+  if(!state) return;
+  state.confirmed = true;
+  state.pedidoId = pedidoId || state.pedidoId || "";
+}
+
+function clearEscudo3dOrderRequestState(){
+  escudo3dOrderRequestState = null;
+}
+
+function buildFormDataOrderFingerprint(productKey, fd){
+  const entries = [];
+  fd?.forEach?.((value, key) => {
+    entries.push({
+      key,
+      value: value instanceof File ? orderFileFingerprint(value) : String(value || "")
+    });
+  });
+  return JSON.stringify(normalizeOrderFingerprintValue({
+    product_id: productKey || "",
+    entries
+  }));
+}
+
+function getOrCreateLegacyOrderRequestState(productKey, fd){
+  const fingerprint = buildFormDataOrderFingerprint(productKey, fd);
+
+  if(legacyOrderRequestState?.fingerprint === fingerprint && legacyOrderRequestState.clientRequestId){
+    return legacyOrderRequestState;
+  }
+
+  legacyOrderRequestState = {
+    fingerprint,
+    clientRequestId: criarClientRequestId(`pedido_${productKey || "legado"}`),
+    confirmed: false,
+    pedidoId: ""
+  };
+
+  return legacyOrderRequestState;
+}
+
+function markLegacyOrderRequestConfirmed(state, pedidoId){
+  if(!state) return;
+  state.confirmed = true;
+  state.pedidoId = pedidoId || state.pedidoId || "";
+}
+
+function clearLegacyOrderRequestState(){
+  legacyOrderRequestState = null;
+}
+
+async function consultarPedidoPorClientRequestId(clientRequestId){
+  if(!token || !clientRequestId){
+    return { ok:false, encontrado:false, error:"Sem token ou chave de tentativa." };
+  }
+
+  const r = await fetch(`${API_BASE}/pedidos/por-client-request-id/${encodeURIComponent(clientRequestId)}?ts=${Date.now()}`, {
+    method:"GET",
+    headers: buildOrderCreationHeaders(),
+    cache:"no-store"
+  });
+  const out = await ia4LerJsonSeguro(r);
+
+  if(r.ok && out?.ok && out.pedido_id){
+    return { ok:true, encontrado:true, pedido:out, status:r.status };
+  }
+
+  return {
+    ok:false,
+    encontrado: out?.encontrado === true,
+    status: r.status,
+    error: out?.error || out?.mensagem || out?.erro || `Erro HTTP ${r.status}.`,
+    resposta: out
+  };
 }
 
 function setPedidoButtonBusy(btn, busy, busyLabel = "Enviando..."){
@@ -16374,7 +16624,54 @@ function setCleanOrderSubmitBusy(form, busy){
     cleanOrderSubmitInFlight.delete(form);
   }
 
+  if(!busy && isCleanOrderSubmitLocked(form)){
+    setCleanSubmitButtonLocked(form, true);
+    return;
+  }
+
   setPedidoButtonBusy(form.querySelector(".cleanSubmitBtn"), busy, "Enviando...");
+}
+
+function isCleanOrderSubmitLocked(form){
+  return form?.dataset?.cleanSubmitLocked === "1";
+}
+
+function setCleanSubmitButtonLocked(form, locked, label = "Pedido enviado"){
+  const btn = form?.querySelector?.(".cleanSubmitBtn");
+  if(!btn) return;
+  if(!btn.dataset.idleLabel) btn.dataset.idleLabel = btn.textContent || "";
+  btn.disabled = !!locked;
+  btn.textContent = locked ? label : btn.dataset.idleLabel;
+}
+
+function lockCleanOrderSubmitAfterSuccess(form, pedidoId = ""){
+  if(!form) return;
+  form.dataset.cleanSubmitLocked = "1";
+  if(pedidoId) form.dataset.cleanSubmitLockedPedidoId = pedidoId;
+  setCleanSubmitButtonLocked(form, true);
+}
+
+function unlockCleanOrderSubmitForNewAttempt(form){
+  if(!form || !isCleanOrderSubmitLocked(form)) return;
+  delete form.dataset.cleanSubmitLocked;
+  delete form.dataset.cleanSubmitLockedPedidoId;
+  clearCleanOrderRequestState(form);
+  setCleanSubmitButtonLocked(form, false);
+  setCleanProductMsg(form, "");
+}
+
+function showCleanOrderAlreadyConfirmed(form){
+  const pedidoId = form?.dataset?.cleanSubmitLockedPedidoId || form?.__cleanOrderRequestState?.pedidoId || "";
+  const msgEl = form?.querySelector?.("[data-clean-msg]");
+  if(msgEl && String(msgEl.textContent || "").trim()){
+    lockCleanOrderSubmitAfterSuccess(form, pedidoId);
+    return;
+  }
+  const msg = pedidoId
+    ? `Pedido ${pedidoId} ja foi confirmado. Acompanhe em Meus pedidos.`
+    : "Este pedido ja foi confirmado. Acompanhe em Meus pedidos.";
+  setCleanProductMsg(form, msg);
+  lockCleanOrderSubmitAfterSuccess(form, pedidoId);
 }
 
 function setEscudo3dOrderSubmitBusy(progressTarget, busy){
@@ -16431,12 +16728,20 @@ function buildLegacyFormDataFromClean(productKey, cleanOrder){
     fd.append("time_adversario", s.away_team || "");
   }
 
-  if(cleanOrder.fields.matchup){
+  if(cleanOrder.fields.matchup && typeof cleanOrder.fields.matchup === "object" && !Array.isArray(cleanOrder.fields.matchup)){
     const m = cleanOrder.fields.matchup;
     const confronto = `${m.home_team || ""} x ${m.away_team || ""}`.trim();
-    appendCleanTextLegacy(fd, "rodada", confronto);
-    fd.append("time_principal", m.home_team || "");
-    fd.append("time_adversario", m.away_team || "");
+    if(confronto) fd.set("rodada", confronto);
+    fd.set("time_principal", m.home_team || "");
+    fd.set("time_adversario", m.away_team || "");
+  }
+
+  if(productKey === "escalacao"){
+    const confronto = String(cleanOrder.fields.matchup || "").trim();
+    const times = splitCleanMatchupText(confronto);
+    if(confronto) fd.set("rodada", confronto);
+    fd.set("time_principal", times.home || "");
+    fd.set("time_adversario", times.away || "");
   }
 
   if(productKey === "jogador_escudo" || productKey === "mascote_uniforme"){
@@ -16832,6 +17137,140 @@ function restaurarPedidosAtivos(pedidos){
   }
 }
 
+function finalizarCleanOrderCriado(form, productKey, product, out, options = {}){
+  setCleanProductMsg(form, "");
+  marcarProductChooserVisto();
+  if(out.pedido_id){
+    salvarPedidoAtivoLocal(out.pedido_id, productKey);
+  }
+
+  ia4Track("pedido_concluido", {
+    produto: productKey,
+    categoria: product?.visualCategory || categoriaSelecionada || "",
+    pedido_id: out.pedido_id || ""
+  });
+
+  atualizarTopoProducao([{ id: out.pedido_id || "novo", status: "processando" }]);
+  iniciarProgressoNoProduto(form, out.pedido_id || "novo");
+  mostrarAvisoPedido();
+
+  if(out.pedido_id){
+    acompanharResultadoClean(out.pedido_id, form);
+  }
+
+  const resumoCupom = couponSummaryText(out);
+  const fallbackMsg = options.foundAfterLookup
+    ? "Pedido confirmado. Acompanhe em Meus pedidos."
+    : "Pedido enviado. Acompanhe em Meus pedidos.";
+  setCleanProductMsg(form, resumoCupom || fallbackMsg);
+
+  if(options.resetForm !== false){
+    resetCleanFormAfterSend(form);
+  }
+
+  lockCleanOrderSubmitAfterSuccess(form, out.pedido_id || "");
+
+  refreshMe();
+  carregarHistorico();
+  destacarMeusPedidos();
+}
+
+function sanitizeOmascoteSendBody(body){
+  if(body === null || body === undefined) return null;
+  if(typeof body !== "object") return String(body).slice(0, 1000);
+
+  const blockedKey = /token|senha|password|authorization|imagem|image|foto|file|arquivo|base64/i;
+  const output = Array.isArray(body) ? [] : {};
+  Object.keys(body).slice(0, 80).forEach(key => {
+    if(blockedKey.test(key)){
+      output[key] = "[omitido]";
+      return;
+    }
+
+    const value = body[key];
+    if(value && typeof value === "object"){
+      output[key] = sanitizeOmascoteSendBody(value);
+      return;
+    }
+
+    const text = String(value ?? "");
+    output[key] = text.length > 500 ? `${text.slice(0, 500)}...` : value;
+  });
+  return output;
+}
+
+function logOmascoteSendError({ productKey, endpoint, clientRequestId, etapa, status, responseBody, erro, postResponseReceived, pedidoCriado }){
+  console.error("[OMASCOTE_SEND_ERROR]", {
+    data_hora: new Date().toISOString(),
+    produto: productKey,
+    endpoint: endpoint || "",
+    etapa: etapa || "desconhecida",
+    client_request_id: clientRequestId || "",
+    status_http: status || "",
+    response_body: sanitizeOmascoteSendBody(responseBody),
+    erro_nome: erro?.name || "",
+    erro_mensagem: erro?.message || String(erro || ""),
+    stack: erro?.stack || "",
+    post_recebeu_resposta: postResponseReceived === true,
+    pedido_ja_criado: pedidoCriado === true
+  });
+}
+
+async function tratarFalhaCleanOrderIndeterminada({ form, productKey, product, endpoint, clientRequestId, erro, diagnostico = {} }){
+  logOmascoteSendError({
+    productKey,
+    endpoint,
+    clientRequestId,
+    etapa: diagnostico.etapa || "falha_indeterminada",
+    status: diagnostico.status || "",
+    responseBody: diagnostico.responseBody || null,
+    erro,
+    postResponseReceived: diagnostico.postResponseReceived,
+    pedidoCriado: diagnostico.pedidoCriado
+  });
+
+  setCleanProductMsg(form, "Nao recebemos a confirmacao do servidor. Conferindo se o pedido foi criado...", true);
+
+  try{
+    const lookup = await consultarPedidoPorClientRequestId(clientRequestId);
+
+    if(lookup.ok && lookup.pedido?.pedido_id){
+      markCleanOrderRequestConfirmed(form, form.__cleanOrderRequestState, lookup.pedido.pedido_id);
+      try{
+        finalizarCleanOrderCriado(form, productKey, product, lookup.pedido, {
+          foundAfterLookup:true,
+          resetForm:true
+        });
+      }catch(uiErr){
+        console.error("[submitCleanProductForm] pedido encontrado mas houve erro ao atualizar UI", {
+          produto: productKey,
+          pedido_id: lookup.pedido.pedido_id || "",
+          erro: uiErr?.message || String(uiErr)
+        });
+        setCleanProductMsg(form, "Pedido confirmado, mas houve erro ao atualizar a tela. Acompanhe em Meus pedidos.", true);
+      }
+      return { found:true };
+    }
+
+    console.warn("[submitCleanProductForm] lookup sem pedido para tentativa", {
+      produto: productKey,
+      client_request_id: clientRequestId,
+      status: lookup.status || "",
+      erro: lookup.error || ""
+    });
+  }catch(lookupErr){
+    console.warn("[submitCleanProductForm] falha ao consultar tentativa apos erro de envio", {
+      produto: productKey,
+      client_request_id: clientRequestId,
+      erro: lookupErr?.message || String(lookupErr)
+    });
+  }
+
+  cancelarProgressoNoProduto(form);
+  setCleanProductMsg(form, "Nao foi possivel confirmar o envio. Ainda nao encontramos esse pedido; tente novamente e a mesma tentativa sera usada para evitar duplicidade.", true);
+  return { found:false };
+}
+
 async function submitCleanProductForm(e){
   e.preventDefault();
 
@@ -16841,6 +17280,10 @@ async function submitCleanProductForm(e){
   const schema = getCleanProductSchema(productKey);
 
   if(!product || !schema) return;
+  if(isCleanOrderSubmitLocked(form)){
+    showCleanOrderAlreadyConfirmed(form);
+    return;
+  }
   if(isCleanOrderSubmitBusy(form)) return;
   if(bloquearCriacaoArteForaDoApp(`envio:${productKey}`)) return;
 
@@ -16879,11 +17322,23 @@ async function enviarCleanProductFormConfirmado(form, options = {}){
 
   if(!product || !schema) return;
   if(bloquearCriacaoArteForaDoApp(`envio:${productKey}`)) return;
+  if(isCleanOrderSubmitLocked(form)){
+    showCleanOrderAlreadyConfirmed(form);
+    return;
+  }
   if(isCleanOrderSubmitBusy(form)) return;
+
+  let envioEtapa = "inicio";
+  let envioHttpStatus = "";
+  let envioResponseBody = null;
+  let envioRecebeuResposta = false;
+  let envioPedidoCriado = false;
+  let clientRequestId = "";
 
   setCleanOrderSubmitBusy(form, true);
 
   try{
+  envioEtapa = "preparar_formulario";
   selectedProductInput.value = productKey;
   flyerTipoInput.value = product.flyerTipo || "";
   activateCleanProductBlock(productKey);
@@ -16895,6 +17350,7 @@ async function enviarCleanProductFormConfirmado(form, options = {}){
     });
   }
 
+  envioEtapa = "validar_formulario";
   const errors = validateCleanProductForm(productKey, form);
   if(errors.length){
     cancelarProgressoNoProduto(form);
@@ -16909,12 +17365,14 @@ async function enviarCleanProductFormConfirmado(form, options = {}){
     return;
   }
 
+  envioEtapa = "verificar_autenticacao";
   if(!token){
     const okAuto = await criarContaAutomaticaAntesPedido();
     if(!okAuto) return;
   }
 
   if(perfilProdutoTituloSecaoConfig(productKey)){
+    envioEtapa = "salvar_titulo_secao";
     setCleanProductMsg(form, "Salvando título da seção...");
     const tituloSecaoResultado = await salvarTituloSecaoProduto(productKey, form);
     if(!tituloSecaoResultado.ok){
@@ -16925,19 +17383,55 @@ async function enviarCleanProductFormConfirmado(form, options = {}){
 
   setCleanProductMsg(form, "Enviando...");
 
+  envioEtapa = "montar_payload";
   const cleanOrder = serializeCleanProductForm(productKey, form);
+  const requestState = getOrCreateCleanOrderRequestState(form, productKey, cleanOrder);
+
+  if(requestState.confirmed){
+    const pedidoMsg = requestState.pedidoId
+      ? `Pedido ${requestState.pedidoId} ja foi confirmado. Acompanhe em Meus pedidos.`
+      : "Este pedido ja foi confirmado. Acompanhe em Meus pedidos.";
+    setCleanProductMsg(form, pedidoMsg);
+    return;
+  }
+
   const fd = buildLegacyFormDataFromClean(productKey, cleanOrder);
-  const clientRequestId = criarClientRequestId(`pedido_${productKey}`);
+  clientRequestId = requestState.clientRequestId;
   appendOrderClientRequest(fd, clientRequestId);
 
   try{
+    envioEtapa = "enviar_requisicao";
     const r = await fetch(`${API_BASE}${schema.endpoint}`, {
       method:"POST",
       headers: buildOrderCreationHeaders(clientRequestId),
       body:fd
     });
+    envioRecebeuResposta = true;
+    envioHttpStatus = r.status;
 
-    const out = await ia4LerJsonSeguro(r);
+    let out;
+    try{
+      envioEtapa = "ler_resposta";
+      out = await ia4LerJsonSeguro(r);
+      envioResponseBody = out;
+    }catch(readErr){
+      await tratarFalhaCleanOrderIndeterminada({
+        form,
+        productKey,
+        product,
+        endpoint: schema.endpoint,
+        clientRequestId,
+        erro: readErr,
+        diagnostico:{
+          etapa: envioEtapa,
+          status: envioHttpStatus,
+          responseBody: envioResponseBody,
+          postResponseReceived: envioRecebeuResposta,
+          pedidoCriado: envioPedidoCriado
+        }
+      });
+      return;
+    }
     const authMsg = ia4TratarAuthInvalida(r, out);
 
     if(authMsg){
@@ -16947,33 +17441,43 @@ async function enviarCleanProductFormConfirmado(form, options = {}){
     }
 
     if(out.ok){
-      setCleanProductMsg(form, "");
-      marcarProductChooserVisto();
-      if(out.pedido_id){
-        salvarPedidoAtivoLocal(out.pedido_id, productKey);
+      envioPedidoCriado = true;
+      envioEtapa = "finalizar_ui";
+      markCleanOrderRequestConfirmed(form, requestState, out.pedido_id || "");
+      try{
+        finalizarCleanOrderCriado(form, productKey, product, out);
+      }catch(uiErr){
+        console.error("[submitCleanProductForm] pedido criado mas houve erro ao atualizar UI", {
+          produto: productKey,
+          endpoint: schema.endpoint,
+          client_request_id: clientRequestId,
+          pedido_id: out.pedido_id || "",
+          erro: uiErr?.message || String(uiErr),
+          stack: uiErr?.stack || ""
+        });
+        setCleanProductMsg(form, "Pedido criado, mas houve erro ao atualizar a tela. Acompanhe em Meus pedidos.", true);
       }
-
-      ia4Track("pedido_concluido", {
-        produto: productKey,
-        categoria: product.visualCategory || categoriaSelecionada || "",
-        pedido_id: out.pedido_id || ""
-      });
-
-      atualizarTopoProducao([{ id: out.pedido_id || "novo", status: "processando" }]);
-      iniciarProgressoNoProduto(form, out.pedido_id || "novo");
-      mostrarAvisoPedido();
-
-      if(out.pedido_id){
-        acompanharResultadoClean(out.pedido_id, form);
-      }
-      const resumoCupom = couponSummaryText(out);
-      setCleanProductMsg(form, resumoCupom || "Pedido enviado. Acompanhe em Meus pedidos.");
-
-      resetCleanFormAfterSend(form);
-      refreshMe();
-      carregarHistorico();
-      destacarMeusPedidos();
     }else{
+      if(r.status >= 500 || r.status === 409){
+        envioEtapa = "resposta_http_indeterminada";
+        const lookup = await tratarFalhaCleanOrderIndeterminada({
+          form,
+          productKey,
+          product,
+          endpoint: schema.endpoint,
+          clientRequestId,
+          erro: new Error(out.error || out.mensagem || out.erro || `HTTP ${r.status}`),
+          diagnostico:{
+            etapa: envioEtapa,
+            status: envioHttpStatus,
+            responseBody: envioResponseBody,
+            postResponseReceived: envioRecebeuResposta,
+            pedidoCriado: envioPedidoCriado
+          }
+        });
+        if(lookup.found) return;
+      }
+
       ia4Track("erro_envio_pedido", {
         produto: productKey,
         categoria: product.visualCategory || categoriaSelecionada || "",
@@ -16983,14 +17487,22 @@ async function enviarCleanProductFormConfirmado(form, options = {}){
       setCleanProductMsg(form, out.error || out.mensagem || out.erro || "Erro ao enviar", true);
     }
   }catch(err){
-    console.error("[submitCleanProductForm] erro ao enviar pedido", {
-      produto: productKey,
+    await tratarFalhaCleanOrderIndeterminada({
+      form,
+      productKey,
+      product,
       endpoint: schema.endpoint,
-      erro: err?.message || String(err),
-      stack: err?.stack || ""
+      clientRequestId,
+      erro: err,
+      diagnostico:{
+        etapa: envioEtapa,
+        status: envioHttpStatus,
+        responseBody: envioResponseBody,
+        postResponseReceived: envioRecebeuResposta,
+        pedidoCriado: envioPedidoCriado
+      }
     });
-    cancelarProgressoNoProduto(form);
-    setCleanProductMsg(form, "Não foi possível enviar agora. Verifique a conexão e tente novamente.", true);
+    return;
   }
   }finally{
     setCleanOrderSubmitBusy(form, false);
@@ -17077,11 +17589,17 @@ function bindCleanProductForms(root){
   root.querySelectorAll("[data-product-form]").forEach(form => {
     form.addEventListener("submit", submitCleanProductForm);
     form.addEventListener("input", (event) => {
-      if(!event.target.closest("[data-clean-review]") && !isCleanCouponInputTarget(event.target)) resetCleanReviewState(form);
+      if(!event.target.closest("[data-clean-review]") && !isCleanCouponInputTarget(event.target)){
+        unlockCleanOrderSubmitForNewAttempt(form);
+        resetCleanReviewState(form);
+      }
       updateCleanAccordionCompletion(event.target.closest("[data-clean-accordion-item]"));
     });
     form.addEventListener("change", (event) => {
-      if(!event.target.closest("[data-clean-review]") && !isCleanCouponInputTarget(event.target)) resetCleanReviewState(form);
+      if(!event.target.closest("[data-clean-review]") && !isCleanCouponInputTarget(event.target)){
+        unlockCleanOrderSubmitForNewAttempt(form);
+        resetCleanReviewState(form);
+      }
       updateCleanAccordionCompletion(event.target.closest("[data-clean-accordion-item]"));
     });
 
@@ -17605,11 +18123,12 @@ function applyLocal(){
   const nome = localStorage.getItem("omascote_nome_time") || "";
   const plano = localStorage.getItem("omascote_plano") || "";
   const usados = localStorage.getItem("omascote_usados") || "";
-  const saldoSalvo = localStorage.getItem("omascote_saldo");
-  const saldoNumero = Number(String(saldoSalvo ?? "").replace(",", "."));
-  const saldoTexto = saldoSalvo !== null && saldoSalvo !== "" && Number.isFinite(saldoNumero)
-    ? `Saldo disponível: R$ ${saldoNumero.toFixed(2).replace(".", ",")}`
-    : "Saldo disponível: —";
+  const saldoNumero = ia4SaldoCacheNumero();
+  const saldoTexto = Number.isFinite(saldoNumero)
+    ? ia4FormatarSaldoTela(saldoNumero)
+    : token
+      ? "Saldo disponível: atualizando..."
+      : "Saldo disponível: entre para ver";
 
   welcomeEl.textContent = nome || "Seu time";
   planoEl.textContent = `Plano: ${plano || "—"} pedidos/mês`;
@@ -17627,41 +18146,51 @@ function applyLocal(){
 
 async function refreshMe(){
   if(!token){
+    pararPollingSaldoPix();
     applyLocal();
     if(typeof ia4AtualizarModoAppUi === "function") ia4AtualizarModoAppUi();
-    return;
+    return { ok:false, semToken:true };
   }
+
+  ia4SetSaldoCarregando();
 
   try{
     const r = await fetch(`${API_BASE}/me`, {
+      cache:"no-store",
       headers: { "Authorization": "Bearer " + token }
     });
     const data = await ia4LerJsonSeguro(r);
 
     if(ia4TratarAuthInvalida(r, data)){
       if(statusEl) statusEl.textContent = "Sessão expirada. Entre novamente.";
-      return;
+      return { ok:false, auth:true, status:r.status };
     }
 
-    if(data.ok){
-      localStorage.setItem("omascote_nome_time", data.nome_time || "");
-      localStorage.setItem("omascote_perfil_id", data.perfil_id || "");
-      localStorage.setItem("omascote_plano", data.plano || "");
-      localStorage.setItem("omascote_usados", data.usados_no_ciclo || "");
-      localStorage.setItem("omascote_saldo", data.saldo ?? "");
-      applyLocal();
-      brindeEscudo3dAppDisponivel = data.brinde_escudo3d_app_disponivel === true;
-      atualizarBrindeEscudo3dAppVisual();
-      statusEl.textContent = data.ativo ? "Status: ativo" : "Status: inativo";
-      const saldo = Number(data.saldo || 0);
+    if(ia4TratarContaInexistente(r, data)){
+      if(statusEl) statusEl.textContent = "Sessão expirada. Entre novamente.";
+      return { ok:false, contaInexistente:true, status:r.status };
+    }
 
-if(saldoEl){
-  saldoEl.textContent = `Saldo disponível: R$ ${saldo.toFixed(2).replace(".", ",")}`;
-}
+    if(!r.ok || !data.ok){
+      ia4SetSaldoFalhaTemporaria("Não foi possível atualizar a conta agora.");
+      console.warn("[refreshMe] falha temporaria ao atualizar conta", {
+        status: r.status,
+        erro: data?.error || data?.erro || data?.mensagem || "sem_detalhe"
+      });
+      return { ok:false, temporario:true, status:r.status };
+    }
 
-if(saldoHeroEl){
-  saldoHeroEl.textContent = `Saldo disponível: R$ ${saldo.toFixed(2).replace(".", ",")}`;
-}
+    const saldo = ia4SetSaldoValor(data.saldo);
+    localStorage.setItem("omascote_nome_time", data.nome_time || "");
+    localStorage.setItem("omascote_perfil_id", data.perfil_id || "");
+    localStorage.setItem("omascote_plano", data.plano ?? "");
+    localStorage.setItem("omascote_usados", data.usados_no_ciclo ?? "");
+    applyLocal();
+    brindeEscudo3dAppDisponivel = data.brinde_escudo3d_app_disponivel === true;
+    atualizarBrindeEscudo3dAppVisual();
+    if(statusEl) statusEl.textContent = data.ativo ? "Status: ativo" : "Status: inativo";
+
+    ia4SetSaldoTexto(ia4FormatarSaldoTela(saldo));
 
 const jaComprou = Number(data.usados_no_ciclo || 0) > 0;
 const brindeMascoteDisponivel = data.brinde_mascote_disponivel === true || Number(data.usados_no_ciclo || 0) === 0;
@@ -17693,8 +18222,15 @@ if(escudoPromo){
   }
 }
 if(typeof ia4AtualizarModoAppUi === "function") ia4AtualizarModoAppUi();
-    }
-  }catch{}
+    return { ok:true, saldo };
+  }catch(e){
+    ia4SetSaldoFalhaTemporaria("Não foi possível atualizar a conta agora.");
+    console.warn("[refreshMe] erro de rede ao atualizar conta", {
+      nome: e?.name || "erro",
+      mensagem: e?.message || "sem_detalhe"
+    });
+    return { ok:false, rede:true };
+  }
 }
 
 function formatarTempoEstimado(segundos){
@@ -17744,6 +18280,11 @@ let acaoDepoisDoCadastro = null;
 let fluxoEscudo3dCadastro = false;
 let escudo3dCadastroFile = null;
 let saldoPixAtual = null;
+let saldoPixPollingTimer = null;
+let saldoPixPollingDeadline = 0;
+let saldoPixPollingSaldoInicial = null;
+const SALDO_PIX_POLL_INTERVAL_MS = 7000;
+const SALDO_PIX_POLL_TIMEOUT_MS = 5 * 60 * 1000;
 
 const SALDO_PIX_LABELS = {
   saldo_800: { pago: "R$8,00", credito: "R$10,00", texto: "Pague R$8,00 e receba R$10,00 de saldo" },
@@ -17772,6 +18313,12 @@ async function comprarCreditos(pacote, metodo = "checkout", triggerBtn = null){
   }
 
   try{
+    let saldoAntesCompra = ia4SaldoCacheNumero();
+    if(metodo === "pix" && !Number.isFinite(saldoAntesCompra)){
+      const contaAntes = await refreshMe();
+      if(contaAntes?.ok) saldoAntesCompra = contaAntes.saldo;
+    }
+
     const endpoint = metodo === "pix" ? "/comprar-creditos-pix" : "/comprar-creditos";
     const controller = new AbortController();
     const timeoutMs = metodo === "pix" ? 30000 : 0;
@@ -17791,6 +18338,12 @@ async function comprarCreditos(pacote, metodo = "checkout", triggerBtn = null){
     if(timeoutId) clearTimeout(timeoutId);
 
     const data = await ia4LerJsonSeguro(r);
+    const authMsg = ia4TratarAuthInvalida(r, data) || ia4TratarContaInexistente(r, data);
+
+    if(authMsg){
+      alert(authMsg);
+      return;
+    }
 
     if(!data.ok || (metodo !== "pix" && !data.init_point)){
       alert(data.error || "Erro ao iniciar pagamento.");
@@ -17803,7 +18356,7 @@ async function comprarCreditos(pacote, metodo = "checkout", triggerBtn = null){
     });
 
     if(metodo === "pix"){
-      abrirModalPixSaldo(pacote, data);
+      abrirModalPixSaldo(pacote, data, saldoAntesCompra);
       return;
     }
 
@@ -19219,6 +19772,111 @@ if(escudo3dModalCouponInput && escudo3dModalPricePreview){
   escudo3dModalCouponInput.addEventListener("change", () => schedulePricePreviewUpdate(escudo3dModalPricePreview, 0));
 }
 
+function finalizarEscudo3dPedidoCriado(out, progressTarget = null, options = {}){
+  marcarProductChooserVisto();
+  const inicioPrimeiroEscudo = localStorage.getItem(PRIMEIRO_ESCUDO_INICIO_KEY);
+
+  if(inicioPrimeiroEscudo && out.pedido_id){
+    localStorage.setItem("ia4tube_pedido_inicio_" + out.pedido_id, inicioPrimeiroEscudo);
+    localStorage.removeItem(PRIMEIRO_ESCUDO_INICIO_KEY);
+  }
+
+  const resumoCupom = couponSummaryText(out);
+  const fallbackMsg = options.foundAfterLookup
+    ? `Pedido confirmado. ID: ${out.pedido_id || ""}`
+    : `Pedido enviado! ID: ${out.pedido_id}`;
+  if(escudo3dMsg) escudo3dMsg.textContent = resumoCupom || fallbackMsg;
+  if(progressTarget && resumoCupom){
+    const msg = progressTarget.querySelector("[data-clean-msg]");
+    if(msg){
+      msg.textContent = resumoCupom;
+      msg.style.color = "#166534";
+    }
+  }
+  if(out.pedido_id){
+    salvarPedidoAtivoLocal(out.pedido_id, "escudo3d");
+  }
+  if(progressTarget){
+    iniciarProgressoNoProduto(progressTarget, out.pedido_id || "novo");
+    if(out.pedido_id) acompanharResultadoClean(out.pedido_id, progressTarget);
+  }
+
+  ia4Track("pedido_concluido", {
+    produto: "escudo3d",
+    pedido_id: out.pedido_id || ""
+  });
+
+  if(onboardingEscudo3d) onboardingEscudo3d.style.display = "none";
+
+  const badge = document.getElementById("pedidosBadge");
+  if(badge){
+    badge.textContent = "1";
+    badge.style.display = "inline-block";
+  }
+
+  mostrarAvisoPedido();
+  refreshMe();
+  carregarHistorico();
+  destacarMeusPedidos();
+
+  if(!progressTarget){
+    setTimeout(()=>{
+      window.scrollTo({ top:0, behavior:"smooth" });
+    }, 300);
+  }
+
+  if(options.closeModal !== false){
+    setTimeout(fecharEscudo3dModal, 900);
+  }
+}
+
+async function tratarFalhaEscudo3dIndeterminada({ progressTarget, clientRequestId, erro }){
+  console.error("[escudo3d] falha indeterminada ao enviar pedido", {
+    client_request_id: clientRequestId,
+    erro: erro?.message || String(erro || ""),
+    stack: erro?.stack || ""
+  });
+
+  const progressMsg = progressTarget?.querySelector("[data-clean-msg]");
+  if(escudo3dMsg) escudo3dMsg.textContent = "Conferindo se o pedido foi criado...";
+  if(progressMsg){
+    progressMsg.textContent = "Conferindo se o pedido foi criado...";
+    progressMsg.style.color = "#dc2626";
+  }
+
+  try{
+    const lookup = await consultarPedidoPorClientRequestId(clientRequestId);
+    if(lookup.ok && lookup.pedido?.pedido_id){
+      markEscudo3dOrderRequestConfirmed(escudo3dOrderRequestState, lookup.pedido.pedido_id);
+      try{
+        finalizarEscudo3dPedidoCriado(lookup.pedido, progressTarget, {
+          foundAfterLookup:true
+        });
+      }catch(uiErr){
+        console.error("[escudo3d] pedido encontrado mas houve erro ao atualizar UI", {
+          pedido_id: lookup.pedido.pedido_id || "",
+          erro: uiErr?.message || String(uiErr)
+        });
+        if(escudo3dMsg) escudo3dMsg.textContent = "Pedido confirmado, mas houve erro ao atualizar a tela. Acompanhe em Meus pedidos.";
+      }
+      return { found:true };
+    }
+  }catch(lookupErr){
+    console.warn("[escudo3d] falha ao consultar tentativa apos erro de envio", {
+      client_request_id: clientRequestId,
+      erro: lookupErr?.message || String(lookupErr)
+    });
+  }
+
+  if(escudo3dMsg) escudo3dMsg.textContent = "Nao foi possivel confirmar o envio. Tente novamente; a mesma tentativa sera usada para evitar duplicidade.";
+  if(progressTarget) cancelarProgressoNoProduto(progressTarget);
+  if(progressMsg){
+    progressMsg.textContent = "Nao foi possivel confirmar o envio. Tente novamente; a mesma tentativa sera usada para evitar duplicidade.";
+    progressMsg.style.color = "#dc2626";
+  }
+  return { found:false };
+}
+
 async function enviarPedidoEscudo3dComArquivo(file, progressTarget = null){
   if(bloquearCriacaoArteForaDoApp("escudo3d:pedido")) return;
   if(escudo3dOrderSubmitInFlight) return;
@@ -19285,7 +19943,22 @@ async function enviarPedidoEscudo3dComArquivo(file, progressTarget = null){
     fd.append("cupom_codigo", escudo3dCupomValor);
   }
   appendIa4AccessContext(fd);
-  const clientRequestId = criarClientRequestId("pedido_escudo3d");
+  const requestState = getOrCreateEscudo3dOrderRequestState(file, escudo3dCupomValor);
+
+  if(requestState.confirmed){
+    const pedidoMsg = requestState.pedidoId
+      ? `Pedido ${requestState.pedidoId} ja foi confirmado. Acompanhe em Meus pedidos.`
+      : "Este pedido ja foi confirmado. Acompanhe em Meus pedidos.";
+    if(escudo3dMsg) escudo3dMsg.textContent = pedidoMsg;
+    const msg = progressTarget?.querySelector("[data-clean-msg]");
+    if(msg){
+      msg.textContent = pedidoMsg;
+      msg.style.color = "#4b5563";
+    }
+    return;
+  }
+
+  const clientRequestId = requestState.clientRequestId;
   appendOrderClientRequest(fd, clientRequestId);
 
   try{
@@ -19295,7 +19968,17 @@ async function enviarPedidoEscudo3dComArquivo(file, progressTarget = null){
       body:fd
     });
 
-    const out = await ia4LerJsonSeguro(r);
+    let out;
+    try{
+      out = await ia4LerJsonSeguro(r);
+    }catch(readErr){
+      await tratarFalhaEscudo3dIndeterminada({
+        progressTarget,
+        clientRequestId,
+        erro: readErr
+      });
+      return;
+    }
     const authMsg = ia4TratarAuthInvalida(r, out);
 
     if(authMsg){
@@ -19306,6 +19989,19 @@ async function enviarPedidoEscudo3dComArquivo(file, progressTarget = null){
     }
 
     if(out.ok){
+      markEscudo3dOrderRequestConfirmed(requestState, out.pedido_id || "");
+      try{
+        finalizarEscudo3dPedidoCriado(out, progressTarget);
+      }catch(uiErr){
+        console.error("[escudo3d] pedido criado mas houve erro ao atualizar UI", {
+          client_request_id: clientRequestId,
+          pedido_id: out.pedido_id || "",
+          erro: uiErr?.message || String(uiErr),
+          stack: uiErr?.stack || ""
+        });
+        if(escudo3dMsg) escudo3dMsg.textContent = "Pedido criado, mas houve erro ao atualizar a tela. Acompanhe em Meus pedidos.";
+      }
+      return;
       marcarProductChooserVisto();
       const inicioPrimeiroEscudo = localStorage.getItem(PRIMEIRO_ESCUDO_INICIO_KEY);
 
@@ -19357,6 +20053,15 @@ async function enviarPedidoEscudo3dComArquivo(file, progressTarget = null){
 
       setTimeout(fecharEscudo3dModal, 900);
     }else{
+      if(r.status >= 500 || r.status === 409){
+        const lookup = await tratarFalhaEscudo3dIndeterminada({
+          progressTarget,
+          clientRequestId,
+          erro: new Error(out.error || out.mensagem || out.erro || `HTTP ${r.status}`)
+        });
+        if(lookup.found) return;
+      }
+
       ia4Track("erro_envio_pedido", {
         produto: "escudo3d",
         erro: out.error || "Erro ao enviar"
@@ -19366,15 +20071,13 @@ async function enviarPedidoEscudo3dComArquivo(file, progressTarget = null){
       if(progressTarget) cancelarProgressoNoProduto(progressTarget);
       alert(out.error || "Erro ao enviar.");
     }
-  }catch{
-    ia4Track("erro_envio_pedido", {
-      produto: "escudo3d",
-      erro: "Erro de rede"
+  }catch(err){
+    await tratarFalhaEscudo3dIndeterminada({
+      progressTarget,
+      clientRequestId,
+      erro: err
     });
-
-    if(escudo3dMsg) escudo3dMsg.textContent = "Erro de rede.";
-    if(progressTarget) cancelarProgressoNoProduto(progressTarget);
-    alert("Erro de rede.");
+    return;
   }
 
   if(escudo3dEnviarBtn) escudo3dEnviarBtn.disabled = false;
@@ -20226,7 +20929,16 @@ document.getElementById("pedidoForm").addEventListener("submit", async (e)=>{
   }
 
   appendIa4AccessContext(fd);
-  const clientRequestId = criarClientRequestId(`pedido_${productKey || "legado"}`);
+  const requestState = getOrCreateLegacyOrderRequestState(productKey || "legado", fd);
+
+  if(requestState.confirmed){
+    msgPedidoEl.textContent = requestState.pedidoId
+      ? `Pedido ${requestState.pedidoId} ja foi confirmado. Acompanhe em Meus pedidos.`
+      : "Este pedido ja foi confirmado. Acompanhe em Meus pedidos.";
+    return;
+  }
+
+  const clientRequestId = requestState.clientRequestId;
   appendOrderClientRequest(fd, clientRequestId);
 
   try{
@@ -20247,6 +20959,7 @@ document.getElementById("pedidoForm").addEventListener("submit", async (e)=>{
     }
 
     if(out.ok){
+      markLegacyOrderRequestConfirmed(requestState, out.pedido_id || "");
       msgPedidoEl.textContent = "";
       marcarProductChooserVisto();
       atualizarTopoProducao([{ id: out.pedido_id || "novo", status: "processando" }]);
@@ -20259,6 +20972,7 @@ document.getElementById("pedidoForm").addEventListener("submit", async (e)=>{
       });
 
       limparCamposAposEnviar();
+      clearLegacyOrderRequestState();
       refreshMe();
       carregarHistorico();
       destacarMeusPedidos();
@@ -20279,14 +20993,36 @@ document.getElementById("pedidoForm").addEventListener("submit", async (e)=>{
 
       msgPedidoEl.textContent = out.error || "Erro ao enviar";
     }
-  }catch{
+  }catch(err){
+    try{
+      msgPedidoEl.textContent = "Conferindo se o pedido foi criado...";
+      const lookup = await consultarPedidoPorClientRequestId(clientRequestId);
+      if(lookup.ok && lookup.pedido?.pedido_id){
+        markLegacyOrderRequestConfirmed(requestState, lookup.pedido.pedido_id);
+        msgPedidoEl.textContent = "Pedido confirmado. Acompanhe em Meus pedidos.";
+        marcarProductChooserVisto();
+        atualizarTopoProducao([{ id: lookup.pedido.pedido_id, status: "processando" }]);
+        mostrarAvisoPedido();
+        refreshMe();
+        carregarHistorico();
+        destacarMeusPedidos();
+        if(isResultado) acompanharResultado(lookup.pedido.pedido_id);
+        return;
+      }
+    }catch(lookupErr){
+      console.warn("[pedido legado] falha ao consultar tentativa apos erro de envio", {
+        client_request_id: clientRequestId,
+        erro: lookupErr?.message || String(lookupErr)
+      });
+    }
+
     ia4Track("erro_envio_pedido", {
       produto: productKey || "desconhecido",
       categoria: categoriaSelecionada || "desconhecida",
-      erro: "Erro de rede"
+      erro: err?.message || "Erro de rede"
     });
 
-    msgPedidoEl.textContent = "Erro de rede";
+    msgPedidoEl.textContent = "Nao foi possivel confirmar o envio. Tente novamente; a mesma tentativa sera usada para evitar duplicidade.";
   }
   }finally{
     legacyOrderSubmitInFlight = false;
@@ -20839,6 +21575,8 @@ function abrirModalPixQr(id, data) {
     return;
   }
 
+  pararPollingSaldoPix();
+  saldoPixAtual = null;
   const modal = document.getElementById("pixQrModal");
   const body = document.getElementById("pixQrBody");
 
@@ -20862,7 +21600,61 @@ function abrirModalPixQr(id, data) {
   modal.setAttribute("aria-hidden", "false");
 }
 
-function abrirModalPixSaldo(pacote, data) {
+function saldoPixModalAberto(){
+  const modal = document.getElementById("pixQrModal");
+  return !!modal?.classList?.contains("open") && !!saldoPixAtual;
+}
+
+function saldoPixSetStatus(texto){
+  const status = document.getElementById("saldoPixStatus");
+  if(status) status.textContent = texto || "";
+}
+
+function pararPollingSaldoPix(){
+  if(saldoPixPollingTimer){
+    clearInterval(saldoPixPollingTimer);
+  }
+  saldoPixPollingTimer = null;
+  saldoPixPollingDeadline = 0;
+  saldoPixPollingSaldoInicial = null;
+}
+
+async function verificarSaldoPixAtualizado(){
+  if(!token || !saldoPixModalAberto()){
+    pararPollingSaldoPix();
+    return;
+  }
+
+  if(Date.now() > saldoPixPollingDeadline){
+    saldoPixSetStatus("A confirmação pode levar alguns instantes. Seu saldo será atualizado assim que o pagamento for aprovado.");
+    pararPollingSaldoPix();
+    return;
+  }
+
+  const resultado = await refreshMe();
+  if(!resultado?.ok || !Number.isFinite(resultado.saldo)){
+    return;
+  }
+
+  if(!Number.isFinite(saldoPixPollingSaldoInicial)){
+    saldoPixPollingSaldoInicial = resultado.saldo;
+    return;
+  }
+
+  if(resultado.saldo > saldoPixPollingSaldoInicial + 0.009){
+    saldoPixSetStatus("Pagamento confirmado. Saldo atualizado.");
+    pararPollingSaldoPix();
+  }
+}
+
+function iniciarPollingSaldoPix(saldoInicial){
+  pararPollingSaldoPix();
+  saldoPixPollingSaldoInicial = Number.isFinite(saldoInicial) ? saldoInicial : null;
+  saldoPixPollingDeadline = Date.now() + SALDO_PIX_POLL_TIMEOUT_MS;
+  saldoPixPollingTimer = setInterval(verificarSaldoPixAtualizado, SALDO_PIX_POLL_INTERVAL_MS);
+}
+
+function abrirModalPixSaldo(pacote, data, saldoAntesCompra = null) {
   const modal = document.getElementById("pixQrModal");
   const body = document.getElementById("pixQrBody");
 
@@ -20886,6 +21678,9 @@ function abrirModalPixSaldo(pacote, data) {
     <div class="pixQrTexto">
       ${textoBonus}. Após o pagamento, o saldo é liberado automaticamente.
     </div>
+    <div class="pixQrTexto" id="saldoPixStatus">
+      Aguardando confirmação do pagamento...
+    </div>
     <button type="button" class="menuPedidoBtn" onclick="copiarPixSaldoAtual()">
       Copiar Pix ${valor}
     </button>
@@ -20893,6 +21688,7 @@ function abrirModalPixSaldo(pacote, data) {
 
   modal.classList.add("open");
   modal.setAttribute("aria-hidden", "false");
+  iniciarPollingSaldoPix(saldoAntesCompra);
 }
 
 async function copiarPixSaldoAtual() {
@@ -20913,6 +21709,8 @@ function fecharModalPixQr() {
   const modal = document.getElementById("pixQrModal");
   if(!modal) return;
 
+  pararPollingSaldoPix();
+  saldoPixAtual = null;
   modal.classList.remove("open");
   modal.setAttribute("aria-hidden", "true");
 }
@@ -21135,10 +21933,22 @@ async function carregarHistorico(){
       return;
     }
 
-    if(!data.ok){
+    const contaMsg = ia4TratarContaInexistente(r, data);
+    if(contaMsg){
       if(!historicoCarregadoUmaVez){
-        historicoVazioEl.textContent = "Erro ao carregar";
+        historicoVazioEl.textContent = contaMsg;
       }
+      return;
+    }
+
+    if(!r.ok || !data.ok){
+      if(!historicoCarregadoUmaVez){
+        historicoVazioEl.textContent = "Não foi possível carregar seus pedidos agora.";
+      }
+      console.warn("[historico] falha temporaria ao carregar pedidos", {
+        status: r.status,
+        erro: data?.error || data?.erro || data?.mensagem || "sem_detalhe"
+      });
       return;
     }
 
@@ -21265,10 +22075,14 @@ ${pagamentoPendente ? `
     `;
     }).join("");
 
-  }catch{
+  }catch(e){
     if(!historicoCarregadoUmaVez){
-      historicoVazioEl.textContent = "Erro de rede";
+      historicoVazioEl.textContent = "Não foi possível carregar seus pedidos agora.";
     }
+    console.warn("[historico] erro de rede ao carregar pedidos", {
+      nome: e?.name || "erro",
+      mensagem: e?.message || "sem_detalhe"
+    });
   }
 }
 
