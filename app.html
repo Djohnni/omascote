@@ -10333,6 +10333,28 @@ body.cleanReviewModalOpen{
   align-items:center;
 }
 
+[data-product-form="proximo_jogo"] .cleanScoreGrid[data-field="matchup"]{
+  grid-template-columns:minmax(0,1fr) 32px minmax(0,1fr);
+}
+
+[data-product-form="proximo_jogo"] .cleanScoreGrid[data-field="matchup"] > div:not(.cleanScoreX){
+  display:none;
+}
+
+[data-product-form="resultado"] .cleanScoreGrid[data-field="score"]{
+  grid-template-columns:minmax(180px,1.5fr) 64px 28px 64px minmax(180px,1.5fr);
+}
+
+[data-product-form="proximo_jogo"] .cleanScoreGrid[data-field="matchup"] input,
+[data-product-form="resultado"] .cleanScoreGrid[data-field="score"] input[name="home_team"],
+[data-product-form="resultado"] .cleanScoreGrid[data-field="score"] input[name="away_team"]{
+  min-width:0;
+  min-height:52px;
+  padding:12px 14px;
+  font-size:16px;
+  line-height:1.25;
+}
+
 .cleanScoreX{
   color:#111827;
   font-weight:950;
@@ -10545,6 +10567,49 @@ body:not(.modeChosen) .builderArea,
   .cleanScoreGrid{
     grid-template-columns:1fr 58px 20px 58px 1fr;
     gap:6px;
+  }
+
+  [data-product-form="proximo_jogo"] .cleanScoreGrid[data-field="matchup"]{
+    grid-template-columns:1fr;
+    gap:8px;
+  }
+
+  [data-product-form="proximo_jogo"] .cleanScoreGrid[data-field="matchup"] .cleanScoreX{
+    grid-column:1;
+    min-height:20px;
+    line-height:20px;
+  }
+
+  [data-product-form="resultado"] .cleanScoreGrid[data-field="score"]{
+    grid-template-columns:1fr 64px 24px 64px 1fr;
+    gap:8px;
+  }
+
+  [data-product-form="resultado"] .cleanScoreGrid[data-field="score"] input[name="home_team"]{
+    grid-column:1 / -1;
+    grid-row:1;
+  }
+
+  [data-product-form="resultado"] .cleanScoreGrid[data-field="score"] input[name="home_score"]{
+    grid-column:2;
+    grid-row:2;
+  }
+
+  [data-product-form="resultado"] .cleanScoreGrid[data-field="score"] .cleanScoreX{
+    grid-column:3;
+    grid-row:2;
+    min-height:20px;
+    line-height:20px;
+  }
+
+  [data-product-form="resultado"] .cleanScoreGrid[data-field="score"] input[name="away_team"]{
+    grid-column:1 / -1;
+    grid-row:3;
+  }
+
+  [data-product-form="resultado"] .cleanScoreGrid[data-field="score"] input[name="away_score"]{
+    grid-column:4;
+    grid-row:2;
   }
 
   .cleanPlayerRow{
@@ -11080,6 +11145,274 @@ body[data-page="home"] .ia4WhatsappIcon{
   }
 }
 
+body[data-page="home"] .preTempoHeadline{
+  display:block !important;
+}
+
+.minhaContaTopoBtn{
+  position:fixed;
+  top:max(10px, env(safe-area-inset-top, 0px));
+  right:max(10px, env(safe-area-inset-right, 0px));
+  z-index:90000;
+  min-height:36px;
+  padding:0 14px;
+  border-radius:999px;
+  border:1px solid rgba(214,165,31,.34);
+  background:rgba(8,8,6,.78);
+  color:#f8fafc;
+  box-shadow:0 12px 28px rgba(0,0,0,.20);
+  font-size:12px;
+  line-height:1;
+  font-weight:950;
+  cursor:pointer;
+}
+
+.minhaContaTopoBtn:hover,
+.minhaContaTopoBtn:focus-visible{
+  background:rgba(8,8,6,.90);
+  border-color:rgba(250,204,21,.58);
+  outline:none;
+}
+
+body.minhaContaModalAberto{
+  overflow:hidden;
+}
+
+.minhaContaModal{
+  position:fixed;
+  inset:0;
+  z-index:91000;
+  display:none;
+  align-items:flex-start;
+  justify-content:flex-end;
+  padding:18px;
+  box-sizing:border-box;
+}
+
+.minhaContaModal.open{
+  display:flex;
+}
+
+.minhaContaBackdrop{
+  position:absolute;
+  inset:0;
+  background:rgba(2,6,23,.52);
+  backdrop-filter:blur(4px);
+  -webkit-backdrop-filter:blur(4px);
+}
+
+.minhaContaCard{
+  position:relative;
+  width:min(420px, calc(100vw - 24px));
+  max-height:calc(100vh - 36px);
+  max-height:calc(100dvh - 36px);
+  overflow:visible;
+  border-radius:24px;
+  background:#ffffff;
+  border:1px solid rgba(214,165,31,.22);
+  box-shadow:0 28px 80px rgba(15,23,42,.34);
+  color:#0f172a;
+}
+
+.minhaContaHeader{
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  gap:16px;
+  padding:18px 18px 12px;
+  border-bottom:1px solid #e5e7eb;
+}
+
+.minhaContaEyebrow{
+  margin-bottom:4px;
+  color:#64748b;
+  font-size:11px;
+  line-height:1;
+  font-weight:950;
+  text-transform:uppercase;
+}
+
+.minhaContaHeader h2{
+  margin:0;
+  color:#0f172a;
+  font-size:22px;
+  line-height:1.05;
+  font-weight:950;
+}
+
+.minhaContaFechar{
+  width:36px;
+  height:36px;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  border-radius:999px;
+  border:1px solid #e5e7eb;
+  background:#f8fafc;
+  color:#111827;
+  font-size:18px;
+  line-height:1;
+  font-weight:950;
+  cursor:pointer;
+}
+
+.minhaContaBody{
+  display:grid;
+  gap:14px;
+  padding:14px 18px 18px;
+  max-height:calc(100vh - 126px);
+  max-height:calc(100dvh - 126px);
+  overflow:visible;
+}
+
+body[data-page="home"] .minhaContaModal .logoutTopBar.logoutOnlyTop{
+  display:flex !important;
+  justify-content:flex-start !important;
+  align-items:center !important;
+  flex-wrap:wrap !important;
+  gap:8px !important;
+  padding:0 !important;
+  background:transparent !important;
+}
+
+body[data-page="home"] .minhaContaModal .logoutTopBar.logoutOnlyTop button{
+  min-height:38px !important;
+  padding:0 13px !important;
+  border-radius:999px !important;
+  background:#f8fafc !important;
+  border:1px solid #e5e7eb !important;
+  color:#111827 !important;
+  box-shadow:none !important;
+  font-size:13px !important;
+  font-weight:950 !important;
+}
+
+body[data-page="home"] .minhaContaModal .logoutTopBar.logoutOnlyTop button[hidden],
+body[data-page="home"] .minhaContaModal .instalarAppBtn[hidden]{
+  display:none !important;
+}
+
+body[data-page="home"] .minhaContaModal .topbar{
+  min-height:0 !important;
+  margin:0 !important;
+  padding:0 !important;
+  border:0 !important;
+  border-radius:0 !important;
+  background:transparent !important;
+  box-shadow:none !important;
+  overflow:visible !important;
+}
+
+body[data-page="home"] .minhaContaModal .topbar .ia4Brand,
+body[data-page="home"] .minhaContaModal .ia4TopProducaoBox{
+  display:none !important;
+}
+
+body[data-page="home"] .minhaContaModal .topbar .topRightArea{
+  display:grid !important;
+  grid-template-columns:1fr !important;
+  width:100% !important;
+  gap:12px !important;
+  min-width:0 !important;
+}
+
+body[data-page="home"] .minhaContaModal .saldoTopoArea{
+  width:100% !important;
+  min-width:0 !important;
+  padding:12px 14px !important;
+  border-radius:18px !important;
+  background:linear-gradient(180deg,#0f172a,#111827) !important;
+  border:1px solid rgba(214,165,31,.28) !important;
+  box-shadow:none !important;
+}
+
+body[data-page="home"] .minhaContaModal .saldoTopoTexto{
+  color:#fff7d6 !important;
+  font-size:15px !important;
+  line-height:1.2 !important;
+  white-space:normal !important;
+}
+
+body[data-page="home"] .minhaContaModal .saldoTopoExtra{
+  width:100% !important;
+  display:grid !important;
+  grid-template-columns:1fr 1fr !important;
+  gap:10px !important;
+  margin:0 !important;
+}
+
+body[data-page="home"] .minhaContaModal .saldoBoxTopo{
+  min-width:0 !important;
+  width:100% !important;
+}
+
+body[data-page="home"] .minhaContaModal #btnAbrirSaldo,
+body[data-page="home"] .minhaContaModal .topOrders{
+  width:100% !important;
+  min-width:0 !important;
+  height:44px !important;
+  padding:0 14px !important;
+  box-sizing:border-box !important;
+  justify-content:center !important;
+  border-radius:14px !important;
+  font-size:13px !important;
+  font-weight:950 !important;
+}
+
+body[data-page="home"] .minhaContaModal .topOrders.highlightPedidos{
+  animation:none !important;
+  transform:none !important;
+}
+
+body[data-page="home"] .minhaContaModal .topOrders{
+  background:#111827 !important;
+  border:1px solid rgba(15,23,42,.10) !important;
+  color:#ffffff !important;
+  box-shadow:none !important;
+}
+
+body[data-page="home"] .minhaContaModal .saldoMenu{
+  right:auto !important;
+  left:0 !important;
+  top:calc(100% + 10px) !important;
+  width:min(392px, calc(100vw - 40px)) !important;
+}
+
+@media (max-width:520px){
+  .minhaContaTopoBtn{
+    min-height:34px;
+    padding:0 12px;
+    font-size:11px;
+  }
+
+  .minhaContaModal{
+    justify-content:center;
+    padding:10px;
+  }
+
+  .minhaContaCard{
+    width:100%;
+    max-height:calc(100dvh - 20px);
+  }
+
+  .minhaContaHeader{
+    padding:16px 16px 11px;
+  }
+
+  .minhaContaBody{
+    padding:12px 16px 16px;
+  }
+
+  body[data-page="home"] > main > .wrap > .panel,
+  body[data-page="home"].visitanteNaoLogado.visitantePrimeiroAcessoReal > main > .wrap > .panel{
+    padding-top:56px !important;
+  }
+
+  body[data-page="home"] .minhaContaModal .saldoTopoExtra{
+    grid-template-columns:1fr !important;
+  }
+}
+
 /* ===== PIX PAYMENT RESPONSIVE FIX ===== */
 #pixQrModal.modalMask{
   align-items:flex-start !important;
@@ -11548,6 +11881,20 @@ body[data-page="home"] .ia4WhatsappIcon{
   </section>
 
   <div class="wrap">
+    <button id="btnMinhaContaTopo" class="minhaContaTopoBtn" type="button" aria-haspopup="dialog" aria-controls="minhaContaModal">Minha conta</button>
+
+    <div id="minhaContaModal" class="minhaContaModal" aria-hidden="true">
+      <div class="minhaContaBackdrop" data-minha-conta-close></div>
+      <div class="minhaContaCard" role="dialog" aria-modal="true" aria-labelledby="minhaContaTitulo">
+        <div class="minhaContaHeader">
+          <div>
+            <div class="minhaContaEyebrow">Acesso rapido</div>
+            <h2 id="minhaContaTitulo">Minha conta</h2>
+          </div>
+          <button id="btnMinhaContaFechar" class="minhaContaFechar" type="button" aria-label="Fechar" data-minha-conta-close>x</button>
+        </div>
+
+        <div class="minhaContaBody">
     <div class="logoutTopBar logoutOnlyTop">
       <button id="btnSair" type="button">Sair</button>
       <button id="btnCadastroTopo" type="button">Cadastro</button>
@@ -11654,8 +12001,9 @@ body[data-page="home"] .ia4WhatsappIcon{
         </div>
       </div>
     </div>
-
- 
+        </div>
+      </div>
+    </div>
 
       <div class="panel">
       <div class="welcomeBox">
@@ -22560,6 +22908,57 @@ function destacarMeusPedidos(){
 const btnSairEl = document.getElementById("btnSair");
 const btnCadastroTopoEl = document.getElementById("btnCadastroTopo");
 const btnPerfilTimeEl = document.getElementById("btnPerfilTime");
+const btnMinhaContaTopo = document.getElementById("btnMinhaContaTopo");
+const minhaContaModal = document.getElementById("minhaContaModal");
+const btnMinhaContaFechar = document.getElementById("btnMinhaContaFechar");
+
+function abrirMinhaContaModal(){
+  if(!minhaContaModal) return;
+  minhaContaModal.classList.add("open");
+  minhaContaModal.setAttribute("aria-hidden", "false");
+  document.body.classList.add("minhaContaModalAberto");
+
+  if(token && typeof refreshMe === "function"){
+    refreshMe().catch(()=>{});
+  }
+
+  setTimeout(()=>{
+    const foco = token
+      ? document.getElementById("btnMeusPedidos") || btnMinhaContaFechar
+      : document.getElementById("btnSair") || btnMinhaContaFechar;
+    try{ foco?.focus({ preventScroll:true }); }catch(e){}
+  }, 40);
+}
+
+function fecharMinhaContaModal(){
+  if(!minhaContaModal) return;
+  minhaContaModal.classList.remove("open");
+  minhaContaModal.setAttribute("aria-hidden", "true");
+  document.body.classList.remove("minhaContaModalAberto");
+  document.getElementById("saldoMenu")?.classList.remove("open");
+  document.getElementById("menuPedidosTopo")?.classList.remove("open");
+  if(typeof atualizarEstadoSaldoMenu === "function") atualizarEstadoSaldoMenu();
+}
+
+btnMinhaContaTopo?.addEventListener("click", (event)=>{
+  event.preventDefault();
+  abrirMinhaContaModal();
+});
+
+btnMinhaContaFechar?.addEventListener("click", fecharMinhaContaModal);
+
+minhaContaModal?.addEventListener("click", (event)=>{
+  if(event.target === minhaContaModal || event.target?.hasAttribute?.("data-minha-conta-close")){
+    fecharMinhaContaModal();
+  }
+});
+
+document.addEventListener("keydown", (event)=>{
+  if(event.key === "Escape" && minhaContaModal?.classList.contains("open")){
+    fecharMinhaContaModal();
+  }
+});
+
 const perfilTimeModal = document.getElementById("perfilTimeModal");
 const perfilTimeCloseBtn = document.getElementById("perfilTimeCloseBtn");
 const perfilCentralDashboard = document.getElementById("perfilCentralDashboard");
@@ -23811,6 +24210,12 @@ function atualizarTopoAuth(){
   const btnCadastroTopo = document.getElementById("btnCadastroTopo");
   const btnPerfilTime = document.getElementById("btnPerfilTime");
 
+  const btnMinhaContaAtual = document.getElementById("btnMinhaContaTopo");
+  if(btnMinhaContaAtual){
+    btnMinhaContaAtual.textContent = "Minha conta";
+    btnMinhaContaAtual.setAttribute("aria-label", token ? "Abrir minha conta" : "Entrar ou criar conta");
+  }
+
   if(btnEntrarTopo){
     btnEntrarTopo.textContent = token ? "Sair" : "Entrar";
     btnEntrarTopo.style.background = "#ffffff";
@@ -23835,6 +24240,7 @@ atualizarTopoAuth();
 
 document.getElementById("btnSair")?.addEventListener("click", ()=>{
   if(!token){
+    fecharMinhaContaModal();
     abrirLoginVisitanteModal();
     return;
   }
@@ -23845,11 +24251,13 @@ document.getElementById("btnSair")?.addEventListener("click", ()=>{
 
 btnCadastroTopoEl?.addEventListener("click", ()=>{
   if(!token){
+    fecharMinhaContaModal();
     abrirCadastroVisitanteModal();
     return;
   }
 
   if(ia4ContaAutoPendente()){
+    fecharMinhaContaModal();
     ia4RenomearContaAutoTopo();
   }
 });
@@ -28256,7 +28664,10 @@ async function salvarPerfilTime(event){
   }
 }
 
-btnPerfilTimeEl?.addEventListener("click", abrirPerfilTimeVisual);
+btnPerfilTimeEl?.addEventListener("click", ()=>{
+  fecharMinhaContaModal();
+  abrirPerfilTimeVisual();
+});
 perfilTimeVisualCloseBtn?.addEventListener("click", fecharPerfilTimeVisual);
 perfilVisualEditarBtn?.addEventListener("click", abrirEditorPeloPerfilVisual);
 perfilVisualCriarArteBtn?.addEventListener("click", criarArteComPerfilVisual);
