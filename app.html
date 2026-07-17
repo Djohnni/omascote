@@ -16248,7 +16248,131 @@ function getCleanFieldValue(form, key){
   return getCleanFormField(form, key)?.value?.trim() || "";
 }
 
+const CLEAN_LOCAL_UPLOAD_FILE_MESSAGE = "A imagem selecionada não está mais disponível para envio. Selecione a imagem novamente e tente criar a arte.";
+
+class CleanLocalUploadFileError extends Error{
+  constructor(message, options = {}){
+    super(message || CLEAN_LOCAL_UPLOAD_FILE_MESSAGE);
+    this.name = "CleanLocalUploadFileError";
+    this.localUploadFileError = true;
+    this.fieldKey = options.fieldKey || "";
+    this.fileName = options.fileName || "";
+    this.cause = options.cause || null;
+  }
+}
+
+function getCleanStableAssetStore(form){
+  if(!form) return {};
+  if(!form.__cleanStableAssets) form.__cleanStableAssets = Object.create(null);
+  return form.__cleanStableAssets;
+}
+
+function getCleanStableAssetState(form, key){
+  return form?.__cleanStableAssets?.[key] || null;
+}
+
+function setCleanStableAssetState(form, key, state, options = {}){
+  if(!form || !key) return null;
+  const store = getCleanStableAssetStore(form);
+  store[key] = state;
+  if(options.clearRequestState !== false){
+    clearCleanOrderRequestState(form);
+  }
+  return state;
+}
+
+function clearCleanStableAsset(form, key, options = {}){
+  if(form?.__cleanStableAssets && key){
+    delete form.__cleanStableAssets[key];
+  }
+  if(options.clearRequestState !== false){
+    clearCleanOrderRequestState(form);
+  }
+}
+
+function clearAllCleanStableAssets(form, options = {}){
+  if(form) form.__cleanStableAssets = Object.create(null);
+  if(options.clearRequestState !== false){
+    clearCleanOrderRequestState(form);
+  }
+}
+
+function getCleanAssetFieldLabel(productKey, fieldKey){
+  const product = PRODUCTS[productKey];
+  const field = getCleanReviewFieldByKey(productKey, fieldKey);
+  return field ? getCleanReviewFieldLabel(product, field) : "imagem";
+}
+
+function buildCleanLocalUploadMessage(productKey, fieldKey){
+  const label = getCleanAssetFieldLabel(productKey, fieldKey);
+  return label ? `${CLEAN_LOCAL_UPLOAD_FILE_MESSAGE} Campo: ${label}.` : CLEAN_LOCAL_UPLOAD_FILE_MESSAGE;
+}
+
+function isCleanStableAssetTokenCurrent(form, key, token){
+  return !!token && getCleanStableAssetState(form, key)?.token === token;
+}
+
+async function createCleanStableUploadFile(file, fieldKey){
+  const fileName = file?.name || `${fieldKey || "imagem"}.jpg`;
+
+  try{
+    if(!file || typeof file.arrayBuffer !== "function"){
+      throw new Error("Arquivo sem leitor binário.");
+    }
+
+    const buffer = await file.arrayBuffer();
+    const type = file.type || "application/octet-stream";
+    const lastModified = Number(file.lastModified || Date.now());
+
+    try{
+      return new File([buffer], fileName, { type, lastModified });
+    }catch(e){
+      const blob = new Blob([buffer], { type });
+      try{ Object.defineProperty(blob, "name", { value:fileName }); }catch(err){}
+      try{ Object.defineProperty(blob, "lastModified", { value:lastModified }); }catch(err){}
+      return blob;
+    }
+  }catch(err){
+    throw new CleanLocalUploadFileError(CLEAN_LOCAL_UPLOAD_FILE_MESSAGE, {
+      fieldKey,
+      fileName,
+      cause: err
+    });
+  }
+}
+
+async function createCleanStableUploadFiles(files, fieldKey){
+  return Promise.all(Array.from(files || []).map(file => createCleanStableUploadFile(file, fieldKey)));
+}
+
+function getCleanAssetBlockingState(productKey, form, schema){
+  for(const field of schema?.fields || []){
+    if(field.type !== "file" && field.type !== "multi-file") continue;
+    const state = getCleanStableAssetState(form, field.key);
+    if(state?.status === "loading"){
+      return {
+        field,
+        message: `Aguarde a imagem terminar de preparar antes de criar a arte. Campo: ${getCleanAssetFieldLabel(productKey, field.key)}.`
+      };
+    }
+    if(state?.status === "error"){
+      return {
+        field,
+        message: buildCleanLocalUploadMessage(productKey, field.key)
+      };
+    }
+  }
+  return null;
+}
+
 function getCleanAssetFiles(form, key){
+  const stable = getCleanStableAssetState(form, key);
+  if(stable?.status === "ready"){
+    return Array.from(stable.files || []);
+  }
+  if(stable?.status === "loading" || stable?.status === "error"){
+    return [];
+  }
   return Array.from(getCleanFormAsset(form, key)?.files || []);
 }
 
@@ -16331,6 +16455,12 @@ function validateCleanProductForm(productKey, form){
     const card = form.querySelector(`[data-clean-field-card="${CSS.escape(field.key)}"]`);
     if(card) card.classList.add("campoObrigatorioErro");
   };
+
+  const assetBlockingState = getCleanAssetBlockingState(productKey, form, schema);
+  if(assetBlockingState){
+    markError(assetBlockingState.field);
+    return [assetBlockingState.message];
+  }
 
   schema.fields.forEach(field => {
     if(field.type === "file" || field.type === "multi-file"){
@@ -16435,10 +16565,10 @@ function appendCleanTextLegacy(fd, name, value){
 function appendCleanAssetLegacy(fd, cleanOrder, fieldKey, legacyName, fallbackFile = null){
   const files = cleanOrder.assets?.[fieldKey]?.files || [];
   if(files.length){
-    files.forEach(file => fd.append(legacyName, file));
+    files.forEach(file => fd.append(legacyName, file, file?.name || `${legacyName}.png`));
     return;
   }
-  if(fallbackFile) fd.append(legacyName, fallbackFile);
+  if(fallbackFile) fd.append(legacyName, fallbackFile, fallbackFile?.name || `${legacyName}.png`);
 }
 
 function splitCleanMatchupText(value){
@@ -16559,8 +16689,15 @@ function orderFileFingerprint(file){
   };
 }
 
+function isOrderUploadBlob(value){
+  return (
+    (typeof File !== "undefined" && value instanceof File) ||
+    (typeof Blob !== "undefined" && value instanceof Blob)
+  );
+}
+
 function normalizeOrderFingerprintValue(value){
-  if(value instanceof File) return orderFileFingerprint(value);
+  if(isOrderUploadBlob(value)) return orderFileFingerprint(value);
   if(Array.isArray(value)) return value.map(item => normalizeOrderFingerprintValue(item));
   if(value && typeof value === "object"){
     const out = {};
@@ -16650,7 +16787,7 @@ function buildFormDataOrderFingerprint(productKey, fd){
   fd?.forEach?.((value, key) => {
     entries.push({
       key,
-      value: value instanceof File ? orderFileFingerprint(value) : String(value || "")
+      value: isOrderUploadBlob(value) ? orderFileFingerprint(value) : String(value || "")
     });
   });
   return JSON.stringify(normalizeOrderFingerprintValue({
@@ -16903,13 +17040,16 @@ function resetCleanFormAfterSend(form){
     loaded: input.dataset.profileTitleLoaded || "",
     dirty: input.dataset.profileTitleDirty || ""
   }));
+  const assetKeys = Array.from(form.querySelectorAll("[data-asset]")).map(input => input.dataset.asset).filter(Boolean);
 
   form.reset();
+  clearAllCleanStableAssets(form);
   profileTitleValues.forEach(item => {
     item.input.value = item.value;
     if(item.loaded) item.input.dataset.profileTitleLoaded = item.loaded;
     if(item.dirty) item.input.dataset.profileTitleDirty = item.dirty;
   });
+  assetKeys.forEach(key => clearCleanFilePreview(form, key));
   form.querySelectorAll("[data-clean-file-name]").forEach(el => {
     el.textContent = "Nenhum arquivo";
   });
@@ -17322,6 +17462,68 @@ function logOmascoteSendError({ productKey, endpoint, clientRequestId, etapa, st
   });
 }
 
+function getCleanUploadErrorText(erro){
+  return [
+    erro?.name || "",
+    erro?.message || "",
+    erro?.stack || "",
+    erro?.cause?.name || "",
+    erro?.cause?.message || ""
+  ].join(" ");
+}
+
+function isCleanLocalUploadError(erro){
+  if(erro?.localUploadFileError === true) return true;
+  const text = getCleanUploadErrorText(erro);
+  return /ERR_UPLOAD_FILE_CHANGED|ERR_FILE_NOT_FOUND|NotReadableError|NotFoundError|file changed|upload file changed|arquivo alterado|arquivo indispon[ií]vel|falha local.*arquivo|failed to read.*file|could not read.*file/i.test(text);
+}
+
+function getFirstCleanOrderAssetFieldKey(productKey, cleanOrder){
+  const schema = getCleanProductSchema(productKey);
+  for(const field of schema?.fields || []){
+    if(field.type !== "file" && field.type !== "multi-file") continue;
+    const files = cleanOrder?.assets?.[field.key]?.files || [];
+    if(files.length) return field.key;
+  }
+  return "";
+}
+
+function tratarFalhaCleanOrderLocalArquivo({ form, productKey, endpoint, clientRequestId, erro, cleanOrder, diagnostico = {} }){
+  const fieldKey = erro?.fieldKey || getFirstCleanOrderAssetFieldKey(productKey, cleanOrder);
+
+  logOmascoteSendError({
+    productKey,
+    endpoint,
+    clientRequestId,
+    etapa: diagnostico.etapa || "erro_local_arquivo_upload",
+    status: diagnostico.status || "",
+    responseBody: diagnostico.responseBody || null,
+    erro,
+    postResponseReceived: diagnostico.postResponseReceived,
+    pedidoCriado: false
+  });
+
+  if(fieldKey){
+    setCleanStableAssetState(form, fieldKey, {
+      status: "error",
+      error: erro?.message || CLEAN_LOCAL_UPLOAD_FILE_MESSAGE,
+      files: []
+    }, { clearRequestState:false });
+    const card = form?.querySelector(`[data-clean-field-card="${CSS.escape(fieldKey)}"]`);
+    if(card) card.classList.add("campoObrigatorioErro");
+    openCleanAccordionForField(form, fieldKey);
+  }
+
+  cancelarProgressoNoProduto(form);
+  setCleanProductMsg(form, buildCleanLocalUploadMessage(productKey, fieldKey), true);
+  ia4Track("erro_envio_pedido_arquivo_local", {
+    produto: productKey,
+    campo: fieldKey || "",
+    erro: erro?.name || "erro_arquivo_local"
+  });
+  return { local:true };
+}
+
 async function tratarFalhaCleanOrderIndeterminada({ form, productKey, product, endpoint, clientRequestId, erro, diagnostico = {} }){
   logOmascoteSendError({
     productKey,
@@ -17595,6 +17797,25 @@ async function enviarCleanProductFormConfirmado(form, options = {}){
       setCleanProductMsg(form, out.error || out.mensagem || out.erro || "Erro ao enviar", true);
     }
   }catch(err){
+    if(isCleanLocalUploadError(err)){
+      tratarFalhaCleanOrderLocalArquivo({
+        form,
+        productKey,
+        endpoint: schema.endpoint,
+        clientRequestId,
+        erro: err,
+        cleanOrder,
+        diagnostico:{
+          etapa: envioEtapa,
+          status: envioHttpStatus,
+          responseBody: envioResponseBody,
+          postResponseReceived: envioRecebeuResposta,
+          pedidoCriado: envioPedidoCriado
+        }
+      });
+      return;
+    }
+
     await tratarFalhaCleanOrderIndeterminada({
       form,
       productKey,
@@ -17642,19 +17863,27 @@ function bindCleanProductForms(root){
   });
 
   root.querySelectorAll("[data-asset]").forEach(input => {
-    input.addEventListener("change", () => {
+    input.addEventListener("change", async () => {
       const form = input.closest("[data-product-form]");
       const productKey = form?.dataset?.productForm || "";
+      const assetKey = input.dataset.asset || "";
       if(productKey) selectCleanProductForPicker(productKey, { scroll:false });
-      const label = form?.querySelector(`[data-clean-file-name="${CSS.escape(input.dataset.asset)}"]`);
+      const label = form?.querySelector(`[data-clean-file-name="${CSS.escape(assetKey)}"]`);
       if(!label) return;
       const files = Array.from(input.files || []);
       const schema = getCleanProductSchema(productKey);
-      const field = schema?.fields?.find(item => item.key === input.dataset.asset);
+      const field = schema?.fields?.find(item => item.key === assetKey);
+      clearCleanStableAsset(form, assetKey);
+
+      if(!files.length){
+        clearCleanFilePreview(form, assetKey);
+        updateCleanAccordionForField(form, assetKey);
+        return;
+      }
       if(field?.maxFiles && files.length > Number(field.maxFiles)){
         input.value = "";
-        clearCleanFilePreview(form, input.dataset.asset);
-        const card = form?.querySelector(`[data-clean-field-card="${CSS.escape(input.dataset.asset)}"]`);
+        clearCleanFilePreview(form, assetKey);
+        const card = form?.querySelector(`[data-clean-field-card="${CSS.escape(assetKey)}"]`);
         if(card) card.classList.add("campoObrigatorioErro");
         setCleanProductMsg(form, `Envie no máximo ${field.maxFiles} fotos neste campo.`, true);
         return;
@@ -17662,17 +17891,61 @@ function bindCleanProductForms(root){
       const sizeMsg = ia4ValidarTamanhoArquivos(files);
       if(sizeMsg){
         input.value = "";
-        clearCleanFilePreview(form, input.dataset.asset);
-        const card = form?.querySelector(`[data-clean-field-card="${CSS.escape(input.dataset.asset)}"]`);
+        clearCleanFilePreview(form, assetKey);
+        const card = form?.querySelector(`[data-clean-field-card="${CSS.escape(assetKey)}"]`);
         if(card) card.classList.add("campoObrigatorioErro");
         setCleanProductMsg(form, sizeMsg, true);
         return;
       }
-      const card = form?.querySelector(`[data-clean-field-card="${CSS.escape(input.dataset.asset)}"]`);
+      const selectionToken = `${Date.now()}_${Math.random().toString(36).slice(2)}`;
+      setCleanStableAssetState(form, assetKey, {
+        status: "loading",
+        token: selectionToken,
+        files: [],
+        originalFiles: files.map(orderFileFingerprint)
+      });
+      setCleanProductMsg(form, "Preparando imagem...");
+
+      let stableFiles;
+      try{
+        stableFiles = await createCleanStableUploadFiles(files, assetKey);
+      }catch(err){
+        if(!isCleanStableAssetTokenCurrent(form, assetKey, selectionToken)) return;
+        input.value = "";
+        setCleanStableAssetState(form, assetKey, {
+          status: "error",
+          error: err?.message || CLEAN_LOCAL_UPLOAD_FILE_MESSAGE,
+          files: []
+        });
+        clearCleanFilePreview(form, assetKey);
+        const card = form?.querySelector(`[data-clean-field-card="${CSS.escape(assetKey)}"]`);
+        if(card) card.classList.add("campoObrigatorioErro");
+        console.warn("[clean_upload_snapshot_error]", {
+          produto: productKey,
+          campo: assetKey,
+          erro: err?.message || String(err || "")
+        });
+        setCleanProductMsg(form, buildCleanLocalUploadMessage(productKey, assetKey), true);
+        openCleanAccordionForField(form, assetKey);
+        return;
+      }
+
+      if(!isCleanStableAssetTokenCurrent(form, assetKey, selectionToken)) return;
+
+      setCleanStableAssetState(form, assetKey, {
+        status: "ready",
+        files: stableFiles,
+        originalFiles: files.map(orderFileFingerprint),
+        capturedAt: Date.now()
+      });
+
+      const card = form?.querySelector(`[data-clean-field-card="${CSS.escape(assetKey)}"]`);
       if(card) card.classList.remove("campoObrigatorioErro");
-      setCleanProductMsg(form, "");
-      setCleanFilePreview(form, input.dataset.asset, files);
-      updateCleanAccordionForField(form, input.dataset.asset);
+      if(!getCleanAssetBlockingState(productKey, form, schema)){
+        setCleanProductMsg(form, "");
+      }
+      setCleanFilePreview(form, assetKey, stableFiles);
+      updateCleanAccordionForField(form, assetKey);
     });
   });
 
