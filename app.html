@@ -6923,6 +6923,37 @@ body{
   max-width:760px;
 }
 
+.homeAuthNav{
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  gap:8px;
+  margin:0 auto 8px;
+  padding:2px 10px;
+  flex-wrap:wrap;
+}
+
+.homeAuthNav button{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap:5px;
+  min-height:30px;
+  padding:7px 10px;
+  border:1px solid rgba(15,23,42,.10);
+  border-radius:999px;
+  background:rgba(255,255,255,.86);
+  color:#111827;
+  font-size:12px;
+  font-weight:900;
+  line-height:1;
+  box-shadow:none;
+}
+
+.homeAuthNav button[hidden]{
+  display:none !important;
+}
+
 body.visitanteNaoLogado .preTempoHeadline{
   display:block;
 }
@@ -11762,6 +11793,12 @@ body.homeLandingClean[data-page="home"] > main > .wrap > .panel{
             Plataforma para clubes de futebol com perfil do time, elenco, escalação, patrocinadores, ranking, galeria, próximos jogos, resultados e artes automáticas.
           </p>
         </section>
+
+        <nav class="homeAuthNav" aria-label="Navegacao da conta">
+          <button id="homeAuthEntrarBtn" type="button">👤 Entrar</button>
+          <button id="homeAuthCadastroBtn" type="button">📝 Cadastro</button>
+          <button id="homeAuthSairBtn" type="button" hidden>🚪 Sair</button>
+        </nav>
 
         <div class="preTempoHeadline">👀 Primeiro você vê sua arte pronta. Depois decide se quer desbloquear.</div>
 
@@ -24196,6 +24233,9 @@ function atualizarTopoAuth(){
   const btnEntrarTopo = document.getElementById("btnSair");
   const btnCadastroTopo = document.getElementById("btnCadastroTopo");
   const btnPerfilTime = document.getElementById("btnPerfilTime");
+  const homeAuthEntrar = document.getElementById("homeAuthEntrarBtn");
+  const homeAuthCadastro = document.getElementById("homeAuthCadastroBtn");
+  const homeAuthSair = document.getElementById("homeAuthSairBtn");
 
   if(btnEntrarTopo){
     btnEntrarTopo.textContent = token ? "Sair" : "Entrar";
@@ -24215,6 +24255,10 @@ function atualizarTopoAuth(){
     btnPerfilTime.style.background = "#ffffff";
     btnPerfilTime.textContent = "Perfil do Time";
   }
+
+  if(homeAuthEntrar) homeAuthEntrar.hidden = !!token;
+  if(homeAuthCadastro) homeAuthCadastro.hidden = !!token;
+  if(homeAuthSair) homeAuthSair.hidden = !token;
 }
 
 atualizarTopoAuth();
@@ -24238,6 +24282,18 @@ btnCadastroTopoEl?.addEventListener("click", ()=>{
   if(ia4ContaAutoPendente()){
     ia4RenomearContaAutoTopo();
   }
+});
+
+document.getElementById("homeAuthEntrarBtn")?.addEventListener("click", ()=>{
+  document.getElementById("btnSair")?.click();
+});
+
+document.getElementById("homeAuthCadastroBtn")?.addEventListener("click", ()=>{
+  btnCadastroTopoEl?.click();
+});
+
+document.getElementById("homeAuthSairBtn")?.addEventListener("click", ()=>{
+  document.getElementById("btnSair")?.click();
 });
 
 function setPerfilTimeMsg(texto, tipo = ""){
