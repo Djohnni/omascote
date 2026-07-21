@@ -10300,6 +10300,20 @@ body.visitanteNaoLogado .visitanteWelcomeCallout{
   font-size:14px;
 }
 
+.fotoJogosSelectedCount{
+  margin-top:3px;
+  color:#64748b;
+  font-size:12px;
+  font-weight:850;
+}
+
+.fotoJogosHeaderActions{
+  display:flex;
+  flex-wrap:wrap;
+  justify-content:flex-end;
+  gap:8px;
+}
+
 .fotoJogosWorkspace .fotoJogosSmallBtn{
   background:#ffffff;
   color:#111827;
@@ -10316,9 +10330,32 @@ body.visitanteNaoLogado .visitanteWelcomeCallout{
   box-shadow:0 18px 42px rgba(15,23,42,.09);
 }
 
+.fotoJogosWorkspace .fotoJogosRow.is-selected{
+  border-color:rgba(22,163,74,.45);
+  box-shadow:0 20px 46px rgba(22,163,74,.14);
+}
+
 .fotoJogosWorkspace .fotoJogosCardTitle{
   color:#15803d;
   font-size:11px;
+}
+
+.fotoJogosSelectPill{
+  min-height:32px;
+  border-radius:999px;
+  padding:7px 10px;
+  border:1px solid #e5e7eb;
+  background:#f8fafc;
+  color:#64748b;
+  font-size:12px;
+  font-weight:950;
+  cursor:pointer;
+}
+
+.fotoJogosSelectPill.is-selected{
+  color:#065f46;
+  background:#dcfce7;
+  border-color:#bbf7d0;
 }
 
 .fotoJogosWorkspace .fotoJogosRowActions .fotoJogosSmallBtn{
@@ -10417,6 +10454,40 @@ body.visitanteNaoLogado .visitanteWelcomeCallout{
   box-shadow:none;
 }
 
+.fotoJogosPhotoBox{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+  padding:10px 0 0;
+}
+
+.fotoJogosPhotoPreview{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  min-width:0;
+  color:#334155;
+  font-size:12px;
+  font-weight:850;
+}
+
+.fotoJogosPhotoPreview img{
+  width:44px;
+  height:44px;
+  border-radius:12px;
+  object-fit:cover;
+  border:1px solid #e2e8f0;
+  background:#f8fafc;
+}
+
+.fotoJogosPhotoTypeMenu{
+  display:flex;
+  flex-wrap:wrap;
+  gap:8px;
+  margin-top:8px;
+}
+
 .fotoJogosWorkspace .fotoJogosMainInfo{
   padding:0;
   background:transparent;
@@ -10481,9 +10552,104 @@ body.visitanteNaoLogado .visitanteWelcomeCallout{
   box-shadow:0 10px 20px rgba(15,23,42,.10);
 }
 
-.fotoJogosWorkspace .fotoJogosEscudo3dChoice{
+.fotoJogosWorkspace .fotoJogosProductActions .fotoJogosSmallBtn.is-selected{
+  background:#16a34a;
+  border-color:#16a34a;
+  color:#052e16;
+}
+
+.fotoJogosWorkspace .fotoJogosEscudo3dChoice,
+.fotoJogosInlineFields{
   background:#fffbeb;
   border-color:#fde68a;
+}
+
+.fotoJogosInlineFields{
+  display:grid;
+  gap:10px;
+  padding:12px;
+  border:1px solid #fde68a;
+  border-radius:16px;
+}
+
+.fotoJogosMiniGrid,
+.fotoJogosChoiceGrid{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:8px;
+}
+
+.fotoJogosChoiceGrid .fotoJogosSmallBtn.is-selected{
+  background:#111827;
+  color:#facc15;
+  border-color:#111827;
+}
+
+.fotoJogosCardErrors{
+  display:grid;
+  gap:5px;
+  color:#b91c1c;
+  font-size:12px;
+  font-weight:900;
+}
+
+.fotoJogosBatchBar{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  margin-top:14px;
+  padding:12px;
+  border-radius:18px;
+  background:#f8fafc;
+  border:1px solid #e5e7eb;
+}
+
+.fotoJogosBatchPanel{
+  display:grid;
+  gap:12px;
+  margin-top:14px;
+  padding:14px;
+  border-radius:20px;
+  background:#ffffff;
+  border:1px solid #e5e7eb;
+  box-shadow:0 14px 30px rgba(15,23,42,.08);
+}
+
+.fotoJogosBatchPanel h4{
+  margin:0;
+  color:#111827;
+  font-size:16px;
+}
+
+.fotoJogosBatchList,
+.fotoJogosProgressList{
+  display:grid;
+  gap:8px;
+  margin:0;
+  padding:0;
+  list-style:none;
+}
+
+.fotoJogosBatchList li,
+.fotoJogosProgressList li{
+  color:#334155;
+  font-size:13px;
+  font-weight:850;
+}
+
+.fotoJogosBatchTotals{
+  display:grid;
+  gap:6px;
+  color:#334155;
+  font-size:13px;
+  font-weight:900;
+}
+
+.fotoJogosBatchActions{
+  display:flex;
+  flex-wrap:wrap;
+  gap:8px;
 }
 
 .fotoJogosProductReturn{
@@ -10562,6 +10728,19 @@ body.fotoJogosProductFocus #fotoJogosProductReturn{
 
   .fotoJogosWorkspace .fotoJogosProductActions{
     grid-template-columns:repeat(2,minmax(0,1fr));
+  }
+
+  .fotoJogosHeaderActions,
+  .fotoJogosBatchBar,
+  .fotoJogosPhotoBox{
+    align-items:stretch;
+    flex-direction:column;
+  }
+
+  .fotoJogosHeaderActions .fotoJogosSmallBtn,
+  .fotoJogosBatchActions .fotoJogosSmallBtn,
+  .fotoJogosBatchActions .fotoJogosBtn{
+    width:100%;
   }
 }
 
@@ -12892,14 +13071,14 @@ body.homeLandingClean[data-page="home"] > main > .wrap > .panel{
             <div class="visitanteWelcomeLine">⚡ Depois desbloqueia pelo preço do produto</div>
           </div>
 
-          <section id="fotoJogosEntry" class="fotoJogosEntry" aria-label="IA4Tube Assistente"></section>
+          <section id="fotoJogosEntry" class="fotoJogosEntry" aria-label="iA4Tube Assistente"></section>
 
           <section id="fotoJogosWorkspace" class="fotoJogosWorkspace" aria-label="Identificar jogos pela foto" hidden></section>
 
           <section id="productChooser" class="productChooser" aria-label="Escolha o tipo de arte"></section>
 
           <div id="fotoJogosProductReturn" class="fotoJogosProductReturn" hidden>
-            <button type="button" class="fotoJogosBackBtn" data-foto-jogos-product-back>&larr; Voltar ao IA4Tube Assistente</button>
+            <button type="button" class="fotoJogosBackBtn" data-foto-jogos-product-back>&larr; Voltar ao iA4Tube Assistente</button>
             <span data-foto-jogos-product-status></span>
           </div>
 
@@ -16985,8 +17164,10 @@ function configurarProductChooserNavegacao(chooser){
 }
 
 const FOTO_JOGOS_ENDPOINT = "/me/time/jogos/identificar-por-foto";
+const FOTO_JOGOS_BATCH_ENDPOINT = "/me/time/jogos/criar-artes";
+const FOTO_JOGOS_BATCH_MAX_ITEMS = 3;
 const FOTO_JOGOS_EMPTY_MESSAGE = "N\u00e3o encontramos confrontos claramente identific\u00e1veis nesta imagem. Tente enviar uma foto mais pr\u00f3xima e n\u00edtida.";
-const FOTO_JOGOS_SLOW_MESSAGE = "A IA4Tube ainda est\u00e1 analisando a imagem. Tabelas maiores podem levar um pouco mais de tempo.";
+const FOTO_JOGOS_SLOW_MESSAGE = "A iA4Tube ainda est\u00e1 analisando a imagem. Tabelas maiores podem levar um pouco mais de tempo.";
 const FOTO_JOGOS_FRONTEND_TIMEOUT_MS = 180000;
 const FOTO_JOGOS_FIELDS = [
   { key:"time_a", label:"Time A" },
@@ -17012,14 +17193,21 @@ const fotoJogosState = {
   message:"",
   error:false,
   crestTarget:null,
+  photoTarget:null,
+  photoChooser:"",
   editing:{},
   moreOpen:{},
-  escudo3dChooser:"",
   workspaceOpen:false,
   productFocus:false,
   productMessage:"",
   workspaceScrollY:0,
-  progressTimers:[]
+  progressTimers:[],
+  batchConfirm:null,
+  batchCreating:false,
+  batchProgress:[],
+  batchResult:null,
+  batchError:"",
+  batchRequestState:null
 };
 
 function fotoJogosCriarId(){
@@ -17031,10 +17219,32 @@ function fotoJogosTexto(value, max = 140){
   return String(value || "").replace(/\s+/g, " ").trim().slice(0, max);
 }
 
+function fotoJogosProdutoDiretoValido(productKey){
+  return ["proximo_jogo", "resultado", "escalacao", "escudo3d", "jogador_escudo"].includes(String(productKey || ""));
+}
+
 function fotoJogosNormalizarJogo(jogo = {}, options = {}){
+  const productCandidate = String(jogo.productKey || jogo.product_id || jogo.produto || "");
+  const productKey = fotoJogosProdutoDiretoValido(productCandidate)
+    ? productCandidate
+    : "";
+  const foto = jogo.foto && typeof jogo.foto === "object" ? jogo.foto : {};
   const normalizado = {
     id: jogo.id || fotoJogosCriarId(),
     selected: options.selected === true || jogo.selected === true,
+    productKey,
+    resultado_gols_a: fotoJogosTexto(jogo.resultado_gols_a || "", 3),
+    resultado_gols_b: fotoJogosTexto(jogo.resultado_gols_b || "", 3),
+    escalacao_texto: String(jogo.escalacao_texto || "").slice(0, 1200),
+    direct_errors: Array.isArray(jogo.direct_errors) ? jogo.direct_errors.slice(0, 6) : [],
+    batch_request_id: jogo.batch_request_id || "",
+    batch_fingerprint: jogo.batch_fingerprint || "",
+    foto: {
+      file: foto.file || null,
+      preview: foto.preview || "",
+      tipo: foto.tipo === "time" ? "time" : (foto.tipo === "jogador" ? "jogador" : ""),
+      nome: fotoJogosTexto(foto.nome || "", 80)
+    },
     escudos: {
       time_a: jogo.escudos?.time_a || null,
       time_b: jogo.escudos?.time_b || null
@@ -17043,7 +17253,8 @@ function fotoJogosNormalizarJogo(jogo = {}, options = {}){
       time_a: jogo.escudo_previews?.time_a || "",
       time_b: jogo.escudo_previews?.time_b || ""
     },
-    escudo3d_side: jogo.escudo3d_side === "time_b" ? "time_b" : "time_a"
+    escudo3d_side: jogo.escudo3d_side === "time_b" ? "time_b" : "time_a",
+    jogador_escudo_side: jogo.jogador_escudo_side === "time_b" ? "time_b" : "time_a"
   };
 
   FOTO_JOGOS_FIELDS.forEach(field => {
@@ -17087,7 +17298,7 @@ function fotoJogosMesclarLista(novosJogos){
   });
 
   (Array.isArray(novosJogos) ? novosJogos : []).forEach(jogo => {
-    const normalizado = fotoJogosNormalizarJogo(jogo);
+    const normalizado = fotoJogosNormalizarJogo(jogo, { selected:true });
     const chave = fotoJogosChaveDedup(normalizado);
     if(!normalizado.time_a || !normalizado.time_b || vistos.has(chave)) return;
     vistos.add(chave);
@@ -17095,6 +17306,9 @@ function fotoJogosMesclarLista(novosJogos){
   });
 
   fotoJogosState.jogos = mesclados;
+  fotoJogosState.batchConfirm = null;
+  fotoJogosState.batchResult = null;
+  fotoJogosState.batchError = "";
 }
 
 function fotoJogosSelecionados(){
@@ -17207,7 +17421,8 @@ function fotoJogosProductLabel(productKey){
     proximo_jogo:"Pr\u00f3ximo Jogo",
     resultado:"Resultado",
     escalacao:"Escala\u00e7\u00e3o",
-    escudo3d:"Escudo 3D"
+    escudo3d:"Escudo 3D",
+    jogador_escudo:"Jogador + Escudo"
   };
   return labels[productKey] || "produto";
 }
@@ -17234,7 +17449,7 @@ function renderFotoJogosEntry(){
     <div class="fotoJogosEntryCard">
       <div class="fotoJogosEntryText">
         <span class="fotoJogosEntryKicker">Ferramenta especial</span>
-        <h3 class="fotoJogosEntryTitle">IA4Tube Assistente</h3>
+        <h3 class="fotoJogosEntryTitle">iA4Tube Assistente</h3>
         <span class="fotoJogosEntrySub">Transforme uma foto em artes</span>
       </div>
       <button type="button" class="fotoJogosEntryBtn" data-foto-jogos-open>Identificar jogos pela foto</button>
@@ -17246,7 +17461,7 @@ function renderFotoJogosWorkspace(){
   return `
     <div class="fotoJogosWorkspaceTop">
       <div>
-        <h2 class="fotoJogosWorkspaceTitle">IA4Tube Assistente</h2>
+        <h2 class="fotoJogosWorkspaceTitle">iA4Tube Assistente</h2>
         <span class="fotoJogosWorkspaceSub">Transforme uma foto em artes</span>
       </div>
       <button type="button" class="fotoJogosBackBtn" data-foto-jogos-back>&larr; Voltar</button>
@@ -17367,22 +17582,181 @@ function renderFotoJogosOptionalInfo(jogo, editing, draft, isOpen){
   `;
 }
 
+function fotoJogosSideLabel(jogo, side){
+  const fallback = side === "time_b" ? "Time B" : "Time A";
+  return fotoJogosTexto(side === "time_b" ? jogo.time_b : jogo.time_a) || fallback;
+}
+
+function renderFotoJogosFoto(jogo){
+  const chooserOpen = fotoJogosState.photoChooser === jogo.id;
+  const foto = jogo.foto || {};
+  const hasFoto = !!foto.file;
+  const tipoLabel = foto.tipo === "jogador" ? "Foto de jogador" : (foto.tipo === "time" ? "Foto do time" : "");
+
+  return `
+    <div class="fotoJogosPhotoBox">
+      ${hasFoto ? `
+        <div class="fotoJogosPhotoPreview">
+          ${foto.preview ? `<img src="${htmlEscape(foto.preview)}" alt="">` : ""}
+          <span>${htmlEscape(tipoLabel || "Foto adicionada")}</span>
+        </div>
+        <div class="fotoJogosBatchActions">
+          <button type="button" class="fotoJogosSmallBtn" data-foto-jogo-photo-toggle>Trocar foto</button>
+          <button type="button" class="fotoJogosSmallBtn" data-foto-jogo-photo-remove>Remover</button>
+        </div>
+      ` : `
+        <button type="button" class="fotoJogosSmallBtn" data-foto-jogo-photo-toggle>+ Foto</button>
+      `}
+    </div>
+    ${chooserOpen ? `
+      <div class="fotoJogosPhotoTypeMenu">
+        <button type="button" class="fotoJogosSmallBtn" data-foto-jogo-photo-type="jogador">Foto de jogador</button>
+        <button type="button" class="fotoJogosSmallBtn" data-foto-jogo-photo-type="time">Foto do time</button>
+      </div>
+    ` : ""}
+  `;
+}
+
+function renderFotoJogosSideChoice(jogo, fieldKey){
+  const selected = jogo[fieldKey] === "time_b" ? "time_b" : "time_a";
+  return `
+    <div class="fotoJogosChoiceGrid">
+      <button type="button" class="fotoJogosSmallBtn${selected === "time_a" ? " is-selected" : ""}" data-foto-jogo-side-choice="${htmlEscape(fieldKey)}" data-foto-jogo-side="time_a">${htmlEscape(fotoJogosSideLabel(jogo, "time_a"))}</button>
+      <button type="button" class="fotoJogosSmallBtn${selected === "time_b" ? " is-selected" : ""}" data-foto-jogo-side-choice="${htmlEscape(fieldKey)}" data-foto-jogo-side="time_b">${htmlEscape(fotoJogosSideLabel(jogo, "time_b"))}</button>
+    </div>
+  `;
+}
+
+function renderFotoJogosDirectFields(jogo){
+  if(jogo.productKey === "resultado"){
+    return `
+      <div class="fotoJogosInlineFields">
+        <div class="fotoJogosMiniGrid">
+          <input class="fotoJogosOptionalInput" data-foto-jogo-direct-field="resultado_gols_a" inputmode="numeric" value="${htmlEscape(jogo.resultado_gols_a || "")}" placeholder="Gols ${htmlEscape(fotoJogosSideLabel(jogo, "time_a"))}" aria-label="Gols Time A">
+          <input class="fotoJogosOptionalInput" data-foto-jogo-direct-field="resultado_gols_b" inputmode="numeric" value="${htmlEscape(jogo.resultado_gols_b || "")}" placeholder="Gols ${htmlEscape(fotoJogosSideLabel(jogo, "time_b"))}" aria-label="Gols Time B">
+        </div>
+      </div>
+    `;
+  }
+
+  if(jogo.productKey === "escalacao"){
+    return `
+      <div class="fotoJogosInlineFields">
+        <textarea class="fotoJogosOptionalTextarea" data-foto-jogo-direct-field="escalacao_texto" placeholder="Jogadores ou escala\u00e7\u00e3o" aria-label="Jogadores ou escala\u00e7\u00e3o">${htmlEscape(jogo.escalacao_texto || "")}</textarea>
+      </div>
+    `;
+  }
+
+  if(jogo.productKey === "escudo3d"){
+    return `
+      <div class="fotoJogosInlineFields">
+        ${renderFotoJogosSideChoice(jogo, "escudo3d_side")}
+      </div>
+    `;
+  }
+
+  if(jogo.productKey === "jogador_escudo"){
+    return `
+      <div class="fotoJogosInlineFields">
+        ${renderFotoJogosSideChoice(jogo, "jogador_escudo_side")}
+        <input class="fotoJogosOptionalInput" data-foto-jogo-photo-name value="${htmlEscape(jogo.foto?.nome || "")}" placeholder="Nome do jogador" aria-label="Nome do jogador">
+      </div>
+    `;
+  }
+
+  return "";
+}
+
+function renderFotoJogosCardErrors(jogo){
+  const errors = Array.isArray(jogo.direct_errors) ? jogo.direct_errors.filter(Boolean) : [];
+  if(!errors.length) return "";
+
+  return `
+    <div class="fotoJogosCardErrors">
+      ${errors.map(error => `<div>${htmlEscape(error)}</div>`).join("")}
+    </div>
+  `;
+}
+
 function renderFotoJogosProductActions(jogo){
-  const chooserOpen = fotoJogosState.escudo3dChooser === jogo.id;
+  const productOptions = [
+    ["proximo_jogo", "\u25b6", "Pr\u00f3ximo Jogo"],
+    ["resultado", "\u25cf", "Resultado"],
+    ["escalacao", "\u25a3", "Escala\u00e7\u00e3o"],
+    ["escudo3d", "\u25c6", "Escudo 3D"],
+    ["jogador_escudo", "+", "Jogador + Escudo"]
+  ];
   return `
     <div class="fotoJogosProductTitle">Criar</div>
     <div class="fotoJogosProductActions">
-      <button type="button" class="fotoJogosSmallBtn" data-foto-jogo-product="proximo_jogo"><span aria-hidden="true">\u25b6</span> Pr\u00f3ximo Jogo</button>
-      <button type="button" class="fotoJogosSmallBtn" data-foto-jogo-product="resultado"><span aria-hidden="true">\u25cf</span> Resultado</button>
-      <button type="button" class="fotoJogosSmallBtn" data-foto-jogo-product="escalacao"><span aria-hidden="true">\u25a3</span> Escala\u00e7\u00e3o</button>
-      <button type="button" class="fotoJogosSmallBtn" data-foto-jogo-escudo3d-toggle><span aria-hidden="true">\u25c6</span> Escudo 3D</button>
+      ${productOptions.map(([key, icon, label]) => `
+        <button type="button" class="fotoJogosSmallBtn${jogo.productKey === key ? " is-selected" : ""}" data-foto-jogo-product-select="${htmlEscape(key)}" aria-pressed="${jogo.productKey === key ? "true" : "false"}"><span aria-hidden="true">${htmlEscape(icon)}</span> ${htmlEscape(label)}</button>
+      `).join("")}
     </div>
-    ${chooserOpen ? `
-      <div class="fotoJogosEscudo3dChoice">
-        <button type="button" class="fotoJogosSmallBtn" data-foto-jogo-product="escudo3d" data-foto-jogo-side="time_a">Usar escudo do Time A</button>
-        <button type="button" class="fotoJogosSmallBtn" data-foto-jogo-product="escudo3d" data-foto-jogo-side="time_b">Usar escudo do Time B</button>
+    ${renderFotoJogosDirectFields(jogo)}
+    ${renderFotoJogosCardErrors(jogo)}
+    <button type="button" class="fotoJogosSmallBtn" data-foto-jogo-more-details>Adicionar mais detalhes</button>
+  `;
+}
+
+function renderFotoJogosBatchPanel(){
+  if(fotoJogosState.batchCreating){
+    const total = fotoJogosState.batchProgress.length;
+    const concluidas = fotoJogosState.batchProgress.filter(item => item.status === "done" || item.status === "failed").length;
+    return `
+      <div class="fotoJogosBatchPanel">
+        <h4>Criando ${total} arte${total === 1 ? "" : "s"}</h4>
+        <ul class="fotoJogosProgressList">
+          ${fotoJogosState.batchProgress.map(item => {
+            const icon = item.status === "done" ? "\u2713" : (item.status === "failed" ? "!" : (item.status === "creating" ? "\u23f3" : "\u25cb"));
+            return `<li>${htmlEscape(icon)} ${htmlEscape(item.label)}${item.error ? ` — ${htmlEscape(item.error)}` : ""}</li>`;
+          }).join("")}
+        </ul>
+        <div class="fotoJogosSelectedCount">${concluidas} de ${total} conclu\u00edda${total === 1 ? "" : "s"}</div>
       </div>
-    ` : ""}
+    `;
+  }
+
+  if(fotoJogosState.batchResult){
+    const criados = Array.isArray(fotoJogosState.batchResult.criados) ? fotoJogosState.batchResult.criados : [];
+    const falhas = Array.isArray(fotoJogosState.batchResult.falhas) ? fotoJogosState.batchResult.falhas : [];
+    return `
+      <div class="fotoJogosBatchPanel">
+        <h4>${criados.length} arte${criados.length === 1 ? "" : "s"} enviada${criados.length === 1 ? "" : "s"} para cria\u00e7\u00e3o</h4>
+        ${falhas.length ? `
+          <div class="fotoJogosCardErrors">
+            ${falhas.map(falha => `<div>${htmlEscape(falha.error || "Falha ao criar arte.")}</div>`).join("")}
+          </div>
+        ` : ""}
+        <div class="fotoJogosBatchActions">
+          <button type="button" class="fotoJogosSmallBtn" data-foto-jogos-view-orders>Ver meus pedidos</button>
+          <button type="button" class="fotoJogosSmallBtn" data-foto-jogos-close-result>Voltar aos jogos</button>
+        </div>
+      </div>
+    `;
+  }
+
+  if(!fotoJogosState.batchConfirm) return "";
+
+  const confirm = fotoJogosState.batchConfirm;
+  return `
+    <div class="fotoJogosBatchPanel">
+      <h4>Voc\u00ea vai criar ${confirm.items.length} arte${confirm.items.length === 1 ? "" : "s"}</h4>
+      <ul class="fotoJogosBatchList">
+        ${confirm.items.map(item => `<li>${htmlEscape(item.label)}</li>`).join("")}
+      </ul>
+      <div class="fotoJogosBatchTotals">
+        <span>Quantidade: ${confirm.items.length}</span>
+        <span>Valor total: ${formatMoneyBR(confirm.total)}</span>
+        <span>Saldo dispon\u00edvel: ${formatMoneyBR(confirm.saldo)}</span>
+        <span>Saldo restante: ${formatMoneyBR(confirm.saldoRestante)}</span>
+      </div>
+      ${fotoJogosState.batchError ? `<div class="fotoJogosCardErrors"><div>${htmlEscape(fotoJogosState.batchError)}</div></div>` : ""}
+      <div class="fotoJogosBatchActions">
+        <button type="button" class="fotoJogosSmallBtn" data-foto-jogos-cancel-batch>Cancelar</button>
+        <button type="button" class="fotoJogosBtn primary" data-foto-jogos-confirm-batch ${fotoJogosState.batchError ? "disabled" : ""}>Confirmar e criar</button>
+      </div>
+    </div>
   `;
 }
 
@@ -17391,11 +17765,20 @@ function renderFotoJogosResults(){
     return "";
   }
 
+  const selecionados = fotoJogosSelecionados().length;
+  const total = fotoJogosState.jogos.length;
   return `
     <div class="fotoJogosResults">
       <div class="fotoJogosResultsHeader">
-        <div class="fotoJogosCount">${htmlEscape(fotoJogosCountLabel())}</div>
-        <button type="button" class="fotoJogosSmallBtn" data-foto-jogos-add>+ Novo confronto</button>
+        <div>
+          <div class="fotoJogosCount">${htmlEscape(fotoJogosCountLabel())}</div>
+          <div class="fotoJogosSelectedCount">${selecionados} selecionado${selecionados === 1 ? "" : "s"}</div>
+        </div>
+        <div class="fotoJogosHeaderActions">
+          <button type="button" class="fotoJogosSmallBtn" data-foto-jogos-select-all ${!total ? "disabled" : ""}>Selecionar todos</button>
+          <button type="button" class="fotoJogosSmallBtn" data-foto-jogos-clear-selection ${!selecionados ? "disabled" : ""}>Desmarcar todos</button>
+          <button type="button" class="fotoJogosSmallBtn" data-foto-jogos-add>+ Novo confronto</button>
+        </div>
       </div>
       <div class="fotoJogosList">
         ${fotoJogosState.jogos.length ? fotoJogosState.jogos.map((jogo, index) => {
@@ -17403,10 +17786,11 @@ function renderFotoJogosResults(){
           const draft = editing ? fotoJogosDraft(jogo.id) : null;
           const moreOpen = !!fotoJogosState.moreOpen[jogo.id];
           return `
-          <div class="fotoJogosRow" data-foto-jogo-id="${htmlEscape(jogo.id)}">
+          <div class="fotoJogosRow${jogo.selected ? " is-selected" : ""}" data-foto-jogo-id="${htmlEscape(jogo.id)}">
             <div class="fotoJogosCardTop">
               <div class="fotoJogosCardTitle">Jogo ${index + 1}</div>
               <div class="fotoJogosRowActions">
+                <button type="button" class="fotoJogosSelectPill${jogo.selected ? " is-selected" : ""}" data-foto-jogo-select-toggle aria-pressed="${jogo.selected ? "true" : "false"}">${jogo.selected ? "Selecionado" : "Selecionar"}</button>
                 ${editing ? `
                   <button type="button" class="fotoJogosSmallBtn" data-foto-jogo-save>Salvar altera\u00e7\u00f5es</button>
                   <button type="button" class="fotoJogosSmallBtn" data-foto-jogo-cancel>Cancelar</button>
@@ -17423,11 +17807,16 @@ function renderFotoJogosResults(){
             </div>
             ${renderFotoJogosMainInfo(jogo, editing, draft)}
             ${renderFotoJogosOptionalInfo(jogo, editing, draft, moreOpen)}
+            ${renderFotoJogosFoto(jogo)}
             ${renderFotoJogosProductActions(jogo)}
           </div>
         `}).join("") : `<div class="fotoJogosOptionalEmpty">Nenhum confronto na lista tempor\u00e1ria.</div>`}
       </div>
-      <div class="fotoJogosCardHint">Escolha um jogo e envie para a arte.</div>
+      <div class="fotoJogosBatchBar">
+        <div class="fotoJogosCardHint">Escolha os jogos e o produto de cada um.</div>
+        <button type="button" class="fotoJogosBtn primary" data-foto-jogos-create-selected ${!selecionados || fotoJogosState.batchCreating ? "disabled" : ""}>Criar artes selecionadas</button>
+      </div>
+      ${renderFotoJogosBatchPanel()}
     </div>
   `;
 }
@@ -17439,12 +17828,13 @@ function renderFotoJogosTool(){
   return `
     <div class="fotoJogosTool" data-foto-jogos-tool>
       <div class="fotoJogosToolHeader">
-        <h3 class="fotoJogosToolTitle">IA4Tube Assistente<span class="fotoJogosToolSub">Transforme uma foto em artes</span></h3>
+        <h3 class="fotoJogosToolTitle">iA4Tube Assistente<span class="fotoJogosToolSub">Transforme uma foto em artes</span></h3>
         <span class="fotoJogosToolBadge">Ferramenta</span>
       </div>
       <input class="fileHidden" type="file" data-foto-jogos-camera-input accept="image/png,image/jpeg,image/jpg,image/webp" capture="environment">
       <input class="fileHidden" type="file" data-foto-jogos-gallery-input accept="image/png,image/jpeg,image/jpg,image/webp">
       <input class="fileHidden" type="file" data-foto-jogos-crest-input accept="image/png,image/jpeg,image/jpg,image/webp">
+      <input class="fileHidden" type="file" data-foto-jogos-photo-input accept="image/png,image/jpeg,image/jpg,image/webp">
       <div class="fotoJogosUploadRow">
         <button type="button" class="fotoJogosBtn" data-foto-jogos-camera ${busy ? "disabled" : ""}>C\u00e2mera</button>
         <button type="button" class="fotoJogosBtn" data-foto-jogos-gallery ${busy ? "disabled" : ""}>Galeria</button>
@@ -17452,7 +17842,7 @@ function renderFotoJogosTool(){
       </div>
       ${hasFile ? `
         <div class="fotoJogosPreview fotoJogosProgressBox" data-foto-jogos-progress-box>
-          ${fotoJogosState.file_preview ? `<img src="${htmlEscape(fotoJogosState.file_preview)}" alt="Imagem selecionada para a IA4Tube">` : ""}
+          ${fotoJogosState.file_preview ? `<img src="${htmlEscape(fotoJogosState.file_preview)}" alt="Imagem selecionada para a iA4Tube">` : ""}
           <div class="fotoJogosPreviewText">
             <strong data-foto-jogos-file-name>${htmlEscape(fileName)}</strong>
             <span>Imagem pronta</span>
@@ -17460,7 +17850,7 @@ function renderFotoJogosTool(){
         </div>
       ` : ""}
       <div class="fotoJogosActions">
-        <button type="button" class="fotoJogosBtn primary" data-foto-jogos-analyze ${!hasFile || busy ? "disabled" : ""}>Identificar jogos pela foto com a IA4Tube</button>
+        <button type="button" class="fotoJogosBtn primary" data-foto-jogos-analyze ${!hasFile || busy ? "disabled" : ""}>Identificar jogos pela foto com a iA4Tube</button>
       </div>
       <div class="fotoJogosMsg${fotoJogosState.error ? " is-error" : ""}" data-foto-jogos-msg>${htmlEscape(fotoJogosState.message || "")}</div>
       ${renderFotoJogosResults()}
@@ -17626,8 +18016,11 @@ function fotoJogosSelecionarEscudo(file){
   fotoJogosRevogarEscudo(jogo, target.side);
   jogo.escudos[target.side] = file || null;
   jogo.escudo_previews[target.side] = file ? URL.createObjectURL(file) : "";
+  jogo.direct_errors = [];
   fotoJogosState.message = file ? "Escudo adicionado" : "";
   fotoJogosState.error = false;
+  fotoJogosState.batchConfirm = null;
+  fotoJogosState.batchResult = null;
   fotoJogosRerender();
 }
 
@@ -17637,8 +18030,101 @@ function fotoJogosRemoverEscudo(id, side){
   fotoJogosRevogarEscudo(jogo, side);
   jogo.escudos[side] = null;
   jogo.escudo_previews[side] = "";
+  jogo.direct_errors = [];
   fotoJogosState.message = "Escudo removido";
   fotoJogosState.error = false;
+  fotoJogosState.batchConfirm = null;
+  fotoJogosState.batchResult = null;
+  fotoJogosRerender();
+}
+
+function fotoJogosRevogarFoto(jogo){
+  const preview = jogo?.foto?.preview || "";
+  if(preview){
+    try{ URL.revokeObjectURL(preview); }catch(e){}
+  }
+}
+
+function fotoJogosAlternarSelecao(id){
+  const jogo = fotoJogosEncontrarJogo(id);
+  if(!jogo) return;
+  jogo.selected = !jogo.selected;
+  fotoJogosState.batchConfirm = null;
+  fotoJogosState.batchResult = null;
+  fotoJogosState.batchError = "";
+  fotoJogosRerender();
+}
+
+function fotoJogosSelecionarTodos(selected){
+  fotoJogosState.jogos.forEach(jogo => {
+    jogo.selected = !!selected;
+  });
+  fotoJogosState.batchConfirm = null;
+  fotoJogosState.batchResult = null;
+  fotoJogosState.batchError = "";
+  fotoJogosRerender();
+}
+
+function fotoJogosAbrirFotoTipo(id){
+  const jogo = fotoJogosEncontrarJogo(id);
+  if(!jogo) return;
+  fotoJogosState.photoChooser = fotoJogosState.photoChooser === id ? "" : id;
+  fotoJogosRerender();
+}
+
+function fotoJogosEscolherTipoFoto(id, tipo){
+  const jogo = fotoJogosEncontrarJogo(id);
+  if(!jogo) return;
+  fotoJogosState.photoTarget = { id, tipo: tipo === "time" ? "time" : "jogador" };
+  fotoJogosState.photoChooser = "";
+  const input = document.querySelector("[data-foto-jogos-photo-input]");
+  if(input){
+    input.value = "";
+    input.click();
+  }
+}
+
+function fotoJogosSelecionarFoto(file){
+  const target = fotoJogosState.photoTarget;
+  fotoJogosState.photoTarget = null;
+  if(!target?.id) return;
+
+  const jogo = fotoJogosEncontrarJogo(target.id);
+  if(!jogo) return;
+
+  const msg = ia4ValidarTamanhoArquivos(file ? [file] : []);
+  if(msg){
+    fotoJogosState.message = msg;
+    fotoJogosState.error = true;
+    fotoJogosRerender();
+    return;
+  }
+
+  fotoJogosRevogarFoto(jogo);
+  jogo.foto = {
+    file: file || null,
+    preview: file ? URL.createObjectURL(file) : "",
+    tipo: target.tipo === "time" ? "time" : "jogador",
+    nome: jogo.foto?.nome || ""
+  };
+  jogo.direct_errors = [];
+  fotoJogosState.message = file ? "Foto adicionada" : "";
+  fotoJogosState.error = false;
+  fotoJogosState.batchConfirm = null;
+  fotoJogosState.batchResult = null;
+  fotoJogosRerender();
+}
+
+function fotoJogosRemoverFoto(id){
+  const jogo = fotoJogosEncontrarJogo(id);
+  if(!jogo) return;
+  fotoJogosRevogarFoto(jogo);
+  jogo.foto = { file:null, preview:"", tipo:"", nome:"" };
+  jogo.direct_errors = [];
+  fotoJogosState.message = "Foto removida";
+  fotoJogosState.error = false;
+  fotoJogosState.batchConfirm = null;
+  fotoJogosState.batchResult = null;
   fotoJogosRerender();
 }
 
@@ -17680,7 +18166,7 @@ async function fotoJogosAnalisarImagem(){
   }
 
   if(!token){
-    fotoJogosAtualizarMsg("Entre na sua conta para usar a IA4Tube Assistente.", true);
+    fotoJogosAtualizarMsg("Entre na sua conta para usar o iA4Tube Assistente.", true);
     abrirLoginVisitanteModal();
     return;
   }
@@ -17708,7 +18194,7 @@ async function fotoJogosAnalisarImagem(){
     const out = await ia4LerJsonSeguro(r);
     const authMsg = ia4TratarAuthInvalida(r, out);
     if(authMsg) throw new Error(authMsg);
-    if(!r.ok || !out.ok) throw new Error(out.error || out.erro || "N\u00e3o foi poss\u00edvel analisar a imagem com a IA4Tube.");
+    if(!r.ok || !out.ok) throw new Error(out.error || out.erro || "N\u00e3o foi poss\u00edvel analisar a imagem com a iA4Tube.");
 
     const jogos = Array.isArray(out.jogos) ? out.jogos.map(jogo => fotoJogosNormalizarJogo(jogo)) : [];
     fotoJogosMesclarLista(jogos);
@@ -17726,7 +18212,7 @@ async function fotoJogosAnalisarImagem(){
     fotoJogosFinalizarProgresso(false);
     fotoJogosState.message = err?.name === "AbortError"
       ? "Tempo esgotado ao analisar a imagem. Tente uma foto mais n\u00edtida ou menor."
-      : err?.message || "N\u00e3o foi poss\u00edvel analisar a imagem com a IA4Tube.";
+      : err?.message || "N\u00e3o foi poss\u00edvel analisar a imagem com a iA4Tube.";
     fotoJogosState.error = true;
   }finally{
     if(frontendTimeout) clearTimeout(frontendTimeout);
@@ -17791,11 +18277,59 @@ function fotoJogosSalvarEdicao(id){
   delete fotoJogosState.editing[id];
   fotoJogosState.message = "Altera\u00e7\u00f5es salvas";
   fotoJogosState.error = false;
+  jogo.direct_errors = [];
+  fotoJogosState.batchConfirm = null;
+  fotoJogosState.batchResult = null;
   fotoJogosRerender();
 }
 
-function fotoJogosAlternarEscudo3d(id){
-  fotoJogosState.escudo3dChooser = fotoJogosState.escudo3dChooser === id ? "" : id;
+function fotoJogosSelecionarProdutoDireto(id, productKey){
+  const jogo = fotoJogosEncontrarJogo(id);
+  if(!jogo || !fotoJogosProdutoDiretoValido(productKey)) return;
+  jogo.productKey = productKey;
+  jogo.selected = true;
+  jogo.direct_errors = [];
+  fotoJogosState.batchConfirm = null;
+  fotoJogosState.batchResult = null;
+  fotoJogosState.batchError = "";
+  fotoJogosRerender();
+}
+
+function fotoJogosAtualizarCampoDireto(id, key, value){
+  const jogo = fotoJogosEncontrarJogo(id);
+  if(!jogo || !key) return;
+
+  if(key === "resultado_gols_a" || key === "resultado_gols_b"){
+    jogo[key] = String(value || "").replace(/[^\d]/g, "").slice(0, 3);
+  }else if(key === "escalacao_texto"){
+    jogo[key] = String(value || "").slice(0, 1200);
+  }
+
+  jogo.direct_errors = [];
+  fotoJogosState.batchConfirm = null;
+  fotoJogosState.batchResult = null;
+  fotoJogosState.batchError = "";
+}
+
+function fotoJogosAtualizarNomeFoto(id, value){
+  const jogo = fotoJogosEncontrarJogo(id);
+  if(!jogo) return;
+  jogo.foto = jogo.foto || { file:null, preview:"", tipo:"", nome:"" };
+  jogo.foto.nome = fotoJogosTexto(value, 80);
+  jogo.direct_errors = [];
+  fotoJogosState.batchConfirm = null;
+  fotoJogosState.batchResult = null;
+  fotoJogosState.batchError = "";
+}
+
+function fotoJogosAtualizarSideChoice(id, fieldKey, side){
+  const jogo = fotoJogosEncontrarJogo(id);
+  if(!jogo || !["escudo3d_side", "jogador_escudo_side"].includes(fieldKey)) return;
+  jogo[fieldKey] = side === "time_b" ? "time_b" : "time_a";
+  jogo.direct_errors = [];
+  fotoJogosState.batchConfirm = null;
+  fotoJogosState.batchResult = null;
+  fotoJogosState.batchError = "";
   fotoJogosRerender();
 }
 
@@ -17853,6 +18387,7 @@ function fotoJogosAplicarProximoJogo(jogo){
   fotoJogosPreencherCampo(form, "venue", jogo.local);
   fotoJogosAplicarArquivoClean(form, "home_crest", jogo.escudos.time_a);
   fotoJogosAplicarArquivoClean(form, "away_crest", jogo.escudos.time_b);
+  fotoJogosAplicarArquivoClean(form, "match_photo", jogo.foto?.file);
   fotoJogosAbrirProduto(form, "proximo_jogo", "Dados enviados para Pr\u00f3ximo Jogo");
 }
 
@@ -17870,6 +18405,7 @@ function fotoJogosAplicarResultado(jogo){
   fotoJogosPreencherCampo(form, "competition", jogo.competicao);
   fotoJogosAplicarArquivoClean(form, "home_crest", jogo.escudos.time_a);
   fotoJogosAplicarArquivoClean(form, "away_crest", jogo.escudos.time_b);
+  fotoJogosAplicarArquivoClean(form, "match_photo", jogo.foto?.file);
   fotoJogosAbrirProduto(form, "resultado", "Dados enviados para Resultado");
 }
 
@@ -17886,6 +18422,7 @@ function fotoJogosAplicarEscalacao(jogo){
   fotoJogosPreencherCampo(form, "venue", jogo.local);
   fotoJogosAplicarArquivoClean(form, "team_crest", jogo.escudos.time_a);
   fotoJogosAplicarArquivoClean(form, "opponent_crest", jogo.escudos.time_b);
+  fotoJogosAplicarArquivoClean(form, "team_photo", jogo.foto?.file);
   fotoJogosAbrirProduto(form, "escalacao", "Dados enviados para Escala\u00e7\u00e3o");
 }
 
@@ -17910,6 +18447,22 @@ function fotoJogosAplicarEscudo3d(jogo, sideParam){
   fotoJogosAbrirProduto(form, "escudo3d", `Dados enviados para Escudo 3D (${teamLabel})`);
 }
 
+function fotoJogosAplicarJogadorEscudo(jogo){
+  const side = jogo.jogador_escudo_side === "time_b" ? "time_b" : "time_a";
+  const form = fotoJogosPrepararProduto("jogador_escudo", jogo);
+  if(!form){
+    fotoJogosAtualizarMsg("Formul\u00e1rio de Jogador + Escudo n\u00e3o encontrado.", true);
+    return;
+  }
+
+  fotoJogosPreencherCampo(form, "player_name", jogo.foto?.nome || "");
+  fotoJogosAplicarArquivoClean(form, "team_crest", jogo.escudos?.[side]);
+  if(jogo.foto?.tipo === "jogador"){
+    fotoJogosAplicarArquivoClean(form, "player_photo", jogo.foto.file);
+  }
+  fotoJogosAbrirProduto(form, "jogador_escudo", "Dados enviados para Jogador + Escudo");
+}
+
 function fotoJogosAplicarProduto(productKey, jogoId, side){
   const jogo = fotoJogosEncontrarJogo(jogoId);
   if(!jogo) return;
@@ -17918,7 +18471,511 @@ function fotoJogosAplicarProduto(productKey, jogoId, side){
   if(productKey === "resultado") return fotoJogosAplicarResultado(jogo);
   if(productKey === "escalacao") return fotoJogosAplicarEscalacao(jogo);
   if(productKey === "escudo3d") return fotoJogosAplicarEscudo3d(jogo, side);
+  if(productKey === "jogador_escudo") return fotoJogosAplicarJogadorEscudo(jogo);
   fotoJogosAtualizarMsg("Produto ainda nao disponivel neste MVP.", true);
+}
+
+function fotoJogosAbrirMaisDetalhes(id){
+  const jogo = fotoJogosEncontrarJogo(id);
+  if(!jogo) return;
+  if(!jogo.productKey){
+    fotoJogosAtualizarMsg("Escolha uma arte primeiro.", true);
+    return;
+  }
+  const side = jogo.productKey === "escudo3d" ? jogo.escudo3d_side : "";
+  fotoJogosAplicarProduto(jogo.productKey, id, side);
+}
+
+function fotoJogosProductPrice(productKey){
+  return Number(PRODUCTS[productKey]?.price || 0);
+}
+
+function fotoJogosItemLabel(jogo){
+  const confronto = fotoJogosConfronto(jogo) || "Confronto";
+  return `${confronto} \u2014 ${fotoJogosProductLabel(jogo.productKey)}`;
+}
+
+function fotoJogosScoreValido(value){
+  if(value === null || value === undefined || value === "") return false;
+  const n = Number(value);
+  return Number.isFinite(n) && n >= 0;
+}
+
+function fotoJogosSplitPlayers(text){
+  return String(text || "")
+    .split(/\r?\n|;/)
+    .map(item => fotoJogosTexto(item, 80))
+    .filter(Boolean)
+    .map(nome => ({ nome, posicao:"" }));
+}
+
+function fotoJogosValidarDireto(jogo){
+  const errors = [];
+  const productKey = jogo.productKey || "";
+  const hasTeams = !!(fotoJogosTexto(jogo.time_a) && fotoJogosTexto(jogo.time_b));
+  const dataHora = fotoJogosDataHora(jogo);
+
+  if(!jogo.selected) return errors;
+  if(!productKey) errors.push("Escolha uma arte.");
+  if(["proximo_jogo", "resultado", "escalacao"].includes(productKey) && !hasTeams){
+    errors.push("Informe os dois times.");
+  }
+
+  if(productKey === "proximo_jogo"){
+    if(!dataHora) errors.push("Informe data e hor\u00e1rio.");
+    if(!fotoJogosTexto(jogo.competicao)) errors.push("Informe campeonato ou competi\u00e7\u00e3o.");
+    if(!jogo.escudos?.time_a || !jogo.escudos?.time_b) errors.push("Adicione os escudos dos dois times.");
+  }
+
+  if(productKey === "resultado"){
+    if(!fotoJogosScoreValido(jogo.resultado_gols_a) || !fotoJogosScoreValido(jogo.resultado_gols_b)) errors.push("Informe o placar.");
+    if(!fotoJogosTexto(jogo.competicao)) errors.push("Informe campeonato ou competi\u00e7\u00e3o.");
+    if(!jogo.escudos?.time_a) errors.push("Adicione o escudo do Time A.");
+  }
+
+  if(productKey === "escalacao"){
+    if(!fotoJogosConfronto(jogo)) errors.push("Informe o confronto.");
+    if(!fotoJogosSplitPlayers(jogo.escalacao_texto).length) errors.push("Informe jogadores ou escala\u00e7\u00e3o.");
+  }
+
+  if(productKey === "escudo3d"){
+    const side = jogo.escudo3d_side === "time_b" ? "time_b" : "time_a";
+    if(!jogo.escudos?.[side]) errors.push("Adicione o escudo do time.");
+  }
+
+  if(productKey === "jogador_escudo"){
+    const side = jogo.jogador_escudo_side === "time_b" ? "time_b" : "time_a";
+    if(!jogo.foto?.file || jogo.foto?.tipo !== "jogador") errors.push("Adicione a foto do jogador.");
+    if(!jogo.escudos?.[side]) errors.push("Adicione o escudo do time.");
+    if(!fotoJogosTexto(jogo.foto?.nome)) errors.push("Informe o nome do jogador.");
+  }
+
+  return [...new Set(errors)];
+}
+
+function fotoJogosAssetsJson(files){
+  return Object.fromEntries(Object.entries(files || {}).map(([key, file]) => [
+    key,
+    {
+      legacyName: key,
+      files: file ? [file.name || "imagem.png"] : []
+    }
+  ]));
+}
+
+function fotoJogosLegacyBody(jogo){
+  const productKey = jogo.productKey || "";
+  const dataHora = fotoJogosDataHora(jogo);
+  const confronto = fotoJogosConfronto(jogo);
+  const acesso = getIa4AccessContext();
+  const base = {
+    schema_version: String(CLEAN_PRODUCT_SCHEMA_VERSION),
+    product_id: productKey,
+    origem_acesso: acesso.origem_acesso,
+    display_mode: acesso.display_mode,
+    jogadores_json: "[]",
+    jogadores_texto: "",
+    artilheiros: "[]",
+    artilheiros_json: "[]",
+    artilheiros_texto: "",
+    artilheiros_qtd: "0"
+  };
+
+  if(productKey === "proximo_jogo"){
+    const fields = {
+      matchup: { home_team:jogo.time_a || "", away_team:jogo.time_b || "" },
+      match_datetime:dataHora,
+      competition:jogo.competicao || "",
+      venue:jogo.local || ""
+    };
+    return {
+      body:{
+        ...base,
+        flyer_tipo:"zz1ft",
+        rodada:confronto,
+        data:dataHora,
+        hora:jogo.competicao || "",
+        arena:jogo.local || "",
+        time_principal:jogo.time_a || "",
+        time_adversario:jogo.time_b || "",
+        fields_json:JSON.stringify(fields),
+        assets_json:JSON.stringify(fotoJogosAssetsJson({
+          home_crest:jogo.escudos?.time_a,
+          away_crest:jogo.escudos?.time_b,
+          match_photo:jogo.foto?.file || null
+        }))
+      },
+      files:{ escudo1:jogo.escudos?.time_a, escudo2:jogo.escudos?.time_b, mascote:jogo.foto?.file || null }
+    };
+  }
+
+  if(productKey === "resultado"){
+    const fields = {
+      score:{
+        home_team:jogo.time_a || "",
+        home_score:jogo.resultado_gols_a || "",
+        away_score:jogo.resultado_gols_b || "",
+        away_team:jogo.time_b || ""
+      },
+      competition:jogo.competicao || "",
+      headline:"Resultado do jogo"
+    };
+    return {
+      body:{
+        ...base,
+        rodada:`${jogo.time_a || ""} ${jogo.resultado_gols_a || "0"} x ${jogo.resultado_gols_b || "0"} ${jogo.time_b || ""}`.trim(),
+        data:"Resultado do jogo",
+        hora:jogo.competicao || "",
+        time_principal:jogo.time_a || "",
+        gols_time_principal:jogo.resultado_gols_a || "",
+        gols_adversario:jogo.resultado_gols_b || "",
+        time_adversario:jogo.time_b || "",
+        fields_json:JSON.stringify(fields),
+        assets_json:JSON.stringify(fotoJogosAssetsJson({
+          home_crest:jogo.escudos?.time_a,
+          away_crest:jogo.escudos?.time_b,
+          match_photo:jogo.foto?.file || null
+        }))
+      },
+      files:{ escudo1:jogo.escudos?.time_a, escudo2:jogo.escudos?.time_b, mascote:jogo.foto?.file || null }
+    };
+  }
+
+  if(productKey === "escalacao"){
+    const jogadores = fotoJogosSplitPlayers(jogo.escalacao_texto);
+    const fields = {
+      matchup:confronto,
+      match_datetime:dataHora,
+      competition:jogo.competicao || "",
+      venue:jogo.local || "",
+      players:jogadores
+    };
+    return {
+      body:{
+        ...base,
+        flyer_tipo:"zz1fs",
+        rodada:confronto,
+        data:dataHora || "Escala\u00e7\u00e3o",
+        hora:jogo.competicao || "",
+        arena:jogo.local || "",
+        time_principal:jogo.time_a || "",
+        time_adversario:jogo.time_b || "",
+        jogadores_json:JSON.stringify(jogadores),
+        jogadores_texto:jogadores.map(jogador => jogador.nome).join("; "),
+        fields_json:JSON.stringify(fields),
+        assets_json:JSON.stringify(fotoJogosAssetsJson({
+          team_crest:jogo.escudos?.time_a || null,
+          opponent_crest:jogo.escudos?.time_b || null,
+          team_photo:jogo.foto?.file || null
+        }))
+      },
+      files:{ escudo1:jogo.escudos?.time_a || null, escudo2:jogo.escudos?.time_b || null, mascote:jogo.foto?.file || null }
+    };
+  }
+
+  if(productKey === "escudo3d"){
+    const side = jogo.escudo3d_side === "time_b" ? "time_b" : "time_a";
+    const fields = { team:fotoJogosSideLabel(jogo, side), side };
+    return {
+      body:{
+        ...base,
+        flyer_tipo:"escudo3d",
+        rodada:"Escudo 3D",
+        data:"Escudo 3D",
+        fields_json:JSON.stringify(fields),
+        assets_json:JSON.stringify(fotoJogosAssetsJson({ escudo1:jogo.escudos?.[side] || null }))
+      },
+      files:{ escudo1:jogo.escudos?.[side] || null }
+    };
+  }
+
+  if(productKey === "jogador_escudo"){
+    const side = jogo.jogador_escudo_side === "time_b" ? "time_b" : "time_a";
+    const playerName = fotoJogosTexto(jogo.foto?.nome, 80);
+    const jogadores = playerName ? [{ nome:playerName, posicao:"" }] : [];
+    const fields = {
+      player_name:playerName,
+      team:fotoJogosSideLabel(jogo, side)
+    };
+    return {
+      body:{
+        ...base,
+        flyer_tipo:"jog_escudo",
+        foto_tipo:jogo.foto?.tipo || "",
+        rodada:"Jogador + escudo",
+        data:playerName,
+        jogadores_json:JSON.stringify(jogadores),
+        jogadores_texto:playerName,
+        fields_json:JSON.stringify(fields),
+        assets_json:JSON.stringify(fotoJogosAssetsJson({
+          team_crest:jogo.escudos?.[side] || null,
+          player_photo:jogo.foto?.file || null
+        }))
+      },
+      files:{ escudo1:jogo.escudos?.[side] || null, mascote:jogo.foto?.file || null }
+    };
+  }
+
+  return { body:base, files:{} };
+}
+
+function fotoJogosItemFingerprint(jogo){
+  return JSON.stringify(normalizeOrderFingerprintValue({
+    productKey:jogo.productKey || "",
+    time_a:jogo.time_a || "",
+    time_b:jogo.time_b || "",
+    data:jogo.data || "",
+    horario:jogo.horario || "",
+    competicao:jogo.competicao || "",
+    local:jogo.local || "",
+    resultado_gols_a:jogo.resultado_gols_a || "",
+    resultado_gols_b:jogo.resultado_gols_b || "",
+    escalacao_texto:jogo.escalacao_texto || "",
+    escudo3d_side:jogo.escudo3d_side || "",
+    jogador_escudo_side:jogo.jogador_escudo_side || "",
+    foto_nome:jogo.foto?.nome || "",
+    foto_tipo:jogo.foto?.tipo || "",
+    foto:orderFileFingerprint(jogo.foto?.file || null),
+    escudo_a:orderFileFingerprint(jogo.escudos?.time_a || null),
+    escudo_b:orderFileFingerprint(jogo.escudos?.time_b || null)
+  }));
+}
+
+function fotoJogosGetOrCreateItemRequestId(jogo){
+  const fingerprint = fotoJogosItemFingerprint(jogo);
+  if(jogo.batch_fingerprint === fingerprint && jogo.batch_request_id){
+    return jogo.batch_request_id;
+  }
+  jogo.batch_fingerprint = fingerprint;
+  jogo.batch_request_id = criarClientRequestId(`fotojogos_${jogo.productKey || "arte"}`);
+  return jogo.batch_request_id;
+}
+
+function fotoJogosBatchFingerprint(items){
+  return JSON.stringify(normalizeOrderFingerprintValue(items.map(item => ({
+    id:item.jogo.id,
+    productKey:item.jogo.productKey,
+    request:item.clientRequestId,
+    fingerprint:item.jogo.batch_fingerprint
+  }))));
+}
+
+function fotoJogosGetOrCreateBatchId(items){
+  const fingerprint = fotoJogosBatchFingerprint(items);
+  if(fotoJogosState.batchRequestState?.fingerprint === fingerprint && fotoJogosState.batchRequestState.batchId){
+    return fotoJogosState.batchRequestState.batchId;
+  }
+  const batchId = criarClientRequestId("fotojogos_batch");
+  fotoJogosState.batchRequestState = { fingerprint, batchId };
+  return batchId;
+}
+
+function fotoJogosPrepararItensSelecionados(){
+  let hasErrors = false;
+  const items = fotoJogosSelecionados().map((jogo, index) => {
+    const errors = fotoJogosValidarDireto(jogo);
+    jogo.direct_errors = errors;
+    if(errors.length) hasErrors = true;
+    return {
+      jogo,
+      index,
+      label:fotoJogosItemLabel(jogo),
+      price:fotoJogosProductPrice(jogo.productKey),
+      errors
+    };
+  });
+
+  return { items, hasErrors };
+}
+
+async function fotoJogosAbrirResumoCriacao(){
+  if(fotoJogosState.batchCreating) return;
+  fotoJogosState.batchResult = null;
+  fotoJogosState.batchError = "";
+
+  if(!token){
+    fotoJogosAtualizarMsg("Entre na sua conta para criar as artes.", true);
+    abrirLoginVisitanteModal();
+    return;
+  }
+
+  const { items, hasErrors } = fotoJogosPrepararItensSelecionados();
+  if(!items.length){
+    fotoJogosAtualizarMsg("Selecione pelo menos um jogo.", true);
+    fotoJogosRerender();
+    return;
+  }
+
+  if(items.length > FOTO_JOGOS_BATCH_MAX_ITEMS){
+    fotoJogosAtualizarMsg(`Crie no m\u00e1ximo ${FOTO_JOGOS_BATCH_MAX_ITEMS} artes por vez neste MVP.`, true);
+    fotoJogosRerender();
+    return;
+  }
+
+  if(hasErrors){
+    fotoJogosAtualizarMsg("Revise os campos destacados nos cards.", true);
+    fotoJogosRerender();
+    return;
+  }
+
+  const saldoAtualizado = await refreshMe();
+  const saldo = Number.isFinite(saldoAtualizado?.saldo)
+    ? saldoAtualizado.saldo
+    : (ia4SaldoCacheNumero() || 0);
+  const total = Number(items.reduce((sum, item) => sum + item.price, 0).toFixed(2));
+  const saldoRestante = Number((saldo - total).toFixed(2));
+
+  fotoJogosState.batchConfirm = {
+    items,
+    total,
+    saldo,
+    saldoRestante
+  };
+  fotoJogosState.batchError = saldoRestante < 0 ? "Saldo insuficiente para criar as artes selecionadas." : "";
+  fotoJogosState.message = "";
+  fotoJogosState.error = false;
+  fotoJogosRerender();
+}
+
+function fotoJogosAppendBatchFile(fd, index, legacyName, file, filesMap){
+  if(!file) return;
+  const fieldName = `item_${index}_${legacyName}`;
+  fd.append(fieldName, file, file.name || `${legacyName}.png`);
+  filesMap[legacyName] = fieldName;
+}
+
+function fotoJogosBuildBatchPayload(confirm){
+  const items = confirm.items.map((item, index) => {
+    const jogo = item.jogo;
+    const clientRequestId = fotoJogosGetOrCreateItemRequestId(jogo);
+    return { ...item, index, clientRequestId };
+  });
+  const batchId = fotoJogosGetOrCreateBatchId(items);
+  const fd = new FormData();
+  const payloadItems = [];
+
+  fd.append("batch_id", batchId);
+
+  items.forEach((item, index) => {
+    const { body, files } = fotoJogosLegacyBody(item.jogo);
+    const filesMap = {};
+    Object.entries(files || {}).forEach(([legacyName, file]) => {
+      fotoJogosAppendBatchFile(fd, index, legacyName, file, filesMap);
+    });
+    payloadItems.push({
+      product_id:item.jogo.productKey,
+      client_request_id:item.clientRequestId,
+      fields:body,
+      files:filesMap
+    });
+  });
+
+  fd.append("items_json", JSON.stringify(payloadItems));
+  return { fd, batchId, items };
+}
+
+async function fotoJogosConfirmarCriacao(){
+  if(fotoJogosState.batchCreating) return;
+  const confirm = fotoJogosState.batchConfirm;
+  if(!confirm){
+    await fotoJogosAbrirResumoCriacao();
+    return;
+  }
+  if(fotoJogosState.batchError) return;
+
+  const { fd, batchId, items } = fotoJogosBuildBatchPayload(confirm);
+  fotoJogosState.batchCreating = true;
+  fotoJogosState.batchConfirm = null;
+  fotoJogosState.batchResult = null;
+  fotoJogosState.batchError = "";
+  fotoJogosState.batchProgress = items.map((item, index) => ({
+    index,
+    label:item.label,
+    status:index === 0 ? "creating" : "pending",
+    error:""
+  }));
+  fotoJogosRerender();
+
+  try{
+    const r = await fetch(`${API_BASE}${FOTO_JOGOS_BATCH_ENDPOINT}`, {
+      method:"POST",
+      headers: buildOrderCreationHeaders(batchId),
+      body:fd
+    });
+    const out = await ia4LerJsonSeguro(r);
+    const authMsg = ia4TratarAuthInvalida(r, out);
+    if(authMsg) throw new Error(authMsg);
+
+    const criados = Array.isArray(out.criados) ? out.criados : [];
+    const falhas = Array.isArray(out.falhas) ? out.falhas : [];
+
+    fotoJogosState.batchProgress = fotoJogosState.batchProgress.map(progress => {
+      const criado = criados.find(item => Number(item.index) === progress.index);
+      const falha = falhas.find(item => Number(item.index) === progress.index);
+      if(criado) return { ...progress, status:"done" };
+      if(falha) return { ...progress, status:"failed", error:falha.error || "Falha ao criar arte." };
+      return { ...progress, status:"done" };
+    });
+
+    if(!r.ok && !criados.length){
+      fotoJogosState.batchResult = {
+        ok:false,
+        batch_id:out.batch_id || batchId,
+        criados:[],
+        falhas:falhas.length ? falhas : [{ error:out.error || "N\u00e3o foi poss\u00edvel criar as artes." }]
+      };
+    }else{
+      fotoJogosState.batchResult = {
+        ok:out.ok !== false,
+        batch_id:out.batch_id || batchId,
+        criados,
+        falhas
+      };
+    }
+
+    criados.forEach(item => {
+      if(item.pedido_id) salvarPedidoAtivoLocal(item.pedido_id, item.product_id || "");
+    });
+    if(criados.length){
+      atualizarTopoProducao(criados.map(item => ({ id:item.pedido_id || "novo", status:"processando" })));
+      mostrarAvisoPedido();
+      refreshMe();
+      carregarHistorico();
+    }
+  }catch(err){
+    fotoJogosState.batchProgress = fotoJogosState.batchProgress.map(item => ({
+      ...item,
+      status:item.status === "done" ? "done" : "failed",
+      error:err?.message || "Falha ao criar arte."
+    }));
+    fotoJogosState.batchResult = {
+      ok:false,
+      batch_id:batchId,
+      criados:[],
+      falhas:[{ error:err?.message || "N\u00e3o foi poss\u00edvel criar as artes." }]
+    };
+  }finally{
+    fotoJogosState.batchCreating = false;
+    fotoJogosRerender();
+  }
+}
+
+function fotoJogosCancelarBatch(){
+  if(fotoJogosState.batchCreating) return;
+  fotoJogosState.batchConfirm = null;
+  fotoJogosState.batchError = "";
+  fotoJogosRerender();
+}
+
+function fotoJogosFecharResultadoBatch(){
+  fotoJogosState.batchResult = null;
+  fotoJogosState.batchError = "";
+  fotoJogosRerender();
+}
+
+function fotoJogosVerPedidos(){
+  try{ carregarHistorico(); }catch(e){}
+  try{ destacarMeusPedidos(); }catch(e){}
 }
 
 function bindFotoJogosShell(){
@@ -17943,6 +19000,7 @@ function bindFotoJogosTool(root){
   const cameraInput = tool.querySelector("[data-foto-jogos-camera-input]");
   const galleryInput = tool.querySelector("[data-foto-jogos-gallery-input]");
   const crestInput = tool.querySelector("[data-foto-jogos-crest-input]");
+  const photoInput = tool.querySelector("[data-foto-jogos-photo-input]");
 
   tool.querySelector("[data-foto-jogos-camera]")?.addEventListener("click", () => {
     if(fotoJogosState.analyzing) return;
@@ -17972,13 +19030,29 @@ function bindFotoJogosTool(root){
   tool.querySelectorAll("[data-foto-jogos-add]").forEach(btn => {
     btn.addEventListener("click", fotoJogosAdicionarManual);
   });
+  tool.querySelectorAll("[data-foto-jogos-select-all]").forEach(btn => {
+    btn.addEventListener("click", () => fotoJogosSelecionarTodos(true));
+  });
+  tool.querySelectorAll("[data-foto-jogos-clear-selection]").forEach(btn => {
+    btn.addEventListener("click", () => fotoJogosSelecionarTodos(false));
+  });
+  tool.querySelector("[data-foto-jogos-create-selected]")?.addEventListener("click", fotoJogosAbrirResumoCriacao);
+  tool.querySelector("[data-foto-jogos-cancel-batch]")?.addEventListener("click", fotoJogosCancelarBatch);
+  tool.querySelector("[data-foto-jogos-confirm-batch]")?.addEventListener("click", fotoJogosConfirmarCriacao);
+  tool.querySelector("[data-foto-jogos-close-result]")?.addEventListener("click", fotoJogosFecharResultadoBatch);
+  tool.querySelector("[data-foto-jogos-view-orders]")?.addEventListener("click", fotoJogosVerPedidos);
   crestInput?.addEventListener("change", () => fotoJogosSelecionarEscudo(crestInput.files?.[0] || null));
+  photoInput?.addEventListener("change", () => fotoJogosSelecionarFoto(photoInput.files?.[0] || null));
 
   tool.querySelectorAll("[data-foto-jogo-id]").forEach(row => {
     const id = row.dataset.fotoJogoId || "";
 
     row.querySelectorAll("[data-foto-jogo-draft]").forEach(input => {
       input.addEventListener("input", () => fotoJogosAtualizarDraft(id, input.dataset.fotoJogoDraft || "", input.value));
+    });
+
+    row.querySelector("[data-foto-jogo-select-toggle]")?.addEventListener("click", () => {
+      fotoJogosAlternarSelecao(id);
     });
 
     row.querySelectorAll("[data-foto-jogo-crest]").forEach(btn => {
@@ -17993,12 +19067,40 @@ function bindFotoJogosTool(root){
       fotoJogosState.moreOpen[id] = !!ev.currentTarget.open;
     });
 
-    row.querySelector("[data-foto-jogo-escudo3d-toggle]")?.addEventListener("click", () => {
-      fotoJogosAlternarEscudo3d(id);
+    row.querySelector("[data-foto-jogo-photo-toggle]")?.addEventListener("click", () => {
+      fotoJogosAbrirFotoTipo(id);
     });
 
-    row.querySelectorAll("[data-foto-jogo-product]").forEach(btn => {
-      btn.addEventListener("click", () => fotoJogosAplicarProduto(btn.dataset.fotoJogoProduct || "", id, btn.dataset.fotoJogoSide || ""));
+    row.querySelectorAll("[data-foto-jogo-photo-type]").forEach(btn => {
+      btn.addEventListener("click", () => fotoJogosEscolherTipoFoto(id, btn.dataset.fotoJogoPhotoType || "jogador"));
+    });
+
+    row.querySelector("[data-foto-jogo-photo-remove]")?.addEventListener("click", () => {
+      fotoJogosRemoverFoto(id);
+    });
+
+    row.querySelectorAll("[data-foto-jogo-product-select]").forEach(btn => {
+      btn.addEventListener("click", () => fotoJogosSelecionarProdutoDireto(id, btn.dataset.fotoJogoProductSelect || ""));
+    });
+
+    row.querySelectorAll("[data-foto-jogo-direct-field]").forEach(input => {
+      input.addEventListener("input", () => fotoJogosAtualizarCampoDireto(id, input.dataset.fotoJogoDirectField || "", input.value));
+      input.addEventListener("change", () => fotoJogosRerender());
+    });
+
+    row.querySelector("[data-foto-jogo-photo-name]")?.addEventListener("input", ev => {
+      fotoJogosAtualizarNomeFoto(id, ev.currentTarget.value);
+    });
+    row.querySelector("[data-foto-jogo-photo-name]")?.addEventListener("change", () => {
+      fotoJogosRerender();
+    });
+
+    row.querySelectorAll("[data-foto-jogo-side-choice]").forEach(btn => {
+      btn.addEventListener("click", () => fotoJogosAtualizarSideChoice(id, btn.dataset.fotoJogoSideChoice || "", btn.dataset.fotoJogoSide || "time_a"));
+    });
+
+    row.querySelector("[data-foto-jogo-more-details]")?.addEventListener("click", () => {
+      fotoJogosAbrirMaisDetalhes(id);
     });
 
     row.querySelector("[data-foto-jogo-edit]")?.addEventListener("click", () => {
@@ -18018,11 +19120,16 @@ function bindFotoJogosTool(root){
       if(jogo){
         fotoJogosRevogarEscudo(jogo, "time_a");
         fotoJogosRevogarEscudo(jogo, "time_b");
+        fotoJogosRevogarFoto(jogo);
       }
       fotoJogosState.jogos = fotoJogosState.jogos.filter(item => item.id !== id);
       delete fotoJogosState.editing[id];
       delete fotoJogosState.moreOpen[id];
-      if(fotoJogosState.escudo3dChooser === id) fotoJogosState.escudo3dChooser = "";
+      if(fotoJogosState.photoChooser === id) fotoJogosState.photoChooser = "";
+      if(fotoJogosState.crestTarget?.id === id) fotoJogosState.crestTarget = null;
+      if(fotoJogosState.photoTarget?.id === id) fotoJogosState.photoTarget = null;
+      fotoJogosState.batchConfirm = null;
+      fotoJogosState.batchResult = null;
       fotoJogosState.message = fotoJogosState.jogos.length ? "Confronto excluido" : "";
       fotoJogosState.error = false;
       fotoJogosRerender();
