@@ -9621,6 +9621,489 @@ body.visitanteNaoLogado .visitanteWelcomeCallout{
   display:none !important;
 }
 
+.fotoJogosTool{
+  position:relative;
+  z-index:1;
+  display:grid;
+  gap:10px;
+  margin:0 0 16px;
+  padding:12px;
+  border-radius:14px;
+  background:rgba(255,255,255,.065);
+  border:1px solid rgba(255,255,255,.14);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.08);
+}
+
+.fotoJogosToolHeader{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+}
+
+.fotoJogosToolTitle{
+  margin:0;
+  color:#ffffff;
+  font-size:15px;
+  font-weight:950;
+  line-height:1.2;
+}
+
+.fotoJogosToolSub{
+  display:block;
+  margin-top:3px;
+  color:rgba(255,255,255,.72);
+  font-size:12px;
+  line-height:1.3;
+  font-weight:800;
+}
+
+.fotoJogosToolBadge{
+  flex:0 0 auto;
+  padding:5px 8px;
+  border-radius:999px;
+  background:rgba(34,197,94,.16);
+  border:1px solid rgba(34,197,94,.36);
+  color:#bbf7d0;
+  font-size:10px;
+  font-weight:950;
+  text-transform:uppercase;
+}
+
+.fotoJogosUploadRow,
+.fotoJogosActions{
+  display:flex;
+  flex-wrap:wrap;
+  gap:8px;
+  align-items:center;
+}
+
+.fotoJogosBtn,
+.fotoJogosSmallBtn{
+  appearance:none;
+  border:1px solid rgba(255,255,255,.18);
+  background:rgba(15,23,42,.74);
+  color:#ffffff;
+  border-radius:10px;
+  padding:9px 11px;
+  font-weight:950;
+  cursor:pointer;
+}
+
+.fotoJogosSmallBtn{
+  padding:7px 9px;
+  border-radius:10px;
+  font-size:12px;
+}
+
+.fotoJogosBtn.primary{
+  background:linear-gradient(135deg,#22c55e,#16a34a);
+  border-color:rgba(187,247,208,.5);
+  color:#052e16;
+}
+
+.fotoJogosBtn:disabled,
+.fotoJogosSmallBtn:disabled{
+  opacity:.55;
+  cursor:not-allowed;
+}
+
+.fotoJogosProgressBox{
+  position:relative;
+  min-height:76px;
+  border-radius:12px;
+  overflow:hidden;
+  background:rgba(2,6,23,.38);
+  border:1px solid rgba(255,255,255,.12);
+  display:grid;
+  place-items:center;
+  color:rgba(255,255,255,.74);
+  font-weight:900;
+}
+
+.fotoJogosPreview{
+  display:grid;
+  grid-template-columns:70px minmax(0,1fr);
+  gap:10px;
+  align-items:center;
+  justify-items:stretch;
+  padding:8px;
+  place-items:initial;
+}
+
+.fotoJogosPreview img{
+  width:70px;
+  height:58px;
+  object-fit:cover;
+  border-radius:10px;
+  border:1px solid rgba(255,255,255,.18);
+  background:#0f172a;
+}
+
+.fotoJogosPreviewText{
+  min-width:0;
+  display:grid;
+  gap:3px;
+  align-content:center;
+}
+
+.fotoJogosPreviewText strong,
+.fotoJogosFileName{
+  color:#ffffff;
+  font-size:12px;
+  font-weight:950;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+}
+
+.fotoJogosPreviewText span{
+  color:rgba(255,255,255,.7);
+  font-size:11px;
+  font-weight:800;
+}
+
+.fotoJogosMsg{
+  color:#fde68a;
+  font-size:13px;
+  font-weight:850;
+  line-height:1.35;
+}
+
+.fotoJogosMsg.is-error{
+  color:#fecaca;
+}
+
+.fotoJogosResults{
+  display:grid;
+  gap:10px;
+}
+
+.fotoJogosResultsHeader{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+}
+
+.fotoJogosCount{
+  color:#ffffff;
+  font-size:13px;
+  font-weight:950;
+}
+
+.fotoJogosList{
+  display:grid;
+  gap:10px;
+}
+
+.fotoJogosRow{
+  display:grid;
+  grid-template-columns:1fr;
+  gap:12px;
+  padding:14px;
+  border-radius:16px;
+  background:rgba(255,255,255,.06);
+  border:1px solid rgba(255,255,255,.12);
+}
+
+.fotoJogosCardTop{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+}
+
+.fotoJogosCardTitle{
+  color:#ffffff;
+  font-size:12px;
+  font-weight:950;
+  text-transform:uppercase;
+  letter-spacing:0;
+}
+
+.fotoJogosMatchup{
+  display:grid;
+  grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);
+  gap:10px;
+  align-items:center;
+}
+
+.fotoJogosTeam{
+  display:grid;
+  grid-template-columns:1fr;
+  gap:8px;
+  align-items:start;
+  min-width:0;
+  padding:10px;
+  border-radius:14px;
+  background:rgba(15,23,42,.64);
+  border:1px solid rgba(255,255,255,.12);
+}
+
+.fotoJogosTeamName{
+  min-width:0;
+  color:#ffffff;
+  font-size:16px;
+  line-height:1.2;
+  font-weight:950;
+  overflow-wrap:anywhere;
+}
+
+.fotoJogosEditInput,
+.fotoJogosSummaryTextarea,
+.fotoJogosOptionalInput,
+.fotoJogosOptionalTextarea{
+  min-width:0;
+  width:100%;
+  border:1px solid rgba(255,255,255,.16);
+  border-radius:10px;
+  background:rgba(15,23,42,.72);
+  color:#ffffff;
+  padding:9px 10px;
+  font-size:14px;
+  font-weight:850;
+  outline:none;
+}
+
+.fotoJogosSummaryTextarea{
+  min-height:92px;
+  resize:vertical;
+  line-height:1.35;
+}
+
+.fotoJogosOptionalTextarea{
+  min-height:74px;
+  resize:vertical;
+  line-height:1.35;
+}
+
+.fotoJogosVs{
+  align-self:center;
+  color:#facc15;
+  font-size:18px;
+  font-weight:950;
+}
+
+.fotoJogosShieldActions{
+  display:flex;
+  flex-wrap:wrap;
+  gap:6px;
+  align-items:center;
+}
+
+.fotoJogosShieldBtn,
+.fotoJogosShieldRemove{
+  appearance:none;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  min-height:32px;
+  border-radius:10px;
+  border:1px solid rgba(250,204,21,.42);
+  background:rgba(250,204,21,.12);
+  color:#ffffff;
+  padding:7px 9px;
+  font-size:12px;
+  font-weight:950;
+  cursor:pointer;
+  overflow:hidden;
+}
+
+.fotoJogosShieldPreview{
+  display:flex;
+  flex-wrap:wrap;
+  align-items:center;
+  gap:7px;
+  color:#ffffff;
+  font-size:12px;
+  font-weight:900;
+}
+
+.fotoJogosShieldPreview img{
+  width:32px;
+  height:32px;
+  object-fit:cover;
+  border-radius:8px;
+  background:#0f172a;
+  border:1px solid rgba(255,255,255,.2);
+}
+
+.fotoJogosShieldRemove{
+  border-color:rgba(248,113,113,.48);
+  background:rgba(127,29,29,.36);
+  color:#fecaca;
+}
+
+.fotoJogosMainInfo{
+  display:grid;
+  gap:8px;
+  padding:10px;
+  border-radius:12px;
+  background:rgba(15,23,42,.42);
+  border:1px solid rgba(255,255,255,.1);
+}
+
+.fotoJogosMainInfoText{
+  white-space:pre-line;
+  color:#ffffff;
+  font-size:14px;
+  line-height:1.45;
+  font-weight:850;
+}
+
+.fotoJogosMainInfoText.is-empty,
+.fotoJogosOptionalEmpty{
+  color:rgba(255,255,255,.58);
+  font-size:12px;
+  font-weight:800;
+}
+
+.fotoJogosMore{
+  border-radius:12px;
+  border:1px solid rgba(255,255,255,.12);
+  background:rgba(255,255,255,.04);
+  overflow:hidden;
+}
+
+.fotoJogosMore summary{
+  cursor:pointer;
+  padding:10px;
+  color:#ffffff;
+  font-size:12px;
+  font-weight:950;
+  list-style:none;
+}
+
+.fotoJogosMore summary::-webkit-details-marker{
+  display:none;
+}
+
+.fotoJogosMore summary::after{
+  content:" ▾";
+  color:#facc15;
+}
+
+.fotoJogosMore[open] summary::after{
+  content:" ▴";
+}
+
+.fotoJogosMoreBody,
+.fotoJogosOptionalGrid{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:8px;
+  padding:0 10px 10px;
+}
+
+.fotoJogosField{
+  display:grid;
+  gap:4px;
+}
+
+.fotoJogosField span{
+  color:rgba(255,255,255,.68);
+  font-size:10px;
+  font-weight:950;
+  text-transform:uppercase;
+}
+
+.fotoJogosFieldValue{
+  color:#ffffff;
+  font-size:13px;
+  font-weight:850;
+  line-height:1.35;
+  overflow-wrap:anywhere;
+}
+
+.fotoJogosEditInput:focus,
+.fotoJogosSummaryTextarea:focus,
+.fotoJogosOptionalInput:focus,
+.fotoJogosOptionalTextarea:focus{
+  border-color:rgba(34,197,94,.72);
+  box-shadow:0 0 0 2px rgba(34,197,94,.16);
+}
+
+.fotoJogosRowActions{
+  display:flex;
+  flex-wrap:wrap;
+  gap:6px;
+}
+
+.fotoJogosProductActions{
+  display:grid;
+  grid-template-columns:repeat(4,minmax(0,1fr));
+  gap:8px;
+}
+
+.fotoJogosProductTitle{
+  color:#fde68a;
+  font-size:11px;
+  font-weight:950;
+  text-transform:uppercase;
+  letter-spacing:0;
+}
+
+.fotoJogosEscudo3dChoice{
+  display:flex;
+  flex-wrap:wrap;
+  gap:8px;
+  padding:10px;
+  border-radius:12px;
+  background:rgba(15,23,42,.58);
+  border:1px solid rgba(250,204,21,.18);
+}
+
+.fotoJogosCardHint{
+  color:rgba(255,255,255,.72);
+  font-size:12px;
+  font-weight:800;
+}
+
+@media (max-width:560px){
+  .fotoJogosToolHeader,
+  .fotoJogosResultsHeader{
+    align-items:flex-start;
+    flex-direction:column;
+  }
+
+  .fotoJogosRow{
+    grid-template-columns:1fr;
+  }
+
+  .fotoJogosMatchup{
+    grid-template-columns:1fr;
+  }
+
+  .fotoJogosVs{
+    text-align:center;
+  }
+
+  .fotoJogosPreview,
+  .fotoJogosMoreBody,
+  .fotoJogosOptionalGrid{
+    grid-template-columns:1fr;
+  }
+
+  .fotoJogosPreview img{
+    width:100%;
+    height:96px;
+  }
+
+  .fotoJogosRowActions{
+    flex-direction:row;
+    flex-wrap:wrap;
+  }
+
+  .fotoJogosProductActions{
+    grid-template-columns:repeat(2,minmax(0,1fr));
+  }
+
+  .fotoJogosProductActions .fotoJogosSmallBtn{
+    width:100%;
+  }
+}
+
 @media (max-width:420px){
   .productChooserRail{
     grid-template-columns:repeat(3,minmax(0,1fr));
@@ -16044,6 +16527,930 @@ function configurarProductChooserNavegacao(chooser){
   setTimeout(atualizar, 0);
 }
 
+const FOTO_JOGOS_ENDPOINT = "/me/time/jogos/identificar-por-foto";
+const FOTO_JOGOS_EMPTY_MESSAGE = "N\u00e3o encontramos confrontos claramente identific\u00e1veis nesta imagem. Tente enviar uma foto mais pr\u00f3xima e n\u00edtida.";
+const FOTO_JOGOS_SLOW_MESSAGE = "A IA4Tube ainda est\u00e1 analisando a imagem. Tabelas maiores podem levar um pouco mais de tempo.";
+const FOTO_JOGOS_FRONTEND_TIMEOUT_MS = 180000;
+const FOTO_JOGOS_FIELDS = [
+  { key:"time_a", label:"Time A" },
+  { key:"time_b", label:"Time B" },
+  { key:"data", label:"Data" },
+  { key:"horario", label:"Hor\u00e1rio" },
+  { key:"competicao", label:"Competi\u00e7\u00e3o" },
+  { key:"rodada", label:"Rodada" },
+  { key:"fase", label:"Fase" },
+  { key:"local", label:"Local" },
+  { key:"numero_jogo", label:"N\u00famero do jogo" },
+  { key:"categoria", label:"Categoria" },
+  { key:"grupo", label:"Grupo" },
+  { key:"observacao", label:"Observa\u00e7\u00e3o" }
+];
+
+const fotoJogosState = {
+  file:null,
+  file_preview:"",
+  jogos:[],
+  analyzing:false,
+  hasAnalyzed:false,
+  message:"",
+  error:false,
+  crestTarget:null,
+  editing:{},
+  moreOpen:{},
+  escudo3dChooser:"",
+  progressTimers:[]
+};
+
+function fotoJogosCriarId(){
+  if(window.crypto?.randomUUID) return window.crypto.randomUUID();
+  return `foto_jogo_${Date.now()}_${Math.random().toString(16).slice(2)}`;
+}
+
+function fotoJogosTexto(value, max = 140){
+  return String(value || "").replace(/\s+/g, " ").trim().slice(0, max);
+}
+
+function fotoJogosNormalizarJogo(jogo = {}, options = {}){
+  const normalizado = {
+    id: jogo.id || fotoJogosCriarId(),
+    selected: options.selected === true || jogo.selected === true,
+    escudos: {
+      time_a: jogo.escudos?.time_a || null,
+      time_b: jogo.escudos?.time_b || null
+    },
+    escudo_previews: {
+      time_a: jogo.escudo_previews?.time_a || "",
+      time_b: jogo.escudo_previews?.time_b || ""
+    },
+    escudo3d_side: jogo.escudo3d_side === "time_b" ? "time_b" : "time_a"
+  };
+
+  FOTO_JOGOS_FIELDS.forEach(field => {
+    normalizado[field.key] = fotoJogosTexto(jogo[field.key] || "", field.key === "observacao" ? 220 : 120);
+  });
+
+  return normalizado;
+}
+
+function fotoJogosChaveDedup(jogo){
+  const limpar = value => String(value || "")
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, " ")
+    .trim();
+  const times = [limpar(jogo.time_a), limpar(jogo.time_b)].sort().join(" x ");
+  return [
+    times,
+    limpar(jogo.data),
+    limpar(jogo.horario),
+    limpar(jogo.competicao),
+    limpar(jogo.rodada),
+    limpar(jogo.fase),
+    limpar(jogo.local),
+    limpar(jogo.numero_jogo),
+    limpar(jogo.categoria),
+    limpar(jogo.grupo)
+  ].join("|");
+}
+
+function fotoJogosMesclarLista(novosJogos){
+  const mesclados = [];
+  const vistos = new Set();
+  fotoJogosState.jogos.forEach(jogo => {
+    const normalizado = fotoJogosNormalizarJogo(jogo);
+    mesclados.push(normalizado);
+    if(normalizado.time_a && normalizado.time_b){
+      vistos.add(fotoJogosChaveDedup(normalizado));
+    }
+  });
+
+  (Array.isArray(novosJogos) ? novosJogos : []).forEach(jogo => {
+    const normalizado = fotoJogosNormalizarJogo(jogo);
+    const chave = fotoJogosChaveDedup(normalizado);
+    if(!normalizado.time_a || !normalizado.time_b || vistos.has(chave)) return;
+    vistos.add(chave);
+    mesclados.push(normalizado);
+  });
+
+  fotoJogosState.jogos = mesclados;
+}
+
+function fotoJogosSelecionados(){
+  return fotoJogosState.jogos.filter(jogo => jogo.selected);
+}
+
+function fotoJogosDataHoraLinha(jogo){
+  const data = fotoJogosTexto(jogo.data);
+  const horario = fotoJogosTexto(jogo.horario);
+  if(data && horario) return `${data} \u00e0s ${horario}`;
+  return data || horario || "";
+}
+
+function fotoJogosRodadaFaseResumo(jogo){
+  return fotoJogosTexto(jogo.rodada || jogo.fase);
+}
+
+function fotoJogosResumoPrincipalLinhas(jogo, manterVazias = false){
+  const linhas = [
+    fotoJogosDataHoraLinha(jogo),
+    fotoJogosTexto(jogo.competicao),
+    fotoJogosRodadaFaseResumo(jogo),
+    fotoJogosTexto(jogo.local)
+  ];
+  return manterVazias ? linhas : linhas.filter(Boolean);
+}
+
+function fotoJogosResumoPrincipalTexto(jogo){
+  return fotoJogosResumoPrincipalLinhas(jogo).join("\n");
+}
+
+function fotoJogosResumoPrincipalTextarea(jogo){
+  return fotoJogosResumoPrincipalLinhas(jogo, true).join("\n");
+}
+
+function fotoJogosOptionalFields(jogo){
+  const fields = [
+    { key:"numero_jogo", label:"N\u00famero do jogo" },
+    { key:"categoria", label:"Categoria" },
+    { key:"grupo", label:"Grupo" },
+    { key:"observacao", label:"Observa\u00e7\u00e3o", textarea:true }
+  ];
+  if(jogo.rodada){
+    fields.splice(3, 0, { key:"fase", label:"Fase" });
+  }
+  return fields;
+}
+
+function fotoJogosCriarDraft(jogo){
+  return {
+    time_a:jogo.time_a || "",
+    time_b:jogo.time_b || "",
+    resumo_principal:fotoJogosResumoPrincipalTextarea(jogo),
+    numero_jogo:jogo.numero_jogo || "",
+    categoria:jogo.categoria || "",
+    grupo:jogo.grupo || "",
+    fase:jogo.fase || "",
+    observacao:jogo.observacao || ""
+  };
+}
+
+function fotoJogosDraft(id){
+  const jogo = fotoJogosEncontrarJogo(id);
+  if(!jogo) return null;
+  if(!fotoJogosState.editing[id]) fotoJogosState.editing[id] = fotoJogosCriarDraft(jogo);
+  return fotoJogosState.editing[id];
+}
+
+function fotoJogosSepararDataHora(linha){
+  const texto = fotoJogosTexto(linha, 120);
+  if(!texto) return { data:"", horario:"" };
+  const match = texto.match(/^(.+?)\s*(?:\u00e0s|as|[-\u2013])\s*(.+)$/i);
+  if(match && /\d|h/i.test(match[2])){
+    return {
+      data:fotoJogosTexto(match[1], 40),
+      horario:fotoJogosTexto(match[2], 40)
+    };
+  }
+  return { data:fotoJogosTexto(texto, 40), horario:"" };
+}
+
+function fotoJogosAplicarResumoPrincipal(jogo, resumo){
+  const linhas = String(resumo || "").split(/\r?\n/).slice(0, 4);
+  while(linhas.length < 4) linhas.push("");
+
+  const dataHora = fotoJogosSepararDataHora(linhas[0]);
+  jogo.data = dataHora.data;
+  jogo.horario = dataHora.horario;
+  jogo.competicao = fotoJogosTexto(linhas[1], 120);
+
+  const rodadaOuFase = fotoJogosTexto(linhas[2], 80);
+  if(/\b(fase|final|semifinal|semi|quartas|oitavas|chave)\b/i.test(rodadaOuFase) && !/\brodada\b/i.test(rodadaOuFase)){
+    jogo.fase = rodadaOuFase;
+    jogo.rodada = "";
+  }else{
+    jogo.rodada = rodadaOuFase;
+  }
+
+  jogo.local = fotoJogosTexto(linhas[3], 120);
+}
+
+function fotoJogosEscudoLabel(jogo, side){
+  const nomeTime = side === "time_b" ? jogo.time_b : jogo.time_a;
+  const fallback = side === "time_b" ? "Time B" : "Time A";
+  return `Adicionar escudo do ${nomeTime || fallback}`;
+}
+
+function renderFotoJogosTeam(jogo, side, editing, draft){
+  const fieldKey = side === "time_b" ? "time_b" : "time_a";
+  const label = side === "time_b" ? "Time B" : "Time A";
+  const preview = jogo.escudo_previews?.[fieldKey] || "";
+  const hasImage = !!jogo.escudos?.[fieldKey];
+  const teamName = editing ? draft?.[fieldKey] : jogo[fieldKey];
+  const safeTeamName = fotoJogosTexto(teamName) || label;
+
+  return `
+    <div class="fotoJogosTeam" data-foto-jogo-team="${htmlEscape(fieldKey)}">
+      ${editing ? `
+        <input class="fotoJogosEditInput" data-foto-jogo-draft="${htmlEscape(fieldKey)}" value="${htmlEscape(teamName || "")}" placeholder="${htmlEscape(label)}" aria-label="${htmlEscape(label)}">
+      ` : `
+        <div class="fotoJogosTeamName">${htmlEscape(safeTeamName)}</div>
+      `}
+      <div class="fotoJogosShieldActions">
+        ${hasImage ? `
+          <div class="fotoJogosShieldPreview">
+            <img src="${htmlEscape(preview)}" alt="Escudo ${htmlEscape(safeTeamName)}">
+            <strong>${htmlEscape(safeTeamName)}</strong>
+            <button type="button" class="fotoJogosShieldBtn" data-foto-jogo-crest="${htmlEscape(fieldKey)}">Trocar</button>
+            <button type="button" class="fotoJogosShieldRemove" data-foto-jogo-crest-remove="${htmlEscape(fieldKey)}">Remover</button>
+          </div>
+        ` : `
+          <button type="button" class="fotoJogosShieldBtn" data-foto-jogo-crest="${htmlEscape(fieldKey)}" aria-label="${htmlEscape(fotoJogosEscudoLabel(jogo, fieldKey))}">+ Escudo</button>
+        `}
+      </div>
+    </div>
+  `;
+}
+
+function renderFotoJogosMainInfo(jogo, editing, draft){
+  if(editing){
+    return `
+      <div class="fotoJogosMainInfo">
+        <label class="fotoJogosField">
+          <span>Informa\u00e7\u00f5es principais</span>
+          <textarea class="fotoJogosSummaryTextarea" rows="4" data-foto-jogo-draft="resumo_principal" aria-label="Informa\u00e7\u00f5es principais">${htmlEscape(draft?.resumo_principal || "")}</textarea>
+        </label>
+      </div>
+    `;
+  }
+
+  const resumo = fotoJogosResumoPrincipalTexto(jogo);
+  return `
+    <div class="fotoJogosMainInfo">
+      <div class="fotoJogosMainInfoText${resumo ? "" : " is-empty"}">${htmlEscape(resumo || "Informa\u00e7\u00f5es principais n\u00e3o identificadas.")}</div>
+    </div>
+  `;
+}
+
+function renderFotoJogosOptionalInfo(jogo, editing, draft, isOpen){
+  const fields = fotoJogosOptionalFields(jogo);
+  const visible = fields.filter(field => editing || fotoJogosTexto(jogo[field.key]));
+  return `
+    <details class="fotoJogosMore" data-foto-jogo-more ${isOpen ? "open" : ""}>
+      <summary>Mais informa\u00e7\u00f5es opcionais</summary>
+      <div class="fotoJogosMoreBody">
+        ${visible.length ? visible.map(field => {
+          const value = editing ? (draft?.[field.key] || "") : (jogo[field.key] || "");
+          if(editing){
+            return `
+              <label class="fotoJogosField">
+                <span>${htmlEscape(field.label)}</span>
+                ${field.textarea ? `
+                  <textarea class="fotoJogosOptionalTextarea" data-foto-jogo-draft="${htmlEscape(field.key)}">${htmlEscape(value)}</textarea>
+                ` : `
+                  <input class="fotoJogosOptionalInput" data-foto-jogo-draft="${htmlEscape(field.key)}" value="${htmlEscape(value)}">
+                `}
+              </label>
+            `;
+          }
+          return `
+            <div class="fotoJogosField">
+              <span>${htmlEscape(field.label)}</span>
+              <div class="fotoJogosFieldValue">${htmlEscape(value)}</div>
+            </div>
+          `;
+        }).join("") : `<div class="fotoJogosOptionalEmpty">Sem informa\u00e7\u00f5es opcionais.</div>`}
+      </div>
+    </details>
+  `;
+}
+
+function renderFotoJogosProductActions(jogo){
+  const chooserOpen = fotoJogosState.escudo3dChooser === jogo.id;
+  return `
+    <div class="fotoJogosProductTitle">Criar arte deste confronto</div>
+    <div class="fotoJogosProductActions">
+      <button type="button" class="fotoJogosSmallBtn" data-foto-jogo-product="proximo_jogo">Pr\u00f3ximo Jogo</button>
+      <button type="button" class="fotoJogosSmallBtn" data-foto-jogo-product="resultado">Resultado</button>
+      <button type="button" class="fotoJogosSmallBtn" data-foto-jogo-product="escalacao">Escala\u00e7\u00e3o</button>
+      <button type="button" class="fotoJogosSmallBtn" data-foto-jogo-escudo3d-toggle>Escudo 3D</button>
+    </div>
+    ${chooserOpen ? `
+      <div class="fotoJogosEscudo3dChoice">
+        <button type="button" class="fotoJogosSmallBtn" data-foto-jogo-product="escudo3d" data-foto-jogo-side="time_a">Usar escudo do Time A</button>
+        <button type="button" class="fotoJogosSmallBtn" data-foto-jogo-product="escudo3d" data-foto-jogo-side="time_b">Usar escudo do Time B</button>
+      </div>
+    ` : ""}
+  `;
+}
+
+function renderFotoJogosResults(){
+  if(!fotoJogosState.hasAnalyzed && !fotoJogosState.jogos.length){
+    return "";
+  }
+
+  return `
+    <div class="fotoJogosResults">
+      <div class="fotoJogosResultsHeader">
+        <div class="fotoJogosCount">${fotoJogosState.jogos.length} confronto(s) na lista tempor\u00e1ria</div>
+        <button type="button" class="fotoJogosSmallBtn" data-foto-jogos-add>Adicionar confronto manualmente</button>
+      </div>
+      <div class="fotoJogosList">
+        ${fotoJogosState.jogos.length ? fotoJogosState.jogos.map((jogo, index) => {
+          const editing = !!fotoJogosState.editing[jogo.id];
+          const draft = editing ? fotoJogosDraft(jogo.id) : null;
+          const moreOpen = !!fotoJogosState.moreOpen[jogo.id];
+          return `
+          <div class="fotoJogosRow" data-foto-jogo-id="${htmlEscape(jogo.id)}">
+            <div class="fotoJogosCardTop">
+              <div class="fotoJogosCardTitle">Jogo ${index + 1}</div>
+              <div class="fotoJogosRowActions">
+                ${editing ? `
+                  <button type="button" class="fotoJogosSmallBtn" data-foto-jogo-save>Salvar altera\u00e7\u00f5es</button>
+                  <button type="button" class="fotoJogosSmallBtn" data-foto-jogo-cancel>Cancelar</button>
+                ` : `
+                  <button type="button" class="fotoJogosSmallBtn" data-foto-jogo-edit>Editar informa\u00e7\u00f5es</button>
+                `}
+                <button type="button" class="fotoJogosSmallBtn" data-foto-jogo-delete>Excluir</button>
+              </div>
+            </div>
+            <div class="fotoJogosMatchup">
+              ${renderFotoJogosTeam(jogo, "time_a", editing, draft)}
+              <div class="fotoJogosVs">X</div>
+              ${renderFotoJogosTeam(jogo, "time_b", editing, draft)}
+            </div>
+            ${renderFotoJogosMainInfo(jogo, editing, draft)}
+            ${renderFotoJogosOptionalInfo(jogo, editing, draft, moreOpen)}
+            ${renderFotoJogosProductActions(jogo)}
+          </div>
+        `}).join("") : `<div class="fotoJogosOptionalEmpty">Nenhum confronto na lista tempor\u00e1ria.</div>`}
+      </div>
+      <div class="fotoJogosCardHint">Os escudos aparecem depois da revis\u00e3o dos confrontos, ficam apenas nesta p\u00e1gina e s\u00f3 preenchem um produto quando voc\u00ea escolher uma a\u00e7\u00e3o do confronto.</div>
+    </div>
+  `;
+}
+
+function renderFotoJogosTool(){
+  const fileName = fotoJogosState.file?.name || "Nenhuma imagem selecionada";
+  const hasFile = !!fotoJogosState.file;
+  const busy = !!fotoJogosState.analyzing;
+  return `
+    <div class="fotoJogosTool" data-foto-jogos-tool>
+      <div class="fotoJogosToolHeader">
+        <h3 class="fotoJogosToolTitle">IA4Tube Assistente<span class="fotoJogosToolSub">Identifique jogos pela foto e prepare suas artes.</span></h3>
+        <span class="fotoJogosToolBadge">Ferramenta</span>
+      </div>
+      <input class="fileHidden" type="file" data-foto-jogos-camera-input accept="image/png,image/jpeg,image/jpg,image/webp" capture="environment">
+      <input class="fileHidden" type="file" data-foto-jogos-gallery-input accept="image/png,image/jpeg,image/jpg,image/webp">
+      <input class="fileHidden" type="file" data-foto-jogos-crest-input accept="image/png,image/jpeg,image/jpg,image/webp">
+      <div class="fotoJogosUploadRow">
+        <button type="button" class="fotoJogosBtn" data-foto-jogos-camera ${busy ? "disabled" : ""}>C\u00e2mera</button>
+        <button type="button" class="fotoJogosBtn" data-foto-jogos-gallery ${busy ? "disabled" : ""}>Galeria</button>
+        <button type="button" class="fotoJogosBtn" data-foto-jogos-remove ${!hasFile || busy ? "disabled" : ""}>Remover imagem</button>
+      </div>
+      ${hasFile ? `
+        <div class="fotoJogosPreview fotoJogosProgressBox" data-foto-jogos-progress-box>
+          ${fotoJogosState.file_preview ? `<img src="${htmlEscape(fotoJogosState.file_preview)}" alt="Imagem selecionada para a IA4Tube">` : ""}
+          <div class="fotoJogosPreviewText">
+            <strong data-foto-jogos-file-name>${htmlEscape(fileName)}</strong>
+            <span>Uma imagem selecionada para an\u00e1lise.</span>
+          </div>
+        </div>
+      ` : ""}
+      <div class="fotoJogosActions">
+        <button type="button" class="fotoJogosBtn primary" data-foto-jogos-analyze ${!hasFile || busy ? "disabled" : ""}>Identificar jogos pela foto com a IA4Tube</button>
+      </div>
+      <div class="fotoJogosMsg${fotoJogosState.error ? " is-error" : ""}" data-foto-jogos-msg>${htmlEscape(fotoJogosState.message || "")}</div>
+      ${renderFotoJogosResults()}
+    </div>
+  `;
+}
+
+function fotoJogosAtualizarMsg(message, error = false){
+  fotoJogosState.message = message || "";
+  fotoJogosState.error = !!error;
+  const msg = document.querySelector("[data-foto-jogos-msg]");
+  if(msg){
+    msg.textContent = fotoJogosState.message;
+    msg.classList.toggle("is-error", fotoJogosState.error);
+  }
+}
+
+function fotoJogosRerender(){
+  const chooser = document.getElementById("productChooser");
+  const atual = chooser?.querySelector("[data-foto-jogos-tool]");
+  if(!chooser || !atual) return;
+  atual.outerHTML = renderFotoJogosTool();
+  bindFotoJogosTool(chooser);
+}
+
+function fotoJogosLimparTimers(){
+  fotoJogosState.progressTimers.forEach(timer => clearTimeout(timer));
+  fotoJogosState.progressTimers = [];
+}
+
+function fotoJogosProgressBox(){
+  return document.querySelector("[data-foto-jogos-progress-box]");
+}
+
+function fotoJogosSetProgress(percent, text){
+  const box = fotoJogosProgressBox();
+  if(!box) return;
+  renderCleanProgressOverlay(box, percent, text);
+}
+
+function fotoJogosIniciarProgresso(){
+  fotoJogosLimparTimers();
+  const etapas = [
+    { delay:0, percent:10, text:"Enviando sua imagem\u2026" },
+    { delay:600, percent:30, text:"Lendo as informa\u00e7\u00f5es\u2026" },
+    { delay:1400, percent:60, text:"Identificando os jogos\u2026" },
+    { delay:7000, percent:85, text:"Organizando os confrontos\u2026" }
+  ];
+
+  etapas.forEach(etapa => {
+    const timer = setTimeout(() => fotoJogosSetProgress(etapa.percent, etapa.text), etapa.delay);
+    fotoJogosState.progressTimers.push(timer);
+  });
+
+  const slowTimer = setTimeout(() => {
+    fotoJogosSetProgress(85, FOTO_JOGOS_SLOW_MESSAGE);
+    fotoJogosAtualizarMsg(FOTO_JOGOS_SLOW_MESSAGE, false);
+  }, 20000);
+  fotoJogosState.progressTimers.push(slowTimer);
+}
+
+function fotoJogosFinalizarProgresso(ok = true){
+  fotoJogosLimparTimers();
+  const box = fotoJogosProgressBox();
+  if(!box) return;
+  if(ok){
+    renderCleanProgressOverlay(box, 100, "Jogos encontrados");
+  }else{
+    box.querySelector(".cleanProgressOverlay")?.remove();
+  }
+  box.classList.remove("is-processing");
+  if(ok){
+    setTimeout(() => box.querySelector(".cleanProgressOverlay")?.remove(), 1400);
+  }
+}
+
+function fotoJogosRevogarImagemSelecionada(){
+  if(fotoJogosState.file_preview){
+    try{ URL.revokeObjectURL(fotoJogosState.file_preview); }catch(e){}
+  }
+  fotoJogosState.file_preview = "";
+}
+
+function fotoJogosSelecionarArquivo(file){
+  const msg = ia4ValidarTamanhoArquivos(file ? [file] : []);
+  if(msg){
+    fotoJogosRevogarImagemSelecionada();
+    fotoJogosState.file = null;
+    fotoJogosState.message = msg;
+    fotoJogosState.error = true;
+    fotoJogosRerender();
+    return;
+  }
+
+  fotoJogosRevogarImagemSelecionada();
+  fotoJogosState.file = file || null;
+  if(file){
+    try{ fotoJogosState.file_preview = URL.createObjectURL(file); }catch(e){ fotoJogosState.file_preview = ""; }
+  }
+  fotoJogosState.message = file ? "Imagem pronta para an\u00e1lise da IA4Tube." : "";
+  fotoJogosState.error = false;
+  fotoJogosRerender();
+}
+
+function fotoJogosEncontrarJogo(id){
+  return fotoJogosState.jogos.find(item => item.id === id) || null;
+}
+
+function fotoJogosRevogarEscudo(jogo, side){
+  const preview = jogo?.escudo_previews?.[side] || "";
+  if(preview){
+    try{ URL.revokeObjectURL(preview); }catch(e){}
+  }
+}
+
+function fotoJogosAbrirEscudo(id, side){
+  const jogo = fotoJogosEncontrarJogo(id);
+  if(!jogo) return;
+  fotoJogosState.crestTarget = { id, side };
+  const input = document.querySelector("[data-foto-jogos-crest-input]");
+  if(input){
+    input.value = "";
+    input.click();
+  }
+}
+
+function fotoJogosSelecionarEscudo(file){
+  const target = fotoJogosState.crestTarget;
+  fotoJogosState.crestTarget = null;
+  if(!target?.id || !target?.side) return;
+
+  const jogo = fotoJogosEncontrarJogo(target.id);
+  if(!jogo) return;
+
+  const msg = ia4ValidarTamanhoArquivos(file ? [file] : []);
+  if(msg){
+    fotoJogosState.message = msg;
+    fotoJogosState.error = true;
+    fotoJogosRerender();
+    return;
+  }
+
+  fotoJogosRevogarEscudo(jogo, target.side);
+  jogo.escudos[target.side] = file || null;
+  jogo.escudo_previews[target.side] = file ? URL.createObjectURL(file) : "";
+  fotoJogosState.message = file ? "Escudo tempor\u00e1rio adicionado. Revise o confronto antes de escolher uma arte." : "";
+  fotoJogosState.error = false;
+  fotoJogosRerender();
+}
+
+function fotoJogosRemoverEscudo(id, side){
+  const jogo = fotoJogosEncontrarJogo(id);
+  if(!jogo) return;
+  fotoJogosRevogarEscudo(jogo, side);
+  jogo.escudos[side] = null;
+  jogo.escudo_previews[side] = "";
+  fotoJogosState.message = "Escudo removido da lista tempor\u00e1ria.";
+  fotoJogosState.error = false;
+  fotoJogosRerender();
+}
+
+function fotoJogosSetFileInput(input, file){
+  if(!input || !file || typeof DataTransfer === "undefined") return false;
+  const dt = new DataTransfer();
+  dt.items.add(file);
+  input.files = dt.files;
+  input.dispatchEvent(new Event("change", { bubbles:true }));
+  return true;
+}
+
+function fotoJogosAplicarArquivoClean(form, key, file){
+  const cleanFile = file && typeof file === "object" && file.file ? file.file : file;
+  if(!form || !key || !cleanFile) return false;
+  const input = getCleanFormAsset(form, key);
+  if(!input) return false;
+  const ok = fotoJogosSetFileInput(input, cleanFile);
+  if(!ok && typeof setCleanFilePreview === "function"){
+    setCleanFilePreview(form, key, [cleanFile]);
+  }
+  const card = form.querySelector(`[data-clean-field-card="${CSS.escape(key)}"]`);
+  if(card) card.classList.remove("campoObrigatorioErro");
+  return ok;
+}
+
+function fotoJogosConfronto(jogo){
+  const timeA = fotoJogosTexto(jogo.time_a);
+  const timeB = fotoJogosTexto(jogo.time_b);
+  return timeA && timeB ? `${timeA} x ${timeB}` : "";
+}
+
+async function fotoJogosAnalisarImagem(){
+  if(fotoJogosState.analyzing) return;
+
+  if(!fotoJogosState.file){
+    fotoJogosAtualizarMsg("Escolha uma imagem antes de analisar.", true);
+    return;
+  }
+
+  if(!token){
+    fotoJogosAtualizarMsg("Entre na sua conta para usar a IA4Tube Assistente.", true);
+    abrirLoginVisitanteModal();
+    return;
+  }
+
+  fotoJogosState.analyzing = true;
+  fotoJogosState.message = "";
+  fotoJogosState.error = false;
+  fotoJogosRerender();
+  fotoJogosIniciarProgresso();
+
+  const fd = new FormData();
+  fd.append("imagem", fotoJogosState.file);
+  const controller = typeof AbortController !== "undefined" ? new AbortController() : null;
+  const frontendTimeout = controller
+    ? setTimeout(() => controller.abort(), FOTO_JOGOS_FRONTEND_TIMEOUT_MS)
+    : null;
+
+  try{
+    const r = await fetch(`${API_BASE}${FOTO_JOGOS_ENDPOINT}`, {
+      method:"POST",
+      headers:{ "Authorization":"Bearer " + token },
+      body:fd,
+      ...(controller ? { signal:controller.signal } : {})
+    });
+    const out = await ia4LerJsonSeguro(r);
+    const authMsg = ia4TratarAuthInvalida(r, out);
+    if(authMsg) throw new Error(authMsg);
+    if(!r.ok || !out.ok) throw new Error(out.error || out.erro || "N\u00e3o foi poss\u00edvel analisar a imagem com a IA4Tube.");
+
+    const jogos = Array.isArray(out.jogos) ? out.jogos.map(jogo => fotoJogosNormalizarJogo(jogo)) : [];
+    fotoJogosMesclarLista(jogos);
+    fotoJogosState.hasAnalyzed = true;
+    fotoJogosFinalizarProgresso(true);
+
+    if(!jogos.length){
+      fotoJogosState.message = FOTO_JOGOS_EMPTY_MESSAGE;
+      fotoJogosState.error = true;
+    }else{
+      fotoJogosState.message = "Revise os confrontos encontrados pela IA4Tube antes de escolher uma arte.";
+      fotoJogosState.error = false;
+    }
+  }catch(err){
+    fotoJogosFinalizarProgresso(false);
+    fotoJogosState.message = err?.name === "AbortError"
+      ? "Tempo esgotado ao analisar a imagem. Tente uma foto mais n\u00edtida ou menor."
+      : err?.message || "N\u00e3o foi poss\u00edvel analisar a imagem com a IA4Tube.";
+    fotoJogosState.error = true;
+  }finally{
+    if(frontendTimeout) clearTimeout(frontendTimeout);
+    fotoJogosState.analyzing = false;
+    fotoJogosRerender();
+  }
+}
+
+function fotoJogosAdicionarManual(){
+  const jogo = fotoJogosNormalizarJogo({}, { selected:true });
+  fotoJogosState.jogos.push(jogo);
+  fotoJogosState.hasAnalyzed = true;
+  fotoJogosState.moreOpen[jogo.id] = true;
+  fotoJogosState.editing[jogo.id] = fotoJogosCriarDraft(jogo);
+  fotoJogosState.message = "Confronto manual adicionado. Preencha os times antes de escolher uma arte.";
+  fotoJogosState.error = false;
+  fotoJogosRerender();
+}
+
+function fotoJogosAtualizarJogo(id, key, value){
+  const jogo = fotoJogosState.jogos.find(item => item.id === id);
+  if(!jogo) return;
+  jogo[key] = fotoJogosTexto(value, key === "observacao" ? 220 : 120);
+}
+
+function fotoJogosAtualizarDraft(id, key, value){
+  const draft = fotoJogosDraft(id);
+  if(!draft || !key) return;
+  draft[key] = key === "observacao" || key === "resumo_principal"
+    ? String(value || "").slice(0, key === "observacao" ? 220 : 360)
+    : fotoJogosTexto(value, 120);
+}
+
+function fotoJogosIniciarEdicao(id){
+  const jogo = fotoJogosEncontrarJogo(id);
+  if(!jogo) return;
+  fotoJogosState.editing[id] = fotoJogosCriarDraft(jogo);
+  fotoJogosRerender();
+}
+
+function fotoJogosCancelarEdicao(id){
+  delete fotoJogosState.editing[id];
+  fotoJogosRerender();
+}
+
+function fotoJogosSalvarEdicao(id){
+  const jogo = fotoJogosEncontrarJogo(id);
+  const draft = fotoJogosState.editing[id];
+  if(!jogo || !draft) return;
+
+  jogo.time_a = fotoJogosTexto(draft.time_a, 80);
+  jogo.time_b = fotoJogosTexto(draft.time_b, 80);
+  fotoJogosAplicarResumoPrincipal(jogo, draft.resumo_principal);
+  jogo.numero_jogo = fotoJogosTexto(draft.numero_jogo, 40);
+  jogo.categoria = fotoJogosTexto(draft.categoria, 80);
+  jogo.grupo = fotoJogosTexto(draft.grupo, 80);
+  if(jogo.rodada){
+    jogo.fase = fotoJogosTexto(draft.fase, 80);
+  }
+  jogo.observacao = fotoJogosTexto(draft.observacao, 220);
+
+  delete fotoJogosState.editing[id];
+  fotoJogosState.message = "Altera\u00e7\u00f5es salvas na lista tempor\u00e1ria.";
+  fotoJogosState.error = false;
+  fotoJogosRerender();
+}
+
+function fotoJogosAlternarEscudo3d(id){
+  fotoJogosState.escudo3dChooser = fotoJogosState.escudo3dChooser === id ? "" : id;
+  fotoJogosRerender();
+}
+
+function fotoJogosPreencherCampo(form, key, value){
+  const input = getCleanFormField(form, key);
+  if(!input) return false;
+  input.value = value || "";
+  input.dispatchEvent(new Event("input", { bubbles:true }));
+  input.dispatchEvent(new Event("change", { bubbles:true }));
+  return true;
+}
+
+function fotoJogosDataHora(jogo){
+  const partes = [jogo.data, jogo.horario].map(value => fotoJogosTexto(value)).filter(Boolean);
+  return partes.join(" - ");
+}
+
+function fotoJogosPrepararProduto(productKey, jogo){
+  if(!fotoJogosTexto(jogo.time_a) || !fotoJogosTexto(jogo.time_b)){
+    fotoJogosAtualizarMsg("Preencha Time A e Time B antes de escolher uma arte.", true);
+    return null;
+  }
+
+  selectCleanProductForPicker(productKey, { scroll:true, track:true });
+  return document.querySelector(`[data-product-form="${CSS.escape(productKey)}"]`);
+}
+
+function fotoJogosAbrirProduto(form, productKey, message){
+  if(form){
+    form.querySelectorAll("[data-clean-accordion-item]").forEach(item => setCleanAccordionItemOpen(item, true));
+    updateCleanAccordionsCompletion(form);
+    setCleanProductMsg(form, message);
+  }
+  const block = document.querySelector(`[data-clean-product-block="${CSS.escape(productKey)}"]`);
+  setTimeout(() => (block || form)?.scrollIntoView({ behavior:"smooth", block:"start" }), 80);
+  fotoJogosAtualizarMsg("Confronto enviado para o produto escolhido. A lista tempor\u00e1ria foi preservada.", false);
+}
+
+function fotoJogosAplicarProximoJogo(jogo){
+  const form = fotoJogosPrepararProduto("proximo_jogo", jogo);
+  if(!form){
+    fotoJogosAtualizarMsg("Formul\u00e1rio de Pr\u00f3ximo Jogo n\u00e3o encontrado.", true);
+    return;
+  }
+
+  fotoJogosPreencherCampo(form, "home_team", jogo.time_a);
+  fotoJogosPreencherCampo(form, "away_team", jogo.time_b);
+  fotoJogosPreencherCampo(form, "match_datetime", fotoJogosDataHora(jogo));
+  fotoJogosPreencherCampo(form, "competition", jogo.competicao);
+  fotoJogosPreencherCampo(form, "venue", jogo.local);
+  fotoJogosAplicarArquivoClean(form, "home_crest", jogo.escudos.time_a);
+  fotoJogosAplicarArquivoClean(form, "away_crest", jogo.escudos.time_b);
+  fotoJogosAbrirProduto(form, "proximo_jogo", "Dados preenchidos pelo IA4Tube Assistente. Revise e complete o que faltar.");
+}
+
+function fotoJogosAplicarResultado(jogo){
+  const form = fotoJogosPrepararProduto("resultado", jogo);
+  if(!form){
+    fotoJogosAtualizarMsg("Formul\u00e1rio de Resultado do Jogo n\u00e3o encontrado.", true);
+    return;
+  }
+
+  fotoJogosPreencherCampo(form, "home_team", jogo.time_a);
+  fotoJogosPreencherCampo(form, "away_team", jogo.time_b);
+  fotoJogosPreencherCampo(form, "home_score", "");
+  fotoJogosPreencherCampo(form, "away_score", "");
+  fotoJogosPreencherCampo(form, "competition", jogo.competicao);
+  fotoJogosAplicarArquivoClean(form, "home_crest", jogo.escudos.time_a);
+  fotoJogosAplicarArquivoClean(form, "away_crest", jogo.escudos.time_b);
+  fotoJogosAbrirProduto(form, "resultado", "Dados preenchidos pelo IA4Tube Assistente. Revise e complete o que faltar.");
+}
+
+function fotoJogosAplicarEscalacao(jogo){
+  const form = fotoJogosPrepararProduto("escalacao", jogo);
+  if(!form){
+    fotoJogosAtualizarMsg("Formul\u00e1rio de Escala\u00e7\u00e3o n\u00e3o encontrado.", true);
+    return;
+  }
+
+  fotoJogosPreencherCampo(form, "matchup", fotoJogosConfronto(jogo));
+  fotoJogosPreencherCampo(form, "match_datetime", fotoJogosDataHora(jogo));
+  fotoJogosPreencherCampo(form, "competition", jogo.competicao);
+  fotoJogosPreencherCampo(form, "venue", jogo.local);
+  fotoJogosAplicarArquivoClean(form, "team_crest", jogo.escudos.time_a);
+  fotoJogosAplicarArquivoClean(form, "opponent_crest", jogo.escudos.time_b);
+  fotoJogosAbrirProduto(form, "escalacao", "Dados preenchidos pelo IA4Tube Assistente. Revise e complete o que faltar.");
+}
+
+function fotoJogosAplicarEscudo3d(jogo, sideParam){
+  const side = sideParam === "time_b" ? "time_b" : "time_a";
+  const file = jogo.escudos?.[side] || null;
+  const teamLabel = side === "time_b" ? "Time B" : "Time A";
+
+  if(!file){
+    fotoJogosAtualizarMsg("Adicione o escudo deste time primeiro.", true);
+    return;
+  }
+
+  selectCleanProductForPicker("escudo3d", { scroll:true, track:true });
+  const applied = fotoJogosSetFileInput(escudo3dFile, file);
+  if(!applied){
+    setEscudo3dCleanFileLabel(file.name || "Escudo selecionado");
+    if(escudo3dFileName) escudo3dFileName.textContent = file.name || "Escudo selecionado";
+  }
+
+  document.querySelectorAll('[data-clean-product-block="escudo3d"] [data-clean-accordion-item]').forEach(item => setCleanAccordionItemOpen(item, true));
+  document.querySelectorAll('[data-clean-product-block="escudo3d"] .cleanProductForm').forEach(form => {
+    setCleanProductMsg(form, `Escudo do ${teamLabel} preparado pela IA4Tube Assistente. Revise e confirme pelo bot\u00e3o atual do produto.`);
+  });
+  fotoJogosAtualizarMsg("Escudo tempor\u00e1rio enviado para Escudos 3D. Nenhum pedido foi criado.", false);
+}
+
+function fotoJogosAplicarProduto(productKey, jogoId, side){
+  const jogo = fotoJogosEncontrarJogo(jogoId);
+  if(!jogo) return;
+
+  if(productKey === "proximo_jogo") return fotoJogosAplicarProximoJogo(jogo);
+  if(productKey === "resultado") return fotoJogosAplicarResultado(jogo);
+  if(productKey === "escalacao") return fotoJogosAplicarEscalacao(jogo);
+  if(productKey === "escudo3d") return fotoJogosAplicarEscudo3d(jogo, side);
+  fotoJogosAtualizarMsg("Produto ainda nao disponivel neste MVP.", true);
+}
+
+function bindFotoJogosTool(root){
+  const tool = root?.querySelector("[data-foto-jogos-tool]");
+  if(!tool) return;
+
+  const cameraInput = tool.querySelector("[data-foto-jogos-camera-input]");
+  const galleryInput = tool.querySelector("[data-foto-jogos-gallery-input]");
+  const crestInput = tool.querySelector("[data-foto-jogos-crest-input]");
+
+  tool.querySelector("[data-foto-jogos-camera]")?.addEventListener("click", () => {
+    if(fotoJogosState.analyzing) return;
+    cameraInput.value = "";
+    cameraInput.click();
+  });
+
+  tool.querySelector("[data-foto-jogos-gallery]")?.addEventListener("click", () => {
+    if(fotoJogosState.analyzing) return;
+    galleryInput.value = "";
+    galleryInput.click();
+  });
+
+  cameraInput?.addEventListener("change", () => fotoJogosSelecionarArquivo(cameraInput.files?.[0] || null));
+  galleryInput?.addEventListener("change", () => fotoJogosSelecionarArquivo(galleryInput.files?.[0] || null));
+
+  tool.querySelector("[data-foto-jogos-remove]")?.addEventListener("click", () => {
+    if(fotoJogosState.analyzing) return;
+    fotoJogosRevogarImagemSelecionada();
+    fotoJogosState.file = null;
+    fotoJogosState.message = "";
+    fotoJogosState.error = false;
+    fotoJogosRerender();
+  });
+
+  tool.querySelector("[data-foto-jogos-analyze]")?.addEventListener("click", fotoJogosAnalisarImagem);
+  tool.querySelectorAll("[data-foto-jogos-add]").forEach(btn => {
+    btn.addEventListener("click", fotoJogosAdicionarManual);
+  });
+  crestInput?.addEventListener("change", () => fotoJogosSelecionarEscudo(crestInput.files?.[0] || null));
+
+  tool.querySelectorAll("[data-foto-jogo-id]").forEach(row => {
+    const id = row.dataset.fotoJogoId || "";
+
+    row.querySelectorAll("[data-foto-jogo-draft]").forEach(input => {
+      input.addEventListener("input", () => fotoJogosAtualizarDraft(id, input.dataset.fotoJogoDraft || "", input.value));
+    });
+
+    row.querySelectorAll("[data-foto-jogo-crest]").forEach(btn => {
+      btn.addEventListener("click", () => fotoJogosAbrirEscudo(id, btn.dataset.fotoJogoCrest || ""));
+    });
+
+    row.querySelectorAll("[data-foto-jogo-crest-remove]").forEach(btn => {
+      btn.addEventListener("click", () => fotoJogosRemoverEscudo(id, btn.dataset.fotoJogoCrestRemove || ""));
+    });
+
+    row.querySelector("[data-foto-jogo-more]")?.addEventListener("toggle", ev => {
+      fotoJogosState.moreOpen[id] = !!ev.currentTarget.open;
+    });
+
+    row.querySelector("[data-foto-jogo-escudo3d-toggle]")?.addEventListener("click", () => {
+      fotoJogosAlternarEscudo3d(id);
+    });
+
+    row.querySelectorAll("[data-foto-jogo-product]").forEach(btn => {
+      btn.addEventListener("click", () => fotoJogosAplicarProduto(btn.dataset.fotoJogoProduct || "", id, btn.dataset.fotoJogoSide || ""));
+    });
+
+    row.querySelector("[data-foto-jogo-edit]")?.addEventListener("click", () => {
+      fotoJogosIniciarEdicao(id);
+    });
+
+    row.querySelector("[data-foto-jogo-save]")?.addEventListener("click", () => {
+      fotoJogosSalvarEdicao(id);
+    });
+
+    row.querySelector("[data-foto-jogo-cancel]")?.addEventListener("click", () => {
+      fotoJogosCancelarEdicao(id);
+    });
+
+    row.querySelector("[data-foto-jogo-delete]")?.addEventListener("click", () => {
+      const jogo = fotoJogosEncontrarJogo(id);
+      if(jogo){
+        fotoJogosRevogarEscudo(jogo, "time_a");
+        fotoJogosRevogarEscudo(jogo, "time_b");
+      }
+      fotoJogosState.jogos = fotoJogosState.jogos.filter(item => item.id !== id);
+      delete fotoJogosState.editing[id];
+      delete fotoJogosState.moreOpen[id];
+      if(fotoJogosState.escudo3dChooser === id) fotoJogosState.escudo3dChooser = "";
+      fotoJogosState.message = fotoJogosState.jogos.length ? "Confronto excluido da lista tempor\u00e1ria." : "";
+      fotoJogosState.error = false;
+      fotoJogosRerender();
+    });
+  });
+}
+
 function renderProductChooser(){
   const chooser = document.getElementById("productChooser");
   if(!chooser) return;
@@ -16056,6 +17463,7 @@ function renderProductChooser(){
       <h2 class="productChooserTitle">Meu Clube FC</h2>
       <p class="productChooserProfileHint" data-product-chooser-profile-hint>Escolha qual arte voce quer criar com os dados do Perfil do Time. Resultado, Proximo Jogo, Escalacao e Jogador + Escudo preenchem automaticamente.</p>
     </div>
+    ${renderFotoJogosTool()}
     <button type="button" class="productChooserArrow productChooserArrowLeft" data-product-chooser-prev aria-label="Produto anterior">‹</button>
     <div class="productChooserRail">
       ${options.map(productKey => {
@@ -16090,6 +17498,7 @@ function renderProductChooser(){
 
   const rail = chooser.querySelector(".productChooserRail");
   if(rail) rail.scrollLeft = 0;
+  bindFotoJogosTool(chooser);
   configurarProductChooserNavegacao(chooser);
   atualizarProductChooserModoPerfil();
 }
