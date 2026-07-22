@@ -8652,16 +8652,6 @@ body.saldoMenuAberto .ia4WhatsappBtn{
   color:#334155;
 }
 
-body.visitanteNaoLogado .saldoTopoArea,
-body.visitanteNaoLogado #btnMeusPedidos,
-body.visitanteNaoLogado .saldoTopoArea,
-body.visitanteNaoLogado #btnAbrirSaldo,
-body.visitanteNaoLogado #saldoMenu,
-body.visitanteNaoLogado #btnMeusPedidos,
-body.visitanteNaoLogado #menuPedidosTopo{
-  display:none !important;
-}
-
 body.omascoteAppMode [data-price-preview],
 body.omascoteAppMode [data-app-payment-cta]{
   display:none !important;
@@ -8669,11 +8659,6 @@ body.omascoteAppMode [data-app-payment-cta]{
 
 body.omascoteAppMode .cleanProductPrice,
 body.omascoteAppMode .optLabel span{
-  display:none !important;
-}
-
-body.homeLandingClean.visitanteNaoLogado.visitantePrimeiroAcessoReal > main > .wrap > .logoutTopBar.logoutOnlyTop,
-body.homeLandingClean.visitanteNaoLogado.visitantePrimeiroAcessoReal > main > .wrap > .topbar{
   display:none !important;
 }
 
@@ -12657,9 +12642,172 @@ body.homeLandingClean.fotoJogosProductFocus[data-page="home"] #tempoEstimadoBox{
   display:none !important;
 }
 
-body.homeLandingClean[data-page="home"] > main > .wrap > .logoutTopBar.logoutOnlyTop,
-body.homeLandingClean[data-page="home"] > main > .wrap > .topbar{
+.accountAccordion{
+  width:calc(100% - 20px);
+  max-width:1080px;
+  margin:10px auto 12px;
+  border:1px solid rgba(214,165,31,.42);
+  border-radius:8px;
+  background:#ffffff;
+  box-shadow:0 12px 28px rgba(15,23,42,.12);
+  overflow:visible;
+  position:relative;
+  z-index:80;
+}
+
+.accountMenuToggle{
+  width:100%;
+  min-height:56px;
+  margin:0;
+  padding:10px 14px;
+  border:0;
+  border-radius:8px;
+  display:flex;
+  align-items:center;
+  gap:10px;
+  background:#11110f;
+  color:#ffffff;
+  box-shadow:none;
+  text-align:left;
+  cursor:pointer;
+}
+
+.accountMenuToggle:hover,
+.accountMenuToggle:focus-visible{
+  background:#1b1a16;
+}
+
+.accountMenuToggle:focus-visible{
+  outline:3px solid rgba(250,204,21,.62);
+  outline-offset:2px;
+}
+
+.accountMenuToggleIcon{
+  flex:0 0 auto;
+  width:34px;
+  height:34px;
+  border-radius:50%;
+  display:grid;
+  place-items:center;
+  background:rgba(250,204,21,.14);
+  color:#fde68a;
+  font-size:18px;
+}
+
+.accountMenuToggleText{
+  min-width:0;
+  flex:1 1 auto;
+  display:grid;
+  gap:2px;
+}
+
+.accountMenuToggleText strong{
+  font-size:15px;
+  line-height:1.15;
+  letter-spacing:0;
+}
+
+.accountMenuToggleText small{
+  color:#d1d5db;
+  font-size:12px;
+  line-height:1.25;
+  font-weight:750;
+  letter-spacing:0;
+}
+
+.accountMenuChevron{
+  flex:0 0 auto;
+  color:#fde68a;
+  font-size:22px;
+  line-height:1;
+  transition:transform .18s ease;
+}
+
+.accountAccordion.is-open .accountMenuChevron{
+  transform:rotate(180deg);
+}
+
+.accountMenuPanel{
+  padding:12px;
+  border-top:1px solid #e5e7eb;
+}
+
+.accountMenuPanel[hidden]{
   display:none !important;
+}
+
+.accountMenuMeta{
+  display:grid;
+  grid-template-columns:minmax(0, 1.4fr) minmax(120px, .8fr) minmax(120px, .8fr);
+  gap:8px;
+  align-items:stretch;
+  margin-bottom:10px;
+}
+
+.accountMenuIdentity,
+.accountMenuStat{
+  min-width:0;
+  padding:10px 12px;
+  border:1px solid #e5e7eb;
+  border-radius:8px;
+  background:#f8fafc;
+}
+
+.accountMenuIdentity{
+  display:grid;
+  gap:3px;
+}
+
+.accountMenuIdentity strong{
+  overflow-wrap:anywhere;
+  color:#111827;
+  font-size:14px;
+  line-height:1.2;
+}
+
+.accountMenuIdentity span,
+.accountMenuStat{
+  color:#475569;
+  font-size:12px;
+  line-height:1.35;
+  font-weight:750;
+}
+
+body[data-page="home"] .accountMenuPanel .logoutTopBar.logoutOnlyTop{
+  padding:4px 2px 8px !important;
+}
+
+.accountMenuPanel .logoutTopBar [hidden]{
+  display:none !important;
+}
+
+body[data-page="home"] .accountMenuPanel .topbar{
+  margin:0 !important;
+  border-radius:8px !important;
+}
+
+@media (max-width:680px){
+  .accountAccordion{
+    width:calc(100% - 16px);
+    margin:8px auto 10px;
+  }
+
+  .accountMenuToggle{
+    min-height:56px;
+    padding:10px 12px;
+  }
+
+  .accountMenuPanel{
+    padding:9px;
+  }
+
+  .accountMenuMeta{
+    grid-template-columns:1fr 1fr;
+  }
+
+  .accountMenuIdentity{
+    grid-column:1 / -1;
+  }
 }
 
 body.homeLandingClean[data-page="home"] > main > .wrap{
@@ -13139,14 +13287,34 @@ body.homeLandingClean[data-page="home"] > main > .wrap > .panel{
   </section>
 
   <div class="wrap">
-    <div class="logoutTopBar logoutOnlyTop">
-      <button id="btnSair" type="button">Sair</button>
-      <button id="btnCadastroTopo" type="button">Cadastro</button>
-      <button id="btnPerfilTime" type="button" hidden>Perfil do Time</button>
-      <button id="btnInstalarApp" class="instalarAppBtn" type="button" hidden>🎁 Resgatar cupom da 1ª arte grátis</button>
-    </div>
+    <section class="accountAccordion" id="accountAccordion" aria-label="Minha conta">
+      <button class="accountMenuToggle" id="accountMenuToggle" type="button" aria-expanded="false" aria-controls="accountMenuPanel">
+        <span class="accountMenuToggleIcon" aria-hidden="true">👤</span>
+        <span class="accountMenuToggleText">
+          <strong>Minha conta</strong>
+          <small id="accountMenuSummary">Saldo, pedidos e acesso</small>
+        </span>
+        <span class="accountMenuChevron" aria-hidden="true">⌄</span>
+      </button>
 
-    <div class="topbar">
+      <div class="accountMenuPanel" id="accountMenuPanel" hidden>
+        <div class="accountMenuMeta">
+          <div class="accountMenuIdentity">
+            <strong id="accountMenuName">Visitante</strong>
+            <span id="accountMenuMessage" aria-live="polite">Entre para ver seu saldo e seus pedidos.</span>
+          </div>
+          <div class="accountMenuStat" id="accountMenuPlan">Plano: —</div>
+          <div class="accountMenuStat" id="accountMenuUsed">Usados no mês: —</div>
+        </div>
+
+        <div class="logoutTopBar logoutOnlyTop">
+          <button id="btnSair" type="button">Sair</button>
+          <button id="btnCadastroTopo" type="button">Cadastro</button>
+          <button id="btnPerfilTime" type="button" hidden>Perfil do Time</button>
+          <button id="btnInstalarApp" class="instalarAppBtn" type="button" hidden>🎁 Resgatar cupom da 1ª arte grátis</button>
+        </div>
+
+        <div class="topbar">
       <!-- removido: stories da barra superior -->
 
       <div class="ia4Brand logoTopoText" aria-label="Meu Clube FC">
@@ -13244,7 +13412,9 @@ body.homeLandingClean[data-page="home"] > main > .wrap > .panel{
             </div>
         </div>
       </div>
-    </div>
+        </div>
+      </div>
+    </section>
 
       <div class="panel">
       <div class="welcomeBox">
@@ -13270,12 +13440,6 @@ body.homeLandingClean[data-page="home"] > main > .wrap > .panel{
             Plataforma para clubes de futebol com perfil do time, elenco, escalação, patrocinadores, ranking, galeria, próximos jogos, resultados e artes automáticas.
           </p>
         </section>
-
-        <nav class="homeAuthNav" aria-label="Navegacao da conta">
-          <button id="homeAuthEntrarBtn" type="button">👤 Entrar</button>
-          <button id="homeAuthCadastroBtn" type="button">📝 Cadastro</button>
-          <button id="homeAuthSairBtn" type="button" hidden>🚪 Sair</button>
-        </nav>
 
         <div class="preTempoHeadline">👀 Primeiro você vê sua arte pronta. Depois decide se quer desbloquear.</div>
 
@@ -14763,6 +14927,59 @@ function ia4ValidarTamanhoArquivos(files){
 }
 
 let token = localStorage.getItem("omascote_token");
+const accountAccordion = document.getElementById("accountAccordion");
+const accountMenuToggle = document.getElementById("accountMenuToggle");
+const accountMenuPanel = document.getElementById("accountMenuPanel");
+
+function definirMenuContaAberto(aberto){
+  const mostrar = !!aberto;
+  if(accountMenuPanel) accountMenuPanel.hidden = !mostrar;
+  if(accountMenuToggle) accountMenuToggle.setAttribute("aria-expanded", String(mostrar));
+  accountAccordion?.classList.toggle("is-open", mostrar);
+
+  if(!mostrar){
+    document.getElementById("saldoMenu")?.classList.remove("open");
+    document.getElementById("menuPedidosTopo")?.classList.remove("open");
+    document.body.classList.remove("saldoMenuAberto");
+  }
+}
+
+function atualizarMenuContaResumo(){
+  const nomeEl = document.getElementById("accountMenuName");
+  const mensagemEl = document.getElementById("accountMenuMessage");
+  const planoContaEl = document.getElementById("accountMenuPlan");
+  const usadosContaEl = document.getElementById("accountMenuUsed");
+  const resumoEl = document.getElementById("accountMenuSummary");
+
+  if(!token){
+    if(nomeEl) nomeEl.textContent = "Visitante";
+    if(mensagemEl) mensagemEl.textContent = "Entre para ver seu saldo e seus pedidos.";
+    if(planoContaEl) planoContaEl.textContent = "Plano: —";
+    if(usadosContaEl) usadosContaEl.textContent = "Usados no mês: —";
+    if(resumoEl) resumoEl.textContent = "Saldo, pedidos e acesso";
+    return;
+  }
+
+  const nome = localStorage.getItem("omascote_nome_time") || "Minha conta";
+  const plano = localStorage.getItem("omascote_plano") || "—";
+  const usados = localStorage.getItem("omascote_usados") || "—";
+  const saldoNumero = ia4SaldoCacheNumero();
+  const saldoCurto = Number.isFinite(saldoNumero)
+    ? `Saldo: ${ia4FormatarSaldoTela(saldoNumero).replace(/^Saldo disponível:\s*/i, "")}`
+    : "Saldo: atualizando...";
+
+  if(nomeEl) nomeEl.textContent = nome;
+  if(mensagemEl) mensagemEl.textContent = saldoCurto;
+  if(planoContaEl) planoContaEl.textContent = `Plano: ${plano} pedidos/mês`;
+  if(usadosContaEl) usadosContaEl.textContent = `Usados no mês: ${usados}`;
+  if(resumoEl) resumoEl.textContent = saldoCurto;
+}
+
+accountMenuToggle?.addEventListener("click", ()=>{
+  definirMenuContaAberto(accountMenuToggle.getAttribute("aria-expanded") !== "true");
+});
+
+definirMenuContaAberto(false);
 const OMASCOTE_HOME_USE_STARTED_KEY = "omascote_home_use_started";
 
 function omascoteHomeUsoIniciadoNestaSessao(){
@@ -23182,11 +23399,11 @@ function applyLocal(){
   const plano = localStorage.getItem("omascote_plano") || "";
   const usados = localStorage.getItem("omascote_usados") || "";
   const saldoNumero = ia4SaldoCacheNumero();
-  const saldoTexto = Number.isFinite(saldoNumero)
-    ? ia4FormatarSaldoTela(saldoNumero)
-    : token
-      ? "Saldo disponível: atualizando..."
-      : "Saldo disponível: entre para ver";
+  const saldoTexto = !token
+    ? "Saldo disponível: entre para ver"
+    : Number.isFinite(saldoNumero)
+      ? ia4FormatarSaldoTela(saldoNumero)
+      : "Saldo disponível: atualizando...";
 
   welcomeEl.textContent = nome || "Seu time";
   planoEl.textContent = `Plano: ${plano || "—"} pedidos/mês`;
@@ -23197,6 +23414,7 @@ function applyLocal(){
   if(saldoHeroEl){
     saldoHeroEl.textContent = saldoTexto;
   }
+  atualizarMenuContaResumo();
   if(typeof atualizarTopoAuth === "function"){
     atualizarTopoAuth();
   }
@@ -26233,6 +26451,11 @@ function togglePedidosTopo(event){
   if(event) event.stopPropagation();
 
   ia4RegistrarAcao("abriu_pedidos");
+
+  if(!token){
+    abrirLoginVisitanteModal();
+    return;
+  }
 
   const menu = document.getElementById("menuPedidosTopo");
   if(!menu) return;
