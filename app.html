@@ -10979,6 +10979,11 @@ body.visitanteNaoLogado .visitanteWelcomeCallout{
   accent-color:#16a34a;
 }
 
+html.fotoJogosPullRefreshGuard,
+body.fotoJogosPullRefreshGuard{
+  overscroll-behavior-y:none;
+}
+
 .fotoJogosProductReturn{
   width:100%;
   max-width:860px;
@@ -17576,11 +17581,107 @@ const fotoJogosState = {
   analysisModePrompt:false,
   filters:{ status:"all", search:"", onlyMyTeam:false, myTeam:"" },
   bulkProductKey:"",
-  recreateConfirm:null
+  recreateConfirm:null,
+  exitPrompt:null,
+  analysisAbortController:null,
+  analysisRunId:0
 };
 
 let fotoJogosSearchTimer = null;
 let fotoJogosScrollEventsBound = false;
+const FOTO_JOGOS_HISTORY_STATE_KEY = "__ia4tube_foto_jogos_guard";
+const fotoJogosExitGuard = {
+  active:false,
+  sentinelAtTop:false,
+  id:""
+};
+
+function fotoJogosJogoConcluidoSemAlteracao(jogo){
+  if(jogo?.creation_status !== "created" || jogo?.selected) return false;
+  if(!jogo.created_fingerprint) return false;
+  return jogo.created_fingerprint === fotoJogosItemFingerprint(jogo);
+}
+
+function fotoJogosTemTrabalhoEmAndamento(){
+  if(fotoJogosState.analyzing || fotoJogosState.batchCreating) return true;
+
+  const jogos = Array.isArray(fotoJogosState.jogos) ? fotoJogosState.jogos : [];
+  if(jogos.length){
+    return !jogos.every(fotoJogosJogoConcluidoSemAlteracao);
+  }
+
+  return !!(
+    fotoJogosState.file ||
+    fotoJogosState.file_preview ||
+    Object.keys(fotoJogosState.editing || {}).length ||
+    fotoJogosState.crestTarget ||
+    fotoJogosState.photoTarget ||
+    fotoJogosState.productFocus
+  );
+}
+
+function fotoJogosHistoryState(){
+  return history.state && typeof history.state === "object" ? history.state : {};
+}
+
+function fotoJogosAdicionarSentinelaHistorico(){
+  if(!fotoJogosExitGuard.active || fotoJogosExitGuard.sentinelAtTop) return;
+  history.pushState({
+    ...fotoJogosHistoryState(),
+    [FOTO_JOGOS_HISTORY_STATE_KEY]:fotoJogosExitGuard.id
+  }, "", location.href);
+  fotoJogosExitGuard.sentinelAtTop = true;
+}
+
+function fotoJogosBeforeUnload(event){
+  if(!fotoJogosExitGuard.active || !fotoJogosTemTrabalhoEmAndamento()) return;
+  event.preventDefault();
+  event.returnValue = "";
+}
+
+function fotoJogosPopState(event){
+  if(!fotoJogosExitGuard.active) return;
+
+  const voltouParaSentinela = event.state?.[FOTO_JOGOS_HISTORY_STATE_KEY] === fotoJogosExitGuard.id;
+  fotoJogosExitGuard.sentinelAtTop = voltouParaSentinela;
+  if(voltouParaSentinela) return;
+
+  fotoJogosSolicitarSaida("history");
+}
+
+function fotoJogosAtivarProtecaoSaida(){
+  if(fotoJogosExitGuard.active) return;
+
+  fotoJogosExitGuard.active = true;
+  fotoJogosExitGuard.id = `foto_jogos_guard_${Date.now()}_${Math.random().toString(16).slice(2)}`;
+  fotoJogosExitGuard.sentinelAtTop = false;
+  window.addEventListener("beforeunload", fotoJogosBeforeUnload);
+  window.addEventListener("popstate", fotoJogosPopState);
+  fotoJogosAdicionarSentinelaHistorico();
+}
+
+function fotoJogosDesativarProtecaoSaida(options = {}){
+  if(!fotoJogosExitGuard.active) return;
+
+  const guardId = fotoJogosExitGuard.id;
+  const sentinelAtTop = fotoJogosExitGuard.sentinelAtTop &&
+    history.state?.[FOTO_JOGOS_HISTORY_STATE_KEY] === guardId;
+
+  window.removeEventListener("beforeunload", fotoJogosBeforeUnload);
+  window.removeEventListener("popstate", fotoJogosPopState);
+  fotoJogosExitGuard.active = false;
+  fotoJogosExitGuard.sentinelAtTop = false;
+  fotoJogosExitGuard.id = "";
+
+  if(options.collapseSentinel !== false && sentinelAtTop){
+    history.back();
+  }
+}
+
+function fotoJogosSincronizarProtecaoSaida(){
+  if(fotoJogosTemTrabalhoEmAndamento()) fotoJogosAtivarProtecaoSaida();
+  else fotoJogosDesativarProtecaoSaida();
+}
 
 function fotoJogosCriarId(){
   if(window.crypto?.randomUUID) return window.crypto.randomUUID();
@@ -18006,6 +18107,9 @@ function fotoJogosSalvarScroll(){
 function fotoJogosAplicarModoTela(){
   document.body.classList.toggle("fotoJogosWorkspaceOpen", !!fotoJogosState.workspaceOpen);
   document.body.classList.toggle("fotoJogosProductFocus", !!fotoJogosState.productFocus);
+  const pullRefreshGuard = !!fotoJogosState.workspaceOpen && fotoJogosExitGuard.active;
+  document.documentElement.classList.toggle("fotoJogosPullRefreshGuard", pullRefreshGuard);
+  document.body.classList.toggle("fotoJogosPullRefreshGuard", pullRefreshGuard);
 }
 
 function renderFotoJogosEntry(){
@@ -18043,6 +18147,11 @@ function fotoJogosAbrirWorkspace(){
 }
 
 function fotoJogosVoltarHome(){
+  if(fotoJogosTemTrabalhoEmAndamento()){
+    fotoJogosSolicitarSaida("assistant");
+    return;
+  }
+
   fotoJogosSalvarScroll();
   fotoJogosState.workspaceOpen = false;
   fotoJogosState.productFocus = false;
@@ -18055,6 +18164,81 @@ function fotoJogosVoltarDoProduto(){
   fotoJogosState.workspaceOpen = true;
   fotoJogosState.productFocus = false;
   fotoJogosRerender({ restoreScroll:true });
+}
+
+function renderFotoJogosExitPrompt(){
+  if(!fotoJogosState.exitPrompt) return "";
+  const criando = fotoJogosState.batchCreating;
+  return `
+    <div class="fotoJogosDialogBackdrop" data-foto-jogos-exit-dialog role="dialog" aria-modal="true" aria-labelledby="fotoJogosExitTitle">
+      <div class="fotoJogosDialog">
+        <h3 id="fotoJogosExitTitle">Sair deste pedido?</h3>
+        <p>Os confrontos, escudos e fotos adicionados ser\u00e3o perdidos.</p>
+        ${criando ? `<p>A cria\u00e7\u00e3o est\u00e1 em andamento. Aguarde a conclus\u00e3o antes de sair.</p>` : ""}
+        <div class="fotoJogosBatchActions">
+          <button type="button" class="fotoJogosBtn primary" data-foto-jogos-exit-continue>Continuar o pedido</button>
+          <button type="button" class="fotoJogosSmallBtn" data-foto-jogos-exit-discard ${criando ? "disabled" : ""}>Sair e descartar</button>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function fotoJogosSolicitarSaida(source = "assistant"){
+  if(!fotoJogosTemTrabalhoEmAndamento()){
+    if(source === "assistant") fotoJogosVoltarHome();
+    return;
+  }
+
+  fotoJogosState.exitPrompt = { source };
+  fotoJogosRerender({ restoreScroll:false });
+}
+
+function fotoJogosContinuarPedido(){
+  const source = fotoJogosState.exitPrompt?.source || "assistant";
+  fotoJogosState.exitPrompt = null;
+  if(source === "history") fotoJogosAdicionarSentinelaHistorico();
+  fotoJogosRerender({ restoreScroll:true });
+}
+
+function fotoJogosDescartarEstado(){
+  fotoJogosLimparTimers();
+  fotoJogosState.analysisRunId += 1;
+  try{ fotoJogosState.analysisAbortController?.abort(); }catch(e){}
+  fotoJogosState.analysisAbortController = null;
+  fotoJogosRevogarImagemSelecionada();
+  fotoJogosLimparListaTemporaria();
+  fotoJogosState.file = null;
+  fotoJogosState.file_preview = "";
+  fotoJogosState.analyzing = false;
+  fotoJogosState.hasAnalyzed = false;
+  fotoJogosState.message = "";
+  fotoJogosState.error = false;
+  fotoJogosState.workspaceScrollY = 0;
+  fotoJogosState.batchCreating = false;
+  fotoJogosState.analysisModePrompt = false;
+  fotoJogosState.filters = { status:"all", search:"", onlyMyTeam:false, myTeam:"" };
+  fotoJogosState.bulkProductKey = "";
+  fotoJogosState.exitPrompt = null;
+  fotoJogosState.workspaceOpen = false;
+  fotoJogosState.productFocus = false;
+  fotoJogosState.productMessage = "";
+}
+
+function fotoJogosSairEDescartar(){
+  if(fotoJogosState.batchCreating) return;
+  const source = fotoJogosState.exitPrompt?.source || "assistant";
+  fotoJogosDesativarProtecaoSaida({ collapseSentinel:source !== "history" });
+  fotoJogosDescartarEstado();
+  fotoJogosRerender({ restoreScroll:false, saveScroll:false });
+
+  if(source === "history"){
+    setTimeout(() => history.back(), 0);
+    return;
+  }
+
+  const entry = document.getElementById("fotoJogosEntry");
+  setTimeout(() => entry?.scrollIntoView({ behavior:"smooth", block:"start" }), 50);
 }
 
 function renderFotoJogosAnalysisModePrompt(){
@@ -18635,7 +18819,7 @@ function fotoJogosRerender(options = {}){
     if(status) status.textContent = fotoJogosState.productMessage || "";
   }
 
-  const dialogHtml = renderFotoJogosAnalysisModePrompt();
+  const dialogHtml = renderFotoJogosExitPrompt() || renderFotoJogosAnalysisModePrompt();
   let dialogHost = document.getElementById("fotoJogosDialogHost");
   if(dialogHtml){
     if(!dialogHost){
@@ -18648,6 +18832,7 @@ function fotoJogosRerender(options = {}){
     dialogHost.remove();
   }
 
+  fotoJogosSincronizarProtecaoSaida();
   fotoJogosAplicarModoTela();
   bindFotoJogosShell();
 
@@ -19323,6 +19508,7 @@ async function fotoJogosAnalisarImagem(mode = ""){
 
   fotoJogosState.analysisModePrompt = false;
   fotoJogosState.analyzing = true;
+  const analysisRunId = ++fotoJogosState.analysisRunId;
   fotoJogosState.message = "";
   fotoJogosState.error = false;
   fotoJogosRerender();
@@ -19331,6 +19517,7 @@ async function fotoJogosAnalisarImagem(mode = ""){
   const fd = new FormData();
   fd.append("imagem", fotoJogosState.file);
   const controller = typeof AbortController !== "undefined" ? new AbortController() : null;
+  fotoJogosState.analysisAbortController = controller;
   const frontendTimeout = controller
     ? setTimeout(() => controller.abort(), FOTO_JOGOS_FRONTEND_TIMEOUT_MS)
     : null;
@@ -19343,6 +19530,7 @@ async function fotoJogosAnalisarImagem(mode = ""){
       ...(controller ? { signal:controller.signal } : {})
     });
     const out = await ia4LerJsonSeguro(r);
+    if(analysisRunId !== fotoJogosState.analysisRunId) return;
     const authMsg = ia4TratarAuthInvalida(r, out);
     if(authMsg) throw new Error(authMsg);
     if(!r.ok || !out.ok) throw new Error(out.error || out.erro || "N\u00e3o foi poss\u00edvel analisar a imagem com a iA4Tube.");
@@ -19361,6 +19549,7 @@ async function fotoJogosAnalisarImagem(mode = ""){
       fotoJogosState.error = false;
     }
   }catch(err){
+    if(analysisRunId !== fotoJogosState.analysisRunId) return;
     fotoJogosFinalizarProgresso(false);
     fotoJogosState.message = err?.name === "AbortError"
       ? "Tempo esgotado ao analisar a imagem. Tente uma foto mais n\u00edtida ou menor."
@@ -19368,6 +19557,8 @@ async function fotoJogosAnalisarImagem(mode = ""){
     fotoJogosState.error = true;
   }finally{
     if(frontendTimeout) clearTimeout(frontendTimeout);
+    if(analysisRunId !== fotoJogosState.analysisRunId) return;
+    fotoJogosState.analysisAbortController = null;
     fotoJogosState.analyzing = false;
     fotoJogosRerender();
   }
@@ -19823,181 +20014,111 @@ function fotoJogosAtualizarValidacaoJogo(id, options = {}){
   return !!detalhes.length;
 }
 
-function fotoJogosAssetsJson(files){
-  return Object.fromEntries(Object.entries(files || {}).map(([key, file]) => [
-    key,
-    {
-      legacyName: key,
-      files: file ? [file.name || "imagem.png"] : []
+function fotoJogosTituloProdutoAtual(productKey, fieldKey){
+  const form = document.querySelector(`[data-product-form="${CSS.escape(productKey)}"]`);
+  return fotoJogosTexto(form?.querySelector(`[data-field="${CSS.escape(fieldKey)}"]`)?.value || "", 80);
+}
+
+function fotoJogosBuildCleanOrder(jogo){
+  const productKey = jogo.productKey || "";
+  const schema = getCleanProductSchema(productKey);
+  if(!schema) return null;
+
+  const fields = {};
+  const assets = {};
+  (schema.fields || []).forEach(field => {
+    if(field.type === "text"){
+      fields[field.key] = field.profileTitleKey
+        ? fotoJogosTituloProdutoAtual(productKey, field.key)
+        : (field.defaultValue || "");
+    }else if(field.type === "file" || field.type === "multi-file"){
+      assets[field.key] = { legacyName:field.legacyName || field.key, files:[] };
+    }else if(field.type === "players" || field.type === "scorers"){
+      fields[field.key] = [];
     }
-  ]));
+  });
+
+  const setAsset = (key, file) => {
+    if(!assets[key]) return;
+    assets[key].files = file ? [file] : [];
+  };
+  const dataHora = fotoJogosDataHora(jogo);
+
+  if(productKey === "proximo_jogo"){
+    fields.matchup = { home_team:jogo.time_a || "", away_team:jogo.time_b || "" };
+    fields.match_datetime = dataHora;
+    fields.competition = jogo.competicao || "";
+    fields.venue = jogo.local || "";
+    setAsset("home_crest", jogo.escudos?.time_a || null);
+    setAsset("away_crest", jogo.escudos?.time_b || null);
+    setAsset("match_photo", jogo.foto?.file || null);
+  }else if(productKey === "resultado"){
+    const principalSide = jogo.resultado_side === "time_b" ? "time_b" : "time_a";
+    const adversarioSide = principalSide === "time_a" ? "time_b" : "time_a";
+    fields.score = {
+      home_team:jogo[principalSide] || "",
+      home_score:principalSide === "time_a" ? jogo.resultado_gols_a || "" : jogo.resultado_gols_b || "",
+      away_score:principalSide === "time_a" ? jogo.resultado_gols_b || "" : jogo.resultado_gols_a || "",
+      away_team:jogo[adversarioSide] || ""
+    };
+    fields.competition = jogo.competicao || "";
+    fields.headline = "Resultado do jogo";
+    setAsset("home_crest", jogo.escudos?.[principalSide] || null);
+    setAsset("away_crest", jogo.escudos?.[adversarioSide] || null);
+    setAsset("match_photo", jogo.foto?.file || null);
+  }else if(productKey === "escalacao"){
+    const principalSide = jogo.escalacao_side === "time_b" ? "time_b" : "time_a";
+    const adversarioSide = principalSide === "time_a" ? "time_b" : "time_a";
+    fields.matchup = `${jogo[principalSide] || ""} x ${jogo[adversarioSide] || ""}`.trim();
+    fields.match_datetime = dataHora;
+    fields.competition = jogo.competicao || "";
+    fields.venue = jogo.local || "";
+    fields.players = fotoJogosSplitPlayers(jogo.escalacao_texto);
+    setAsset("team_crest", jogo.escudos?.[principalSide] || null);
+    setAsset("opponent_crest", jogo.escudos?.[adversarioSide] || null);
+    setAsset("team_photo", jogo.foto?.tipo === "time" ? jogo.foto.file : null);
+  }else if(productKey === "jogador_escudo"){
+    const side = jogo.jogador_escudo_side === "time_b" ? "time_b" : "time_a";
+    fields.player_name = fotoJogosTexto(jogo.foto?.nome, 80);
+    setAsset("team_crest", jogo.escudos?.[side] || null);
+    setAsset("player_photo", jogo.foto?.file || null);
+  }
+
+  return {
+    schema_version:CLEAN_PRODUCT_SCHEMA_VERSION,
+    product_id:productKey,
+    fields,
+    assets
+  };
+}
+
+function fotoJogosPayloadFromLegacyFormData(fd){
+  const body = {};
+  const files = {};
+  fd.forEach((value, key) => {
+    if(isOrderUploadBlob(value)){
+      if(!files[key]) files[key] = value;
+      return;
+    }
+    body[key] = String(value || "");
+  });
+  return { body, files };
 }
 
 function fotoJogosLegacyBody(jogo){
   const productKey = jogo.productKey || "";
-  const dataHora = fotoJogosDataHora(jogo);
-  const confronto = fotoJogosConfronto(jogo);
-  const acesso = getIa4AccessContext();
-  const base = {
-    schema_version: String(CLEAN_PRODUCT_SCHEMA_VERSION),
-    product_id: productKey,
-    origem_acesso: acesso.origem_acesso,
-    display_mode: acesso.display_mode,
-    jogadores_json: "[]",
-    jogadores_texto: "",
-    artilheiros: "[]",
-    artilheiros_json: "[]",
-    artilheiros_texto: "",
-    artilheiros_qtd: "0"
-  };
-
-  if(productKey === "proximo_jogo"){
-    const fields = {
-      matchup: { home_team:jogo.time_a || "", away_team:jogo.time_b || "" },
-      match_datetime:dataHora,
-      competition:jogo.competicao || "",
-      venue:jogo.local || ""
-    };
-    return {
-      body:{
-        ...base,
-        flyer_tipo:"zz1ft",
-        rodada:confronto,
-        data:dataHora,
-        hora:jogo.competicao || "",
-        arena:jogo.local || "",
-        time_principal:jogo.time_a || "",
-        time_adversario:jogo.time_b || "",
-        fields_json:JSON.stringify(fields),
-        assets_json:JSON.stringify(fotoJogosAssetsJson({
-          home_crest:jogo.escudos?.time_a,
-          away_crest:jogo.escudos?.time_b,
-          match_photo:jogo.foto?.file || null
-        }))
-      },
-      files:{ escudo1:jogo.escudos?.time_a, escudo2:jogo.escudos?.time_b, mascote:jogo.foto?.file || null }
-    };
-  }
-
-  if(productKey === "resultado"){
-    const principalSide = jogo.resultado_side === "time_b" ? "time_b" : "time_a";
-    const adversarioSide = principalSide === "time_a" ? "time_b" : "time_a";
-    const golsPrincipal = principalSide === "time_a" ? jogo.resultado_gols_a : jogo.resultado_gols_b;
-    const golsAdversario = principalSide === "time_a" ? jogo.resultado_gols_b : jogo.resultado_gols_a;
-    const fields = {
-      score:{
-        home_team:jogo[principalSide] || "",
-        home_score:golsPrincipal || "",
-        away_score:golsAdversario || "",
-        away_team:jogo[adversarioSide] || ""
-      },
-      competition:jogo.competicao || "",
-      headline:"Resultado do jogo"
-    };
-    return {
-      body:{
-        ...base,
-        rodada:`${jogo[principalSide] || ""} ${golsPrincipal || "0"} x ${golsAdversario || "0"} ${jogo[adversarioSide] || ""}`.trim(),
-        data:"Resultado do jogo",
-        hora:jogo.competicao || "",
-        time_principal:jogo[principalSide] || "",
-        gols_time_principal:golsPrincipal || "",
-        gols_adversario:golsAdversario || "",
-        time_adversario:jogo[adversarioSide] || "",
-        fields_json:JSON.stringify(fields),
-        assets_json:JSON.stringify(fotoJogosAssetsJson({
-          home_crest:jogo.escudos?.[principalSide],
-          away_crest:jogo.escudos?.[adversarioSide],
-          match_photo:jogo.foto?.file || null
-        }))
-      },
-      files:{ escudo1:jogo.escudos?.[principalSide], escudo2:jogo.escudos?.[adversarioSide], mascote:jogo.foto?.file || null }
-    };
-  }
-
-  if(productKey === "escalacao"){
-    const principalSide = jogo.escalacao_side === "time_b" ? "time_b" : "time_a";
-    const adversarioSide = principalSide === "time_a" ? "time_b" : "time_a";
-    const confrontoEscalacao = `${jogo[principalSide] || ""} x ${jogo[adversarioSide] || ""}`.trim();
-    const jogadores = fotoJogosSplitPlayers(jogo.escalacao_texto);
-    const fields = {
-      matchup:confrontoEscalacao,
-      match_datetime:dataHora,
-      competition:jogo.competicao || "",
-      venue:jogo.local || "",
-      players:jogadores
-    };
-    return {
-      body:{
-        ...base,
-        flyer_tipo:"zz1fs",
-        rodada:confrontoEscalacao,
-        data:dataHora || "Escala\u00e7\u00e3o",
-        hora:jogo.competicao || "",
-        arena:jogo.local || "",
-        time_principal:jogo[principalSide] || "",
-        time_adversario:jogo[adversarioSide] || "",
-        jogadores_json:JSON.stringify(jogadores),
-        jogadores_texto:jogadores.map(jogador => jogador.nome).join("; "),
-        fields_json:JSON.stringify(fields),
-        assets_json:JSON.stringify(fotoJogosAssetsJson({
-          team_crest:jogo.escudos?.[principalSide] || null,
-          opponent_crest:jogo.escudos?.[adversarioSide] || null,
-          team_photo:jogo.foto?.tipo === "time" ? jogo.foto.file : null
-        }))
-      },
-      files:{
-        escudo1:jogo.escudos?.[principalSide] || null,
-        escudo2:jogo.escudos?.[adversarioSide] || null,
-        mascote:jogo.foto?.tipo === "time" ? jogo.foto.file : null
-      }
-    };
-  }
-
   if(productKey === "escudo3d"){
     const side = jogo.escudo3d_side === "time_b" ? "time_b" : "time_a";
-    const fields = { team:fotoJogosSideLabel(jogo, side), side };
-    return {
-      body:{
-        ...base,
-        flyer_tipo:"escudo3d",
-        rodada:"Escudo 3D",
-        data:"Escudo 3D",
-        fields_json:JSON.stringify(fields),
-        assets_json:JSON.stringify(fotoJogosAssetsJson({ escudo1:jogo.escudos?.[side] || null }))
-      },
-      files:{ escudo1:jogo.escudos?.[side] || null }
-    };
+    return fotoJogosPayloadFromLegacyFormData(
+      buildEscudo3dLegacyFormData(jogo.escudos?.[side] || null)
+    );
   }
 
-  if(productKey === "jogador_escudo"){
-    const side = jogo.jogador_escudo_side === "time_b" ? "time_b" : "time_a";
-    const playerName = fotoJogosTexto(jogo.foto?.nome, 80);
-    const jogadores = playerName ? [{ nome:playerName, posicao:"" }] : [];
-    const fields = {
-      player_name:playerName,
-      team:fotoJogosSideLabel(jogo, side)
-    };
-    return {
-      body:{
-        ...base,
-        flyer_tipo:"jog_escudo",
-        foto_tipo:jogo.foto?.tipo || "",
-        rodada:"Jogador + escudo",
-        data:playerName,
-        jogadores_json:JSON.stringify(jogadores),
-        jogadores_texto:playerName,
-        fields_json:JSON.stringify(fields),
-        assets_json:JSON.stringify(fotoJogosAssetsJson({
-          team_crest:jogo.escudos?.[side] || null,
-          player_photo:jogo.foto?.file || null
-        }))
-      },
-      files:{ escudo1:jogo.escudos?.[side] || null, mascote:jogo.foto?.file || null }
-    };
-  }
-
-  return { body:base, files:{} };
+  const cleanOrder = fotoJogosBuildCleanOrder(jogo);
+  if(!cleanOrder) return { body:{}, files:{} };
+  return fotoJogosPayloadFromLegacyFormData(
+    buildLegacyFormDataFromClean(productKey, cleanOrder, { allowSavedEscudoFallback:false })
+  );
 }
 
 function fotoJogosItemFingerprint(jogo){
@@ -20350,6 +20471,11 @@ function bindFotoJogosShell(){
   }
   const analysisCancel = document.querySelector("[data-foto-jogos-analysis-mode-cancel]");
   if(analysisCancel) analysisCancel.onclick = fotoJogosCancelarModoAnalise;
+
+  const exitContinue = document.querySelector("[data-foto-jogos-exit-continue]");
+  if(exitContinue) exitContinue.onclick = fotoJogosContinuarPedido;
+  const exitDiscard = document.querySelector("[data-foto-jogos-exit-discard]");
+  if(exitDiscard) exitDiscard.onclick = fotoJogosSairEDescartar;
 
   document.querySelectorAll("[data-foto-jogos-back]").forEach(btn => {
     btn.onclick = fotoJogosVoltarHome;
@@ -21458,7 +21584,7 @@ function setEscudo3dOrderSubmitBusy(progressTarget, busy){
   setPedidoButtonBusy(progressTarget?.querySelector?.("[data-submit-escudo3d]"), busy, "Enviando...");
 }
 
-function buildLegacyFormDataFromClean(productKey, cleanOrder){
+function buildLegacyFormDataFromClean(productKey, cleanOrder, options = {}){
   const product = PRODUCTS[productKey];
   const schema = getCleanProductSchema(productKey);
   const fd = new FormData();
@@ -21491,7 +21617,9 @@ function buildLegacyFormDataFromClean(productKey, cleanOrder){
     }
 
     if((field.type === "file" || field.type === "multi-file") && field.legacyName){
-      const fallback = field.legacyName === "escudo1" && field.savedFallback ? getSavedEscudo1File() : null;
+      const fallback = options.allowSavedEscudoFallback !== false && field.legacyName === "escudo1" && field.savedFallback
+        ? getSavedEscudo1File()
+        : null;
       appendCleanAssetLegacy(fd, cleanOrder, field.key, field.legacyName, fallback);
     }
   });
@@ -21554,6 +21682,18 @@ function buildLegacyFormDataFromClean(productKey, cleanOrder){
   if(!fd.has("data")) appendCleanTextLegacy(fd, "data", product?.title || productKey);
   appendIa4AccessContext(fd);
 
+  return fd;
+}
+
+function buildEscudo3dLegacyFormData(file, cupomCodigo = ""){
+  const fd = new FormData();
+  fd.append("flyer_tipo", "escudo3d");
+  fd.append("rodada", "Escudo 3D");
+  fd.append("data", "Escudo 3D");
+  if(file) fd.append("escudo1", file, file.name || "escudo1.png");
+  const cupom = String(cupomCodigo || "").trim();
+  if(cupom) fd.append("cupom_codigo", cupom);
+  appendIa4AccessContext(fd);
   return fd;
 }
 
@@ -24848,20 +24988,12 @@ async function enviarPedidoEscudo3dComArquivo(file, progressTarget = null){
   if(escudo3dEnviarBtn) escudo3dEnviarBtn.disabled = true;
   if(escudo3dMsg) escudo3dMsg.textContent = "Enviando...";
 
-  const fd = new FormData();
-  fd.append("flyer_tipo", "escudo3d");
-  fd.append("rodada", "Escudo 3D");
-  fd.append("data", "Escudo 3D");
-  fd.append("escudo1", file);
   const escudo3dCupomValor = (
     progressTarget?.querySelector("[data-escudo3d-coupon]")?.value ||
     document.getElementById("escudo3dCupom")?.value ||
     ""
   ).trim();
-  if(escudo3dCupomValor){
-    fd.append("cupom_codigo", escudo3dCupomValor);
-  }
-  appendIa4AccessContext(fd);
+  const fd = buildEscudo3dLegacyFormData(file, escudo3dCupomValor);
   const requestState = getOrCreateEscudo3dOrderRequestState(file, escudo3dCupomValor);
 
   if(requestState.confirmed){
