@@ -16608,7 +16608,7 @@ const CLEAN_PRODUCT_FORM_SCHEMAS = {
     endpoint: "/resultado_do_jogo",
     validationMessage: "Preencha o placar, campeonato/competição e envie o escudo do Time A.",
     fields: [
-      { key: "titulo_secao_resultados", type: "text", label: "Título da seção de resultados", placeholder: "", required: false, visualNormal: true, profileTitleKey: "titulo_secao_resultados", maxLength: 80 },
+      { key: "titulo_secao_resultados", type: "text", label: "Título da seção de resultados", placeholder: "", required: false, visualNormal: true, orderTitleKey: "titulo_secao_resultados", maxLength: 80 },
       { key: "score", type: "score", label: "Placar", required: true },
       { key: "competition", type: "text", legacyName: "hora", labelKey: "hora", placeholderKey: "hora", required: true },
       { key: "headline", type: "text", legacyName: "data", labelKey: "data", placeholderKey: "data", required: false, defaultValue: "Resultado do jogo" },
@@ -16647,7 +16647,7 @@ const CLEAN_PRODUCT_FORM_SCHEMAS = {
     endpoint: "/pedidos",
     validationMessage: "Preencha o confronto, data e horário, campeonato/competição e envie os escudos dos dois times.",
     fields: [
-      { key: "titulo_secao_proximo_jogo", type: "text", label: "Título da seção de próximo jogo", placeholder: "Próximo Jogo", required: false, visualNormal: true, profileTitleKey: "titulo_secao_proximo_jogo", maxLength: 80 },
+      { key: "titulo_secao_proximo_jogo", type: "text", label: "Título da seção de próximo jogo", placeholder: "Próximo Jogo", required: false, visualNormal: true, orderTitleKey: "titulo_secao_proximo_jogo", maxLength: 80 },
       { key: "matchup", type: "matchup", label: "Confronto", required: true },
       { key: "match_datetime", type: "text", legacyName: "data", labelKey: "data", placeholderKey: "data", required: true },
       { key: "competition", type: "text", legacyName: "hora", labelKey: "hora", placeholderKey: "hora", required: true },
@@ -16834,11 +16834,10 @@ function renderCleanTextField(product, field, step){
     ? `<div data-price-preview data-price-product="${htmlEscape(product?.id || "")}"></div>`
     : "";
   const maxLengthAttr = field.maxLength ? ` maxlength="${htmlEscape(field.maxLength)}"` : "";
-  const profileTitleAttr = field.profileTitleKey ? ` data-profile-section-title="${htmlEscape(field.profileTitleKey)}"` : "";
   return `
     <div class="cleanFieldCard" data-clean-field-card="${htmlEscape(field.key)}">
       <label class="cleanFieldLabel" data-step="${htmlEscape(step)}">${label}</label>
-      <input name="${htmlEscape(field.key)}" data-field="${htmlEscape(field.key)}"${profileTitleAttr}${maxLengthAttr} placeholder="${htmlEscape(getCleanFieldPlaceholder(product, field))}" aria-label="${htmlEscape(label)}">
+      <input name="${htmlEscape(field.key)}" data-field="${htmlEscape(field.key)}"${maxLengthAttr} placeholder="${htmlEscape(getCleanFieldPlaceholder(product, field))}" aria-label="${htmlEscape(label)}">
     </div>
     ${pricePreview}
   `;
@@ -20231,11 +20230,6 @@ function fotoJogosAtualizarValidacaoJogo(id, options = {}){
   return !!detalhes.length;
 }
 
-function fotoJogosTituloProdutoAtual(productKey, fieldKey){
-  const form = document.querySelector(`[data-product-form="${CSS.escape(productKey)}"]`);
-  return fotoJogosTexto(form?.querySelector(`[data-field="${CSS.escape(fieldKey)}"]`)?.value || "", 80);
-}
-
 function fotoJogosBuildCleanOrder(jogo){
   const productKey = jogo.productKey || "";
   const schema = getCleanProductSchema(productKey);
@@ -20245,9 +20239,9 @@ function fotoJogosBuildCleanOrder(jogo){
   const assets = {};
   (schema.fields || []).forEach(field => {
     if(field.type === "text"){
-      fields[field.key] = field.profileTitleKey
-        ? fotoJogosTituloProdutoAtual(productKey, field.key)
-        : (field.defaultValue || "");
+      if(!field.orderTitleKey){
+        fields[field.key] = field.defaultValue || "";
+      }
     }else if(field.type === "file" || field.type === "multi-file"){
       assets[field.key] = { legacyName:field.legacyName || field.key, files:[] };
     }else if(field.type === "players" || field.type === "scorers"){
@@ -20970,7 +20964,6 @@ function selectCleanProductForPicker(productKey, options = {}){
   }
   if(window.perfilAssistRuntimeReady){
     perfilAssistAtualizarProduto(productKey);
-    carregarTituloSecaoProduto(productKey);
   }
 
   if(options.perfilAuto !== false && !perfilAssistAplicandoArquivo && perfilCriarArteModoAtivo && perfilAssistProductEnabled(productKey)){
@@ -21396,7 +21389,10 @@ function serializeCleanProductForm(productKey, form){
 
   schema.fields.forEach(field => {
     if(field.type === "text"){
-      fields[field.key] = getCleanFieldValue(form, field.key);
+      const value = getCleanFieldValue(form, field.key);
+      if(!field.orderTitleKey || value){
+        fields[field.key] = value;
+      }
     }
 
     if(field.type === "score"){
@@ -21825,8 +21821,8 @@ function buildLegacyFormDataFromClean(productKey, cleanOrder, options = {}){
   Object.keys(defaults).forEach(name => appendCleanTextLegacy(fd, name, defaults[name]));
 
   schema.fields.forEach(field => {
-    if(field.profileTitleKey){
-      fd.append(field.profileTitleKey, cleanOrder.fields[field.key] || "");
+    if(field.orderTitleKey && cleanOrder.fields[field.key]){
+      fd.append(field.orderTitleKey, cleanOrder.fields[field.key]);
     }
 
     if(field.type === "text" && field.legacyName){
@@ -21927,21 +21923,10 @@ function resetCleanFormAfterSend(form){
   resetCleanReviewState(form);
   closeCleanAccordions(form);
 
-  const profileTitleValues = Array.from(form.querySelectorAll("[data-profile-section-title]")).map(input => ({
-    input,
-    value: input.value || "",
-    loaded: input.dataset.profileTitleLoaded || "",
-    dirty: input.dataset.profileTitleDirty || ""
-  }));
   const assetKeys = Array.from(form.querySelectorAll("[data-asset]")).map(input => input.dataset.asset).filter(Boolean);
 
   form.reset();
   clearAllCleanStableAssets(form);
-  profileTitleValues.forEach(item => {
-    item.input.value = item.value;
-    if(item.loaded) item.input.dataset.profileTitleLoaded = item.loaded;
-    if(item.dirty) item.input.dataset.profileTitleDirty = item.dirty;
-  });
   assetKeys.forEach(key => clearCleanFilePreview(form, key));
   form.querySelectorAll("[data-clean-file-name]").forEach(el => {
     el.textContent = "Nenhum arquivo";
@@ -22574,16 +22559,6 @@ async function enviarCleanProductFormConfirmado(form, options = {}){
     if(!okAuto) return;
   }
 
-  if(perfilProdutoTituloSecaoConfig(productKey)){
-    envioEtapa = "salvar_titulo_secao";
-    setCleanProductMsg(form, "Salvando título da seção...");
-    const tituloSecaoResultado = await salvarTituloSecaoProduto(productKey, form);
-    if(!tituloSecaoResultado.ok){
-      setCleanProductMsg(form, tituloSecaoResultado.error || "Não foi possível salvar o título da seção.", true);
-      return;
-    }
-  }
-
   setCleanProductMsg(form, "Enviando...");
 
   envioEtapa = "montar_payload";
@@ -22886,12 +22861,6 @@ function bindCleanProductForms(root){
       couponInput.addEventListener("input", () => schedulePricePreviewUpdate(pricePreview));
       couponInput.addEventListener("change", () => schedulePricePreviewUpdate(pricePreview, 0));
     }
-  });
-
-  root.querySelectorAll("[data-profile-section-title]").forEach(input => {
-    input.addEventListener("input", () => {
-      input.dataset.profileTitleDirty = "1";
-    });
   });
 
   root.querySelectorAll("[data-perfil-assist-apply]").forEach(btn => {
@@ -28143,154 +28112,6 @@ let perfilGaleriaFiltroEditor = "todos";
 let perfilGaleriaFiltroPublica = "todos";
 let perfilPublicoGaleriaDadosAtuais = [];
 
-function perfilProdutoTituloSecaoConfig(productKey){
-  if(productKey === "resultado"){
-    return {
-      fieldKey: "titulo_secao_resultados",
-      fallback: "Últimos Resultados"
-    };
-  }
-
-  if(productKey === "proximo_jogo"){
-    return {
-      fieldKey: "titulo_secao_proximo_jogo",
-      fallback: "Próximo Jogo"
-    };
-  }
-
-  return null;
-}
-
-function perfilProdutoTituloSecaoCampo(productKey, form = null){
-  const config = perfilProdutoTituloSecaoConfig(productKey);
-  if(!config) return null;
-
-  const escopo = form || document.querySelector(`[data-product-form="${CSS.escape(productKey)}"]`);
-  return escopo?.querySelector(`[data-profile-section-title="${CSS.escape(config.fieldKey)}"]`) || null;
-}
-
-function atualizarCamposTituloSecaoProduto(perfil = {}, options = {}){
-  ["resultado", "proximo_jogo"].forEach(productKey => {
-    const config = perfilProdutoTituloSecaoConfig(productKey);
-    if(!config) return;
-
-    document.querySelectorAll(`[data-product-form="${CSS.escape(productKey)}"] [data-profile-section-title="${CSS.escape(config.fieldKey)}"]`).forEach(input => {
-      if(!options.force && input.dataset.profileTitleDirty === "1") return;
-      input.value = perfil?.[config.fieldKey] || "";
-      input.dataset.profileTitleLoaded = "1";
-      delete input.dataset.profileTitleDirty;
-    });
-  });
-}
-
-async function carregarPerfilBasicoParaTituloProduto(force = false){
-  if(!token){
-    return { ok:false, error:"Entre na sua conta para editar o título da seção." };
-  }
-
-  if(perfilAssistCache.perfil && perfilCentralCarregado.perfil && !force){
-    atualizarCamposTituloSecaoProduto(perfilAssistCache.perfil);
-    return { ok:true, perfil:perfilAssistCache.perfil };
-  }
-
-  try{
-    const r = await fetch(`${API_BASE}/me/time/perfil`, {
-      headers:{ "Authorization":"Bearer " + token }
-    });
-    const data = await ia4LerJsonSeguro(r);
-    const authMsg = ia4TratarAuthInvalida(r, data);
-
-    if(authMsg){
-      return { ok:false, error:authMsg };
-    }
-
-    if(!r.ok || !data.ok){
-      throw new Error(data.error || data.erro || "Nao foi possivel carregar o perfil.");
-    }
-
-    perfilAssistCache.perfil = data.perfil || {};
-    perfilCentralCarregado.perfil = true;
-    preencherPerfilTime(data.perfil || {});
-    atualizarPerfilTimeVisualSeAberto();
-    atualizarCamposTituloSecaoProduto(data.perfil || {});
-
-    if(data.perfil?.perfil_id){
-      localStorage.setItem("omascote_perfil_id", data.perfil.perfil_id);
-    }
-    if(data.perfil?.nome_time){
-      localStorage.setItem("omascote_nome_time", data.perfil.nome_time);
-      atualizarTopoAuth();
-    }
-
-    return { ok:true, perfil:perfilAssistCache.perfil };
-  }catch(err){
-    return { ok:false, error:err?.message || "Erro de rede ao carregar perfil." };
-  }
-}
-
-async function carregarTituloSecaoProduto(productKey){
-  const input = perfilProdutoTituloSecaoCampo(productKey);
-  if(!input || input.dataset.profileTitleLoaded === "1" || input.dataset.profileTitleDirty === "1") return;
-  await carregarPerfilBasicoParaTituloProduto(false);
-}
-
-async function salvarTituloSecaoProduto(productKey, form){
-  const config = perfilProdutoTituloSecaoConfig(productKey);
-  const input = perfilProdutoTituloSecaoCampo(productKey, form);
-  if(!config || !input || !token){
-    return { ok:true };
-  }
-
-  const perfilAtual = await carregarPerfilBasicoParaTituloProduto(false);
-  if(!perfilAtual.ok){
-    return perfilAtual;
-  }
-
-  const valor = (input.value || "").trim();
-
-  try{
-    const r = await fetch(`${API_BASE}/me/time/perfil`, {
-      method:"PATCH",
-      headers:{
-        "Content-Type":"application/json",
-        "Authorization":"Bearer " + token
-      },
-      body:JSON.stringify({
-        [config.fieldKey]: valor,
-        publico: perfilAtual.perfil?.publico === true
-      })
-    });
-    const data = await ia4LerJsonSeguro(r);
-    const authMsg = ia4TratarAuthInvalida(r, data);
-
-    if(authMsg){
-      return { ok:false, error:authMsg };
-    }
-
-    if(!r.ok || !data.ok){
-      throw new Error(data.error || data.erro || "Nao foi possivel salvar o título da seção.");
-    }
-
-    perfilAssistCache.perfil = data.perfil || {
-      ...(perfilAtual.perfil || {}),
-      [config.fieldKey]: valor
-    };
-    perfilCentralCarregado.perfil = true;
-    input.value = perfilAssistCache.perfil?.[config.fieldKey] || "";
-    input.dataset.profileTitleLoaded = "1";
-    delete input.dataset.profileTitleDirty;
-    preencherPerfilTime(perfilAssistCache.perfil);
-    atualizarTitulosSecoesPerfil(perfilAssistCache.perfil);
-    atualizarPerfilTimeVisualSeAberto();
-    perfilPublicoAtualizarControles(perfilAssistCache.perfil);
-    atualizarCamposTituloSecaoProduto(perfilAssistCache.perfil, { force:true });
-
-    return { ok:true, perfil:perfilAssistCache.perfil };
-  }catch(err){
-    return { ok:false, error:err?.message || "Erro de rede ao salvar o título da seção." };
-  }
-}
-
 function perfilAssistInvalidarCache(){
   perfilAssistCache.loaded = false;
   perfilAssistCache.loading = null;
@@ -28687,8 +28508,6 @@ async function perfilAssistCarregarDados(force = false){
       perfilJogosTime = perfilAssistCache.jogos;
       perfilEscalacaoTime = perfilAssistCache.escalacao;
       perfilPatrocinadoresTime = perfilAssistCache.patrocinadores;
-      atualizarCamposTituloSecaoProduto(perfilAssistCache.perfil);
-
       if(perfilAssistCache.perfil?.nome_time){
         localStorage.setItem("omascote_nome_time", perfilAssistCache.perfil.nome_time);
         atualizarTopoAuth();
@@ -29081,7 +28900,6 @@ const produtoAtualPerfilAssist = selectedProductInput?.value ||
   (typeof getCleanProductPickerSelectedRaw === "function" ? getCleanProductPickerSelectedRaw() : "") ||
   "";
 perfilAssistAtualizarProduto(produtoAtualPerfilAssist);
-carregarTituloSecaoProduto(produtoAtualPerfilAssist);
 
 function atualizarTopoAuth(){
   const btnEntrarTopo = document.getElementById("btnSair");
@@ -33534,7 +33352,6 @@ async function salvarPerfilTime(event){
     perfilAssistCache.perfil = data.perfil || payload;
     perfilCentralCarregado.perfil = true;
     preencherPerfilTime(data.perfil || payload);
-    atualizarCamposTituloSecaoProduto(data.perfil || payload, { force:true });
     localStorage.setItem("omascote_perfil_id", data.perfil?.perfil_id || localStorage.getItem("omascote_perfil_id") || "");
     localStorage.setItem("omascote_nome_time", data.perfil?.nome_time || nomeTime);
     atualizarTopoAuth();
