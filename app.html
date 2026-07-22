@@ -10151,6 +10151,7 @@ body.visitanteNaoLogado .visitanteWelcomeCallout{
   display:grid;
   gap:4px;
   min-width:0;
+  max-width:100%;
 }
 
 .fotoJogosEntryKicker{
@@ -10170,9 +10171,13 @@ body.visitanteNaoLogado .visitanteWelcomeCallout{
 }
 
 .fotoJogosEntrySub{
-  color:rgba(255,255,255,.76);
+  display:block;
+  max-width:560px;
+  color:rgba(255,255,255,.88);
   font-size:14px;
   font-weight:850;
+  line-height:1.32;
+  overflow-wrap:break-word;
 }
 
 .fotoJogosEntryBtn,
@@ -10230,10 +10235,12 @@ body.visitanteNaoLogado .visitanteWelcomeCallout{
 
 .fotoJogosWorkspaceSub{
   display:block;
+  max-width:640px;
   margin-top:6px;
-  color:#64748b;
+  color:#475569;
   font-size:14px;
   font-weight:850;
+  line-height:1.32;
 }
 
 .fotoJogosBackBtn{
@@ -10333,6 +10340,10 @@ body.visitanteNaoLogado .visitanteWelcomeCallout{
 .fotoJogosWorkspace .fotoJogosRow.is-selected{
   border-color:rgba(22,163,74,.45);
   box-shadow:0 20px 46px rgba(22,163,74,.14);
+}
+
+.fotoJogosWorkspace .fotoJogosRow.has-errors{
+  border-left:4px solid #ef4444;
 }
 
 .fotoJogosWorkspace .fotoJogosCardTitle{
@@ -10445,6 +10456,14 @@ body.visitanteNaoLogado .visitanteWelcomeCallout{
   box-shadow:none;
 }
 
+.fotoJogosWorkspace .fotoJogosShieldBtn.is-error,
+.fotoJogosWorkspace .fotoJogosSmallBtn.is-error{
+  color:#b91c1c;
+  border-color:#ef4444;
+  background:#fef2f2;
+  box-shadow:0 0 0 2px rgba(239,68,68,.10);
+}
+
 .fotoJogosWorkspace .fotoJogosShieldRemove{
   min-height:30px;
   border-radius:999px;
@@ -10454,12 +10473,83 @@ body.visitanteNaoLogado .visitanteWelcomeCallout{
   box-shadow:none;
 }
 
+.fotoJogosShieldPrompt{
+  display:grid;
+  gap:10px;
+  padding:12px;
+  border-radius:16px;
+  background:#fffbeb;
+  border:1px solid #fde68a;
+  color:#111827;
+}
+
+.fotoJogosShieldPromptText{
+  font-size:13px;
+  font-weight:950;
+  line-height:1.3;
+}
+
+.fotoJogosShieldPromptActions{
+  display:flex;
+  flex-wrap:wrap;
+  gap:8px;
+}
+
 .fotoJogosPhotoBox{
   display:flex;
   align-items:center;
   justify-content:space-between;
   gap:10px;
   padding:10px 0 0;
+}
+
+.fotoJogosPhotoBox .fotoJogosPhotoButton{
+  display:inline-flex;
+  min-height:44px;
+  align-items:flex-start;
+  flex-direction:column;
+  gap:2px;
+  color:#111827;
+  border-color:#cbd5e1;
+  background:#ffffff;
+  box-shadow:0 8px 16px rgba(15,23,42,.06);
+  opacity:1;
+}
+
+.fotoJogosPhotoBox .fotoJogosPhotoButton:hover,
+.fotoJogosPhotoBox .fotoJogosPhotoButton:focus-visible{
+  border-color:#94a3b8;
+  box-shadow:0 0 0 3px rgba(148,163,184,.18), 0 8px 16px rgba(15,23,42,.08);
+}
+
+.fotoJogosPhotoButtonText{
+  color:inherit;
+  font-weight:950;
+  line-height:1.15;
+}
+
+.fotoJogosPhotoButtonHint{
+  color:#64748b;
+  font-size:11px;
+  font-weight:850;
+  line-height:1.1;
+}
+
+.fotoJogosPhotoBox.is-error{
+  border-radius:14px;
+  outline:2px solid rgba(239,68,68,.28);
+  outline-offset:6px;
+}
+
+.fotoJogosPhotoBox.is-error .fotoJogosPhotoButton{
+  color:#111827;
+  border-color:#ef4444;
+  background:#ffffff;
+  box-shadow:0 0 0 2px rgba(239,68,68,.12), 0 8px 16px rgba(15,23,42,.06);
+}
+
+.fotoJogosPhotoBox.is-error .fotoJogosPhotoButtonHint{
+  color:#b91c1c;
 }
 
 .fotoJogosPhotoPreview{
@@ -10472,6 +10562,25 @@ body.visitanteNaoLogado .visitanteWelcomeCallout{
   font-weight:850;
 }
 
+.fotoJogosPhotoPreviewText{
+  display:grid;
+  gap:2px;
+  min-width:0;
+}
+
+.fotoJogosPhotoPreviewText strong,
+.fotoJogosPhotoPreviewText span{
+  min-width:0;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+}
+
+.fotoJogosPhotoPreviewText span{
+  color:#64748b;
+  font-size:11px;
+}
+
 .fotoJogosPhotoPreview img{
   width:44px;
   height:44px;
@@ -10482,10 +10591,19 @@ body.visitanteNaoLogado .visitanteWelcomeCallout{
 }
 
 .fotoJogosPhotoTypeMenu{
-  display:flex;
-  flex-wrap:wrap;
+  display:grid;
   gap:8px;
   margin-top:8px;
+  padding:10px;
+  border-radius:14px;
+  background:#f8fafc;
+  border:1px solid #e5e7eb;
+}
+
+.fotoJogosPhotoTypeTitle{
+  color:#334155;
+  font-size:12px;
+  font-weight:950;
 }
 
 .fotoJogosWorkspace .fotoJogosMainInfo{
@@ -10533,6 +10651,14 @@ body.visitanteNaoLogado .visitanteWelcomeCallout{
   border-color:#cbd5e1;
 }
 
+.fotoJogosWorkspace .fotoJogosEditInput.is-error,
+.fotoJogosWorkspace .fotoJogosSummaryTextarea.is-error,
+.fotoJogosWorkspace .fotoJogosOptionalInput.is-error,
+.fotoJogosWorkspace .fotoJogosOptionalTextarea.is-error{
+  border-color:#ef4444;
+  box-shadow:0 0 0 2px rgba(239,68,68,.12);
+}
+
 .fotoJogosWorkspace .fotoJogosProductTitle{
   color:#111827;
   font-size:13px;
@@ -10572,6 +10698,20 @@ body.visitanteNaoLogado .visitanteWelcomeCallout{
   border-radius:16px;
 }
 
+.fotoJogosInlineFields.is-error,
+.fotoJogosChoiceGrid.is-error,
+.fotoJogosProductActions.is-error{
+  border-color:#ef4444;
+  box-shadow:0 0 0 2px rgba(239,68,68,.10);
+}
+
+.fotoJogosChoiceGrid.is-error,
+.fotoJogosProductActions.is-error{
+  border:1px solid #ef4444;
+  border-radius:14px;
+  padding:8px;
+}
+
 .fotoJogosMiniGrid,
 .fotoJogosChoiceGrid{
   display:grid;
@@ -10591,6 +10731,18 @@ body.visitanteNaoLogado .visitanteWelcomeCallout{
   color:#b91c1c;
   font-size:12px;
   font-weight:900;
+}
+
+.fotoJogosFieldError,
+.fotoJogosValidationSummary{
+  color:#b91c1c;
+  font-size:12px;
+  font-weight:950;
+  line-height:1.25;
+}
+
+.fotoJogosValidationSummary{
+  margin-top:4px;
 }
 
 .fotoJogosBatchBar{
@@ -10652,6 +10804,181 @@ body.visitanteNaoLogado .visitanteWelcomeCallout{
   gap:8px;
 }
 
+.fotoJogosControlPanel{
+  display:grid;
+  gap:12px;
+  margin:14px 0;
+  padding:12px;
+  border:1px solid #e5e7eb;
+  border-radius:18px;
+  background:#f8fafc;
+}
+
+.fotoJogosFilterRow,
+.fotoJogosBulkRow,
+.fotoJogosOwnerRow{
+  display:flex;
+  align-items:center;
+  flex-wrap:wrap;
+  gap:8px;
+}
+
+.fotoJogosFilterLabel{
+  color:#334155;
+  font-size:12px;
+  font-weight:950;
+}
+
+.fotoJogosFilterTabs{
+  display:flex;
+  flex-wrap:wrap;
+  gap:6px;
+}
+
+.fotoJogosFilterTabs .fotoJogosSmallBtn.is-selected{
+  color:#ffffff;
+  background:#111827;
+  border-color:#111827;
+}
+
+.fotoJogosSearch,
+.fotoJogosBulkSelect,
+.fotoJogosOwnerSelect{
+  min-height:40px;
+  padding:9px 11px;
+  border:1px solid #cbd5e1;
+  border-radius:12px;
+  background:#ffffff;
+  color:#111827;
+  font:inherit;
+  font-size:13px;
+  font-weight:800;
+}
+
+.fotoJogosSearch{
+  flex:1 1 210px;
+  min-width:0;
+}
+
+.fotoJogosOwnerToggle{
+  display:inline-flex;
+  align-items:center;
+  gap:7px;
+  color:#334155;
+  font-size:13px;
+  font-weight:900;
+  cursor:pointer;
+}
+
+.fotoJogosOwnerToggle input{
+  width:18px;
+  height:18px;
+  accent-color:#16a34a;
+}
+
+.fotoJogosStatusBlock{
+  display:flex;
+  align-items:center;
+  flex-wrap:wrap;
+  gap:8px;
+}
+
+.fotoJogosStatusBadge{
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+  min-height:30px;
+  padding:6px 10px;
+  border-radius:999px;
+  font-size:12px;
+  font-weight:950;
+}
+
+.fotoJogosStatusBadge::before{
+  content:"";
+  width:8px;
+  height:8px;
+  border-radius:999px;
+  background:currentColor;
+}
+
+.fotoJogosStatusBadge.is-created{
+  color:#166534;
+  background:#dcfce7;
+  border:1px solid #bbf7d0;
+}
+
+.fotoJogosStatusBadge.is-failed{
+  color:#b91c1c;
+  background:#fef2f2;
+  border:1px solid #fecaca;
+}
+
+.fotoJogosStatusError{
+  width:100%;
+  color:#b91c1c;
+  font-size:12px;
+  font-weight:850;
+}
+
+.fotoJogosDialogBackdrop{
+  position:fixed;
+  inset:0;
+  z-index:10020;
+  display:grid;
+  place-items:center;
+  padding:18px;
+  background:rgba(15,23,42,.68);
+}
+
+.fotoJogosDialog{
+  width:min(100%,460px);
+  display:grid;
+  gap:14px;
+  padding:20px;
+  border-radius:20px;
+  background:#ffffff;
+  color:#111827;
+  border:1px solid #e5e7eb;
+  box-shadow:0 24px 70px rgba(15,23,42,.32);
+}
+
+.fotoJogosDialog h3{
+  margin:0;
+  font-size:20px;
+}
+
+.fotoJogosDialog p{
+  margin:0;
+  color:#475569;
+  font-size:14px;
+  font-weight:800;
+  line-height:1.4;
+}
+
+.fotoJogosDialogChoices{
+  display:grid;
+  gap:8px;
+}
+
+.fotoJogosDialogChoice{
+  display:flex;
+  align-items:flex-start;
+  gap:9px;
+  padding:11px;
+  border:1px solid #e2e8f0;
+  border-radius:14px;
+  color:#111827;
+  font-size:14px;
+  font-weight:900;
+  cursor:pointer;
+}
+
+.fotoJogosDialogChoice input{
+  margin-top:2px;
+  accent-color:#16a34a;
+}
+
 .fotoJogosProductReturn{
   width:100%;
   max-width:860px;
@@ -10701,11 +11028,19 @@ body.fotoJogosProductFocus #fotoJogosProductReturn{
 }
 
 @media (max-width:680px){
+  .fotoJogosEntry{
+    max-width:calc(100vw - 24px);
+  }
+
   .fotoJogosEntryCard,
   .fotoJogosWorkspaceTop,
   .fotoJogosProductReturn{
     align-items:stretch;
     flex-direction:column;
+  }
+
+  .fotoJogosEntrySub{
+    max-width:100%;
   }
 
   .fotoJogosEntryBtn,
@@ -10732,7 +11067,10 @@ body.fotoJogosProductFocus #fotoJogosProductReturn{
 
   .fotoJogosHeaderActions,
   .fotoJogosBatchBar,
-  .fotoJogosPhotoBox{
+  .fotoJogosPhotoBox,
+  .fotoJogosFilterRow,
+  .fotoJogosBulkRow,
+  .fotoJogosOwnerRow{
     align-items:stretch;
     flex-direction:column;
   }
@@ -10741,6 +11079,30 @@ body.fotoJogosProductFocus #fotoJogosProductReturn{
   .fotoJogosBatchActions .fotoJogosSmallBtn,
   .fotoJogosBatchActions .fotoJogosBtn{
     width:100%;
+  }
+
+  .fotoJogosFilterTabs{
+    display:grid;
+    grid-template-columns:repeat(2,minmax(0,1fr));
+  }
+
+  .fotoJogosFilterTabs .fotoJogosSmallBtn,
+  .fotoJogosBulkSelect,
+  .fotoJogosOwnerSelect,
+  .fotoJogosBulkRow > .fotoJogosSmallBtn{
+    width:100%;
+  }
+
+  .fotoJogosSearch{
+    flex:0 0 auto;
+    width:100%;
+    min-height:42px;
+  }
+}
+
+@media (max-width:360px){
+  .fotoJogosWorkspace .fotoJogosPhotoTypeMenu .fotoJogosChoiceGrid{
+    grid-template-columns:1fr;
   }
 }
 
@@ -17193,6 +17555,8 @@ const fotoJogosState = {
   message:"",
   error:false,
   crestTarget:null,
+  shieldPrompt:null,
+  teamAssets:{},
   photoTarget:null,
   photoChooser:"",
   editing:{},
@@ -17207,8 +17571,16 @@ const fotoJogosState = {
   batchProgress:[],
   batchResult:null,
   batchError:"",
-  batchRequestState:null
+  validationSummary:"",
+  batchRequestState:null,
+  analysisModePrompt:false,
+  filters:{ status:"all", search:"", onlyMyTeam:false, myTeam:"" },
+  bulkProductKey:"",
+  recreateConfirm:null
 };
+
+let fotoJogosSearchTimer = null;
+let fotoJogosScrollEventsBound = false;
 
 function fotoJogosCriarId(){
   if(window.crypto?.randomUUID) return window.crypto.randomUUID();
@@ -17237,6 +17609,8 @@ function fotoJogosNormalizarJogo(jogo = {}, options = {}){
     resultado_gols_b: fotoJogosTexto(jogo.resultado_gols_b || "", 3),
     escalacao_texto: String(jogo.escalacao_texto || "").slice(0, 1200),
     direct_errors: Array.isArray(jogo.direct_errors) ? jogo.direct_errors.slice(0, 6) : [],
+    direct_error_fields: jogo.direct_error_fields && typeof jogo.direct_error_fields === "object" ? { ...jogo.direct_error_fields } : {},
+    direct_error_focus: jogo.direct_error_focus || "",
     batch_request_id: jogo.batch_request_id || "",
     batch_fingerprint: jogo.batch_fingerprint || "",
     foto: {
@@ -17253,8 +17627,22 @@ function fotoJogosNormalizarJogo(jogo = {}, options = {}){
       time_a: jogo.escudo_previews?.time_a || "",
       time_b: jogo.escudo_previews?.time_b || ""
     },
-    escudo3d_side: jogo.escudo3d_side === "time_b" ? "time_b" : "time_a",
-    jogador_escudo_side: jogo.jogador_escudo_side === "time_b" ? "time_b" : "time_a"
+    escudo_asset_keys: {
+      time_a: jogo.escudo_asset_keys?.time_a || "",
+      time_b: jogo.escudo_asset_keys?.time_b || ""
+    },
+    escudo_overrides: {
+      time_a: jogo.escudo_overrides?.time_a === true,
+      time_b: jogo.escudo_overrides?.time_b === true
+    },
+    resultado_side: jogo.resultado_side === "time_b" ? "time_b" : "time_a",
+    escalacao_side: jogo.escalacao_side === "time_b" ? "time_b" : "time_a",
+    escudo3d_side: jogo.escudo3d_side === "time_b" ? "time_b" : (jogo.escudo3d_side === "time_a" ? "time_a" : ""),
+    jogador_escudo_side: jogo.jogador_escudo_side === "time_b" ? "time_b" : (jogo.jogador_escudo_side === "time_a" ? "time_a" : ""),
+    creation_status: ["created", "failed"].includes(jogo.creation_status) ? jogo.creation_status : "",
+    creation_order_id: fotoJogosTexto(jogo.creation_order_id || "", 120),
+    creation_error: fotoJogosTexto(jogo.creation_error || "", 220),
+    created_fingerprint: String(jogo.created_fingerprint || "").slice(0, 1800)
   };
 
   FOTO_JOGOS_FIELDS.forEach(field => {
@@ -17262,6 +17650,38 @@ function fotoJogosNormalizarJogo(jogo = {}, options = {}){
   });
 
   return normalizado;
+}
+
+function fotoJogosRevogarTodosAssetsTemporarios(){
+  const previews = new Set();
+  fotoJogosState.jogos.forEach(jogo => {
+    [jogo.foto?.preview, jogo.escudo_previews?.time_a, jogo.escudo_previews?.time_b].filter(Boolean).forEach(preview => previews.add(preview));
+  });
+  Object.values(fotoJogosState.teamAssets || {}).forEach(asset => {
+    if(asset?.preview) previews.add(asset.preview);
+  });
+  previews.forEach(preview => {
+    try{ URL.revokeObjectURL(preview); }catch(e){}
+  });
+}
+
+function fotoJogosLimparListaTemporaria(){
+  fotoJogosRevogarTodosAssetsTemporarios();
+  fotoJogosState.jogos = [];
+  fotoJogosState.teamAssets = {};
+  fotoJogosState.editing = {};
+  fotoJogosState.moreOpen = {};
+  fotoJogosState.crestTarget = null;
+  fotoJogosState.shieldPrompt = null;
+  fotoJogosState.photoTarget = null;
+  fotoJogosState.photoChooser = "";
+  fotoJogosState.batchConfirm = null;
+  fotoJogosState.batchResult = null;
+  fotoJogosState.batchError = "";
+  fotoJogosState.batchProgress = [];
+  fotoJogosState.validationSummary = "";
+  fotoJogosState.batchRequestState = null;
+  fotoJogosState.recreateConfirm = null;
 }
 
 function fotoJogosChaveDedup(jogo){
@@ -17306,9 +17726,64 @@ function fotoJogosMesclarLista(novosJogos){
   });
 
   fotoJogosState.jogos = mesclados;
+  fotoJogosAplicarAssetsConhecidos();
   fotoJogosState.batchConfirm = null;
   fotoJogosState.batchResult = null;
   fotoJogosState.batchError = "";
+  fotoJogosState.validationSummary = "";
+}
+
+function fotoJogosSubstituirLista(novosJogos){
+  fotoJogosLimparListaTemporaria();
+  const vistos = new Set();
+  fotoJogosState.jogos = (Array.isArray(novosJogos) ? novosJogos : []).reduce((lista, jogo) => {
+    const normalizado = fotoJogosNormalizarJogo(jogo, { selected:true });
+    const chave = fotoJogosChaveDedup(normalizado);
+    if(!normalizado.time_a || !normalizado.time_b || vistos.has(chave)) return lista;
+    vistos.add(chave);
+    lista.push(normalizado);
+    return lista;
+  }, []);
+}
+
+function fotoJogosStatusFiltro(jogo){
+  if(jogo?.creation_status === "created") return "created";
+  if(jogo?.creation_status === "failed") return "failed";
+  return "pending";
+}
+
+function fotoJogosTextoBusca(value){
+  return String(value || "")
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase()
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+function fotoJogosTimesDisponiveis(){
+  const nomes = new Map();
+  fotoJogosState.jogos.forEach(jogo => {
+    [jogo.time_a, jogo.time_b].forEach(nome => {
+      const value = fotoJogosTexto(nome, 80);
+      const key = fotoJogosTextoBusca(value);
+      if(key && !nomes.has(key)) nomes.set(key, value);
+    });
+  });
+  return [...nomes.values()].sort((a, b) => a.localeCompare(b, "pt-BR"));
+}
+
+function fotoJogosListaFiltrada(){
+  const filters = fotoJogosState.filters || {};
+  const search = fotoJogosTextoBusca(filters.search || "");
+  const meuTime = fotoJogosTextoBusca(filters.myTeam || "");
+  return fotoJogosState.jogos.filter(jogo => {
+    if(filters.status && filters.status !== "all" && fotoJogosStatusFiltro(jogo) !== filters.status) return false;
+    const nomes = [fotoJogosTextoBusca(jogo.time_a), fotoJogosTextoBusca(jogo.time_b)];
+    if(search && !nomes.some(nome => nome.includes(search))) return false;
+    if(filters.onlyMyTeam && (!meuTime || !nomes.includes(meuTime))) return false;
+    return true;
+  });
 }
 
 function fotoJogosSelecionados(){
@@ -17433,6 +17908,95 @@ function fotoJogosCountLabel(){
   return `${total} confrontos encontrados`;
 }
 
+function fotoJogosAplicarDraftAoJogo(jogo, draft){
+  if(!jogo || !draft) return jogo;
+  jogo.time_a = fotoJogosTexto(draft.time_a, 80);
+  jogo.time_b = fotoJogosTexto(draft.time_b, 80);
+  fotoJogosAplicarResumoPrincipal(jogo, draft.resumo_principal);
+  jogo.numero_jogo = fotoJogosTexto(draft.numero_jogo, 40);
+  jogo.categoria = fotoJogosTexto(draft.categoria, 80);
+  jogo.grupo = fotoJogosTexto(draft.grupo, 80);
+  if(jogo.rodada){
+    jogo.fase = fotoJogosTexto(draft.fase, 80);
+  }
+  jogo.observacao = fotoJogosTexto(draft.observacao, 220);
+  return jogo;
+}
+
+function fotoJogosJogoParaValidacao(jogo){
+  const clone = {
+    ...jogo,
+    escudos:{ ...(jogo.escudos || {}) },
+    escudo_previews:{ ...(jogo.escudo_previews || {}) },
+    foto:{ ...(jogo.foto || {}) }
+  };
+  const draft = fotoJogosState.editing[jogo.id];
+  return draft ? fotoJogosAplicarDraftAoJogo(clone, draft) : clone;
+}
+
+function fotoJogosAplicarDraftPendente(jogo){
+  const draft = fotoJogosState.editing[jogo.id];
+  if(!draft) return jogo;
+  fotoJogosAplicarDraftAoJogo(jogo, draft);
+  fotoJogosState.editing[jogo.id] = fotoJogosCriarDraft(jogo);
+  return jogo;
+}
+
+function fotoJogosErroDetalhe(field, message, options = {}){
+  return {
+    field,
+    message,
+    edit:!!options.edit,
+    more:!!options.more,
+    photo:!!options.photo,
+    focus:options.focus !== false
+  };
+}
+
+function fotoJogosLimparErrosDiretos(jogo){
+  if(jogo){
+    jogo.direct_errors = [];
+    jogo.direct_error_fields = {};
+    jogo.direct_error_focus = "";
+  }
+  fotoJogosAtualizarResumoValidacao();
+}
+
+function fotoJogosMensagensErroCampo(jogo, fields){
+  const fieldList = Array.isArray(fields) ? fields : [fields];
+  const map = jogo?.direct_error_fields || {};
+  return [...new Set(fieldList.map(field => map[field]).filter(Boolean))];
+}
+
+function fotoJogosTemErroCampo(jogo, fields){
+  return !!fotoJogosMensagensErroCampo(jogo, fields).length;
+}
+
+function fotoJogosErroClass(jogo, fields){
+  return fotoJogosTemErroCampo(jogo, fields) ? " is-error" : "";
+}
+
+function renderFotoJogosFieldError(jogo, fields){
+  const messages = fotoJogosMensagensErroCampo(jogo, fields);
+  if(!messages.length) return "";
+  return `
+    <div class="fotoJogosFieldError">
+      ${messages.map(message => `<div>${htmlEscape(message)}</div>`).join("")}
+    </div>
+  `;
+}
+
+function fotoJogosAtualizarResumoValidacao(){
+  const invalidos = fotoJogosState.jogos.filter(jogo => jogo.selected && Array.isArray(jogo.direct_errors) && jogo.direct_errors.length).length;
+  fotoJogosState.validationSummary = invalidos > 1 ? `${invalidos} jogos precisam de ajustes.` : "";
+}
+
+function fotoJogosLimparFeedbackCriacao(){
+  fotoJogosState.batchConfirm = null;
+  fotoJogosState.batchResult = null;
+  fotoJogosState.batchError = "";
+}
+
 function fotoJogosSalvarScroll(){
   if(document.body?.classList?.contains("fotoJogosWorkspaceOpen")){
     fotoJogosState.workspaceScrollY = Math.max(0, window.scrollY || 0);
@@ -17450,7 +18014,7 @@ function renderFotoJogosEntry(){
       <div class="fotoJogosEntryText">
         <span class="fotoJogosEntryKicker">Ferramenta especial</span>
         <h3 class="fotoJogosEntryTitle">iA4Tube Assistente</h3>
-        <span class="fotoJogosEntrySub">Transforme uma foto em artes</span>
+        <span class="fotoJogosEntrySub">Recebeu a tabela ou a arte dos confrontos do campeonato? Poste aqui e a iA4Tube prepara tudo para você.</span>
       </div>
       <button type="button" class="fotoJogosEntryBtn" data-foto-jogos-open>Identificar jogos pela foto</button>
     </div>
@@ -17462,7 +18026,7 @@ function renderFotoJogosWorkspace(){
     <div class="fotoJogosWorkspaceTop">
       <div>
         <h2 class="fotoJogosWorkspaceTitle">iA4Tube Assistente</h2>
-        <span class="fotoJogosWorkspaceSub">Transforme uma foto em artes</span>
+        <span class="fotoJogosWorkspaceSub">Envie a imagem dos confrontos.</span>
       </div>
       <button type="button" class="fotoJogosBackBtn" data-foto-jogos-back>&larr; Voltar</button>
     </div>
@@ -17493,6 +18057,31 @@ function fotoJogosVoltarDoProduto(){
   fotoJogosRerender({ restoreScroll:true });
 }
 
+function renderFotoJogosAnalysisModePrompt(){
+  if(!fotoJogosState.analysisModePrompt) return "";
+  return `
+    <div class="fotoJogosDialogBackdrop" data-foto-jogos-analysis-mode-dialog role="dialog" aria-modal="true" aria-labelledby="fotoJogosAnalysisModeTitle">
+      <div class="fotoJogosDialog">
+        <h3 id="fotoJogosAnalysisModeTitle">Como deseja usar a nova imagem?</h3>
+        <div class="fotoJogosDialogChoices">
+          <label class="fotoJogosDialogChoice">
+            <input type="radio" name="foto_jogos_analysis_mode" value="replace">
+            <span>Substituir a lista atual</span>
+          </label>
+          <label class="fotoJogosDialogChoice">
+            <input type="radio" name="foto_jogos_analysis_mode" value="append">
+            <span>Adicionar \u00e0 lista atual</span>
+          </label>
+        </div>
+        <div class="fotoJogosBatchActions">
+          <button type="button" class="fotoJogosBtn primary" data-foto-jogos-analysis-mode-confirm disabled>Continuar</button>
+          <button type="button" class="fotoJogosSmallBtn" data-foto-jogos-analysis-mode-cancel>Cancelar</button>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
 function renderFotoJogosTeam(jogo, side, editing, draft){
   const fieldKey = side === "time_b" ? "time_b" : "time_a";
   const label = side === "time_b" ? "Time B" : "Time A";
@@ -17500,15 +18089,19 @@ function renderFotoJogosTeam(jogo, side, editing, draft){
   const hasImage = !!jogo.escudos?.[fieldKey];
   const teamName = editing ? draft?.[fieldKey] : jogo[fieldKey];
   const safeTeamName = fotoJogosTexto(teamName) || label;
+  const teamErrorClass = fotoJogosErroClass(jogo, fieldKey);
+  const shieldErrorField = `escudo_${fieldKey}`;
+  const shieldErrorClass = fotoJogosErroClass(jogo, shieldErrorField);
 
   return `
-    <div class="fotoJogosTeam" data-foto-jogo-team="${htmlEscape(fieldKey)}">
+    <div class="fotoJogosTeam${teamErrorClass || shieldErrorClass ? " is-error" : ""}" data-foto-jogo-team="${htmlEscape(fieldKey)}">
       <div class="fotoJogosTeamCrest" aria-hidden="true">
         ${hasImage && preview ? `<img src="${htmlEscape(preview)}" alt="">` : `<span>+</span>`}
       </div>
       <div class="fotoJogosTeamBody">
         ${editing ? `
-          <input class="fotoJogosEditInput" data-foto-jogo-draft="${htmlEscape(fieldKey)}" value="${htmlEscape(teamName || "")}" placeholder="${htmlEscape(label)}" aria-label="${htmlEscape(label)}">
+          <input class="fotoJogosEditInput${teamErrorClass}" data-foto-jogo-draft="${htmlEscape(fieldKey)}" value="${htmlEscape(teamName || "")}" placeholder="${htmlEscape(label)}" aria-label="${htmlEscape(label)}" ${teamErrorClass ? 'aria-invalid="true"' : ""}>
+          ${renderFotoJogosFieldError(jogo, fieldKey)}
         ` : `
           <div class="fotoJogosTeamName">${htmlEscape(safeTeamName)}</div>
         `}
@@ -17521,21 +18114,46 @@ function renderFotoJogosTeam(jogo, side, editing, draft){
               <button type="button" class="fotoJogosShieldRemove" data-foto-jogo-crest-remove="${htmlEscape(fieldKey)}">Remover</button>
             </div>
           ` : `
-            <button type="button" class="fotoJogosShieldBtn" data-foto-jogo-crest="${htmlEscape(fieldKey)}" aria-label="${htmlEscape(fotoJogosEscudoLabel(jogo, fieldKey))}">+ Escudo</button>
+            <button type="button" class="fotoJogosShieldBtn${shieldErrorClass}" data-foto-jogo-crest="${htmlEscape(fieldKey)}" aria-label="${htmlEscape(fotoJogosEscudoLabel(jogo, fieldKey))}" ${shieldErrorClass ? 'aria-invalid="true"' : ""}>+ Escudo</button>
           `}
+          ${renderFotoJogosFieldError(jogo, shieldErrorField)}
         </div>
       </div>
     </div>
   `;
 }
 
+function renderFotoJogosShieldPrompt(jogo){
+  const prompt = fotoJogosState.shieldPrompt;
+  if(!prompt || prompt.id !== jogo.id) return "";
+  const teamName = prompt.teamName || "este time";
+  const isRemove = prompt.type === "remove";
+  const text = isRemove
+    ? `Remover este escudo de todos os jogos de ${teamName}?`
+    : `Aplicar o novo escudo em todos os jogos de ${teamName}?`;
+  const allLabel = isRemove ? "Remover de todos" : "Aplicar em todos";
+  const oneLabel = "Somente neste jogo";
+  return `
+    <div class="fotoJogosShieldPrompt" data-foto-jogo-shield-prompt>
+      <div class="fotoJogosShieldPromptText">${htmlEscape(text)}</div>
+      <div class="fotoJogosShieldPromptActions">
+        <button type="button" class="fotoJogosSmallBtn" data-foto-jogo-shield-all>${htmlEscape(allLabel)}</button>
+        <button type="button" class="fotoJogosSmallBtn" data-foto-jogo-shield-one>${htmlEscape(oneLabel)}</button>
+      </div>
+    </div>
+  `;
+}
+
 function renderFotoJogosMainInfo(jogo, editing, draft){
+  const mainFields = ["data_horario", "competicao"];
+  const mainErrorClass = fotoJogosErroClass(jogo, mainFields);
   if(editing){
     return `
       <div class="fotoJogosMainInfo">
         <label class="fotoJogosField">
           <span>Informa\u00e7\u00f5es principais</span>
-          <textarea class="fotoJogosSummaryTextarea" rows="4" data-foto-jogo-draft="resumo_principal" aria-label="Informa\u00e7\u00f5es principais">${htmlEscape(draft?.resumo_principal || "")}</textarea>
+          <textarea class="fotoJogosSummaryTextarea${mainErrorClass}" rows="4" data-foto-jogo-draft="resumo_principal" aria-label="Informa\u00e7\u00f5es principais" ${mainErrorClass ? 'aria-invalid="true"' : ""}>${htmlEscape(draft?.resumo_principal || "")}</textarea>
+          ${renderFotoJogosFieldError(jogo, mainFields)}
         </label>
       </div>
     `;
@@ -17544,7 +18162,8 @@ function renderFotoJogosMainInfo(jogo, editing, draft){
   const resumo = fotoJogosResumoPrincipalTexto(jogo);
   return `
     <div class="fotoJogosMainInfo">
-      <div class="fotoJogosMainInfoText${resumo ? "" : " is-empty"}">${htmlEscape(resumo || "Informa\u00e7\u00f5es principais n\u00e3o identificadas.")}</div>
+      <div class="fotoJogosMainInfoText${resumo ? "" : " is-empty"}${mainErrorClass}">${htmlEscape(resumo || "Informa\u00e7\u00f5es principais n\u00e3o identificadas.")}</div>
+      ${renderFotoJogosFieldError(jogo, mainFields)}
     </div>
   `;
 }
@@ -17591,58 +18210,88 @@ function renderFotoJogosFoto(jogo){
   const chooserOpen = fotoJogosState.photoChooser === jogo.id;
   const foto = jogo.foto || {};
   const hasFoto = !!foto.file;
-  const tipoLabel = foto.tipo === "jogador" ? "Foto de jogador" : (foto.tipo === "time" ? "Foto do time" : "");
+  const tipoLabel = foto.tipo === "jogador" ? "Jogador" : (foto.tipo === "time" ? "Time" : "");
+  const fotoFields = ["jogador_foto", "jogador_foto_tipo"];
+  const fotoErrorClass = fotoJogosErroClass(jogo, fotoFields);
+  const fileName = foto.file?.name || "";
 
   return `
-    <div class="fotoJogosPhotoBox">
+    <div class="fotoJogosPhotoBox${fotoErrorClass}" data-foto-jogo-photo-box>
       ${hasFoto ? `
         <div class="fotoJogosPhotoPreview">
           ${foto.preview ? `<img src="${htmlEscape(foto.preview)}" alt="">` : ""}
-          <span>${htmlEscape(tipoLabel || "Foto adicionada")}</span>
+          <span class="fotoJogosPhotoPreviewText">
+            <strong>Foto adicionada</strong>
+            ${tipoLabel ? `<span>${htmlEscape(tipoLabel)}</span>` : ""}
+            ${fileName ? `<span>${htmlEscape(fileName)}</span>` : ""}
+          </span>
         </div>
         <div class="fotoJogosBatchActions">
-          <button type="button" class="fotoJogosSmallBtn" data-foto-jogo-photo-toggle>Trocar foto</button>
+          <button type="button" class="fotoJogosSmallBtn${fotoErrorClass}" data-foto-jogo-photo-toggle>Trocar</button>
           <button type="button" class="fotoJogosSmallBtn" data-foto-jogo-photo-remove>Remover</button>
         </div>
       ` : `
-        <button type="button" class="fotoJogosSmallBtn" data-foto-jogo-photo-toggle>+ Foto</button>
+        <button type="button" class="fotoJogosSmallBtn fotoJogosPhotoButton${fotoErrorClass}" data-foto-jogo-photo-toggle ${fotoErrorClass ? 'aria-invalid="true"' : ""}>
+          <span class="fotoJogosPhotoButtonText">+ Foto do jogador ou time</span>
+          <span class="fotoJogosPhotoButtonHint">Opcional</span>
+        </button>
       `}
     </div>
+    ${renderFotoJogosFieldError(jogo, fotoFields)}
     ${chooserOpen ? `
       <div class="fotoJogosPhotoTypeMenu">
-        <button type="button" class="fotoJogosSmallBtn" data-foto-jogo-photo-type="jogador">Foto de jogador</button>
-        <button type="button" class="fotoJogosSmallBtn" data-foto-jogo-photo-type="time">Foto do time</button>
+        <div class="fotoJogosPhotoTypeTitle">Qual foto deseja adicionar?</div>
+        <div class="fotoJogosChoiceGrid">
+          <button type="button" class="fotoJogosSmallBtn" data-foto-jogo-photo-type="jogador">Foto de jogador</button>
+          <button type="button" class="fotoJogosSmallBtn" data-foto-jogo-photo-type="time">Foto do time</button>
+        </div>
+        <button type="button" class="fotoJogosSmallBtn" data-foto-jogo-photo-cancel>Cancelar</button>
       </div>
     ` : ""}
   `;
 }
 
 function renderFotoJogosSideChoice(jogo, fieldKey){
-  const selected = jogo[fieldKey] === "time_b" ? "time_b" : "time_a";
+  const selected = jogo[fieldKey] === "time_b" ? "time_b" : (jogo[fieldKey] === "time_a" ? "time_a" : "");
+  const errorClass = fotoJogosErroClass(jogo, fieldKey);
+  const labels = {
+    resultado_side:"Time principal no Resultado",
+    escalacao_side:"Escala\u00e7\u00e3o de",
+    escudo3d_side:"Time do Escudo 3D",
+    jogador_escudo_side:"Time do Jogador + Escudo"
+  };
   return `
-    <div class="fotoJogosChoiceGrid">
-      <button type="button" class="fotoJogosSmallBtn${selected === "time_a" ? " is-selected" : ""}" data-foto-jogo-side-choice="${htmlEscape(fieldKey)}" data-foto-jogo-side="time_a">${htmlEscape(fotoJogosSideLabel(jogo, "time_a"))}</button>
-      <button type="button" class="fotoJogosSmallBtn${selected === "time_b" ? " is-selected" : ""}" data-foto-jogo-side-choice="${htmlEscape(fieldKey)}" data-foto-jogo-side="time_b">${htmlEscape(fotoJogosSideLabel(jogo, "time_b"))}</button>
+    <div class="fotoJogosChoiceGrid${errorClass}" data-foto-jogo-side-choice-group="${htmlEscape(fieldKey)}" role="group" aria-label="${htmlEscape(labels[fieldKey] || "Escolha o time")}" ${errorClass ? 'aria-invalid="true"' : ""}>
+      <button type="button" class="fotoJogosSmallBtn${selected === "time_a" ? " is-selected" : ""}" data-foto-jogo-side-choice="${htmlEscape(fieldKey)}" data-foto-jogo-side="time_a" aria-pressed="${selected === "time_a" ? "true" : "false"}">${htmlEscape(fotoJogosSideLabel(jogo, "time_a"))}</button>
+      <button type="button" class="fotoJogosSmallBtn${selected === "time_b" ? " is-selected" : ""}" data-foto-jogo-side-choice="${htmlEscape(fieldKey)}" data-foto-jogo-side="time_b" aria-pressed="${selected === "time_b" ? "true" : "false"}">${htmlEscape(fotoJogosSideLabel(jogo, "time_b"))}</button>
     </div>
+    ${renderFotoJogosFieldError(jogo, fieldKey)}
   `;
 }
 
 function renderFotoJogosDirectFields(jogo){
   if(jogo.productKey === "resultado"){
+    const scoreFields = ["resultado_gols_a", "resultado_gols_b"];
     return `
-      <div class="fotoJogosInlineFields">
+      <div class="fotoJogosInlineFields${fotoJogosErroClass(jogo, scoreFields)}">
+        <div class="fotoJogosFilterLabel">Time principal no Resultado</div>
+        ${renderFotoJogosSideChoice(jogo, "resultado_side")}
         <div class="fotoJogosMiniGrid">
-          <input class="fotoJogosOptionalInput" data-foto-jogo-direct-field="resultado_gols_a" inputmode="numeric" value="${htmlEscape(jogo.resultado_gols_a || "")}" placeholder="Gols ${htmlEscape(fotoJogosSideLabel(jogo, "time_a"))}" aria-label="Gols Time A">
-          <input class="fotoJogosOptionalInput" data-foto-jogo-direct-field="resultado_gols_b" inputmode="numeric" value="${htmlEscape(jogo.resultado_gols_b || "")}" placeholder="Gols ${htmlEscape(fotoJogosSideLabel(jogo, "time_b"))}" aria-label="Gols Time B">
+          <input class="fotoJogosOptionalInput${fotoJogosErroClass(jogo, "resultado_gols_a")}" data-foto-jogo-direct-field="resultado_gols_a" inputmode="numeric" value="${htmlEscape(jogo.resultado_gols_a || "")}" placeholder="Gols ${htmlEscape(fotoJogosSideLabel(jogo, "time_a"))}" aria-label="Gols Time A" ${fotoJogosTemErroCampo(jogo, "resultado_gols_a") ? 'aria-invalid="true"' : ""}>
+          <input class="fotoJogosOptionalInput${fotoJogosErroClass(jogo, "resultado_gols_b")}" data-foto-jogo-direct-field="resultado_gols_b" inputmode="numeric" value="${htmlEscape(jogo.resultado_gols_b || "")}" placeholder="Gols ${htmlEscape(fotoJogosSideLabel(jogo, "time_b"))}" aria-label="Gols Time B" ${fotoJogosTemErroCampo(jogo, "resultado_gols_b") ? 'aria-invalid="true"' : ""}>
         </div>
+        ${renderFotoJogosFieldError(jogo, scoreFields)}
       </div>
     `;
   }
 
   if(jogo.productKey === "escalacao"){
     return `
-      <div class="fotoJogosInlineFields">
-        <textarea class="fotoJogosOptionalTextarea" data-foto-jogo-direct-field="escalacao_texto" placeholder="Jogadores ou escala\u00e7\u00e3o" aria-label="Jogadores ou escala\u00e7\u00e3o">${htmlEscape(jogo.escalacao_texto || "")}</textarea>
+      <div class="fotoJogosInlineFields${fotoJogosErroClass(jogo, "escalacao_texto")}">
+        <div class="fotoJogosFilterLabel">Escala\u00e7\u00e3o de</div>
+        ${renderFotoJogosSideChoice(jogo, "escalacao_side")}
+        <textarea class="fotoJogosOptionalTextarea${fotoJogosErroClass(jogo, "escalacao_texto")}" data-foto-jogo-direct-field="escalacao_texto" placeholder="Jogadores ou escala\u00e7\u00e3o" aria-label="Jogadores ou escala\u00e7\u00e3o" ${fotoJogosTemErroCampo(jogo, "escalacao_texto") ? 'aria-invalid="true"' : ""}>${htmlEscape(jogo.escalacao_texto || "")}</textarea>
+        ${renderFotoJogosFieldError(jogo, "escalacao_texto")}
       </div>
     `;
   }
@@ -17659,7 +18308,8 @@ function renderFotoJogosDirectFields(jogo){
     return `
       <div class="fotoJogosInlineFields">
         ${renderFotoJogosSideChoice(jogo, "jogador_escudo_side")}
-        <input class="fotoJogosOptionalInput" data-foto-jogo-photo-name value="${htmlEscape(jogo.foto?.nome || "")}" placeholder="Nome do jogador" aria-label="Nome do jogador">
+        <input class="fotoJogosOptionalInput${fotoJogosErroClass(jogo, "jogador_nome")}" data-foto-jogo-photo-name value="${htmlEscape(jogo.foto?.nome || "")}" placeholder="Nome do jogador" aria-label="Nome do jogador" ${fotoJogosTemErroCampo(jogo, "jogador_nome") ? 'aria-invalid="true"' : ""}>
+        ${renderFotoJogosFieldError(jogo, "jogador_nome")}
       </div>
     `;
   }
@@ -17669,6 +18319,8 @@ function renderFotoJogosDirectFields(jogo){
 
 function renderFotoJogosCardErrors(jogo){
   const errors = Array.isArray(jogo.direct_errors) ? jogo.direct_errors.filter(Boolean) : [];
+  const fieldErrors = jogo.direct_error_fields && Object.keys(jogo.direct_error_fields).length;
+  if(fieldErrors) return "";
   if(!errors.length) return "";
 
   return `
@@ -17688,14 +18340,87 @@ function renderFotoJogosProductActions(jogo){
   ];
   return `
     <div class="fotoJogosProductTitle">Criar</div>
-    <div class="fotoJogosProductActions">
+    <div class="fotoJogosProductActions${fotoJogosErroClass(jogo, "product")}">
       ${productOptions.map(([key, icon, label]) => `
         <button type="button" class="fotoJogosSmallBtn${jogo.productKey === key ? " is-selected" : ""}" data-foto-jogo-product-select="${htmlEscape(key)}" aria-pressed="${jogo.productKey === key ? "true" : "false"}"><span aria-hidden="true">${htmlEscape(icon)}</span> ${htmlEscape(label)}</button>
       `).join("")}
     </div>
+    ${renderFotoJogosFieldError(jogo, "product")}
     ${renderFotoJogosDirectFields(jogo)}
     ${renderFotoJogosCardErrors(jogo)}
     <button type="button" class="fotoJogosSmallBtn" data-foto-jogo-more-details>Adicionar mais detalhes</button>
+  `;
+}
+
+function renderFotoJogosCreationStatus(jogo){
+  if(jogo.creation_status === "created"){
+    return `
+      <div class="fotoJogosStatusBlock">
+        <span class="fotoJogosStatusBadge is-created">Criado</span>
+        ${jogo.creation_order_id ? `<button type="button" class="fotoJogosSmallBtn" data-foto-jogo-view-order>Ver pedido</button>` : ""}
+      </div>
+    `;
+  }
+  if(jogo.creation_status === "failed"){
+    return `
+      <div class="fotoJogosStatusBlock">
+        <span class="fotoJogosStatusBadge is-failed">Falhou</span>
+        <button type="button" class="fotoJogosSmallBtn" data-foto-jogo-retry>Tentar novamente</button>
+        ${jogo.creation_error ? `<div class="fotoJogosStatusError">${htmlEscape(jogo.creation_error)}</div>` : ""}
+      </div>
+    `;
+  }
+  return "";
+}
+
+function renderFotoJogosControls(){
+  const filters = fotoJogosState.filters || {};
+  const times = fotoJogosTimesDisponiveis();
+  const productOptions = [
+    ["", "Escolha o produto"],
+    ["proximo_jogo", "Pr\u00f3ximo Jogo"],
+    ["resultado", "Resultado"],
+    ["escalacao", "Escala\u00e7\u00e3o"],
+    ["escudo3d", "Escudo 3D"],
+    ["jogador_escudo", "Jogador + Escudo"]
+  ];
+  const statusOptions = [
+    ["all", "Todos"],
+    ["pending", "Pendentes"],
+    ["created", "Criados"],
+    ["failed", "Com erro"]
+  ];
+  return `
+    <div class="fotoJogosControlPanel">
+      <div class="fotoJogosFilterRow">
+        <span class="fotoJogosFilterLabel">Mostrar</span>
+        <div class="fotoJogosFilterTabs" role="group" aria-label="Filtrar confrontos por status">
+          ${statusOptions.map(([value, label]) => `
+            <button type="button" class="fotoJogosSmallBtn${filters.status === value ? " is-selected" : ""}" data-foto-jogos-filter-status="${htmlEscape(value)}" aria-pressed="${filters.status === value ? "true" : "false"}">${htmlEscape(label)}</button>
+          `).join("")}
+        </div>
+        <input class="fotoJogosSearch" type="search" value="${htmlEscape(filters.search || "")}" placeholder="Pesquisar time" aria-label="Pesquisar time" data-foto-jogos-search>
+      </div>
+      <div class="fotoJogosOwnerRow">
+        <label class="fotoJogosOwnerToggle">
+          <input type="checkbox" data-foto-jogos-only-my-team ${filters.onlyMyTeam ? "checked" : ""}>
+          <span>Somente jogos do meu time</span>
+        </label>
+        ${filters.onlyMyTeam ? `
+          <select class="fotoJogosOwnerSelect" data-foto-jogos-my-team aria-label="Escolha seu time">
+            <option value="">Escolha o time</option>
+            ${times.map(nome => `<option value="${htmlEscape(nome)}" ${filters.myTeam === nome ? "selected" : ""}>${htmlEscape(nome)}</option>`).join("")}
+          </select>
+        ` : ""}
+      </div>
+      <div class="fotoJogosBulkRow">
+        <span class="fotoJogosFilterLabel">Aplicar produto aos selecionados</span>
+        <select class="fotoJogosBulkSelect" data-foto-jogos-bulk-product aria-label="Produto para os confrontos selecionados">
+          ${productOptions.map(([value, label]) => `<option value="${htmlEscape(value)}" ${fotoJogosState.bulkProductKey === value ? "selected" : ""}>${htmlEscape(label)}</option>`).join("")}
+        </select>
+        <button type="button" class="fotoJogosSmallBtn" data-foto-jogos-bulk-apply ${!fotoJogosState.bulkProductKey || !fotoJogosSelecionados().length ? "disabled" : ""}>Aplicar</button>
+      </div>
+    </div>
   `;
 }
 
@@ -17713,6 +18438,20 @@ function renderFotoJogosBatchPanel(){
           }).join("")}
         </ul>
         <div class="fotoJogosSelectedCount">${concluidas} de ${total} conclu\u00edda${total === 1 ? "" : "s"}</div>
+      </div>
+    `;
+  }
+
+  if(fotoJogosState.recreateConfirm){
+    const total = fotoJogosState.recreateConfirm.ids?.length || 1;
+    return `
+      <div class="fotoJogosBatchPanel">
+        <h4>${total === 1 ? "Esta arte j\u00e1 foi criada" : "Algumas artes j\u00e1 foram criadas"}</h4>
+        <div class="fotoJogosCardHint">Deseja criar novamente?</div>
+        <div class="fotoJogosBatchActions">
+          <button type="button" class="fotoJogosSmallBtn" data-foto-jogos-recreate-cancel>Cancelar</button>
+          <button type="button" class="fotoJogosBtn primary" data-foto-jogos-recreate-confirm>Criar novamente</button>
+        </div>
       </div>
     `;
   }
@@ -17767,6 +18506,7 @@ function renderFotoJogosResults(){
 
   const selecionados = fotoJogosSelecionados().length;
   const total = fotoJogosState.jogos.length;
+  const filtrados = fotoJogosListaFiltrada();
   return `
     <div class="fotoJogosResults">
       <div class="fotoJogosResultsHeader">
@@ -17780,13 +18520,16 @@ function renderFotoJogosResults(){
           <button type="button" class="fotoJogosSmallBtn" data-foto-jogos-add>+ Novo confronto</button>
         </div>
       </div>
+      ${renderFotoJogosControls()}
       <div class="fotoJogosList">
-        ${fotoJogosState.jogos.length ? fotoJogosState.jogos.map((jogo, index) => {
+        ${filtrados.length ? filtrados.map(jogo => {
+          const index = fotoJogosState.jogos.findIndex(item => item.id === jogo.id);
           const editing = !!fotoJogosState.editing[jogo.id];
           const draft = editing ? fotoJogosDraft(jogo.id) : null;
           const moreOpen = !!fotoJogosState.moreOpen[jogo.id];
+          const hasErrors = Array.isArray(jogo.direct_errors) && jogo.direct_errors.length;
           return `
-          <div class="fotoJogosRow${jogo.selected ? " is-selected" : ""}" data-foto-jogo-id="${htmlEscape(jogo.id)}">
+          <div class="fotoJogosRow${jogo.selected ? " is-selected" : ""}${hasErrors ? " has-errors" : ""}" data-foto-jogo-id="${htmlEscape(jogo.id)}" data-foto-jogo-status="${htmlEscape(fotoJogosStatusFiltro(jogo))}">
             <div class="fotoJogosCardTop">
               <div class="fotoJogosCardTitle">Jogo ${index + 1}</div>
               <div class="fotoJogosRowActions">
@@ -17800,20 +18543,25 @@ function renderFotoJogosResults(){
                 <button type="button" class="fotoJogosSmallBtn" data-foto-jogo-delete>Excluir</button>
               </div>
             </div>
+            ${renderFotoJogosCreationStatus(jogo)}
             <div class="fotoJogosMatchup">
               ${renderFotoJogosTeam(jogo, "time_a", editing, draft)}
               <div class="fotoJogosVs">X</div>
               ${renderFotoJogosTeam(jogo, "time_b", editing, draft)}
             </div>
+            ${renderFotoJogosShieldPrompt(jogo)}
             ${renderFotoJogosMainInfo(jogo, editing, draft)}
             ${renderFotoJogosOptionalInfo(jogo, editing, draft, moreOpen)}
             ${renderFotoJogosFoto(jogo)}
             ${renderFotoJogosProductActions(jogo)}
           </div>
-        `}).join("") : `<div class="fotoJogosOptionalEmpty">Nenhum confronto na lista tempor\u00e1ria.</div>`}
+        `}).join("") : `<div class="fotoJogosOptionalEmpty">Nenhum confronto encontrado neste filtro.</div>`}
       </div>
       <div class="fotoJogosBatchBar">
-        <div class="fotoJogosCardHint">Escolha os jogos e o produto de cada um.</div>
+        <div>
+          <div class="fotoJogosCardHint">Escolha os jogos e o produto de cada um.</div>
+          ${fotoJogosState.validationSummary ? `<div class="fotoJogosValidationSummary">${htmlEscape(fotoJogosState.validationSummary)}</div>` : ""}
+        </div>
         <button type="button" class="fotoJogosBtn primary" data-foto-jogos-create-selected ${!selecionados || fotoJogosState.batchCreating ? "disabled" : ""}>Criar artes selecionadas</button>
       </div>
       ${renderFotoJogosBatchPanel()}
@@ -17828,7 +18576,7 @@ function renderFotoJogosTool(){
   return `
     <div class="fotoJogosTool" data-foto-jogos-tool>
       <div class="fotoJogosToolHeader">
-        <h3 class="fotoJogosToolTitle">iA4Tube Assistente<span class="fotoJogosToolSub">Transforme uma foto em artes</span></h3>
+        <h3 class="fotoJogosToolTitle">iA4Tube Assistente<span class="fotoJogosToolSub">Revise os jogos encontrados.</span></h3>
         <span class="fotoJogosToolBadge">Ferramenta</span>
       </div>
       <input class="fileHidden" type="file" data-foto-jogos-camera-input accept="image/png,image/jpeg,image/jpg,image/webp" capture="environment">
@@ -17887,6 +18635,19 @@ function fotoJogosRerender(options = {}){
     if(status) status.textContent = fotoJogosState.productMessage || "";
   }
 
+  const dialogHtml = renderFotoJogosAnalysisModePrompt();
+  let dialogHost = document.getElementById("fotoJogosDialogHost");
+  if(dialogHtml){
+    if(!dialogHost){
+      dialogHost = document.createElement("div");
+      dialogHost.id = "fotoJogosDialogHost";
+      document.body.appendChild(dialogHost);
+    }
+    dialogHost.innerHTML = dialogHtml;
+  }else if(dialogHost){
+    dialogHost.remove();
+  }
+
   fotoJogosAplicarModoTela();
   bindFotoJogosShell();
 
@@ -17894,6 +18655,15 @@ function fotoJogosRerender(options = {}){
     const targetY = fotoJogosState.workspaceScrollY || workspace?.offsetTop || 0;
     setTimeout(() => window.scrollTo({ top:targetY, behavior:"auto" }), 0);
   }
+}
+
+function fotoJogosBindScrollEvents(){
+  if(fotoJogosScrollEventsBound) return;
+  fotoJogosScrollEventsBound = true;
+  window.addEventListener("scroll", () => {
+    if(!fotoJogosState.workspaceOpen) return;
+    fotoJogosState.workspaceScrollY = Math.max(0, window.scrollY || 0);
+  }, { passive:true });
 }
 
 function fotoJogosLimparTimers(){
@@ -17979,11 +18749,191 @@ function fotoJogosEncontrarJogo(id){
   return fotoJogosState.jogos.find(item => item.id === id) || null;
 }
 
-function fotoJogosRevogarEscudo(jogo, side){
-  const preview = jogo?.escudo_previews?.[side] || "";
-  if(preview){
+function fotoJogosNormalizarNomeTimeAsset(value){
+  let texto = fotoJogosTexto(value, 120);
+  if(!texto) return "";
+  texto = texto
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase()
+    .replace(/[.'`\u2019]/g, "")
+    .replace(/[-\u2010-\u2015]+/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+  texto = texto.replace(/\b(f\s*c|fc)\b$/i, "").replace(/\s+/g, " ").trim();
+  return texto;
+}
+
+function fotoJogosNomeTimeAtual(jogo, side){
+  const fieldKey = side === "time_b" ? "time_b" : "time_a";
+  const draft = fotoJogosState.editing[jogo?.id || ""];
+  return fotoJogosTexto(draft?.[fieldKey] ?? jogo?.[fieldKey] ?? "", 80);
+}
+
+function fotoJogosTeamAssetKey(jogo, side){
+  return fotoJogosNormalizarNomeTimeAsset(fotoJogosNomeTimeAtual(jogo, side));
+}
+
+function fotoJogosTeamAssetLabel(jogo, side){
+  const fallback = side === "time_b" ? "Time B" : "Time A";
+  return fotoJogosNomeTimeAtual(jogo, side) || fallback;
+}
+
+function fotoJogosEscudoAsset(file, preview){
+  return {
+    file:file || null,
+    preview:preview || "",
+    name:file?.name || "Escudo selecionado"
+  };
+}
+
+function fotoJogosPreviewEscudoEmUso(preview, exceptId = "", exceptSide = ""){
+  if(!preview) return false;
+  if(fotoJogosState.shieldPrompt?.preview === preview) return true;
+  if(Object.values(fotoJogosState.teamAssets || {}).some(asset => asset?.preview === preview)) return true;
+  return fotoJogosState.jogos.some(jogo => ["time_a", "time_b"].some(side => {
+    if(jogo.id === exceptId && side === exceptSide) return false;
+    return jogo.escudo_previews?.[side] === preview;
+  }));
+}
+
+function fotoJogosRevogarPreviewEscudoSeLivre(preview, exceptId = "", exceptSide = ""){
+  if(preview && !fotoJogosPreviewEscudoEmUso(preview, exceptId, exceptSide)){
     try{ URL.revokeObjectURL(preview); }catch(e){}
   }
+}
+
+function fotoJogosRevogarEscudo(jogo, side){
+  const preview = jogo?.escudo_previews?.[side] || "";
+  fotoJogosRevogarPreviewEscudoSeLivre(preview, jogo?.id || "", side);
+}
+
+function fotoJogosOcorrenciasPorTimeKey(key){
+  if(!key) return [];
+  const ocorrencias = [];
+  fotoJogosState.jogos.forEach(jogo => {
+    ["time_a", "time_b"].forEach(side => {
+      if(fotoJogosTeamAssetKey(jogo, side) === key){
+        ocorrencias.push({ jogo, side });
+      }
+    });
+  });
+  return ocorrencias;
+}
+
+function fotoJogosContarJogosUnicos(ocorrencias){
+  return new Set((ocorrencias || []).map(item => item.jogo?.id).filter(Boolean)).size;
+}
+
+function fotoJogosGarantirEscudoMeta(jogo){
+  if(!jogo.escudo_asset_keys) jogo.escudo_asset_keys = { time_a:"", time_b:"" };
+  if(!jogo.escudo_overrides) jogo.escudo_overrides = { time_a:false, time_b:false };
+}
+
+function fotoJogosAtribuirEscudo(jogo, side, asset, key, override = false){
+  if(!jogo || !side || !asset?.file) return false;
+  fotoJogosGarantirEscudoMeta(jogo);
+  if(jogo.escudo_previews?.[side] && jogo.escudo_previews[side] !== asset.preview){
+    fotoJogosRevogarEscudo(jogo, side);
+  }
+  jogo.escudos[side] = asset.file;
+  jogo.escudo_previews[side] = asset.preview || "";
+  jogo.escudo_asset_keys[side] = key || fotoJogosTeamAssetKey(jogo, side);
+  jogo.escudo_overrides[side] = !!override;
+  fotoJogosAtualizarValidacaoJogo(jogo.id, { force:!!(jogo.selected && jogo.productKey) });
+  return true;
+}
+
+function fotoJogosLimparEscudoOcorrencia(jogo, side, key = "", override = false){
+  if(!jogo || !side) return false;
+  fotoJogosGarantirEscudoMeta(jogo);
+  const preview = jogo.escudo_previews?.[side] || "";
+  jogo.escudos[side] = null;
+  jogo.escudo_previews[side] = "";
+  jogo.escudo_asset_keys[side] = key || fotoJogosTeamAssetKey(jogo, side);
+  jogo.escudo_overrides[side] = !!override;
+  fotoJogosRevogarPreviewEscudoSeLivre(preview, jogo.id, side);
+  fotoJogosAtualizarValidacaoJogo(jogo.id, { force:!!(jogo.selected && jogo.productKey) });
+  return true;
+}
+
+function fotoJogosAplicarEscudoCompartilhado(key, asset, options = {}){
+  if(!key || !asset?.file) return 0;
+  fotoJogosState.teamAssets[key] = asset;
+  const ocorrencias = fotoJogosOcorrenciasPorTimeKey(key);
+  ocorrencias.forEach(({ jogo, side }) => {
+    if(options.skipOverrides && jogo.escudo_overrides?.[side]) return;
+    fotoJogosAtribuirEscudo(jogo, side, asset, key, false);
+  });
+  fotoJogosAtualizarResumoValidacao();
+  return fotoJogosContarJogosUnicos(ocorrencias);
+}
+
+function fotoJogosAplicarAssetsConhecidos(){
+  fotoJogosState.jogos.forEach(jogo => {
+    ["time_a", "time_b"].forEach(side => {
+      const key = fotoJogosTeamAssetKey(jogo, side);
+      const asset = key ? fotoJogosState.teamAssets?.[key] : null;
+      if(asset?.file && !jogo.escudos?.[side] && !jogo.escudo_overrides?.[side]){
+        fotoJogosAtribuirEscudo(jogo, side, asset, key, false);
+      }
+    });
+  });
+}
+
+function fotoJogosSincronizarEscudosAposEdicao(jogo, previousKeys = {}){
+  if(!jogo) return;
+  fotoJogosGarantirEscudoMeta(jogo);
+  ["time_a", "time_b"].forEach(side => {
+    const oldKey = previousKeys[side] || "";
+    const newKey = fotoJogosTeamAssetKey(jogo, side);
+    if(!newKey){
+      jogo.escudo_asset_keys[side] = "";
+      jogo.escudo_overrides[side] = !!jogo.escudos?.[side];
+      return;
+    }
+
+    if(newKey === oldKey){
+      jogo.escudo_asset_keys[side] = newKey;
+      return;
+    }
+
+    const known = fotoJogosState.teamAssets?.[newKey] || null;
+    const currentFile = jogo.escudos?.[side] || null;
+    jogo.escudo_asset_keys[side] = newKey;
+
+    if(known?.file && !currentFile){
+      fotoJogosAtribuirEscudo(jogo, side, known, newKey, false);
+      return;
+    }
+
+    if(known?.file && currentFile === known.file){
+      jogo.escudo_overrides[side] = false;
+      return;
+    }
+
+    jogo.escudo_overrides[side] = !!currentFile;
+  });
+  fotoJogosAplicarAssetsConhecidos();
+}
+
+function fotoJogosMensagemEscudoAplicado(totalJogos){
+  return totalJogos > 1
+    ? `Escudo aplicado em ${totalJogos} jogos deste time.`
+    : "Escudo adicionado.";
+}
+
+function fotoJogosAbrirShieldPrompt(prompt){
+  if(fotoJogosState.shieldPrompt?.preview && fotoJogosState.shieldPrompt.preview !== prompt.preview){
+    fotoJogosRevogarPreviewEscudoSeLivre(fotoJogosState.shieldPrompt.preview);
+  }
+  fotoJogosState.shieldPrompt = prompt;
+  fotoJogosState.message = "";
+  fotoJogosState.error = false;
+}
+
+function fotoJogosLimparShieldPrompt(){
+  fotoJogosState.shieldPrompt = null;
 }
 
 function fotoJogosAbrirEscudo(id, side){
@@ -18004,6 +18954,7 @@ function fotoJogosSelecionarEscudo(file){
 
   const jogo = fotoJogosEncontrarJogo(target.id);
   if(!jogo) return;
+  if(!file) return;
 
   const msg = ia4ValidarTamanhoArquivos(file ? [file] : []);
   if(msg){
@@ -18013,28 +18964,112 @@ function fotoJogosSelecionarEscudo(file){
     return;
   }
 
-  fotoJogosRevogarEscudo(jogo, target.side);
-  jogo.escudos[target.side] = file || null;
-  jogo.escudo_previews[target.side] = file ? URL.createObjectURL(file) : "";
-  jogo.direct_errors = [];
-  fotoJogosState.message = file ? "Escudo adicionado" : "";
+  const key = fotoJogosTeamAssetKey(jogo, target.side);
+  const teamName = fotoJogosTeamAssetLabel(jogo, target.side);
+  const preview = URL.createObjectURL(file);
+  const asset = fotoJogosEscudoAsset(file, preview);
+  const ocorrencias = fotoJogosOcorrenciasPorTimeKey(key);
+  const totalJogos = fotoJogosContarJogosUnicos(ocorrencias);
+  const hasCurrentShield = !!jogo.escudos?.[target.side];
+  const hasSharedAsset = !!(key && fotoJogosState.teamAssets?.[key]?.file);
+
+  if(key && totalJogos > 1 && (hasCurrentShield || hasSharedAsset)){
+    fotoJogosAbrirShieldPrompt({
+      type:"replace",
+      id:target.id,
+      side:target.side,
+      key,
+      teamName,
+      file,
+      preview,
+      name:file.name || "Escudo selecionado"
+    });
+    fotoJogosLimparFeedbackCriacao();
+    fotoJogosRerender();
+    return;
+  }
+
+  if(key){
+    const applied = fotoJogosAplicarEscudoCompartilhado(key, asset);
+    fotoJogosState.message = fotoJogosMensagemEscudoAplicado(applied);
+  }else{
+    fotoJogosAtribuirEscudo(jogo, target.side, asset, "", true);
+    fotoJogosState.message = "Escudo adicionado.";
+  }
   fotoJogosState.error = false;
-  fotoJogosState.batchConfirm = null;
-  fotoJogosState.batchResult = null;
+  fotoJogosLimparFeedbackCriacao();
   fotoJogosRerender();
 }
 
 function fotoJogosRemoverEscudo(id, side){
   const jogo = fotoJogosEncontrarJogo(id);
   if(!jogo) return;
-  fotoJogosRevogarEscudo(jogo, side);
-  jogo.escudos[side] = null;
-  jogo.escudo_previews[side] = "";
-  jogo.direct_errors = [];
+  const key = jogo.escudo_asset_keys?.[side] || fotoJogosTeamAssetKey(jogo, side);
+  const teamName = fotoJogosTeamAssetLabel(jogo, side);
+  const totalJogos = fotoJogosContarJogosUnicos(fotoJogosOcorrenciasPorTimeKey(key));
+
+  if(key && totalJogos > 1 && (jogo.escudos?.[side] || fotoJogosState.teamAssets?.[key]?.file)){
+    fotoJogosAbrirShieldPrompt({
+      type:"remove",
+      id,
+      side,
+      key,
+      teamName
+    });
+    fotoJogosLimparFeedbackCriacao();
+    fotoJogosRerender();
+    return;
+  }
+
+  fotoJogosLimparEscudoOcorrencia(jogo, side, key, true);
+  if(key) delete fotoJogosState.teamAssets[key];
   fotoJogosState.message = "Escudo removido";
   fotoJogosState.error = false;
-  fotoJogosState.batchConfirm = null;
-  fotoJogosState.batchResult = null;
+  fotoJogosLimparFeedbackCriacao();
+  fotoJogosRerender();
+}
+
+function fotoJogosResolverShieldPrompt(applyAll){
+  const prompt = fotoJogosState.shieldPrompt;
+  if(!prompt) return;
+  const jogo = fotoJogosEncontrarJogo(prompt.id);
+  if(!jogo){
+    fotoJogosLimparShieldPrompt();
+    fotoJogosRerender();
+    return;
+  }
+
+  if(prompt.type === "replace"){
+    const asset = fotoJogosEscudoAsset(prompt.file, prompt.preview);
+    if(applyAll){
+      const applied = fotoJogosAplicarEscudoCompartilhado(prompt.key, asset);
+      fotoJogosState.message = fotoJogosMensagemEscudoAplicado(applied);
+    }else{
+      fotoJogosAtribuirEscudo(jogo, prompt.side, asset, prompt.key, true);
+      fotoJogosState.message = "Escudo adicionado.";
+    }
+  }
+
+  if(prompt.type === "remove"){
+    if(applyAll){
+      const ocorrencias = fotoJogosOcorrenciasPorTimeKey(prompt.key);
+      const totalJogos = fotoJogosContarJogosUnicos(ocorrencias);
+      delete fotoJogosState.teamAssets[prompt.key];
+      ocorrencias.forEach(({ jogo:occJogo, side:occSide }) => {
+        fotoJogosLimparEscudoOcorrencia(occJogo, occSide, prompt.key, false);
+      });
+      fotoJogosState.message = totalJogos > 1
+        ? `Escudo removido de ${totalJogos} jogos deste time.`
+        : "Escudo removido";
+    }else{
+      fotoJogosLimparEscudoOcorrencia(jogo, prompt.side, prompt.key, true);
+      fotoJogosState.message = "Escudo removido";
+    }
+  }
+
+  fotoJogosState.error = false;
+  fotoJogosLimparShieldPrompt();
+  fotoJogosLimparFeedbackCriacao();
   fotoJogosRerender();
 }
 
@@ -18049,19 +19084,90 @@ function fotoJogosAlternarSelecao(id){
   const jogo = fotoJogosEncontrarJogo(id);
   if(!jogo) return;
   jogo.selected = !jogo.selected;
-  fotoJogosState.batchConfirm = null;
-  fotoJogosState.batchResult = null;
-  fotoJogosState.batchError = "";
+  if(!jogo.selected) fotoJogosLimparErrosDiretos(jogo);
+  else fotoJogosAtualizarValidacaoJogo(id, { force:!!jogo.productKey });
+  fotoJogosLimparFeedbackCriacao();
   fotoJogosRerender();
 }
 
 function fotoJogosSelecionarTodos(selected){
   fotoJogosState.jogos.forEach(jogo => {
     jogo.selected = !!selected;
+    if(!selected) fotoJogosLimparErrosDiretos(jogo);
   });
-  fotoJogosState.batchConfirm = null;
-  fotoJogosState.batchResult = null;
-  fotoJogosState.batchError = "";
+  fotoJogosLimparFeedbackCriacao();
+  fotoJogosRerender();
+}
+
+function fotoJogosDefinirFiltroStatus(status){
+  fotoJogosState.filters.status = ["all", "pending", "created", "failed"].includes(status) ? status : "all";
+  fotoJogosRerender({ restoreScroll:false });
+}
+
+function fotoJogosAtualizarPesquisa(value){
+  fotoJogosState.filters.search = fotoJogosTexto(value, 80);
+  if(fotoJogosSearchTimer) clearTimeout(fotoJogosSearchTimer);
+  fotoJogosSearchTimer = setTimeout(() => {
+    fotoJogosRerender({ restoreScroll:false });
+    setTimeout(() => {
+      const input = document.querySelector("[data-foto-jogos-search]");
+      if(input){
+        input.focus({ preventScroll:true });
+        const end = input.value.length;
+        try{ input.setSelectionRange(end, end); }catch(e){}
+      }
+    }, 0);
+  }, 180);
+}
+
+function fotoJogosAlternarMeuTime(enabled){
+  fotoJogosState.filters.onlyMyTeam = !!enabled;
+  if(!enabled) fotoJogosState.filters.myTeam = "";
+  fotoJogosRerender({ restoreScroll:false });
+}
+
+function fotoJogosEscolherMeuTime(value){
+  fotoJogosState.filters.myTeam = fotoJogosTexto(value, 80);
+  fotoJogosRerender({ restoreScroll:false });
+}
+
+function fotoJogosAplicarProdutoSelecionados(){
+  const productKey = fotoJogosState.bulkProductKey;
+  if(!fotoJogosProdutoDiretoValido(productKey)) return;
+  fotoJogosSelecionados().forEach(jogo => {
+    jogo.productKey = productKey;
+    fotoJogosLimparErrosDiretos(jogo);
+    fotoJogosAtualizarValidacaoJogo(jogo.id, { force:true });
+  });
+  fotoJogosLimparFeedbackCriacao();
+  fotoJogosState.message = `Produto aplicado a ${fotoJogosSelecionados().length} jogo${fotoJogosSelecionados().length === 1 ? "" : "s"}`;
+  fotoJogosState.error = false;
+  fotoJogosRerender();
+}
+
+function fotoJogosTentarNovamente(id){
+  const jogo = fotoJogosEncontrarJogo(id);
+  if(!jogo) return;
+  fotoJogosState.jogos.forEach(item => { item.selected = item.id === id; });
+  fotoJogosLimparFeedbackCriacao();
+  fotoJogosAbrirResumoCriacao();
+}
+
+function fotoJogosConfirmarRecriacao(){
+  const ids = Array.isArray(fotoJogosState.recreateConfirm?.ids) ? fotoJogosState.recreateConfirm.ids : [];
+  ids.forEach(id => {
+    const jogo = fotoJogosEncontrarJogo(id);
+    if(!jogo) return;
+    jogo.batch_request_id = "";
+    jogo.batch_fingerprint = "";
+  });
+  fotoJogosState.batchRequestState = null;
+  fotoJogosState.recreateConfirm = null;
+  fotoJogosAbrirResumoCriacao({ allowRecreate:true });
+}
+
+function fotoJogosCancelarRecriacao(){
+  fotoJogosState.recreateConfirm = null;
   fotoJogosRerender();
 }
 
@@ -18107,11 +19213,10 @@ function fotoJogosSelecionarFoto(file){
     tipo: target.tipo === "time" ? "time" : "jogador",
     nome: jogo.foto?.nome || ""
   };
-  jogo.direct_errors = [];
+  fotoJogosAtualizarValidacaoJogo(target.id, { force:Array.isArray(jogo.direct_errors) && !!jogo.direct_errors.length });
   fotoJogosState.message = file ? "Foto adicionada" : "";
   fotoJogosState.error = false;
-  fotoJogosState.batchConfirm = null;
-  fotoJogosState.batchResult = null;
+  fotoJogosLimparFeedbackCriacao();
   fotoJogosRerender();
 }
 
@@ -18120,11 +19225,10 @@ function fotoJogosRemoverFoto(id){
   if(!jogo) return;
   fotoJogosRevogarFoto(jogo);
   jogo.foto = { file:null, preview:"", tipo:"", nome:"" };
-  jogo.direct_errors = [];
+  fotoJogosAtualizarValidacaoJogo(id, { force:!!(jogo.selected && jogo.productKey === "jogador_escudo") });
   fotoJogosState.message = "Foto removida";
   fotoJogosState.error = false;
-  fotoJogosState.batchConfirm = null;
-  fotoJogosState.batchResult = null;
+  fotoJogosLimparFeedbackCriacao();
   fotoJogosRerender();
 }
 
@@ -18151,17 +19255,63 @@ function fotoJogosAplicarArquivoClean(form, key, file){
   return ok;
 }
 
+function fotoJogosLimparArquivoClean(form, key){
+  if(!form || !key) return;
+  const input = getCleanFormAsset(form, key);
+  if(input){
+    try{ input.value = ""; }catch(e){}
+    if(typeof DataTransfer !== "undefined"){
+      try{
+        const vazio = new DataTransfer();
+        input.files = vazio.files;
+      }catch(e){}
+    }
+  }
+  if(typeof clearCleanStableAsset === "function") clearCleanStableAsset(form, key, { clearRequestState:false });
+  if(typeof clearCleanFilePreview === "function") clearCleanFilePreview(form, key);
+  const card = form.querySelector(`[data-clean-field-card="${CSS.escape(key)}"]`);
+  if(card) card.classList.remove("campoObrigatorioErro");
+}
+
+function fotoJogosLimparArquivosFormulario(form){
+  if(!form) return;
+  const keys = [...new Set(Array.from(form.querySelectorAll("[data-asset]")).map(input => input.dataset.asset).filter(Boolean))];
+  keys.forEach(key => fotoJogosLimparArquivoClean(form, key));
+  if(typeof clearCleanOrderRequestState === "function") clearCleanOrderRequestState(form);
+}
+
+function fotoJogosLimparEscudo3dAnterior(){
+  if(escudo3dFile){
+    try{ escudo3dFile.value = ""; }catch(e){}
+    if(typeof DataTransfer !== "undefined"){
+      try{
+        const vazio = new DataTransfer();
+        escudo3dFile.files = vazio.files;
+      }catch(e){}
+    }
+  }
+  if(typeof setEscudo3dCleanFileLabel === "function") setEscudo3dCleanFileLabel("Selecionar escudo");
+  if(escudo3dFileName) escudo3dFileName.textContent = "Selecionar escudo";
+  document.querySelector('[data-clean-product-block="escudo3d"] [data-clean-field-card="escudo3d_crest"]')?.classList.remove("campoObrigatorioErro");
+}
+
 function fotoJogosConfronto(jogo){
   const timeA = fotoJogosTexto(jogo.time_a);
   const timeB = fotoJogosTexto(jogo.time_b);
   return timeA && timeB ? `${timeA} x ${timeB}` : "";
 }
 
-async function fotoJogosAnalisarImagem(){
+async function fotoJogosAnalisarImagem(mode = ""){
   if(fotoJogosState.analyzing) return;
 
   if(!fotoJogosState.file){
     fotoJogosAtualizarMsg("Escolha uma imagem antes de analisar.", true);
+    return;
+  }
+
+  if(fotoJogosState.jogos.length && !["replace", "append"].includes(mode)){
+    fotoJogosState.analysisModePrompt = true;
+    fotoJogosRerender();
     return;
   }
 
@@ -18171,6 +19321,7 @@ async function fotoJogosAnalisarImagem(){
     return;
   }
 
+  fotoJogosState.analysisModePrompt = false;
   fotoJogosState.analyzing = true;
   fotoJogosState.message = "";
   fotoJogosState.error = false;
@@ -18197,7 +19348,8 @@ async function fotoJogosAnalisarImagem(){
     if(!r.ok || !out.ok) throw new Error(out.error || out.erro || "N\u00e3o foi poss\u00edvel analisar a imagem com a iA4Tube.");
 
     const jogos = Array.isArray(out.jogos) ? out.jogos.map(jogo => fotoJogosNormalizarJogo(jogo)) : [];
-    fotoJogosMesclarLista(jogos);
+    if(jogos.length && mode === "replace") fotoJogosSubstituirLista(jogos);
+    else fotoJogosMesclarLista(jogos);
     fotoJogosState.hasAnalyzed = true;
     fotoJogosFinalizarProgresso(true);
 
@@ -18229,6 +19381,7 @@ function fotoJogosAdicionarManual(){
   fotoJogosState.editing[jogo.id] = fotoJogosCriarDraft(jogo);
   fotoJogosState.message = "Novo confronto";
   fotoJogosState.error = false;
+  fotoJogosLimparFeedbackCriacao();
   fotoJogosRerender();
 }
 
@@ -18244,6 +19397,8 @@ function fotoJogosAtualizarDraft(id, key, value){
   draft[key] = key === "observacao" || key === "resumo_principal"
     ? String(value || "").slice(0, key === "observacao" ? 220 : 360)
     : fotoJogosTexto(value, 120);
+  fotoJogosLimparFeedbackCriacao();
+  fotoJogosAtualizarValidacaoJogo(id, { focusField:key, rerender:true });
 }
 
 function fotoJogosIniciarEdicao(id){
@@ -18263,23 +19418,18 @@ function fotoJogosSalvarEdicao(id){
   const draft = fotoJogosState.editing[id];
   if(!jogo || !draft) return;
 
-  jogo.time_a = fotoJogosTexto(draft.time_a, 80);
-  jogo.time_b = fotoJogosTexto(draft.time_b, 80);
-  fotoJogosAplicarResumoPrincipal(jogo, draft.resumo_principal);
-  jogo.numero_jogo = fotoJogosTexto(draft.numero_jogo, 40);
-  jogo.categoria = fotoJogosTexto(draft.categoria, 80);
-  jogo.grupo = fotoJogosTexto(draft.grupo, 80);
-  if(jogo.rodada){
-    jogo.fase = fotoJogosTexto(draft.fase, 80);
-  }
-  jogo.observacao = fotoJogosTexto(draft.observacao, 220);
+  const previousKeys = {
+    time_a:fotoJogosNormalizarNomeTimeAsset(jogo.time_a),
+    time_b:fotoJogosNormalizarNomeTimeAsset(jogo.time_b)
+  };
+  fotoJogosAplicarDraftAoJogo(jogo, draft);
+  fotoJogosSincronizarEscudosAposEdicao(jogo, previousKeys);
 
   delete fotoJogosState.editing[id];
   fotoJogosState.message = "Altera\u00e7\u00f5es salvas";
   fotoJogosState.error = false;
-  jogo.direct_errors = [];
-  fotoJogosState.batchConfirm = null;
-  fotoJogosState.batchResult = null;
+  fotoJogosLimparErrosDiretos(jogo);
+  fotoJogosLimparFeedbackCriacao();
   fotoJogosRerender();
 }
 
@@ -18288,10 +19438,9 @@ function fotoJogosSelecionarProdutoDireto(id, productKey){
   if(!jogo || !fotoJogosProdutoDiretoValido(productKey)) return;
   jogo.productKey = productKey;
   jogo.selected = true;
-  jogo.direct_errors = [];
-  fotoJogosState.batchConfirm = null;
-  fotoJogosState.batchResult = null;
-  fotoJogosState.batchError = "";
+  fotoJogosLimparErrosDiretos(jogo);
+  fotoJogosAtualizarValidacaoJogo(id, { force:true });
+  fotoJogosLimparFeedbackCriacao();
   fotoJogosRerender();
 }
 
@@ -18305,10 +19454,8 @@ function fotoJogosAtualizarCampoDireto(id, key, value){
     jogo[key] = String(value || "").slice(0, 1200);
   }
 
-  jogo.direct_errors = [];
-  fotoJogosState.batchConfirm = null;
-  fotoJogosState.batchResult = null;
-  fotoJogosState.batchError = "";
+  fotoJogosLimparFeedbackCriacao();
+  fotoJogosAtualizarValidacaoJogo(id, { focusField:key, rerender:true });
 }
 
 function fotoJogosAtualizarNomeFoto(id, value){
@@ -18316,20 +19463,16 @@ function fotoJogosAtualizarNomeFoto(id, value){
   if(!jogo) return;
   jogo.foto = jogo.foto || { file:null, preview:"", tipo:"", nome:"" };
   jogo.foto.nome = fotoJogosTexto(value, 80);
-  jogo.direct_errors = [];
-  fotoJogosState.batchConfirm = null;
-  fotoJogosState.batchResult = null;
-  fotoJogosState.batchError = "";
+  fotoJogosLimparFeedbackCriacao();
+  fotoJogosAtualizarValidacaoJogo(id, { focusField:"jogador_nome", rerender:true });
 }
 
 function fotoJogosAtualizarSideChoice(id, fieldKey, side){
   const jogo = fotoJogosEncontrarJogo(id);
-  if(!jogo || !["escudo3d_side", "jogador_escudo_side"].includes(fieldKey)) return;
+  if(!jogo || !["resultado_side", "escalacao_side", "escudo3d_side", "jogador_escudo_side"].includes(fieldKey)) return;
   jogo[fieldKey] = side === "time_b" ? "time_b" : "time_a";
-  jogo.direct_errors = [];
-  fotoJogosState.batchConfirm = null;
-  fotoJogosState.batchResult = null;
-  fotoJogosState.batchError = "";
+  fotoJogosAtualizarValidacaoJogo(id, { force:true });
+  fotoJogosLimparFeedbackCriacao();
   fotoJogosRerender();
 }
 
@@ -18353,8 +19496,10 @@ function fotoJogosPrepararProduto(productKey, jogo){
     return null;
   }
 
-  selectCleanProductForPicker(productKey, { scroll:false, track:true });
-  return document.querySelector(`[data-product-form="${CSS.escape(productKey)}"]`);
+  selectCleanProductForPicker(productKey, { scroll:false, track:true, perfilAuto:false });
+  const form = document.querySelector(`[data-product-form="${CSS.escape(productKey)}"]`);
+  fotoJogosLimparArquivosFormulario(form);
+  return form;
 }
 
 function fotoJogosAbrirProduto(form, productKey, message){
@@ -18398,13 +19543,15 @@ function fotoJogosAplicarResultado(jogo){
     return;
   }
 
-  fotoJogosPreencherCampo(form, "home_team", jogo.time_a);
-  fotoJogosPreencherCampo(form, "away_team", jogo.time_b);
+  const principalSide = jogo.resultado_side === "time_b" ? "time_b" : "time_a";
+  const adversarioSide = principalSide === "time_a" ? "time_b" : "time_a";
+  fotoJogosPreencherCampo(form, "home_team", jogo[principalSide]);
+  fotoJogosPreencherCampo(form, "away_team", jogo[adversarioSide]);
   fotoJogosPreencherCampo(form, "home_score", "");
   fotoJogosPreencherCampo(form, "away_score", "");
   fotoJogosPreencherCampo(form, "competition", jogo.competicao);
-  fotoJogosAplicarArquivoClean(form, "home_crest", jogo.escudos.time_a);
-  fotoJogosAplicarArquivoClean(form, "away_crest", jogo.escudos.time_b);
+  fotoJogosAplicarArquivoClean(form, "home_crest", jogo.escudos[principalSide]);
+  fotoJogosAplicarArquivoClean(form, "away_crest", jogo.escudos[adversarioSide]);
   fotoJogosAplicarArquivoClean(form, "match_photo", jogo.foto?.file);
   fotoJogosAbrirProduto(form, "resultado", "Dados enviados para Resultado");
 }
@@ -18416,13 +19563,15 @@ function fotoJogosAplicarEscalacao(jogo){
     return;
   }
 
-  fotoJogosPreencherCampo(form, "matchup", fotoJogosConfronto(jogo));
+  const principalSide = jogo.escalacao_side === "time_b" ? "time_b" : "time_a";
+  const adversarioSide = principalSide === "time_a" ? "time_b" : "time_a";
+  fotoJogosPreencherCampo(form, "matchup", `${jogo[principalSide] || ""} x ${jogo[adversarioSide] || ""}`.trim());
   fotoJogosPreencherCampo(form, "match_datetime", fotoJogosDataHora(jogo));
   fotoJogosPreencherCampo(form, "competition", jogo.competicao);
   fotoJogosPreencherCampo(form, "venue", jogo.local);
-  fotoJogosAplicarArquivoClean(form, "team_crest", jogo.escudos.time_a);
-  fotoJogosAplicarArquivoClean(form, "opponent_crest", jogo.escudos.time_b);
-  fotoJogosAplicarArquivoClean(form, "team_photo", jogo.foto?.file);
+  fotoJogosAplicarArquivoClean(form, "team_crest", jogo.escudos[principalSide]);
+  fotoJogosAplicarArquivoClean(form, "opponent_crest", jogo.escudos[adversarioSide]);
+  fotoJogosAplicarArquivoClean(form, "team_photo", jogo.foto?.tipo === "time" ? jogo.foto.file : null);
   fotoJogosAbrirProduto(form, "escalacao", "Dados enviados para Escala\u00e7\u00e3o");
 }
 
@@ -18436,7 +19585,8 @@ function fotoJogosAplicarEscudo3d(jogo, sideParam){
     return;
   }
 
-  selectCleanProductForPicker("escudo3d", { scroll:false, track:true });
+  selectCleanProductForPicker("escudo3d", { scroll:false, track:true, perfilAuto:false });
+  fotoJogosLimparEscudo3dAnterior();
   const applied = fotoJogosSetFileInput(escudo3dFile, file);
   if(!applied){
     setEscudo3dCleanFileLabel(file.name || "Escudo selecionado");
@@ -18509,48 +19659,168 @@ function fotoJogosSplitPlayers(text){
     .map(nome => ({ nome, posicao:"" }));
 }
 
-function fotoJogosValidarDireto(jogo){
+function fotoJogosValidarDiretoDetalhado(jogo){
   const errors = [];
   const productKey = jogo.productKey || "";
-  const hasTeams = !!(fotoJogosTexto(jogo.time_a) && fotoJogosTexto(jogo.time_b));
+  const timeA = fotoJogosTexto(jogo.time_a);
+  const timeB = fotoJogosTexto(jogo.time_b);
+  const hasTeams = !!(timeA && timeB);
   const dataHora = fotoJogosDataHora(jogo);
 
   if(!jogo.selected) return errors;
-  if(!productKey) errors.push("Escolha uma arte.");
-  if(["proximo_jogo", "resultado", "escalacao"].includes(productKey) && !hasTeams){
-    errors.push("Informe os dois times.");
+  if(!productKey) return [fotoJogosErroDetalhe("product", "Escolha uma arte.")];
+  if(["proximo_jogo", "resultado", "escalacao"].includes(productKey)){
+    if(!timeA) errors.push(fotoJogosErroDetalhe("time_a", "Informe o Time A.", { edit:true }));
+    if(!timeB) errors.push(fotoJogosErroDetalhe("time_b", "Informe o Time B.", { edit:true }));
   }
 
   if(productKey === "proximo_jogo"){
-    if(!dataHora) errors.push("Informe data e hor\u00e1rio.");
-    if(!fotoJogosTexto(jogo.competicao)) errors.push("Informe campeonato ou competi\u00e7\u00e3o.");
-    if(!jogo.escudos?.time_a || !jogo.escudos?.time_b) errors.push("Adicione os escudos dos dois times.");
+    if(!dataHora) errors.push(fotoJogosErroDetalhe("data_horario", "Informe a data e o hor\u00e1rio.", { edit:true }));
+    if(!fotoJogosTexto(jogo.competicao)) errors.push(fotoJogosErroDetalhe("competicao", "Informe a competi\u00e7\u00e3o.", { edit:true }));
+    if(!jogo.escudos?.time_a) errors.push(fotoJogosErroDetalhe("escudo_time_a", "Adicione o escudo do Time A.", { focus:false }));
+    if(!jogo.escudos?.time_b) errors.push(fotoJogosErroDetalhe("escudo_time_b", "Adicione o escudo do Time B.", { focus:false }));
   }
 
   if(productKey === "resultado"){
-    if(!fotoJogosScoreValido(jogo.resultado_gols_a) || !fotoJogosScoreValido(jogo.resultado_gols_b)) errors.push("Informe o placar.");
-    if(!fotoJogosTexto(jogo.competicao)) errors.push("Informe campeonato ou competi\u00e7\u00e3o.");
-    if(!jogo.escudos?.time_a) errors.push("Adicione o escudo do Time A.");
+    const principalSide = jogo.resultado_side === "time_b" ? "time_b" : "time_a";
+    if(!fotoJogosScoreValido(jogo.resultado_gols_a)) errors.push(fotoJogosErroDetalhe("resultado_gols_a", "Informe o placar."));
+    if(!fotoJogosScoreValido(jogo.resultado_gols_b)) errors.push(fotoJogosErroDetalhe("resultado_gols_b", "Informe o placar."));
+    if(!fotoJogosTexto(jogo.competicao)) errors.push(fotoJogosErroDetalhe("competicao", "Informe a competi\u00e7\u00e3o.", { edit:true }));
+    if(!jogo.escudos?.[principalSide]) errors.push(fotoJogosErroDetalhe(`escudo_${principalSide}`, `Adicione o escudo do ${principalSide === "time_b" ? "Time B" : "Time A"}.`, { focus:false }));
   }
 
   if(productKey === "escalacao"){
-    if(!fotoJogosConfronto(jogo)) errors.push("Informe o confronto.");
-    if(!fotoJogosSplitPlayers(jogo.escalacao_texto).length) errors.push("Informe jogadores ou escala\u00e7\u00e3o.");
+    if(!hasTeams){
+      if(!timeA) errors.push(fotoJogosErroDetalhe("time_a", "Informe o Time A.", { edit:true }));
+      if(!timeB) errors.push(fotoJogosErroDetalhe("time_b", "Informe o Time B.", { edit:true }));
+    }
+    if(!fotoJogosSplitPlayers(jogo.escalacao_texto).length) errors.push(fotoJogosErroDetalhe("escalacao_texto", "Adicione a escala\u00e7\u00e3o."));
   }
 
   if(productKey === "escudo3d"){
-    const side = jogo.escudo3d_side === "time_b" ? "time_b" : "time_a";
-    if(!jogo.escudos?.[side]) errors.push("Adicione o escudo do time.");
+    const side = jogo.escudo3d_side === "time_b" ? "time_b" : (jogo.escudo3d_side === "time_a" ? "time_a" : "");
+    if(!side){
+      errors.push(fotoJogosErroDetalhe("escudo3d_side", "Escolha o time do Escudo 3D.", { focus:false }));
+    }else if(!jogo.escudos?.[side]){
+      errors.push(fotoJogosErroDetalhe(`escudo_${side}`, `Adicione o escudo do ${side === "time_b" ? "Time B" : "Time A"}.`, { focus:false }));
+    }
   }
 
   if(productKey === "jogador_escudo"){
-    const side = jogo.jogador_escudo_side === "time_b" ? "time_b" : "time_a";
-    if(!jogo.foto?.file || jogo.foto?.tipo !== "jogador") errors.push("Adicione a foto do jogador.");
-    if(!jogo.escudos?.[side]) errors.push("Adicione o escudo do time.");
-    if(!fotoJogosTexto(jogo.foto?.nome)) errors.push("Informe o nome do jogador.");
+    const side = jogo.jogador_escudo_side === "time_b" ? "time_b" : (jogo.jogador_escudo_side === "time_a" ? "time_a" : "");
+    if(!side){
+      errors.push(fotoJogosErroDetalhe("jogador_escudo_side", "Escolha o time do Jogador + Escudo.", { focus:false }));
+    }else if(!jogo.escudos?.[side]){
+      errors.push(fotoJogosErroDetalhe(`escudo_${side}`, `Adicione o escudo do ${side === "time_b" ? "Time B" : "Time A"}.`, { focus:false }));
+    }
+    if(!jogo.foto?.file){
+      errors.push(fotoJogosErroDetalhe("jogador_foto", "Adicione a foto do jogador.", { photo:true, focus:false }));
+    }else if(jogo.foto?.tipo !== "jogador"){
+      errors.push(fotoJogosErroDetalhe("jogador_foto_tipo", "Escolha Foto de jogador para esta arte.", { photo:true, focus:false }));
+    }
+    if(!fotoJogosTexto(jogo.foto?.nome)) errors.push(fotoJogosErroDetalhe("jogador_nome", "Informe o nome do jogador."));
   }
 
-  return [...new Set(errors)];
+  const seen = new Set();
+  return errors.filter(error => {
+    const key = `${error.field}|${error.message}`;
+    if(seen.has(key)) return false;
+    seen.add(key);
+    return true;
+  });
+}
+
+function fotoJogosAplicarErrosDetalhados(jogo, detalhes){
+  const fields = {};
+  const messages = [];
+  (Array.isArray(detalhes) ? detalhes : []).forEach(error => {
+    if(error?.field && !fields[error.field]) fields[error.field] = error.message || "Complete este campo.";
+    if(error?.message && !messages.includes(error.message)) messages.push(error.message);
+  });
+  jogo.direct_errors = messages.slice(0, 10);
+  jogo.direct_error_fields = fields;
+  const focusable = detalhes.find(error => error.focus !== false) || detalhes[0];
+  jogo.direct_error_focus = focusable?.field || "";
+  return jogo.direct_errors;
+}
+
+function fotoJogosValidarDireto(jogo){
+  return fotoJogosValidarDiretoDetalhado(jogo).map(error => error.message).filter(Boolean);
+}
+
+function fotoJogosSelectorFocoErro(field){
+  const selectors = {
+    time_a:'[data-foto-jogo-draft="time_a"]',
+    time_b:'[data-foto-jogo-draft="time_b"]',
+    resumo_principal:'[data-foto-jogo-draft="resumo_principal"]',
+    data_horario:'[data-foto-jogo-draft="resumo_principal"]',
+    competicao:'[data-foto-jogo-draft="resumo_principal"]',
+    resultado_gols_a:'[data-foto-jogo-direct-field="resultado_gols_a"]',
+    resultado_gols_b:'[data-foto-jogo-direct-field="resultado_gols_b"]',
+    resultado_side:'[data-foto-jogo-side-choice-group="resultado_side"] .fotoJogosSmallBtn',
+    escalacao_texto:'[data-foto-jogo-direct-field="escalacao_texto"]',
+    escalacao_side:'[data-foto-jogo-side-choice-group="escalacao_side"] .fotoJogosSmallBtn',
+    escudo3d_side:'[data-foto-jogo-side-choice-group="escudo3d_side"] .fotoJogosSmallBtn',
+    jogador_escudo_side:'[data-foto-jogo-side-choice-group="jogador_escudo_side"] .fotoJogosSmallBtn',
+    jogador_foto:'[data-foto-jogo-photo-toggle]',
+    jogador_foto_tipo:'[data-foto-jogo-photo-toggle]',
+    jogador_nome:'[data-foto-jogo-photo-name]',
+    product:'[data-foto-jogo-product-select]'
+  };
+  if(field === "escudo_time_a") return '[data-foto-jogo-crest="time_a"]';
+  if(field === "escudo_time_b") return '[data-foto-jogo-crest="time_b"]';
+  return selectors[field] || "";
+}
+
+function fotoJogosScrollParaErro(errorTarget){
+  if(!errorTarget?.id) return;
+  setTimeout(() => {
+    const row = document.querySelector(`[data-foto-jogo-id="${CSS.escape(errorTarget.id)}"]`);
+    if(!row) return;
+    row.scrollIntoView({ behavior:"smooth", block:"center" });
+    const field = errorTarget.field || "";
+    const selector = fotoJogosSelectorFocoErro(field);
+    const preferred = selector ? row.querySelector(selector) : null;
+    const textual = row.querySelector("input.is-error, textarea.is-error");
+    const target = textual || preferred;
+    if(target && typeof target.focus === "function"){
+      setTimeout(() => target.focus({ preventScroll:true }), 260);
+    }
+  }, 80);
+}
+
+function fotoJogosAtualizarValidacaoJogo(id, options = {}){
+  const jogo = fotoJogosEncontrarJogo(id);
+  if(!jogo) return false;
+  const tinhaErros = Array.isArray(jogo.direct_errors) && jogo.direct_errors.length;
+  if(!tinhaErros && !options.force) return false;
+
+  const alvo = fotoJogosJogoParaValidacao(jogo);
+  const detalhes = fotoJogosValidarDiretoDetalhado(alvo);
+  fotoJogosAplicarErrosDetalhados(jogo, detalhes);
+  fotoJogosAtualizarResumoValidacao();
+
+  if(options.rerender){
+    const focusField = options.focusField || jogo.direct_error_focus || "";
+    const active = document.activeElement;
+    const start = typeof active?.selectionStart === "number" ? active.selectionStart : null;
+    const end = typeof active?.selectionEnd === "number" ? active.selectionEnd : null;
+    fotoJogosRerender({ restoreScroll:false });
+    const selector = fotoJogosSelectorFocoErro(focusField);
+    if(selector){
+      setTimeout(() => {
+        const row = document.querySelector(`[data-foto-jogo-id="${CSS.escape(id)}"]`);
+        const target = row?.querySelector(selector);
+        if(target && typeof target.focus === "function"){
+          target.focus({ preventScroll:true });
+          if(start !== null && typeof target.setSelectionRange === "function"){
+            try{ target.setSelectionRange(start, end ?? start); }catch(e){}
+          }
+        }
+      }, 0);
+    }
+  }
+  return !!detalhes.length;
 }
 
 function fotoJogosAssetsJson(files){
@@ -18610,12 +19880,16 @@ function fotoJogosLegacyBody(jogo){
   }
 
   if(productKey === "resultado"){
+    const principalSide = jogo.resultado_side === "time_b" ? "time_b" : "time_a";
+    const adversarioSide = principalSide === "time_a" ? "time_b" : "time_a";
+    const golsPrincipal = principalSide === "time_a" ? jogo.resultado_gols_a : jogo.resultado_gols_b;
+    const golsAdversario = principalSide === "time_a" ? jogo.resultado_gols_b : jogo.resultado_gols_a;
     const fields = {
       score:{
-        home_team:jogo.time_a || "",
-        home_score:jogo.resultado_gols_a || "",
-        away_score:jogo.resultado_gols_b || "",
-        away_team:jogo.time_b || ""
+        home_team:jogo[principalSide] || "",
+        home_score:golsPrincipal || "",
+        away_score:golsAdversario || "",
+        away_team:jogo[adversarioSide] || ""
       },
       competition:jogo.competicao || "",
       headline:"Resultado do jogo"
@@ -18623,28 +19897,31 @@ function fotoJogosLegacyBody(jogo){
     return {
       body:{
         ...base,
-        rodada:`${jogo.time_a || ""} ${jogo.resultado_gols_a || "0"} x ${jogo.resultado_gols_b || "0"} ${jogo.time_b || ""}`.trim(),
+        rodada:`${jogo[principalSide] || ""} ${golsPrincipal || "0"} x ${golsAdversario || "0"} ${jogo[adversarioSide] || ""}`.trim(),
         data:"Resultado do jogo",
         hora:jogo.competicao || "",
-        time_principal:jogo.time_a || "",
-        gols_time_principal:jogo.resultado_gols_a || "",
-        gols_adversario:jogo.resultado_gols_b || "",
-        time_adversario:jogo.time_b || "",
+        time_principal:jogo[principalSide] || "",
+        gols_time_principal:golsPrincipal || "",
+        gols_adversario:golsAdversario || "",
+        time_adversario:jogo[adversarioSide] || "",
         fields_json:JSON.stringify(fields),
         assets_json:JSON.stringify(fotoJogosAssetsJson({
-          home_crest:jogo.escudos?.time_a,
-          away_crest:jogo.escudos?.time_b,
+          home_crest:jogo.escudos?.[principalSide],
+          away_crest:jogo.escudos?.[adversarioSide],
           match_photo:jogo.foto?.file || null
         }))
       },
-      files:{ escudo1:jogo.escudos?.time_a, escudo2:jogo.escudos?.time_b, mascote:jogo.foto?.file || null }
+      files:{ escudo1:jogo.escudos?.[principalSide], escudo2:jogo.escudos?.[adversarioSide], mascote:jogo.foto?.file || null }
     };
   }
 
   if(productKey === "escalacao"){
+    const principalSide = jogo.escalacao_side === "time_b" ? "time_b" : "time_a";
+    const adversarioSide = principalSide === "time_a" ? "time_b" : "time_a";
+    const confrontoEscalacao = `${jogo[principalSide] || ""} x ${jogo[adversarioSide] || ""}`.trim();
     const jogadores = fotoJogosSplitPlayers(jogo.escalacao_texto);
     const fields = {
-      matchup:confronto,
+      matchup:confrontoEscalacao,
       match_datetime:dataHora,
       competition:jogo.competicao || "",
       venue:jogo.local || "",
@@ -18654,22 +19931,26 @@ function fotoJogosLegacyBody(jogo){
       body:{
         ...base,
         flyer_tipo:"zz1fs",
-        rodada:confronto,
+        rodada:confrontoEscalacao,
         data:dataHora || "Escala\u00e7\u00e3o",
         hora:jogo.competicao || "",
         arena:jogo.local || "",
-        time_principal:jogo.time_a || "",
-        time_adversario:jogo.time_b || "",
+        time_principal:jogo[principalSide] || "",
+        time_adversario:jogo[adversarioSide] || "",
         jogadores_json:JSON.stringify(jogadores),
         jogadores_texto:jogadores.map(jogador => jogador.nome).join("; "),
         fields_json:JSON.stringify(fields),
         assets_json:JSON.stringify(fotoJogosAssetsJson({
-          team_crest:jogo.escudos?.time_a || null,
-          opponent_crest:jogo.escudos?.time_b || null,
-          team_photo:jogo.foto?.file || null
+          team_crest:jogo.escudos?.[principalSide] || null,
+          opponent_crest:jogo.escudos?.[adversarioSide] || null,
+          team_photo:jogo.foto?.tipo === "time" ? jogo.foto.file : null
         }))
       },
-      files:{ escudo1:jogo.escudos?.time_a || null, escudo2:jogo.escudos?.time_b || null, mascote:jogo.foto?.file || null }
+      files:{
+        escudo1:jogo.escudos?.[principalSide] || null,
+        escudo2:jogo.escudos?.[adversarioSide] || null,
+        mascote:jogo.foto?.tipo === "time" ? jogo.foto.file : null
+      }
     };
   }
 
@@ -18730,7 +20011,9 @@ function fotoJogosItemFingerprint(jogo){
     local:jogo.local || "",
     resultado_gols_a:jogo.resultado_gols_a || "",
     resultado_gols_b:jogo.resultado_gols_b || "",
+    resultado_side:jogo.resultado_side || "",
     escalacao_texto:jogo.escalacao_texto || "",
+    escalacao_side:jogo.escalacao_side || "",
     escudo3d_side:jogo.escudo3d_side || "",
     jogador_escudo_side:jogo.jogador_escudo_side || "",
     foto_nome:jogo.foto?.nome || "",
@@ -18772,10 +20055,32 @@ function fotoJogosGetOrCreateBatchId(items){
 
 function fotoJogosPrepararItensSelecionados(){
   let hasErrors = false;
+  let invalidCount = 0;
+  let firstError = null;
+  let photoOpened = false;
   const items = fotoJogosSelecionados().map((jogo, index) => {
-    const errors = fotoJogosValidarDireto(jogo);
-    jogo.direct_errors = errors;
-    if(errors.length) hasErrors = true;
+    fotoJogosAplicarDraftPendente(jogo);
+    const detalhes = fotoJogosValidarDiretoDetalhado(jogo);
+    const errors = fotoJogosAplicarErrosDetalhados(jogo, detalhes);
+    if(errors.length){
+      hasErrors = true;
+      invalidCount += 1;
+      if(detalhes.some(error => error.edit)){
+        fotoJogosState.editing[jogo.id] = fotoJogosCriarDraft(jogo);
+      }
+      if(detalhes.some(error => error.more)){
+        fotoJogosState.moreOpen[jogo.id] = true;
+      }
+      if(detalhes.some(error => error.photo) && !photoOpened){
+        fotoJogosState.photoChooser = jogo.id;
+        photoOpened = true;
+      }
+      if(!firstError){
+        firstError = { id:jogo.id, field:jogo.direct_error_focus || detalhes[0]?.field || "" };
+      }
+    }else{
+      fotoJogosLimparErrosDiretos(jogo);
+    }
     return {
       jogo,
       index,
@@ -18784,11 +20089,12 @@ function fotoJogosPrepararItensSelecionados(){
       errors
     };
   });
+  fotoJogosState.validationSummary = invalidCount > 1 ? `${invalidCount} jogos precisam de ajustes.` : "";
 
-  return { items, hasErrors };
+  return { items, hasErrors, invalidCount, firstError };
 }
 
-async function fotoJogosAbrirResumoCriacao(){
+async function fotoJogosAbrirResumoCriacao(options = {}){
   if(fotoJogosState.batchCreating) return;
   fotoJogosState.batchResult = null;
   fotoJogosState.batchError = "";
@@ -18799,7 +20105,7 @@ async function fotoJogosAbrirResumoCriacao(){
     return;
   }
 
-  const { items, hasErrors } = fotoJogosPrepararItensSelecionados();
+  const { items, hasErrors, firstError } = fotoJogosPrepararItensSelecionados();
   if(!items.length){
     fotoJogosAtualizarMsg("Selecione pelo menos um jogo.", true);
     fotoJogosRerender();
@@ -18812,9 +20118,19 @@ async function fotoJogosAbrirResumoCriacao(){
     return;
   }
 
-  if(hasErrors){
-    fotoJogosAtualizarMsg("Revise os campos destacados nos cards.", true);
+  const jaCriados = items.filter(item => item.jogo.creation_status === "created");
+  if(jaCriados.length && !options.allowRecreate){
+    fotoJogosState.recreateConfirm = { ids:jaCriados.map(item => item.jogo.id) };
+    fotoJogosState.message = "";
+    fotoJogosState.error = false;
     fotoJogosRerender();
+    return;
+  }
+
+  if(hasErrors){
+    fotoJogosAtualizarMsg("Complete os campos destacados para continuar.", true);
+    fotoJogosRerender();
+    fotoJogosScrollParaErro(firstError);
     return;
   }
 
@@ -18914,7 +20230,24 @@ async function fotoJogosConfirmarCriacao(){
       const falha = falhas.find(item => Number(item.index) === progress.index);
       if(criado) return { ...progress, status:"done" };
       if(falha) return { ...progress, status:"failed", error:falha.error || "Falha ao criar arte." };
-      return { ...progress, status:"done" };
+      return { ...progress, status:"failed", error:out.error || "Resposta incompleta ao criar a arte." };
+    });
+
+    items.forEach((item, index) => {
+      const criado = criados.find(result => Number(result.index) === index);
+      const falha = falhas.find(result => Number(result.index) === index);
+      if(criado){
+        item.jogo.creation_status = "created";
+        item.jogo.creation_order_id = fotoJogosTexto(criado.pedido_id || "", 120);
+        item.jogo.creation_error = "";
+        item.jogo.created_fingerprint = fotoJogosItemFingerprint(item.jogo);
+        item.jogo.selected = false;
+        fotoJogosLimparErrosDiretos(item.jogo);
+        return;
+      }
+      item.jogo.creation_status = "failed";
+      item.jogo.creation_error = fotoJogosTexto(falha?.error || out.error || "N\u00e3o foi poss\u00edvel criar esta arte.", 220);
+      item.jogo.selected = true;
     });
 
     if(!r.ok && !criados.length){
@@ -18943,6 +20276,11 @@ async function fotoJogosConfirmarCriacao(){
       carregarHistorico();
     }
   }catch(err){
+    items.forEach(item => {
+      item.jogo.creation_status = "failed";
+      item.jogo.creation_error = fotoJogosTexto(err?.message || "Falha ao criar arte.", 220);
+      item.jogo.selected = true;
+    });
     fotoJogosState.batchProgress = fotoJogosState.batchProgress.map(item => ({
       ...item,
       status:item.status === "done" ? "done" : "failed",
@@ -18960,6 +20298,11 @@ async function fotoJogosConfirmarCriacao(){
   }
 }
 
+function fotoJogosCancelarModoAnalise(){
+  fotoJogosState.analysisModePrompt = false;
+  fotoJogosRerender();
+}
+
 function fotoJogosCancelarBatch(){
   if(fotoJogosState.batchCreating) return;
   fotoJogosState.batchConfirm = null;
@@ -18973,14 +20316,40 @@ function fotoJogosFecharResultadoBatch(){
   fotoJogosRerender();
 }
 
-function fotoJogosVerPedidos(){
-  try{ carregarHistorico(); }catch(e){}
+function fotoJogosVerPedidos(event){
+  if(event) event.stopPropagation();
+  try{
+    const menu = document.getElementById("menuPedidosTopo");
+    if(menu){
+      menu.classList.add("open");
+      menu.style.transform = "";
+    }
+    ia4RegistrarAcao("abriu_pedidos");
+  }catch(e){}
   try{ destacarMeusPedidos(); }catch(e){}
+  try{ carregarHistorico(); }catch(e){}
 }
 
 function bindFotoJogosShell(){
+  fotoJogosBindScrollEvents();
   const entryBtn = document.querySelector("[data-foto-jogos-open]");
   if(entryBtn) entryBtn.onclick = fotoJogosAbrirWorkspace;
+
+  document.querySelectorAll('input[name="foto_jogos_analysis_mode"]').forEach(input => {
+    input.onchange = () => {
+      const confirm = document.querySelector("[data-foto-jogos-analysis-mode-confirm]");
+      if(confirm) confirm.disabled = false;
+    };
+  });
+  const analysisConfirm = document.querySelector("[data-foto-jogos-analysis-mode-confirm]");
+  if(analysisConfirm){
+    analysisConfirm.onclick = () => {
+      const mode = document.querySelector('input[name="foto_jogos_analysis_mode"]:checked')?.value || "";
+      if(mode) fotoJogosAnalisarImagem(mode);
+    };
+  }
+  const analysisCancel = document.querySelector("[data-foto-jogos-analysis-mode-cancel]");
+  if(analysisCancel) analysisCancel.onclick = fotoJogosCancelarModoAnalise;
 
   document.querySelectorAll("[data-foto-jogos-back]").forEach(btn => {
     btn.onclick = fotoJogosVoltarHome;
@@ -19041,6 +20410,25 @@ function bindFotoJogosTool(root){
   tool.querySelector("[data-foto-jogos-confirm-batch]")?.addEventListener("click", fotoJogosConfirmarCriacao);
   tool.querySelector("[data-foto-jogos-close-result]")?.addEventListener("click", fotoJogosFecharResultadoBatch);
   tool.querySelector("[data-foto-jogos-view-orders]")?.addEventListener("click", fotoJogosVerPedidos);
+  tool.querySelectorAll("[data-foto-jogos-filter-status]").forEach(btn => {
+    btn.addEventListener("click", () => fotoJogosDefinirFiltroStatus(btn.dataset.fotoJogosFilterStatus || "all"));
+  });
+  tool.querySelector("[data-foto-jogos-search]")?.addEventListener("input", ev => {
+    fotoJogosAtualizarPesquisa(ev.currentTarget.value);
+  });
+  tool.querySelector("[data-foto-jogos-only-my-team]")?.addEventListener("change", ev => {
+    fotoJogosAlternarMeuTime(ev.currentTarget.checked);
+  });
+  tool.querySelector("[data-foto-jogos-my-team]")?.addEventListener("change", ev => {
+    fotoJogosEscolherMeuTime(ev.currentTarget.value);
+  });
+  tool.querySelector("[data-foto-jogos-bulk-product]")?.addEventListener("change", ev => {
+    fotoJogosState.bulkProductKey = fotoJogosProdutoDiretoValido(ev.currentTarget.value) ? ev.currentTarget.value : "";
+    fotoJogosRerender({ restoreScroll:false });
+  });
+  tool.querySelector("[data-foto-jogos-bulk-apply]")?.addEventListener("click", fotoJogosAplicarProdutoSelecionados);
+  tool.querySelector("[data-foto-jogos-recreate-confirm]")?.addEventListener("click", fotoJogosConfirmarRecriacao);
+  tool.querySelector("[data-foto-jogos-recreate-cancel]")?.addEventListener("click", fotoJogosCancelarRecriacao);
   crestInput?.addEventListener("change", () => fotoJogosSelecionarEscudo(crestInput.files?.[0] || null));
   photoInput?.addEventListener("change", () => fotoJogosSelecionarFoto(photoInput.files?.[0] || null));
 
@@ -19063,6 +20451,14 @@ function bindFotoJogosTool(root){
       btn.addEventListener("click", () => fotoJogosRemoverEscudo(id, btn.dataset.fotoJogoCrestRemove || ""));
     });
 
+    row.querySelector("[data-foto-jogo-shield-all]")?.addEventListener("click", () => {
+      fotoJogosResolverShieldPrompt(true);
+    });
+
+    row.querySelector("[data-foto-jogo-shield-one]")?.addEventListener("click", () => {
+      fotoJogosResolverShieldPrompt(false);
+    });
+
     row.querySelector("[data-foto-jogo-more]")?.addEventListener("toggle", ev => {
       fotoJogosState.moreOpen[id] = !!ev.currentTarget.open;
     });
@@ -19073,6 +20469,11 @@ function bindFotoJogosTool(root){
 
     row.querySelectorAll("[data-foto-jogo-photo-type]").forEach(btn => {
       btn.addEventListener("click", () => fotoJogosEscolherTipoFoto(id, btn.dataset.fotoJogoPhotoType || "jogador"));
+    });
+
+    row.querySelector("[data-foto-jogo-photo-cancel]")?.addEventListener("click", () => {
+      if(fotoJogosState.photoChooser === id) fotoJogosState.photoChooser = "";
+      fotoJogosRerender();
     });
 
     row.querySelector("[data-foto-jogo-photo-remove]")?.addEventListener("click", () => {
@@ -19103,6 +20504,9 @@ function bindFotoJogosTool(root){
       fotoJogosAbrirMaisDetalhes(id);
     });
 
+    row.querySelector("[data-foto-jogo-view-order]")?.addEventListener("click", fotoJogosVerPedidos);
+    row.querySelector("[data-foto-jogo-retry]")?.addEventListener("click", () => fotoJogosTentarNovamente(id));
+
     row.querySelector("[data-foto-jogo-edit]")?.addEventListener("click", () => {
       fotoJogosIniciarEdicao(id);
     });
@@ -19127,6 +20531,7 @@ function bindFotoJogosTool(root){
       delete fotoJogosState.moreOpen[id];
       if(fotoJogosState.photoChooser === id) fotoJogosState.photoChooser = "";
       if(fotoJogosState.crestTarget?.id === id) fotoJogosState.crestTarget = null;
+      if(fotoJogosState.shieldPrompt?.id === id) fotoJogosState.shieldPrompt = null;
       if(fotoJogosState.photoTarget?.id === id) fotoJogosState.photoTarget = null;
       fotoJogosState.batchConfirm = null;
       fotoJogosState.batchResult = null;
