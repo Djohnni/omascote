@@ -9764,6 +9764,62 @@ body.visitanteNaoLogado .visitanteWelcomeCallout{
   gap:10px;
 }
 
+.fotoJogosCompactSection{
+  display:grid;
+  gap:8px;
+}
+
+.fotoJogosCompactToggle{
+  appearance:none;
+  width:100%;
+  min-height:42px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  padding:9px 12px;
+  border:1px solid #dbe4ef;
+  border-radius:12px;
+  background:#ffffff;
+  color:#111827;
+  box-shadow:0 8px 18px rgba(15,23,42,.06);
+  font-size:13px;
+  font-weight:950;
+  text-align:left;
+  cursor:pointer;
+}
+
+.fotoJogosCompactToggle[aria-expanded="true"]{
+  border-color:rgba(22,163,74,.4);
+  background:#f0fdf4;
+}
+
+.fotoJogosCompactIndicator{
+  flex:0 0 auto;
+  color:#15803d;
+  font-size:15px;
+  line-height:1;
+}
+
+.fotoJogosCompactBody{
+  min-width:0;
+  padding:10px;
+  border:1px solid #e5e7eb;
+  border-radius:14px;
+  background:#f8fafc;
+}
+
+.fotoJogosCompactBody[hidden]{
+  display:none !important;
+}
+
+.fotoJogosCompactBody .fotoJogosControlPanel{
+  margin:0;
+  padding:0;
+  border:0;
+  background:transparent;
+}
+
 .fotoJogosResultsHeader{
   display:flex;
   align-items:center;
@@ -17975,6 +18031,7 @@ const fotoJogosState = {
   batchRequestState:null,
   analysisModePrompt:false,
   filters:{ status:"all", search:"", onlyMyTeam:false, myTeam:"" },
+  compactPanels:{ review:false, apply:false },
   bulkProductKey:"",
   recreateConfirm:null,
   exitPrompt:null,
@@ -18648,6 +18705,7 @@ function fotoJogosDescartarEstado(){
   fotoJogosState.batchCreating = false;
   fotoJogosState.analysisModePrompt = false;
   fotoJogosState.filters = { status:"all", search:"", onlyMyTeam:false, myTeam:"" };
+  fotoJogosState.compactPanels = { review:false, apply:false };
   fotoJogosState.bulkProductKey = "";
   fotoJogosState.exitPrompt = null;
   fotoJogosState.workspaceOpen = false;
@@ -19039,6 +19097,24 @@ function renderFotoJogosControls(){
   `;
 }
 
+function fotoJogosAlternarPainelCompacto(tipo){
+  const key = tipo === "apply" ? "apply" : "review";
+  if(!fotoJogosState.compactPanels){
+    fotoJogosState.compactPanels = { review:false, apply:false };
+  }
+  const aberto = !fotoJogosState.compactPanels[key];
+  fotoJogosState.compactPanels[key] = aberto;
+
+  const toggle = document.querySelector(`[data-foto-jogos-panel-toggle="${key}"]`);
+  const panel = document.querySelector(`[data-foto-jogos-panel="${key}"]`);
+  if(toggle){
+    toggle.setAttribute("aria-expanded", aberto ? "true" : "false");
+    const indicator = toggle.querySelector("[data-foto-jogos-panel-indicator]");
+    if(indicator) indicator.textContent = aberto ? "\u25b4" : "\u25be";
+  }
+  if(panel) panel.hidden = !aberto;
+}
+
 function renderFotoJogosBatchPanel(){
   if(fotoJogosState.batchCreating){
     const total = fotoJogosState.batchProgress.length;
@@ -19123,20 +19199,37 @@ function renderFotoJogosResults(){
   const selecionados = fotoJogosSelecionados().length;
   const total = fotoJogosState.jogos.length;
   const filtrados = fotoJogosListaFiltrada();
+  const panels = fotoJogosState.compactPanels || { review:false, apply:false };
   return `
     <div class="fotoJogosResults">
-      <div class="fotoJogosResultsHeader">
-        <div>
-          <div class="fotoJogosCount">${htmlEscape(fotoJogosCountLabel())}</div>
-          <div class="fotoJogosSelectedCount">${selecionados} selecionado${selecionados === 1 ? "" : "s"}</div>
-        </div>
-        <div class="fotoJogosHeaderActions">
-          <button type="button" class="fotoJogosSmallBtn" data-foto-jogos-select-all ${!total ? "disabled" : ""}>Selecionar todos</button>
-          <button type="button" class="fotoJogosSmallBtn" data-foto-jogos-clear-selection ${!selecionados ? "disabled" : ""}>Desmarcar todos</button>
-          <button type="button" class="fotoJogosSmallBtn" data-foto-jogos-add>+ Novo confronto</button>
+      <div class="fotoJogosCompactSection">
+        <button type="button" class="fotoJogosCompactToggle" data-foto-jogos-panel-toggle="review" aria-expanded="${panels.review ? "true" : "false"}">
+          <span>\ud83d\udcdd Revisar os jogos</span>
+          <span class="fotoJogosCompactIndicator" data-foto-jogos-panel-indicator aria-hidden="true">${panels.review ? "\u25b4" : "\u25be"}</span>
+        </button>
+        <div class="fotoJogosCompactBody" data-foto-jogos-panel="review" ${panels.review ? "" : "hidden"}>
+          <div class="fotoJogosResultsHeader">
+            <div>
+              <div class="fotoJogosCount">${htmlEscape(fotoJogosCountLabel())}</div>
+              <div class="fotoJogosSelectedCount">${selecionados} selecionado${selecionados === 1 ? "" : "s"}</div>
+            </div>
+            <div class="fotoJogosHeaderActions">
+              <button type="button" class="fotoJogosSmallBtn" data-foto-jogos-select-all ${!total ? "disabled" : ""}>Selecionar todos</button>
+              <button type="button" class="fotoJogosSmallBtn" data-foto-jogos-clear-selection ${!selecionados ? "disabled" : ""}>Desmarcar todos</button>
+              <button type="button" class="fotoJogosSmallBtn" data-foto-jogos-add>+ Novo confronto</button>
+            </div>
+          </div>
         </div>
       </div>
-      ${renderFotoJogosControls()}
+      <div class="fotoJogosCompactSection">
+        <button type="button" class="fotoJogosCompactToggle" data-foto-jogos-panel-toggle="apply" aria-expanded="${panels.apply ? "true" : "false"}">
+          <span>\u2699\ufe0f Mostrar e aplicar</span>
+          <span class="fotoJogosCompactIndicator" data-foto-jogos-panel-indicator aria-hidden="true">${panels.apply ? "\u25b4" : "\u25be"}</span>
+        </button>
+        <div class="fotoJogosCompactBody" data-foto-jogos-panel="apply" ${panels.apply ? "" : "hidden"}>
+          ${renderFotoJogosControls()}
+        </div>
+      </div>
       <div class="fotoJogosList">
         ${filtrados.length ? filtrados.map(jogo => {
           const index = fotoJogosState.jogos.findIndex(item => item.id === jogo.id);
@@ -19966,6 +20059,7 @@ async function fotoJogosAnalisarImagem(mode = ""){
   }
 
   fotoJogosState.analysisModePrompt = false;
+  fotoJogosState.compactPanels = { review:false, apply:false };
   fotoJogosState.analyzing = true;
   const analysisRunId = ++fotoJogosState.analysisRunId;
   fotoJogosState.message = "";
@@ -21092,6 +21186,9 @@ function bindFotoJogosTool(root){
   });
 
   tool.querySelector("[data-foto-jogos-analyze]")?.addEventListener("click", fotoJogosAnalisarImagem);
+  tool.querySelectorAll("[data-foto-jogos-panel-toggle]").forEach(btn => {
+    btn.addEventListener("click", () => fotoJogosAlternarPainelCompacto(btn.dataset.fotoJogosPanelToggle || "review"));
+  });
   tool.querySelectorAll("[data-foto-jogos-add]").forEach(btn => {
     btn.addEventListener("click", fotoJogosAdicionarManual);
   });
