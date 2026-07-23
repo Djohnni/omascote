@@ -17792,6 +17792,7 @@ const FOTO_JOGOS_FIELDS = [
   { key:"grupo", label:"Grupo" },
   { key:"observacao", label:"Observa\u00e7\u00e3o" }
 ];
+const FOTO_JOGOS_OBSERVACAO_MAX = 1200;
 
 const fotoJogosState = {
   file:null,
@@ -17934,6 +17935,14 @@ function fotoJogosTexto(value, max = 140){
   return String(value || "").replace(/\s+/g, " ").trim().slice(0, max);
 }
 
+function fotoJogosObservacaoTexto(value){
+  return String(value || "")
+    .replace(/\r\n?/g, "\n")
+    .replace(/[^\S\n]+/g, " ")
+    .trim()
+    .slice(0, FOTO_JOGOS_OBSERVACAO_MAX);
+}
+
 function fotoJogosProdutoDiretoValido(productKey){
   return ["proximo_jogo", "resultado", "escalacao", "escudo3d", "jogador_escudo"].includes(String(productKey || ""));
 }
@@ -17989,7 +17998,9 @@ function fotoJogosNormalizarJogo(jogo = {}, options = {}){
   };
 
   FOTO_JOGOS_FIELDS.forEach(field => {
-    normalizado[field.key] = fotoJogosTexto(jogo[field.key] || "", field.key === "observacao" ? 220 : 120);
+    normalizado[field.key] = field.key === "observacao"
+      ? fotoJogosObservacaoTexto(jogo[field.key])
+      : fotoJogosTexto(jogo[field.key] || "", 120);
   });
 
   return normalizado;
@@ -18262,7 +18273,7 @@ function fotoJogosAplicarDraftAoJogo(jogo, draft){
   if(jogo.rodada){
     jogo.fase = fotoJogosTexto(draft.fase, 80);
   }
-  jogo.observacao = fotoJogosTexto(draft.observacao, 220);
+  jogo.observacao = fotoJogosObservacaoTexto(draft.observacao);
   return jogo;
 }
 
@@ -19849,14 +19860,16 @@ function fotoJogosAdicionarManual(){
 function fotoJogosAtualizarJogo(id, key, value){
   const jogo = fotoJogosState.jogos.find(item => item.id === id);
   if(!jogo) return;
-  jogo[key] = fotoJogosTexto(value, key === "observacao" ? 220 : 120);
+  jogo[key] = key === "observacao"
+    ? fotoJogosObservacaoTexto(value)
+    : fotoJogosTexto(value, 120);
 }
 
 function fotoJogosAtualizarDraft(id, key, value){
   const draft = fotoJogosDraft(id);
   if(!draft || !key) return;
   draft[key] = key === "observacao" || key === "resumo_principal"
-    ? String(value || "").slice(0, key === "observacao" ? 220 : 360)
+    ? String(value || "").slice(0, key === "observacao" ? FOTO_JOGOS_OBSERVACAO_MAX : 360)
     : fotoJogosTexto(value, 120);
   fotoJogosLimparFeedbackCriacao();
   fotoJogosAtualizarValidacaoJogo(id, { focusField:key, rerender:true });
@@ -20349,6 +20362,9 @@ function fotoJogosBuildCleanOrder(jogo){
     setAsset("player_photo", jogo.foto?.file || null);
   }
 
+  const customerNotes = fotoJogosObservacaoTexto(jogo.observacao);
+  if(customerNotes) fields.customer_notes = customerNotes;
+
   return {
     schema_version:CLEAN_PRODUCT_SCHEMA_VERSION,
     product_id:productKey,
@@ -20395,6 +20411,7 @@ function fotoJogosItemFingerprint(jogo){
     horario:jogo.horario || "",
     competicao:jogo.competicao || "",
     local:jogo.local || "",
+    observacao:fotoJogosObservacaoTexto(jogo.observacao),
     resultado_gols_a:jogo.resultado_gols_a || "",
     resultado_gols_b:jogo.resultado_gols_b || "",
     resultado_side:jogo.resultado_side || "",
