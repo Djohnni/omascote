@@ -9952,6 +9952,9 @@ body.visitanteNaoLogado .visitanteWelcomeCallout{
 }
 
 .fotoJogosMore summary{
+  display:flex;
+  align-items:center;
+  gap:8px;
   cursor:pointer;
   padding:10px;
   color:#ffffff;
@@ -9966,11 +9969,26 @@ body.visitanteNaoLogado .visitanteWelcomeCallout{
 
 .fotoJogosMore summary::after{
   content:" ▾";
+  margin-left:auto;
   color:#facc15;
 }
 
 .fotoJogosMore[open] summary::after{
   content:" ▴";
+}
+
+.fotoJogosMoreFilled{
+  display:inline-flex;
+  align-items:center;
+  min-height:20px;
+  padding:2px 7px;
+  border:1px solid #bbf7d0;
+  border-radius:999px;
+  background:#dcfce7;
+  color:#166534;
+  font-size:10px;
+  font-weight:900;
+  line-height:1;
 }
 
 .fotoJogosMoreBody,
@@ -17793,6 +17811,8 @@ const FOTO_JOGOS_FIELDS = [
   { key:"observacao", label:"Observa\u00e7\u00e3o" }
 ];
 const FOTO_JOGOS_OBSERVACAO_MAX = 1200;
+const FOTO_JOGOS_OBSERVACAO_RESUMO = "\n[Conte\u00fado resumido para caber no limite de 1.200 caracteres.]";
+const FOTO_JOGOS_BATCH_TIMEOUT_MS = 120000;
 
 const fotoJogosState = {
   file:null,
@@ -17936,11 +17956,20 @@ function fotoJogosTexto(value, max = 140){
 }
 
 function fotoJogosObservacaoTexto(value){
-  return String(value || "")
+  const texto = String(value || "")
     .replace(/\r\n?/g, "\n")
     .replace(/[^\S\n]+/g, " ")
-    .trim()
-    .slice(0, FOTO_JOGOS_OBSERVACAO_MAX);
+    .replace(/\n{3,}/g, "\n\n")
+    .trim();
+  if(texto.length <= FOTO_JOGOS_OBSERVACAO_MAX) return texto;
+
+  const limite = FOTO_JOGOS_OBSERVACAO_MAX - FOTO_JOGOS_OBSERVACAO_RESUMO.length;
+  let base = texto.slice(0, Math.max(0, limite)).trimEnd();
+  const ultimoEspaco = Math.max(base.lastIndexOf(" "), base.lastIndexOf("\n"));
+  if(ultimoEspaco >= Math.floor(limite * 0.75)){
+    base = base.slice(0, ultimoEspaco).trimEnd();
+  }
+  return `${base}${FOTO_JOGOS_OBSERVACAO_RESUMO}`;
 }
 
 function fotoJogosProdutoDiretoValido(productKey){
@@ -18065,6 +18094,9 @@ function fotoJogosMesclarLista(novosJogos){
   const vistos = new Set();
   fotoJogosState.jogos.forEach(jogo => {
     const normalizado = fotoJogosNormalizarJogo(jogo);
+    if(fotoJogosState.moreOpen[normalizado.id] === undefined && fotoJogosTemConteudoOpcional(normalizado)){
+      fotoJogosState.moreOpen[normalizado.id] = true;
+    }
     mesclados.push(normalizado);
     if(normalizado.time_a && normalizado.time_b){
       vistos.add(fotoJogosChaveDedup(normalizado));
@@ -18076,6 +18108,9 @@ function fotoJogosMesclarLista(novosJogos){
     const chave = fotoJogosChaveDedup(normalizado);
     if(!normalizado.time_a || !normalizado.time_b || vistos.has(chave)) return;
     vistos.add(chave);
+    if(fotoJogosTemConteudoOpcional(normalizado)){
+      fotoJogosState.moreOpen[normalizado.id] = true;
+    }
     mesclados.push(normalizado);
   });
 
@@ -18095,6 +18130,9 @@ function fotoJogosSubstituirLista(novosJogos){
     const chave = fotoJogosChaveDedup(normalizado);
     if(!normalizado.time_a || !normalizado.time_b || vistos.has(chave)) return lista;
     vistos.add(chave);
+    if(fotoJogosTemConteudoOpcional(normalizado)){
+      fotoJogosState.moreOpen[normalizado.id] = true;
+    }
     lista.push(normalizado);
     return lista;
   }, []);
@@ -18184,6 +18222,13 @@ function fotoJogosOptionalFields(jogo){
     fields.splice(3, 0, { key:"fase", label:"Fase" });
   }
   return fields;
+}
+
+function fotoJogosTemConteudoOpcional(jogo){
+  return ["numero_jogo", "categoria", "grupo", "fase", "observacao"].some(key => {
+    if(key === "observacao") return !!fotoJogosObservacaoTexto(jogo?.[key]);
+    return !!fotoJogosTexto(jogo?.[key]);
+  });
 }
 
 function fotoJogosCriarDraft(jogo){
@@ -18608,9 +18653,10 @@ function renderFotoJogosMainInfo(jogo, editing, draft){
 function renderFotoJogosOptionalInfo(jogo, editing, draft, isOpen){
   const fields = fotoJogosOptionalFields(jogo);
   const visible = fields.filter(field => editing || fotoJogosTexto(jogo[field.key]));
+  const hasContent = fotoJogosTemConteudoOpcional(jogo);
   return `
     <details class="fotoJogosMore" data-foto-jogo-more ${isOpen ? "open" : ""}>
-      <summary>Mais op\u00e7\u00f5es</summary>
+      <summary><span>Mais op\u00e7\u00f5es</span>${hasContent ? `<span class="fotoJogosMoreFilled">Preenchido</span>` : ""}</summary>
       <div class="fotoJogosMoreBody">
         ${visible.length ? visible.map(field => {
           const value = editing ? (draft?.[field.key] || "") : (jogo[field.key] || "");
@@ -18619,7 +18665,7 @@ function renderFotoJogosOptionalInfo(jogo, editing, draft, isOpen){
               <label class="fotoJogosField">
                 <span>${htmlEscape(field.label)}</span>
                 ${field.textarea ? `
-                  <textarea class="fotoJogosOptionalTextarea" data-foto-jogo-draft="${htmlEscape(field.key)}">${htmlEscape(value)}</textarea>
+                  <textarea class="fotoJogosOptionalTextarea" data-foto-jogo-draft="${htmlEscape(field.key)}" maxlength="${FOTO_JOGOS_OBSERVACAO_MAX}">${htmlEscape(value)}</textarea>
                 ` : `
                   <input class="fotoJogosOptionalInput" data-foto-jogo-draft="${htmlEscape(field.key)}" value="${htmlEscape(value)}">
                 `}
@@ -19842,6 +19888,19 @@ async function fotoJogosAnalisarImagem(mode = ""){
     fotoJogosState.analysisAbortController = null;
     fotoJogosState.analyzing = false;
     fotoJogosRerender();
+    if(!fotoJogosState.error){
+      const preenchido = fotoJogosState.jogos.find(jogo => fotoJogosTemConteudoOpcional(jogo));
+      if(preenchido){
+        fotoJogosState.moreOpen[preenchido.id] = true;
+        requestAnimationFrame(() => {
+          const details = document.querySelector(
+            `[data-foto-jogo-id="${CSS.escape(preenchido.id)}"] [data-foto-jogo-more]`
+          );
+          if(details) details.open = true;
+          details?.scrollIntoView({ behavior:"smooth", block:"nearest" });
+        });
+      }
+    }
   }
 }
 
@@ -20594,6 +20653,32 @@ function fotoJogosBuildBatchPayload(confirm){
   return { fd, batchId, items };
 }
 
+function fotoJogosAguardar(ms){
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+async function fotoJogosConsultarPedidosAposFalha(items){
+  const encontrados = new Map();
+  const intervalos = [0, 700, 1800];
+
+  for(const intervalo of intervalos){
+    if(intervalo) await fotoJogosAguardar(intervalo);
+    const pendentes = items.filter(item => !encontrados.has(item.clientRequestId));
+    if(!pendentes.length) break;
+
+    await Promise.all(pendentes.map(async item => {
+      try{
+        const lookup = await consultarPedidoPorClientRequestId(item.clientRequestId);
+        if(lookup.ok && lookup.pedido?.pedido_id){
+          encontrados.set(item.clientRequestId, lookup.pedido);
+        }
+      }catch(e){}
+    }));
+  }
+
+  return encontrados;
+}
+
 async function fotoJogosConfirmarCriacao(){
   if(fotoJogosState.batchCreating) return;
   const confirm = fotoJogosState.batchConfirm;
@@ -20616,18 +20701,28 @@ async function fotoJogosConfirmarCriacao(){
   }));
   fotoJogosRerender();
 
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), FOTO_JOGOS_BATCH_TIMEOUT_MS);
+
   try{
     const r = await fetch(`${API_BASE}${FOTO_JOGOS_BATCH_ENDPOINT}`, {
       method:"POST",
       headers: buildOrderCreationHeaders(batchId),
-      body:fd
+      body:fd,
+      signal:controller.signal
     });
     const out = await ia4LerJsonSeguro(r);
     const authMsg = ia4TratarAuthInvalida(r, out);
     if(authMsg) throw new Error(authMsg);
 
+    const temResultadoEstruturado = Array.isArray(out.criados) || Array.isArray(out.falhas);
     const criados = Array.isArray(out.criados) ? out.criados : [];
     const falhas = Array.isArray(out.falhas) ? out.falhas : [];
+    if((r.ok && !temResultadoEstruturado) || (!r.ok && !criados.length && (r.status >= 500 || r.status === 409))){
+      const erroResposta = new Error("Resposta do servidor sem confirma\u00e7\u00e3o conclusiva.");
+      erroResposta.status = r.status;
+      throw erroResposta;
+    }
 
     fotoJogosState.batchProgress = fotoJogosState.batchProgress.map(progress => {
       const criado = criados.find(item => Number(item.index) === progress.index);
@@ -20680,23 +20775,83 @@ async function fotoJogosConfirmarCriacao(){
       carregarHistorico();
     }
   }catch(err){
-    items.forEach(item => {
-      item.jogo.creation_status = "failed";
-      item.jogo.creation_error = fotoJogosTexto(err?.message || "Falha ao criar arte.", 220);
-      item.jogo.selected = true;
-    });
+    const mensagemConferencia = err?.name === "AbortError"
+      ? "A conex\u00e3o demorou mais que o esperado. Conferindo se o pedido foi recebido..."
+      : "A conex\u00e3o foi interrompida. Conferindo se o pedido foi recebido...";
     fotoJogosState.batchProgress = fotoJogosState.batchProgress.map(item => ({
       ...item,
-      status:item.status === "done" ? "done" : "failed",
-      error:err?.message || "Falha ao criar arte."
+      status:"creating",
+      error:mensagemConferencia
     }));
-    fotoJogosState.batchResult = {
-      ok:false,
+    fotoJogosRerender();
+
+    console.warn("[IA4TUBE_BATCH_CONFIRMACAO_INCERTA]", {
       batch_id:batchId,
-      criados:[],
-      falhas:[{ error:err?.message || "N\u00e3o foi poss\u00edvel criar as artes." }]
+      erro:err?.name || "erro_rede_ou_resposta",
+      status:err?.status || "",
+      itens:items.map(item => ({
+        index:item.index,
+        client_request_id:item.clientRequestId
+      }))
+    });
+
+    const encontrados = await fotoJogosConsultarPedidosAposFalha(items);
+    const criados = [];
+    const falhas = [];
+    const mensagemNaoConfirmada = "Ainda n\u00e3o confirmamos este pedido. Tente novamente; a mesma tentativa ser\u00e1 usada para evitar duplicidade.";
+
+    items.forEach((item, index) => {
+      const pedido = encontrados.get(item.clientRequestId);
+      if(pedido?.pedido_id){
+        const criado = {
+          index,
+          pedido_id:pedido.pedido_id,
+          product_id:item.jogo.productKey,
+          reutilizado:true
+        };
+        criados.push(criado);
+        item.jogo.creation_status = "created";
+        item.jogo.creation_order_id = fotoJogosTexto(pedido.pedido_id, 120);
+        item.jogo.creation_error = "";
+        item.jogo.created_fingerprint = fotoJogosItemFingerprint(item.jogo);
+        item.jogo.selected = false;
+        fotoJogosLimparErrosDiretos(item.jogo);
+        return;
+      }
+
+      falhas.push({ index, error:mensagemNaoConfirmada });
+      item.jogo.creation_status = "failed";
+      item.jogo.creation_error = mensagemNaoConfirmada;
+      item.jogo.selected = true;
+    });
+
+    fotoJogosState.batchProgress = items.map((item, index) => {
+      const criado = criados.some(result => Number(result.index) === index);
+      return {
+        index,
+        label:item.label,
+        status:criado ? "done" : "failed",
+        error:criado ? "" : mensagemNaoConfirmada
+      };
+    });
+    fotoJogosState.batchResult = {
+      ok:falhas.length === 0,
+      batch_id:batchId,
+      criados,
+      falhas
     };
+
+    criados.forEach(item => {
+      salvarPedidoAtivoLocal(item.pedido_id, item.product_id || "");
+    });
+    if(criados.length){
+      atualizarTopoProducao(criados.map(item => ({ id:item.pedido_id, status:"processando" })));
+      mostrarAvisoPedido();
+      refreshMe();
+      carregarHistorico();
+    }
   }finally{
+    clearTimeout(timeoutId);
     fotoJogosState.batchCreating = false;
     fotoJogosRerender();
   }
