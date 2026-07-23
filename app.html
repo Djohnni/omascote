@@ -10753,6 +10753,32 @@ body.visitanteNaoLogado .visitanteWelcomeCallout{
   box-shadow:0 14px 30px rgba(15,23,42,.08);
 }
 
+.fotoJogosBatchPanel.is-attention{
+  animation:fotoJogosBatchAttention 1.8s ease-out;
+}
+
+@keyframes fotoJogosBatchAttention{
+  0%, 18%{
+    border-color:#16a34a;
+    background:#f0fdf4;
+    box-shadow:0 0 0 4px rgba(22,163,74,.18), 0 18px 38px rgba(15,23,42,.14);
+  }
+  100%{
+    border-color:#e5e7eb;
+    background:#ffffff;
+    box-shadow:0 14px 30px rgba(15,23,42,.08);
+  }
+}
+
+@media (prefers-reduced-motion:reduce){
+  .fotoJogosBatchPanel.is-attention{
+    animation:none;
+    border-color:#16a34a;
+    background:#f0fdf4;
+    box-shadow:0 0 0 3px rgba(22,163,74,.16), 0 14px 30px rgba(15,23,42,.10);
+  }
+}
+
 .fotoJogosBatchPanel h4{
   margin:0;
   color:#111827;
@@ -18879,8 +18905,9 @@ function renderFotoJogosBatchPanel(){
 
   const confirm = fotoJogosState.batchConfirm;
   return `
-    <div class="fotoJogosBatchPanel">
+    <div class="fotoJogosBatchPanel" data-foto-jogos-batch-confirm role="region" aria-label="Revis\u00e3o e confirma\u00e7\u00e3o das artes">
       <h4>Voc\u00ea vai criar ${confirm.items.length} arte${confirm.items.length === 1 ? "" : "s"}</h4>
+      <div class="fotoJogosCardHint">Revise abaixo e confirme a cria\u00e7\u00e3o das artes.</div>
       <ul class="fotoJogosBatchList">
         ${confirm.items.map(item => `<li>${htmlEscape(item.label)}</li>`).join("")}
       </ul>
@@ -19056,6 +19083,33 @@ function fotoJogosRerender(options = {}){
     const targetY = fotoJogosState.workspaceScrollY || workspace?.offsetTop || 0;
     setTimeout(() => window.scrollTo({ top:targetY, behavior:"auto" }), 0);
   }
+}
+
+function fotoJogosRevelarResumoCriacao(attempt = 0){
+  requestAnimationFrame(() => {
+    const panel = document.querySelector("[data-foto-jogos-batch-confirm]");
+    const rect = panel?.getBoundingClientRect?.();
+    const ready = !!panel && panel.isConnected && rect?.width > 0 && rect?.height > 0;
+
+    if(!ready){
+      if(attempt < 5) fotoJogosRevelarResumoCriacao(attempt + 1);
+      return;
+    }
+
+    const reduceMotion = window.matchMedia?.("(prefers-reduced-motion: reduce)")?.matches;
+    panel.classList.remove("is-attention");
+    void panel.offsetWidth;
+    panel.classList.add("is-attention");
+    panel.scrollIntoView({
+      behavior:reduceMotion ? "auto" : "smooth",
+      block:"center",
+      inline:"nearest"
+    });
+
+    window.setTimeout(() => {
+      if(panel.isConnected) panel.classList.remove("is-attention");
+    }, 1900);
+  });
 }
 
 function fotoJogosBindScrollEvents(){
@@ -20482,7 +20536,8 @@ async function fotoJogosAbrirResumoCriacao(options = {}){
   fotoJogosState.batchError = saldoRestante < 0 ? "Saldo insuficiente para criar as artes selecionadas." : "";
   fotoJogosState.message = "";
   fotoJogosState.error = false;
-  fotoJogosRerender();
+  fotoJogosRerender({ restoreScroll:false });
+  fotoJogosRevelarResumoCriacao();
 }
 
 function fotoJogosAppendBatchFile(fd, index, legacyName, file, filesMap){
