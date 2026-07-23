@@ -10133,6 +10133,35 @@ body.visitanteNaoLogado .visitanteWelcomeCallout{
   margin:0 auto 18px;
 }
 
+.homeVersionDivider{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:12px;
+  width:min(100%,860px);
+  margin:14px auto;
+  color:#b8860b;
+  font-size:12px;
+  font-weight:950;
+  line-height:1;
+  letter-spacing:.12em;
+  text-align:center;
+  white-space:nowrap;
+}
+
+.homeVersionDivider::before,
+.homeVersionDivider::after{
+  content:"";
+  flex:1 1 80px;
+  max-width:150px;
+  height:1px;
+  background:linear-gradient(90deg,transparent,rgba(184,134,11,.78));
+}
+
+.homeVersionDivider::after{
+  background:linear-gradient(90deg,rgba(184,134,11,.78),transparent);
+}
+
 .fotoJogosEntryCard{
   position:relative;
   display:flex;
@@ -11037,6 +11066,7 @@ body.fotoJogosPullRefreshGuard{
 body.fotoJogosWorkspaceOpen #productChooser,
 body.fotoJogosWorkspaceOpen #productFormsRoot,
 body.fotoJogosWorkspaceOpen #fotoJogosEntry,
+body.fotoJogosWorkspaceOpen .homeVersionDivider,
 body.fotoJogosWorkspaceOpen .visitanteWelcomeCallout,
 body.fotoJogosWorkspaceOpen .trustFooter,
 body.fotoJogosWorkspaceOpen #dynamicTitle,
@@ -11053,6 +11083,7 @@ body.fotoJogosWorkspaceOpen #fotoJogosWorkspace{
 
 body.fotoJogosProductFocus #fotoJogosEntry,
 body.fotoJogosProductFocus #productChooser,
+body.fotoJogosProductFocus .homeVersionDivider,
 body.fotoJogosProductFocus .visitanteWelcomeCallout{
   display:none !important;
 }
@@ -11062,6 +11093,13 @@ body.fotoJogosProductFocus #fotoJogosProductReturn{
 }
 
 @media (max-width:680px){
+  .homeVersionDivider{
+    gap:9px;
+    width:calc(100% - 24px);
+    margin:12px auto;
+    font-size:11px;
+  }
+
   .fotoJogosEntry{
     max-width:calc(100vw - 24px);
   }
@@ -13742,7 +13780,13 @@ body.homeLandingClean[data-page="home"] > main > .wrap > .panel{
             <div class="visitanteWelcomeLine">⚡ Depois desbloqueia pelo preço do produto</div>
           </div>
 
+          <div class="homeVersionDivider" aria-label="Versão 2.0"><span>VERSÃO 2.0</span></div>
+
           <section id="fotoJogosEntry" class="fotoJogosEntry" aria-label="iA4Tube Assistente"></section>
+
+          <div class="homeVersionDivider" aria-label="Ou"><span>OU</span></div>
+
+          <div class="homeVersionDivider" aria-label="Versão 1.0"><span>VERSÃO 1.0</span></div>
 
           <section id="fotoJogosWorkspace" class="fotoJogosWorkspace" aria-label="Identificar jogos pela foto" hidden></section>
 
@@ -18503,7 +18547,7 @@ function renderFotoJogosEntry(){
     <div class="fotoJogosEntryCard">
       <div class="fotoJogosEntryText">
         <span class="fotoJogosEntryKicker">Ferramenta especial</span>
-        <h3 class="fotoJogosEntryTitle">iA4Tube Assistente</h3>
+        <h3 class="fotoJogosEntryTitle">iA4Tube Assistente 2.0</h3>
         <span class="fotoJogosEntrySub">Recebeu a tabela ou a arte dos confrontos do campeonato? Poste aqui e a iA4Tube prepara tudo para você.</span>
       </div>
       <button type="button" class="fotoJogosEntryBtn" data-foto-jogos-open>Identificar jogos pela foto</button>
