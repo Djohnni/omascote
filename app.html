@@ -12774,6 +12774,9 @@ body.homeLandingClean.fotoJogosProductFocus[data-page="home"] #tempoEstimadoBox{
 .accountMenuPanel{
   padding:12px;
   border-top:1px solid #e5e7eb;
+  display:flex;
+  flex-direction:column;
+  gap:10px;
 }
 
 .accountMenuPanel[hidden]{
@@ -12782,43 +12785,53 @@ body.homeLandingClean.fotoJogosProductFocus[data-page="home"] #tempoEstimadoBox{
 
 .accountMenuMeta{
   display:grid;
-  grid-template-columns:minmax(0, 1.4fr) minmax(120px, .8fr) minmax(120px, .8fr);
-  gap:8px;
+  grid-template-columns:minmax(0, 1fr) auto;
+  gap:18px;
   align-items:stretch;
-  margin-bottom:10px;
+  padding:2px 2px 8px;
 }
 
 .accountMenuIdentity,
-.accountMenuStat{
+.accountMenuBalance{
   min-width:0;
-  padding:10px 12px;
-  border:1px solid #e5e7eb;
-  border-radius:8px;
-  background:#f8fafc;
-}
-
-.accountMenuIdentity{
   display:grid;
-  gap:3px;
+  gap:4px;
 }
 
-.accountMenuIdentity strong{
+.accountMenuIdentity strong,
+.accountMenuBalance strong{
   overflow-wrap:anywhere;
   color:#111827;
-  font-size:14px;
-  line-height:1.2;
+  font-size:17px;
+  line-height:1.25;
 }
 
-.accountMenuIdentity span,
-.accountMenuStat{
-  color:#475569;
-  font-size:12px;
-  line-height:1.35;
-  font-weight:750;
+.accountMenuBalance{
+  text-align:right;
+}
+
+.accountMenuBalance strong{
+  color:#8a6510;
+  white-space:nowrap;
+}
+
+.accountMenuLabel{
+  color:#64748b;
+  font-size:11px;
+  line-height:1.2;
+  font-weight:800;
+  text-transform:uppercase;
+  letter-spacing:.04em;
 }
 
 body[data-page="home"] .accountMenuPanel .logoutTopBar.logoutOnlyTop{
-  padding:4px 2px 8px !important;
+  order:3;
+  display:grid !important;
+  grid-template-columns:1fr 1fr;
+  gap:8px !important;
+  width:100% !important;
+  padding:0 !important;
+  margin:0 !important;
 }
 
 .accountMenuPanel .logoutTopBar [hidden]{
@@ -12826,8 +12839,83 @@ body[data-page="home"] .accountMenuPanel .logoutTopBar.logoutOnlyTop{
 }
 
 body[data-page="home"] .accountMenuPanel .topbar{
+  order:2;
+  display:block !important;
+  width:100% !important;
   margin:0 !important;
-  border-radius:8px !important;
+  padding:0 !important;
+  border:0 !important;
+  border-radius:0 !important;
+  background:transparent !important;
+  box-shadow:none !important;
+  min-height:0 !important;
+}
+
+.accountMenuPanel .ia4Brand,
+.accountMenuPanel #ia4TopProducaoBox,
+.accountMenuPanel .saldoTopoArea{
+  display:none !important;
+}
+
+body[data-page="home"] .accountMenuPanel .topRightArea{
+  display:block !important;
+  width:100% !important;
+  margin:0 !important;
+  padding:0 !important;
+}
+
+body[data-page="home"] .accountMenuPanel .saldoTopoExtra{
+  display:grid !important;
+  grid-template-columns:minmax(0, 1fr) minmax(0, 1fr);
+  gap:8px !important;
+  width:100% !important;
+  margin:0 !important;
+  padding:0 !important;
+}
+
+.accountMenuPanel .saldoBoxTopo{
+  width:100%;
+}
+
+.accountMenuPanel #btnAbrirSaldo,
+.accountMenuPanel #btnMeusPedidos,
+.accountMenuPanel #btnPerfilTime,
+.accountMenuPanel #btnSair{
+  width:100% !important;
+  min-width:0 !important;
+  min-height:42px !important;
+  margin:0 !important;
+  padding:9px 10px !important;
+  border-radius:7px !important;
+  justify-content:center !important;
+  font-size:13px !important;
+  line-height:1.15 !important;
+  white-space:nowrap !important;
+}
+
+.accountMenuPanel #btnAbrirSaldo,
+.accountMenuPanel #btnMeusPedidos{
+  border-color:#d6a51f !important;
+  background:#11110f !important;
+  color:#ffffff !important;
+}
+
+.accountMenuPanel #btnPerfilTime,
+.accountMenuPanel #btnSair{
+  border:1px solid #d7dce2 !important;
+  background:#ffffff !important;
+  color:#1f2937 !important;
+  box-shadow:none !important;
+}
+
+.accountMenuPanel #btnCadastroTopo,
+.accountMenuPanel #btnInstalarApp{
+  display:none !important;
+}
+
+.accountMenuPanel #menuPedidosTopo,
+.accountMenuPanel #saldoMenu{
+  z-index:120;
 }
 
 @media (max-width:680px){
@@ -12846,11 +12934,22 @@ body[data-page="home"] .accountMenuPanel .topbar{
   }
 
   .accountMenuMeta{
-    grid-template-columns:1fr 1fr;
+    gap:10px;
   }
 
-  .accountMenuIdentity{
-    grid-column:1 / -1;
+  .accountMenuIdentity strong,
+  .accountMenuBalance strong{
+    font-size:15px;
+  }
+}
+
+@media (max-width:390px){
+  .accountMenuPanel #btnAbrirSaldo,
+  .accountMenuPanel #btnMeusPedidos,
+  .accountMenuPanel #btnPerfilTime,
+  .accountMenuPanel #btnSair{
+    padding-inline:7px !important;
+    font-size:12px !important;
   }
 }
 
@@ -13336,7 +13435,7 @@ body.homeLandingClean[data-page="home"] > main > .wrap > .panel{
         <span class="accountMenuToggleIcon" aria-hidden="true">👤</span>
         <span class="accountMenuToggleText">
           <strong>Minha conta</strong>
-          <small id="accountMenuSummary">Saldo, pedidos e acesso</small>
+          <small id="accountMenuSummary">Meu Clube FC</small>
         </span>
         <span class="accountMenuChevron" aria-hidden="true">⌄</span>
       </button>
@@ -13344,11 +13443,13 @@ body.homeLandingClean[data-page="home"] > main > .wrap > .panel{
       <div class="accountMenuPanel" id="accountMenuPanel" hidden>
         <div class="accountMenuMeta">
           <div class="accountMenuIdentity">
+            <span class="accountMenuLabel">Nome do time</span>
             <strong id="accountMenuName">Visitante</strong>
-            <span id="accountMenuMessage" aria-live="polite">Entre para ver seu saldo e seus pedidos.</span>
           </div>
-          <div class="accountMenuStat" id="accountMenuPlan">Plano: —</div>
-          <div class="accountMenuStat" id="accountMenuUsed">Usados no mês: —</div>
+          <div class="accountMenuBalance">
+            <span class="accountMenuLabel">Saldo disponível</span>
+            <strong id="accountMenuMessage" aria-live="polite">—</strong>
+          </div>
         </div>
 
         <div class="logoutTopBar logoutOnlyTop">
@@ -13360,11 +13461,6 @@ body.homeLandingClean[data-page="home"] > main > .wrap > .panel{
 
         <div class="topbar">
       <!-- removido: stories da barra superior -->
-
-      <div class="ia4Brand logoTopoText" aria-label="Meu Clube FC">
-        <strong><span class="c1">Meu</span><span class="c2"> Clube</span><span class="c3"> FC</span></strong>
-        <small>Plataforma para Clubes</small>
-      </div>
 
       <div id="ia4TopProducaoBox" class="ia4TopProducaoBox">
         <span id="ia4TopProducaoTexto">Aguarde</span>
@@ -14991,32 +15087,24 @@ function definirMenuContaAberto(aberto){
 function atualizarMenuContaResumo(){
   const nomeEl = document.getElementById("accountMenuName");
   const mensagemEl = document.getElementById("accountMenuMessage");
-  const planoContaEl = document.getElementById("accountMenuPlan");
-  const usadosContaEl = document.getElementById("accountMenuUsed");
   const resumoEl = document.getElementById("accountMenuSummary");
 
   if(!token){
     if(nomeEl) nomeEl.textContent = "Visitante";
-    if(mensagemEl) mensagemEl.textContent = "Entre para ver seu saldo e seus pedidos.";
-    if(planoContaEl) planoContaEl.textContent = "Plano: —";
-    if(usadosContaEl) usadosContaEl.textContent = "Usados no mês: —";
-    if(resumoEl) resumoEl.textContent = "Saldo, pedidos e acesso";
+    if(mensagemEl) mensagemEl.textContent = "—";
+    if(resumoEl) resumoEl.textContent = "Meu Clube FC";
     return;
   }
 
   const nome = localStorage.getItem("omascote_nome_time") || "Minha conta";
-  const plano = localStorage.getItem("omascote_plano") || "—";
-  const usados = localStorage.getItem("omascote_usados") || "—";
   const saldoNumero = ia4SaldoCacheNumero();
-  const saldoCurto = Number.isFinite(saldoNumero)
-    ? `Saldo: ${ia4FormatarSaldoTela(saldoNumero).replace(/^Saldo disponível:\s*/i, "")}`
-    : "Saldo: atualizando...";
+  const saldoTexto = Number.isFinite(saldoNumero)
+    ? ia4FormatarSaldoTela(saldoNumero).replace(/^Saldo disponível:\s*/i, "")
+    : "Atualizando...";
 
   if(nomeEl) nomeEl.textContent = nome;
-  if(mensagemEl) mensagemEl.textContent = saldoCurto;
-  if(planoContaEl) planoContaEl.textContent = `Plano: ${plano} pedidos/mês`;
-  if(usadosContaEl) usadosContaEl.textContent = `Usados no mês: ${usados}`;
-  if(resumoEl) resumoEl.textContent = saldoCurto;
+  if(mensagemEl) mensagemEl.textContent = saldoTexto;
+  if(resumoEl) resumoEl.textContent = "Meu Clube FC";
 }
 
 accountMenuToggle?.addEventListener("click", ()=>{
