@@ -19461,7 +19461,7 @@ function fotoJogosRevogarImagemSelecionada(){
   fotoJogosState.file_preview = "";
 }
 
-function fotoJogosSelecionarArquivo(file){
+async function fotoJogosSelecionarArquivo(file){
   const msg = ia4ValidarTamanhoArquivos(file ? [file] : []);
   if(msg){
     fotoJogosRevogarImagemSelecionada();
@@ -19472,12 +19472,26 @@ function fotoJogosSelecionarArquivo(file){
     return;
   }
 
-  fotoJogosRevogarImagemSelecionada();
-  fotoJogosState.file = file || null;
+  let stableFile = null;
   if(file){
-    try{ fotoJogosState.file_preview = URL.createObjectURL(file); }catch(e){ fotoJogosState.file_preview = ""; }
+    try{
+      stableFile = await createCleanStableUploadFile(file, "foto_jogos_imagem");
+    }catch(err){
+      fotoJogosRevogarImagemSelecionada();
+      fotoJogosState.file = null;
+      fotoJogosState.message = CLEAN_LOCAL_UPLOAD_FILE_MESSAGE;
+      fotoJogosState.error = true;
+      fotoJogosRerender();
+      return;
+    }
   }
-  fotoJogosState.message = file ? "Imagem pronta" : "";
+
+  fotoJogosRevogarImagemSelecionada();
+  fotoJogosState.file = stableFile;
+  if(stableFile){
+    try{ fotoJogosState.file_preview = URL.createObjectURL(stableFile); }catch(e){ fotoJogosState.file_preview = ""; }
+  }
+  fotoJogosState.message = stableFile ? "Imagem pronta" : "";
   fotoJogosState.error = false;
   fotoJogosRerender();
 }
@@ -19684,7 +19698,7 @@ function fotoJogosAbrirEscudo(id, side){
   }
 }
 
-function fotoJogosSelecionarEscudo(file){
+async function fotoJogosSelecionarEscudo(file){
   const target = fotoJogosState.crestTarget;
   fotoJogosState.crestTarget = null;
   if(!target?.id || !target?.side) return;
@@ -19701,10 +19715,20 @@ function fotoJogosSelecionarEscudo(file){
     return;
   }
 
+  let stableFile;
+  try{
+    stableFile = await createCleanStableUploadFile(file, `foto_jogos_escudo_${target.side}`);
+  }catch(err){
+    fotoJogosState.message = CLEAN_LOCAL_UPLOAD_FILE_MESSAGE;
+    fotoJogosState.error = true;
+    fotoJogosRerender();
+    return;
+  }
+
   const key = fotoJogosTeamAssetKey(jogo, target.side);
   const teamName = fotoJogosTeamAssetLabel(jogo, target.side);
-  const preview = URL.createObjectURL(file);
-  const asset = fotoJogosEscudoAsset(file, preview);
+  const preview = URL.createObjectURL(stableFile);
+  const asset = fotoJogosEscudoAsset(stableFile, preview);
   const ocorrencias = fotoJogosOcorrenciasPorTimeKey(key);
   const totalJogos = fotoJogosContarJogosUnicos(ocorrencias);
   const hasCurrentShield = !!jogo.escudos?.[target.side];
@@ -19717,9 +19741,9 @@ function fotoJogosSelecionarEscudo(file){
       side:target.side,
       key,
       teamName,
-      file,
+      file:stableFile,
       preview,
-      name:file.name || "Escudo selecionado"
+      name:stableFile.name || "Escudo selecionado"
     });
     fotoJogosLimparFeedbackCriacao();
     fotoJogosRerender();
@@ -19927,7 +19951,7 @@ function fotoJogosEscolherTipoFoto(id, tipo){
   }
 }
 
-function fotoJogosSelecionarFoto(file){
+async function fotoJogosSelecionarFoto(file){
   const target = fotoJogosState.photoTarget;
   fotoJogosState.photoTarget = null;
   if(!target?.id) return;
@@ -19943,15 +19967,27 @@ function fotoJogosSelecionarFoto(file){
     return;
   }
 
+  let stableFile = null;
+  if(file){
+    try{
+      stableFile = await createCleanStableUploadFile(file, "foto_jogos_referencia");
+    }catch(err){
+      fotoJogosState.message = CLEAN_LOCAL_UPLOAD_FILE_MESSAGE;
+      fotoJogosState.error = true;
+      fotoJogosRerender();
+      return;
+    }
+  }
+
   fotoJogosRevogarFoto(jogo);
   jogo.foto = {
-    file: file || null,
-    preview: file ? URL.createObjectURL(file) : "",
+    file: stableFile,
+    preview: stableFile ? URL.createObjectURL(stableFile) : "",
     tipo: target.tipo === "time" ? "time" : "jogador",
     nome: jogo.foto?.nome || ""
   };
   fotoJogosAtualizarValidacaoJogo(target.id, { force:Array.isArray(jogo.direct_errors) && !!jogo.direct_errors.length });
-  fotoJogosState.message = file ? "Foto adicionada" : "";
+  fotoJogosState.message = stableFile ? "Foto adicionada" : "";
   fotoJogosState.error = false;
   fotoJogosLimparFeedbackCriacao();
   fotoJogosRerender();
