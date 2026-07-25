@@ -15782,6 +15782,7 @@ async function entrarComGoogle(response){
       return;
     }
 
+    const retomarAssistente = fotoJogosTemRetomadaAuthPendente();
     token = data.token;
 
     localStorage.setItem("omascote_token", data.token);
@@ -15814,7 +15815,10 @@ async function entrarComGoogle(response){
     const acao = acaoDepoisDoCadastro;
     acaoDepoisDoCadastro = null;
 
-    if(typeof acao === "function"){
+    if(retomarAssistente){
+      setAuthVisitanteMsg("Login realizado com sucesso!", "ok");
+      setTimeout(()=>fotoJogosRetomarAposAutenticacao({ created:false }), 250);
+    }else if(typeof acao === "function"){
       setTimeout(()=>acao(), 250);
     }
 
@@ -18051,6 +18055,7 @@ const FOTO_JOGOS_BATCH_TIMEOUT_MS = 120000;
 const fotoJogosState = {
   file:null,
   file_preview:"",
+  analysisRequestId:"",
   jogos:[],
   analyzing:false,
   hasAnalyzed:false,
@@ -18084,6 +18089,264 @@ const fotoJogosState = {
   analysisAbortController:null,
   analysisRunId:0
 };
+
+const FOTO_JOGOS_AUTH_RESUME_KEY = "ia4tube_foto_jogos_auth_resume_v1";
+const FOTO_JOGOS_AUTH_RESUME_DB = "ia4tube_assistente";
+const FOTO_JOGOS_AUTH_RESUME_STORE = "retomadas";
+const FOTO_JOGOS_AUTH_RESUME_ID = "identificar_jogos_auth";
+const FOTO_JOGOS_AUTH_RESUME_TTL_MS = 30 * 60 * 1000;
+let fotoJogosAuthResumeActive = false;
+let fotoJogosAuthResumeRunning = false;
+let fotoJogosAuthResumeInitialized = false;
+
+function fotoJogosLerMarcadorRetomadaAuth(){
+  try{
+    const raw = localStorage.getItem(FOTO_JOGOS_AUTH_RESUME_KEY);
+    const marker = raw ? JSON.parse(raw) : null;
+    if(!marker || marker.id !== FOTO_JOGOS_AUTH_RESUME_ID) return null;
+    if(Date.now() - Number(marker.createdAt || 0) > FOTO_JOGOS_AUTH_RESUME_TTL_MS){
+      localStorage.removeItem(FOTO_JOGOS_AUTH_RESUME_KEY);
+      return null;
+    }
+    return marker;
+  }catch(e){
+    return null;
+  }
+}
+
+function fotoJogosTemRetomadaAuthPendente(){
+  return fotoJogosAuthResumeActive || !!fotoJogosLerMarcadorRetomadaAuth();
+}
+
+function fotoJogosSalvarMarcadorRetomadaAuth(record){
+  try{
+    localStorage.setItem(FOTO_JOGOS_AUTH_RESUME_KEY, JSON.stringify({
+      id:FOTO_JOGOS_AUTH_RESUME_ID,
+      requestId:record.requestId,
+      mode:record.mode || "",
+      fileName:record.fileName || "",
+      fileSize:Number(record.fileSize || 0),
+      createdAt:Number(record.createdAt || Date.now()),
+      updatedAt:Date.now()
+    }));
+  }catch(e){}
+}
+
+function fotoJogosAbrirBancoRetomadaAuth(){
+  return new Promise((resolve, reject)=>{
+    if(!window.indexedDB){
+      reject(new Error("indexeddb_indisponivel"));
+      return;
+    }
+    const request = indexedDB.open(FOTO_JOGOS_AUTH_RESUME_DB, 1);
+    request.onupgradeneeded = () => {
+      const db = request.result;
+      if(!db.objectStoreNames.contains(FOTO_JOGOS_AUTH_RESUME_STORE)){
+        db.createObjectStore(FOTO_JOGOS_AUTH_RESUME_STORE, { keyPath:"id" });
+      }
+    };
+    request.onsuccess = () => resolve(request.result);
+    request.onerror = () => reject(request.error || new Error("indexeddb_erro"));
+  });
+}
+
+async function fotoJogosGravarRetomadaAuth(record){
+  const db = await fotoJogosAbrirBancoRetomadaAuth();
+  try{
+    await new Promise((resolve, reject)=>{
+      const tx = db.transaction(FOTO_JOGOS_AUTH_RESUME_STORE, "readwrite");
+      tx.objectStore(FOTO_JOGOS_AUTH_RESUME_STORE).put(record);
+      tx.oncomplete = resolve;
+      tx.onerror = () => reject(tx.error || new Error("indexeddb_gravacao"));
+      tx.onabort = () => reject(tx.error || new Error("indexeddb_gravacao"));
+    });
+  }finally{
+    db.close();
+  }
+}
+
+async function fotoJogosLerRetomadaAuth(){
+  try{
+    const db = await fotoJogosAbrirBancoRetomadaAuth();
+    try{
+      return await new Promise((resolve, reject)=>{
+        const tx = db.transaction(FOTO_JOGOS_AUTH_RESUME_STORE, "readonly");
+        const request = tx.objectStore(FOTO_JOGOS_AUTH_RESUME_STORE).get(FOTO_JOGOS_AUTH_RESUME_ID);
+        request.onsuccess = () => resolve(request.result || null);
+        request.onerror = () => reject(request.error || new Error("indexeddb_leitura"));
+      });
+    }finally{
+      db.close();
+    }
+  }catch(e){
+    return null;
+  }
+}
+
+async function fotoJogosApagarRetomadaAuth(options = {}){
+  fotoJogosAuthResumeActive = false;
+  try{ localStorage.removeItem(FOTO_JOGOS_AUTH_RESUME_KEY); }catch(e){}
+  if(options.clearRequest !== false) fotoJogosState.analysisRequestId = "";
+  try{
+    const db = await fotoJogosAbrirBancoRetomadaAuth();
+    try{
+      await new Promise((resolve, reject)=>{
+        const tx = db.transaction(FOTO_JOGOS_AUTH_RESUME_STORE, "readwrite");
+        tx.objectStore(FOTO_JOGOS_AUTH_RESUME_STORE).delete(FOTO_JOGOS_AUTH_RESUME_ID);
+        tx.oncomplete = resolve;
+        tx.onerror = () => reject(tx.error || new Error("indexeddb_exclusao"));
+        tx.onabort = () => reject(tx.error || new Error("indexeddb_exclusao"));
+      });
+    }finally{
+      db.close();
+    }
+  }catch(e){}
+}
+
+function fotoJogosCriarAnalysisRequestId(){
+  if(window.crypto?.randomUUID) return `foto_jogos_${window.crypto.randomUUID()}`;
+  return `foto_jogos_${Date.now()}_${Math.random().toString(16).slice(2)}`;
+}
+
+async function fotoJogosPrepararRetomadaAuth(mode = ""){
+  if(!fotoJogosState.file) return false;
+  const requestId = fotoJogosState.analysisRequestId || fotoJogosCriarAnalysisRequestId();
+  const marker = fotoJogosLerMarcadorRetomadaAuth();
+  const createdAt = marker?.requestId === requestId
+    ? Number(marker.createdAt || Date.now())
+    : Date.now();
+  const record = {
+    id:FOTO_JOGOS_AUTH_RESUME_ID,
+    requestId,
+    mode:["replace", "append"].includes(mode) ? mode : "",
+    phase:"awaiting_auth",
+    file:fotoJogosState.file,
+    fileName:fotoJogosState.file.name || "imagem.jpg",
+    fileType:fotoJogosState.file.type || "image/jpeg",
+    fileLastModified:Number(fotoJogosState.file.lastModified || Date.now()),
+    fileSize:Number(fotoJogosState.file.size || 0),
+    createdAt,
+    updatedAt:Date.now()
+  };
+
+  fotoJogosState.analysisRequestId = requestId;
+  fotoJogosAuthResumeActive = true;
+  fotoJogosSalvarMarcadorRetomadaAuth(record);
+
+  try{
+    await fotoJogosGravarRetomadaAuth(record);
+    return true;
+  }catch(e){
+    return true;
+  }
+}
+
+async function fotoJogosAtualizarFaseRetomadaAuth(phase){
+  if(!fotoJogosTemRetomadaAuthPendente()) return;
+  const record = await fotoJogosLerRetomadaAuth();
+  if(!record || record.requestId !== fotoJogosState.analysisRequestId) return;
+  record.phase = phase || record.phase;
+  record.updatedAt = Date.now();
+  try{ await fotoJogosGravarRetomadaAuth(record); }catch(e){}
+}
+
+async function fotoJogosRestaurarArquivoRetomada(record){
+  if(!record?.file) return false;
+  let restoredFile = record.file;
+  if(!(restoredFile instanceof File)){
+    restoredFile = new File([record.file], record.fileName || "imagem.jpg", {
+      type:record.fileType || record.file?.type || "image/jpeg",
+      lastModified:Number(record.fileLastModified || Date.now())
+    });
+  }
+  const stableFile = await createCleanStableUploadFile(restoredFile, "foto_jogos_imagem");
+  fotoJogosRevogarImagemSelecionada();
+  fotoJogosState.file = stableFile;
+  try{ fotoJogosState.file_preview = URL.createObjectURL(stableFile); }catch(e){ fotoJogosState.file_preview = ""; }
+  fotoJogosState.analysisRequestId = record.requestId || fotoJogosCriarAnalysisRequestId();
+  return true;
+}
+
+async function fotoJogosRetomarAposAutenticacao(options = {}){
+  if(fotoJogosAuthResumeRunning || fotoJogosState.analyzing || !token) return false;
+  if(!fotoJogosTemRetomadaAuthPendente()) return false;
+
+  fotoJogosAuthResumeRunning = true;
+  try{
+    const record = await fotoJogosLerRetomadaAuth();
+    if(!record || Date.now() - Number(record.createdAt || 0) > FOTO_JOGOS_AUTH_RESUME_TTL_MS){
+      await fotoJogosApagarRetomadaAuth();
+      return false;
+    }
+
+    if(!fotoJogosState.file){
+      const restored = await fotoJogosRestaurarArquivoRetomada(record);
+      if(!restored){
+        fotoJogosState.workspaceOpen = true;
+        fotoJogosState.productFocus = false;
+        fotoJogosAtualizarMsg("Não foi possível restaurar a imagem. Selecione-a novamente.", true);
+        fotoJogosRerender({ restoreScroll:false });
+        return false;
+      }
+    }else{
+      fotoJogosState.analysisRequestId = record.requestId || fotoJogosState.analysisRequestId || fotoJogosCriarAnalysisRequestId();
+    }
+
+    fotoJogosAuthResumeActive = true;
+    fotoJogosState.workspaceOpen = true;
+    fotoJogosState.productFocus = false;
+    fotoJogosState.message = options.created
+      ? "Conta criada com sucesso. Continuando a análise da sua imagem..."
+      : "Login realizado com sucesso. Continuando a análise da sua imagem...";
+    fotoJogosState.error = false;
+    fotoJogosRerender({ restoreScroll:false });
+    await fotoJogosAtualizarFaseRetomadaAuth("analyzing");
+    await new Promise(resolve => setTimeout(resolve, 180));
+    await fotoJogosAnalisarImagem(record.mode || "");
+    return true;
+  }finally{
+    fotoJogosAuthResumeRunning = false;
+  }
+}
+
+async function fotoJogosInicializarRetomadaAuth(){
+  if(fotoJogosAuthResumeInitialized) return;
+  fotoJogosAuthResumeInitialized = true;
+  const marker = fotoJogosLerMarcadorRetomadaAuth();
+  if(!marker) return;
+
+  const record = await fotoJogosLerRetomadaAuth();
+  if(!record || Date.now() - Number(record.createdAt || 0) > FOTO_JOGOS_AUTH_RESUME_TTL_MS){
+    await fotoJogosApagarRetomadaAuth();
+    return;
+  }
+
+  try{
+    await fotoJogosRestaurarArquivoRetomada(record);
+  }catch(e){
+    await fotoJogosApagarRetomadaAuth();
+    return;
+  }
+
+  fotoJogosAuthResumeActive = true;
+  fotoJogosState.workspaceOpen = true;
+  fotoJogosState.productFocus = false;
+  fotoJogosState.message = token
+    ? "Retomando a análise da imagem..."
+    : "Imagem preservada. Entre ou crie sua conta para continuar.";
+  fotoJogosState.error = false;
+  fotoJogosRerender({ restoreScroll:false });
+  setTimeout(() => document.getElementById("fotoJogosWorkspace")?.scrollIntoView({
+    behavior:"auto",
+    block:"start"
+  }), 260);
+
+  if(token){
+    await fotoJogosRetomarAposAutenticacao({ created:false });
+  }else{
+    setTimeout(() => abrirLoginVisitanteModal(), 120);
+  }
+}
 
 let fotoJogosSearchTimer = null;
 let fotoJogosScrollEventsBound = false;
@@ -18757,6 +19020,7 @@ function fotoJogosDescartarEstado(){
   fotoJogosState.workspaceOpen = false;
   fotoJogosState.productFocus = false;
   fotoJogosState.productMessage = "";
+  void fotoJogosApagarRetomadaAuth();
 }
 
 function fotoJogosSairEDescartar(){
@@ -19515,6 +19779,7 @@ function fotoJogosRevogarImagemSelecionada(){
 }
 
 async function fotoJogosSelecionarArquivo(file){
+  await fotoJogosApagarRetomadaAuth();
   const msg = ia4ValidarTamanhoArquivos(file ? [file] : []);
   if(msg){
     fotoJogosRevogarImagemSelecionada();
@@ -20129,6 +20394,7 @@ function fotoJogosConfronto(jogo){
 
 async function fotoJogosAnalisarImagem(mode = ""){
   if(fotoJogosState.analyzing) return;
+  mode = typeof mode === "string" ? mode : "";
 
   if(!fotoJogosState.file){
     fotoJogosAtualizarMsg("Escolha uma imagem antes de analisar.", true);
@@ -20142,7 +20408,11 @@ async function fotoJogosAnalisarImagem(mode = ""){
   }
 
   if(!token){
-    fotoJogosAtualizarMsg("Entre na sua conta para usar o iA4Tube Assistente.", true);
+    await fotoJogosPrepararRetomadaAuth(mode);
+    fotoJogosState.workspaceOpen = true;
+    fotoJogosState.productFocus = false;
+    fotoJogosAtualizarMsg("Imagem preservada. Entre ou crie sua conta para continuar.", false);
+    fotoJogosRerender({ restoreScroll:false });
     abrirLoginVisitanteModal();
     return;
   }
@@ -20158,6 +20428,8 @@ async function fotoJogosAnalisarImagem(mode = ""){
 
   const fd = new FormData();
   fd.append("imagem", fotoJogosState.file);
+  const analysisRequestId = fotoJogosState.analysisRequestId || fotoJogosCriarAnalysisRequestId();
+  fotoJogosState.analysisRequestId = analysisRequestId;
   const controller = typeof AbortController !== "undefined" ? new AbortController() : null;
   fotoJogosState.analysisAbortController = controller;
   const frontendTimeout = controller
@@ -20167,7 +20439,10 @@ async function fotoJogosAnalisarImagem(mode = ""){
   try{
     const r = await fetch(`${API_BASE}${FOTO_JOGOS_ENDPOINT}`, {
       method:"POST",
-      headers:{ "Authorization":"Bearer " + token },
+      headers:{
+        "Authorization":"Bearer " + token,
+        "X-Idempotency-Key":analysisRequestId
+      },
       body:fd,
       ...(controller ? { signal:controller.signal } : {})
     });
@@ -20190,6 +20465,7 @@ async function fotoJogosAnalisarImagem(mode = ""){
       fotoJogosState.message = "Revise os jogos";
       fotoJogosState.error = false;
     }
+    await fotoJogosApagarRetomadaAuth();
   }catch(err){
     if(analysisRunId !== fotoJogosState.analysisRunId) return;
     fotoJogosFinalizarProgresso(false);
@@ -21282,6 +21558,7 @@ function bindFotoJogosTool(root){
     fotoJogosState.file = null;
     fotoJogosState.message = "";
     fotoJogosState.error = false;
+    void fotoJogosApagarRetomadaAuth();
     fotoJogosRerender();
   });
 
@@ -24323,6 +24600,24 @@ abrirCadastroHomeBtn?.addEventListener("click", ()=>{
 abrirCadastroHomeCamposBtn?.addEventListener("click", mostrarCadastroHomeCampos);
 
 let modoCadastro = false;
+let authVisitanteSubmitting = false;
+
+function aplicarTextoAuthVisitante(modo){
+  const assistentePendente = fotoJogosTemRetomadaAuthPendente();
+  const titulo = document.querySelector(".authPromoBox h2");
+  const texto = document.querySelector(".authPromoBox p");
+  if(modo === "cadastro"){
+    if(titulo) titulo.textContent = assistentePendente ? "Criar conta para continuar" : "Criar cadastro";
+    if(texto) texto.textContent = assistentePendente
+      ? "Sua imagem está preservada. Crie a conta e a análise continuará automaticamente."
+      : "Salve seus dados para receber e acompanhar sua arte.";
+    return;
+  }
+  if(titulo) titulo.textContent = assistentePendente ? "Entrar para continuar" : "Entrar na sua conta";
+  if(texto) texto.textContent = assistentePendente
+    ? "Sua imagem está preservada. Entre na conta e a análise continuará automaticamente."
+    : "Digite seu WhatsApp ou nome do time e senha para acessar seus pedidos.";
+}
 
 function abrirCadastroVisitanteModal(){
   inicializarLoginGoogle();
@@ -24330,8 +24625,7 @@ function abrirCadastroVisitanteModal(){
   escudo3dCadastroFile = null;
   clearInterval(authProgressTimer);
 
-  document.querySelector(".authPromoBox h2").textContent = "Criar cadastro";
-  document.querySelector(".authPromoBox p").textContent = "Salve seus dados para receber e acompanhar sua arte.";
+  aplicarTextoAuthVisitante("cadastro");
   document.getElementById("authProgressWrap")?.style.setProperty("display", "none", "important");
   document.getElementById("authProgressText")?.style.setProperty("display", "none", "important");
   document.getElementById("authSenha")?.setAttribute("placeholder", "Crie uma senha simples");
@@ -24393,8 +24687,7 @@ function abrirLoginVisitanteModal(){
   if(!authVisitanteModal) return;
 
   modoCadastro = false;
-  document.querySelector(".authPromoBox h2").textContent = "Entrar na sua conta";
-  document.querySelector(".authPromoBox p").textContent = "Digite seu WhatsApp ou nome do time e senha para acessar seus pedidos.";
+  aplicarTextoAuthVisitante("login");
   document.getElementById("authProgressWrap")?.style.setProperty("display", "none", "important");
   document.getElementById("authProgressText")?.style.setProperty("display", "none", "important");
   document.getElementById("authSenha")?.setAttribute("placeholder", "Digite sua senha");
@@ -24510,6 +24803,7 @@ function iniciarProgressoCadastroEscudo3d(){
 }
 
 async function finalizarCadastroVisitante(){
+  if(authVisitanteSubmitting) return;
   const whatsapp = onlyDigits(document.getElementById("authWhatsapp")?.value || "");
   const nome_time = document.getElementById("authNomeTime")?.value?.trim() || whatsapp;
   const senha = document.getElementById("authSenha")?.value || "";
@@ -24524,13 +24818,17 @@ async function finalizarCadastroVisitante(){
     return;
   }
 
+  const authModoCadastro = modoCadastro;
+  authVisitanteSubmitting = true;
   authCriarContaBtn.disabled = true;
+  if(authEntrarBtn) authEntrarBtn.disabled = true;
+  if(authCriarContaToggle) authCriarContaToggle.disabled = true;
   authCriarContaBtn.textContent = fluxoEscudo3dCadastro ? "Criando seu time..." : "Criando conta...";
 
   try{
     let r;
 
-if(modoCadastro){
+if(authModoCadastro){
   r = await fetch(`${API_BASE}/auth/register`, {
     method:"POST",
     headers:{ "Content-Type":"application/json" },
@@ -24551,15 +24849,19 @@ if(modoCadastro){
 
     if(!r.ok || !data.ok || !data.token){
       setAuthVisitanteMsg(data.error || "Não foi possível entrar. Confira os dados.", "err");
+      authVisitanteSubmitting = false;
       authCriarContaBtn.disabled = false;
+      if(authEntrarBtn) authEntrarBtn.disabled = false;
+      if(authCriarContaToggle) authCriarContaToggle.disabled = false;
       authCriarContaBtn.textContent = fluxoEscudo3dCadastro ? "Criar meu time e gerar escudo 3D 🚀" : "Criar conta e continuar 🚀";
       return;
     }
 
+    const retomarAssistente = fotoJogosTemRetomadaAuthPendente();
     token = data.token;
 
-    ia4Track(modoCadastro ? "cadastro_concluido" : "login_concluido", {
-      metodo: modoCadastro ? "cadastro" : "login"
+    ia4Track(authModoCadastro ? "cadastro_concluido" : "login_concluido", {
+      metodo: authModoCadastro ? "cadastro" : "login"
     });
 
     localStorage.setItem("omascote_token", data.token);
@@ -24568,9 +24870,9 @@ if(modoCadastro){
     localStorage.setItem("omascote_usados", String(data.usados_no_ciclo ?? ""));
     localStorage.removeItem("ia4tube_conta_auto_pendente");
 
-    setAuthVisitanteMsg(modoCadastro ? "Conta criada! Continuando..." : "Login realizado!", "ok");
+    setAuthVisitanteMsg(authModoCadastro ? "Conta criada com sucesso!" : "Login realizado com sucesso!", "ok");
 
-    if(modoCadastro){
+    if(authModoCadastro && !retomarAssistente){
       document.body.classList.remove("visitanteNaoLogado");
 
       const desbloqueio = document.createElement("div");
@@ -24687,6 +24989,11 @@ if(modoCadastro){
     acaoDepoisDoCadastro = null;
 
     setTimeout(()=>{
+      if(retomarAssistente){
+        fotoJogosRetomarAposAutenticacao({ created:authModoCadastro });
+        return;
+      }
+
       if(fluxoEscudo3dCadastro && escudo3dCadastroFile){
         enviarPedidoEscudo3dComArquivo(escudo3dCadastroFile);
         fluxoEscudo3dCadastro = false;
@@ -24702,7 +25009,10 @@ if(modoCadastro){
     setAuthVisitanteMsg("Erro de rede. Tente novamente.", "err");
   }
 
+  authVisitanteSubmitting = false;
   authCriarContaBtn.disabled = false;
+  if(authEntrarBtn) authEntrarBtn.disabled = false;
+  if(authCriarContaToggle) authCriarContaToggle.disabled = false;
   authCriarContaBtn.textContent = fluxoEscudo3dCadastro ? "Criar meu time e gerar escudo 3D 🚀" : "Criar conta e continuar 🚀";
 }
 
@@ -24851,8 +25161,7 @@ authEntrarBtn?.addEventListener("click", ()=>{
   if(modoCadastro){
     modoCadastro = false;
 
-    document.querySelector(".authPromoBox h2").textContent = "Entrar na sua conta";
-    document.querySelector(".authPromoBox p").textContent = "Digite seu WhatsApp ou nome do time e senha para acessar seus pedidos.";
+    aplicarTextoAuthVisitante("login");
     document.getElementById("authSenha")?.setAttribute("placeholder", "Digite sua senha");
 
     if(labelNomeTime) labelNomeTime.style.display = "none";
@@ -24874,8 +25183,7 @@ authEntrarBtn?.addEventListener("click", ()=>{
 authCriarContaToggle?.addEventListener("click", ()=>{
   modoCadastro = true;
 
-  document.querySelector(".authPromoBox h2").textContent = "Criar cadastro";
-  document.querySelector(".authPromoBox p").textContent = "Salve seus dados para receber e acompanhar sua arte.";
+  aplicarTextoAuthVisitante("cadastro");
   document.getElementById("authSenha")?.setAttribute("placeholder", "Crie uma senha simples");
 
   if(labelNomeTime) labelNomeTime.style.display = "block";
@@ -27607,6 +27915,9 @@ async function ia4RenomearContaAutoTopo(){
     applyLocal();
     await refreshMe();
     await carregarHistorico();
+    if(fotoJogosTemRetomadaAuthPendente()){
+      await fotoJogosRetomarAposAutenticacao({ created:false });
+    }
     alert("Conta atualizada com sucesso.");
   }catch(e){
     alert("Erro de rede ao renomear sua conta.");
@@ -28313,7 +28624,7 @@ updateChosenPlaceholders(null);
 selectorStage?.classList.add("open");
 resetProductCategory();
 
-if(!token){
+if(!token && !fotoJogosTemRetomadaAuthPendente()){
   selectorStage?.classList.add("open");
 
   setTimeout(()=>{
@@ -28335,6 +28646,7 @@ if(token){
 }
 iniciarFlipCampos();
 ia4IniciarEventos();
+void fotoJogosInicializarRetomadaAuth();
 
 const bannerJogadorEscudoLink = document.getElementById("bannerJogadorEscudoLink");
 
