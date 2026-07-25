@@ -18694,12 +18694,12 @@ function fotoJogosRodadaFaseResumo(jogo){
 
 function fotoJogosResumoPrincipalLinhas(jogo, manterVazias = false){
   const linhas = [
-    fotoJogosDataHoraLinha(jogo),
-    fotoJogosTexto(jogo.competicao),
-    fotoJogosRodadaFaseResumo(jogo),
-    fotoJogosTexto(jogo.local)
+    `Data e hor\u00e1rio: ${fotoJogosDataHoraLinha(jogo)}`,
+    `Competi\u00e7\u00e3o: ${fotoJogosTexto(jogo.competicao)}`,
+    `Rodada/Fase: ${fotoJogosRodadaFaseResumo(jogo)}`,
+    `Local: ${fotoJogosTexto(jogo.local)}`
   ];
-  return manterVazias ? linhas : linhas.filter(Boolean);
+  return linhas;
 }
 
 function fotoJogosResumoPrincipalTexto(jogo){
@@ -18766,13 +18766,16 @@ function fotoJogosSepararDataHora(linha){
 function fotoJogosAplicarResumoPrincipal(jogo, resumo){
   const linhas = String(resumo || "").split(/\r?\n/).slice(0, 4);
   while(linhas.length < 4) linhas.push("");
+  const valorLinha = (linha, prefixo) => String(linha || "")
+    .replace(new RegExp(`^\\s*${prefixo}\\s*:\\s*`, "i"), "")
+    .trim();
 
-  const dataHora = fotoJogosSepararDataHora(linhas[0]);
+  const dataHora = fotoJogosSepararDataHora(valorLinha(linhas[0], "Data(?:\\s+e)?\\s+hor[aá]rio"));
   jogo.data = dataHora.data;
   jogo.horario = dataHora.horario;
-  jogo.competicao = fotoJogosTexto(linhas[1], 120);
+  jogo.competicao = fotoJogosTexto(valorLinha(linhas[1], "Competi[cç][aã]o"), 120);
 
-  const rodadaOuFase = fotoJogosTexto(linhas[2], 80);
+  const rodadaOuFase = fotoJogosTexto(valorLinha(linhas[2], "Rodada(?:\\s*\\/\\s*Fase)?"), 80);
   if(/\b(fase|final|semifinal|semi|quartas|oitavas|chave)\b/i.test(rodadaOuFase) && !/\brodada\b/i.test(rodadaOuFase)){
     jogo.fase = rodadaOuFase;
     jogo.rodada = "";
@@ -18780,7 +18783,7 @@ function fotoJogosAplicarResumoPrincipal(jogo, resumo){
     jogo.rodada = rodadaOuFase;
   }
 
-  jogo.local = fotoJogosTexto(linhas[3], 120);
+  jogo.local = fotoJogosTexto(valorLinha(linhas[3], "Local"), 120);
 }
 
 function fotoJogosEscudoLabel(jogo, side){
@@ -19462,10 +19465,7 @@ function renderFotoJogosBatchPanel(){
   if(fotoJogosState.batchResult){
     const criados = Array.isArray(fotoJogosState.batchResult.criados) ? fotoJogosState.batchResult.criados : [];
     const falhas = Array.isArray(fotoJogosState.batchResult.falhas) ? fotoJogosState.batchResult.falhas : [];
-    const aguardandoPix = criados.filter(item =>
-      item.pagamento_pendente === true &&
-      item.modalidade_criacao === "economica"
-    );
+    const aguardandoPix = criados.filter(item => item.pagamento_pendente === true);
     const enviados = criados.filter(item => !aguardandoPix.includes(item));
     return `
       <div class="fotoJogosBatchPanel">
@@ -19474,18 +19474,17 @@ function renderFotoJogosBatchPanel(){
           : `${enviados.length} arte${enviados.length === 1 ? "" : "s"} enviada${enviados.length === 1 ? "" : "s"} para cria\u00e7\u00e3o`
         }</h4>
         ${aguardandoPix.length ? `
-          <div class="fotoJogosCardHint">A Cria\u00e7\u00e3o Econ\u00f4mica s\u00f3 entra na fila depois que o pagamento for aprovado.</div>
+          <div class="fotoJogosCardHint">As artes do Assistente s\u00f3 entram na fila depois que o pagamento do lote for aprovado.</div>
           <div class="fotoJogosCardErrors">
-            ${aguardandoPix.map(item => `
-              <div>
-                <strong>${formatMoneyBR(Number(item.valor_final || item.valor_pendente || 0))}</strong>
-                ${item.pix_error ? ` \u2014 ${htmlEscape(item.pix_error)}` : " \u2014 aguardando pagamento"}
-                <div class="fotoJogosBatchActions">
-                  <button type="button" class="fotoJogosSmallBtn" data-foto-jogos-pix-copy="${htmlEscape(item.pedido_id || "")}">Copiar PIX</button>
-                  <button type="button" class="fotoJogosSmallBtn" data-foto-jogos-pix-qr="${htmlEscape(item.pedido_id || "")}">Ver QR Code</button>
-                </div>
+            <div>
+              <strong>${formatMoneyBR(Number(aguardandoPix[0].pix_lote_valor || aguardandoPix.reduce((total, item) => total + Number(item.valor_final || item.valor_pendente || 0), 0)))}</strong>
+              \u2014 ${aguardandoPix.length} arte${aguardandoPix.length === 1 ? "" : "s"}
+              ${aguardandoPix[0].pix_error ? ` \u2014 ${htmlEscape(aguardandoPix[0].pix_error)}` : " \u2014 aguardando pagamento"}
+              <div class="fotoJogosBatchActions">
+                <button type="button" class="fotoJogosSmallBtn" data-foto-jogos-pix-copy="${htmlEscape(aguardandoPix[0].pedido_id || "")}">Copiar PIX</button>
+                <button type="button" class="fotoJogosSmallBtn" data-foto-jogos-pix-qr="${htmlEscape(aguardandoPix[0].pedido_id || "")}">Ver QR Code</button>
               </div>
-            `).join("")}
+            </div>
           </div>
         ` : ""}
         ${falhas.length ? `
@@ -19518,7 +19517,7 @@ function renderFotoJogosBatchPanel(){
       ${fotoJogosState.batchError ? `<div class="fotoJogosCardErrors"><div>${htmlEscape(fotoJogosState.batchError)}</div></div>` : ""}
       <div class="fotoJogosBatchPlanActions">
         <button type="button" class="fotoJogosBtn primary fotoJogosBatchPlanBtn" data-foto-jogos-confirm-batch="com_suporte">
-          <span class="fotoJogosBatchPlanLabel">Confirmar e criar com suporte</span>
+          <span class="fotoJogosBatchPlanLabel">Confirmar e gerar PIX com suporte</span>
           <span class="fotoJogosBatchPlanPrice">${formatMoneyBR(confirm.totalSuporte)}</span>
         </button>
         <button type="button" class="fotoJogosBtn primary fotoJogosBatchPlanBtn" data-foto-jogos-confirm-batch="economica">
@@ -19526,7 +19525,7 @@ function renderFotoJogosBatchPanel(){
           <span class="fotoJogosBatchPlanPrice">${formatMoneyBR(confirm.totalEconomico)}</span>
         </button>
         <div class="fotoJogosBatchPlanNote">Na Cria\u00e7\u00e3o Econ\u00f4mica, o PIX \u00e9 gerado primeiro e a arte s\u00f3 entra na fila depois da aprova\u00e7\u00e3o do pagamento. N\u00e3o inclui atendimento personalizado nem pedidos de altera\u00e7\u00e3o.</div>
-        ${confirm.saldoRestanteSuporte < 0 ? `<div class="fotoJogosBatchPlanNote">Na op\u00e7\u00e3o com suporte, se o saldo n\u00e3o cobrir o valor, o pedido ficar\u00e1 pendente e poder\u00e1 ser pago por PIX no site.</div>` : ""}
+        <div class="fotoJogosBatchPlanNote">Em qualquer op\u00e7\u00e3o do Assistente, um \u00fanico PIX cobra o valor total das artes selecionadas. A produ\u00e7\u00e3o come\u00e7a somente ap\u00f3s a aprova\u00e7\u00e3o.</div>
         <button type="button" class="fotoJogosSmallBtn fotoJogosBatchCancel" data-foto-jogos-cancel-batch>Cancelar</button>
       </div>
     </div>
@@ -21308,44 +21307,49 @@ async function fotoJogosConsultarPedidosAposFalha(items){
 }
 
 async function fotoJogosGerarPixAntesDaCriacao(criados, modalidadeCriacao){
-  if(modalidadeCriacao !== "economica") return criados;
-  const preparados = [];
+  const pendentes = criados.filter(item => item.pagamento_pendente === true);
+  if(!pendentes.length) return criados;
+  const batchId = fotoJogosTexto(pendentes[0]?.batch_id || "", 160);
 
-  for(const criado of criados){
-    if(criado.pagamento_pendente !== true){
-      preparados.push(criado);
-      continue;
+  try{
+    if(!batchId) throw new Error("O lote de pagamento n\u00e3o foi identificado.");
+    const r = await fetch(`${API_BASE}/pedidos/gerar-pix-lote`, {
+      method:"POST",
+      headers:{
+        "Authorization":"Bearer " + token,
+        "Content-Type":"application/json"
+      },
+      body:JSON.stringify({ batch_id:batchId })
+    });
+    const pix = await ia4LerJsonSeguro(r);
+    if(!r.ok || !pix?.pix_copia_cola){
+      throw new Error(pix?.error || "O servidor n\u00e3o retornou a chave PIX.");
     }
-
-    try{
-      const pix = await gerarPixPedido(criado.pedido_id);
-      if(!pix?.pix_copia_cola){
-        throw new Error("O servidor n\u00e3o retornou a chave PIX.");
-      }
-      preparados.push({
-        ...criado,
-        ...pix,
-        pagamento_pendente:true,
-        modalidade_criacao:"economica",
-        pix_error:""
-      });
-    }catch(e){
-      preparados.push({
-        ...criado,
-        pagamento_pendente:true,
-        modalidade_criacao:"economica",
-        pix_error:e?.message || "N\u00e3o foi poss\u00edvel gerar o PIX."
-      });
-    }
+    return criados.map(criado => criado.pagamento_pendente === true ? {
+      ...criado,
+      ...pix,
+      pedido_id:criado.pedido_id,
+      product_id:criado.product_id,
+      index:criado.index,
+      valor_final:criado.valor_final,
+      valor_pendente:criado.valor_pendente,
+      pix_lote_valor:Number(pix.valor_final || pix.valor_pendente || 0),
+      pagamento_pendente:true,
+      modalidade_criacao:criado.modalidade_criacao || modalidadeCriacao,
+      pix_error:""
+    } : criado);
+  }catch(e){
+    return criados.map(criado => criado.pagamento_pendente === true ? {
+      ...criado,
+      pagamento_pendente:true,
+      pix_error:e?.message || "N\u00e3o foi poss\u00edvel gerar o PIX."
+    } : criado);
   }
-
-  return preparados;
 }
 
 function fotoJogosAbrirPrimeiroPixGerado(criados){
   const primeiro = criados.find(item =>
     item.pagamento_pendente === true &&
-    item.modalidade_criacao === "economica" &&
     item.pix_copia_cola &&
     !item.pix_error
   );
@@ -27675,8 +27679,13 @@ function ia4ContaAutoPendente(){
 function pedidoEconomicoAntesPagamentoUI(p){
   return (
     p?.pagamento_pendente === true &&
-    p?.modalidade_criacao === "economica" &&
-    p?.motivo_pagamento_pendente === "pix_obrigatorio_criacao_economica"
+    (
+      p?.motivo_pagamento_pendente === "pix_obrigatorio_assistente" ||
+      (
+        p?.modalidade_criacao === "economica" &&
+        p?.motivo_pagamento_pendente === "pix_obrigatorio_criacao_economica"
+      )
+    )
   );
 }
 
@@ -27700,7 +27709,7 @@ function cardPagamentoPendente(p) {
     ? "Pague antes de iniciar a criação"
     : "Sua prévia está pronta ✅";
   const texto = economicaAntesDoPagamento
-    ? `A Criação Econômica de R$${valor} só entra na fila depois da aprovação do PIX.`
+    ? `Esta arte de R$${valor} só entra na fila depois da aprovação do PIX.`
     : `Gostou da arte? Oferta do dia: pague R$${valor} e receba R$${valor} de bônus para criar a próxima arte. ⚽`;
   return `
     <div class="pagamentoPendenteBox">
