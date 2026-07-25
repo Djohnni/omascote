@@ -10918,6 +10918,48 @@ body.visitanteNaoLogado .visitanteWelcomeCallout{
   gap:8px;
 }
 
+.fotoJogosBatchPlanActions{
+  display:grid;
+  gap:8px;
+}
+
+.fotoJogosBatchPlanBtn{
+  width:100%;
+  min-height:44px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:14px;
+  padding:11px 14px;
+  border-radius:10px;
+  text-align:left;
+}
+
+.fotoJogosBatchPlanLabel{
+  min-width:0;
+  line-height:1.2;
+}
+
+.fotoJogosBatchPlanPrice{
+  flex:0 0 auto;
+  padding-left:12px;
+  border-left:1px solid rgba(255,255,255,.38);
+  font-size:14px;
+  font-weight:950;
+  white-space:nowrap;
+}
+
+.fotoJogosBatchPlanNote{
+  color:#64748b;
+  font-size:11px;
+  font-weight:800;
+  line-height:1.35;
+}
+
+.fotoJogosBatchCancel{
+  justify-self:start;
+}
+
 .fotoJogosControlPanel{
   display:grid;
   gap:12px;
@@ -11206,6 +11248,10 @@ body.fotoJogosProductFocus #fotoJogosProductReturn{
   .fotoJogosHeaderActions .fotoJogosSmallBtn,
   .fotoJogosBatchActions .fotoJogosSmallBtn,
   .fotoJogosBatchActions .fotoJogosBtn{
+    width:100%;
+  }
+
+  .fotoJogosBatchCancel{
     width:100%;
   }
 
@@ -19178,14 +19224,21 @@ function renderFotoJogosBatchPanel(){
       </ul>
       <div class="fotoJogosBatchTotals">
         <span>Quantidade: ${confirm.items.length}</span>
-        <span>Valor total: ${formatMoneyBR(confirm.total)}</span>
         <span>Saldo dispon\u00edvel: ${formatMoneyBR(confirm.saldo)}</span>
-        <span>Saldo restante: ${formatMoneyBR(confirm.saldoRestante)}</span>
       </div>
       ${fotoJogosState.batchError ? `<div class="fotoJogosCardErrors"><div>${htmlEscape(fotoJogosState.batchError)}</div></div>` : ""}
-      <div class="fotoJogosBatchActions">
-        <button type="button" class="fotoJogosSmallBtn" data-foto-jogos-cancel-batch>Cancelar</button>
-        <button type="button" class="fotoJogosBtn primary" data-foto-jogos-confirm-batch ${fotoJogosState.batchError ? "disabled" : ""}>Confirmar e criar</button>
+      <div class="fotoJogosBatchPlanActions">
+        <button type="button" class="fotoJogosBtn primary fotoJogosBatchPlanBtn" data-foto-jogos-confirm-batch="com_suporte">
+          <span class="fotoJogosBatchPlanLabel">Confirmar e criar com suporte</span>
+          <span class="fotoJogosBatchPlanPrice">${formatMoneyBR(confirm.totalSuporte)}</span>
+        </button>
+        <button type="button" class="fotoJogosBtn primary fotoJogosBatchPlanBtn" data-foto-jogos-confirm-batch="economica">
+          <span class="fotoJogosBatchPlanLabel">Confirmar e criar automaticamente (Cria\u00e7\u00e3o Econ\u00f4mica)</span>
+          <span class="fotoJogosBatchPlanPrice">${formatMoneyBR(confirm.totalEconomico)}</span>
+        </button>
+        <div class="fotoJogosBatchPlanNote">A cria\u00e7\u00e3o econ\u00f4mica n\u00e3o inclui atendimento personalizado nem pedidos de altera\u00e7\u00e3o. Falhas t\u00e9cnicas continuam cobertas.</div>
+        ${(confirm.saldoRestanteSuporte < 0 || confirm.saldoRestanteEconomica < 0) ? `<div class="fotoJogosBatchPlanNote">Se o saldo n\u00e3o cobrir a op\u00e7\u00e3o escolhida, o pedido ficar\u00e1 pendente e poder\u00e1 ser pago por PIX no site.</div>` : ""}
+        <button type="button" class="fotoJogosSmallBtn fotoJogosBatchCancel" data-foto-jogos-cancel-batch>Cancelar</button>
       </div>
     </div>
   `;
@@ -20748,8 +20801,11 @@ function fotoJogosItemFingerprint(jogo){
   }));
 }
 
-function fotoJogosGetOrCreateItemRequestId(jogo){
-  const fingerprint = fotoJogosItemFingerprint(jogo);
+function fotoJogosGetOrCreateItemRequestId(jogo, modalidadeCriacao = "com_suporte"){
+  const fingerprint = JSON.stringify([
+    fotoJogosItemFingerprint(jogo),
+    modalidadeCriacao
+  ]);
   if(jogo.batch_fingerprint === fingerprint && jogo.batch_request_id){
     return jogo.batch_request_id;
   }
@@ -20758,17 +20814,18 @@ function fotoJogosGetOrCreateItemRequestId(jogo){
   return jogo.batch_request_id;
 }
 
-function fotoJogosBatchFingerprint(items){
+function fotoJogosBatchFingerprint(items, modalidadeCriacao){
   return JSON.stringify(normalizeOrderFingerprintValue(items.map(item => ({
     id:item.jogo.id,
     productKey:item.jogo.productKey,
     request:item.clientRequestId,
-    fingerprint:item.jogo.batch_fingerprint
+    fingerprint:item.jogo.batch_fingerprint,
+    modalidadeCriacao
   }))));
 }
 
-function fotoJogosGetOrCreateBatchId(items){
-  const fingerprint = fotoJogosBatchFingerprint(items);
+function fotoJogosGetOrCreateBatchId(items, modalidadeCriacao){
+  const fingerprint = fotoJogosBatchFingerprint(items, modalidadeCriacao);
   if(fotoJogosState.batchRequestState?.fingerprint === fingerprint && fotoJogosState.batchRequestState.batchId){
     return fotoJogosState.batchRequestState.batchId;
   }
@@ -20862,16 +20919,23 @@ async function fotoJogosAbrirResumoCriacao(options = {}){
   const saldo = Number.isFinite(saldoAtualizado?.saldo)
     ? saldoAtualizado.saldo
     : (ia4SaldoCacheNumero() || 0);
-  const total = Number(items.reduce((sum, item) => sum + item.price, 0).toFixed(2));
-  const saldoRestante = Number((saldo - total).toFixed(2));
+  const totalSuporte = Number(items.reduce((sum, item) => sum + item.price, 0).toFixed(2));
+  const totalEconomico = Number(items.reduce(
+    (sum, item) => sum + Math.max(4, item.price / 2),
+    0
+  ).toFixed(2));
+  const saldoRestanteSuporte = Number((saldo - totalSuporte).toFixed(2));
+  const saldoRestanteEconomica = Number((saldo - totalEconomico).toFixed(2));
 
   fotoJogosState.batchConfirm = {
     items,
-    total,
+    totalSuporte,
+    totalEconomico,
     saldo,
-    saldoRestante
+    saldoRestanteSuporte,
+    saldoRestanteEconomica
   };
-  fotoJogosState.batchError = saldoRestante < 0 ? "Saldo insuficiente para criar as artes selecionadas." : "";
+  fotoJogosState.batchError = "";
   fotoJogosState.message = "";
   fotoJogosState.error = false;
   fotoJogosRerender({ restoreScroll:false });
@@ -20885,13 +20949,13 @@ function fotoJogosAppendBatchFile(fd, index, legacyName, file, filesMap){
   filesMap[legacyName] = fieldName;
 }
 
-function fotoJogosBuildBatchPayload(confirm){
+function fotoJogosBuildBatchPayload(confirm, modalidadeCriacao){
   const items = confirm.items.map((item, index) => {
     const jogo = item.jogo;
-    const clientRequestId = fotoJogosGetOrCreateItemRequestId(jogo);
+    const clientRequestId = fotoJogosGetOrCreateItemRequestId(jogo, modalidadeCriacao);
     return { ...item, index, clientRequestId };
   });
-  const batchId = fotoJogosGetOrCreateBatchId(items);
+  const batchId = fotoJogosGetOrCreateBatchId(items, modalidadeCriacao);
   const fd = new FormData();
   const payloadItems = [];
 
@@ -20906,6 +20970,7 @@ function fotoJogosBuildBatchPayload(confirm){
     payloadItems.push({
       product_id:item.jogo.productKey,
       client_request_id:item.clientRequestId,
+      modalidade_criacao:modalidadeCriacao,
       fields:body,
       files:filesMap
     });
@@ -20941,16 +21006,15 @@ async function fotoJogosConsultarPedidosAposFalha(items){
   return encontrados;
 }
 
-async function fotoJogosConfirmarCriacao(){
+async function fotoJogosConfirmarCriacao(modalidadeCriacao = "com_suporte"){
   if(fotoJogosState.batchCreating) return;
+  if(!["com_suporte", "economica"].includes(modalidadeCriacao)) return;
   const confirm = fotoJogosState.batchConfirm;
   if(!confirm){
     await fotoJogosAbrirResumoCriacao();
     return;
   }
-  if(fotoJogosState.batchError) return;
-
-  const { fd, batchId, items } = fotoJogosBuildBatchPayload(confirm);
+  const { fd, batchId, items } = fotoJogosBuildBatchPayload(confirm, modalidadeCriacao);
   fotoJogosState.batchCreating = true;
   fotoJogosState.batchConfirm = null;
   fotoJogosState.batchResult = null;
@@ -21236,7 +21300,9 @@ function bindFotoJogosTool(root){
   });
   tool.querySelector("[data-foto-jogos-create-selected]")?.addEventListener("click", fotoJogosAbrirResumoCriacao);
   tool.querySelector("[data-foto-jogos-cancel-batch]")?.addEventListener("click", fotoJogosCancelarBatch);
-  tool.querySelector("[data-foto-jogos-confirm-batch]")?.addEventListener("click", fotoJogosConfirmarCriacao);
+  tool.querySelectorAll("[data-foto-jogos-confirm-batch]").forEach(btn => {
+    btn.addEventListener("click", () => fotoJogosConfirmarCriacao(btn.dataset.fotoJogosConfirmBatch || "com_suporte"));
+  });
   tool.querySelector("[data-foto-jogos-close-result]")?.addEventListener("click", fotoJogosFecharResultadoBatch);
   tool.querySelector("[data-foto-jogos-view-orders]")?.addEventListener("click", fotoJogosVerPedidos);
   tool.querySelectorAll("[data-foto-jogos-filter-status]").forEach(btn => {
@@ -27565,6 +27631,7 @@ function atualizarMenuPedidosTopo(pedidos){
     const pagamentoPendente = p.pagamento_pendente === true;
     const mostrarPagamentoPendente = pagamentoPendente && !!p.imagem_url;
     const usouAjuste = p.ajuste_automatico_usado === true;
+    const criacaoEconomica = p.modalidade_criacao === "economica";
 
     return `
     <div class="menuPedidoItem" data-pedido-id="${p.id}">
@@ -27574,8 +27641,9 @@ function atualizarMenuPedidosTopo(pedidos){
           ${mostrarPagamentoPendente ? `` : `
           <div class="previewAviso">
             👇 Esta é apenas a prévia da imagem abaixo.<br>
-            Você pode baixar a imagem final<br>
-            ou pedir 1 edição gratuita antes de baixar 🚀
+            ${criacaoEconomica
+              ? `A Cria\u00e7\u00e3o Econ\u00f4mica n\u00e3o inclui edi\u00e7\u00e3o personalizada.`
+              : `Voc\u00ea pode baixar a imagem final<br>ou pedir 1 edi\u00e7\u00e3o gratuita antes de baixar 🚀`}
           </div>
           `}
         </div>
@@ -27588,6 +27656,7 @@ function atualizarMenuPedidosTopo(pedidos){
 
       <div class="menuPedidoInfo">
         <div class="menuPedidoTipo">${p.tipo || "Arte"}</div>
+        ${criacaoEconomica ? `<div class="ajustePedidoBox">Cria\u00e7\u00e3o Econ\u00f4mica — sem altera\u00e7\u00f5es personalizadas.</div>` : ``}
         <div class="menuPedidoStatus">${ajustePendente ? "⏳ Ajustando sua arte..." : textoStatusPedido(p.status)}</div>
         ${mostrarPagamentoPendente ? cardPagamentoPendente(p) : pagamentoPendente ? `<div class="ajustePedidoBox">${typeof ia4EstaEmModoApp === "function" && ia4EstaEmModoApp() ? ia4MensagemRecursoIndisponivelApp() : "Sua arte está sendo criada. Assim que a prévia ficar pronta, o pagamento Pix aparecerá aqui."}</div>` : ``}
         ${p.status === "pronto" ? `<div class="descLabelInstagram">Sugestão de descrição para Instagram</div>` : ``}
@@ -27606,7 +27675,9 @@ ${pagamentoPendente ? `
 ` : `
 <button type="button" class="menuPedidoBtn" onclick="aprovarPedido('${p.id}')">✅ Está boa, baixar</button>
 <button type="button" class="menuPedidoBtn" onclick="aprovarECompartilharPedido('${p.id}')">Compartilhar imagem</button>
-${usouAjuste ? `
+${criacaoEconomica ? `
+<div class="ajustePedidoBox">Este pedido n\u00e3o inclui pedido de ajuste. Falhas t\u00e9cnicas continuam cobertas pelo suporte.</div>
+` : usouAjuste ? `
 <div class="ajustePedidoBox">Esse pedido já utilizou o ajuste automático.</div>
 ` : `
 <button type="button" class="menuPedidoBtnAjuste" onclick="abrirModalAjuste('${p.id}')">✏️ Pedir ajuste gratuito</button>
@@ -27705,6 +27776,8 @@ async function carregarHistorico(){
       pagamento_pendente: p.pagamento_pendente,
       valor_pendente: p.valor_pendente,
       motivo_pagamento_pendente: p.motivo_pagamento_pendente,
+      modalidade_criacao: p.modalidade_criacao,
+      pode_pedir_ajuste: p.pode_pedir_ajuste,
       ajuste_automatico_usado: p.ajuste_automatico_usado,
       motivo_ajuste: p.motivo_ajuste
     })));
@@ -27747,10 +27820,12 @@ async function carregarHistorico(){
       const pagamentoPendente = p.pagamento_pendente === true;
       const mostrarPagamentoPendente = pagamentoPendente && !!p.imagem_url;
       const usouAjuste = p.ajuste_automatico_usado === true;
+      const criacaoEconomica = p.modalidade_criacao === "economica";
 
       return `
       <div data-pedido-id="${p.id}" data-historico-pedido-id="${p.id}" style="background:#fff;color:#000;padding:10px;border-radius:10px;border:1px solid #e5e7eb;">
         <b>${p.tipo}</b><br>
+        ${criacaoEconomica ? `<div class="ajustePedidoBox">Cria\u00e7\u00e3o Econ\u00f4mica — sem altera\u00e7\u00f5es personalizadas.</div>` : ``}
         ID: ${p.id}<br>
         Status: ${ajustePendente ? "⏳ Ajustando sua arte..." : textoStatusPedido(p.status)}<br>
         ${mostrarPagamentoPendente ? cardPagamentoPendente(p) : pagamentoPendente ? `<div class="ajustePedidoBox">${typeof ia4EstaEmModoApp === "function" && ia4EstaEmModoApp() ? ia4MensagemRecursoIndisponivelApp() : "Sua arte está sendo criada. Assim que a prévia ficar pronta, o pagamento Pix aparecerá aqui."}</div>` : ``}
@@ -27762,8 +27837,9 @@ async function carregarHistorico(){
             <img src="${p.imagem_url}" class="previewProtegida" alt="Prévia da arte" oncontextmenu="return false;" draggable="false">
             ${mostrarPagamentoPendente ? `` : `<div class="previewAviso">
   👇 Esta é apenas a prévia da sua arte.<br>
-  Você pode baixar a imagem final em alta qualidade<br>
-  ou pedir 1 edição gratuita antes de baixar 🚀
+  ${criacaoEconomica
+    ? `A Cria\u00e7\u00e3o Econ\u00f4mica n\u00e3o inclui edi\u00e7\u00e3o personalizada.`
+    : `Voc\u00ea pode baixar a imagem final em alta qualidade<br>ou pedir 1 edi\u00e7\u00e3o gratuita antes de baixar 🚀`}
 </div>`}
           </div>
         ` : `
@@ -27798,7 +27874,9 @@ ${pagamentoPendente ? `
           Compartilhar imagem
         </button>
 
-        ${usouAjuste ? `
+        ${criacaoEconomica ? `
+          <div class="ajustePedidoBox">Este pedido n\u00e3o inclui pedido de ajuste. Falhas t\u00e9cnicas continuam cobertas pelo suporte.</div>
+        ` : usouAjuste ? `
           <div class="ajustePedidoBox">Esse pedido já utilizou o ajuste automático.</div>
         ` : `
           <button onclick="abrirModalAjuste('${p.id}')" style="margin-top:8px;padding:8px 12px;border-radius:10px;border:1px solid #d1d5db;background:#fff;color:#111827;font-weight:900;cursor:pointer;width:100%;">
