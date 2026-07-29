@@ -6629,6 +6629,30 @@ body{
   box-shadow:none !important;
 }
 
+.pedidoDownloadFeedback{
+  display:none;
+  margin-top:8px;
+  padding:10px 12px;
+  border-radius:10px;
+  border:1px solid #bbf7d0;
+  background:#f0fdf4;
+  color:#166534;
+  font-size:13px;
+  font-weight:900;
+  line-height:1.35;
+  text-align:center;
+}
+
+.pedidoDownloadFeedback.show{
+  display:block;
+}
+
+[data-pedido-download][aria-busy="true"]{
+  opacity:.72;
+  cursor:wait !important;
+  pointer-events:none;
+}
+
 .menuPedidoBtnAjuste{
   margin-top:8px;
   width:100%;
@@ -23169,15 +23193,18 @@ async function acompanharResultadoClean(pedidoId, form){
           imgEl.style.display = "block";
         }
         if(downloadEl){
-          downloadEl.removeAttribute("href");
-          downloadEl.textContent = "✅ Está boa, baixar imagem";
-          downloadEl.onclick = async (ev)=>{
+          configurarAcaoDownloadPedido(downloadEl, pedidoId, data.aprovado_cliente === true);
+          downloadEl.onclick = async (ev) => {
             ev.preventDefault();
-            await aprovarPedido(pedidoId);
+            if(data.aprovado_cliente === true){
+              await baixarPedido(pedidoId);
+            }else{
+              await aprovarPedido(pedidoId);
+            }
             restaurarImagemOriginalDoProduto(form);
           };
-          downloadEl.style.display = "inline-block";
         }
+        registrarStatusDownloadPedido(statusElLocal, pedidoId);
       }else{
         if(statusElLocal) statusElLocal.textContent = "Estamos montando sua imagem...";
       }
@@ -24606,16 +24633,25 @@ async function comprarCreditos(pacote, metodo = "checkout", triggerBtn = null){
 
 let timerAvisoPedido = null;
 
-function mostrarAvisoPedido(){
+function mostrarAvisoPedido(
+  titulo = "\u2705 Pedido recebido!",
+  mensagem = "Sua arte j\u00e1 entrou em produ\u00e7\u00e3o. Acompanhe em Meus pedidos \u2014 quando ficar pronta, ela aparecer\u00e1 l\u00e1 para baixar.",
+  duracao = 5000
+){
   const aviso = document.getElementById("ia4ToastPedido");
   if(!aviso) return;
+
+  const tituloEl = aviso.querySelector("strong");
+  const mensagemEl = aviso.querySelector("span");
+  if(tituloEl) tituloEl.textContent = titulo;
+  if(mensagemEl) mensagemEl.textContent = mensagem;
 
   aviso.classList.add("show");
 
   clearTimeout(timerAvisoPedido);
   timerAvisoPedido = setTimeout(()=>{
     fecharAvisoPedido();
-  }, 5000);
+  }, duracao);
 }
 
 function fecharAvisoPedido(){
@@ -28165,10 +28201,12 @@ function atualizarMenuPedidosTopo(pedidos){
 
 ${pagamentoPendente ? `
 ` : aprovado ? `
-<button type="button" class="menuPedidoBtn" onclick="baixarPedido('${p.id}')">Baixar novamente</button>
+<button type="button" class="menuPedidoBtn" data-pedido-download data-pedido-id="${p.id}" onclick="baixarPedido('${p.id}')">Baixar novamente</button>
+<div class="pedidoDownloadFeedback" data-pedido-download-status data-pedido-id="${p.id}" aria-live="polite"></div>
 <button type="button" class="menuPedidoBtn" onclick="compartilharImagemPedido('${p.id}')">Compartilhar imagem</button>
 ` : `
-<button type="button" class="menuPedidoBtn" onclick="aprovarPedido('${p.id}')">✅ Está boa, baixar</button>
+<button type="button" class="menuPedidoBtn" data-pedido-download data-pedido-id="${p.id}" onclick="aprovarPedido('${p.id}')">✅ Está boa, baixar</button>
+<div class="pedidoDownloadFeedback" data-pedido-download-status data-pedido-id="${p.id}" aria-live="polite"></div>
 <button type="button" class="menuPedidoBtn" onclick="aprovarECompartilharPedido('${p.id}')">Compartilhar imagem</button>
 ${criacaoEconomica ? `
 <div class="ajustePedidoBox">Este pedido n\u00e3o inclui pedido de ajuste. Falhas t\u00e9cnicas continuam cobertas pelo suporte.</div>
@@ -28363,16 +28401,18 @@ ${p.status === "pronto" ? `
 
 ${pagamentoPendente ? `
 ` : aprovado ? `
-        <button onclick="baixarPedido('${p.id}')" style="margin-top:8px;padding:8px 12px;border-radius:10px;border:none;background:#2ecc71;color:#fff;font-weight:900;cursor:pointer;width:100%;">
+        <button data-pedido-download data-pedido-id="${p.id}" onclick="baixarPedido('${p.id}')" style="margin-top:8px;padding:8px 12px;border-radius:10px;border:none;background:#2ecc71;color:#fff;font-weight:900;cursor:pointer;width:100%;">
           Baixar novamente
         </button>
+        <div class="pedidoDownloadFeedback" data-pedido-download-status data-pedido-id="${p.id}" aria-live="polite"></div>
         <button onclick="compartilharImagemPedido('${p.id}')" style="margin-top:8px;padding:8px 12px;border-radius:10px;border:none;background:#0f172a;color:#fff;font-weight:900;cursor:pointer;width:100%;">
           Compartilhar imagem
         </button>
 ` : `
-        <button onclick="aprovarPedido('${p.id}')" style="margin-top:8px;padding:8px 12px;border-radius:10px;border:none;background:#16a34a;color:#fff;font-weight:900;cursor:pointer;width:100%;">
+        <button data-pedido-download data-pedido-id="${p.id}" onclick="aprovarPedido('${p.id}')" style="margin-top:8px;padding:8px 12px;border-radius:10px;border:none;background:#16a34a;color:#fff;font-weight:900;cursor:pointer;width:100%;">
           ✅ Está boa, baixar imagem
         </button>
+        <div class="pedidoDownloadFeedback" data-pedido-download-status data-pedido-id="${p.id}" aria-live="polite"></div>
         <button onclick="aprovarECompartilharPedido('${p.id}')" style="margin-top:8px;padding:8px 12px;border-radius:10px;border:none;background:#0f172a;color:#fff;font-weight:900;cursor:pointer;width:100%;">
           Compartilhar imagem
         </button>
@@ -28523,15 +28563,126 @@ async function enviarAjustePedido(){
   }
 }
 
+const DOWNLOAD_UX_VERSION = "download_ux_v1_20260728";
+const aprovacoesPedidoEmAndamento = new Set();
+
+function seletorPedidoSeguro(id){
+  const valor = String(id || "");
+  if(window.CSS && typeof window.CSS.escape === "function"){
+    return CSS.escape(valor);
+  }
+  return valor.replace(/["\\]/g, "\\$&");
+}
+
+function registrarStatusDownloadPedido(statusEl, id){
+  if(!statusEl) return;
+  statusEl.dataset.pedidoDownloadStatus = "";
+  statusEl.dataset.pedidoId = String(id || "");
+}
+
+function configurarAcaoDownloadPedido(el, id, aprovado){
+  if(!el) return;
+  const pedidoId = String(id || "");
+  el.removeAttribute("href");
+  el.removeAttribute("target");
+  el.dataset.pedidoDownload = "";
+  el.dataset.pedidoId = pedidoId;
+  el.disabled = false;
+  el.removeAttribute("aria-busy");
+  el.removeAttribute("aria-disabled");
+  el.textContent = aprovado ? "Baixar novamente" : "\u2705 Est\u00e1 boa, baixar imagem";
+  el.onclick = async (ev) => {
+    ev?.preventDefault?.();
+    if(aprovado){
+      await baixarPedido(pedidoId);
+    }else{
+      await aprovarPedido(pedidoId);
+    }
+  };
+  el.style.display = "inline-block";
+}
+
+function atualizarEstadoVisualDownloadPedido(id, estado, mensagem = ""){
+  const pedidoId = String(id || "");
+  const seletorId = seletorPedidoSeguro(pedidoId);
+  const processando = estado === "aprovando" || estado === "preparando";
+  const textos = {
+    aprovando: "Aprovando\u2026",
+    preparando: "Preparando download\u2026",
+    liberado: "Baixar novamente",
+    aguardando_aprovacao: "\u2705 Est\u00e1 boa, baixar imagem"
+  };
+
+  document
+    .querySelectorAll(`[data-pedido-download][data-pedido-id="${seletorId}"]`)
+    .forEach((el) => {
+      if(textos[estado]) el.textContent = textos[estado];
+      el.disabled = processando;
+      el.setAttribute("aria-busy", processando ? "true" : "false");
+      el.setAttribute("aria-disabled", processando ? "true" : "false");
+
+      if(estado === "liberado"){
+        el.onclick = async (ev) => {
+          ev?.preventDefault?.();
+          await baixarPedido(pedidoId);
+        };
+      }else if(estado === "aguardando_aprovacao"){
+        el.onclick = async (ev) => {
+          ev?.preventDefault?.();
+          await aprovarPedido(pedidoId);
+        };
+      }
+    });
+
+  document
+    .querySelectorAll(`[data-pedido-download-status][data-pedido-id="${seletorId}"]`)
+    .forEach((el) => {
+      el.textContent = mensagem;
+      if(el.classList.contains("pedidoDownloadFeedback")){
+        el.classList.toggle("show", !!mensagem);
+      }
+    });
+}
+
 async function aprovarPedido(id){
+  const pedidoId = String(id || "");
+  if(!pedidoId) return false;
+
+  if(aprovacoesPedidoEmAndamento.has(pedidoId)){
+    mostrarAvisoPedido(
+      "Aprova\u00e7\u00e3o em andamento",
+      "Aguarde. O pedido est\u00e1 sendo aprovado e o download ser\u00e1 iniciado automaticamente.",
+      4500
+    );
+    return false;
+  }
+
+  const chaveDownload = `pedido:${pedidoId}:resultado`;
+  if(downloadsDiretosEmAndamento.has(chaveDownload)){
+    mostrarAvisoPedido(
+      "Download em prepara\u00e7\u00e3o",
+      "Aguarde alguns instantes. N\u00e3o \u00e9 necess\u00e1rio tocar novamente.",
+      4000
+    );
+    return false;
+  }
+
+  aprovacoesPedidoEmAndamento.add(pedidoId);
+  atualizarEstadoVisualDownloadPedido(
+    pedidoId,
+    "aprovando",
+    "Aprovando seu pedido\u2026"
+  );
+
   ia4Track("clicou_esta_boa_baixar", {
-    pedido_id: id || "",
+    pedido_id: pedidoId,
     produto: selectedProductInput?.value || "",
-    categoria: categoriaSelecionada || ""
+    categoria: categoriaSelecionada || "",
+    versao_fluxo: DOWNLOAD_UX_VERSION
   });
 
   try{
-    const r = await fetch(`${API_BASE}/pedidos/${id}/aprovar`, {
+    const r = await fetch(`${API_BASE}/pedidos/${pedidoId}/aprovar`, {
       method:"POST",
       headers:{
         "Authorization":"Bearer " + token,
@@ -28544,20 +28695,35 @@ async function aprovarPedido(id){
 
     if(authMsg){
       alert(authMsg);
-      return;
+      atualizarEstadoVisualDownloadPedido(pedidoId, "aguardando_aprovacao", authMsg);
+      return false;
     }
 
     if(!r.ok || !out.ok || out.pode_baixar === false){
-      alert(out.error || out.mensagem || "Não foi possível liberar o download deste pedido.");
+      const mensagem = out.error || out.mensagem || "Não foi possível liberar o download deste pedido.";
+      alert(mensagem);
+      atualizarEstadoVisualDownloadPedido(pedidoId, "aguardando_aprovacao", mensagem);
       carregarHistorico();
-      return;
+      return false;
     }
   }catch(e){
     alert("Erro de rede ao aprovar pedido");
-    return;
+    atualizarEstadoVisualDownloadPedido(
+      pedidoId,
+      "aguardando_aprovacao",
+      "Erro de rede ao aprovar. Tente novamente."
+    );
+    return false;
+  }finally{
+    aprovacoesPedidoEmAndamento.delete(pedidoId);
   }
 
-  await baixarPedido(id);
+  atualizarEstadoVisualDownloadPedido(
+    pedidoId,
+    "preparando",
+    "Pedido aprovado. Preparando download\u2026"
+  );
+  return baixarPedido(pedidoId, { aprovadoAgora: true });
 }
 
 async function aprovarECompartilharPedido(id){
@@ -28642,7 +28808,14 @@ async function iniciarDownloadDiretoSeguro({
     return false;
   }
 
-  if(downloadsDiretosEmAndamento.has(chave)) return false;
+  if(downloadsDiretosEmAndamento.has(chave)){
+    mostrarAvisoPedido(
+      "Download em prepara\u00e7\u00e3o",
+      "Aguarde. O ticket de download ainda est\u00e1 sendo processado.",
+      4000
+    );
+    return false;
+  }
 
   if(ambiente.navegadorInterno && !orientarDownloadNavegadorInterno()){
     ia4Track("download_cancelado_navegador_interno", {
@@ -28753,25 +28926,92 @@ async function iniciarDownloadDiretoSeguro({
   }
 }
 
-async function baixarPedido(id){
+async function baixarPedido(id, { aprovadoAgora = false } = {}){
+  const pedidoId = String(id || "");
+  if(!pedidoId) return false;
+
+  const chave = `pedido:${pedidoId}:resultado`;
+  if(downloadsDiretosEmAndamento.has(chave)){
+    mostrarAvisoPedido(
+      "Download em prepara\u00e7\u00e3o",
+      "Aguarde. O ticket de download ainda est\u00e1 sendo processado.",
+      4000
+    );
+    return false;
+  }
+
+  const downloadRepetido = !aprovadoAgora && getPedidosBaixados().includes(pedidoId);
+  atualizarEstadoVisualDownloadPedido(
+    pedidoId,
+    "preparando",
+    downloadRepetido
+      ? "Preparando outro download\u2026"
+      : "Preparando download\u2026"
+  );
+
+  if(downloadRepetido){
+    mostrarAvisoPedido(
+      "Outro download ser\u00e1 iniciado",
+      "Se o Chrome perguntar se deseja baixar o arquivo novamente, toque em \u201cFazer o download novamente\u201d.",
+      9000
+    );
+  }
+
   const iniciou = await iniciarDownloadDiretoSeguro({
-    id,
-    ticketEndpoint: `/pedidos/${encodeURIComponent(id)}/download-ticket`,
+    id: pedidoId,
+    ticketEndpoint: `/pedidos/${encodeURIComponent(pedidoId)}/download-ticket`,
     formato: "resultado",
     recurso: "pedido"
   });
 
-  if(!iniciou) return;
+  if(!iniciou){
+    atualizarEstadoVisualDownloadPedido(
+      pedidoId,
+      "liberado",
+      "N\u00e3o foi poss\u00edvel iniciar o download. Toque em Baixar novamente para tentar."
+    );
+    return false;
+  }
 
   ia4Track("baixou_imagem", {
-    pedido_id: id || "",
+    pedido_id: pedidoId,
     produto: selectedProductInput?.value || "",
     categoria: categoriaSelecionada || "",
     rota: "download_direto_post"
   });
 
-  marcarPedidoBaixado(id);
-  carregarHistorico();
+  marcarPedidoBaixado(pedidoId);
+  atualizarEstadoVisualDownloadPedido(
+    pedidoId,
+    "liberado",
+    downloadRepetido
+      ? "Outro download foi liberado. Confirme no Chrome se ele solicitar."
+      : "Download liberado. Verifique a pasta Downloads do celular."
+  );
+
+  if(downloadRepetido){
+    mostrarAvisoPedido(
+      "Outro download liberado",
+      "Confirme \u201cFazer o download novamente\u201d se o Chrome mostrar o aviso de arquivo duplicado.",
+      9000
+    );
+  }else{
+    mostrarAvisoPedido(
+      "\u2705 Imagem liberada!",
+      "Verifique a pasta Downloads do celular. Para baixar outra c\u00f3pia, use o bot\u00e3o \u201cBaixar novamente\u201d.",
+      8000
+    );
+  }
+
+  await carregarHistorico();
+  atualizarEstadoVisualDownloadPedido(
+    pedidoId,
+    "liberado",
+    downloadRepetido
+      ? "Outro download foi liberado. Confirme no Chrome se ele solicitar."
+      : "Download liberado. Verifique a pasta Downloads do celular."
+  );
+  return true;
 }
 
 async function compartilharImagemPedido(id){
@@ -28860,12 +29100,16 @@ async function acompanharResultado(pedidoId){
         imgEl.style.display = "block";
 
         downloadEl.removeAttribute("href");
-        downloadEl.textContent = "✅ Está boa, baixar imagem";
-        downloadEl.onclick = (ev)=>{
+        configurarAcaoDownloadPedido(downloadEl, pedidoId, data.aprovado_cliente === true);
+        downloadEl.onclick = async (ev)=>{
           ev.preventDefault();
-          aprovarPedido(pedidoId);
+          if(data.aprovado_cliente === true){
+            await baixarPedido(pedidoId);
+          }else{
+            await aprovarPedido(pedidoId);
+          }
         };
-        downloadEl.style.display = "inline-block";
+        registrarStatusDownloadPedido(statusElLocal, pedidoId);
       } else {
         statusElLocal.textContent = "Estamos montando sua imagem...";
       }
