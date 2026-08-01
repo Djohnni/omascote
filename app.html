@@ -11546,6 +11546,7 @@ body.fotoJogosProductFocus #fotoJogosProductReturn{
 }
 
 .resultadoScenarioThumb{
+  position:relative;
   display:grid;
   place-items:center;
   min-width:0;
@@ -11554,10 +11555,22 @@ body.fotoJogosProductFocus #fotoJogosProductReturn{
 }
 
 .resultadoScenarioThumb img{
+  position:absolute;
+  inset:0;
   width:100%;
   height:100%;
   display:block;
   object-fit:cover;
+  object-position:50% var(--scenario-object-y, 68%);
+}
+
+.fotoJogosScenarioField{
+  display:grid;
+  gap:6px;
+}
+
+.fotoJogosScenarioSelect{
+  width:100%;
 }
 
 .resultadoScenarioPlaceholder{
@@ -17095,81 +17108,110 @@ const RESULTADO_SCENARIO_RESERVED_IDS = Object.freeze([
   "resultado_estadio_noturno_v1",
   "resultado_estadio_dia_v1"
 ]);
-const RESULTADO_SCENARIOS = Object.freeze([
-  Object.freeze({
-    id: RESULTADO_SCENARIO_CURRENT_ID,
-    label: "Cenário atual",
-    enabled: true,
-    publiclyVisible: true,
-    thumbnail: "produtos/cenarios/resultado_atual_v1.png",
-    status: "Disponível"
-  }),
-  Object.freeze({
-    id: "resultado_sol_v1",
-    label: "Sol",
-    enabled: true,
-    publiclyVisible: true,
-    thumbnail: "produtos/cenarios/resultado_sol_v1.jpg",
-    status: "Disponível"
-  }),
-  Object.freeze({
-    id: "resultado_noite_v1",
-    label: "Noite",
-    enabled: true,
-    publiclyVisible: true,
-    thumbnail: "produtos/cenarios/resultado_noite_v1.jpg",
-    status: "Disponível"
-  }),
-  Object.freeze({
-    id: "resultado_chuva_v1",
-    label: "Chuva",
-    enabled: true,
-    publiclyVisible: true,
-    thumbnail: "produtos/cenarios/resultado_chuva_v1.jpg",
-    status: "Disponível"
-  }),
-  Object.freeze({
-    id: "resultado_estadio_grande_dia_v1",
-    label: "Estádio grande de dia",
-    enabled: true,
-    publiclyVisible: true,
-    thumbnail: "produtos/cenarios/resultado_estadio_grande_dia_v1.jpg",
-    status: "Disponível"
-  }),
-  Object.freeze({
-    id: "resultado_estadio_varzea_dia_v1",
-    label: "Estádio de várzea de dia",
-    enabled: true,
-    publiclyVisible: true,
-    thumbnail: "produtos/cenarios/resultado_estadio_varzea_dia_v1.jpg",
-    status: "Disponível"
-  }),
-  Object.freeze({
-    id: "resultado_fumaca_v1",
-    label: "Fundo com fumaça",
-    enabled: true,
-    publiclyVisible: true,
-    thumbnail: "produtos/cenarios/resultado_fumaca_v1.jpg",
-    status: "Disponível"
-  }),
-  Object.freeze({
-    id: "resultado_futsal_v1",
-    label: "Futsal",
-    enabled: true,
-    publiclyVisible: true,
-    thumbnail: "produtos/cenarios/resultado_futsal_v1.jpg",
-    status: "Disponível"
-  })
+const SCENARIO_SUPPORTED_PRODUCT_IDS = Object.freeze([
+  "resultado",
+  "proximo_jogo",
+  "jogador_escudo",
+  "mascote_uniforme",
+  "escalacao"
 ]);
-const RESULTADO_PUBLIC_SCENARIOS = Object.freeze(
-  RESULTADO_SCENARIOS.filter(option => (
-    option.enabled === true &&
-    option.publiclyVisible === true
-  ))
-);
-const RESULTADO_SCENARIO_BY_ID = new Map(
-  RESULTADO_SCENARIOS.map(option => [option.id, option])
-);
+const SCENARIO_ASSISTANT_PRODUCT_IDS = Object.freeze([
+  "resultado",
+  "proximo_jogo",
+  "escalacao",
+  "jogador_escudo"
+]);
+const SCENARIO_CURRENT_THUMBNAILS = Object.freeze({
+  resultado:"produtos/cenarios/resultado_atual_v1.png",
+  proximo_jogo:"produtos/proximo_jogo.jpg",
+  jogador_escudo:"produtos/jogador_escudo.jpg",
+  mascote_uniforme:"produtos/mascote_uniforme.jpg",
+  escalacao:"produtos/escalacao.jpg"
+});
+const SCENARIO_VARIANTS = Object.freeze([
+  Object.freeze({ key:"atual", suffix:"atual_v1", label:"Cenário atual", status:"Disponível", objectY:"50%" }),
+  Object.freeze({ key:"sol", suffix:"sol_v1", label:"Sol", status:"Disponível", thumbnail:"produtos/cenarios/resultado_sol_v1.jpg", objectY:"70%" }),
+  Object.freeze({ key:"noite", suffix:"noite_v1", label:"Noite", status:"Disponível", thumbnail:"produtos/cenarios/resultado_noite_v1.jpg", objectY:"68%" }),
+  Object.freeze({ key:"chuva", suffix:"chuva_v1", label:"Chuva", status:"Disponível", thumbnail:"produtos/cenarios/resultado_chuva_v1.jpg", objectY:"70%" }),
+  Object.freeze({ key:"estadio_grande_dia", suffix:"estadio_grande_dia_v1", label:"Estádio grande de dia", status:"Disponível", thumbnail:"produtos/cenarios/resultado_estadio_grande_dia_v1.jpg", objectY:"72%" }),
+  Object.freeze({ key:"estadio_varzea_dia", suffix:"estadio_varzea_dia_v1", label:"Estádio de várzea de dia", status:"Disponível", thumbnail:"produtos/cenarios/resultado_estadio_varzea_dia_v1.jpg", objectY:"72%" }),
+  Object.freeze({ key:"fumaca", suffix:"fumaca_v1", label:"Fundo com fumaça", status:"Disponível", thumbnail:"produtos/cenarios/resultado_fumaca_v1.jpg", objectY:"68%" }),
+  Object.freeze({ key:"futsal", suffix:"futsal_v1", label:"Futsal", status:"Disponível", thumbnail:"produtos/cenarios/resultado_futsal_v1.jpg", objectY:"70%" })
+]);
+
+function productSupportsScenario(productKey){
+  return SCENARIO_SUPPORTED_PRODUCT_IDS.includes(String(productKey || ""));
+}
+
+function assistantProductSupportsScenario(productKey){
+  return SCENARIO_ASSISTANT_PRODUCT_IDS.includes(String(productKey || ""));
+}
+
+function getProductDefaultScenarioId(productKey){
+  const key = String(productKey || "");
+  return productSupportsScenario(key) ? `${key}_atual_v1` : "";
+}
+
+function buildProductScenarioOptions(productKey){
+  const key = String(productKey || "");
+  if(!productSupportsScenario(key)) return [];
+  return SCENARIO_VARIANTS.map(variant => Object.freeze({
+    id:`${key}_${variant.suffix}`,
+    productKey:key,
+    variant:variant.key,
+    label:variant.label,
+    enabled:true,
+    publiclyVisible:true,
+    thumbnail:variant.key === "atual" ? SCENARIO_CURRENT_THUMBNAILS[key] : variant.thumbnail,
+    objectY:variant.objectY,
+    status:variant.status
+  }));
+}
+
+const PRODUCT_SCENARIOS = Object.freeze(Object.fromEntries(
+  SCENARIO_SUPPORTED_PRODUCT_IDS.map(productKey => [
+    productKey,
+    Object.freeze(buildProductScenarioOptions(productKey))
+  ])
+));
+const PRODUCT_SCENARIO_BY_ID = Object.freeze(Object.fromEntries(
+  SCENARIO_SUPPORTED_PRODUCT_IDS.map(productKey => [
+    productKey,
+    new Map(PRODUCT_SCENARIOS[productKey].map(option => [option.id, option]))
+  ])
+));
+
+function getProductScenarioOptions(productKey){
+  return PRODUCT_SCENARIOS[String(productKey || "")] || [];
+}
+
+function getProductPublicScenarios(productKey){
+  return getProductScenarioOptions(productKey).filter(option => (
+    option.enabled === true && option.publiclyVisible === true
+  ));
+}
+
+function getProductScenarioById(productKey, scenarioId){
+  return PRODUCT_SCENARIO_BY_ID[String(productKey || "")]?.get(String(scenarioId || "")) || null;
+}
+
+function scenarioVariantFromId(scenarioId){
+  const id = String(scenarioId || "");
+  for(const productKey of SCENARIO_SUPPORTED_PRODUCT_IDS){
+    const option = getProductScenarioById(productKey, id);
+    if(option) return option.variant;
+  }
+  return "";
+}
+
+function scenarioIdForProductVariant(productKey, variant){
+  const option = getProductScenarioOptions(productKey).find(item => item.variant === variant);
+  return option?.id || getProductDefaultScenarioId(productKey);
+}
+
+const RESULTADO_SCENARIOS = PRODUCT_SCENARIOS.resultado;
+const RESULTADO_PUBLIC_SCENARIOS = Object.freeze(getProductPublicScenarios("resultado"));
+const RESULTADO_SCENARIO_BY_ID = PRODUCT_SCENARIO_BY_ID.resultado;
 
 const CLEAN_PRODUCT_SCHEMA_VERSION = 2;
 
@@ -17197,6 +17239,7 @@ const CLEAN_PRODUCT_FORM_SCHEMAS = {
       { key: "match_datetime", type: "text", legacyName: "data", labelKey: "data", placeholderKey: "data", required: false },
       { key: "competition", type: "text", legacyName: "hora", labelKey: "hora", placeholderKey: "hora", required: false },
       { key: "venue", type: "text", legacyName: "arena", labelKey: "arena", placeholderKey: "arena", required: false },
+      { key: "scenario_id", type: "scenario", label: "Escolha o cenário", required: true, visualNormal: true, defaultValue: "escalacao_atual_v1" },
       { key: "players", type: "players", label: "Nome dos jogadores aqui", required: true, minItems: 2 },
       { key: "team_crest", type: "file", legacyName: "escudo1", labelKey: "esc1", required: false, savedFallback: true },
       { key: "opponent_crest", type: "file", legacyName: "escudo2", labelKey: "esc2", required: false },
@@ -17223,6 +17266,7 @@ const CLEAN_PRODUCT_FORM_SCHEMAS = {
       { key: "match_datetime", type: "text", legacyName: "data", labelKey: "data", placeholderKey: "data", required: true },
       { key: "competition", type: "text", legacyName: "hora", labelKey: "hora", placeholderKey: "hora", required: true },
       { key: "venue", type: "text", legacyName: "arena", labelKey: "arena", placeholderKey: "arena", required: false },
+      { key: "scenario_id", type: "scenario", label: "Escolha o cenário", required: true, visualNormal: true, defaultValue: "proximo_jogo_atual_v1" },
       { key: "home_crest", type: "file", legacyName: "escudo1", labelKey: "esc1", required: true, savedFallback: true },
       { key: "away_crest", type: "file", legacyName: "escudo2", labelKey: "esc2", required: true },
       { key: "match_photo", type: "multi-file", legacyName: "mascote", labelKey: "mascote", required: false, maxFiles: 4, visualNormal: true }
@@ -17268,6 +17312,7 @@ const CLEAN_PRODUCT_FORM_SCHEMAS = {
     validationMessage: "Preencha o nome do jogador, envie o escudo do time e a foto do jogador.",
     fields: [
       { key: "player_name", type: "text", legacyName: "data", labelKey: "data", placeholderKey: "data", required: true },
+      { key: "scenario_id", type: "scenario", label: "Escolha o cenário", required: true, visualNormal: true, defaultValue: "jogador_escudo_atual_v1" },
       { key: "team_crest", type: "file", legacyName: "escudo1", labelKey: "esc1", required: true, savedFallback: true },
       { key: "player_photo", type: "file", legacyName: "mascote", labelKey: "mascote", required: true },
       { key: "coupon_code", type: "text", legacyName: "cupom_codigo", label: "Cupom", placeholder: "Digite seu cupom", required: false, visualNormal: true }
@@ -17279,6 +17324,7 @@ const CLEAN_PRODUCT_FORM_SCHEMAS = {
     validationMessage: "Preencha qual animal você quer transformar em mascote e envie o escudo ou brasão do time.",
     fields: [
       { key: "mascot_animal", type: "text", legacyName: "data", labelKey: "data", placeholderKey: "data", required: true },
+      { key: "scenario_id", type: "scenario", label: "Escolha o cenário", required: true, visualNormal: true, defaultValue: "mascote_uniforme_atual_v1" },
       { key: "team_crest", type: "file", legacyName: "escudo1", labelKey: "esc1", required: true, savedFallback: true },
       { key: "uniform_image", type: "file", legacyName: "mascote", labelKey: "mascote", required: false, visualNormal: true }
     ],
@@ -17414,21 +17460,24 @@ function renderCleanTextField(product, field, step){
   `;
 }
 
-function renderResultadoScenarioField(field){
+function renderProductScenarioField(product, field){
   const label = field.label || "Escolha o cenário";
+  const productKey = String(product?.id || "");
+  const defaultId = getProductDefaultScenarioId(productKey);
+  const options = getProductPublicScenarios(productKey);
   return `
     <div class="cleanFieldCard" data-clean-field-card="${htmlEscape(field.key)}">
       <fieldset class="resultadoScenarioFieldset">
         <legend class="resultadoScenarioLegend">${htmlEscape(label)}</legend>
         <div class="resultadoScenarioGrid">
-          ${RESULTADO_PUBLIC_SCENARIOS.map(option => {
+          ${options.map(option => {
             const disabled = option.enabled ? "" : " disabled";
-            const checked = option.id === RESULTADO_SCENARIO_CURRENT_ID ? " checked" : "";
+            const checked = option.id === defaultId ? " checked" : "";
             const media = option.thumbnail
-              ? `<img src="${htmlEscape(option.thumbnail)}" alt="" width="320" height="400" loading="lazy" decoding="async">`
+              ? `<img src="${htmlEscape(option.thumbnail)}" alt="" width="320" height="400" loading="lazy" decoding="async" style="--scenario-object-y:${htmlEscape(option.objectY || "68%")}\">`
               : `<span class="resultadoScenarioPlaceholder" aria-hidden="true"></span>`;
             return `
-              <label class="resultadoScenarioCard${option.enabled ? "" : " is-disabled"}" data-resultado-scenario-card="${htmlEscape(option.id)}" aria-disabled="${option.enabled ? "false" : "true"}">
+              <label class="resultadoScenarioCard${option.enabled ? "" : " is-disabled"}" data-product-scenario-card="${htmlEscape(option.id)}" data-scenario-variant="${htmlEscape(option.variant)}" aria-disabled="${option.enabled ? "false" : "true"}">
                 <input class="resultadoScenarioRadio" type="radio" name="scenario_id" value="${htmlEscape(option.id)}"${checked}${disabled}>
                 <span class="resultadoScenarioCardSurface">
                   <span class="resultadoScenarioSelectionMark" aria-hidden="true">✓</span>
@@ -17445,6 +17494,10 @@ function renderResultadoScenarioField(field){
       </fieldset>
     </div>
   `;
+}
+
+function renderResultadoScenarioField(field){
+  return renderProductScenarioField(PRODUCTS.resultado, field);
 }
 
 function renderCleanFileField(product, field, step){
@@ -17512,7 +17565,7 @@ function renderCleanPeopleField(field, step){
 
 function renderCleanProductFieldContent(product, field, step){
   if(field.type === "text") return renderCleanTextField(product, field, step);
-  if(field.type === "scenario") return renderResultadoScenarioField(field);
+  if(field.type === "scenario") return renderProductScenarioField(product, field);
   if(field.type === "file" || field.type === "multi-file") return renderCleanFileField(product, field, step);
   if(field.type === "score") return renderCleanScoreField(field, step);
   if(field.type === "matchup") return renderCleanMatchupField(field, step);
@@ -18811,11 +18864,15 @@ function fotoJogosNormalizarJogo(jogo = {}, options = {}){
   const productKey = fotoJogosProdutoDiretoValido(productCandidate)
     ? productCandidate
     : "";
+  const scenarioId = assistantProductSupportsScenario(productKey)
+    ? (getProductScenarioById(productKey, jogo.scenario_id)?.id || getProductDefaultScenarioId(productKey))
+    : "";
   const foto = jogo.foto && typeof jogo.foto === "object" ? jogo.foto : {};
   const normalizado = {
     id: jogo.id || fotoJogosCriarId(),
     selected: options.selected === true || jogo.selected === true,
     productKey,
+    scenario_id: scenarioId,
     resultado_gols_a: fotoJogosTexto(jogo.resultado_gols_a || "", 3),
     resultado_gols_b: fotoJogosTexto(jogo.resultado_gols_b || "", 3),
     escalacao_texto: String(jogo.escalacao_texto || "").slice(0, 1200),
@@ -19587,6 +19644,25 @@ function renderFotoJogosSideChoice(jogo, fieldKey){
   `;
 }
 
+function renderFotoJogosScenarioField(jogo){
+  const productKey = String(jogo?.productKey || "");
+  if(!assistantProductSupportsScenario(productKey)) return "";
+  const selectedId = getProductScenarioById(productKey, jogo?.scenario_id)?.id
+    || getProductDefaultScenarioId(productKey);
+  const errorClass = fotoJogosErroClass(jogo, "scenario");
+  return `
+    <label class="fotoJogosScenarioField${errorClass}">
+      <span class="fotoJogosFilterLabel">Cenário</span>
+      <select class="fotoJogosBulkSelect fotoJogosScenarioSelect${errorClass}" data-foto-jogo-scenario aria-label="Cenário da arte" ${errorClass ? 'aria-invalid="true"' : ""}>
+        ${getProductPublicScenarios(productKey).map(option => `
+          <option value="${htmlEscape(option.id)}"${option.id === selectedId ? " selected" : ""}>${htmlEscape(option.label)}</option>
+        `).join("")}
+      </select>
+      ${renderFotoJogosFieldError(jogo, "scenario")}
+    </label>
+  `;
+}
+
 function renderFotoJogosDirectFields(jogo){
   if(jogo.productKey === "resultado"){
     const scoreFields = ["resultado_gols_a", "resultado_gols_b"];
@@ -19599,6 +19675,7 @@ function renderFotoJogosDirectFields(jogo){
           <input class="fotoJogosOptionalInput${fotoJogosErroClass(jogo, "resultado_gols_b")}" data-foto-jogo-direct-field="resultado_gols_b" inputmode="numeric" value="${htmlEscape(jogo.resultado_gols_b || "")}" placeholder="Gols ${htmlEscape(fotoJogosSideLabel(jogo, "time_b"))}" aria-label="Gols Time B" ${fotoJogosTemErroCampo(jogo, "resultado_gols_b") ? 'aria-invalid="true"' : ""}>
         </div>
         ${renderFotoJogosFieldError(jogo, scoreFields)}
+        ${renderFotoJogosScenarioField(jogo)}
       </div>
     `;
   }
@@ -19610,6 +19687,15 @@ function renderFotoJogosDirectFields(jogo){
         ${renderFotoJogosSideChoice(jogo, "escalacao_side")}
         <textarea class="fotoJogosOptionalTextarea${fotoJogosErroClass(jogo, "escalacao_texto")}" data-foto-jogo-direct-field="escalacao_texto" placeholder="Jogadores ou escala\u00e7\u00e3o" aria-label="Jogadores ou escala\u00e7\u00e3o" ${fotoJogosTemErroCampo(jogo, "escalacao_texto") ? 'aria-invalid="true"' : ""}>${htmlEscape(jogo.escalacao_texto || "")}</textarea>
         ${renderFotoJogosFieldError(jogo, "escalacao_texto")}
+        ${renderFotoJogosScenarioField(jogo)}
+      </div>
+    `;
+  }
+
+  if(jogo.productKey === "proximo_jogo"){
+    return `
+      <div class="fotoJogosInlineFields">
+        ${renderFotoJogosScenarioField(jogo)}
       </div>
     `;
   }
@@ -19628,6 +19714,7 @@ function renderFotoJogosDirectFields(jogo){
         ${renderFotoJogosSideChoice(jogo, "jogador_escudo_side")}
         <input class="fotoJogosOptionalInput${fotoJogosErroClass(jogo, "jogador_nome")}" data-foto-jogo-photo-name value="${htmlEscape(jogo.foto?.nome || "")}" placeholder="Nome do jogador" aria-label="Nome do jogador" ${fotoJogosTemErroCampo(jogo, "jogador_nome") ? 'aria-invalid="true"' : ""}>
         ${renderFotoJogosFieldError(jogo, "jogador_nome")}
+        ${renderFotoJogosScenarioField(jogo)}
       </div>
     `;
   }
@@ -20569,7 +20656,11 @@ function fotoJogosAplicarProdutoSelecionados(){
   const productKey = fotoJogosState.bulkProductKey;
   if(!fotoJogosProdutoDiretoValido(productKey)) return;
   fotoJogosSelecionados().forEach(jogo => {
+    const previousVariant = scenarioVariantFromId(jogo.scenario_id) || "atual";
     jogo.productKey = productKey;
+    jogo.scenario_id = assistantProductSupportsScenario(productKey)
+      ? scenarioIdForProductVariant(productKey, previousVariant)
+      : "";
     fotoJogosLimparErrosDiretos(jogo);
     fotoJogosAtualizarValidacaoJogo(jogo.id, { force:true });
   });
@@ -20915,11 +21006,28 @@ function fotoJogosSalvarEdicao(id){
 function fotoJogosSelecionarProdutoDireto(id, productKey){
   const jogo = fotoJogosEncontrarJogo(id);
   if(!jogo || !fotoJogosProdutoDiretoValido(productKey)) return;
+  const previousVariant = scenarioVariantFromId(jogo.scenario_id) || "atual";
   jogo.productKey = productKey;
+  jogo.scenario_id = assistantProductSupportsScenario(productKey)
+    ? scenarioIdForProductVariant(productKey, previousVariant)
+    : "";
   jogo.selected = true;
   fotoJogosLimparErrosDiretos(jogo);
   fotoJogosAtualizarValidacaoJogo(id, { force:true });
   fotoJogosLimparFeedbackCriacao();
+  fotoJogosRerender();
+}
+
+function fotoJogosAtualizarScenario(id, scenarioId){
+  const jogo = fotoJogosEncontrarJogo(id);
+  const productKey = String(jogo?.productKey || "");
+  const option = getProductScenarioById(productKey, scenarioId);
+  if(!jogo || !assistantProductSupportsScenario(productKey) || !option?.enabled || !option?.publiclyVisible) return;
+  jogo.scenario_id = option.id;
+  jogo.selected = true;
+  fotoJogosLimparErrosDiretos(jogo);
+  fotoJogosLimparFeedbackCriacao();
+  fotoJogosAtualizarValidacaoJogo(id, { force:true });
   fotoJogosRerender();
 }
 
@@ -21009,6 +21117,7 @@ function fotoJogosAplicarProximoJogo(jogo){
   fotoJogosPreencherCampo(form, "match_datetime", fotoJogosDataHora(jogo));
   fotoJogosPreencherCampo(form, "competition", jogo.competicao);
   fotoJogosPreencherCampo(form, "venue", jogo.local);
+  setProductScenarioSelection("proximo_jogo", form, jogo.scenario_id || getProductDefaultScenarioId("proximo_jogo"), { dispatch:true });
   fotoJogosAplicarArquivoClean(form, "home_crest", jogo.escudos.time_a);
   fotoJogosAplicarArquivoClean(form, "away_crest", jogo.escudos.time_b);
   fotoJogosAplicarArquivoClean(form, "match_photo", jogo.foto?.file);
@@ -21022,7 +21131,7 @@ function fotoJogosAplicarResultado(jogo){
     return;
   }
 
-  resetResultadoScenarioSelection(form, { dispatch:true });
+  setProductScenarioSelection("resultado", form, jogo.scenario_id || getProductDefaultScenarioId("resultado"), { dispatch:true });
   const principalSide = jogo.resultado_side === "time_b" ? "time_b" : "time_a";
   const adversarioSide = principalSide === "time_a" ? "time_b" : "time_a";
   fotoJogosPreencherCampo(form, "home_team", jogo[principalSide]);
@@ -21049,6 +21158,7 @@ function fotoJogosAplicarEscalacao(jogo){
   fotoJogosPreencherCampo(form, "match_datetime", fotoJogosDataHora(jogo));
   fotoJogosPreencherCampo(form, "competition", jogo.competicao);
   fotoJogosPreencherCampo(form, "venue", jogo.local);
+  setProductScenarioSelection("escalacao", form, jogo.scenario_id || getProductDefaultScenarioId("escalacao"), { dispatch:true });
   fotoJogosAplicarArquivoClean(form, "team_crest", jogo.escudos[principalSide]);
   fotoJogosAplicarArquivoClean(form, "opponent_crest", jogo.escudos[adversarioSide]);
   fotoJogosAplicarArquivoClean(form, "team_photo", jogo.foto?.tipo === "time" ? jogo.foto.file : null);
@@ -21086,6 +21196,7 @@ function fotoJogosAplicarJogadorEscudo(jogo){
   }
 
   fotoJogosPreencherCampo(form, "player_name", jogo.foto?.nome || "");
+  setProductScenarioSelection("jogador_escudo", form, jogo.scenario_id || getProductDefaultScenarioId("jogador_escudo"), { dispatch:true });
   fotoJogosAplicarArquivoClean(form, "team_crest", jogo.escudos?.[side]);
   if(jogo.foto?.tipo === "jogador"){
     fotoJogosAplicarArquivoClean(form, "player_photo", jogo.foto.file);
@@ -21149,6 +21260,12 @@ function fotoJogosValidarDiretoDetalhado(jogo){
 
   if(!jogo.selected) return errors;
   if(!productKey) return [fotoJogosErroDetalhe("product", "Escolha uma arte.")];
+  if(assistantProductSupportsScenario(productKey)){
+    const scenario = getProductScenarioById(productKey, jogo.scenario_id);
+    if(!scenario?.enabled || !scenario?.publiclyVisible){
+      errors.push(fotoJogosErroDetalhe("scenario", "Escolha um cenário válido."));
+    }
+  }
   if(["proximo_jogo", "resultado", "escalacao"].includes(productKey)){
     if(!timeA) errors.push(fotoJogosErroDetalhe("time_a", "Informe o Time A.", { edit:true }));
     if(!timeB) errors.push(fotoJogosErroDetalhe("time_b", "Informe o Time B.", { edit:true }));
@@ -21245,6 +21362,7 @@ function fotoJogosSelectorFocoErro(field){
     jogador_foto:'[data-foto-jogo-photo-toggle]',
     jogador_foto_tipo:'[data-foto-jogo-photo-toggle]',
     jogador_nome:'[data-foto-jogo-photo-name]',
+    scenario:'[data-foto-jogo-scenario]',
     product:'[data-foto-jogo-product-select]'
   };
   if(field === "escudo_time_a") return '[data-foto-jogo-crest="time_a"]';
@@ -21319,6 +21437,9 @@ function fotoJogosBuildCleanOrder(jogo){
       assets[field.key] = { legacyName:field.legacyName || field.key, files:[] };
     }else if(field.type === "players" || field.type === "scorers"){
       fields[field.key] = [];
+    }else if(field.type === "scenario"){
+      fields[field.key] = getProductScenarioById(productKey, jogo.scenario_id)?.id
+        || getProductDefaultScenarioId(productKey);
     }
   });
 
@@ -21411,6 +21532,9 @@ function fotoJogosLegacyBody(jogo){
 function fotoJogosItemFingerprint(jogo){
   return JSON.stringify(normalizeOrderFingerprintValue({
     productKey:jogo.productKey || "",
+    scenario_id:assistantProductSupportsScenario(jogo.productKey)
+      ? (getProductScenarioById(jogo.productKey, jogo.scenario_id)?.id || getProductDefaultScenarioId(jogo.productKey))
+      : "",
     time_a:jogo.time_a || "",
     time_b:jogo.time_b || "",
     data:jogo.data || "",
@@ -21436,6 +21560,9 @@ function fotoJogosItemFingerprint(jogo){
 async function fotoJogosItemContentFingerprint(jogo){
   return JSON.stringify(await normalizeOrderFingerprintValueAsync({
     productKey:jogo.productKey || "",
+    scenario_id:assistantProductSupportsScenario(jogo.productKey)
+      ? (getProductScenarioById(jogo.productKey, jogo.scenario_id)?.id || getProductDefaultScenarioId(jogo.productKey))
+      : "",
     time_a:jogo.time_a || "",
     time_b:jogo.time_b || "",
     data:jogo.data || "",
@@ -22202,6 +22329,10 @@ function bindFotoJogosTool(root){
       input.addEventListener("change", () => fotoJogosRerender());
     });
 
+    row.querySelector("[data-foto-jogo-scenario]")?.addEventListener("change", ev => {
+      fotoJogosAtualizarScenario(id, ev.currentTarget.value);
+    });
+
     row.querySelector("[data-foto-jogo-photo-name]")?.addEventListener("input", ev => {
       fotoJogosAtualizarNomeFoto(id, ev.currentTarget.value);
     });
@@ -22496,13 +22627,15 @@ function getCleanFieldValue(form, key){
   return getCleanFormField(form, key)?.value?.trim() || "";
 }
 
-function getResultadoScenarioSelection(form){
+function getProductScenarioSelection(productKey, form){
+  const key = String(productKey || "");
   const checked = Array.from(form?.querySelectorAll?.('input[name="scenario_id"]:checked') || []);
   const input = checked.length === 1 ? checked[0] : null;
   const id = String(input?.value || "").trim();
-  const reserved = RESULTADO_SCENARIO_RESERVED_IDS.includes(id);
-  const option = RESULTADO_SCENARIO_BY_ID.get(id) || null;
+  const reserved = key === "resultado" && RESULTADO_SCENARIO_RESERVED_IDS.includes(id);
+  const option = getProductScenarioById(key, id);
   const valid = !!(
+    productSupportsScenario(key) &&
     input &&
     !input.disabled &&
     !reserved &&
@@ -22513,19 +22646,38 @@ function getResultadoScenarioSelection(form){
   return { valid, id, option, reserved, checkedCount:checked.length };
 }
 
-function resetResultadoScenarioSelection(form, options = {}){
+function getResultadoScenarioSelection(form){
+  return getProductScenarioSelection("resultado", form);
+}
+
+function setProductScenarioSelection(productKey, form, scenarioId, options = {}){
   if(!form) return false;
-  let currentInput = null;
+  const key = String(productKey || "");
+  const targetId = getProductScenarioById(key, scenarioId)?.id || getProductDefaultScenarioId(key);
+  let selectedInput = null;
   form.querySelectorAll('input[name="scenario_id"]').forEach(input => {
-    const checked = input.value === RESULTADO_SCENARIO_CURRENT_ID && !input.disabled;
+    const checked = input.value === targetId && !input.disabled;
     input.checked = checked;
-    if(checked) currentInput = input;
+    if(checked) selectedInput = input;
   });
-  if(currentInput && options.dispatch){
-    currentInput.dispatchEvent(new Event("input", { bubbles:true }));
-    currentInput.dispatchEvent(new Event("change", { bubbles:true }));
+  if(selectedInput && options.dispatch){
+    selectedInput.dispatchEvent(new Event("input", { bubbles:true }));
+    selectedInput.dispatchEvent(new Event("change", { bubbles:true }));
   }
-  return !!currentInput;
+  return !!selectedInput;
+}
+
+function resetProductScenarioSelection(productKey, form, options = {}){
+  return setProductScenarioSelection(
+    productKey,
+    form,
+    getProductDefaultScenarioId(productKey),
+    options
+  );
+}
+
+function resetResultadoScenarioSelection(form, options = {}){
+  return resetProductScenarioSelection("resultado", form, options);
 }
 
 function normalizeResultadoScenarioObservation(value){
@@ -22567,11 +22719,15 @@ function resultadoObservationRequestsScenarioChange(value){
     });
 }
 
-function resultadoScenarioObservationConflict(productKey, cleanOrder){
-  if(productKey !== "resultado") return "";
+function productScenarioObservationConflict(productKey, cleanOrder){
+  if(!productSupportsScenario(productKey)) return "";
   const fields = cleanOrder?.fields || {};
   if(!resultadoObservationRequestsScenarioChange(fields.customer_notes)) return "";
   return "A observação pede para trocar o fundo ou cenário, mas este pedido já tem um cenário selecionado. Remova esse pedido da observação para continuar. O texto foi preservado.";
+}
+
+function resultadoScenarioObservationConflict(productKey, cleanOrder){
+  return productScenarioObservationConflict(productKey, cleanOrder);
 }
 
 class ResultadoScenarioObservationConflictError extends Error{
@@ -22582,14 +22738,15 @@ class ResultadoScenarioObservationConflictError extends Error{
   }
 }
 
-function findFotoJogosResultadoScenarioConflict(items){
+function findFotoJogosScenarioConflict(items){
   for(const item of Array.from(items || [])){
     const jogo = item?.jogo || item;
-    if(jogo?.productKey !== "resultado") continue;
+    if(!assistantProductSupportsScenario(jogo?.productKey)) continue;
     const customerNotes = fotoJogosObservacaoTexto(jogo.observacao);
-    const message = resultadoScenarioObservationConflict("resultado", {
+    const scenarioId = getProductScenarioById(jogo.productKey, jogo.scenario_id)?.id || getProductDefaultScenarioId(jogo.productKey);
+    const message = productScenarioObservationConflict(jogo.productKey, {
       fields:{
-        scenario_id:RESULTADO_SCENARIO_CURRENT_ID,
+        scenario_id:scenarioId,
         customer_notes:customerNotes
       }
     });
@@ -22601,6 +22758,10 @@ function findFotoJogosResultadoScenarioConflict(items){
     };
   }
   return null;
+}
+
+function findFotoJogosResultadoScenarioConflict(items){
+  return findFotoJogosScenarioConflict(items);
 }
 
 const CLEAN_LOCAL_UPLOAD_FILE_MESSAGE = "A imagem selecionada não está mais disponível para envio. Selecione a imagem novamente e tente criar a arte.";
@@ -22820,8 +22981,8 @@ function validateCleanProductForm(productKey, form){
 
   schema.fields.forEach(field => {
     if(field.type === "scenario"){
-      const selection = getResultadoScenarioSelection(form);
-      if(productKey !== "resultado" || !selection.valid){
+      const selection = getProductScenarioSelection(productKey, form);
+      if(!selection.valid){
         scenarioError = "O cenário selecionado não está disponível. Escolha o cenário atual para continuar.";
         markError(field);
       }
@@ -22890,7 +23051,7 @@ function serializeCleanProductForm(productKey, form){
     }
 
     if(field.type === "scenario"){
-      const selection = getResultadoScenarioSelection(form);
+      const selection = getProductScenarioSelection(productKey, form);
       if(selection.valid){
         fields[field.key] = selection.id;
       }
@@ -23503,8 +23664,9 @@ function resetCleanFormAfterSend(form){
   const assetKeys = Array.from(form.querySelectorAll("[data-asset]")).map(input => input.dataset.asset).filter(Boolean);
 
   form.reset();
-  if(form.dataset.productForm === "resultado"){
-    resetResultadoScenarioSelection(form);
+  const productKey = form.dataset.productForm || "";
+  if(productSupportsScenario(productKey)){
+    resetProductScenarioSelection(productKey, form);
   }
   clearAllCleanStableAssets(form);
   assetKeys.forEach(key => clearCleanFilePreview(form, key));
@@ -30748,7 +30910,7 @@ function perfilAssistLimparCleanProduto(form, productKey){
 
   schema.fields.forEach(field => {
     if(field.type === "scenario"){
-      resetResultadoScenarioSelection(form, { dispatch:true });
+      resetProductScenarioSelection(productKey, form, { dispatch:true });
       return;
     }
 
