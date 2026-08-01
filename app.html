@@ -11444,6 +11444,189 @@ body.fotoJogosProductFocus #fotoJogosProductReturn{
   border:1px solid #e5e7eb;
 }
 
+.resultadoScenarioFieldset{
+  min-width:0;
+  margin:0;
+  padding:0;
+  border:0;
+}
+
+.resultadoScenarioLegend{
+  position:absolute;
+  width:1px;
+  height:1px;
+  padding:0;
+  margin:-1px;
+  overflow:hidden;
+  clip:rect(0, 0, 0, 0);
+  white-space:nowrap;
+  border:0;
+}
+
+.resultadoScenarioGrid{
+  display:grid;
+  grid-template-columns:repeat(3, minmax(0, 1fr));
+  gap:12px;
+}
+
+.resultadoScenarioCard{
+  position:relative;
+  display:block;
+  min-width:0;
+  cursor:pointer;
+  -webkit-tap-highlight-color:transparent;
+  touch-action:manipulation;
+}
+
+.resultadoScenarioRadio{
+  position:absolute;
+  width:1px;
+  height:1px;
+  margin:-1px;
+  overflow:hidden;
+  clip:rect(0, 0, 0, 0);
+  white-space:nowrap;
+  opacity:0;
+}
+
+.resultadoScenarioCardSurface{
+  position:relative;
+  min-height:100%;
+  display:grid;
+  grid-template-rows:132px auto;
+  overflow:hidden;
+  border:2px solid #dbe3ec;
+  border-radius:18px;
+  background:#ffffff;
+  color:#0f172a;
+  box-shadow:0 10px 22px rgba(15,23,42,.08);
+  transition:border-color .16s ease, box-shadow .16s ease, transform .16s ease;
+}
+
+.resultadoScenarioCard:hover .resultadoScenarioCardSurface{
+  transform:translateY(-1px);
+  border-color:#86efac;
+}
+
+.resultadoScenarioRadio:focus-visible + .resultadoScenarioCardSurface{
+  outline:3px solid rgba(22,163,74,.34);
+  outline-offset:3px;
+}
+
+.resultadoScenarioRadio:checked + .resultadoScenarioCardSurface{
+  border-color:#16a34a;
+  box-shadow:0 0 0 3px rgba(22,163,74,.16), 0 12px 26px rgba(15,23,42,.10);
+}
+
+.resultadoScenarioSelectionMark{
+  position:absolute;
+  top:10px;
+  right:10px;
+  z-index:1;
+  width:28px;
+  height:28px;
+  display:grid;
+  place-items:center;
+  border:2px solid #ffffff;
+  border-radius:999px;
+  background:#16a34a;
+  color:#ffffff;
+  font-size:16px;
+  line-height:1;
+  font-weight:950;
+  box-shadow:0 4px 12px rgba(15,23,42,.2);
+  opacity:0;
+  transform:scale(.82);
+  transition:opacity .16s ease, transform .16s ease;
+}
+
+.resultadoScenarioRadio:checked + .resultadoScenarioCardSurface .resultadoScenarioSelectionMark{
+  opacity:1;
+  transform:scale(1);
+}
+
+.resultadoScenarioThumb{
+  display:grid;
+  place-items:center;
+  min-width:0;
+  overflow:hidden;
+  background:#eef2f7;
+}
+
+.resultadoScenarioThumb img{
+  width:100%;
+  height:100%;
+  display:block;
+  object-fit:cover;
+}
+
+.resultadoScenarioPlaceholder{
+  width:100%;
+  height:100%;
+  display:grid;
+  place-items:center;
+  background:#eef2f7;
+  color:#94a3b8;
+}
+
+.resultadoScenarioPlaceholder::before{
+  content:"";
+  width:44px;
+  height:32px;
+  border:2px solid currentColor;
+  border-radius:10px;
+  background:linear-gradient(135deg, transparent 48%, currentColor 49%, currentColor 52%, transparent 53%);
+  opacity:.72;
+}
+
+.resultadoScenarioCopy{
+  min-height:68px;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  gap:4px;
+  padding:12px;
+}
+
+.resultadoScenarioName{
+  font-size:14px;
+  line-height:1.25;
+  font-weight:950;
+}
+
+.resultadoScenarioStatus{
+  font-size:12px;
+  line-height:1.3;
+  color:#64748b;
+  font-weight:800;
+}
+
+.resultadoScenarioCard.is-disabled{
+  cursor:not-allowed;
+}
+
+.resultadoScenarioCard.is-disabled .resultadoScenarioCardSurface{
+  opacity:.68;
+  box-shadow:none;
+}
+
+.resultadoScenarioCard.is-disabled:hover .resultadoScenarioCardSurface{
+  transform:none;
+  border-color:#dbe3ec;
+}
+
+@media (max-width:680px){
+  .resultadoScenarioGrid{
+    grid-template-columns:1fr;
+  }
+
+  .resultadoScenarioCardSurface{
+    grid-template-columns:112px minmax(0, 1fr);
+    grid-template-rows:minmax(104px, auto);
+    min-height:104px;
+  }
+}
+
 .cleanCouponExtra{
   display:grid;
   gap:10px;
@@ -16907,6 +17090,87 @@ function getProductSerializer(productKey){
   return PRODUCT_SERIALIZERS[productKey] || null;
 }
 
+const RESULTADO_SCENARIO_CURRENT_ID = "resultado_atual_v1";
+const RESULTADO_SCENARIO_RESERVED_IDS = Object.freeze([
+  "resultado_estadio_noturno_v1",
+  "resultado_estadio_dia_v1"
+]);
+const RESULTADO_SCENARIOS = Object.freeze([
+  Object.freeze({
+    id: RESULTADO_SCENARIO_CURRENT_ID,
+    label: "Cenário atual",
+    enabled: true,
+    publiclyVisible: true,
+    thumbnail: "produtos/cenarios/resultado_atual_v1.png",
+    status: "Disponível"
+  }),
+  Object.freeze({
+    id: "resultado_sol_v1",
+    label: "Sol",
+    enabled: true,
+    publiclyVisible: true,
+    thumbnail: "",
+    status: "Disponível"
+  }),
+  Object.freeze({
+    id: "resultado_noite_v1",
+    label: "Noite",
+    enabled: true,
+    publiclyVisible: true,
+    thumbnail: "",
+    status: "Disponível"
+  }),
+  Object.freeze({
+    id: "resultado_chuva_v1",
+    label: "Chuva",
+    enabled: true,
+    publiclyVisible: true,
+    thumbnail: "",
+    status: "Disponível"
+  }),
+  Object.freeze({
+    id: "resultado_estadio_grande_dia_v1",
+    label: "Estádio grande de dia",
+    enabled: true,
+    publiclyVisible: true,
+    thumbnail: "",
+    status: "Disponível"
+  }),
+  Object.freeze({
+    id: "resultado_estadio_varzea_dia_v1",
+    label: "Estádio de várzea de dia",
+    enabled: true,
+    publiclyVisible: true,
+    thumbnail: "",
+    status: "Disponível"
+  }),
+  Object.freeze({
+    id: "resultado_fumaca_v1",
+    label: "Fundo com fumaça",
+    enabled: true,
+    publiclyVisible: true,
+    thumbnail: "",
+    status: "Disponível"
+  }),
+  Object.freeze({
+    id: "resultado_futsal_v1",
+    label: "Futsal",
+    enabled: true,
+    publiclyVisible: true,
+    thumbnail: "",
+    status: "Disponível"
+  })
+]);
+const RESULTADO_PUBLIC_SCENARIOS = Object.freeze(
+  RESULTADO_SCENARIOS.filter(option => (
+    option.enabled === true &&
+    option.publiclyVisible === true
+  ))
+);
+const RESULTADO_SCENARIO_BY_ID = new Map(
+  RESULTADO_SCENARIOS.map(option => [option.id, option])
+);
+
 const CLEAN_PRODUCT_SCHEMA_VERSION = 2;
 
 const CLEAN_PRODUCT_FORM_SCHEMAS = {
@@ -16916,6 +17180,7 @@ const CLEAN_PRODUCT_FORM_SCHEMAS = {
     fields: [
       { key: "titulo_secao_resultados", type: "text", label: "Título da seção de resultados", placeholder: "", required: false, visualNormal: true, orderTitleKey: "titulo_secao_resultados", maxLength: 80 },
       { key: "score", type: "score", label: "Placar", required: true },
+      { key: "scenario_id", type: "scenario", label: "Escolha o cenário", required: true, visualNormal: true, defaultValue: RESULTADO_SCENARIO_CURRENT_ID },
       { key: "competition", type: "text", legacyName: "hora", labelKey: "hora", placeholderKey: "hora", required: true },
       { key: "headline", type: "text", legacyName: "data", labelKey: "data", placeholderKey: "data", required: false, defaultValue: "Resultado do jogo" },
       { key: "home_crest", type: "file", legacyName: "escudo1", labelKey: "esc1", required: true, savedFallback: true },
@@ -17149,6 +17414,39 @@ function renderCleanTextField(product, field, step){
   `;
 }
 
+function renderResultadoScenarioField(field){
+  const label = field.label || "Escolha o cenário";
+  return `
+    <div class="cleanFieldCard" data-clean-field-card="${htmlEscape(field.key)}">
+      <fieldset class="resultadoScenarioFieldset">
+        <legend class="resultadoScenarioLegend">${htmlEscape(label)}</legend>
+        <div class="resultadoScenarioGrid">
+          ${RESULTADO_PUBLIC_SCENARIOS.map(option => {
+            const disabled = option.enabled ? "" : " disabled";
+            const checked = option.id === RESULTADO_SCENARIO_CURRENT_ID ? " checked" : "";
+            const media = option.thumbnail
+              ? `<img src="${htmlEscape(option.thumbnail)}" alt="" width="320" height="400" loading="lazy" decoding="async">`
+              : `<span class="resultadoScenarioPlaceholder" aria-hidden="true"></span>`;
+            return `
+              <label class="resultadoScenarioCard${option.enabled ? "" : " is-disabled"}" data-resultado-scenario-card="${htmlEscape(option.id)}" aria-disabled="${option.enabled ? "false" : "true"}">
+                <input class="resultadoScenarioRadio" type="radio" name="scenario_id" value="${htmlEscape(option.id)}"${checked}${disabled}>
+                <span class="resultadoScenarioCardSurface">
+                  <span class="resultadoScenarioSelectionMark" aria-hidden="true">✓</span>
+                  <span class="resultadoScenarioThumb">${media}</span>
+                  <span class="resultadoScenarioCopy">
+                    <span class="resultadoScenarioName">${htmlEscape(option.label)}</span>
+                    <span class="resultadoScenarioStatus">${htmlEscape(option.status)}</span>
+                  </span>
+                </span>
+              </label>
+            `;
+          }).join("")}
+        </div>
+      </fieldset>
+    </div>
+  `;
+}
+
 function renderCleanFileField(product, field, step){
   const multiple = field.type === "multi-file" ? " multiple" : "";
   const label = getCleanFieldLabel(product, field);
@@ -17214,6 +17512,7 @@ function renderCleanPeopleField(field, step){
 
 function renderCleanProductFieldContent(product, field, step){
   if(field.type === "text") return renderCleanTextField(product, field, step);
+  if(field.type === "scenario") return renderResultadoScenarioField(field);
   if(field.type === "file" || field.type === "multi-file") return renderCleanFileField(product, field, step);
   if(field.type === "score") return renderCleanScoreField(field, step);
   if(field.type === "matchup") return renderCleanMatchupField(field, step);
@@ -17613,6 +17912,14 @@ function getCleanReviewItems(productKey, form){
       const value = getCleanFieldValue(form, field.key);
       const item = createCleanReviewTextItem(label, value);
       if(item) items.push(item);
+      return;
+    }
+
+    if(field.type === "scenario"){
+      const selection = getResultadoScenarioSelection(form);
+      if(selection.valid){
+        items.push({ label, value:selection.option.label });
+      }
       return;
     }
 
@@ -20715,6 +21022,7 @@ function fotoJogosAplicarResultado(jogo){
     return;
   }
 
+  resetResultadoScenarioSelection(form, { dispatch:true });
   const principalSide = jogo.resultado_side === "time_b" ? "time_b" : "time_a";
   const adversarioSide = principalSide === "time_a" ? "time_b" : "time_a";
   fotoJogosPreencherCampo(form, "home_team", jogo[principalSide]);
@@ -21125,9 +21433,34 @@ function fotoJogosItemFingerprint(jogo){
   }));
 }
 
-function fotoJogosGetOrCreateItemRequestId(jogo, modalidadeCriacao = "com_suporte"){
+async function fotoJogosItemContentFingerprint(jogo){
+  return JSON.stringify(await normalizeOrderFingerprintValueAsync({
+    productKey:jogo.productKey || "",
+    time_a:jogo.time_a || "",
+    time_b:jogo.time_b || "",
+    data:jogo.data || "",
+    horario:jogo.horario || "",
+    competicao:jogo.competicao || "",
+    local:jogo.local || "",
+    observacao:fotoJogosObservacaoTexto(jogo.observacao),
+    resultado_gols_a:jogo.resultado_gols_a || "",
+    resultado_gols_b:jogo.resultado_gols_b || "",
+    resultado_side:jogo.resultado_side || "",
+    escalacao_texto:jogo.escalacao_texto || "",
+    escalacao_side:jogo.escalacao_side || "",
+    escudo3d_side:jogo.escudo3d_side || "",
+    jogador_escudo_side:jogo.jogador_escudo_side || "",
+    foto_nome:jogo.foto?.nome || "",
+    foto_tipo:jogo.foto?.tipo || "",
+    foto:jogo.foto?.file || null,
+    escudo_a:jogo.escudos?.time_a || null,
+    escudo_b:jogo.escudos?.time_b || null
+  }));
+}
+
+async function fotoJogosGetOrCreateItemRequestId(jogo, modalidadeCriacao = "com_suporte"){
   const fingerprint = JSON.stringify([
-    fotoJogosItemFingerprint(jogo),
+    await fotoJogosItemContentFingerprint(jogo),
     modalidadeCriacao
   ]);
   if(jogo.batch_fingerprint === fingerprint && jogo.batch_request_id){
@@ -21239,6 +21572,15 @@ async function fotoJogosAbrirResumoCriacao(options = {}){
     return;
   }
 
+  const scenarioObservationConflict = findFotoJogosResultadoScenarioConflict(items);
+  if(scenarioObservationConflict){
+    const conflictId = scenarioObservationConflict.jogo?.id || "";
+    if(conflictId) fotoJogosState.moreOpen[conflictId] = true;
+    fotoJogosAtualizarMsg(scenarioObservationConflict.message, true);
+    fotoJogosRerender();
+    return;
+  }
+
   const saldoAtualizado = await refreshMe();
   const saldo = Number.isFinite(saldoAtualizado?.saldo)
     ? saldoAtualizado.saldo
@@ -21273,12 +21615,20 @@ function fotoJogosAppendBatchFile(fd, index, legacyName, file, filesMap){
   filesMap[legacyName] = fieldName;
 }
 
-function fotoJogosBuildBatchPayload(confirm, modalidadeCriacao){
-  const items = confirm.items.map((item, index) => {
+async function fotoJogosBuildBatchPayload(confirm, modalidadeCriacao){
+  const scenarioObservationConflict = findFotoJogosResultadoScenarioConflict(confirm.items);
+  if(scenarioObservationConflict){
+    throw new ResultadoScenarioObservationConflictError(
+      scenarioObservationConflict.message
+    );
+  }
+
+  const items = [];
+  for(const [index, item] of confirm.items.entries()){
     const jogo = item.jogo;
-    const clientRequestId = fotoJogosGetOrCreateItemRequestId(jogo, modalidadeCriacao);
-    return { ...item, index, clientRequestId };
-  });
+    const clientRequestId = await fotoJogosGetOrCreateItemRequestId(jogo, modalidadeCriacao);
+    items.push({ ...item, index, clientRequestId });
+  }
   const batchId = fotoJogosGetOrCreateBatchId(items, modalidadeCriacao);
   const fd = new FormData();
   const payloadItems = [];
@@ -21389,7 +21739,19 @@ async function fotoJogosConfirmarCriacao(modalidadeCriacao = "com_suporte"){
     await fotoJogosAbrirResumoCriacao();
     return;
   }
-  const { fd, batchId, items } = fotoJogosBuildBatchPayload(confirm, modalidadeCriacao);
+  let batchPayload;
+  try{
+    batchPayload = await fotoJogosBuildBatchPayload(confirm, modalidadeCriacao);
+  }catch(error){
+    const message = error instanceof ResultadoScenarioObservationConflictError
+      ? error.message
+      : orderFingerprintErrorMessage(error);
+    fotoJogosState.batchError = message;
+    fotoJogosAtualizarMsg(message, true);
+    fotoJogosRerender();
+    return;
+  }
+  const { fd, batchId, items } = batchPayload;
   fotoJogosState.batchCreating = true;
   fotoJogosState.batchCreatingMode = modalidadeCriacao;
   fotoJogosState.batchConfirm = null;
@@ -21417,10 +21779,54 @@ async function fotoJogosConfirmarCriacao(modalidadeCriacao = "com_suporte"){
     const authMsg = ia4TratarAuthInvalida(r, out);
     if(authMsg) throw new Error(authMsg);
 
+    if(r.status === 409 && out?.code === "IDEMPOTENCY_CONFLICT"){
+      const conflictMessage = out.error || "Este lote entrou em conflito com outro conteúdo. Revise os itens e tente novamente; novas chaves serão usadas.";
+      fotoJogosState.batchRequestState = null;
+      items.forEach(item => {
+        item.jogo.batch_request_id = "";
+        item.jogo.batch_fingerprint = "";
+        item.jogo.creation_status = "failed";
+        item.jogo.creation_error = conflictMessage;
+        item.jogo.selected = true;
+      });
+      fotoJogosState.batchProgress = fotoJogosState.batchProgress.map(progress => ({
+        ...progress,
+        status:"failed",
+        error:conflictMessage
+      }));
+      fotoJogosState.batchError = conflictMessage;
+      fotoJogosState.batchResult = {
+        ok:false,
+        batch_id:out.batch_id || batchId,
+        criados:[],
+        falhas:items.map(item => ({
+          index:item.index,
+          code:"IDEMPOTENCY_CONFLICT",
+          error:conflictMessage
+        }))
+      };
+      fotoJogosAtualizarMsg(conflictMessage, true);
+      return;
+    }
+
     const temResultadoEstruturado = Array.isArray(out.criados) || Array.isArray(out.falhas);
     let criados = Array.isArray(out.criados) ? out.criados : [];
     const falhas = Array.isArray(out.falhas) ? out.falhas : [];
-    if((r.ok && !temResultadoEstruturado) || (!r.ok && !criados.length && (r.status >= 500 || r.status === 409))){
+    const hasItemIdempotencyConflict = falhas.some(
+      falha => falha?.code === "IDEMPOTENCY_CONFLICT"
+    );
+    if(hasItemIdempotencyConflict){
+      fotoJogosState.batchRequestState = null;
+    }
+    if(
+      (r.ok && !temResultadoEstruturado) ||
+      (
+        !r.ok &&
+        !criados.length &&
+        (r.status >= 500 || r.status === 409) &&
+        !(r.status === 409 && hasItemIdempotencyConflict)
+      )
+    ){
       const erroResposta = new Error("Resposta do servidor sem confirma\u00e7\u00e3o conclusiva.");
       erroResposta.status = r.status;
       throw erroResposta;
@@ -21449,6 +21855,10 @@ async function fotoJogosConfirmarCriacao(modalidadeCriacao = "com_suporte"){
         item.jogo.selected = false;
         fotoJogosLimparErrosDiretos(item.jogo);
         return;
+      }
+      if(falha?.code === "IDEMPOTENCY_CONFLICT"){
+        item.jogo.batch_request_id = "";
+        item.jogo.batch_fingerprint = "";
       }
       item.jogo.creation_status = "failed";
       item.jogo.creation_error = fotoJogosTexto(falha?.error || out.error || "N\u00e3o foi poss\u00edvel criar esta arte.", 220);
@@ -22086,6 +22496,113 @@ function getCleanFieldValue(form, key){
   return getCleanFormField(form, key)?.value?.trim() || "";
 }
 
+function getResultadoScenarioSelection(form){
+  const checked = Array.from(form?.querySelectorAll?.('input[name="scenario_id"]:checked') || []);
+  const input = checked.length === 1 ? checked[0] : null;
+  const id = String(input?.value || "").trim();
+  const reserved = RESULTADO_SCENARIO_RESERVED_IDS.includes(id);
+  const option = RESULTADO_SCENARIO_BY_ID.get(id) || null;
+  const valid = !!(
+    input &&
+    !input.disabled &&
+    !reserved &&
+    option?.enabled === true &&
+    option?.publiclyVisible === true &&
+    id === option.id
+  );
+  return { valid, id, option, reserved, checkedCount:checked.length };
+}
+
+function resetResultadoScenarioSelection(form, options = {}){
+  if(!form) return false;
+  let currentInput = null;
+  form.querySelectorAll('input[name="scenario_id"]').forEach(input => {
+    const checked = input.value === RESULTADO_SCENARIO_CURRENT_ID && !input.disabled;
+    input.checked = checked;
+    if(checked) currentInput = input;
+  });
+  if(currentInput && options.dispatch){
+    currentInput.dispatchEvent(new Event("input", { bubbles:true }));
+    currentInput.dispatchEvent(new Event("change", { bubbles:true }));
+  }
+  return !!currentInput;
+}
+
+function normalizeResultadoScenarioObservation(value){
+  return String(value || "")
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase()
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+function resultadoObservationRequestsScenarioChange(value){
+  const text = normalizeResultadoScenarioObservation(value);
+  if(!text) return false;
+  const actionWord = "(?:trocar|troque|mudar|mude|alterar|altere|substituir|substitua|transformar|transforme|remover|remova|colocar|coloque|usar|use|quero)";
+  const sceneWord = "(?:fundo|cenario|ambiente|estadio|campo\\s+(?:de\\s+)?(?:futebol|society|varzea)|quadra|arquibancada|ginasio|vestiario|gramado|torcida|iluminacao|clima|sol|noite|chuva|fumaca|futsal)";
+  const negationWord = "(?:nao|nunca|jamais|sem|nem)";
+  const negationHelper = "(?:deve|deva|precisa|precisar|pode|podem|quero|queremos|e|eh|para|ser)";
+  const negatedAction = `${negationWord}\\s+(?:(?:${negationHelper})\\s+){0,4}${actionWord}`;
+  const negatedSceneForward = new RegExp(
+    `\\b${negatedAction}\\b[^.!?;\\n]{0,64}?\\b${sceneWord}\\b`,
+    "g"
+  );
+  const negatedSceneReverse = new RegExp(
+    `\\b${sceneWord}\\b[^.!?;\\n]{0,64}?\\b${negatedAction}\\b`,
+    "g"
+  );
+  const negatedActionOnly = new RegExp(`\\b${negatedAction}\\b`, "g");
+  const actionPattern = new RegExp(`\\b${actionWord}\\b`);
+  const scenePattern = new RegExp(`\\b${sceneWord}\\b`);
+  return text
+    .split(/[\n.!?;]+/)
+    .some(segment => {
+      const affirmativeText = segment
+        .replace(negatedSceneForward, " ")
+        .replace(negatedSceneReverse, " ")
+        .replace(negatedActionOnly, " ");
+      return actionPattern.test(affirmativeText) && scenePattern.test(affirmativeText);
+    });
+}
+
+function resultadoScenarioObservationConflict(productKey, cleanOrder){
+  if(productKey !== "resultado") return "";
+  const fields = cleanOrder?.fields || {};
+  if(!resultadoObservationRequestsScenarioChange(fields.customer_notes)) return "";
+  return "A observação pede para trocar o fundo ou cenário, mas este pedido já tem um cenário selecionado. Remova esse pedido da observação para continuar. O texto foi preservado.";
+}
+
+class ResultadoScenarioObservationConflictError extends Error{
+  constructor(message){
+    super(message);
+    this.name = "ResultadoScenarioObservationConflictError";
+    this.code = "SCENARIO_OBSERVATION_CONFLICT";
+  }
+}
+
+function findFotoJogosResultadoScenarioConflict(items){
+  for(const item of Array.from(items || [])){
+    const jogo = item?.jogo || item;
+    if(jogo?.productKey !== "resultado") continue;
+    const customerNotes = fotoJogosObservacaoTexto(jogo.observacao);
+    const message = resultadoScenarioObservationConflict("resultado", {
+      fields:{
+        scenario_id:RESULTADO_SCENARIO_CURRENT_ID,
+        customer_notes:customerNotes
+      }
+    });
+    if(!message) continue;
+    const label = item?.label || fotoJogosItemLabel(jogo) || "Resultado";
+    return {
+      jogo,
+      message:`${label}: ${message}`
+    };
+  }
+  return null;
+}
+
 const CLEAN_LOCAL_UPLOAD_FILE_MESSAGE = "A imagem selecionada não está mais disponível para envio. Selecione a imagem novamente e tente criar a arte.";
 
 class CleanLocalUploadFileError extends Error{
@@ -22283,6 +22800,7 @@ function validateCleanProductForm(productKey, form){
   const product = PRODUCTS[productKey];
   let hasError = false;
   let fileSizeError = "";
+  let scenarioError = "";
 
   if(!schema) return ["Produto sem configuração."];
 
@@ -22301,6 +22819,15 @@ function validateCleanProductForm(productKey, form){
   }
 
   schema.fields.forEach(field => {
+    if(field.type === "scenario"){
+      const selection = getResultadoScenarioSelection(form);
+      if(productKey !== "resultado" || !selection.valid){
+        scenarioError = "O cenário selecionado não está disponível. Escolha o cenário atual para continuar.";
+        markError(field);
+      }
+      return;
+    }
+
     if(field.type === "file" || field.type === "multi-file"){
       const files = getCleanAssetFiles(form, field.key);
       if(field.maxFiles && files.length > Number(field.maxFiles)){
@@ -22344,6 +22871,7 @@ function validateCleanProductForm(productKey, form){
     }
   });
 
+  if(scenarioError) return [scenarioError];
   if(fileSizeError) return [fileSizeError];
   return hasError ? [schema.validationMessage || "Preencha os campos obrigatórios."] : [];
 }
@@ -22358,6 +22886,13 @@ function serializeCleanProductForm(productKey, form){
       const value = getCleanFieldValue(form, field.key);
       if(!field.orderTitleKey || value){
         fields[field.key] = value;
+      }
+    }
+
+    if(field.type === "scenario"){
+      const selection = getResultadoScenarioSelection(form);
+      if(selection.valid){
+        fields[field.key] = selection.id;
       }
     }
 
@@ -22537,6 +23072,63 @@ function isOrderUploadBlob(value){
   );
 }
 
+class OrderFingerprintError extends Error{
+  constructor(message, options = {}){
+    super(message, options);
+    this.name = "OrderFingerprintError";
+    this.code = "CLIENT_FILE_HASH_FAILED";
+  }
+}
+
+const orderFileContentSha256Cache = new WeakMap();
+
+function orderFingerprintErrorMessage(error){
+  if(error instanceof OrderFingerprintError){
+    return "Não foi possível validar o conteúdo das imagens neste dispositivo. Selecione os arquivos novamente e tente criar a arte.";
+  }
+  return error?.message || "Não foi possível preparar este pedido com segurança.";
+}
+
+async function orderFileContentSha256(file){
+  if(!isOrderUploadBlob(file)){
+    throw new OrderFingerprintError("Arquivo inválido para cálculo de SHA-256.");
+  }
+
+  const cached = orderFileContentSha256Cache.get(file);
+  if(cached) return cached;
+
+  const digestPromise = (async () => {
+    const subtle = globalThis.crypto?.subtle;
+    if(!subtle || typeof subtle.digest !== "function" || typeof file.arrayBuffer !== "function"){
+      throw new OrderFingerprintError("SHA-256 via Web Crypto não está disponível.");
+    }
+    try{
+      const bytes = await file.arrayBuffer();
+      const digest = await subtle.digest("SHA-256", bytes);
+      return Array.from(new Uint8Array(digest), value => value.toString(16).padStart(2, "0")).join("");
+    }catch(error){
+      if(error instanceof OrderFingerprintError) throw error;
+      throw new OrderFingerprintError("Falha ao calcular SHA-256 do arquivo.", { cause:error });
+    }
+  })();
+
+  orderFileContentSha256Cache.set(file, digestPromise);
+  try{
+    return await digestPromise;
+  }catch(error){
+    orderFileContentSha256Cache.delete(file);
+    throw error;
+  }
+}
+
+async function orderFileContentFingerprint(file){
+  if(!file) return null;
+  return {
+    ...orderFileFingerprint(file),
+    sha256:await orderFileContentSha256(file)
+  };
+}
+
 function normalizeOrderFingerprintValue(value){
   if(isOrderUploadBlob(value)) return orderFileFingerprint(value);
   if(Array.isArray(value)) return value.map(item => normalizeOrderFingerprintValue(item));
@@ -22550,16 +23142,35 @@ function normalizeOrderFingerprintValue(value){
   return value;
 }
 
-function buildCleanOrderFingerprint(productKey, cleanOrder){
-  return JSON.stringify(normalizeOrderFingerprintValue({
+async function normalizeOrderFingerprintValueAsync(value){
+  if(isOrderUploadBlob(value)) return orderFileContentFingerprint(value);
+  if(Array.isArray(value)){
+    return Promise.all(value.map(item => normalizeOrderFingerprintValueAsync(item)));
+  }
+  if(value && typeof value === "object"){
+    const keys = Object.keys(value).sort();
+    const normalizedValues = await Promise.all(
+      keys.map(key => normalizeOrderFingerprintValueAsync(value[key]))
+    );
+    const out = {};
+    keys.forEach((key, index) => {
+      out[key] = normalizedValues[index];
+    });
+    return out;
+  }
+  return value;
+}
+
+async function buildCleanOrderFingerprint(productKey, cleanOrder){
+  return JSON.stringify(await normalizeOrderFingerprintValueAsync({
     product_id: productKey,
     fields: cleanOrder?.fields || {},
     assets: cleanOrder?.assets || {}
   }));
 }
 
-function getOrCreateCleanOrderRequestState(form, productKey, cleanOrder){
-  const fingerprint = buildCleanOrderFingerprint(productKey, cleanOrder);
+async function getOrCreateCleanOrderRequestState(form, productKey, cleanOrder){
+  const fingerprint = await buildCleanOrderFingerprint(productKey, cleanOrder);
   const current = form.__cleanOrderRequestState;
 
   if(current && current.fingerprint === fingerprint && current.clientRequestId){
@@ -22588,16 +23199,16 @@ function clearCleanOrderRequestState(form){
   if(form) delete form.__cleanOrderRequestState;
 }
 
-function buildEscudo3dOrderFingerprint(file, cupomCodigo = ""){
-  return JSON.stringify(normalizeOrderFingerprintValue({
+async function buildEscudo3dOrderFingerprint(file, cupomCodigo = ""){
+  return JSON.stringify(await normalizeOrderFingerprintValueAsync({
     product_id: "escudo3d",
     cupom_codigo: String(cupomCodigo || "").trim(),
-    file: orderFileFingerprint(file)
+    file
   }));
 }
 
-function getOrCreateEscudo3dOrderRequestState(file, cupomCodigo = ""){
-  const fingerprint = buildEscudo3dOrderFingerprint(file, cupomCodigo);
+async function getOrCreateEscudo3dOrderRequestState(file, cupomCodigo = ""){
+  const fingerprint = await buildEscudo3dOrderFingerprint(file, cupomCodigo);
 
   if(escudo3dOrderRequestState?.fingerprint === fingerprint && escudo3dOrderRequestState.clientRequestId){
     return escudo3dOrderRequestState;
@@ -22623,22 +23234,22 @@ function clearEscudo3dOrderRequestState(){
   escudo3dOrderRequestState = null;
 }
 
-function buildFormDataOrderFingerprint(productKey, fd){
+async function buildFormDataOrderFingerprint(productKey, fd){
   const entries = [];
   fd?.forEach?.((value, key) => {
     entries.push({
       key,
-      value: isOrderUploadBlob(value) ? orderFileFingerprint(value) : String(value || "")
+      value:isOrderUploadBlob(value) ? value : String(value || "")
     });
   });
-  return JSON.stringify(normalizeOrderFingerprintValue({
+  return JSON.stringify(await normalizeOrderFingerprintValueAsync({
     product_id: productKey || "",
     entries
   }));
 }
 
-function getOrCreateLegacyOrderRequestState(productKey, fd){
-  const fingerprint = buildFormDataOrderFingerprint(productKey, fd);
+async function getOrCreateLegacyOrderRequestState(productKey, fd){
+  const fingerprint = await buildFormDataOrderFingerprint(productKey, fd);
 
   if(legacyOrderRequestState?.fingerprint === fingerprint && legacyOrderRequestState.clientRequestId){
     return legacyOrderRequestState;
@@ -22892,6 +23503,9 @@ function resetCleanFormAfterSend(form){
   const assetKeys = Array.from(form.querySelectorAll("[data-asset]")).map(input => input.dataset.asset).filter(Boolean);
 
   form.reset();
+  if(form.dataset.productForm === "resultado"){
+    resetResultadoScenarioSelection(form);
+  }
   clearAllCleanStableAssets(form);
   assetKeys.forEach(key => clearCleanFilePreview(form, key));
   form.querySelectorAll("[data-clean-file-name]").forEach(el => {
@@ -23565,6 +24179,14 @@ async function enviarCleanProductFormConfirmado(form, options = {}){
     return;
   }
 
+  envioEtapa = "montar_payload";
+  const cleanOrder = serializeCleanProductForm(productKey, form);
+  const scenarioObservationError = resultadoScenarioObservationConflict(productKey, cleanOrder);
+  if(scenarioObservationError){
+    setCleanProductMsg(form, scenarioObservationError, true);
+    return;
+  }
+
   envioEtapa = "verificar_autenticacao";
   if(!token){
     const okAuto = await criarContaAutomaticaAntesPedido();
@@ -23573,9 +24195,7 @@ async function enviarCleanProductFormConfirmado(form, options = {}){
 
   setCleanProductMsg(form, "Enviando...");
 
-  envioEtapa = "montar_payload";
-  const cleanOrder = serializeCleanProductForm(productKey, form);
-  const requestState = getOrCreateCleanOrderRequestState(form, productKey, cleanOrder);
+  const requestState = await getOrCreateCleanOrderRequestState(form, productKey, cleanOrder);
 
   if(requestState.confirmed){
     const pedidoMsg = requestState.pedidoId
@@ -23648,6 +24268,17 @@ async function enviarCleanProductFormConfirmado(form, options = {}){
         setCleanProductMsg(form, "Pedido criado, mas houve erro ao atualizar a tela. Acompanhe em Meus pedidos.", true);
       }
     }else{
+      if(r.status === 409 && out?.code === "IDEMPOTENCY_CONFLICT"){
+        clearCleanOrderRequestState(form);
+        cancelarProgressoNoProduto(form);
+        setCleanProductMsg(
+          form,
+          out.error || "Esta tentativa entrou em conflito com outro conteúdo. Revise o pedido e tente novamente; uma nova chave será usada.",
+          true
+        );
+        return;
+      }
+
       if(r.status >= 500 || r.status === 409){
         envioEtapa = "resposta_http_indeterminada";
         const lookup = await tratarFalhaCleanOrderIndeterminada({
@@ -23677,6 +24308,13 @@ async function enviarCleanProductFormConfirmado(form, options = {}){
       setCleanProductMsg(form, out.error || out.mensagem || out.erro || "Erro ao enviar", true);
     }
   }catch(err){
+    if(err instanceof OrderFingerprintError){
+      clearCleanOrderRequestState(form);
+      cancelarProgressoNoProduto(form);
+      setCleanProductMsg(form, orderFingerprintErrorMessage(err), true);
+      return;
+    }
+
     if(isCleanLocalUploadError(err)){
       tratarFalhaCleanOrderLocalArquivo({
         form,
@@ -26233,7 +26871,21 @@ async function enviarPedidoEscudo3dComArquivo(file, progressTarget = null){
     ""
   ).trim();
   const fd = buildEscudo3dLegacyFormData(file, escudo3dCupomValor);
-  const requestState = getOrCreateEscudo3dOrderRequestState(file, escudo3dCupomValor);
+  let requestState;
+  try{
+    requestState = await getOrCreateEscudo3dOrderRequestState(file, escudo3dCupomValor);
+  }catch(error){
+    clearEscudo3dOrderRequestState();
+    const fingerprintMessage = orderFingerprintErrorMessage(error);
+    if(escudo3dMsg) escudo3dMsg.textContent = fingerprintMessage;
+    const msg = progressTarget?.querySelector("[data-clean-msg]");
+    if(msg){
+      msg.textContent = fingerprintMessage;
+      msg.style.color = "#dc2626";
+    }
+    if(progressTarget) cancelarProgressoNoProduto(progressTarget);
+    return;
+  }
 
   if(requestState.confirmed){
     const pedidoMsg = requestState.pedidoId
@@ -26343,6 +26995,19 @@ async function enviarPedidoEscudo3dComArquivo(file, progressTarget = null){
 
       setTimeout(fecharEscudo3dModal, 900);
     }else{
+      if(r.status === 409 && out?.code === "IDEMPOTENCY_CONFLICT"){
+        clearEscudo3dOrderRequestState();
+        const conflictMessage = out.error || "Esta tentativa entrou em conflito com outro conteúdo. Revise o pedido e tente novamente; uma nova chave será usada.";
+        if(escudo3dMsg) escudo3dMsg.textContent = conflictMessage;
+        const msg = progressTarget?.querySelector("[data-clean-msg]");
+        if(msg){
+          msg.textContent = conflictMessage;
+          msg.style.color = "#dc2626";
+        }
+        if(progressTarget) cancelarProgressoNoProduto(progressTarget);
+        return;
+      }
+
       if(r.status >= 500 || r.status === 409){
         const lookup = await tratarFalhaEscudo3dIndeterminada({
           progressTarget,
@@ -26362,6 +27027,19 @@ async function enviarPedidoEscudo3dComArquivo(file, progressTarget = null){
       alert(out.error || "Erro ao enviar.");
     }
   }catch(err){
+    if(err instanceof OrderFingerprintError){
+      clearEscudo3dOrderRequestState();
+      const fingerprintMessage = orderFingerprintErrorMessage(err);
+      if(escudo3dMsg) escudo3dMsg.textContent = fingerprintMessage;
+      const msg = progressTarget?.querySelector("[data-clean-msg]");
+      if(msg){
+        msg.textContent = fingerprintMessage;
+        msg.style.color = "#dc2626";
+      }
+      if(progressTarget) cancelarProgressoNoProduto(progressTarget);
+      return;
+    }
+
     await tratarFalhaEscudo3dIndeterminada({
       progressTarget,
       clientRequestId,
@@ -27221,7 +27899,14 @@ document.getElementById("pedidoForm").addEventListener("submit", async (e)=>{
   }
 
   appendIa4AccessContext(fd);
-  const requestState = getOrCreateLegacyOrderRequestState(productKey || "legado", fd);
+  let requestState;
+  try{
+    requestState = await getOrCreateLegacyOrderRequestState(productKey || "legado", fd);
+  }catch(error){
+    clearLegacyOrderRequestState();
+    msgPedidoEl.textContent = orderFingerprintErrorMessage(error);
+    return;
+  }
 
   if(requestState.confirmed){
     msgPedidoEl.textContent = requestState.pedidoId
@@ -27277,6 +27962,12 @@ document.getElementById("pedidoForm").addEventListener("submit", async (e)=>{
         acompanharResultado(out.pedido_id);
       }
     }else{
+      if(r.status === 409 && out?.code === "IDEMPOTENCY_CONFLICT"){
+        clearLegacyOrderRequestState();
+        msgPedidoEl.textContent = out.error || "Esta tentativa entrou em conflito com outro conteúdo. Revise o pedido e tente novamente; uma nova chave será usada.";
+        return;
+      }
+
       ia4Track("erro_envio_pedido", {
         produto: productKey || "desconhecido",
         categoria: categoriaSelecionada || "desconhecida",
@@ -30056,6 +30747,11 @@ function perfilAssistLimparCleanProduto(form, productKey){
   if(!form || !schema) return;
 
   schema.fields.forEach(field => {
+    if(field.type === "scenario"){
+      resetResultadoScenarioSelection(form, { dispatch:true });
+      return;
+    }
+
     if(field.type === "text"){
       const input = getCleanFormField(form, field.key);
       if(input){
