@@ -11922,7 +11922,7 @@ body.fotoJogosProductFocus #fotoJogosProductReturn{
 
 @media (max-width:420px){
   .cleanInlineUploadRow{
-    gap:6px;
+    gap:5px;
     padding-left:10px;
     padding-right:8px;
   }
@@ -11937,12 +11937,12 @@ body.fotoJogosProductFocus #fotoJogosProductReturn{
   }
 
   .cleanInlinePhotoActions{
-    gap:4px;
+    gap:2px;
   }
 
   .cleanInlinePhotoButton{
     min-height:30px;
-    padding:6px 5px;
+    padding:6px 2px;
     font-size:9px;
   }
 
@@ -18188,13 +18188,12 @@ function renderCleanInlineCrestField(product, field, step){
         <span class="cleanFieldStep">${htmlEscape(step)}</span>
         <span class="cleanInlineUploadTitleText">${htmlEscape(label)}</span>
       </span>
-      <span class="cleanInlineUploadSpacer"></span>
-      <span class="cleanInlineFileName" data-clean-file-name="${htmlEscape(field.key)}">Nenhum arquivo</span>
       <input class="fileHidden" type="file" name="${htmlEscape(field.key)}" data-asset="${htmlEscape(field.key)}" accept="image/png,image/jpeg,image/jpg,image/webp" aria-label="${htmlEscape(label)}">
       <button class="cleanInlineAssetButton" type="button" data-clean-file-for="${htmlEscape(field.key)}" aria-label="Adicionar ${htmlEscape(label)}">
         <span class="cleanInlineFileThumb" data-clean-file-thumb="${htmlEscape(field.key)}" aria-hidden="true"></span>
         <span class="cleanFilePlus" aria-hidden="true">+</span>
       </button>
+      <span class="cleanInlineFileName" data-clean-file-name="${htmlEscape(field.key)}">Nenhum arquivo</span>
     </div>
   `;
 }
@@ -18211,9 +18210,7 @@ function renderCleanInlinePhotoField(product, field, step){
       <span class="cleanInlineUploadTitle">
         <span class="cleanFieldStep">${htmlEscape(step)}</span>
         <span class="cleanInlineUploadTitleText">${label}</span>
-        <span class="cleanInlineUploadOptional">opcional</span>
       </span>
-      <span class="cleanInlineUploadSpacer"></span>
       <div class="cleanInlinePhotoActions" aria-label="Escolher o tipo de imagem principal">
         <button class="cleanInlinePhotoButton is-selected" type="button" data-clean-photo-type-for="${htmlEscape(field.key)}" data-clean-photo-type="crests_only" aria-pressed="true">
           <span class="cleanInlinePhotoPlus" aria-hidden="true">+</span>
@@ -18227,6 +18224,7 @@ function renderCleanInlinePhotoField(product, field, step){
           </button>
         `).join("")}
       </div>
+      <span class="cleanInlineUploadOptional">opcional</span>
     </div>
   `;
 }
@@ -23140,7 +23138,6 @@ function renderProductChooser(){
         const product = PRODUCTS[productKey] || {};
         const copy = PRODUCT_CHOOSER_COPY[productKey] || {};
         const name = copy.name || product.title || product.name || productKey;
-        const priceLabel = formatProductCardPrice(product);
         return `
           <button type="button" class="productChooserCard" data-product-picker="${htmlEscape(productKey)}" aria-pressed="false">
             <span class="productChooserThumb" aria-hidden="true">
@@ -23149,7 +23146,6 @@ function renderProductChooser(){
             <span>
               ${productKey === "mascote_uniforme" ? `<span class="productChooserBadge">Produto do anúncio</span>` : ""}
               <span class="productChooserName">${htmlEscape(name)}</span>
-              ${priceLabel ? `<span class="productChooserPrice">${htmlEscape(priceLabel)}</span>` : ""}
             </span>
           </button>
         `;
