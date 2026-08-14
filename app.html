@@ -13488,6 +13488,136 @@ body.homeLandingClean[data-page="home"] > main > .wrap > .panel{
     font-size:12px !important;
   }
 }
+
+.ia4WebviewNotice{
+  width:min(100%,860px);
+  margin:0 auto 18px;
+  padding:16px;
+  display:grid;
+  grid-template-columns:auto 1fr;
+  gap:12px;
+  border:1px solid #f59e0b;
+  border-radius:18px;
+  background:linear-gradient(135deg,#fff7ed,#fffbeb);
+  color:#7c2d12;
+  text-align:left;
+  box-shadow:0 12px 32px rgba(120,53,15,.13);
+}
+
+.ia4WebviewNotice[hidden]{
+  display:none !important;
+}
+
+.ia4WebviewNoticeIcon{
+  width:42px;
+  height:42px;
+  display:grid;
+  place-items:center;
+  border-radius:14px;
+  background:#f59e0b;
+  color:#fff;
+  font-size:22px;
+  font-weight:950;
+}
+
+.ia4WebviewNotice strong{
+  display:block;
+  color:#7c2d12;
+  font-size:16px;
+  line-height:1.25;
+}
+
+.ia4WebviewNotice p,
+.ia4WebviewNotice small{
+  display:block;
+  margin:6px 0 0;
+  color:#92400e;
+  font-size:13px;
+  line-height:1.4;
+  font-weight:750;
+}
+
+.ia4WebviewNotice small{
+  font-size:12px;
+  font-weight:700;
+}
+
+.ia4WebviewNoticeActions{
+  display:flex;
+  flex-wrap:wrap;
+  gap:8px;
+  margin-top:12px;
+}
+
+.ia4WebviewNoticeActions a,
+.ia4WebviewNoticeActions button{
+  min-height:42px;
+  padding:10px 14px;
+  border:0;
+  border-radius:12px;
+  font:inherit;
+  font-size:13px;
+  font-weight:900;
+  cursor:pointer;
+  text-decoration:none;
+}
+
+.ia4WebviewNoticeOpen{
+  background:#15803d;
+  color:#fff;
+}
+
+.ia4WebviewNoticeCopy,
+.ia4WebviewNoticeContinue{
+  background:#fff;
+  color:#7c2d12;
+  box-shadow:inset 0 0 0 1px #fdba74;
+}
+
+.pixManualCopy{
+  display:grid;
+  gap:8px;
+  width:100%;
+  margin-top:12px;
+  padding:12px;
+  border:1px solid #f59e0b;
+  border-radius:14px;
+  background:#fffbeb;
+  color:#78350f;
+  text-align:left;
+}
+
+.pixManualCopy strong,
+.pixManualCopy small{
+  color:#78350f;
+  line-height:1.35;
+}
+
+.pixManualCopy textarea{
+  width:100%;
+  min-height:92px;
+  resize:vertical;
+  padding:10px;
+  border:1px solid #f59e0b;
+  border-radius:10px;
+  background:#fff;
+  color:#111827;
+  font:700 13px/1.35 ui-monospace,SFMono-Regular,Consolas,monospace;
+  overflow-wrap:anywhere;
+}
+
+@media (max-width:680px){
+  .ia4WebviewNotice{
+    grid-template-columns:1fr;
+    width:calc(100% - 8px);
+    padding:14px;
+  }
+
+  .ia4WebviewNoticeActions > *{
+    flex:1 1 100%;
+    text-align:center;
+  }
+}
 </style>
 </head>
 
@@ -13942,6 +14072,20 @@ body.homeLandingClean[data-page="home"] > main > .wrap > .panel{
         </section>
 
         <div class="preTempoHeadline">👀 Primeiro você vê sua arte pronta. Depois decide se quer desbloquear.</div>
+
+        <aside class="ia4WebviewNotice" id="ia4WebviewNotice" aria-live="polite" hidden>
+          <div class="ia4WebviewNoticeIcon" aria-hidden="true">↗</div>
+          <div>
+            <strong id="ia4WebviewNoticeTitle">Abra no navegador antes de enviar suas fotos</strong>
+            <p>Assim o login, o Pix e o download da sua arte funcionam com mais segurança.</p>
+            <small id="ia4WebviewNoticeHint"></small>
+            <div class="ia4WebviewNoticeActions">
+              <a class="ia4WebviewNoticeOpen" id="ia4WebviewOpenBrowser" href="/app.html" rel="noopener">Abrir no navegador</a>
+              <button class="ia4WebviewNoticeCopy" id="ia4WebviewCopyLink" type="button" hidden>Copiar link</button>
+              <button class="ia4WebviewNoticeContinue" id="ia4WebviewContinue" type="button">Continuar aqui</button>
+            </div>
+          </div>
+        </aside>
 
         <div id="tempoEstimadoBox" class="tempoEstimadoBox">
           ⏱ Calculando tempo estimado...
@@ -14580,13 +14724,13 @@ body.homeLandingClean[data-page="home"] > main > .wrap > .panel{
   Criar meu time e gerar Minha Arte Brinde 🚀
 </button>
 
-      <div style="display:flex;align-items:center;gap:10px;margin:16px 0 8px;">
+      <div id="googleLoginSeparator" style="display:flex;align-items:center;gap:10px;margin:16px 0 8px;">
         <div style="height:1px;background:#d1d5db;flex:1;"></div>
         <div style="font-size:13px;font-weight:950;color:#64748b;">OU</div>
         <div style="height:1px;background:#d1d5db;flex:1;"></div>
       </div>
 
-      <div class="googleLoginBox">
+      <div class="googleLoginBox" id="googleLoginBox">
         <div id="googleLoginModal"></div>
       </div>
 
@@ -15406,7 +15550,305 @@ const API_BASE = "https://api.omascote.com.br";
 const MEU_CLUBE_PLAY_STORE_URL = "https://play.google.com/store/apps/details?id=br.com.omascote.app";
 const MEU_CLUBE_APP_WEB_URL = "https://omascote.com.br/app.html";
 const MEU_CLUBE_ARTE_APP_MSG = "Para criar artes, baixe o app Meu Clube FC na Play Store.";
-const isInstagram = /Instagram/i.test(navigator.userAgent);
+// Ative somente junto do deploy coordenado da API de handoff.
+const IA4_BROWSER_HANDOFF_ENABLED = false;
+const IA4_BROWSER_HANDOFF_CODE_RE = /^[A-Za-z0-9_-]{43}$/;
+const IA4_WEBVIEW_NOTICE_DISMISSED_KEY = "omascote_webview_notice_dismissed_v1";
+const IA4_ENTRADA_CHAVES_PERMITIDAS = new Set([
+  "fbclid",
+  "utm_source",
+  "utm_medium",
+  "utm_campaign",
+  "utm_id",
+  "utm_term",
+  "utm_content",
+  "utm_source_platform",
+  "utm_creative_format",
+  "utm_marketing_tactic",
+  "produto"
+]);
+const IA4_CONTROLES_RE = /[\u0000-\u001f\u007f]/;
+
+function ia4DetectarAmbienteNavegacao(userAgent = navigator.userAgent, overrides = {}){
+  const ua = String(userAgent || "");
+  const sistema = /Android/i.test(ua)
+    ? "android"
+    : /iPhone|iPad|iPod/i.test(ua)
+      ? "ios"
+      : /Windows/i.test(ua)
+        ? "windows"
+        : /Mac OS X|Macintosh/i.test(ua)
+          ? "macos"
+          : "outro";
+
+  let appSocial = "";
+  if(/FBAN\/MessengerForiOS|FB_IAB\/MESSENGER|Orca-Android|Messenger/i.test(ua)){
+    appSocial = "messenger";
+  }else if(/Instagram/i.test(ua)){
+    appSocial = "instagram";
+  }else if(/WhatsApp/i.test(ua)){
+    appSocial = "whatsapp";
+  }else if(/FBAN|FBAV|FB_IAB|FB4A|FBIOS/i.test(ua)){
+    appSocial = "facebook";
+  }
+
+  const twa = typeof overrides.twa === "boolean"
+    ? overrides.twa
+    : (typeof ia4EstaEmModoApp === "function" && ia4EstaEmModoApp());
+  const pwa = typeof overrides.pwa === "boolean"
+    ? overrides.pwa
+    : (typeof ia4EstaEmPwa === "function" && ia4EstaEmPwa());
+  const webviewMeta = ["instagram", "facebook", "messenger", "whatsapp"].includes(appSocial);
+
+  return {
+    userAgent:ua,
+    sistema,
+    appSocial,
+    webviewMeta,
+    twa:!!twa,
+    pwa:!!pwa,
+    navegadorInterno:!!(webviewMeta && !twa && !pwa)
+  };
+}
+
+const IA4_AMBIENTE_NAVEGACAO = ia4DetectarAmbienteNavegacao();
+const isInstagram = IA4_AMBIENTE_NAVEGACAO.appSocial === "instagram";
+
+function ia4RotaPublicaAtual(){
+  try{
+    const params = new URLSearchParams(location.search || "");
+    return params.has("time") ||
+      params.get("ranking") === "times" ||
+      params.has("dividir") ||
+      params.has("avaliar");
+  }catch(e){
+    return false;
+  }
+}
+
+function ia4ValorEntradaSeguro(chave, valorOriginal){
+  const valorBruto = String(valorOriginal || "");
+  const valor = valorBruto.trim();
+  const limite = chave === "produto" ? 64 : 300;
+  if(!valor || valor.length > limite || IA4_CONTROLES_RE.test(valorBruto)) return "";
+  if(chave === "produto" && !/^[a-z0-9_-]+$/i.test(valor)) return "";
+  return valor;
+}
+
+function ia4DestinoAppSeguro(){
+  const destino = new URL("/app.html", location.origin);
+  try{
+    const entrada = new URL(location.href);
+    for(const [chaveOriginal, valorOriginal] of entrada.searchParams){
+      const chave = String(chaveOriginal || "").toLowerCase();
+      if(!IA4_ENTRADA_CHAVES_PERMITIDAS.has(chave)) continue;
+      const valor = ia4ValorEntradaSeguro(chave, valorOriginal);
+      if(valor) destino.searchParams.set(chave, valor);
+    }
+
+    const ancora = entrada.hash.slice(1);
+    if(ancora && ancora.length <= 200 && !IA4_CONTROLES_RE.test(ancora)){
+      destino.hash = ancora;
+    }
+  }catch(e){}
+  return destino;
+}
+
+function ia4DestinoContinuarSeguro(destino, codigo = ""){
+  if(!IA4_BROWSER_HANDOFF_ENABLED || !IA4_BROWSER_HANDOFF_CODE_RE.test(codigo)) return destino;
+  const continuar = new URL("/continuar.html", location.origin);
+  continuar.searchParams.set("next", `${destino.pathname}${destino.search}${destino.hash}`);
+  const fragmento = new URLSearchParams();
+  fragmento.set("auth_handoff", codigo);
+  continuar.hash = fragmento.toString();
+  return continuar;
+}
+
+function ia4IntentChromeParaUrl(destino){
+  const fallback = encodeURIComponent(destino.href);
+  return `intent://${destino.host}${destino.pathname}${destino.search}#Intent;scheme=https;package=com.android.chrome;S.browser_fallback_url=${fallback};end`;
+}
+
+async function ia4CriarBrowserHandoff(destino){
+  if(!IA4_BROWSER_HANDOFF_ENABLED || !token) return { ok:false, destino, motivo:"desativado" };
+
+  try{
+    const r = await fetch(`${API_BASE}/auth/browser-handoff`, {
+      method:"POST",
+      cache:"no-store",
+      headers:{
+        "Authorization":"Bearer " + token,
+        "Content-Type":"application/json",
+        "Cache-Control":"no-cache"
+      },
+      body:JSON.stringify({})
+    });
+    const data = await r.json().catch(()=>({}));
+
+    if(r.status === 404 || r.status === 503){
+      return { ok:false, destino, motivo:"indisponivel" };
+    }
+
+    const codigo = String(data.code || data.auth_handoff || data.handoff_code || "").trim();
+    if(!r.ok || !data.ok || !IA4_BROWSER_HANDOFF_CODE_RE.test(codigo)){
+      return { ok:false, destino, motivo:"rejeitado" };
+    }
+
+    return {
+      ok:true,
+      codigo,
+      destino:ia4DestinoContinuarSeguro(destino, codigo)
+    };
+  }catch(e){
+    return { ok:false, destino, motivo:"rede" };
+  }
+}
+
+function ia4NavegarParaDestinoExterno(destino){
+  const ambiente = ia4DetectarAmbienteNavegacao();
+  if(destino.pathname === "/continuar.html"){
+    // A pagina intermediaria nao resgata dentro do WebView; ela orienta a abertura externa.
+    location.href = destino.href;
+    return;
+  }
+
+  if(ambiente.sistema === "android"){
+    location.href = ia4IntentChromeParaUrl(destino);
+    return;
+  }
+
+  location.href = destino.href;
+}
+
+async function ia4AbrirNavegadorExternoSeguro(){
+  const destinoDireto = ia4DestinoAppSeguro();
+  const handoff = await ia4CriarBrowserHandoff(destinoDireto);
+  const destinoFinal = handoff.ok ? handoff.destino : destinoDireto;
+  ia4NavegarParaDestinoExterno(destinoFinal);
+  return handoff;
+}
+
+async function ia4CopiarTextoSeguro(texto){
+  const valor = String(texto || "").trim();
+  if(!valor) return false;
+
+  if(window.isSecureContext && navigator.clipboard?.writeText){
+    try{
+      await navigator.clipboard.writeText(valor);
+      return true;
+    }catch(e){}
+  }
+
+  const focoAnterior = document.activeElement;
+  let area = null;
+  try{
+    area = document.createElement("textarea");
+    area.value = valor;
+    area.setAttribute("readonly", "readonly");
+    area.setAttribute("aria-hidden", "true");
+    area.style.position = "fixed";
+    area.style.left = "-9999px";
+    area.style.top = "0";
+    area.style.opacity = "0.01";
+    area.style.fontSize = "16px";
+    area.style.pointerEvents = "none";
+    document.body.appendChild(area);
+    area.focus();
+    area.select();
+    area.setSelectionRange(0, valor.length);
+    return document.execCommand("copy") === true;
+  }catch(e){
+    return false;
+  }finally{
+    area?.remove();
+    try{ focoAnterior?.focus?.({ preventScroll:true }); }catch(e){}
+  }
+}
+
+function ia4NomeAppSocial(appSocial){
+  return {
+    instagram:"Instagram",
+    facebook:"Facebook",
+    messenger:"Messenger",
+    whatsapp:"WhatsApp"
+  }[appSocial] || "aplicativo";
+}
+
+function ia4InicializarAvisoNavegadorInterno(){
+  const aviso = document.getElementById("ia4WebviewNotice");
+  const abrir = document.getElementById("ia4WebviewOpenBrowser");
+  const copiar = document.getElementById("ia4WebviewCopyLink");
+  const continuar = document.getElementById("ia4WebviewContinue");
+  const titulo = document.getElementById("ia4WebviewNoticeTitle");
+  const dica = document.getElementById("ia4WebviewNoticeHint");
+  if(!aviso || !abrir || !continuar) return;
+
+  let dispensado = false;
+  try{ dispensado = sessionStorage.getItem(IA4_WEBVIEW_NOTICE_DISMISSED_KEY) === "1"; }catch(e){}
+  if(!IA4_AMBIENTE_NAVEGACAO.navegadorInterno || ia4RotaPublicaAtual() || dispensado){
+    aviso.hidden = true;
+    return;
+  }
+
+  const nomeApp = ia4NomeAppSocial(IA4_AMBIENTE_NAVEGACAO.appSocial);
+  const destinoDireto = ia4DestinoAppSeguro();
+  const destinoExterno = ia4DestinoContinuarSeguro(destinoDireto);
+  aviso.hidden = false;
+  if(titulo) titulo.textContent = `Abra no navegador antes de enviar suas fotos (${nomeApp})`;
+
+  if(IA4_AMBIENTE_NAVEGACAO.sistema === "android"){
+    abrir.href = ia4IntentChromeParaUrl(destinoExterno);
+    abrir.removeAttribute("target");
+    if(dica) dica.textContent = "Toque em Abrir no navegador. Se o Chrome não abrir, use o menu ⋮ deste aplicativo.";
+    if(copiar) copiar.hidden = true;
+  }else{
+    abrir.href = destinoExterno.href;
+    abrir.target = "_blank";
+    if(dica) dica.textContent = "No iPhone, use o menu do aplicativo e escolha Abrir no navegador. Você também pode copiar o link.";
+    if(copiar) copiar.hidden = false;
+  }
+
+  abrir.addEventListener("click", async (event)=>{
+    try{ ia4Track("abriu_navegador_externo_aviso", { aplicativo:nomeApp.toLowerCase() }); }catch(e){}
+    if(!IA4_BROWSER_HANDOFF_ENABLED || !token) return;
+
+    event.preventDefault();
+    abrir.setAttribute("aria-busy", "true");
+    const textoOriginal = abrir.textContent;
+    abrir.textContent = "Preparando acesso seguro...";
+    const handoff = await ia4CriarBrowserHandoff(destinoDireto);
+    abrir.removeAttribute("aria-busy");
+    abrir.textContent = textoOriginal;
+
+    if(!handoff.ok && dica){
+      dica.textContent = "Não foi possível levar a sessão automaticamente. O navegador será aberto para você entrar normalmente.";
+    }
+    ia4NavegarParaDestinoExterno(handoff.ok ? handoff.destino : destinoDireto);
+  });
+
+  copiar?.addEventListener("click", async ()=>{
+    let destinoParaCopiar = destinoExterno;
+    if(IA4_BROWSER_HANDOFF_ENABLED && token){
+      const handoff = await ia4CriarBrowserHandoff(destinoDireto);
+      if(handoff.ok) destinoParaCopiar = handoff.destino;
+      else if(dica) dica.textContent = "Não foi possível levar a sessão automaticamente. Copie o link e entre normalmente no navegador.";
+    }
+
+    const ok = await ia4CopiarTextoSeguro(destinoParaCopiar.href);
+    if(dica) dica.textContent = ok
+      ? "Link copiado. Cole no Chrome ou Safari."
+      : "Selecione e copie este link para abrir no navegador.";
+    if(!ok) window.prompt("Copie o link para abrir no navegador:", destinoParaCopiar.href);
+  });
+
+  continuar.addEventListener("click", ()=>{
+    try{ sessionStorage.setItem(IA4_WEBVIEW_NOTICE_DISMISSED_KEY, "1"); }catch(e){}
+    aviso.hidden = true;
+    try{ ia4Track("continuou_navegador_interno", { aplicativo:nomeApp.toLowerCase() }); }catch(e){}
+  });
+}
+
+ia4InicializarAvisoNavegadorInterno();
 const IA4_MAX_UPLOAD_BYTES = 50 * 1024 * 1024;
 const IA4_MAX_UPLOAD_MB = 50;
 const OMASCOTE_ALLOWED_IMAGE_TYPES = new Set(["image/png", "image/jpeg", "image/jpg", "image/webp"]);
@@ -15909,6 +16351,19 @@ ia4AtualizarPrimeiroAcessoReal();
 
 let googleClientId = "";
 let googleLoginInicializado = false;
+let googleLoginInicializando = null;
+
+function configurarLoginGoogleUi(disponivel){
+  const separador = document.getElementById("googleLoginSeparator");
+  const box = document.getElementById("googleLoginBox");
+  if(separador) separador.hidden = !disponivel;
+  if(box) box.hidden = !disponivel;
+}
+
+function loginGooglePermitidoNesteAmbiente(){
+  const ambiente = ia4DetectarAmbienteNavegacao();
+  return !ambiente.navegadorInterno;
+}
 
 function carregarScriptGoogleLogin(){
   return new Promise((resolve, reject)=>{
@@ -15917,67 +16372,95 @@ function carregarScriptGoogleLogin(){
       return;
     }
 
-    if(document.getElementById("googleLoginScript")){
-      const esperar = setInterval(()=>{
-        if(window.google && window.google.accounts && window.google.accounts.id){
-          clearInterval(esperar);
-          resolve();
-        }
-      }, 150);
-      setTimeout(()=>clearInterval(esperar), 8000);
-      return;
+    let concluido = false;
+    let script = document.getElementById("googleLoginScript");
+    const encerrar = (erro = null)=>{
+      if(concluido) return;
+      concluido = true;
+      clearInterval(esperar);
+      clearTimeout(limite);
+      script?.removeEventListener("error", aoFalhar);
+      erro ? reject(erro) : resolve();
+    };
+    const verificar = ()=>{
+      if(window.google && window.google.accounts && window.google.accounts.id){
+        encerrar();
+      }
+    };
+    const aoFalhar = ()=>encerrar(new Error("google_gsi_indisponivel"));
+    const esperar = setInterval(verificar, 150);
+    const limite = setTimeout(()=>encerrar(new Error("google_gsi_timeout")), 8000);
+
+    if(!script){
+      script = document.createElement("script");
+      script.id = "googleLoginScript";
+      script.src = "https://accounts.google.com/gsi/client";
+      script.async = true;
+      script.defer = true;
+      document.head.appendChild(script);
     }
 
-    const s = document.createElement("script");
-    s.id = "googleLoginScript";
-    s.src = "https://accounts.google.com/gsi/client";
-    s.async = true;
-    s.defer = true;
-    s.onload = resolve;
-    s.onerror = reject;
-    document.head.appendChild(s);
+    script.addEventListener("error", aoFalhar, { once:true });
+    verificar();
   });
 }
 
 async function inicializarLoginGoogle(){
+  if(!loginGooglePermitidoNesteAmbiente()){
+    configurarLoginGoogleUi(false);
+    return false;
+  }
+
+  if(googleLoginInicializado){
+    configurarLoginGoogleUi(true);
+    return true;
+  }
+
+  if(googleLoginInicializando) return googleLoginInicializando;
+  configurarLoginGoogleUi(true);
+
+  googleLoginInicializando = (async ()=>{
   try{
     await carregarScriptGoogleLogin();
     const r = await fetch(`${API_BASE}/auth/google-config`);
-    const data = await r.json();
+    const data = await r.json().catch(()=>({}));
 
-    if(!data.ok || !data.client_id){
-      return;
+    if(!r.ok || !data.ok || !data.client_id){
+      throw new Error("google_config_indisponivel");
     }
 
     googleClientId = data.client_id;
 
-    const esperarGoogle = setInterval(()=>{
-      if(!window.google || !google.accounts || !google.accounts.id) return;
+    google.accounts.id.initialize({
+      client_id: googleClientId,
+      callback: entrarComGoogle
+    });
 
-      clearInterval(esperarGoogle);
+    ["googleLoginHome", "googleLoginModal"].forEach((id)=>{
+      const el = document.getElementById(id);
+      if(!el) return;
 
-      google.accounts.id.initialize({
-        client_id: googleClientId,
-        callback: entrarComGoogle
+      google.accounts.id.renderButton(el, {
+        theme: "outline",
+        size: "large",
+        text: "continue_with",
+        shape: "pill",
+        width: 280
       });
+    });
 
-      ["googleLoginHome", "googleLoginModal"].forEach((id)=>{
-        const el = document.getElementById(id);
-        if(!el) return;
+    googleLoginInicializado = true;
+    configurarLoginGoogleUi(true);
+    return true;
+  }catch(e){
+    configurarLoginGoogleUi(false);
+    return false;
+  }finally{
+    googleLoginInicializando = null;
+  }
+  })();
 
-        google.accounts.id.renderButton(el, {
-          theme: "outline",
-          size: "large",
-          text: "continue_with",
-          shape: "pill",
-          width: 280
-        });
-      });
-
-      googleLoginInicializado = true;
-    }, 300);
-
-  }catch(e){}
+  return googleLoginInicializando;
 }
 
 async function entrarComGoogle(response){
@@ -28653,20 +29136,55 @@ async function gerarPixPedido(id) {
 }
 
 async function copiarTextoPix(texto) {
-  if(navigator.clipboard?.writeText){
-    await navigator.clipboard.writeText(texto);
+  return ia4CopiarTextoSeguro(texto);
+}
+
+function mostrarCodigoPixCopiaManual(texto){
+  const valor = String(texto || "").trim();
+  if(!valor) return;
+
+  const modal = document.getElementById("pixQrModal");
+  const body = document.getElementById("pixQrBody");
+  if(!modal || !body){
+    window.prompt("Selecione e copie o código Pix:", valor);
     return;
   }
 
-  const input = document.createElement("textarea");
-  input.value = texto;
-  input.style.position = "fixed";
-  input.style.opacity = "0";
-  document.body.appendChild(input);
-  input.focus();
-  input.select();
-  document.execCommand("copy");
-  input.remove();
+  let bloco = body.querySelector("[data-pix-manual-copy]");
+  if(!bloco){
+    bloco = document.createElement("div");
+    bloco.className = "pixManualCopy";
+    bloco.dataset.pixManualCopy = "";
+
+    const titulo = document.createElement("strong");
+    titulo.textContent = "Copie o código Pix manualmente";
+    const ajuda = document.createElement("small");
+    ajuda.textContent = "Toque no código, selecione tudo e escolha Copiar.";
+    const area = document.createElement("textarea");
+    area.readOnly = true;
+    area.setAttribute("aria-label", "Código Pix para copiar manualmente");
+    const selecionar = ()=>{
+      area.focus();
+      area.select();
+      area.setSelectionRange(0, area.value.length);
+    };
+    area.addEventListener("focus", selecionar);
+    area.addEventListener("click", selecionar);
+    bloco.append(titulo, ajuda, area);
+    body.appendChild(bloco);
+  }
+
+  const area = bloco.querySelector("textarea");
+  if(area){
+    area.value = valor;
+    setTimeout(()=>{
+      area.focus();
+      area.select();
+      area.setSelectionRange(0, area.value.length);
+    }, 80);
+  }
+  modal.classList.add("open");
+  modal.setAttribute("aria-hidden", "false");
 }
 
 async function copiarPixPedido(id) {
@@ -28681,7 +29199,12 @@ async function copiarPixPedido(id) {
       return;
     }
 
-    await copiarTextoPix(data.pix_copia_cola);
+    const copiado = await copiarTextoPix(data.pix_copia_cola);
+    if(!copiado){
+      abrirModalPixQr(id, data);
+      mostrarCodigoPixCopiaManual(data.pix_copia_cola);
+      return;
+    }
     alert("Pix copiado. Após o pagamento, a imagem será liberada automaticamente.");
     carregarHistorico();
   }catch(e){
@@ -28877,7 +29400,11 @@ async function copiarPixSaldoAtual() {
   }
 
   try{
-    await copiarTextoPix(saldoPixAtual.pix);
+    const copiado = await copiarTextoPix(saldoPixAtual.pix);
+    if(!copiado){
+      mostrarCodigoPixCopiaManual(saldoPixAtual.pix);
+      return;
+    }
     alert("Pix copiado. Após o pagamento, o saldo é liberado automaticamente.");
   }catch(e){
     alert("Não foi possível copiar o Pix.");
@@ -29614,43 +30141,49 @@ const downloadsDiretosEmAndamento = new Set();
 
 function ambienteDownloadAtual(){
   const ua = String(navigator.userAgent || "");
-  let navegador = "outro";
+  const ambiente = ia4DetectarAmbienteNavegacao(ua);
+  let navegador = ambiente.appSocial || "outro";
 
-  if(/Instagram/i.test(ua)) navegador = "instagram";
-  else if(/WhatsApp/i.test(ua)) navegador = "whatsapp";
-  else if(/SamsungBrowser/i.test(ua)) navegador = "samsung_internet";
-  else if(/CriOS/i.test(ua)) navegador = "chrome_ios";
-  else if(/Chrome|Chromium/i.test(ua)) navegador = "chrome";
-  else if(/Safari/i.test(ua)) navegador = "safari";
+  if(!ambiente.appSocial && /SamsungBrowser/i.test(ua)) navegador = "samsung_internet";
+  else if(!ambiente.appSocial && /CriOS/i.test(ua)) navegador = "chrome_ios";
+  else if(!ambiente.appSocial && /Chrome|Chromium/i.test(ua)) navegador = "chrome";
+  else if(!ambiente.appSocial && /Safari/i.test(ua)) navegador = "safari";
 
-  let sistema = "outro";
-  if(/Android/i.test(ua)) sistema = "android";
-  else if(/iPhone|iPad|iPod/i.test(ua)) sistema = "ios";
-  else if(/Windows/i.test(ua)) sistema = "windows";
-  else if(/Mac OS X|Macintosh/i.test(ua)) sistema = "macos";
-
-  const ios = sistema === "ios";
+  const ios = ambiente.sistema === "ios";
   const safariIos = ios &&
     navegador === "safari" &&
-    !/CriOS|FxiOS|EdgiOS|OPiOS|Instagram|WhatsApp/i.test(ua);
-  const navegadorInterno = navegador === "instagram" || navegador === "whatsapp";
+    !ambiente.navegadorInterno;
 
-  return { navegador, sistema, safariIos, navegadorInterno };
+  return {
+    navegador,
+    sistema:ambiente.sistema,
+    safariIos,
+    navegadorInterno:ambiente.navegadorInterno,
+    appSocial:ambiente.appSocial,
+    pwa:ambiente.pwa,
+    twa:ambiente.twa
+  };
 }
 
-function orientarDownloadNavegadorInterno(){
-  return window.confirm(
-    "O navegador do Instagram ou WhatsApp pode bloquear o salvamento. " +
+async function orientarDownloadNavegadorInterno(ambiente = ambienteDownloadAtual()){
+  const nomeApp = ia4NomeAppSocial(ambiente.appSocial);
+  const tentarAqui = window.confirm(
+    `O navegador do ${nomeApp} pode bloquear o salvamento. ` +
     "Para garantir o download, abra o menu \u22ef e escolha \u201cAbrir no navegador\u201d.\n\n" +
-    "Toque em OK para tentar continuar aqui."
+    "OK: tentar o download aqui.\nCancelar: preparar a abertura no navegador."
   );
+  if(tentarAqui) return true;
+
+  await ia4AbrirNavegadorExternoSeguro();
+  return false;
 }
 
 async function iniciarDownloadDiretoSeguro({
   id,
   ticketEndpoint,
   formato = "resultado",
-  recurso = "pedido"
+  recurso = "pedido",
+  navegadorInternoOrientado = false
 } = {}){
   const recursoId = String(id || "");
   const chave = `${recurso}:${recursoId}:${formato}`;
@@ -29670,8 +30203,12 @@ async function iniciarDownloadDiretoSeguro({
     return false;
   }
 
-  if(ambiente.navegadorInterno && !orientarDownloadNavegadorInterno()){
-    ia4Track("download_cancelado_navegador_interno", {
+  if(
+    ambiente.navegadorInterno &&
+    !navegadorInternoOrientado &&
+    !await orientarDownloadNavegadorInterno(ambiente)
+  ){
+    ia4Track("download_redirecionado_navegador_externo", {
       pedido_id: recursoId,
       navegador: ambiente.navegador,
       sistema_operacional: ambiente.sistema,
@@ -29889,12 +30426,16 @@ async function compartilharImagemPedido(id){
         text: "Minha arte criada no Meu Clube FC",
         files: [file]
       });
-      return;
+      return true;
     }
 
-    await baixarPedido(id);
-  }catch{
-    await baixarPedido(id);
+    return baixarPedido(id);
+  }catch(e){
+    if(e?.name === "AbortError"){
+      try{ ia4Track("compartilhamento_cancelado", { pedido_id:String(id || "") }); }catch(err){}
+      return false;
+    }
+    return baixarPedido(id);
   }
 }
 
@@ -36566,12 +37107,15 @@ async function baixarCartaAppImagem(id){
   try{
     if(!token || !id) return;
     const carta = cartasAppAtivas.find(item => String(item.id) === String(id));
+    const ambiente = ambienteDownloadAtual();
+
+    // Se for preciso trocar de navegador, preserve a carta como não lida para ela
+    // continuar disponível quando a conta for restaurada no navegador externo.
+    if(ambiente.navegadorInterno && !await orientarDownloadNavegadorInterno(ambiente)) return;
+
     await marcarCartaAppLida(id);
 
     if(carta?.imagem_url){
-      const ambiente = ambienteDownloadAtual();
-      if(ambiente.navegadorInterno && !orientarDownloadNavegadorInterno()) return;
-
       const externa = new URL(carta.imagem_url, location.href);
       if(!["http:", "https:"].includes(externa.protocol)){
         throw new Error("url_imagem_invalida");
@@ -36593,7 +37137,8 @@ async function baixarCartaAppImagem(id){
       id,
       ticketEndpoint: `/cartas-app/${encodeURIComponent(id)}/download-ticket`,
       formato: "imagem",
-      recurso: "carta"
+      recurso: "carta",
+      navegadorInternoOrientado: ambiente.navegadorInterno
     });
   }catch(e){
     alert("Imagem indisponível no momento.");
@@ -36615,8 +37160,10 @@ function abrirCartaApp(id){
 
   cartaAppModal.classList.add("open");
   cartaAppModal.setAttribute("aria-hidden", "false");
-  console.log("marcando carta como lida", carta.id);
-  marcarCartaAppLida(carta.id);
+  if(!carta.tem_imagem){
+    console.log("marcando carta como lida", carta.id);
+    marcarCartaAppLida(carta.id);
+  }
 }
 
 function ia4RegistrarAppInstaladoUmaVez(){
