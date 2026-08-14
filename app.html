@@ -13215,6 +13215,53 @@ body[data-page="home"] .ia4WhatsappIcon{
   }
 }
 
+/* Cartões iniciais: uma única imagem grande com o nome destacado dentro dela. */
+body[data-page="home"] .productChooserCard{
+  position:relative !important;
+  display:block !important;
+  min-height:0 !important;
+  aspect-ratio:.82 !important;
+  padding:0 !important;
+  gap:0 !important;
+  overflow:hidden !important;
+}
+
+body[data-page="home"] .productChooserThumb{
+  position:absolute !important;
+  inset:0 !important;
+  width:100% !important;
+  height:100% !important;
+  border:0 !important;
+  border-radius:inherit !important;
+  box-shadow:none !important;
+}
+
+body[data-page="home"] .productChooserCard > span:not(.productChooserThumb){
+  position:absolute !important;
+  z-index:2 !important;
+  left:5px !important;
+  right:5px !important;
+  bottom:5px !important;
+  display:block !important;
+}
+
+body[data-page="home"] .productChooserName{
+  display:flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  width:100% !important;
+  max-width:none !important;
+  min-height:32px !important;
+  padding:5px 4px !important;
+  border:1px solid rgba(255,255,255,.12) !important;
+  border-radius:9px !important;
+  background:rgba(0,0,0,.90) !important;
+  box-shadow:0 6px 14px rgba(0,0,0,.34) !important;
+  color:#ffffff !important;
+  text-shadow:0 1px 3px rgba(0,0,0,.9) !important;
+  box-sizing:border-box !important;
+}
+
 body.homeLandingClean[data-page="home"] .preTempoHeadline{
   display:block !important;
 }
