@@ -23140,7 +23140,6 @@ function renderProductChooser(){
         const product = PRODUCTS[productKey] || {};
         const copy = PRODUCT_CHOOSER_COPY[productKey] || {};
         const name = copy.name || product.title || product.name || productKey;
-        const priceLabel = formatProductCardPrice(product);
         return `
           <button type="button" class="productChooserCard" data-product-picker="${htmlEscape(productKey)}" aria-pressed="false">
             <span class="productChooserThumb" aria-hidden="true">
@@ -23149,7 +23148,6 @@ function renderProductChooser(){
             <span>
               ${productKey === "mascote_uniforme" ? `<span class="productChooserBadge">Produto do anúncio</span>` : ""}
               <span class="productChooserName">${htmlEscape(name)}</span>
-              ${priceLabel ? `<span class="productChooserPrice">${htmlEscape(priceLabel)}</span>` : ""}
             </span>
           </button>
         `;
