@@ -15550,11 +15550,9 @@ const API_BASE = "https://api.omascote.com.br";
 const MEU_CLUBE_PLAY_STORE_URL = "https://play.google.com/store/apps/details?id=br.com.omascote.app";
 const MEU_CLUBE_APP_WEB_URL = "https://omascote.com.br/app.html";
 const MEU_CLUBE_ARTE_APP_MSG = "Para criar artes, baixe o app Meu Clube FC na Play Store.";
-// A liberacao geral continua desligada. Este marcador permite um teste real
-// e controlado no celular antes de ativar a transferencia para todos.
-const IA4_BROWSER_HANDOFF_BETA_CAMPAIGN = "teste_meta_seguro_20260814";
-const IA4_BROWSER_HANDOFF_ENABLED =
-  new URLSearchParams(location.search || "").get("utm_campaign") === IA4_BROWSER_HANDOFF_BETA_CAMPAIGN;
+// Fluxo validado em aparelho real. A transferencia continua opcional:
+// so acontece quando a pessoa escolhe abrir no navegador externo.
+const IA4_BROWSER_HANDOFF_ENABLED = true;
 const IA4_BROWSER_HANDOFF_CODE_RE = /^[A-Za-z0-9_-]{43}$/;
 const IA4_WEBVIEW_NOTICE_DISMISSED_KEY = "omascote_webview_notice_dismissed_v1";
 const IA4_ENTRADA_CHAVES_PERMITIDAS = new Set([
