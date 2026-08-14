@@ -11890,11 +11890,12 @@ body.fotoJogosProductFocus #fotoJogosProductReturn{
   display:flex;
   align-items:center;
   justify-content:flex-end;
-  gap:6px;
+  gap:5px;
+  flex-wrap:nowrap;
 }
 
 .cleanInlinePhotoButton{
-  padding:7px 10px;
+  padding:7px 9px;
   border-radius:999px;
   white-space:nowrap;
 }
@@ -11941,8 +11942,8 @@ body.fotoJogosProductFocus #fotoJogosProductReturn{
 
   .cleanInlinePhotoButton{
     min-height:30px;
-    padding:6px 7px;
-    font-size:10px;
+    padding:6px 5px;
+    font-size:9px;
   }
 
   .cleanInlineFileName{
@@ -18219,7 +18220,11 @@ function renderCleanInlinePhotoField(product, field, step){
         <span class="cleanInlineUploadOptional">opcional</span>
       </span>
       <span class="cleanInlineUploadSpacer"></span>
-      <div class="cleanInlinePhotoActions" aria-label="Adicionar foto por tipo">
+      <div class="cleanInlinePhotoActions" aria-label="Escolher o tipo de imagem principal">
+        <button class="cleanInlinePhotoButton is-selected" type="button" data-clean-photo-type-for="${htmlEscape(field.key)}" data-clean-photo-type="crests_only" aria-pressed="true">
+          <span class="cleanInlinePhotoPlus" aria-hidden="true">+</span>
+          <span>Só escudos</span>
+        </button>
         ${photoTypes.map(item => `
           <input class="fileHidden" type="file" name="${htmlEscape(field.key)}" data-asset="${htmlEscape(field.key)}" data-clean-photo-role="${htmlEscape(item.role)}" accept="image/png,image/jpeg,image/jpg,image/webp" aria-label="Adicionar foto: ${htmlEscape(item.label)}">
           <button class="cleanInlinePhotoButton" type="button" data-clean-photo-type-for="${htmlEscape(field.key)}" data-clean-photo-type="${htmlEscape(item.role)}" aria-pressed="false">
@@ -23673,6 +23678,7 @@ function getCleanAssetFiles(form, key){
 }
 
 function updateCleanInlinePhotoButtons(form, key){
+  let selectedRole = "";
   getCleanFormAssets(form, key).forEach(input => {
     const role = input.dataset.cleanPhotoRole || "";
     if(!role) return;
@@ -23680,14 +23686,33 @@ function updateCleanInlinePhotoButtons(form, key){
     const hasFile = state?.status === "ready"
       ? Array.from(state.files || []).length > 0
       : (state?.status === "loading" || state?.status === "error" ? false : (input.files?.length || 0) > 0);
-    const button = form?.querySelector?.(
-      `[data-clean-photo-type-for="${CSS.escape(key)}"][data-clean-photo-type="${CSS.escape(role)}"]`
-    );
-    if(button){
-      button.classList.toggle("is-selected", hasFile);
-      button.setAttribute("aria-pressed", hasFile ? "true" : "false");
-    }
+    if(hasFile && !selectedRole) selectedRole = role;
   });
+
+  form?.querySelectorAll?.(`[data-clean-photo-type-for="${CSS.escape(key)}"]`).forEach(button => {
+    const role = button.dataset.cleanPhotoType || "";
+    const selected = role === (selectedRole || "crests_only");
+    button.classList.toggle("is-selected", selected);
+    button.setAttribute("aria-pressed", selected ? "true" : "false");
+  });
+}
+
+function clearCleanPhotoRoleSelections(form, key, exceptRole = ""){
+  getCleanFormAssets(form, key).forEach(input => {
+    const role = input.dataset.cleanPhotoRole || "";
+    if(!role || role === exceptRole) return;
+    try{ input.value = ""; }catch(e){}
+    if(typeof DataTransfer !== "undefined"){
+      try{
+        const empty = new DataTransfer();
+        input.files = empty.files;
+      }catch(e){}
+    }
+    clearCleanStableAsset(form, getCleanAssetInputStateKey(input, key), { clearRequestState:false });
+  });
+  clearCleanOrderRequestState(form);
+  resetCleanReviewState(form);
+  updateCleanInlinePhotoButtons(form, key);
 }
 
 function clearCleanFilePreview(form, key){
@@ -25356,6 +25381,13 @@ function bindCleanProductForms(root){
       const role = button.dataset.cleanPhotoType || "";
       const productKey = form?.dataset?.productForm || "";
       if(productKey) selectCleanProductForPicker(productKey, { scroll:false });
+      if(role === "crests_only"){
+        clearCleanPhotoRoleSelections(form, key);
+        setCleanFilePreview(form, key, []);
+        updateCleanAccordionForField(form, key);
+        setCleanProductMsg(form, "");
+        return;
+      }
       getCleanFormAsset(form, key, role)?.click();
     });
   });
@@ -25429,6 +25461,11 @@ function bindCleanProductForms(root){
       }
 
       if(!isCleanStableAssetTokenCurrent(form, assetStateKey, selectionToken)) return;
+
+      const selectedPhotoRole = input.dataset.cleanPhotoRole || "";
+      if(selectedPhotoRole){
+        clearCleanPhotoRoleSelections(form, assetKey, selectedPhotoRole);
+      }
 
       setCleanStableAssetState(form, assetStateKey, {
         status: "ready",
