@@ -178,8 +178,50 @@ button:disabled{opacity:.6;cursor:not-allowed}
 
 const API_BASE = "https://api.omascote.com.br";
 
-// Agora a página principal sempre abre o app
-window.location.replace("app.html");
+// A raiz sempre abre o app sem perder a atribuicao valida do anuncio.
+(function redirecionarParaApp(){
+  const CHAVES_ENTRADA_PERMITIDAS = new Set([
+    "fbclid",
+    "utm_source",
+    "utm_medium",
+    "utm_campaign",
+    "utm_id",
+    "utm_term",
+    "utm_content",
+    "utm_source_platform",
+    "utm_creative_format",
+    "utm_marketing_tactic",
+    "produto"
+  ]);
+  const CONTROLES_RE = /[\u0000-\u001f\u007f]/;
+
+  try{
+    const entrada = new URL(window.location.href);
+    const destino = new URL("/app.html", entrada.origin);
+
+    for(const [chaveOriginal, valorOriginal] of entrada.searchParams){
+      const chave = String(chaveOriginal || "").toLowerCase();
+      if(!CHAVES_ENTRADA_PERMITIDAS.has(chave)) continue;
+
+      const valorBruto = String(valorOriginal || "");
+      const valor = valorBruto.trim();
+      const limite = chave === "produto" ? 64 : 300;
+      if(!valor || valor.length > limite || CONTROLES_RE.test(valorBruto)) continue;
+      if(chave === "produto" && !/^[a-z0-9_-]+$/i.test(valor)) continue;
+
+      destino.searchParams.set(chave, valor);
+    }
+
+    const ancora = entrada.hash.slice(1);
+    if(ancora && ancora.length <= 200 && !CONTROLES_RE.test(ancora)){
+      destino.hash = ancora;
+    }
+
+    window.location.replace(destino.href);
+  }catch(e){
+    window.location.replace("/app.html");
+  }
+})();
 
 let modoCadastro = false;
 
