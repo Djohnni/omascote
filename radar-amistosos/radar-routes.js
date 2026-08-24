@@ -3,7 +3,8 @@
 
   const allowedViews = new Set([
     "home", "eligibility", "profile-manual", "print-import", "draft-review", "verification",
-    "availabilities", "availability-form", "states", "loading", "empty", "success", "error",
+    "availabilities", "availability-form", "opponents", "opponent-filters", "opponent-detail",
+    "opponents-loading", "opponents-error", "states", "loading", "empty", "success", "error",
     "session-expired", "access-denied"
   ]);
 
@@ -27,24 +28,32 @@
     function navigate(view, options) {
       const safeView = allowedViews.has(view) ? view : "home";
       const method = options && options.replace ? "replaceState" : "pushState";
+      const currentDepth = Number(window.history.state?.radarDemoDepth || 0);
+      const nextDepth = method === "replaceState" ? currentDepth : currentDepth + 1;
       store.dismissToast();
-      window.history[method]({ radarDemo: true, view: safeView }, "", buildUrl(safeView));
+      window.history[method]({ radarDemo: true, radarDemoDepth: nextDepth, view: safeView }, "", buildUrl(safeView));
       store.setView(safeView);
       window.scrollTo({ top: 0, behavior: "auto" });
       window.requestAnimationFrame(() => document.getElementById("radar-main")?.focus({ preventScroll: true }));
     }
 
     function back() {
-      if (window.history.state && window.history.state.radarDemo) {
+      if (Number(window.history.state?.radarDemoDepth || 0) > 0) {
         window.history.back();
       } else {
-        navigate("home", { replace: true });
+        const current = store.getState().view;
+        const fallback = ["opponent-detail", "opponent-filters", "opponents-loading", "opponents-error"].includes(current)
+          ? "opponents"
+          : "home";
+        navigate(fallback, { replace: true });
       }
     }
 
     window.addEventListener("popstate", () => {
-      store.setView(viewFromLocation());
-      window.scrollTo({ top: 0, behavior: "auto" });
+      const view = viewFromLocation();
+      store.setView(view);
+      const top = view === "opponents" ? store.getState().opponentListScrollY : 0;
+      window.requestAnimationFrame(() => window.scrollTo({ top, behavior: "auto" }));
     });
 
     return { navigate, back };
@@ -55,6 +64,7 @@
     if (!root || !window.RadarCore || !window.RadarApi || !window.RadarUI) return;
 
     const params = new URL(window.location.href).searchParams;
+    document.documentElement.classList.toggle("capture-mode", params.get("capture") === "1");
     if (params.get("demo") !== "1") {
       root.innerHTML = '<main class="demo-locked"><span>MCF</span><h1>Demonstração local protegida</h1><p>Abra este checkpoint usando a chave local fornecida pela equipe.</p></main>';
       return;
@@ -63,7 +73,7 @@
     if (params.get("reset") === "1") store.reset();
     const initialView = viewFromLocation();
     store.setView(initialView);
-    window.history.replaceState({ radarDemo: true, view: initialView }, "", window.location.href);
+    window.history.replaceState({ radarDemo: true, radarDemoDepth: 0, view: initialView }, "", window.location.href);
 
     const router = createRouter(store);
     const api = window.RadarApi.create({ demoMode: true });

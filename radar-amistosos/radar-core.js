@@ -8,6 +8,18 @@
     return JSON.parse(JSON.stringify(value));
   }
 
+  function defaultOpponentFilters() {
+    return {
+      modality: "Todas",
+      category: "Todas",
+      level: "Qualquer",
+      day: "Qualquer",
+      period: "Qualquer",
+      radiusKm: 25,
+      venue: "Casa ou fora"
+    };
+  }
+
   function defaultState() {
     return {
       view: "home",
@@ -26,6 +38,10 @@
       },
       availabilities: copy(source.availabilities),
       editingAvailabilityId: null,
+      opponentFilters: defaultOpponentFilters(),
+      opponentVisibleLimit: 6,
+      selectedOpponentSlug: null,
+      opponentListScrollY: 0,
       sequence: 2
     };
   }
@@ -43,6 +59,7 @@
         profileReady: Boolean(parsed.profileReady),
         verification: { ...fresh.verification, ...(parsed.verification || {}), challenge: null },
         availabilities: Array.isArray(parsed.availabilities) ? parsed.availabilities : fresh.availabilities,
+        opponentFilters: { ...fresh.opponentFilters, ...(parsed.opponentFilters || {}) },
         sequence: Number.isInteger(parsed.sequence) ? parsed.sequence : fresh.sequence
       };
     } catch (_error) {
@@ -59,6 +76,7 @@
       profileReady: state.profileReady,
       verification: { ...state.verification, challenge: null },
       availabilities: state.availabilities,
+      opponentFilters: state.opponentFilters,
       sequence: state.sequence
     };
     try {
@@ -254,6 +272,54 @@
       item.status = "cancelled";
       emit();
       notify("Disponibilidade cancelada.", "info");
+    },
+
+    applyOpponentFilters(values) {
+      const allowed = {
+        modality: new Set(["Todas", "Society", "Campo", "Futsal"]),
+        category: new Set(["Todas", "Livre", "Veterano", "Sub-20"]),
+        level: new Set(["Qualquer", "Recreativo", "Intermediário", "Competitivo"]),
+        day: new Set(["Qualquer", "Sábado", "Domingo", "Próximos 30 dias"]),
+        period: new Set(["Qualquer", "Manhã", "Tarde", "Noite"]),
+        venue: new Set(["Casa ou fora", "Mandante", "Visitante"])
+      };
+      const next = defaultOpponentFilters();
+      for (const key of Object.keys(allowed)) {
+        if (allowed[key].has(values?.[key])) next[key] = values[key];
+      }
+      const radius = Number(values?.radiusKm);
+      next.radiusKm = Number.isFinite(radius) ? Math.max(5, Math.min(25, Math.round(radius))) : 25;
+      state.opponentFilters = next;
+      state.opponentVisibleLimit = 6;
+      state.opponentListScrollY = 0;
+      emit();
+      announce("Filtros aplicados à lista de times.");
+    },
+
+    clearOpponentFilters() {
+      state.opponentFilters = defaultOpponentFilters();
+      state.opponentVisibleLimit = 6;
+      state.opponentListScrollY = 0;
+      emit();
+      announce("Filtros removidos.");
+    },
+
+    selectOpponent(slug, scrollY) {
+      const exists = source.nearbyTeams.some((team) => team.slug === slug);
+      state.selectedOpponentSlug = exists ? slug : null;
+      state.opponentListScrollY = Math.max(0, Number(scrollY) || 0);
+      emit({ persist: false });
+    },
+
+    rememberOpponentListPosition(scrollY) {
+      state.opponentListScrollY = Math.max(0, Number(scrollY) || 0);
+    },
+
+    loadMoreOpponents() {
+      return delay("Buscando mais times compatíveis", () => {
+        state.opponentVisibleLimit += 4;
+        announce("Mais times adicionados à lista.");
+      }, 420);
     }
   };
 

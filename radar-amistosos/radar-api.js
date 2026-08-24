@@ -8,7 +8,8 @@
     verification: "/me/time/verificacao",
     startInstagramVerification: "/me/time/verificacoes/instagram",
     confirmInstagramVerification: "/me/time/verificacoes/instagram/confirmar",
-    availabilities: "/me/time/amistosos/disponibilidades"
+    availabilities: "/me/time/amistosos/disponibilidades",
+    nearbyTeams: "/amistosos/times-proximos"
   });
 
   const ERROR_MESSAGES = Object.freeze({
@@ -42,6 +43,29 @@
       throw new RadarApiError("INVALID_RESOURCE_REFERENCE", 0, "Referência de disponibilidade inválida.");
     }
     return `${ENDPOINTS.availabilities}/${encodeURIComponent(id)}`;
+  }
+
+  function buildNearbyTeamsPath(filters) {
+    const input = filters || {};
+    const parameters = new URLSearchParams();
+    const modality = { Society: "society", Campo: "futebol_campo", Futsal: "futsal" }[input.modality];
+    const level = { Recreativo: "iniciante", Intermediário: "intermediario", Competitivo: "competitivo" }[input.level];
+    const day = { Sábado: "saturday", Domingo: "sunday" }[input.day];
+    const period = { Manhã: "morning", Tarde: "afternoon", Noite: "evening" }[input.period];
+    const venue = { Mandante: "home", Visitante: "away" }[input.venue];
+    if (modality) parameters.set("modality", modality);
+    if (input.category && input.category !== "Todas") parameters.set("category", input.category);
+    if (level) parameters.set("level", level);
+    if (day) parameters.set("day", day);
+    if (period) parameters.set("period", period);
+    if (venue) parameters.set("venue_preference", venue);
+    const radius = Number(input.radiusKm);
+    if (Number.isInteger(radius) && radius > 0) parameters.set("radius_km", String(radius));
+    const limit = Number(input.limit);
+    if (Number.isInteger(limit) && limit > 0) parameters.set("limit", String(limit));
+    if (typeof input.cursor === "string" && input.cursor) parameters.set("cursor", input.cursor);
+    const query = parameters.toString();
+    return `${ENDPOINTS.nearbyTeams}${query ? `?${query}` : ""}`;
   }
 
   function create(options) {
@@ -133,6 +157,7 @@
         method: "POST", body: values, etag, idempotent: true, idempotencyKey
       }),
       listAvailabilities: () => request(ENDPOINTS.availabilities),
+      listNearbyTeams: (filters) => request(buildNearbyTeamsPath(filters)),
       createAvailability: (values, idempotencyKey) => request(ENDPOINTS.availabilities, {
         method: "POST", body: values, idempotent: true, idempotencyKey
       }),
@@ -145,5 +170,5 @@
     });
   }
 
-  window.RadarApi = { ENDPOINTS, ERROR_MESSAGES, RadarApiError, create };
+  window.RadarApi = { ENDPOINTS, ERROR_MESSAGES, RadarApiError, buildNearbyTeamsPath, create };
 })();

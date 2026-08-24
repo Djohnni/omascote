@@ -33,7 +33,10 @@
       lock: '<rect x="5" y="10" width="14" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/>',
       location: '<path d="M20 10c0 5-8 11-8 11S4 15 4 10a8 8 0 1 1 16 0z"/><circle cx="12" cy="10" r="2.5"/>',
       close: '<path d="m6 6 12 12M18 6 6 18"/>',
-      eye: '<path d="M2 12s3.5-6 10-6 10 6 10 6-3.5 6-10 6S2 12 2 12z"/><circle cx="12" cy="12" r="2.5"/>'
+      eye: '<path d="M2 12s3.5-6 10-6 10 6 10 6-3.5 6-10 6S2 12 2 12z"/><circle cx="12" cy="12" r="2.5"/>',
+      filter: '<path d="M4 5h16M7 12h10M10 19h4"/>',
+      star: '<path d="m12 3 2.8 5.7 6.2.9-4.5 4.4 1.1 6.2-5.6-2.9-5.6 2.9 1.1-6.2L3 9.6l6.2-.9z"/>',
+      clock: '<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>'
     };
     return `<svg class="icon" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">${paths[name] || paths.radar}</svg>`;
   }
@@ -94,7 +97,7 @@
           <h2 id="feature-title">Seu próximo adversário pode estar bem perto.</h2>
           <p>Mostre quando seu time quer jogar, encontre clubes compatíveis e combine o amistoso com mais confiança.</p>
           <div class="feature-card__actions">
-            ${button("Encontrar amistoso", { action: "navigate", target: "eligibility", trailing: "arrow" })}
+            ${button("Encontrar amistoso", { action: "navigate", target: "opponents", trailing: "arrow" })}
             <span>${icon("shield")} Contato só depois do aceite</span>
           </div>
         </div>
@@ -323,10 +326,136 @@
         ${state.availabilities.length ? state.availabilities.map(availabilityCard).join("") : renderInlineEmpty()}
       </section>
       <section class="opponents-section">
-        <div class="section-title"><div><p class="eyebrow">Por perto</p><h2>Times que combinam com seu perfil</h2></div><button class="quiet-link" type="button" data-action="notify-opponents">Ver todos</button></div>
+        <div class="section-title"><div><p class="eyebrow">Por perto</p><h2>Times que combinam com seu perfil</h2></div><button class="quiet-link" type="button" data-action="navigate" data-target="opponents">Ver todos</button></div>
         <div class="opponent-grid">${data.suggestedOpponents.map((team) => `<article class="opponent-card card">${crest(team.initials, "team-crest--small")}<div><h3>${esc(team.name)} ${team.verified ? `<span title="Perfil verificado">${icon("check")}</span>` : ""}</h3><p>${esc(team.distance)} · ${esc(team.level)}</p><small>${icon("shield")} ${esc(team.conduct)}</small></div><button class="icon-button" type="button" data-action="notify-opponent" aria-label="Ver ${esc(team.name)}">${icon("arrow")}</button></article>`).join("")}</div>
       </section>
     </div>`;
+  }
+
+  function filteredOpponents(state) {
+    const filters = state.opponentFilters;
+    return data.nearbyTeams.filter((team) => {
+      if (filters.modality !== "Todas" && team.modality !== filters.modality) return false;
+      if (filters.category !== "Todas" && team.category !== filters.category) return false;
+      if (filters.level !== "Qualquer" && team.level !== filters.level) return false;
+      if (!["Qualquer", "Próximos 30 dias"].includes(filters.day) && team.day !== filters.day) return false;
+      if (filters.period !== "Qualquer" && team.period !== filters.period) return false;
+      if (filters.venue !== "Casa ou fora" && team.venue !== filters.venue) return false;
+      if (team.distanceKm !== null && team.distanceKm > Number(filters.radiusKm)) return false;
+      return true;
+    }).sort((first, second) => second.compatibility - first.compatibility ||
+      (first.distanceKm ?? Number.MAX_SAFE_INTEGER) - (second.distanceKm ?? Number.MAX_SAFE_INTEGER) ||
+      first.slug.localeCompare(second.slug, "pt-BR"));
+  }
+
+  function opponentDistance(team) {
+    return team.distanceKm === null ? "mesma cidade" : `${team.distanceKm} km aproximadamente`;
+  }
+
+  function opponentCard(team) {
+    const reputation = team.reputation && team.verifiedMatches >= 3
+      ? `${team.reputation.score.toFixed(1).replace(".", ",")} de reputação`
+      : "Novo no Radar";
+    return `<article class="nearby-card card" data-team-slug="${esc(team.slug)}">
+      <div class="nearby-card__top">
+        ${crest(team.initials, "team-crest--opponent")}
+        <div class="nearby-card__identity"><span class="verified-label">${icon("shield")} Time verificado</span><h2>${esc(team.name)}</h2><p>${icon("location")} ${esc(team.city)}, ${esc(team.state)} · ${esc(opponentDistance(team))}</p></div>
+        <div class="compatibility-score"><strong>${esc(team.compatibility)}%</strong><span>compatível</span></div>
+      </div>
+      <div class="nearby-card__tags"><span>${esc(team.modality)}</span><span>${esc(team.category)}</span><span>${esc(team.level)}</span></div>
+      <div class="nearby-card__availability">${icon("calendar")}<div><span>Próximo horário</span><strong>${esc(team.availability)}</strong></div><small>${esc(team.venue)}</small></div>
+      <div class="nearby-card__reasons">${team.reasons.slice(0, 3).map((reason) => `<span>${icon("check")} ${esc(reason)}</span>`).join("")}</div>
+      <div class="nearby-card__footer"><span>${icon("star")} ${esc(reputation)}</span>${button("Ver time", { action: "view-opponent", id: team.slug, trailing: "arrow" })}</div>
+    </article>`;
+  }
+
+  function activeOpponentFilterCount(filters) {
+    return [
+      filters.modality !== "Todas",
+      filters.category !== "Todas",
+      filters.level !== "Qualquer",
+      filters.day !== "Qualquer",
+      filters.period !== "Qualquer",
+      Number(filters.radiusKm) < 25,
+      filters.venue !== "Casa ou fora"
+    ].filter(Boolean).length;
+  }
+
+  function renderOpponentEmpty() {
+    return `<section class="search-empty card" aria-labelledby="search-empty-title">
+      <span class="search-empty__visual">${icon("radar")}</span>
+      <p class="eyebrow">Nenhum resultado</p>
+      <h2 id="search-empty-title">Nenhum time compatível por perto</h2>
+      <p>O Radar não encontrou um clube com os filtros atuais. Nenhum convite foi criado.</p>
+      <div class="search-empty__safety"><span><strong>O que fazer agora</strong>Aumente o raio, altere o dia ou limpe os filtros.</span><span><strong>Seus dados continuam seguros</strong>Contato e localização exata não foram exibidos.</span></div>
+      <div class="search-empty__actions">${button("Ajustar filtros", { action: "open-opponent-filters", icon: "filter" })}${button("Limpar filtros", { action: "clear-opponent-filters", kind: "ghost" })}</div>
+    </section>`;
+  }
+
+  function renderOpponents(state) {
+    const teams = filteredOpponents(state);
+    const visibleTeams = teams.slice(0, state.opponentVisibleLimit);
+    const filterCount = activeOpponentFilterCount(state.opponentFilters);
+    return `<div class="screen screen--wide opponents-screen">
+      ${screenHeader("Radar de Amistosos", "Times querendo amistoso", "Ordenados por compatibilidade, distância aproximada e próximo horário.", button(`Filtros${filterCount ? ` (${filterCount})` : ""}`, { action: "open-opponent-filters", kind: "secondary", icon: "filter" }))}
+      <section class="search-master card"><div><span>${icon("radar")}</span><div><strong>Seu time está disponível</strong><p>Society · Livre · ${esc(state.profile.city)} · até ${esc(state.opponentFilters.radiusKm)} km</p></div></div><span class="search-master__status"><i></i> Radar ativo</span></section>
+      <div class="search-summary"><p><strong>${teams.length}</strong> ${teams.length === 1 ? "time encontrado" : "times encontrados"}</p><span>${icon("shield")} Sem contato antes do aceite</span></div>
+      ${teams.length ? `<section class="nearby-grid" aria-label="Times próximos">${visibleTeams.map(opponentCard).join("")}</section>
+        ${teams.length > visibleTeams.length ? `<div class="load-more">${button("Carregar mais times", { action: "load-more-opponents", kind: "secondary", trailing: "arrow" })}<p>Próxima página protegida por cursor no produto real.</p></div>` : ""}` : renderOpponentEmpty()}
+    </div>`;
+  }
+
+  function filterChoice(name, value, current) {
+    return `<label class="filter-choice"><input type="radio" name="${esc(name)}" value="${esc(value)}"${value === current ? " checked" : ""}><span>${esc(value)}</span></label>`;
+  }
+
+  function renderOpponentFilters(state) {
+    const filters = state.opponentFilters;
+    return `<div class="screen screen--narrow filters-screen">
+      ${screenHeader("Radar de Amistosos", "Ajustar busca", "Os filtros mudam somente esta lista. Sua disponibilidade continua ativa.")}
+      <form class="filters-form" data-form="opponent-filters">
+        <fieldset class="filter-section"><legend>Modalidade</legend><div class="filter-choice-grid">${["Society", "Campo", "Futsal", "Todas"].map((value) => filterChoice("modality", value, filters.modality)).join("")}</div></fieldset>
+        <fieldset class="filter-section"><legend>Categoria</legend><label class="field"><span>Categoria do adversário</span><select name="category"><option${selected(filters.category, "Todas")}>Todas</option><option${selected(filters.category, "Livre")}>Livre</option><option${selected(filters.category, "Veterano")}>Veterano</option><option${selected(filters.category, "Sub-20")}>Sub-20</option></select></label></fieldset>
+        <fieldset class="filter-section"><legend>Nível</legend><div class="filter-choice-grid">${["Recreativo", "Intermediário", "Competitivo", "Qualquer"].map((value) => filterChoice("level", value, filters.level)).join("")}</div></fieldset>
+        <fieldset class="filter-section"><legend>Distância máxima <output class="radius-output" for="opponent-radius">${esc(filters.radiusKm)} km</output></legend><input class="radius-range" id="opponent-radius" type="range" name="radiusKm" min="5" max="25" step="5" value="${esc(filters.radiusKm)}"></fieldset>
+        <fieldset class="filter-section"><legend>Quando</legend><div class="filter-choice-grid filter-choice-grid--three">${["Sábado", "Domingo", "Próximos 30 dias", "Qualquer"].map((value) => filterChoice("day", value, filters.day)).join("")}</div><label class="field"><span>Período</span><select name="period"><option${selected(filters.period, "Qualquer")}>Qualquer</option><option${selected(filters.period, "Manhã")}>Manhã</option><option${selected(filters.period, "Tarde")}>Tarde</option><option${selected(filters.period, "Noite")}>Noite</option></select></label></fieldset>
+        <fieldset class="filter-section"><legend>Mando</legend><label class="field"><span>Preferência</span><select name="venue"><option${selected(filters.venue, "Casa ou fora")}>Casa ou fora</option><option${selected(filters.venue, "Mandante")}>Mandante</option><option${selected(filters.venue, "Visitante")}>Visitante</option></select></label></fieldset>
+        <div class="filters-actions">${button("Aplicar filtros", { type: "submit", full: true, trailing: "arrow" })}${button("Limpar filtros", { action: "clear-opponent-filters", kind: "ghost", full: true })}</div>
+      </form>
+    </div>`;
+  }
+
+  function reputationBar(label, value) {
+    const percent = Math.max(0, Math.min(100, Number(value) * 20));
+    return `<div class="reputation-row"><span>${esc(label)}</span><i><b style="width:${percent}%"></b></i><strong>${String(value).replace(".", ",")}</strong></div>`;
+  }
+
+  function renderOpponentDetail(state) {
+    const team = data.nearbyTeams.find((item) => item.slug === state.selectedOpponentSlug) || data.nearbyTeams[0];
+    const publicReputation = team.reputation && team.verifiedMatches >= 3;
+    return `<div class="screen screen--narrow opponent-detail">
+      ${screenHeader("Radar de Amistosos", team.name, "Veja somente informações públicas e esportivas antes de decidir.")}
+      <section class="opponent-hero card">
+        ${crest(team.initials, "team-crest--detail")}
+        <div><span class="verified-label">${icon("shield")} Time verificado</span><h2>${esc(team.name)}</h2><p>${esc(team.city)}, ${esc(team.state)} · ${esc(opponentDistance(team))}</p></div>
+        <strong class="opponent-hero__score">${esc(team.compatibility)}%<small>compatível</small></strong>
+        <div class="opponent-hero__tags"><span>${esc(team.modality)}</span><span>${esc(team.category)}</span><span>${esc(team.level)}</span></div>
+      </section>
+      <section class="detail-availability card"><span>${icon("calendar")}</span><div><p>Próxima disponibilidade compatível</p><h2>${esc(team.availability)}</h2><small>${esc(team.venue)} · ${esc(team.reasons.join(" · "))}</small></div></section>
+      ${publicReputation ? `<section class="reputation-card card"><div class="reputation-card__heading"><div><p>Reputação em amistosos</p><small>Baseada em ${esc(team.verifiedMatches)} partidas verificadas.</small></div><strong>${team.reputation.score.toFixed(1).replace(".", ",")} ${icon("star")}</strong></div>${reputationBar("Fair play", team.reputation.fairPlay)}${reputationBar("Compromisso", team.reputation.commitment)}${reputationBar("Organização", team.reputation.organization)}<div class="play-again"><strong>${esc(team.reputation.playAgain)}%</strong><span>jogariam novamente</span></div></section>`
+        : `<section class="new-radar-card card">${icon("star")}<div><strong>Novo no Radar</strong><p>A nota pública aparece somente depois de três partidas elegíveis.</p></div></section>`}
+      ${team.verifiedMatches > 0 ? `<div class="verified-match-count"><strong>${esc(team.verifiedMatches)}</strong><span>${team.verifiedMatches === 1 ? "amistoso verificado" : "amistosos verificados"}</span></div>` : ""}
+      <section class="contact-lock card">${icon("lock")}<div><strong>Contato protegido</strong><p>Telefone, WhatsApp, endereço e localização exata não aparecem aqui. O contato só será liberado após os dois times aceitarem o convite.</p></div></section>
+      <div class="detail-actions">${button("Voltar aos times", { action: "back", kind: "ghost" })}${button("Convidar — próxima etapa", { action: "invite-preview", trailing: "arrow" })}</div>
+    </div>`;
+  }
+
+  function renderOpponentsLoading() {
+    return `<div class="screen screen--wide opponents-screen">${screenHeader("Radar de Amistosos", "Buscando times próximos", "A lista está sendo ordenada com segurança.")}<div class="search-skeleton" role="status" aria-label="Carregando times"><span></span><span></span><span></span><span></span></div></div>`;
+  }
+
+  function renderOpponentsError() {
+    return `<div class="screen state-page state-page--error"><section class="state-page__visual">${icon("close")}</section><p class="eyebrow">Busca interrompida</p><h1>Não foi possível carregar os times</h1><p>Seus filtros foram preservados e nenhuma informação privada foi exibida.</p>${button("Tentar novamente", { action: "retry-opponents", trailing: "arrow" })}${button("Voltar à central", { action: "navigate", target: "home", kind: "ghost" })}</div>`;
   }
 
   function renderInlineEmpty() {
@@ -370,6 +499,8 @@
 
   function renderStates() {
     const states = [
+      ["opponents-loading", "Busca carregando", "Enquanto os times próximos são organizados"],
+      ["opponents-error", "Erro na busca", "Falha sem perder filtros ou expor dados"],
       ["loading", "Carregamento", "Enquanto os dados são preparados"],
       ["empty", "Lista vazia", "Quando ainda não há publicações"],
       ["success", "Ação concluída", "Confirmação clara e próxima etapa"],
@@ -409,6 +540,11 @@
       verification: renderVerification,
       availabilities: renderAvailabilities,
       "availability-form": renderAvailabilityForm,
+      opponents: renderOpponents,
+      "opponent-filters": renderOpponentFilters,
+      "opponent-detail": renderOpponentDetail,
+      "opponents-loading": renderOpponentsLoading,
+      "opponents-error": renderOpponentsError,
       states: renderStates
     };
     if (screens[state.view]) return screens[state.view](state);
@@ -434,7 +570,8 @@
           <nav>
             <p>MEU TIME</p>
             <button class="nav-item${activeClass(state.view, ["home"])}" type="button" data-action="navigate" data-target="home">${icon("home")}<span>Central do time</span></button>
-            <button class="nav-item${activeClass(state.view, ["eligibility", "profile-manual", "print-import", "draft-review", "verification"])}" type="button" data-action="navigate" data-target="eligibility">${icon("radar")}<span>Radar de Amistosos</span><i>NOVO</i></button>
+            <button class="nav-item${activeClass(state.view, ["opponents", "opponent-filters", "opponent-detail", "opponents-loading", "opponents-error"])}" type="button" data-action="navigate" data-target="opponents">${icon("radar")}<span>Encontrar amistoso</span><i>NOVO</i></button>
+            <button class="nav-item${activeClass(state.view, ["eligibility", "profile-manual", "print-import", "draft-review", "verification"])}" type="button" data-action="navigate" data-target="eligibility">${icon("shield")}<span>Cadastro e segurança</span></button>
             <button class="nav-item${activeClass(state.view, ["availabilities", "availability-form"])}" type="button" data-action="navigate" data-target="availabilities">${icon("calendar")}<span>Disponibilidades</span></button>
             <p>DEMONSTRAÇÃO</p>
             <button class="nav-item${activeClass(state.view, ["states", "loading", "empty", "success", "error", "session-expired", "access-denied"])}" type="button" data-action="navigate" data-target="states">${icon("list")}<span>Estados da tela</span></button>
@@ -445,7 +582,7 @@
       </div>
       <nav class="bottom-nav" aria-label="Navegação principal">
         <button class="${activeClass(state.view, ["home"])}" type="button" data-action="navigate" data-target="home">${icon("home")}<span>Central</span></button>
-        <button class="${activeClass(state.view, ["eligibility", "profile-manual", "print-import", "draft-review", "verification"])}" type="button" data-action="navigate" data-target="eligibility">${icon("radar")}<span>Radar</span></button>
+        <button class="${activeClass(state.view, ["opponents", "opponent-filters", "opponent-detail", "opponents-loading", "opponents-error"])}" type="button" data-action="navigate" data-target="opponents">${icon("radar")}<span>Radar</span></button>
         <button class="${activeClass(state.view, ["availabilities", "availability-form"])}" type="button" data-action="navigate" data-target="availabilities">${icon("calendar")}<span>Publicações</span></button>
         <button class="${activeClass(state.view, ["states", "loading", "empty", "success", "error", "session-expired", "access-denied"])}" type="button" data-action="navigate" data-target="states">${icon("list")}<span>Estados</span></button>
       </nav>
@@ -489,6 +626,21 @@
       if (action === "edit-availability") { store.beginAvailabilityEdit(id); router.navigate("availability-form"); }
       if (action === "toggle-availability") store.toggleAvailability(id);
       if (action === "cancel-availability" && window.confirm("Cancelar esta disponibilidade demonstrativa?")) store.cancelAvailability(id);
+      if (action === "open-opponent-filters") {
+        store.rememberOpponentListPosition(window.scrollY);
+        router.navigate("opponent-filters");
+      }
+      if (action === "view-opponent") {
+        store.selectOpponent(id, window.scrollY);
+        router.navigate("opponent-detail");
+      }
+      if (action === "load-more-opponents") await store.loadMoreOpponents();
+      if (action === "clear-opponent-filters") {
+        store.clearOpponentFilters();
+        router.navigate("opponents");
+      }
+      if (action === "retry-opponents") router.navigate("opponents");
+      if (action === "invite-preview") store.notify("O convite será conectado na próxima etapa. Nenhuma ação real foi enviada.", "info");
       if (action === "copy-code") {
         try { await navigator.clipboard.writeText("MCF-4827"); } catch (_error) { /* A seleção manual continua disponível. */ }
         control.classList.add("is-copied");
@@ -517,6 +669,13 @@
       reader.readAsDataURL(file);
     });
 
+    root.addEventListener("input", (event) => {
+      const range = event.target.closest("#opponent-radius");
+      if (!range) return;
+      const output = root.querySelector(".radius-output");
+      if (output) output.value = `${range.value} km`;
+    });
+
     root.addEventListener("submit", async (event) => {
       const form = event.target;
       event.preventDefault();
@@ -533,6 +692,10 @@
       if (form.dataset.form === "availability") {
         await store.saveAvailability(values);
         router.navigate("availabilities");
+      }
+      if (form.dataset.form === "opponent-filters") {
+        store.applyOpponentFilters(values);
+        router.navigate("opponents");
       }
     });
 
