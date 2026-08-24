@@ -1,6 +1,16 @@
 <!doctype html>
 <html lang="pt-br" translate="no">
 <head>
+  <script>
+    (() => {
+      const params = new URLSearchParams(window.location.search);
+      if (params.get("radar_demo") !== "1") return;
+      const demoUrl = new URL("./radar-amistosos/demo.html", window.location.href);
+      demoUrl.searchParams.set("demo", "1");
+      if (params.get("omascote_app") === "1") demoUrl.searchParams.set("omascote_app", "1");
+      window.location.replace(demoUrl);
+    })();
+  </script>
   <!-- Google tag carregado com atraso para não travar a primeira tela -->
 <script>
   window.dataLayer = window.dataLayer || [];

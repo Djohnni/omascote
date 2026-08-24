@@ -1,0 +1,149 @@
+(function () {
+  "use strict";
+
+  const ENDPOINTS = Object.freeze({
+    radarProfile: "/me/time/radar",
+    eligibility: "/me/time/radar/elegibilidade",
+    importPrint: "/me/time/perfil/importar-print",
+    verification: "/me/time/verificacao",
+    startInstagramVerification: "/me/time/verificacoes/instagram",
+    confirmInstagramVerification: "/me/time/verificacoes/instagram/confirmar",
+    availabilities: "/me/time/amistosos/disponibilidades"
+  });
+
+  const ERROR_MESSAGES = Object.freeze({
+    401: "Sua sessão expirou. Entre novamente para continuar.",
+    403: "Sua conta não tem acesso a esta ação.",
+    409: "Esta alteração conflita com uma atualização recente.",
+    412: "Os dados mudaram. Atualize a tela antes de tentar novamente.",
+    429: "Muitas tentativas. Aguarde um pouco e tente novamente.",
+    503: "O Radar está temporariamente indisponível."
+  });
+
+  class RadarApiError extends Error {
+    constructor(code, status, message, details) {
+      super(message);
+      this.name = "RadarApiError";
+      this.code = code;
+      this.status = status || 0;
+      this.details = details || null;
+    }
+  }
+
+  function createIdempotencyKey() {
+    if (!window.crypto || typeof window.crypto.randomUUID !== "function") {
+      throw new RadarApiError("IDEMPOTENCY_UNAVAILABLE", 0, "Não foi possível proteger esta operação.");
+    }
+    return window.crypto.randomUUID();
+  }
+
+  function safeAvailabilityPath(id) {
+    if (typeof id !== "string" || !/^[a-zA-Z0-9_-]{1,96}$/.test(id)) {
+      throw new RadarApiError("INVALID_RESOURCE_REFERENCE", 0, "Referência de disponibilidade inválida.");
+    }
+    return `${ENDPOINTS.availabilities}/${encodeURIComponent(id)}`;
+  }
+
+  function create(options) {
+    const settings = { demoMode: true, timeoutMs: 12000, ...(options || {}) };
+    if (!settings.demoMode && !settings.baseUrl) {
+      throw new RadarApiError("API_BASE_REQUIRED", 0, "A origem segura da API precisa ser configurada.");
+    }
+
+    async function request(path, requestOptions) {
+      if (settings.demoMode) {
+        throw new RadarApiError(
+          "DEMO_NETWORK_BLOCKED",
+          0,
+          "A demonstração local não pode chamar serviços externos."
+        );
+      }
+
+      const config = { method: "GET", ...(requestOptions || {}) };
+      const controller = new AbortController();
+      const timeout = window.setTimeout(() => controller.abort(), settings.timeoutMs);
+      const headers = new Headers({ Accept: "application/json", ...(config.headers || {}) });
+      const token = typeof settings.getAccessToken === "function" ? await settings.getAccessToken() : null;
+
+      if (token) headers.set("Authorization", `Bearer ${token}`);
+      if (config.etag) headers.set("If-Match", config.etag);
+      if (config.idempotent) headers.set("Idempotency-Key", config.idempotencyKey || createIdempotencyKey());
+
+      let body = config.body;
+      if (body && !(body instanceof FormData)) {
+        headers.set("Content-Type", "application/json");
+        body = JSON.stringify(body);
+      }
+
+      try {
+        const response = await window.fetch(new URL(path, settings.baseUrl), {
+          method: config.method,
+          headers,
+          body,
+          credentials: "include",
+          cache: "no-store",
+          redirect: "error",
+          signal: controller.signal
+        });
+
+        const contentType = response.headers.get("content-type") || "";
+        const payload = contentType.includes("application/json") ? await response.json() : null;
+        if (!response.ok) {
+          const publicCode = payload && typeof payload.code === "string" ? payload.code : `HTTP_${response.status}`;
+          throw new RadarApiError(
+            publicCode,
+            response.status,
+            ERROR_MESSAGES[response.status] || "Não foi possível concluir esta ação.",
+            payload && payload.details ? payload.details : null
+          );
+        }
+
+        return {
+          data: payload,
+          etag: response.headers.get("etag"),
+          cacheControl: response.headers.get("cache-control")
+        };
+      } catch (error) {
+        if (error && error.name === "AbortError") {
+          throw new RadarApiError("TIMEOUT", 0, "A solicitação demorou além do esperado.");
+        }
+        if (error instanceof RadarApiError) throw error;
+        throw new RadarApiError("NETWORK_ERROR", 0, "Não foi possível conectar ao Radar.");
+      } finally {
+        window.clearTimeout(timeout);
+      }
+    }
+
+    return Object.freeze({
+      getRadarProfile: () => request(ENDPOINTS.radarProfile),
+      getEligibility: () => request(ENDPOINTS.eligibility),
+      updateRadarProfile: (values, etag, idempotencyKey) => request(ENDPOINTS.radarProfile, {
+        method: "PATCH", body: values, etag, idempotent: true, idempotencyKey
+      }),
+      importProfilePrint: (file, idempotencyKey) => {
+        const form = new FormData();
+        form.set("print", file);
+        return request(ENDPOINTS.importPrint, { method: "POST", body: form, idempotent: true, idempotencyKey });
+      },
+      getVerification: () => request(ENDPOINTS.verification),
+      startInstagramVerification: (values, idempotencyKey) => request(ENDPOINTS.startInstagramVerification, {
+        method: "POST", body: values, idempotent: true, idempotencyKey
+      }),
+      confirmInstagramVerification: (values, etag, idempotencyKey) => request(ENDPOINTS.confirmInstagramVerification, {
+        method: "POST", body: values, etag, idempotent: true, idempotencyKey
+      }),
+      listAvailabilities: () => request(ENDPOINTS.availabilities),
+      createAvailability: (values, idempotencyKey) => request(ENDPOINTS.availabilities, {
+        method: "POST", body: values, idempotent: true, idempotencyKey
+      }),
+      updateAvailability: (id, values, etag, idempotencyKey) => request(safeAvailabilityPath(id), {
+        method: "PATCH", body: values, etag, idempotent: true, idempotencyKey
+      }),
+      deleteAvailability: (id, etag, idempotencyKey) => request(safeAvailabilityPath(id), {
+        method: "DELETE", etag, idempotent: true, idempotencyKey
+      })
+    });
+  }
+
+  window.RadarApi = { ENDPOINTS, ERROR_MESSAGES, RadarApiError, create };
+})();
