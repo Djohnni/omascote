@@ -47,6 +47,10 @@
       invitationBox: "all",
       invitations: copy(source.invitations),
       notifications: copy(source.notifications),
+      matches: copy(source.matches || []),
+      selectedMatchId: source.matches?.[0]?.id || null,
+      matchBox: "upcoming",
+      matchListScrollY: 0,
       confirmedMatch: null,
       sequence: 2
     };
@@ -68,6 +72,9 @@
         opponentFilters: { ...fresh.opponentFilters, ...(parsed.opponentFilters || {}) },
         invitations: Array.isArray(parsed.invitations) ? parsed.invitations : fresh.invitations,
         notifications: Array.isArray(parsed.notifications) ? parsed.notifications : fresh.notifications,
+        matches: Array.isArray(parsed.matches) ? parsed.matches : fresh.matches,
+        selectedMatchId: parsed.selectedMatchId || fresh.selectedMatchId,
+        matchBox: ["upcoming", "history"].includes(parsed.matchBox) ? parsed.matchBox : fresh.matchBox,
         confirmedMatch: parsed.confirmedMatch || null,
         sequence: Number.isInteger(parsed.sequence) ? parsed.sequence : fresh.sequence
       };
@@ -88,6 +95,9 @@
       opponentFilters: state.opponentFilters,
       invitations: state.invitations,
       notifications: state.notifications,
+      matches: state.matches,
+      selectedMatchId: state.selectedMatchId,
+      matchBox: state.matchBox,
       confirmedMatch: state.confirmedMatch,
       sequence: state.sequence
     };
@@ -407,13 +417,21 @@
         invitation.state = "accepted";
         invitation.version += 1;
         invitation.updatedLabel = "agora";
-        state.confirmedMatch = {
+        const createdMatch = {
           id: `demo-partida-${state.sequence++}`,
+          state: "scheduled",
+          version: 1,
           opponentName: invitation.opponentName,
           opponentInitials: invitation.opponentInitials,
           proposal: copy(invitation.proposal),
-          contact: { name: "Carlos, responsável", phone: "(47) 99999-0000" }
+          contact: { name: "Carlos, responsável", phone: "(47) 99999-0000" },
+          confirmation: { mine: false, opponent: false },
+          cancellation: null,
+          updatedLabel: "agora"
         };
+        state.confirmedMatch = createdMatch;
+        state.matches = [createdMatch, ...state.matches];
+        state.selectedMatchId = createdMatch.id;
         state.notifications = [{
           id: `demo-aviso-${state.sequence++}`, type: "accepted", title: "Amistoso confirmado",
           detail: invitation.opponentName, read: false, time: "agora"
@@ -452,6 +470,71 @@
         invitation.version += 1;
         invitation.updatedLabel = "agora";
         notify("Contraproposta enviada.");
+      }, 520);
+    },
+
+    selectMatch(id, scrollY) {
+      state.selectedMatchId = state.matches.some((item) => item.id === id) ? id : null;
+      state.matchListScrollY = Math.max(0, Number(scrollY) || 0);
+      emit({ persist: false });
+    },
+
+    rememberMatchListPosition(scrollY) {
+      state.matchListScrollY = Math.max(0, Number(scrollY) || 0);
+    },
+
+    setMatchBox(box) {
+      state.matchBox = box === "history" ? "history" : "upcoming";
+      state.matchListScrollY = 0;
+      emit();
+    },
+
+    confirmMatchOccurrence(id) {
+      return delay("Salvando confirmação", () => {
+        const match = state.matches.find((item) => item.id === id);
+        if (!match || ["played", "cancelled"].includes(match.state) || match.confirmation?.mine) return;
+        match.confirmation = { ...(match.confirmation || {}), mine: true };
+        match.version += 1;
+        match.state = match.confirmation.opponent ? "played" : "awaiting_occurrence";
+        match.updatedLabel = match.state === "played" ? "realizada" : "aguardando rival";
+        state.notifications = [{
+          id: `demo-aviso-${state.sequence++}`,
+          type: "confirmation",
+          title: match.state === "played" ? "Partida realizada" : "Confirmação enviada",
+          detail: match.opponentName,
+          read: false,
+          time: "agora"
+        }, ...state.notifications];
+        notify(match.state === "played" ? "Partida realizada." : "Aguardando o outro time.");
+      }, 520);
+    },
+
+    cancelMatch(id, values) {
+      const reasons = {
+        weather: "Clima",
+        field_unavailable: "Campo indisponível",
+        team_unavailable: "Time indisponível",
+        scheduling_conflict: "Conflito de horário",
+        safety: "Segurança",
+        other: "Outro motivo"
+      };
+      return delay("Cancelando partida", () => {
+        const match = state.matches.find((item) => item.id === id);
+        const reason = String(values?.reason || "");
+        if (!match || !reasons[reason] || match.confirmation?.mine || match.confirmation?.opponent || ["played", "cancelled"].includes(match.state)) return;
+        match.state = "cancelled";
+        match.version += 1;
+        match.cancellation = { reason: reasons[reason], byMe: true, at: "agora" };
+        match.updatedLabel = "cancelada";
+        state.notifications = [{
+          id: `demo-aviso-${state.sequence++}`,
+          type: "cancelled",
+          title: "Partida cancelada",
+          detail: match.opponentName,
+          read: false,
+          time: "agora"
+        }, ...state.notifications];
+        notify("Partida cancelada.", "info");
       }, 520);
     },
 

@@ -284,7 +284,69 @@
     notifications: [
       { id: "demo-aviso-1", type: "invite", title: "Novo convite", detail: "EC Aventureiro · 05/09, 16h", read: false, time: "12 min" },
       { id: "demo-aviso-2", type: "accepted", title: "Convite aceito", detail: "União Vila Nova", read: false, time: "1 h" },
-      { id: "demo-aviso-3", type: "result", title: "Confirmar resultado", detail: "Estrela do Norte 3 × 2 União Vila Nova", read: true, time: "ontem" }
+      { id: "demo-aviso-3", type: "confirmation", title: "Jogo confirmado", detail: "Guerreiros do Bairro", read: true, time: "ontem" }
+    ],
+    matches: [
+      {
+        id: "demo-partida-confirmada",
+        state: "scheduled",
+        version: 1,
+        opponentName: "União Vila Nova",
+        opponentInitials: "UV",
+        proposal: {
+          date: "30/08/2026", time: "15:00", duration: "2h",
+          modality: "Society", category: "Livre", city: "Joinville, SC", venue: "Mandante"
+        },
+        contact: { name: "Carlos, responsável", phone: "(47) 99999-0000" },
+        confirmation: { mine: false, opponent: false },
+        cancellation: null,
+        updatedLabel: "domingo"
+      },
+      {
+        id: "demo-partida-aguardando",
+        state: "awaiting_occurrence",
+        version: 2,
+        opponentName: "Guerreiros do Bairro",
+        opponentInitials: "GB",
+        proposal: {
+          date: "22/08/2026", time: "19:30", duration: "2h",
+          modality: "Society", category: "Livre", city: "Joinville, SC", venue: "Visitante"
+        },
+        contact: { name: "Rafael, responsável", phone: "(47) 98888-1200" },
+        confirmation: { mine: true, opponent: false },
+        cancellation: null,
+        updatedLabel: "aguardando rival"
+      },
+      {
+        id: "demo-partida-realizada",
+        state: "played",
+        version: 3,
+        opponentName: "Atlético Rio Bonito",
+        opponentInitials: "AR",
+        proposal: {
+          date: "15/08/2026", time: "16:00", duration: "2h",
+          modality: "Society", category: "Livre", city: "Joinville, SC", venue: "Mandante"
+        },
+        contact: { name: "Bruno, responsável", phone: "(47) 97777-4400" },
+        confirmation: { mine: true, opponent: true },
+        cancellation: null,
+        updatedLabel: "realizada"
+      },
+      {
+        id: "demo-partida-cancelada",
+        state: "cancelled",
+        version: 2,
+        opponentName: "Tricolor da Ilha",
+        opponentInitials: "TI",
+        proposal: {
+          date: "09/08/2026", time: "09:00", duration: "2h",
+          modality: "Society", category: "Veterano", city: "São Francisco do Sul, SC", venue: "Visitante"
+        },
+        contact: { name: "Diego, responsável", phone: "(47) 96666-3100" },
+        confirmation: { mine: false, opponent: false },
+        cancellation: { reason: "Clima", byMe: false, at: "08/08/2026" },
+        updatedLabel: "cancelada"
+      }
     ],
     availabilities: [
       {

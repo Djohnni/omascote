@@ -12,6 +12,7 @@
     nearbyTeams: "/amistosos/times-proximos",
     invitations: "/amistosos/convites",
     teamInvitations: "/me/time/amistosos/convites",
+    matches: "/me/time/amistosos",
     notifications: "/me/notificacoes"
   });
 
@@ -20,6 +21,7 @@
     403: "Sua conta não tem acesso a esta ação.",
     409: "Esta alteração conflita com uma atualização recente.",
     412: "Os dados mudaram. Atualize a tela antes de tentar novamente.",
+    428: "Atualize a partida antes de continuar.",
     429: "Muitas tentativas. Aguarde um pouco e tente novamente.",
     503: "O Radar está temporariamente indisponível."
   });
@@ -187,6 +189,14 @@
       listNotifications: (cursor) => request(`${ENDPOINTS.notifications}${cursor ? `?cursor=${encodeURIComponent(cursor)}` : ""}`),
       readNotification: (id, idempotencyKey) => request(safeOpaquePath(ENDPOINTS.notifications, id, "/lida"), {
         method: "POST", body: {}, idempotent: true, idempotencyKey
+      }),
+      listMatches: (state) => request(`${ENDPOINTS.matches}?estado=${state === "historico" ? "historico" : state === "proximas" ? "proximas" : "todas"}`),
+      getMatch: (id) => request(safeOpaquePath(ENDPOINTS.matches, id)),
+      confirmMatchOccurrence: (id, etag, idempotencyKey) => request(safeOpaquePath(ENDPOINTS.matches, id, "/confirmar-realizacao"), {
+        method: "POST", body: {}, etag, idempotent: true, idempotencyKey
+      }),
+      cancelMatch: (id, reason, etag, idempotencyKey) => request(safeOpaquePath(ENDPOINTS.matches, id, "/cancelar"), {
+        method: "POST", body: { reason }, etag, idempotent: true, idempotencyKey
       }),
       createAvailability: (values, idempotencyKey) => request(ENDPOINTS.availabilities, {
         method: "POST", body: values, idempotent: true, idempotencyKey

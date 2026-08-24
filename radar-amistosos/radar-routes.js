@@ -5,7 +5,9 @@
     "home", "eligibility", "profile-manual", "print-import", "draft-review", "verification",
     "availabilities", "availability-form", "opponents", "opponent-filters", "opponent-detail",
     "invitation-compose", "invitation-review", "invitation-sent", "invitations",
-    "invitation-detail", "invitation-counter", "match-confirmed", "notifications",
+    "invitation-detail", "invitation-counter", "match-confirmed", "matches", "match-detail",
+    "match-cancel", "match-cancelled", "match-loading", "match-empty", "match-error",
+    "match-access-denied", "notifications",
     "invitations-empty", "invitations-error",
     "opponents-loading", "opponents-error", "states", "loading", "empty", "success", "error",
     "session-expired", "access-denied"
@@ -50,8 +52,10 @@
         const current = store.getState().view;
         const fallback = ["opponent-detail", "opponent-filters", "opponents-loading", "opponents-error", "invitation-compose", "invitation-review", "invitation-sent"].includes(current)
           ? "opponents"
-          : ["invitation-detail", "invitation-counter", "match-confirmed", "notifications", "invitations-empty", "invitations-error"].includes(current)
+          : ["invitation-detail", "invitation-counter", "notifications", "invitations-empty", "invitations-error"].includes(current)
             ? "invitations"
+            : ["match-confirmed", "match-detail", "match-cancel", "match-cancelled", "match-loading", "match-empty", "match-error", "match-access-denied"].includes(current)
+              ? "matches"
             : "home";
         navigate(fallback, { replace: true });
       }
@@ -60,7 +64,12 @@
     window.addEventListener("popstate", () => {
       const view = viewFromLocation();
       store.setView(view);
-      const top = view === "opponents" ? store.getState().opponentListScrollY : 0;
+      const currentState = store.getState();
+      const top = view === "opponents"
+        ? currentState.opponentListScrollY
+        : view === "matches"
+          ? currentState.matchListScrollY
+          : 0;
       window.requestAnimationFrame(() => window.scrollTo({ top, behavior: "auto" }));
     });
 

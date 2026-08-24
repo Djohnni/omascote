@@ -607,24 +607,113 @@
   }
 
   function renderMatchConfirmed(state) {
-    const match = state.confirmedMatch;
-    if (!match) return `<div class="screen state-page state-page--empty"><section class="state-page__visual">${icon("calendar")}</section><h1>Nenhuma partida</h1><p>Aceite um convite primeiro.</p>${button("Ver convites", { action: "navigate", target: "invitations" })}</div>`;
-    return `<div class="screen screen--narrow confirmed-screen">
-      ${screenHeader("Amistoso", "Partida confirmada", "Agora o contato está liberado.")}
-      <section class="success-seal">${icon("check")}</section>
-      ${matchup(match.opponentName, match.opponentInitials)}
-      <section class="proposal-card card">${proposalFacts(match.proposal)}</section>
-      <section class="contact-revealed card"><span>${icon("user")}</span><div><small>Responsável</small><strong>${esc(match.contact.name)}</strong><a href="tel:+5547999990000">${esc(match.contact.phone)}</a></div><span class="invite-state invite-state--accepted">Liberado</span></section>
-      <details class="compact-details card"><summary>Detalhes</summary><p>Contato fictício desta demonstração.</p></details>
-      ${button("Voltar aos convites", { action: "navigate", target: "invitations", full: true })}
+    return renderMatchDetail(state);
+  }
+
+  function selectedMatch(state) {
+    return state.matches.find((item) => item.id === state.selectedMatchId) || state.confirmedMatch || null;
+  }
+
+  function matchState(value) {
+    return {
+      scheduled: ["Confirmada", "accepted"],
+      awaiting_occurrence: ["Aguardando", "pending"],
+      played: ["Realizada", "accepted"],
+      cancelled: ["Cancelada", "cancelled"]
+    }[value] || ["Em aberto", "pending"];
+  }
+
+  function matchCard(match) {
+    const stateInfo = matchState(match.state);
+    return `<article class="match-card card match-card--${esc(match.state)}">
+      <div class="match-card__top">${crest(match.opponentInitials, "team-crest--small")}<div><h2>${esc(match.opponentName)}</h2><p>${esc(match.proposal.date)} · ${esc(match.proposal.time)}</p></div><span class="invite-state invite-state--${esc(stateInfo[1])}">${esc(stateInfo[0])}</span></div>
+      <div class="match-card__facts"><span>${icon("location")} ${esc(match.proposal.city)}</span><span>${esc(match.proposal.modality)}</span><small>${esc(match.updatedLabel)}</small></div>
+      ${button("Abrir partida", { action: "open-match", id: match.id, full: true, kind: match.state === "scheduled" ? "primary" : "secondary" })}
+    </article>`;
+  }
+
+  function renderMatches(state) {
+    const box = state.matchBox || "upcoming";
+    const upcoming = new Set(["scheduled", "awaiting_occurrence"]);
+    const items = state.matches.filter((item) => box === "upcoming" ? upcoming.has(item.state) : !upcoming.has(item.state));
+    return `<div class="screen screen--wide matches-screen">
+      ${screenHeader("Amistosos", "Central de partidas", `${items.length} ${items.length === 1 ? "partida" : "partidas"}.`)}
+      <div class="segmented-control match-tabs" role="group" aria-label="Filtro das partidas">
+        <button class="${box === "upcoming" ? "is-active" : ""}" data-action="match-box" data-target="upcoming">Próximas</button>
+        <button class="${box === "history" ? "is-active" : ""}" data-action="match-box" data-target="history">Histórico</button>
+      </div>
+      ${items.length ? `<section class="match-grid">${items.map(matchCard).join("")}</section>` : renderMatchState("match-empty")}
     </div>`;
+  }
+
+  function confirmationPanel(match) {
+    if (match.state === "played") {
+      return `<section class="confirmation-panel confirmation-panel--done card">${icon("check")}<div><strong>Partida realizada</strong><span>Confirmação dos dois times</span></div><b>2/2</b></section>`;
+    }
+    if (match.confirmation?.mine) {
+      return `<section class="confirmation-panel card">${icon("clock")}<div><strong>Você confirmou</strong><span>Aguardando o outro time</span></div><b>1/2</b></section>`;
+    }
+    if (match.confirmation?.opponent) {
+      return `<section class="confirmation-panel card">${icon("bell")}<div><strong>Rival confirmou</strong><span>Falta sua confirmação</span></div><b>1/2</b></section>`;
+    }
+    return `<section class="confirmation-panel card">${icon("clock")}<div><strong>Após o jogo</strong><span>Cada time confirma</span></div><b>0/2</b></section>`;
+  }
+
+  function renderMatchDetail(state) {
+    const match = selectedMatch(state);
+    if (!match) return renderMatchState("match-empty");
+    if (match.state === "cancelled") return renderMatchCancelled(state);
+    const canConfirm = !match.confirmation?.mine && match.state !== "played";
+    const canCancel = !match.confirmation?.mine && !match.confirmation?.opponent && match.state === "scheduled";
+    return `<div class="screen screen--narrow match-screen">
+      ${screenHeader("Amistoso", "Central da partida", `${match.proposal.date} · ${match.proposal.time}`)}
+      <div class="match-status-row"><span class="invite-state invite-state--${esc(matchState(match.state)[1])}">${esc(matchState(match.state)[0])}</span><small>v${esc(match.version)}</small></div>
+      ${matchup(match.opponentName, match.opponentInitials)}
+      <section class="proposal-card card">${proposalFacts(match.proposal)}<div class="proposal-chips"><span>${esc(match.proposal.modality)}</span><span>${esc(match.proposal.category)}</span></div></section>
+      ${confirmationPanel(match)}
+      <section class="contact-revealed card"><span>${icon("user")}</span><div><small>Responsável</small><strong>${esc(match.contact.name)}</strong><a href="tel:+5547999990000">${esc(match.contact.phone)}</a></div><span class="invite-state invite-state--accepted">Liberado</span></section>
+      <details class="compact-details card"><summary>Detalhes</summary><p>Contato fictício. Sem placar nesta fase.</p>${canCancel ? `<button class="details-danger" type="button" data-action="cancel-match">Cancelar partida</button>` : ""}</details>
+      ${canConfirm ? `<div class="sticky-actions match-primary-action">${button("Confirmar realização", { action: "confirm-match", id: match.id, icon: "check", full: true })}</div>` : ""}
+    </div>`;
+  }
+
+  function renderMatchCancel(state) {
+    const match = selectedMatch(state);
+    if (!match) return renderMatchState("match-empty");
+    if (match.confirmation?.mine || match.confirmation?.opponent || match.state !== "scheduled") return renderMatchDetail(state);
+    return `<div class="screen screen--narrow match-screen match-cancel-screen">
+      ${screenHeader("Amistoso", "Cancelar partida", "Escolha o motivo.")}
+      ${matchup(match.opponentName, match.opponentInitials, `${match.proposal.date} · ${match.proposal.time}`)}
+      <form class="match-cancel-form" data-form="match-cancel">
+        <section class="form-card card"><label class="field"><span>Motivo</span><select name="reason" required><option value="">Selecione</option><option value="weather">Clima</option><option value="field_unavailable">Campo indisponível</option><option value="team_unavailable">Time indisponível</option><option value="scheduling_conflict">Conflito de horário</option><option value="safety">Segurança</option><option value="other">Outro motivo</option></select></label>
+        <div class="cancel-rule">${icon("shield")} Bloqueado após confirmação</div></section>
+        <div class="sticky-actions match-cancel-actions"><div>${button("Manter partida", { action: "navigate", target: "match-detail", kind: "ghost" })}${button("Confirmar cancelamento", { type: "submit", kind: "danger" })}</div></div>
+      </form>
+    </div>`;
+  }
+
+  function renderMatchCancelled(state) {
+    const match = selectedMatch(state);
+    if (!match || match.state !== "cancelled") return renderMatchDetail(state);
+    return `<div class="screen state-page state-page--error match-cancelled-state"><section class="state-page__visual">${icon("close")}</section><p class="eyebrow">Amistoso</p><h1>Partida cancelada</h1><p>${esc(match.opponentName)} · ${esc(match.cancellation?.reason || "Cancelada")}</p>${button("Ver partidas", { action: "navigate", target: "matches", kind: "secondary" })}</div>`;
+  }
+
+  function renderMatchState(view) {
+    const content = {
+      "match-loading": ["more", "Carregando partidas", "Só um instante.", "matches"],
+      "match-empty": ["calendar", "Nenhuma partida", "Aceite um convite.", "invitations"],
+      "match-error": ["close", "Partidas indisponíveis", "Tente novamente.", "matches"],
+      "match-access-denied": ["lock", "Acesso negado", "Partida restrita.", "matches"]
+    }[view] || ["calendar", "Nenhuma partida", "Aceite um convite.", "invitations"];
+    const labels = { "match-loading": "Carregando", "match-empty": "Ver convites", "match-error": "Tentar novamente", "match-access-denied": "Voltar" };
+    return `<div class="screen state-page state-page--${view === "match-error" ? "error" : view === "match-access-denied" ? "denied" : view === "match-loading" ? "loading" : "empty"}"><section class="state-page__visual">${icon(content[0])}${view === "match-loading" ? '<span class="spinner-ring"></span>' : ""}</section><p class="eyebrow">Partidas</p><h1>${esc(content[1])}</h1><p>${esc(content[2])}</p>${view === "match-loading" ? "" : button(labels[view] || "Voltar", { action: "navigate", target: content[3] })}</div>`;
   }
 
   function renderNotifications(state) {
     const unread = state.notifications.filter((item) => !item.read).length;
     return `<div class="screen screen--narrow notifications-screen">
       ${screenHeader("Meu Clube", "Notificações", unread ? `${unread} novas.` : "Tudo lido.")}
-      <section class="notification-list">${state.notifications.map((item) => `<article class="notification-card card${item.read ? "" : " is-unread"}"><span>${icon(item.type === "accepted" ? "check" : item.type === "invite" ? "send" : "calendar")}</span><div><h2>${esc(item.title)}</h2><p>${esc(item.detail)}</p></div><small>${esc(item.time)}</small></article>`).join("")}</section>
+      <section class="notification-list">${state.notifications.map((item) => `<article class="notification-card card${item.read ? "" : " is-unread"}"><span>${icon(["accepted", "confirmation"].includes(item.type) ? "check" : item.type === "invite" ? "send" : item.type === "cancelled" ? "close" : "calendar")}</span><div><h2>${esc(item.title)}</h2><p>${esc(item.detail)}</p></div><small>${esc(item.time)}</small></article>`).join("")}</section>
       ${unread ? button("Marcar como lidas", { action: "notifications-read", kind: "secondary", full: true }) : ""}
       ${button("Ver convites", { action: "navigate", target: "invitations", full: true })}
     </div>`;
@@ -646,6 +735,10 @@
     const states = [
       ["opponents-loading", "Busca carregando", "Ordenando times"],
       ["opponents-error", "Erro na busca", "Filtros preservados"],
+      ["match-loading", "Partidas carregando", "Preparando a central"],
+      ["match-empty", "Sem partidas", "Aceite um convite"],
+      ["match-error", "Erro nas partidas", "Tente novamente"],
+      ["match-access-denied", "Partida restrita", "Acesso negado"],
       ["loading", "Carregamento", "Preparando dados"],
       ["empty", "Lista vazia", "Sem publicações"],
       ["success", "Ação concluída", "Tudo certo"],
@@ -697,6 +790,14 @@
       "invitation-detail": renderInvitationDetail,
       "invitation-counter": renderInvitationCounter,
       "match-confirmed": renderMatchConfirmed,
+      matches: renderMatches,
+      "match-detail": renderMatchDetail,
+      "match-cancel": renderMatchCancel,
+      "match-cancelled": renderMatchCancelled,
+      "match-loading": () => renderMatchState("match-loading"),
+      "match-empty": () => renderMatchState("match-empty"),
+      "match-error": () => renderMatchState("match-error"),
+      "match-access-denied": () => renderMatchState("match-access-denied"),
       notifications: renderNotifications,
       "invitations-empty": renderInvitationsEmptyPage,
       "invitations-error": renderInvitationsError,
@@ -727,6 +828,7 @@
             <button class="nav-item${activeClass(state.view, ["home"])}" type="button" data-action="navigate" data-target="home">${icon("home")}<span>Central do time</span></button>
             <button class="nav-item${activeClass(state.view, ["opponents", "opponent-filters", "opponent-detail", "opponents-loading", "opponents-error"])}" type="button" data-action="navigate" data-target="opponents">${icon("radar")}<span>Encontrar amistoso</span><i>NOVO</i></button>
             <button class="nav-item${activeClass(state.view, ["invitations", "invitation-compose", "invitation-review", "invitation-sent", "invitation-detail", "invitation-counter", "notifications", "invitations-empty", "invitations-error"])}" type="button" data-action="navigate" data-target="invitations">${icon("send")}<span>Convites</span></button>
+            <button class="nav-item${activeClass(state.view, ["matches", "match-confirmed", "match-detail", "match-cancel", "match-cancelled", "match-loading", "match-empty", "match-error", "match-access-denied"])}" type="button" data-action="navigate" data-target="matches">${icon("calendar")}<span>Partidas</span></button>
             <button class="nav-item${activeClass(state.view, ["eligibility", "profile-manual", "print-import", "draft-review", "verification"])}" type="button" data-action="navigate" data-target="eligibility">${icon("shield")}<span>Cadastro e segurança</span></button>
             <button class="nav-item${activeClass(state.view, ["availabilities", "availability-form"])}" type="button" data-action="navigate" data-target="availabilities">${icon("calendar")}<span>Disponibilidades</span></button>
             <p>DEMONSTRAÇÃO</p>
@@ -739,7 +841,7 @@
       <nav class="bottom-nav" aria-label="Navegação principal">
         <button class="${activeClass(state.view, ["opponents", "opponent-filters", "opponent-detail", "opponents-loading", "opponents-error"])}" type="button" data-action="navigate" data-target="opponents">${icon("radar")}<span>Radar</span></button>
         <button class="${activeClass(state.view, ["invitations", "invitation-compose", "invitation-review", "invitation-sent", "invitation-detail", "invitation-counter", "notifications", "invitations-empty", "invitations-error"])}" type="button" data-action="navigate" data-target="invitations">${icon("send")}<span>Convites</span></button>
-        <button class="${activeClass(state.view, ["match-confirmed"])}" type="button" data-action="navigate" data-target="match-confirmed">${icon("calendar")}<span>Partida</span></button>
+        <button class="${activeClass(state.view, ["matches", "match-confirmed", "match-detail", "match-cancel", "match-cancelled", "match-loading", "match-empty", "match-error", "match-access-denied"])}" type="button" data-action="navigate" data-target="matches">${icon("calendar")}<span>Partidas</span></button>
         <button class="${activeClass(state.view, ["home", "eligibility", "profile-manual", "print-import", "draft-review", "verification", "availabilities", "availability-form"])}" type="button" data-action="navigate" data-target="home">${icon("user")}<span>Meu time</span></button>
       </nav>
       ${state.toast ? `<div class="toast toast--${esc(state.toast.tone)}" role="status">${icon(state.toast.tone === "success" ? "check" : "radar")}<span>${esc(state.toast.message)}</span><button type="button" data-action="dismiss-toast" aria-label="Fechar aviso">${icon("close")}</button></div>` : ""}
@@ -800,11 +902,15 @@
       if (action === "send-invitation") { await store.sendInvitation(); router.navigate("invitation-sent"); }
       if (action === "invitation-box") store.setInvitationBox(target);
       if (action === "open-invitation") { store.selectInvitation(id); router.navigate("invitation-detail"); }
-      if (action === "accept-invitation") { await store.acceptInvitation(id); router.navigate("match-confirmed"); }
+      if (action === "accept-invitation") { await store.acceptInvitation(id); router.navigate("match-detail"); }
       if (action === "decline-invitation") { store.declineInvitation(id); router.navigate("invitations"); }
       if (action === "cancel-invitation") { store.cancelInvitation(id); router.navigate("invitations"); }
       if (action === "counter-invitation") { store.selectInvitation(id); router.navigate("invitation-counter"); }
       if (action === "notifications-read") store.markNotificationsRead();
+      if (action === "match-box") store.setMatchBox(target);
+      if (action === "open-match") { store.selectMatch(id, window.scrollY); router.navigate("match-detail"); }
+      if (action === "cancel-match") router.navigate("match-cancel");
+      if (action === "confirm-match") await store.confirmMatchOccurrence(id || currentState.selectedMatchId);
       if (action === "copy-code") {
         try { await navigator.clipboard.writeText("MCF-4827"); } catch (_error) { /* A seleção manual continua disponível. */ }
         control.classList.add("is-copied");
@@ -868,6 +974,10 @@
       if (form.dataset.form === "invitation-counter") {
         await store.counterInvitation(currentState.selectedInvitationId, values);
         router.navigate("invitations");
+      }
+      if (form.dataset.form === "match-cancel") {
+        await store.cancelMatch(currentState.selectedMatchId, values);
+        router.navigate("match-cancelled");
       }
     });
 
