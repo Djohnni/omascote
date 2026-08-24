@@ -231,6 +231,61 @@
         reputation: null
       }
     ],
+    invitations: [
+      {
+        id: "demo-convite-recebido",
+        direction: "incoming",
+        state: "pending",
+        version: 1,
+        opponentSlug: "esporte-clube-aventureiro",
+        opponentName: "EC Aventureiro",
+        opponentInitials: "EA",
+        distance: "9 km",
+        proposal: {
+          date: "05/09/2026", time: "16:00", duration: "2h",
+          modality: "Society", category: "Livre", city: "Joinville, SC",
+          venue: "Visitante", message: "Horário reservado e arbitragem confirmada."
+        },
+        updatedLabel: "há 12 min"
+      },
+      {
+        id: "demo-convite-enviado",
+        direction: "outgoing",
+        state: "pending",
+        version: 1,
+        opponentSlug: "uniao-vila-nova",
+        opponentName: "União Vila Nova",
+        opponentInitials: "UV",
+        distance: "12 km",
+        proposal: {
+          date: "30/08/2026", time: "15:00", duration: "2h",
+          modality: "Society", category: "Livre", city: "Joinville, SC",
+          venue: "Mandante", message: "Campo disponível domingo à tarde."
+        },
+        updatedLabel: "há 1 h"
+      },
+      {
+        id: "demo-convite-expirado",
+        direction: "incoming",
+        state: "expired",
+        version: 2,
+        opponentSlug: "tricolor-da-ilha",
+        opponentName: "Tricolor da Ilha",
+        opponentInitials: "TI",
+        distance: "24 km",
+        proposal: {
+          date: "23/08/2026", time: "09:00", duration: "2h",
+          modality: "Society", category: "Veterano", city: "São Francisco do Sul, SC",
+          venue: "Visitante", message: null
+        },
+        updatedLabel: "ontem"
+      }
+    ],
+    notifications: [
+      { id: "demo-aviso-1", type: "invite", title: "Novo convite", detail: "EC Aventureiro · 05/09, 16h", read: false, time: "12 min" },
+      { id: "demo-aviso-2", type: "accepted", title: "Convite aceito", detail: "União Vila Nova", read: false, time: "1 h" },
+      { id: "demo-aviso-3", type: "result", title: "Confirmar resultado", detail: "Estrela do Norte 3 × 2 União Vila Nova", read: true, time: "ontem" }
+    ],
     availabilities: [
       {
         id: "demo-disponibilidade-1",

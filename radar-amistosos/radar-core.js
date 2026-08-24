@@ -42,6 +42,12 @@
       opponentVisibleLimit: 6,
       selectedOpponentSlug: null,
       opponentListScrollY: 0,
+      invitationDraft: null,
+      selectedInvitationId: null,
+      invitationBox: "all",
+      invitations: copy(source.invitations),
+      notifications: copy(source.notifications),
+      confirmedMatch: null,
       sequence: 2
     };
   }
@@ -60,6 +66,9 @@
         verification: { ...fresh.verification, ...(parsed.verification || {}), challenge: null },
         availabilities: Array.isArray(parsed.availabilities) ? parsed.availabilities : fresh.availabilities,
         opponentFilters: { ...fresh.opponentFilters, ...(parsed.opponentFilters || {}) },
+        invitations: Array.isArray(parsed.invitations) ? parsed.invitations : fresh.invitations,
+        notifications: Array.isArray(parsed.notifications) ? parsed.notifications : fresh.notifications,
+        confirmedMatch: parsed.confirmedMatch || null,
         sequence: Number.isInteger(parsed.sequence) ? parsed.sequence : fresh.sequence
       };
     } catch (_error) {
@@ -77,6 +86,9 @@
       verification: { ...state.verification, challenge: null },
       availabilities: state.availabilities,
       opponentFilters: state.opponentFilters,
+      invitations: state.invitations,
+      notifications: state.notifications,
+      confirmedMatch: state.confirmedMatch,
       sequence: state.sequence
     };
     try {
@@ -320,6 +332,133 @@
         state.opponentVisibleLimit += 4;
         announce("Mais times adicionados à lista.");
       }, 420);
+    },
+
+    beginInvitation(slug) {
+      const team = source.nearbyTeams.find((item) => item.slug === slug) || source.nearbyTeams[0];
+      state.selectedOpponentSlug = team.slug;
+      state.invitationDraft = {
+        opponentSlug: team.slug,
+        opponentName: team.name,
+        opponentInitials: team.initials,
+        distance: team.distanceKm === null ? "mesma cidade" : `${team.distanceKm} km`,
+        date: "30/08/2026",
+        time: "15:00",
+        duration: "2h",
+        modality: team.modality,
+        category: team.category,
+        city: `${state.profile.city}, ${state.profile.state}`,
+        venue: "Mandante",
+        message: "Campo disponível domingo à tarde."
+      };
+      emit({ persist: false });
+    },
+
+    reviewInvitation(values) {
+      if (!state.invitationDraft) return;
+      state.invitationDraft = { ...state.invitationDraft, ...values };
+      emit({ persist: false });
+    },
+
+    sendInvitation() {
+      return delay("Enviando convite", () => {
+        const draft = state.invitationDraft;
+        if (!draft) return;
+        const invitation = {
+          id: `demo-convite-${state.sequence++}`,
+          direction: "outgoing",
+          state: "pending",
+          version: 1,
+          opponentSlug: draft.opponentSlug,
+          opponentName: draft.opponentName,
+          opponentInitials: draft.opponentInitials,
+          distance: draft.distance,
+          proposal: {
+            date: draft.date, time: draft.time, duration: draft.duration,
+            modality: draft.modality, category: draft.category, city: draft.city,
+            venue: draft.venue, message: draft.message || null
+          },
+          updatedLabel: "agora"
+        };
+        state.invitations = [invitation, ...state.invitations];
+        state.selectedInvitationId = invitation.id;
+        state.notifications = [{
+          id: `demo-aviso-${state.sequence++}`, type: "sent", title: "Convite enviado",
+          detail: invitation.opponentName, read: false, time: "agora"
+        }, ...state.notifications];
+        notify("Convite enviado.");
+      }, 560);
+    },
+
+    selectInvitation(id) {
+      state.selectedInvitationId = state.invitations.some((item) => item.id === id) ? id : null;
+      emit({ persist: false });
+    },
+
+    setInvitationBox(box) {
+      state.invitationBox = ["all", "incoming", "outgoing"].includes(box) ? box : "all";
+      emit({ persist: false });
+    },
+
+    acceptInvitation(id) {
+      return delay("Confirmando amistoso", () => {
+        const invitation = state.invitations.find((item) => item.id === id);
+        if (!invitation || invitation.state !== "pending") return;
+        invitation.state = "accepted";
+        invitation.version += 1;
+        invitation.updatedLabel = "agora";
+        state.confirmedMatch = {
+          id: `demo-partida-${state.sequence++}`,
+          opponentName: invitation.opponentName,
+          opponentInitials: invitation.opponentInitials,
+          proposal: copy(invitation.proposal),
+          contact: { name: "Carlos, responsável", phone: "(47) 99999-0000" }
+        };
+        state.notifications = [{
+          id: `demo-aviso-${state.sequence++}`, type: "accepted", title: "Amistoso confirmado",
+          detail: invitation.opponentName, read: false, time: "agora"
+        }, ...state.notifications];
+        notify("Amistoso confirmado.");
+      }, 620);
+    },
+
+    declineInvitation(id) {
+      const invitation = state.invitations.find((item) => item.id === id);
+      if (!invitation || invitation.state !== "pending") return;
+      invitation.state = "declined";
+      invitation.version += 1;
+      invitation.updatedLabel = "agora";
+      emit();
+      notify("Convite recusado.", "info");
+    },
+
+    cancelInvitation(id) {
+      const invitation = state.invitations.find((item) => item.id === id);
+      if (!invitation || !["pending", "counter_proposed"].includes(invitation.state)) return;
+      invitation.state = "cancelled";
+      invitation.version += 1;
+      invitation.updatedLabel = "agora";
+      emit();
+      notify("Convite cancelado.", "info");
+    },
+
+    counterInvitation(id, values) {
+      return delay("Enviando contraproposta", () => {
+        const invitation = state.invitations.find((item) => item.id === id);
+        if (!invitation || invitation.state !== "pending") return;
+        invitation.proposal = { ...invitation.proposal, ...values };
+        invitation.state = "counter_proposed";
+        invitation.direction = "outgoing";
+        invitation.version += 1;
+        invitation.updatedLabel = "agora";
+        notify("Contraproposta enviada.");
+      }, 520);
+    },
+
+    markNotificationsRead() {
+      state.notifications.forEach((item) => { item.read = true; });
+      emit();
+      announce("Notificações marcadas como lidas.");
     }
   };
 

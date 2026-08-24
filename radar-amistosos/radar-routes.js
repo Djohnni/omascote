@@ -4,6 +4,9 @@
   const allowedViews = new Set([
     "home", "eligibility", "profile-manual", "print-import", "draft-review", "verification",
     "availabilities", "availability-form", "opponents", "opponent-filters", "opponent-detail",
+    "invitation-compose", "invitation-review", "invitation-sent", "invitations",
+    "invitation-detail", "invitation-counter", "match-confirmed", "notifications",
+    "invitations-empty", "invitations-error",
     "opponents-loading", "opponents-error", "states", "loading", "empty", "success", "error",
     "session-expired", "access-denied"
   ]);
@@ -34,7 +37,10 @@
       window.history[method]({ radarDemo: true, radarDemoDepth: nextDepth, view: safeView }, "", buildUrl(safeView));
       store.setView(safeView);
       window.scrollTo({ top: 0, behavior: "auto" });
-      window.requestAnimationFrame(() => document.getElementById("radar-main")?.focus({ preventScroll: true }));
+      window.requestAnimationFrame(() => {
+        window.scrollTo({ top: 0, behavior: "auto" });
+        document.getElementById("radar-main")?.focus({ preventScroll: true });
+      });
     }
 
     function back() {
@@ -42,9 +48,11 @@
         window.history.back();
       } else {
         const current = store.getState().view;
-        const fallback = ["opponent-detail", "opponent-filters", "opponents-loading", "opponents-error"].includes(current)
+        const fallback = ["opponent-detail", "opponent-filters", "opponents-loading", "opponents-error", "invitation-compose", "invitation-review", "invitation-sent"].includes(current)
           ? "opponents"
-          : "home";
+          : ["invitation-detail", "invitation-counter", "match-confirmed", "notifications", "invitations-empty", "invitations-error"].includes(current)
+            ? "invitations"
+            : "home";
         navigate(fallback, { replace: true });
       }
     }

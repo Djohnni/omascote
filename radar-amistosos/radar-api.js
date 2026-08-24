@@ -9,7 +9,10 @@
     startInstagramVerification: "/me/time/verificacoes/instagram",
     confirmInstagramVerification: "/me/time/verificacoes/instagram/confirmar",
     availabilities: "/me/time/amistosos/disponibilidades",
-    nearbyTeams: "/amistosos/times-proximos"
+    nearbyTeams: "/amistosos/times-proximos",
+    invitations: "/amistosos/convites",
+    teamInvitations: "/me/time/amistosos/convites",
+    notifications: "/me/notificacoes"
   });
 
   const ERROR_MESSAGES = Object.freeze({
@@ -43,6 +46,13 @@
       throw new RadarApiError("INVALID_RESOURCE_REFERENCE", 0, "Referência de disponibilidade inválida.");
     }
     return `${ENDPOINTS.availabilities}/${encodeURIComponent(id)}`;
+  }
+
+  function safeOpaquePath(base, id, suffix) {
+    if (typeof id !== "string" || !/^[a-zA-Z0-9_-]{1,96}$/.test(id)) {
+      throw new RadarApiError("INVALID_RESOURCE_REFERENCE", 0, "Referência inválida.");
+    }
+    return `${base}/${encodeURIComponent(id)}${suffix || ""}`;
   }
 
   function buildNearbyTeamsPath(filters) {
@@ -158,6 +168,26 @@
       }),
       listAvailabilities: () => request(ENDPOINTS.availabilities),
       listNearbyTeams: (filters) => request(buildNearbyTeamsPath(filters)),
+      listInvitations: (box) => request(`${ENDPOINTS.teamInvitations}?caixa=${box === "saida" ? "saida" : "entrada"}`),
+      createInvitation: (values, idempotencyKey) => request(ENDPOINTS.invitations, {
+        method: "POST", body: values, idempotent: true, idempotencyKey
+      }),
+      acceptInvitation: (id, etag, idempotencyKey) => request(safeOpaquePath(ENDPOINTS.invitations, id, "/aceitar"), {
+        method: "POST", body: {}, etag, idempotent: true, idempotencyKey
+      }),
+      declineInvitation: (id, etag, idempotencyKey) => request(safeOpaquePath(ENDPOINTS.invitations, id, "/recusar"), {
+        method: "POST", body: {}, etag, idempotent: true, idempotencyKey
+      }),
+      cancelInvitation: (id, etag, idempotencyKey) => request(safeOpaquePath(ENDPOINTS.invitations, id, "/cancelar"), {
+        method: "POST", body: {}, etag, idempotent: true, idempotencyKey
+      }),
+      counterInvitation: (id, values, etag, idempotencyKey) => request(safeOpaquePath(ENDPOINTS.invitations, id, "/contrapropor"), {
+        method: "POST", body: values, etag, idempotent: true, idempotencyKey
+      }),
+      listNotifications: (cursor) => request(`${ENDPOINTS.notifications}${cursor ? `?cursor=${encodeURIComponent(cursor)}` : ""}`),
+      readNotification: (id, idempotencyKey) => request(safeOpaquePath(ENDPOINTS.notifications, id, "/lida"), {
+        method: "POST", body: {}, idempotent: true, idempotencyKey
+      }),
       createAvailability: (values, idempotencyKey) => request(ENDPOINTS.availabilities, {
         method: "POST", body: values, idempotent: true, idempotencyKey
       }),
