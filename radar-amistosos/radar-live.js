@@ -28,6 +28,8 @@
     invitationBox: "entrada",
     traces: []
   };
+  let returnFocus = null;
+  let backgroundDialogs = [];
 
   function token() {
     try { return localStorage.getItem("omascote_token") || ""; }
@@ -104,20 +106,20 @@
 
   function shell(content, options = {}) {
     const canBack = state.stack.length > 0;
-    return `<section class="radar-live__panel" role="dialog" aria-modal="true" aria-label="Radar de Amistosos">
+    return `<section class="radar-live__panel" role="dialog" aria-modal="true" aria-labelledby="radarLiveTitle" aria-busy="${state.loading || state.busy ? "true" : "false"}">
       <header class="radar-live__top">
         <button type="button" data-action="${canBack ? "back" : "close"}" aria-label="${canBack ? "Voltar" : "Fechar"}">${canBack ? "←" : "×"}</button>
         <div class="radar-live__brand"><strong>Radar de Amistosos</strong><span><b>${environment === "local-real" ? "LOCAL REAL" : "MEU CLUBE FC"}</b> · dados da API</span></div>
         <button type="button" data-action="refresh" aria-label="Atualizar">↻</button>
       </header>
-      <main class="radar-live__main" id="radarLiveMain" tabindex="-1">
+      <main class="radar-live__main" id="radarLiveMain" tabindex="-1" aria-live="polite">
         <div class="radar-live__screen${options.wide ? " radar-live__screen--wide" : ""}">${content}</div>
       </main>
     </section>`;
   }
 
   function heading(eyebrow, title, lead) {
-    return `<p class="radar-live__eyebrow">${esc(eyebrow)}</p><h1>${esc(title)}</h1>${lead ? `<p class="radar-live__lead">${esc(lead)}</p>` : ""}`;
+    return `<p class="radar-live__eyebrow">${esc(eyebrow)}</p><h1 id="radarLiveTitle">${esc(title)}</h1>${lead ? `<p class="radar-live__lead">${esc(lead)}</p>` : ""}`;
   }
 
   function stateCard(icon, title, text, retry = false) {
@@ -318,6 +320,42 @@
     requestAnimationFrame(() => document.getElementById("radarLiveMain")?.focus({ preventScroll: true }));
   }
 
+  function closeRadar() {
+    state.open = false;
+    root.hidden = true;
+    document.body.style.overflow = "";
+    for (const item of backgroundDialogs) {
+      item.element.inert = item.inert;
+      if (item.ariaHidden === null) item.element.removeAttribute("aria-hidden");
+      else item.element.setAttribute("aria-hidden", item.ariaHidden);
+    }
+    backgroundDialogs = [];
+    const target = returnFocus;
+    returnFocus = null;
+    requestAnimationFrame(() => target?.focus?.({ preventScroll: true }));
+  }
+
+  function revealForm(name) {
+    const form = root.querySelector(`[data-form="${name}"]`);
+    if (!form) return;
+    form.removeAttribute("hidden");
+    requestAnimationFrame(() => form.querySelector("input, select, textarea, button")?.focus({ preventScroll: true }));
+  }
+
+  function isolateBackgroundDialogs() {
+    backgroundDialogs = [...document.querySelectorAll('[role="dialog"]')]
+      .filter(item => !root.contains(item))
+      .map(element => ({
+        element,
+        inert: element.inert,
+        ariaHidden: element.getAttribute("aria-hidden")
+      }));
+    for (const item of backgroundDialogs) {
+      item.element.inert = true;
+      item.element.setAttribute("aria-hidden", "true");
+    }
+  }
+
   async function requestView(view) {
     if (view === "home") {
       const [profile, eligibility, notifications] = await Promise.all([
@@ -421,6 +459,8 @@
 
   entries.forEach(item => item.addEventListener("click", async () => {
     if (item.dataset.radarAllowed !== "true" && !(await probe())) return;
+    returnFocus = item;
+    isolateBackgroundDialogs();
     state.open = true;
     state.stack = [];
     state.view = "home";
@@ -433,7 +473,7 @@
     if (!target) return;
     const action = target.dataset.action;
     if (action === "close") {
-      state.open = false; root.hidden = true; document.body.style.overflow = ""; return;
+      closeRadar(); return;
     }
     if (action === "back") {
       const previous = state.stack.pop() || "home";
@@ -450,18 +490,18 @@
       state.selected = list(state.data?.items)[Number(target.dataset.index)]; state.selectedEtag = etagOf(state.selected);
       state.stack.push(state.view); state.view = "invitation-detail"; render(); return;
     }
-    if (action === "show-counter") { root.querySelector('[data-form="counter"]')?.removeAttribute("hidden"); return; }
+    if (action === "show-counter") { revealForm("counter"); return; }
     if (action === "accept-invitation") await mutate(() => api.acceptInvitation(idOf(state.selected), state.selectedEtag), "matches");
     if (action === "decline-invitation") await mutate(() => api.declineInvitation(idOf(state.selected), state.selectedEtag), "invitations");
     if (action === "cancel-invitation") await mutate(() => api.cancelInvitation(idOf(state.selected), state.selectedEtag), "invitations");
     if (action === "open-match" || action === "open-history-match") { await openMatch(list(state.data?.items)[Number(target.dataset.index)]); return; }
     if (action === "confirm-occurrence") await mutate(() => api.confirmMatchOccurrence(idOf(state.selected), state.selectedEtag), "matches");
-    if (action === "show-score") { root.querySelector('[data-form="score"]')?.removeAttribute("hidden"); return; }
+    if (action === "show-score") { revealForm("score"); return; }
     if (action === "confirm-score") await mutate(() => api.confirmMatchResult(idOf(state.selected), state.selectedEtag), "matches");
-    if (action === "show-review") { root.querySelector('[data-form="review"]')?.removeAttribute("hidden"); return; }
-    if (action === "show-dispute") { root.querySelector('[data-form="dispute"]')?.removeAttribute("hidden"); return; }
-    if (action === "show-report-match") { root.querySelector('[data-form="report-match"]')?.removeAttribute("hidden"); return; }
-    if (action === "review-pending") { await openMatch(list(state.data?.items)[Number(target.dataset.index)]); root.querySelector('[data-form="review"]')?.removeAttribute("hidden"); return; }
+    if (action === "show-review") { revealForm("review"); return; }
+    if (action === "show-dispute") { revealForm("dispute"); return; }
+    if (action === "show-report-match") { revealForm("report-match"); return; }
+    if (action === "review-pending") { await openMatch(list(state.data?.items)[Number(target.dataset.index)]); revealForm("review"); return; }
     if (action === "read-notification") {
       const item = list(state.data?.items)[Number(target.dataset.index)];
       await mutate(() => api.readNotification(idOf(item)), "notifications");
@@ -528,8 +568,19 @@
   window.addEventListener("radar:refresh-access", probe);
   document.addEventListener("keydown", event => {
     if (event.key === "Escape" && state.open) {
+      event.preventDefault();
       if (state.stack.length) root.querySelector('[data-action="back"]')?.click();
       else root.querySelector('[data-action="close"]')?.click();
+    }
+    if (event.key === "Tab" && state.open) {
+      const panel = root.querySelector(".radar-live__panel");
+      const focusable = [...(panel?.querySelectorAll('button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [href], [tabindex]:not([tabindex="-1"])') || [])]
+        .filter(item => !item.closest("[hidden]") && item.getClientRects().length > 0);
+      if (!focusable.length) return;
+      const first = focusable[0];
+      const last = focusable[focusable.length - 1];
+      if (event.shiftKey && document.activeElement === first) { event.preventDefault(); last.focus(); }
+      else if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first.focus(); }
     }
   });
 
