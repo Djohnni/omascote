@@ -333,6 +333,7 @@
   function filteredOpponents(state) {
     const filters = state.opponentFilters;
     return data.nearbyTeams.filter((team) => {
+      if (team.publicId && state.blockedTeamIds.includes(team.publicId)) return false;
       if (filters.modality !== "Todas" && team.modality !== filters.modality) return false;
       if (filters.category !== "Todas" && team.category !== filters.category) return false;
       if (filters.level !== "Qualquer" && team.level !== filters.level) return false;
@@ -434,7 +435,7 @@
         <div class="opponent-hero__tags"><span>${esc(team.modality)}</span><span>${esc(team.category)}</span><span>${esc(team.level)}</span></div>
       </section>
       <section class="detail-availability card"><span>${icon("calendar")}</span><div><p>Próximo horário</p><h2>${esc(team.availability)}</h2><small>${esc(team.venue)}</small></div></section>
-      <details class="compact-details card"><summary>Detalhes</summary>${publicReputation ? `<div class="reputation-card__heading"><strong>${team.reputation.score.toFixed(1).replace(".", ",")} ${icon("star")}</strong><span>${esc(team.verifiedMatches)} avaliações</span></div>${reputationBar("Fair play", team.reputation.fairPlay)}${reputationBar("Pontualidade", team.reputation.punctuality)}` : `<p>Reputação nova</p>`}<button class="details-link" type="button" data-action="open-reputation" data-id="${esc(team.publicId || "44444444-4444-4444-8444-444444444444")}">Ver reputação ${icon("arrow")}</button></details>
+      <details class="compact-details card"><summary>Detalhes</summary>${publicReputation ? `<div class="reputation-card__heading"><strong>${team.reputation.score.toFixed(1).replace(".", ",")} ${icon("star")}</strong><span>${esc(team.verifiedMatches)} avaliações</span></div>${reputationBar("Fair play", team.reputation.fairPlay)}${reputationBar("Pontualidade", team.reputation.punctuality)}` : `<p>Reputação nova</p>`}<button class="details-link" type="button" data-action="open-reputation" data-id="${esc(team.publicId || "44444444-4444-4444-8444-444444444444")}">Ver reputação ${icon("arrow")}</button><div class="safety-inline-actions"><button type="button" data-action="begin-report-team" data-id="${esc(team.slug)}">${icon("alert")} Denunciar</button><button type="button" data-action="begin-block" data-id="${esc(team.slug)}">${icon("close")} Bloquear</button></div></details>
       <section class="contact-lock card">${icon("lock")}<div><strong>Contato protegido</strong><p>Liberado após o aceite.</p></div></section>
       <div class="detail-actions">${button("Convidar", { action: "invite-preview", id: team.slug, trailing: "arrow", full: true })}</div>
     </div>`;
@@ -820,8 +821,8 @@
       ${matchup(match.opponentName, match.opponentInitials)}
       <section class="proposal-card card">${proposalFacts(match.proposal)}<div class="proposal-chips"><span>${esc(match.proposal.modality)}</span><span>${esc(match.proposal.category)}</span></div></section>
       ${confirmationPanel(match)}
-      <section class="contact-revealed card"><span>${icon("user")}</span><div><small>Responsável</small><strong>${esc(match.contact.name)}</strong><a href="tel:+5547999990000">${esc(match.contact.phone)}</a></div><span class="invite-state invite-state--accepted">Liberado</span></section>
-      <details class="compact-details card"><summary>Detalhes</summary><p>Contato fictício da demonstração.</p>${canCancel ? `<button class="details-danger" type="button" data-action="cancel-match">Cancelar partida</button>` : ""}</details>
+      ${match.contactHidden ? `<section class="contact-lock card">${icon("lock")}<div><strong>Contato oculto</strong><p>Bloqueio ativo.</p></div></section>` : `<section class="contact-revealed card"><span>${icon("user")}</span><div><small>Responsável</small><strong>${esc(match.contact.name)}</strong><a href="tel:+5547999990000">${esc(match.contact.phone)}</a></div><span class="invite-state invite-state--accepted">Liberado</span></section>`}
+      <details class="compact-details card"><summary>Detalhes</summary><p>Dados fictícios.</p>${canCancel ? `<button class="details-danger" type="button" data-action="cancel-match">Cancelar partida</button>` : ""}${["verified", "divergent"].includes(resultState) ? `<button class="details-link" type="button" data-action="begin-dispute" data-id="${esc(match.id)}">Contestar resultado ${icon("arrow")}</button>` : ""}<button class="details-link" type="button" data-action="begin-report-match" data-id="${esc(match.id)}">Denunciar partida ${icon("arrow")}</button></details>
       ${resultAction ? `<div class="sticky-actions match-primary-action">${resultAction}</div>` : canConfirm ? `<div class="sticky-actions match-primary-action">${button("Confirmar realização", { action: "confirm-match", id: match.id, icon: "check", full: true })}</div>` : ""}
     </div>`;
   }
@@ -1090,6 +1091,161 @@
     return `<div class="screen state-page state-page--${view === "match-error" ? "error" : view === "match-access-denied" ? "denied" : view === "match-loading" ? "loading" : "empty"}"><section class="state-page__visual">${icon(content[0])}${view === "match-loading" ? '<span class="spinner-ring"></span>' : ""}</section><p class="eyebrow">Partidas</p><h1>${esc(content[1])}</h1><p>${esc(content[2])}</p>${view === "match-loading" ? "" : button(labels[view] || "Voltar", { action: "navigate", target: content[3] })}</div>`;
   }
 
+  function safetyOption(iconName, title, detail, target, count) {
+    return `<button class="safety-option card" type="button" data-action="navigate" data-target="${esc(target)}"><span>${icon(iconName)}</span><div><strong>${esc(title)}</strong><small>${esc(detail)}</small></div>${count ? `<b>${esc(count)}</b>` : icon("arrow")}</button>`;
+  }
+
+  function renderSafety(state) {
+    return `<div class="screen screen--narrow safety-screen">
+      ${screenHeader("Radar", "Segurança e privacidade", "Controle seu time.")}
+      <section class="safety-status card"><span>${icon("shield")}</span><div><strong>${state.exitedRadar ? "Fora do Radar" : "Perfil protegido"}</strong><small>${state.exitedRadar ? "Perfil oculto" : "Dados privados"}</small></div><i class="${state.exitedRadar ? "is-off" : ""}"></i></section>
+      <section class="safety-menu" aria-label="Opções de segurança">
+        ${safetyOption("alert", "Denunciar incidente", "Motivos por seleção", "safety-report")}
+        ${safetyOption("close", "Times bloqueados", "Sem novos convites", "safety-blocks", state.blockedTeamIds.length || "")}
+        ${safetyOption("trophy", "Contestar resultado", "Sem mudar o placar", "safety-dispute")}
+        ${safetyOption("list", "Casos enviados", "Acompanhe a situação", "safety-cases", state.safetyCases.length)}
+        ${safetyOption("lock", "Dados e saída", "Privacidade do Radar", "safety-privacy")}
+      </section>
+      <details class="compact-details card"><summary>Equipe de moderação</summary><p>Acesso restrito.</p>${button("Abrir fila demo", { action: "navigate", target: "moderation-queue", kind: "ghost", full: true })}</details>
+      <section class="private-case-note">${icon("shield")}<div><strong>Denúncias são privadas</strong><span>O outro time não vê quem enviou.</span></div></section>
+    </div>`;
+  }
+
+  function safetyTarget(state, type) {
+    if (state.safetyTarget?.type === type) return state.safetyTarget;
+    if (type === "team") {
+      const team = data.nearbyTeams.find((item) => item.publicId && !state.blockedTeamIds.includes(item.publicId));
+      return team ? { type: "team", slug: team.slug, publicId: team.publicId, name: team.name, initials: team.initials } : null;
+    }
+    const match = state.matches.find((item) => type === "dispute"
+      ? ["verified", "divergent"].includes(item.result?.state)
+      : true);
+    return match ? { type, matchId: match.id, name: match.opponentName, initials: match.opponentInitials } : null;
+  }
+
+  function targetStrip(target) {
+    if (!target) return "";
+    return `<section class="safety-target card">${crest(target.initials || "FC", "team-crest--small")}<div><small>Time</small><strong>${esc(target.name)}</strong></div>${icon("shield")}</section>`;
+  }
+
+  function reasonChoices(name, values) {
+    return `<div class="safety-choices">${values.map(([value, label, iconName]) => `<label><input type="radio" name="${esc(name)}" value="${esc(value)}" required><span>${icon(iconName || "alert")}<b>${esc(label)}</b></span></label>`).join("")}</div>`;
+  }
+
+  function renderSafetyReport(state) {
+    const target = safetyTarget(state, state.safetyTarget?.type === "match" ? "match" : "team");
+    if (!target) return renderSafetyState("safety-empty");
+    return `<div class="screen screen--narrow safety-form-screen">
+      ${screenHeader("Segurança", "Denunciar", "Escolha o motivo.")}
+      ${targetStrip(target)}
+      <form data-form="safety-report" class="safety-form">
+        ${reasonChoices("category", [["unsafe_conduct", "Conduta perigosa", "alert"], ["harassment", "Assédio", "close"], ["identity_fraud", "Identidade falsa", "user"], ["spam", "Spam", "send"], ["inappropriate_content", "Conteúdo impróprio", "eye"], ["other", "Outro", "more"]])}
+        <details class="compact-details card"><summary>Adicionar descrição</summary><label class="field"><span>Privada · até 500 caracteres</span><textarea name="description" maxlength="500" rows="3"></textarea></label></details>
+        <div class="sticky-actions">${button("Enviar denúncia", { type: "submit", icon: "send", full: true })}</div>
+      </form>
+    </div>`;
+  }
+
+  function renderSafetyBlock(state) {
+    const target = safetyTarget(state, "team");
+    if (!target) return renderSafetyState("safety-empty");
+    return `<div class="screen screen--narrow safety-form-screen">
+      ${screenHeader("Segurança", "Bloquear time", "Ação imediata.")}
+      ${targetStrip(target)}
+      <section class="impact-list card"><div>${icon("eye")}<span>Some da busca</span></div><div>${icon("send")}<span>Convites encerrados</span></div><div>${icon("lock")}<span>Contato oculto</span></div></section>
+      <form data-form="safety-block" class="safety-form">
+        ${reasonChoices("reason", [["unwanted_contact", "Contato indesejado", "send"], ["conduct", "Conduta", "alert"], ["safety", "Segurança", "shield"], ["other", "Outro", "more"]])}
+        <div class="sticky-actions">${button("Bloquear time", { type: "submit", icon: "close", full: true })}</div>
+      </form>
+    </div>`;
+  }
+
+  function renderSafetyBlocks(state) {
+    const teams = data.nearbyTeams.filter((item) => item.publicId && state.blockedTeamIds.includes(item.publicId));
+    return `<div class="screen screen--narrow safety-screen">
+      ${screenHeader("Privacidade", "Times bloqueados", `${teams.length} ${teams.length === 1 ? "time" : "times"}.`)}
+      ${teams.length ? `<section class="safety-list">${teams.map((team) => `<article class="safety-list-item card">${crest(team.initials, "team-crest--small")}<div><strong>${esc(team.name)}</strong><small>Contato oculto</small></div><button type="button" data-action="unblock-team" data-id="${esc(team.publicId)}">Desbloquear</button></article>`).join("")}</section>` : `<section class="inline-empty card">${icon("shield")}<h2>Nenhum bloqueio</h2><p>Sua lista está vazia.</p></section>`}
+    </div>`;
+  }
+
+  function caseStatus(item) {
+    const tone = item.status === "Resolvido" ? "accepted" : item.status === "Em análise" || item.status === "Atribuído" ? "counter" : "pending";
+    return `<span class="invite-state invite-state--${tone}">${esc(item.status)}</span>`;
+  }
+
+  function renderSafetyCases(state) {
+    return `<div class="screen screen--narrow safety-screen">
+      ${screenHeader("Moderação", "Casos enviados", `${state.safetyCases.length} registros.`)}
+      ${state.safetyCases.length ? `<section class="case-list">${state.safetyCases.map((item) => `<article class="case-card card"><div><span>${esc(item.type)}</span>${caseStatus(item)}</div><strong>${esc(item.category)}</strong><p>${esc(item.teamName)} · ${esc(item.createdLabel)}</p><details><summary>Detalhes</summary><small>Caso ${esc(item.id)} · v${esc(item.version)}</small></details></article>`).join("")}</section>` : renderSafetyState("safety-empty")}
+    </div>`;
+  }
+
+  function renderSafetyDispute(state) {
+    const target = safetyTarget(state, "dispute");
+    if (!target) return renderSafetyState("safety-empty");
+    const match = state.matches.find((item) => item.id === target.matchId);
+    const score = match?.result?.official || match?.result?.mine || { mine: "–", opponent: "–" };
+    return `<div class="screen screen--narrow safety-form-screen">
+      ${screenHeader("Resultado", "Contestar placar", "O placar não muda agora.")}
+      ${targetStrip(target)}
+      <section class="dispute-score card"><strong>${esc(score.mine)}</strong><span>×</span><strong>${esc(score.opponent)}</strong></section>
+      <form data-form="safety-dispute" class="safety-form">
+        ${reasonChoices("reason", [["score_incorrect", "Placar incorreto", "trophy"], ["identity_fraud", "Partida incorreta", "alert"], ["other", "Outro", "more"]])}
+        <details class="compact-details card"><summary>Adicionar descrição</summary><label class="field"><span>Privada · até 500 caracteres</span><textarea name="description" maxlength="500" rows="3"></textarea></label></details>
+        <div class="sticky-actions">${button("Enviar contestação", { type: "submit", icon: "send", full: true })}</div>
+      </form>
+    </div>`;
+  }
+
+  function renderSafetyPrivacy(state) {
+    return `<div class="screen screen--narrow safety-screen">
+      ${screenHeader("Radar", "Dados e saída", "Controle sua presença.")}
+      <section class="privacy-metrics card"><div><strong>${state.availabilities.filter((item) => item.status === "active").length}</strong><span>disponibilidades</span></div><div><strong>${state.invitations.filter((item) => ["pending", "counter_proposed"].includes(item.state)).length}</strong><span>convites abertos</span></div><div><strong>${state.safetyCases.length}</strong><span>casos</span></div></section>
+      <section class="privacy-card card">${icon("eye")}<div><strong>Perfil no Radar</strong><span>${state.exitedRadar ? "Oculto" : "Visível"}</span></div>${caseStatus({ status: state.exitedRadar ? "Desativado" : "Ativo" })}</section>
+      <details class="compact-details card"><summary>O que é preservado</summary><p>Histórico obrigatório e auditoria protegida.</p></details>
+      ${state.exitedRadar ? `<section class="private-case-note">${icon("check")}<div><strong>Saída concluída</strong><span>Novos convites bloqueados.</span></div></section>` : `<div class="privacy-exit">${button("Sair do Radar", { action: "navigate", target: "safety-exit", kind: "danger", full: true })}</div>`}
+    </div>`;
+  }
+
+  function renderSafetyExit() {
+    return `<div class="screen screen--narrow safety-form-screen">
+      ${screenHeader("Privacidade", "Sair do Radar", "Revise antes de sair.")}
+      <section class="impact-list card"><div>${icon("eye")}<span>Perfil oculto</span></div><div>${icon("calendar")}<span>Disponibilidades canceladas</span></div><div>${icon("send")}<span>Convites encerrados</span></div></section>
+      <form data-form="safety-exit" class="safety-form"><label class="consent"><input type="checkbox" name="confirm" value="yes" required><span>${icon("check")}</span><span>Confirmo a saída.</span></label><div class="sticky-actions">${button("Confirmar saída", { type: "submit", icon: "close", full: true })}</div></form>
+    </div>`;
+  }
+
+  function renderModerationQueue(state) {
+    return `<div class="screen screen--wide safety-screen">
+      ${screenHeader("Admin", "Fila de moderação", `${state.moderationCases.filter((item) => item.status !== "Resolvido").length} pendentes.`)}
+      <section class="moderation-grid">${state.moderationCases.map((item) => `<button class="moderation-card card" type="button" data-action="open-moderation-case" data-id="${esc(item.id)}"><span>${icon(item.type === "Contestação" ? "trophy" : "alert")}</span><div><small>${esc(item.type)} · ${esc(item.createdLabel)}</small><strong>${esc(item.category)}</strong><p>${esc(item.teamName)}</p></div><div>${caseStatus(item)}<small>${esc(item.priority)}</small></div></button>`).join("")}</section>
+      <details class="compact-details card"><summary>Simular permissão</summary>${button("Acesso negado", { action: "navigate", target: "moderation-access-denied", kind: "ghost", full: true })}</details>
+    </div>`;
+  }
+
+  function renderModerationCase(state) {
+    const item = state.moderationCases.find((entry) => entry.id === state.selectedModerationCaseId);
+    if (!item) return renderSafetyState("safety-empty");
+    return `<div class="screen screen--narrow safety-form-screen">
+      ${screenHeader("Admin", "Revisar caso", `v${item.version} · ${item.createdLabel}`)}
+      <section class="case-summary card"><div>${caseStatus(item)}<small>${esc(item.type)}</small></div><h2>${esc(item.category)}</h2><p>${esc(item.teamName)}</p></section>
+      ${item.status === "Aberto" ? `<div class="assign-action">${button("Atribuir a mim", { action: "assign-moderation-case", id: item.id, icon: "user", full: true })}</div>` : item.status === "Resolvido" ? `<section class="private-case-note">${icon("check")}<div><strong>${esc(item.resolution || "Caso resolvido")}</strong><span>Decisão auditada.</span></div></section>` : `<form data-form="moderation-resolve" data-id="${esc(item.id)}" class="safety-form"><fieldset class="filter-section"><legend>Decisão</legend><select name="decision" required><option value="">Selecione</option><option value="dismiss">Arquivar</option><option value="warn">Orientar time</option><option value="invalidate_review">Invalidar avaliação</option><option value="invalidate_result">Invalidar resultado</option><option value="suspend_team">Suspender time</option></select></fieldset><fieldset class="filter-section"><legend>Motivo</legend><select name="reason" required><option value="">Selecione</option><option value="no_violation">Sem violação</option><option value="insufficient_evidence">Provas insuficientes</option><option value="violation_confirmed">Violação confirmada</option><option value="invalid_review">Avaliação inválida</option><option value="invalid_result">Resultado inválido</option></select></fieldset><div class="sticky-actions">${button("Registrar decisão", { type: "submit", icon: "shield", full: true })}</div></form>`}
+    </div>`;
+  }
+
+  function renderSafetyState(view) {
+    const content = {
+      "safety-report-success": ["check", "Denúncia enviada", "A moderação recebeu."],
+      "safety-dispute-success": ["check", "Contestação enviada", "O placar segue igual."],
+      "safety-exit-success": ["shield", "Saída concluída", "Perfil oculto."],
+      "safety-empty": ["shield", "Nada por aqui", "Nenhum registro."],
+      "safety-error": ["close", "Ação indisponível", "Tente novamente."],
+      "safety-access-denied": ["lock", "Acesso negado", "Conta sem permissão."],
+      "moderation-access-denied": ["lock", "Acesso restrito", "Somente moderadores."]
+    }[view];
+    return `<div class="screen state-page state-page--${view.includes("success") ? "success" : view.includes("denied") ? "denied" : view.includes("error") ? "error" : "empty"}"><section class="state-page__visual">${icon(content[0])}</section><p class="eyebrow">Segurança</p><h1>${esc(content[1])}</h1><p>${esc(content[2])}</p>${button("Voltar à segurança", { action: "navigate", target: "safety", trailing: "arrow" })}</div>`;
+  }
+
   function renderNotifications(state) {
     const unread = state.notifications.filter((item) => !item.read).length;
     return `<div class="screen screen--narrow notifications-screen">
@@ -1206,6 +1362,23 @@
       "reputation-loading": () => renderReputationState("reputation-loading"),
       "reputation-empty": () => renderReputationState("reputation-empty"),
       "reputation-error": () => renderReputationState("reputation-error"),
+      safety: renderSafety,
+      "safety-report": renderSafetyReport,
+      "safety-report-success": () => renderSafetyState("safety-report-success"),
+      "safety-block": renderSafetyBlock,
+      "safety-blocks": renderSafetyBlocks,
+      "safety-cases": renderSafetyCases,
+      "safety-dispute": renderSafetyDispute,
+      "safety-dispute-success": () => renderSafetyState("safety-dispute-success"),
+      "safety-privacy": renderSafetyPrivacy,
+      "safety-exit": renderSafetyExit,
+      "safety-exit-success": () => renderSafetyState("safety-exit-success"),
+      "safety-empty": () => renderSafetyState("safety-empty"),
+      "safety-error": () => renderSafetyState("safety-error"),
+      "safety-access-denied": () => renderSafetyState("safety-access-denied"),
+      "moderation-queue": renderModerationQueue,
+      "moderation-case": renderModerationCase,
+      "moderation-access-denied": () => renderSafetyState("moderation-access-denied"),
       notifications: renderNotifications,
       "invitations-empty": renderInvitationsEmptyPage,
       "invitations-error": renderInvitationsError,
@@ -1238,8 +1411,9 @@
             <button class="nav-item${activeClass(state.view, ["invitations", "invitation-compose", "invitation-review", "invitation-sent", "invitation-detail", "invitation-counter", "notifications", "invitations-empty", "invitations-error"])}" type="button" data-action="navigate" data-target="invitations">${icon("send")}<span>Convites</span></button>
             <button class="nav-item${activeClass(state.view, ["matches", "match-confirmed", "match-detail", "match-cancel", "match-cancelled", "match-loading", "match-empty", "match-error", "match-access-denied"])}" type="button" data-action="navigate" data-target="matches">${icon("calendar")}<span>Partidas</span></button>
             <button class="nav-item${activeClass(state.view, ["history", "head-to-head", "history-loading", "history-empty", "history-error"])}" type="button" data-action="navigate" data-target="history">${icon("trophy")}<span>Histórico</span></button>
-            <button class="nav-item${activeClass(state.view, ["eligibility", "profile-manual", "print-import", "draft-review", "verification"])}" type="button" data-action="navigate" data-target="eligibility">${icon("shield")}<span>Cadastro e segurança</span></button>
+            <button class="nav-item${activeClass(state.view, ["eligibility", "profile-manual", "print-import", "draft-review", "verification"])}" type="button" data-action="navigate" data-target="eligibility">${icon("shield")}<span>Cadastro</span></button>
             <button class="nav-item${activeClass(state.view, ["availabilities", "availability-form"])}" type="button" data-action="navigate" data-target="availabilities">${icon("calendar")}<span>Disponibilidades</span></button>
+            <button class="nav-item${activeClass(state.view, ["safety", "safety-report", "safety-report-success", "safety-block", "safety-blocks", "safety-cases", "safety-dispute", "safety-dispute-success", "safety-privacy", "safety-exit", "safety-exit-success", "safety-empty", "safety-error", "safety-access-denied", "moderation-queue", "moderation-case", "moderation-access-denied"])}" type="button" data-action="navigate" data-target="safety">${icon("lock")}<span>Segurança</span></button>
             <p>DEMONSTRAÇÃO</p>
             <button class="nav-item${activeClass(state.view, ["states", "loading", "empty", "success", "error", "session-expired", "access-denied"])}" type="button" data-action="navigate" data-target="states">${icon("list")}<span>Estados da tela</span></button>
           </nav>
@@ -1251,7 +1425,7 @@
         <button class="${activeClass(state.view, ["opponents", "opponent-filters", "opponent-detail", "opponents-loading", "opponents-error"])}" type="button" data-action="navigate" data-target="opponents">${icon("radar")}<span>Radar</span></button>
         <button class="${activeClass(state.view, ["invitations", "invitation-compose", "invitation-review", "invitation-sent", "invitation-detail", "invitation-counter", "notifications", "invitations-empty", "invitations-error"])}" type="button" data-action="navigate" data-target="invitations">${icon("send")}<span>Convites</span></button>
         <button class="${activeClass(state.view, ["history", "head-to-head", "history-loading", "history-empty", "history-error", "matches", "match-detail"])}" type="button" data-action="navigate" data-target="history">${icon("trophy")}<span>Histórico</span></button>
-        <button class="${activeClass(state.view, ["home", "eligibility", "profile-manual", "print-import", "draft-review", "verification", "availabilities", "availability-form"])}" type="button" data-action="navigate" data-target="home">${icon("user")}<span>Meu time</span></button>
+        <button class="${activeClass(state.view, ["home", "eligibility", "profile-manual", "print-import", "draft-review", "verification", "availabilities", "availability-form", "safety", "safety-report", "safety-block", "safety-blocks", "safety-cases", "safety-dispute", "safety-privacy", "safety-exit", "moderation-queue", "moderation-case"])}" type="button" data-action="navigate" data-target="home">${icon("user")}<span>Meu time</span></button>
       </nav>
       ${state.toast ? `<div class="toast toast--${esc(state.toast.tone)}" role="status">${icon(state.toast.tone === "success" ? "check" : "radar")}<span>${esc(state.toast.message)}</span><button type="button" data-action="dismiss-toast" aria-label="Fechar aviso">${icon("close")}</button></div>` : ""}
       ${state.busy ? `<div class="busy-overlay" role="status" aria-live="polite"><span class="loader"></span><strong>${esc(state.busyLabel)}</strong></div>` : ""}`;
@@ -1339,6 +1513,13 @@
         router.navigate(submitted ? "review-complete" : "review-error");
       }
       if (action === "open-reputation" && store.selectReputationTeam(id)) router.navigate("reputation");
+      if (action === "begin-block" && store.beginBlock(id)) router.navigate("safety-block");
+      if (action === "begin-report-team" && store.beginSafetyReport("team", id)) router.navigate("safety-report");
+      if (action === "begin-report-match" && store.beginSafetyReport("match", id)) router.navigate("safety-report");
+      if (action === "unblock-team") store.unblockTeam(id);
+      if (action === "begin-dispute" && store.beginDispute(id)) router.navigate("safety-dispute");
+      if (action === "open-moderation-case" && store.selectModerationCase(id)) router.navigate("moderation-case");
+      if (action === "assign-moderation-case") store.assignModerationCase(id);
       if (action === "copy-code") {
         try { await navigator.clipboard.writeText("MCF-4827"); } catch (_error) { /* A seleção manual continua disponível. */ }
         control.classList.add("is-copied");
@@ -1417,6 +1598,26 @@
       }
       if (form.dataset.form === "team-review") {
         if (store.reviewEvaluation(values, form.dataset.id)) router.navigate("review-confirm");
+      }
+      if (form.dataset.form === "safety-report") {
+        if (!currentState.safetyTarget) store.beginSafetyReport("team", data.nearbyTeams[0].slug);
+        if (store.submitSafetyReport(values)) router.navigate("safety-report-success");
+      }
+      if (form.dataset.form === "safety-block") {
+        if (store.blockSelected(values)) router.navigate("safety-blocks");
+      }
+      if (form.dataset.form === "safety-dispute") {
+        if (!currentState.safetyTarget || currentState.safetyTarget.type !== "dispute") {
+          const match = currentState.matches.find((item) => ["verified", "divergent"].includes(item.result?.state));
+          if (match) store.beginDispute(match.id);
+        }
+        if (store.submitDispute(values)) router.navigate("safety-dispute-success");
+      }
+      if (form.dataset.form === "safety-exit") {
+        if (store.exitRadar()) router.navigate("safety-exit-success");
+      }
+      if (form.dataset.form === "moderation-resolve") {
+        if (store.resolveModerationCase(form.dataset.id, values)) router.navigate("moderation-queue");
       }
     });
 

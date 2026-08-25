@@ -17,6 +17,10 @@
     pendingEvaluations: "/me/time/avaliacoes/pendentes",
     ownReputation: "/me/time/reputacao",
     publicTeamReputation: "/radar/times",
+    radarBlocks: "/me/time/radar/bloqueios",
+    radarReports: "/me/time/radar/denuncias",
+    radarExit: "/me/time/radar/exclusao",
+    moderationQueue: "/admin/radar/moderacao",
     notifications: "/me/notificacoes"
   });
 
@@ -246,6 +250,40 @@
       }),
       getOwnReputation: () => request(ENDPOINTS.ownReputation),
       getTeamReputation: (teamPublicId) => request(safeOpaquePath(ENDPOINTS.publicTeamReputation, teamPublicId, "/reputacao")),
+      listRadarBlocks: () => request(ENDPOINTS.radarBlocks),
+      blockRadarTeam: (teamPublicId, reason, idempotencyKey) => request(ENDPOINTS.radarBlocks, {
+        method: "POST", body: { team_public_id: teamPublicId, motivo: reason }, idempotent: true, idempotencyKey
+      }),
+      unblockRadarTeam: (teamPublicId, idempotencyKey) => request(safeOpaquePath(ENDPOINTS.radarBlocks, teamPublicId), {
+        method: "DELETE", idempotent: true, idempotencyKey
+      }),
+      reportRadarTeam: (teamPublicId, category, description, idempotencyKey) => request(ENDPOINTS.radarReports, {
+        method: "POST", body: {
+          tipo: "time", team_public_id: teamPublicId, categoria: category,
+          ...(description ? { descricao: description } : {})
+        }, idempotent: true, idempotencyKey
+      }),
+      reportRadarMatch: (matchId, category, description, idempotencyKey) => request(ENDPOINTS.radarReports, {
+        method: "POST", body: {
+          tipo: "partida", match_id: matchId, categoria: category,
+          ...(description ? { descricao: description } : {})
+        }, idempotent: true, idempotencyKey
+      }),
+      listRadarReports: () => request(ENDPOINTS.radarReports),
+      disputeMatchResult: (matchId, reason, description, idempotencyKey) => request(safeOpaquePath(ENDPOINTS.matches, matchId, "/contestacao"), {
+        method: "POST", body: { motivo: reason, ...(description ? { descricao: description } : {}) },
+        idempotent: true, idempotencyKey
+      }),
+      exitRadar: (idempotencyKey) => request(ENDPOINTS.radarExit, {
+        method: "POST", body: { confirmacao: "SAIR_DO_RADAR" }, idempotent: true, idempotencyKey
+      }),
+      listModerationQueue: () => request(ENDPOINTS.moderationQueue),
+      assignModerationCase: (caseId, reason, etag, idempotencyKey) => request(safeOpaquePath(ENDPOINTS.moderationQueue, caseId, "/atribuir"), {
+        method: "POST", body: { motivo: reason }, etag, idempotent: true, idempotencyKey
+      }),
+      resolveModerationCase: (caseId, decision, reason, etag, idempotencyKey) => request(safeOpaquePath(ENDPOINTS.moderationQueue, caseId, "/resolver"), {
+        method: "POST", body: { decisao: decision, motivo: reason }, etag, idempotent: true, idempotencyKey
+      }),
       createAvailability: (values, idempotencyKey) => request(ENDPOINTS.availabilities, {
         method: "POST", body: values, idempotent: true, idempotencyKey
       }),

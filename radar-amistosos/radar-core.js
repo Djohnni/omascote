@@ -67,6 +67,12 @@
       },
       reviewedMatchIds: [],
       selectedReputationTeamId: "11111111-1111-4111-8111-111111111111",
+      blockedTeamIds: [],
+      safetyCases: copy(source.safetyCases || []),
+      safetyTarget: null,
+      moderationCases: copy(source.moderationCases || []),
+      selectedModerationCaseId: source.moderationCases?.[0]?.id || null,
+      exitedRadar: false,
       confirmedMatch: null,
       sequence: 2
     };
@@ -99,6 +105,12 @@
         reviewDraft: { ...fresh.reviewDraft, ...(parsed.reviewDraft || {}) },
         reviewedMatchIds: Array.isArray(parsed.reviewedMatchIds) ? parsed.reviewedMatchIds : [],
         selectedReputationTeamId: parsed.selectedReputationTeamId || fresh.selectedReputationTeamId,
+        blockedTeamIds: Array.isArray(parsed.blockedTeamIds) ? parsed.blockedTeamIds : [],
+        safetyCases: Array.isArray(parsed.safetyCases) ? parsed.safetyCases : fresh.safetyCases,
+        safetyTarget: parsed.safetyTarget || null,
+        moderationCases: Array.isArray(parsed.moderationCases) ? parsed.moderationCases : fresh.moderationCases,
+        selectedModerationCaseId: parsed.selectedModerationCaseId || fresh.selectedModerationCaseId,
+        exitedRadar: Boolean(parsed.exitedRadar),
         confirmedMatch: parsed.confirmedMatch || null,
         sequence: Number.isInteger(parsed.sequence) ? parsed.sequence : fresh.sequence
       };
@@ -130,6 +142,12 @@
       reviewDraft: state.reviewDraft,
       reviewedMatchIds: state.reviewedMatchIds,
       selectedReputationTeamId: state.selectedReputationTeamId,
+      blockedTeamIds: state.blockedTeamIds,
+      safetyCases: state.safetyCases,
+      safetyTarget: state.safetyTarget,
+      moderationCases: state.moderationCases,
+      selectedModerationCaseId: state.selectedModerationCaseId,
+      exitedRadar: state.exitedRadar,
       confirmedMatch: state.confirmedMatch,
       sequence: state.sequence
     };
@@ -741,6 +759,137 @@
       if (!exists) return false;
       state.selectedReputationTeamId = publicId;
       emit({ persist: false });
+      return true;
+    },
+
+    beginBlock(slug) {
+      const team = source.nearbyTeams.find((item) => item.slug === slug);
+      if (!team?.publicId) return false;
+      state.safetyTarget = { type: "team", slug: team.slug, publicId: team.publicId, name: team.name, initials: team.initials };
+      emit({ persist: false });
+      return true;
+    },
+
+    blockSelected() {
+      const target = state.safetyTarget;
+      if (!target?.publicId) return false;
+      if (!state.blockedTeamIds.includes(target.publicId)) state.blockedTeamIds = [...state.blockedTeamIds, target.publicId];
+      state.invitations = state.invitations.map((item) => item.opponentSlug === target.slug && ["pending", "counter_proposed"].includes(item.state)
+        ? { ...item, state: "cancelled", version: item.version + 1, updatedLabel: "bloqueado" }
+        : item);
+      state.matches = state.matches.map((item) => item.opponentPublicId === target.publicId
+        ? { ...item, contactHidden: true }
+        : item);
+      emit();
+      notify("Time bloqueado.", "info");
+      return true;
+    },
+
+    unblockTeam(publicId) {
+      state.blockedTeamIds = state.blockedTeamIds.filter((id) => id !== publicId);
+      state.matches = state.matches.map((item) => item.opponentPublicId === publicId
+        ? { ...item, contactHidden: false }
+        : item);
+      emit();
+      notify("Bloqueio removido.", "info");
+    },
+
+    beginSafetyReport(type, reference) {
+      if (type === "team") {
+        const team = source.nearbyTeams.find((item) => item.slug === reference);
+        if (!team?.publicId) return false;
+        state.safetyTarget = { type, slug: team.slug, publicId: team.publicId, name: team.name, initials: team.initials };
+      } else {
+        const match = state.matches.find((item) => item.id === reference);
+        if (!match) return false;
+        state.safetyTarget = { type: "match", matchId: match.id, name: match.opponentName, initials: match.opponentInitials };
+      }
+      emit({ persist: false });
+      return true;
+    },
+
+    submitSafetyReport(values) {
+      const categories = {
+        unsafe_conduct: "Conduta perigosa", harassment: "Assédio", identity_fraud: "Identidade falsa",
+        spam: "Spam", inappropriate_content: "Conteúdo impróprio", other: "Outro"
+      };
+      const target = state.safetyTarget;
+      if (!target || !categories[values?.category]) return false;
+      const item = {
+        id: `caso-demo-${state.sequence++}`, type: target.type === "match" ? "Denúncia de partida" : "Denúncia",
+        category: categories[values.category], status: "Recebida", version: 1,
+        teamName: target.name, matchId: target.matchId || null, createdLabel: "agora"
+      };
+      state.safetyCases = [item, ...state.safetyCases];
+      state.notifications = [{
+        id: `demo-aviso-${state.sequence++}`, type: "safety", title: "Caso recebido",
+        detail: item.category, read: false, time: "agora"
+      }, ...state.notifications];
+      emit();
+      notify("Denúncia enviada.");
+      return true;
+    },
+
+    beginDispute(matchId) {
+      const match = state.matches.find((item) => item.id === matchId && ["verified", "divergent"].includes(item.result?.state));
+      if (!match) return false;
+      state.safetyTarget = { type: "dispute", matchId: match.id, name: match.opponentName, initials: match.opponentInitials };
+      emit({ persist: false });
+      return true;
+    },
+
+    submitDispute(values) {
+      const reasons = { score_incorrect: "Placar incorreto", identity_fraud: "Partida incorreta", other: "Outro" };
+      const target = state.safetyTarget;
+      if (target?.type !== "dispute" || !reasons[values?.reason]) return false;
+      state.safetyCases = [{
+        id: `caso-demo-${state.sequence++}`, type: "Contestação", category: reasons[values.reason],
+        status: "Recebida", version: 1, teamName: target.name, matchId: target.matchId, createdLabel: "agora"
+      }, ...state.safetyCases];
+      emit();
+      notify("Contestação enviada.");
+      return true;
+    },
+
+    exitRadar() {
+      if (state.exitedRadar) return false;
+      state.exitedRadar = true;
+      state.profile = { ...state.profile, publicProfile: false };
+      state.availabilities = state.availabilities.map((item) => ({ ...item, status: "cancelled" }));
+      state.invitations = state.invitations.map((item) => ["pending", "counter_proposed"].includes(item.state)
+        ? { ...item, state: "cancelled", version: item.version + 1 }
+        : item);
+      emit();
+      notify("Saída do Radar concluída.", "info");
+      return true;
+    },
+
+    selectModerationCase(id) {
+      if (!state.moderationCases.some((item) => item.id === id)) return false;
+      state.selectedModerationCaseId = id;
+      emit({ persist: false });
+      return true;
+    },
+
+    assignModerationCase(id) {
+      state.moderationCases = state.moderationCases.map((item) => item.id === id
+        ? { ...item, status: "Atribuído", version: item.version + 1 }
+        : item);
+      emit();
+      notify("Caso atribuído.");
+    },
+
+    resolveModerationCase(id, values) {
+      const labels = {
+        dismiss: "Arquivado", warn: "Orientação aplicada", invalidate_review: "Avaliação invalidada",
+        invalidate_result: "Resultado invalidado", suspend_team: "Time suspenso"
+      };
+      if (!labels[values?.decision]) return false;
+      state.moderationCases = state.moderationCases.map((item) => item.id === id
+        ? { ...item, status: "Resolvido", resolution: labels[values.decision], version: item.version + 1 }
+        : item);
+      emit();
+      notify("Decisão registrada.");
       return true;
     },
 

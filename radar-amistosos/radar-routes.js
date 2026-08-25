@@ -14,6 +14,11 @@
     "review-form", "review-confirm", "review-complete", "review-loading", "review-empty",
     "review-error", "reputation", "reputation-new", "reputation-loading",
     "reputation-empty", "reputation-error",
+    "safety", "safety-report", "safety-report-success", "safety-block",
+    "safety-blocks", "safety-cases", "safety-dispute", "safety-dispute-success",
+    "safety-privacy", "safety-exit", "safety-exit-success", "safety-empty",
+    "safety-error", "safety-access-denied", "moderation-queue", "moderation-case",
+    "moderation-access-denied",
     "invitations-empty", "invitations-error",
     "opponents-loading", "opponents-error", "states", "loading", "empty", "success", "error",
     "session-expired", "access-denied"
@@ -70,6 +75,12 @@
               ? "match-detail"
             : ["reputation", "reputation-new", "reputation-loading", "reputation-empty", "reputation-error"].includes(current)
               ? "opponent-detail"
+            : ["safety-report", "safety-report-success", "safety-block", "safety-blocks", "safety-cases", "safety-privacy", "safety-exit", "safety-exit-success", "safety-empty", "safety-error", "safety-access-denied", "moderation-queue", "moderation-access-denied"].includes(current)
+              ? "safety"
+            : ["safety-dispute", "safety-dispute-success"].includes(current)
+              ? "match-detail"
+            : current === "moderation-case"
+              ? "moderation-queue"
             : "home";
         navigate(fallback, { replace: true });
       }

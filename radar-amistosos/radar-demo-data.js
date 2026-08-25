@@ -2,7 +2,7 @@
   "use strict";
 
   window.RadarDemoData = {
-    storageKey: "meu-clube-fc:radar-demo:v2",
+    storageKey: "meu-clube-fc:radar-demo:v3",
     profile: {
       teamName: "Estrela do Norte FC",
       shortName: "Estrela do Norte",
@@ -466,6 +466,30 @@
         },
         cancellation: null,
         updatedLabel: "resultado oficial"
+      }
+    ],
+    safetyCases: [
+      {
+        id: "caso-demo-1", type: "Denúncia", category: "Conduta perigosa",
+        status: "Em análise", version: 1, teamName: "Atlético Rio Bonito",
+        matchId: null, createdLabel: "hoje"
+      },
+      {
+        id: "caso-demo-2", type: "Contestação", category: "Placar incorreto",
+        status: "Recebida", version: 1, teamName: "Guerreiros do Bairro",
+        matchId: "demo-placar-divergente", createdLabel: "ontem"
+      }
+    ],
+    moderationCases: [
+      {
+        id: "moderacao-demo-1", type: "Denúncia de partida", category: "Conduta perigosa",
+        status: "Aberto", version: 1, teamName: "Atlético Rio Bonito",
+        createdLabel: "há 18 min", priority: "24 h"
+      },
+      {
+        id: "moderacao-demo-2", type: "Contestação", category: "Placar incorreto",
+        status: "Atribuído", version: 2, teamName: "Guerreiros do Bairro",
+        createdLabel: "há 1 h", priority: "8 h"
       }
     ],
     availabilities: [
