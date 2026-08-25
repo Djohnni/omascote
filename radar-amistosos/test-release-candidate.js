@@ -13,6 +13,7 @@ const preview = fs.readFileSync(path.join(__dirname, "local-preview-server.js"),
 
 test("production entry stays hidden until the authenticated eligibility probe succeeds", () => {
   assert.match(app, /meta name="omascote-api-base" content="https:\/\/api\.omascote\.com\.br"/);
+  assert.match(app, /meta name="omascote-environment" content="production"/);
   assert.match(app, /data-radar-live-entry[^>]*hidden/);
   assert.match(live, /api\.getEligibility\(\)/);
   assert.match(live, /item\.dataset\.radarAllowed = "true"/);
