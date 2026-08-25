@@ -37,10 +37,20 @@ test("first access renders onboarding before loading notifications", () => {
   assert.ok(live.indexOf("if (firstAccess.profile === null) return firstAccess") < live.indexOf("await api.listNotifications()"));
   assert.match(live, /data-form="onboarding"/);
   for (const field of [
-    "city_name", "city_ibge_code", "state_code", "instagram_handle", "modality",
-    "category", "declared_level", "travel_radius_km", "venue_preference", "accept_terms"
+    "city_name", "state_code", "instagram_handle", "modalities",
+    "category", "travel_radius_km", "venue_preference", "whatsapp",
+    "whatsapp_visible", "accept_terms"
   ]) assert.match(live, new RegExp(`name="${field}"`));
+  assert.match(live, /Enviar print/);
+  assert.match(live, /Preencher manualmente/);
+  assert.match(live, /Revise os dados/);
+  assert.doesNotMatch(live, /name="city_ibge_code"/);
+  assert.doesNotMatch(live, /name="declared_level"/);
+  assert.doesNotMatch(live, /name="level"/);
   assert.match(live, /api\.createRadarProfile/);
+  assert.match(live, /api\.getTeamWhatsapp/);
+  assert.match(live, /item\.whatsapp_disponivel === true/);
+  assert.match(live, /requestedWhatsappVisible|whatsapp_visible/);
   assert.match(live, /legacyCrest\(\)/);
   assert.match(live, /legacyFormDefaults\(\)/);
   assert.doesNotMatch(live, /name="city_ibge_code"[^>]*value="4209102"/);

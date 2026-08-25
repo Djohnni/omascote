@@ -54,12 +54,44 @@ test("first Radar profile uses PATCH with idempotency and no If-Match", async ()
   });
   await client.createRadarProfile({
     city_name: "Joinville",
-    city_ibge_code: "4209102"
+    state_code: "SC",
+    modalities: ["society", "futsal"]
   }, "onboarding-create-0001");
   assert.equal(captured.url, "https://api.example.invalid/me/time/radar");
   assert.equal(captured.options.method, "PATCH");
   assert.equal(captured.options.headers.get("Idempotency-Key"), "onboarding-create-0001");
   assert.equal(captured.options.headers.has("If-Match"), false);
+});
+
+test("smart onboarding uploads only the selected image under the real API contract", async () => {
+  let captured;
+  const client = loadClient(async (url, options) => {
+    captured = { url: String(url), options };
+    return response(201, { ok: true, draft: { suggestions: {} }, profile_unchanged: true });
+  });
+  const file = new Blob(["synthetic"], { type: "image/png" });
+  await client.importProfilePrint(file, "smart-print-client-1");
+  assert.equal(captured.url, "https://api.example.invalid/me/time/perfil/importar-print");
+  assert.equal(captured.options.body instanceof FormData, true);
+  assert.equal(captured.options.body.get("imagem").size, file.size);
+  assert.equal(captured.options.body.get("imagem").type, file.type);
+  assert.equal(captured.options.body.has("print"), false);
+  assert.equal(captured.options.headers.get("Idempotency-Key"), "smart-print-client-1");
+});
+
+test("WhatsApp is fetched only by the protected click endpoint", async () => {
+  let captured;
+  const client = loadClient(async (url, options) => {
+    captured = { url: String(url), options };
+    return response(200, { ok: true, whatsapp_url: "https://wa.me/5547999999999" }, {
+      "Cache-Control": "private, no-store"
+    });
+  });
+  const teamId = "22222222-2222-4222-8222-222222222222";
+  const result = await client.getTeamWhatsapp(teamId);
+  assert.equal(captured.url, `https://api.example.invalid/radar/times/${teamId}/whatsapp`);
+  assert.equal(captured.options.headers.get("Authorization"), "Bearer test-token-not-logged");
+  assert.equal(result.data.whatsapp_url, "https://wa.me/5547999999999");
 });
 
 test("real client preserves pagination and maps session, conflict and API outage safely", async () => {

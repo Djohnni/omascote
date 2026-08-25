@@ -17,6 +17,7 @@
     pendingEvaluations: "/me/time/avaliacoes/pendentes",
     ownReputation: "/me/time/reputacao",
     publicTeamReputation: "/radar/times",
+    teamWhatsapp: "/radar/times",
     radarBlocks: "/me/time/radar/bloqueios",
     radarReports: "/me/time/radar/denuncias",
     radarExit: "/me/time/radar/exclusao",
@@ -69,13 +70,11 @@
     const input = filters || {};
     const parameters = new URLSearchParams();
     const modality = { Society: "society", Campo: "futebol_campo", Futsal: "futsal" }[input.modality];
-    const level = { Recreativo: "iniciante", Intermediário: "intermediario", Competitivo: "competitivo" }[input.level];
     const day = { Sábado: "saturday", Domingo: "sunday" }[input.day];
     const period = { Manhã: "morning", Tarde: "afternoon", Noite: "evening" }[input.period];
     const venue = { Mandante: "home", Visitante: "away" }[input.venue];
     if (modality) parameters.set("modality", modality);
     if (input.category && input.category !== "Todas") parameters.set("category", input.category);
-    if (level) parameters.set("level", level);
     if (day) parameters.set("day", day);
     if (period) parameters.set("period", period);
     if (venue) parameters.set("venue_preference", venue);
@@ -199,9 +198,10 @@
       }),
       importProfilePrint: (file, idempotencyKey) => {
         const form = new FormData();
-        form.set("print", file);
+        form.set("imagem", file);
         return request(ENDPOINTS.importPrint, { method: "POST", body: form, idempotent: true, idempotencyKey });
       },
+      getTeamWhatsapp: (teamPublicId) => request(safeOpaquePath(ENDPOINTS.teamWhatsapp, teamPublicId, "/whatsapp")),
       getVerification: () => request(ENDPOINTS.verification),
       startInstagramVerification: (values, idempotencyKey) => request(ENDPOINTS.startInstagramVerification, {
         method: "POST", body: values, idempotent: true, idempotencyKey
