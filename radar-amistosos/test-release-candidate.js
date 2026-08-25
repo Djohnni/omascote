@@ -31,6 +31,21 @@ test("real mode uses the API as its Radar data source", () => {
   assert.doesNotMatch(live, /localStorage\.setItem|localStorage\.removeItem/);
 });
 
+test("first access renders onboarding before loading notifications", () => {
+  assert.match(live, /const \[profile, eligibility\] = await Promise\.all/);
+  assert.match(live, /if \(firstAccess\.profile === null\) return firstAccess/);
+  assert.ok(live.indexOf("if (firstAccess.profile === null) return firstAccess") < live.indexOf("await api.listNotifications()"));
+  assert.match(live, /data-form="onboarding"/);
+  for (const field of [
+    "city_name", "city_ibge_code", "state_code", "instagram_handle", "modality",
+    "category", "declared_level", "travel_radius_km", "venue_preference", "accept_terms"
+  ]) assert.match(live, new RegExp(`name="${field}"`));
+  assert.match(live, /api\.createRadarProfile/);
+  assert.match(live, /legacyCrest\(\)/);
+  assert.match(live, /legacyFormDefaults\(\)/);
+  assert.doesNotMatch(live, /name="city_ibge_code"[^>]*value="4209102"/);
+});
+
 test("modal supports keyboard containment, escape and focus restoration", () => {
   assert.match(live, /role="dialog" aria-modal="true" aria-labelledby="radarLiveTitle"/);
   assert.match(live, /aria-live="polite"/);

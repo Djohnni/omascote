@@ -104,6 +104,49 @@
   const button = (label, action, kind = "", extra = "") => `<button class="radar-live__button${kind ? ` radar-live__button--${kind}` : ""}" type="button" data-action="${esc(action)}" ${extra}>${esc(label)}</button>`;
   const formButton = label => `<button class="radar-live__button" type="submit" ${state.busy ? "disabled" : ""}>${esc(label)}</button>`;
 
+  const pendingLabels = Object.freeze({
+    radar_profile_not_created: "Cadastro pendente",
+    team_name_missing: "Nome do time",
+    profile_not_public: "Perfil público",
+    crest_missing: "Escudo",
+    city_missing: "Cidade",
+    state_missing: "UF",
+    instagram_missing: "Instagram",
+    modality_missing: "Modalidade",
+    category_missing: "Categoria",
+    level_missing: "Nível",
+    instagram_not_verified: "Verificar Instagram",
+    terms_not_accepted: "Aceitar termos",
+    outside_pilot_city: "Fora da cidade piloto"
+  });
+
+  function legacyCrest() {
+    const avatar = document.getElementById("perfilTimePreviewAvatar");
+    const image = avatar?.querySelector("img");
+    const source = image?.currentSrc || image?.src || "";
+    if (source) return `<img src="${esc(source)}" alt="">`;
+    const initial = String(avatar?.textContent || "⚽").trim().slice(0, 1) || "⚽";
+    return `<span>${esc(initial)}</span>`;
+  }
+
+  function legacyFormDefaults() {
+    const location = String(document.getElementById("perfilTimePreviewLocal")?.textContent || "").trim();
+    const locationMatch = location.match(/^(.+?)\s*[-–]\s*([A-Za-z]{2})$/);
+    const instagram = String(document.getElementById("perfilTimePreviewInstagram")?.textContent || "")
+      .trim().replace(/^@/, "");
+    return Object.freeze({
+      city: locationMatch ? locationMatch[1].trim() : "",
+      state: locationMatch ? locationMatch[2].toUpperCase() : "",
+      instagram: instagram && instagram.toLowerCase() !== "instagram" ? instagram : ""
+    });
+  }
+
+  function pendingSummary(eligibility) {
+    const missing = list(eligibility?.missing).filter(item => item !== "radar_profile_not_created");
+    if (!missing.length) return "Próximo: publicar horários";
+    return `Próximo: ${pendingLabels[missing[0]] || "completar cadastro"}`;
+  }
+
   function shell(content, options = {}) {
     const canBack = state.stack.length > 0;
     return `<section class="radar-live__panel" role="dialog" aria-modal="true" aria-labelledby="radarLiveTitle" aria-busy="${state.loading || state.busy ? "true" : "false"}">
@@ -141,9 +184,11 @@
 
   function renderHome() {
     const info = state.data || {};
+    if (info.profile === null) return renderOnboarding(info);
     const eligibility = info.eligibility || {};
     const profile = info.profile || {};
     const notifications = list(info.notifications?.items);
+    const pending = list(eligibility.missing).filter(item => item !== "radar_profile_not_created");
     const menu = [
       ["⌚", "Disponibilidade", "Quando jogar", "availability"],
       ["⌖", "Times próximos", "Buscar adversário", "search"],
@@ -158,9 +203,32 @@
     ];
     return shell(`${heading("Meu time", "Encontrar amistoso", "Dados reais do Radar.")}
       <section class="radar-live__hero"><div class="radar-live__hero-row"><div><strong>${esc(profile.public_name || info.legacy_profile?.nome_time || "Seu time")}</strong><small>${esc(profile.city_name || "Perfil Radar")}</small></div><strong class="radar-live__number">${eligibility.eligible ? "✓" : "!"}</strong></div>
-      <div class="radar-live__chips">${chip(eligibility.eligible ? "Elegível" : "Configuração pendente", eligibility.eligible ? "ok" : "warn")}${chip(eligibility.discoverable ? "Visível" : "Oculto")}${chip(profile.instagram_verification_status === "verified" ? "Instagram verificado" : "Instagram pendente", profile.instagram_verification_status === "verified" ? "ok" : "warn")}</div></section>
+      <div class="radar-live__chips">${chip(eligibility.eligible ? "Elegível" : "Configuração pendente", eligibility.eligible ? "ok" : "warn")}${chip(eligibility.discoverable ? "Visível" : "Oculto")}${pending.slice(0, 3).map(item => chip(pendingLabels[item] || item, "warn")).join("")}</div><small class="radar-live__next">${esc(pendingSummary(eligibility))}</small></section>
       <section class="radar-live__menu">${menu.map(item => `<button type="button" data-action="nav" data-view="${item[3]}"><i>${item[0]}</i><span><strong>${item[1]}</strong><small>${item[2]}</small></span><b>›</b></button>`).join("")}</section>
       <p class="radar-live__trace">${state.traces.filter(item => item.phase === "response").length} respostas da API nesta sessão</p>`, { wide: true });
+  }
+
+  function renderOnboarding(info) {
+    const eligibility = info.eligibility || {};
+    const legacy = info.legacy_profile || {};
+    const name = legacy.nome_time || document.getElementById("perfilTimePreviewNome")?.textContent || "Seu time";
+    const missing = list(eligibility.missing);
+    const defaults = legacyFormDefaults();
+    return shell(`${heading("Primeiro acesso", "Cadastrar no Radar", "Complete para começar.")}
+      <section class="radar-live__team"><div class="radar-live__crest">${legacyCrest()}</div><div><strong>${esc(name)}</strong><small>Nome e escudo do perfil</small></div>${chip("Novo", "warn")}</section>
+      <div class="radar-live__chips">${missing.slice(0, 4).map(item => chip(pendingLabels[item] || item, "warn")).join("")}</div>
+      <form class="radar-live__form radar-live__onboarding" data-form="onboarding"><div class="radar-live__fields">
+        <label class="radar-live__field"><span>Cidade</span><input name="city_name" maxlength="120" autocomplete="address-level2" value="${esc(defaults.city)}" placeholder="Sua cidade" required></label>
+        <label class="radar-live__field"><span>IBGE</span><input name="city_ibge_code" inputmode="numeric" pattern="[0-9]{7}" maxlength="7" placeholder="7 dígitos" required></label>
+        <label class="radar-live__field"><span>UF</span><input name="state_code" maxlength="2" pattern="[A-Za-z]{2}" autocomplete="address-level1" value="${esc(defaults.state)}" placeholder="UF" required></label>
+        <label class="radar-live__field"><span>Instagram</span><input name="instagram_handle" maxlength="80" autocomplete="off" value="${esc(defaults.instagram)}" placeholder="@seutime" required></label>
+        <label class="radar-live__field"><span>Modalidade</span><select name="modality" required><option value="society">Society</option><option value="futsal">Futsal</option><option value="futebol_campo">Campo</option></select></label>
+        <label class="radar-live__field"><span>Categoria</span><input name="category" maxlength="40" value="Livre" required></label>
+        <label class="radar-live__field"><span>Nível</span><select name="declared_level" required><option value="iniciante">Iniciante</option><option value="intermediario" selected>Intermediário</option><option value="competitivo">Competitivo</option><option value="avancado">Avançado</option></select></label>
+        <label class="radar-live__field"><span>Raio</span><select name="travel_radius_km" required><option value="10">10 km</option><option value="25" selected>25 km</option><option value="50">50 km</option><option value="100">100 km</option></select></label>
+        <label class="radar-live__field radar-live__field--wide"><span>Mando</span><select name="venue_preference" required><option value="either">Casa ou fora</option><option value="home">Mandante</option><option value="away">Visitante</option></select></label>
+        <label class="radar-live__terms radar-live__field--wide"><input name="accept_terms" type="checkbox" value="true" required><span>Aceito os termos do Radar</span></label>
+      </div><div class="radar-live__form-actions">${formButton("Cadastrar time")}</div></form>`, { wide: true });
   }
 
   function renderAvailability() {
@@ -358,10 +426,13 @@
 
   async function requestView(view) {
     if (view === "home") {
-      const [profile, eligibility, notifications] = await Promise.all([
-        api.getRadarProfile(), api.getEligibility(), api.listNotifications()
+      const [profile, eligibility] = await Promise.all([
+        api.getRadarProfile(), api.getEligibility()
       ]);
-      return { ...payload(profile), ...payload(eligibility), notifications: payload(notifications) };
+      const firstAccess = { ...payload(profile), ...payload(eligibility) };
+      if (firstAccess.profile === null) return firstAccess;
+      const notifications = await api.listNotifications();
+      return { ...firstAccess, notifications: payload(notifications) };
     }
     if (view === "availability") return payload(await api.listAvailabilities());
     if (view === "search") return payload(await api.listNearbyTeams(state.filters));
@@ -524,6 +595,18 @@
     event.preventDefault();
     const form = event.target;
     const values = Object.fromEntries(new FormData(form).entries());
+    if (form.dataset.form === "onboarding") await mutate(() => api.createRadarProfile({
+      city_name: values.city_name,
+      city_ibge_code: values.city_ibge_code,
+      state_code: String(values.state_code || "").toUpperCase(),
+      instagram_handle: values.instagram_handle,
+      modalities: [values.modality],
+      categories: [values.category],
+      declared_level: values.declared_level,
+      travel_radius_km: Number(values.travel_radius_km),
+      venue_preference: values.venue_preference,
+      accept_terms: values.accept_terms === "true"
+    }), "home");
     if (form.dataset.form === "availability") await mutate(() => api.createAvailability({
       modality: values.modality, category: values.category,
       starts_at: toIso(values.starts_at), ends_at: toIso(values.ends_at),

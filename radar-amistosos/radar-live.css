@@ -103,6 +103,13 @@
 .radar-live__hero strong { font-size: 17px; }
 .radar-live__hero small { display: block; margin-top: 3px; color: #9ca3af; font-size: 10px; }
 .radar-live__number { color: #facc15; font-size: 30px !important; line-height: 1; }
+.radar-live__next { display: block; color: #fde68a !important; font-weight: 850; }
+
+.radar-live__team { display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 12px; padding: 12px; border: 1px solid #292e36; border-radius: 16px; background: #13161b; }
+.radar-live__team strong { display: block; font-size: 14px; }
+.radar-live__team small { display: block; margin-top: 3px; color: #9ca3af; font-size: 9px; }
+.radar-live__crest { width: 48px; height: 48px; display: grid; place-items: center; overflow: hidden; border: 1px solid #343942; border-radius: 14px; color: #facc15; background: #0b0d11; font-size: 22px; font-weight: 950; }
+.radar-live__crest img { width: 100%; height: 100%; object-fit: cover; }
 
 .radar-live__menu { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 9px; margin-top: 12px; }
 .radar-live__menu button, .radar-live__card-button {
@@ -148,6 +155,8 @@
 .radar-live__field input, .radar-live__field select, .radar-live__field textarea { width: 100%; min-height: 43px; padding: 9px 10px; border: 1px solid #353b45; border-radius: 10px; color: #f8fafc; background: #0c0e12; font-size: 12px; }
 .radar-live__field textarea { min-height: 76px; resize: vertical; }
 .radar-live__form-actions { position: sticky; bottom: 0; display: grid; grid-template-columns: 1fr; padding-top: 5px; background: linear-gradient(transparent, #101217 25%); }
+.radar-live__terms { min-height: 43px; display: flex; align-items: center; gap: 9px; color: #d9dee5; font-size: 10px; font-weight: 800; }
+.radar-live__terms input { width: 18px; height: 18px; accent-color: #facc15; }
 
 .radar-live__empty { padding: 30px 18px; text-align: center; }
 .radar-live__empty b { display: block; color: #facc15; font-size: 30px; }

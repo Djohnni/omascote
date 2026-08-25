@@ -191,6 +191,9 @@
     return Object.freeze({
       getRadarProfile: () => request(ENDPOINTS.radarProfile),
       getEligibility: () => request(ENDPOINTS.eligibility),
+      createRadarProfile: (values, idempotencyKey) => request(ENDPOINTS.radarProfile, {
+        method: "PATCH", body: values, idempotent: true, idempotencyKey
+      }),
       updateRadarProfile: (values, etag, idempotencyKey) => request(ENDPOINTS.radarProfile, {
         method: "PATCH", body: values, etag, idempotent: true, idempotencyKey
       }),

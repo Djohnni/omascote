@@ -46,6 +46,22 @@ test("real client sends authentication, idempotency and optimistic version witho
   assert.equal(JSON.stringify(traces).includes("Joinville"), false);
 });
 
+test("first Radar profile uses PATCH with idempotency and no If-Match", async () => {
+  let captured;
+  const client = loadClient(async (url, options) => {
+    captured = { url: String(url), options };
+    return response(200, { ok: true, profile: { version: 1 } }, { ETag: 'W/"1"' });
+  });
+  await client.createRadarProfile({
+    city_name: "Joinville",
+    city_ibge_code: "4209102"
+  }, "onboarding-create-0001");
+  assert.equal(captured.url, "https://api.example.invalid/me/time/radar");
+  assert.equal(captured.options.method, "PATCH");
+  assert.equal(captured.options.headers.get("Idempotency-Key"), "onboarding-create-0001");
+  assert.equal(captured.options.headers.has("If-Match"), false);
+});
+
 test("real client preserves pagination and maps session, conflict and API outage safely", async () => {
   const paths = [];
   const client = loadClient(async url => {
