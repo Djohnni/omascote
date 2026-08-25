@@ -13,6 +13,7 @@
     invitations: "/amistosos/convites",
     teamInvitations: "/me/time/amistosos/convites",
     matches: "/me/time/amistosos",
+    matchHistory: "/me/time/amistosos/historico",
     notifications: "/me/notificacoes"
   });
 
@@ -78,6 +79,20 @@
     if (typeof input.cursor === "string" && input.cursor) parameters.set("cursor", input.cursor);
     const query = parameters.toString();
     return `${ENDPOINTS.nearbyTeams}${query ? `?${query}` : ""}`;
+  }
+
+  function buildMatchHistoryPath(filters, opponentPublicId) {
+    const input = filters || {};
+    const parameters = new URLSearchParams();
+    if (["30d", "90d", "365d", "all"].includes(input.periodo)) parameters.set("periodo", input.periodo);
+    if (["official", "divergent", "cancelled", "pending", "all"].includes(input.situacao)) parameters.set("situacao", input.situacao);
+    if (Number.isInteger(Number(input.limit)) && Number(input.limit) > 0) parameters.set("limit", String(input.limit));
+    if (typeof input.cursor === "string" && input.cursor) parameters.set("cursor", input.cursor);
+    const base = opponentPublicId
+      ? safeOpaquePath(ENDPOINTS.matchHistory, opponentPublicId)
+      : ENDPOINTS.matchHistory;
+    const query = parameters.toString();
+    return `${base}${query ? `?${query}` : ""}`;
   }
 
   function create(options) {
@@ -191,6 +206,8 @@
         method: "POST", body: {}, idempotent: true, idempotencyKey
       }),
       listMatches: (state) => request(`${ENDPOINTS.matches}?estado=${state === "historico" ? "historico" : state === "proximas" ? "proximas" : "todas"}`),
+      listMatchHistory: (filters) => request(buildMatchHistoryPath(filters)),
+      getMatchHistoryAgainst: (opponentPublicId, filters) => request(buildMatchHistoryPath(filters, opponentPublicId)),
       getMatch: (id) => request(safeOpaquePath(ENDPOINTS.matches, id)),
       confirmMatchOccurrence: (id, etag, idempotencyKey) => request(safeOpaquePath(ENDPOINTS.matches, id, "/confirmar-realizacao"), {
         method: "POST", body: {}, etag, idempotent: true, idempotencyKey
@@ -223,5 +240,5 @@
     });
   }
 
-  window.RadarApi = { ENDPOINTS, ERROR_MESSAGES, RadarApiError, buildNearbyTeamsPath, create };
+  window.RadarApi = { ENDPOINTS, ERROR_MESSAGES, RadarApiError, buildNearbyTeamsPath, buildMatchHistoryPath, create };
 })();

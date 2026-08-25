@@ -996,6 +996,68 @@ h2, h3 { line-height: 1.2; }
 .divergence-grid small { overflow: hidden; color: var(--muted); font-size: 8px; text-overflow: ellipsis; white-space: nowrap; }
 .divergence-grid b { margin-top: 5px; color: var(--text); font-size: 24px; }
 
+/* Fase 4C — histórico privado e confrontos. */
+.history-screen { padding-bottom: 20px; }
+.history-summary { display: grid; grid-template-columns: minmax(210px, 1fr) auto auto; align-items: center; gap: 16px; margin-bottom: 12px; padding: 14px 16px; }
+.history-summary__results { display: grid; grid-template-columns: repeat(3, 1fr); min-width: 0; }
+.history-summary__results span { display: flex; align-items: baseline; justify-content: center; gap: 5px; padding: 2px 15px; border-right: 1px solid var(--line); }
+.history-summary__results span:last-child { border-right: 0; }
+.history-summary__results strong { color: var(--text); font-size: 25px; line-height: 1; }
+.history-summary__results small { color: var(--muted-2); font-size: 9px; font-weight: 900; }
+.history-summary__goals { display: flex; align-items: center; gap: 6px; }
+.history-summary__goals span { padding: 6px 8px; color: var(--muted); background: #17191d; border-radius: 8px; font-size: 8px; font-weight: 850; }
+.history-summary__goals b { color: var(--gold); font-size: 13px; }
+.history-form { display: flex; align-items: center; justify-content: flex-end; gap: 4px; min-width: 75px; }
+.history-form i { display: grid; place-items: center; width: 22px; height: 22px; border-radius: 7px; font-size: 8px; font-style: normal; font-weight: 950; }
+.history-form__win { color: var(--green); background: var(--green-soft); }
+.history-form__draw { color: var(--warning); background: rgba(255, 182, 72, .1); }
+.history-form__loss { color: var(--red); background: var(--red-soft); }
+.history-form small { color: var(--muted-2); font-size: 8px; }
+.history-filters { margin-bottom: 12px; }
+.history-filters summary { display: flex; align-items: center; justify-content: space-between; }
+.history-filters summary span { color: var(--muted-2); font-size: 8px; font-weight: 700; }
+.history-filters > div { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; padding: 0 14px 14px; }
+.history-filters label span { display: block; margin: 0 0 5px; color: var(--muted); font-size: 8px; font-weight: 850; text-transform: uppercase; }
+.history-filters select { width: 100%; min-height: 39px; padding: 0 10px; color: var(--text); background: #0d0f12; border: 1px solid var(--line); border-radius: 8px; font-size: 10px; }
+.history-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+.history-grid--single { grid-template-columns: 1fr; }
+.history-card { overflow: hidden; padding: 14px; border-left: 3px solid var(--line); }
+.history-card--win { border-left-color: var(--green); }
+.history-card--draw, .history-card--pending { border-left-color: var(--warning); }
+.history-card--loss, .history-card--divergent { border-left-color: var(--red); }
+.history-card--cancelled { border-left-color: var(--muted-2); opacity: .82; }
+.history-card__meta { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+.history-card__meta time { color: var(--muted); font-size: 9px; font-weight: 800; }
+.history-state { padding: 4px 7px; color: var(--warning); background: rgba(255, 182, 72, .1); border-radius: 999px; font-size: 7px; font-weight: 950; text-transform: uppercase; }
+.history-state--official { color: var(--green); background: var(--green-soft); }
+.history-state--divergent { color: var(--red); background: var(--red-soft); }
+.history-state--cancelled { color: var(--muted); background: #24272d; }
+.history-card__score { display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); align-items: center; gap: 8px; margin-bottom: 12px; }
+.history-card__score > div { display: flex; align-items: center; min-width: 0; gap: 7px; }
+.history-card__score > div:last-child { justify-content: flex-end; text-align: right; }
+.history-card__score > div strong { overflow: hidden; font-size: 9px; text-overflow: ellipsis; white-space: nowrap; }
+.history-card__score p { display: flex; align-items: center; gap: 7px; margin: 0; white-space: nowrap; }
+.history-card__score p b { color: var(--gold); font-size: 27px; line-height: 1; }
+.history-card__score p i { color: var(--muted-2); font-size: 10px; font-style: normal; }
+.team-crest--tiny { width: 30px; height: 34px; border-radius: 9px; font-size: 8px; }
+.history-note { margin: -3px 0 10px; color: var(--muted); font-size: 8px; text-align: center; }
+.history-card > .button { min-height: 38px; }
+.history-card__details { margin-top: 6px; border-top: 1px solid var(--line); }
+.history-card__details summary { padding: 9px 2px 2px; color: var(--muted-2); cursor: pointer; font-size: 8px; font-weight: 800; }
+.history-card__details button { display: flex; align-items: center; justify-content: space-between; width: 100%; min-height: 36px; padding: 5px 2px 0; color: var(--gold); background: transparent; border: 0; font-size: 9px; font-weight: 850; }
+.history-card__details .icon { width: 14px; height: 14px; }
+.history-load { display: flex; justify-content: center; margin-top: 14px; }
+.history-empty { display: grid; justify-items: center; min-height: 190px; padding: 35px 20px; text-align: center; }
+.history-empty > .icon { width: 32px; height: 32px; color: var(--muted-2); }
+.history-empty h2 { margin: 12px 0 4px; font-size: 18px; }
+.history-empty p { margin: 0; color: var(--muted); font-size: 10px; }
+.h2h-hero { display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); align-items: center; gap: 14px; margin-bottom: 12px; padding: 18px; border-color: rgba(244, 196, 48, .22); }
+.h2h-hero > div { display: flex; align-items: center; flex-direction: column; min-width: 0; gap: 7px; text-align: center; }
+.h2h-hero > div strong { overflow: hidden; width: 100%; font-size: 10px; text-overflow: ellipsis; white-space: nowrap; }
+.h2h-hero > b { color: var(--gold); font-size: 34px; line-height: 1; }
+.history-summary--compact { grid-template-columns: 1fr; }
+.history-summary--compact .history-summary__goals, .history-summary--compact .history-form { justify-content: center; }
+
 .bottom-nav { display: none; }
 .capture-mode .bottom-nav { display: none !important; }
 .capture-mode .main { padding-bottom: 36px; }
@@ -1136,6 +1198,19 @@ h2, h3 { line-height: 1.2; }
   .scoreboard { padding: 22px 12px; }
   .score-team b, .score-input { width: 82px; height: 82px; border-radius: 18px; font-size: 44px; }
   .score-actions > .button { width: 100%; min-width: 0; }
+  .history-summary { grid-template-columns: 1fr auto; gap: 10px; }
+  .history-summary__results { grid-column: 1 / -1; }
+  .history-summary__results span { padding-inline: 8px; }
+  .history-summary__goals { justify-content: flex-start; }
+  .history-grid { grid-template-columns: 1fr; }
+  .history-card { padding: 13px 12px; }
+  .history-card__score > div strong { font-size: 8px; }
+  .history-card__score p b { font-size: 25px; }
+  .h2h-hero { padding: 15px 10px; }
+  .history-summary--compact { grid-template-columns: 1fr auto; }
+  .history-summary--compact .history-summary__results { grid-column: 1 / -1; }
+  .history-summary--compact .history-summary__goals { justify-content: flex-start; }
+  .history-summary--compact .history-form { justify-content: flex-end; }
   .invitation-card__identity { grid-template-columns: auto minmax(0, 1fr); }
   .invitation-card__identity .invite-state { grid-column: 2; justify-self: start; }
   .invitation-actions > div { display: grid; grid-template-columns: 1fr 1fr; }
@@ -1181,6 +1256,10 @@ h2, h3 { line-height: 1.2; }
   .matchup-card strong { font-size: 10px; }
   .contact-revealed { grid-template-columns: auto minmax(0, 1fr); }
   .contact-revealed .invite-state { grid-column: 2; justify-self: start; }
+  .history-filters > div { grid-template-columns: 1fr; }
+  .history-card__score { gap: 5px; }
+  .history-card__score > div { gap: 4px; }
+  .team-crest--tiny { width: 27px; height: 31px; }
 }
 
 @media (prefers-reduced-motion: reduce) {

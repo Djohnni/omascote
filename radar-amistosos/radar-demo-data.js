@@ -289,6 +289,7 @@
     matches: [
       {
         id: "demo-partida-confirmada",
+        opponentPublicId: "11111111-1111-4111-8111-111111111111",
         state: "scheduled",
         version: 1,
         opponentName: "União Vila Nova",
@@ -305,6 +306,7 @@
       },
       {
         id: "demo-partida-aguardando",
+        opponentPublicId: "22222222-2222-4222-8222-222222222222",
         state: "awaiting_occurrence",
         version: 2,
         opponentName: "Guerreiros do Bairro",
@@ -321,6 +323,7 @@
       },
       {
         id: "demo-partida-realizada",
+        opponentPublicId: "33333333-3333-4333-8333-333333333333",
         state: "played",
         version: 3,
         opponentName: "Atlético Rio Bonito",
@@ -337,6 +340,7 @@
       },
       {
         id: "demo-placar-recebido",
+        opponentPublicId: "11111111-1111-4111-8111-111111111111",
         state: "played",
         version: 4,
         opponentName: "União Vila Nova",
@@ -356,6 +360,7 @@
       },
       {
         id: "demo-placar-divergente",
+        opponentPublicId: "22222222-2222-4222-8222-222222222222",
         state: "played",
         version: 5,
         opponentName: "Guerreiros do Bairro",
@@ -377,27 +382,29 @@
       },
       {
         id: "demo-resultado-confirmado",
+        opponentPublicId: "44444444-4444-4444-8444-444444444444",
         state: "played",
         version: 5,
         opponentName: "Bola na Rede FC",
         opponentInitials: "BR",
         proposal: {
-          date: "02/08/2026", time: "18:00", duration: "2h",
+          date: "16/08/2026", time: "18:00", duration: "2h",
           modality: "Society", category: "Livre", city: "Joinville, SC", venue: "Mandante"
         },
         contact: { name: "Lucas, responsável", phone: "(47) 95555-2020" },
         confirmation: { mine: true, opponent: true },
         result: {
           state: "verified",
-          mine: { mine: 4, opponent: 2, at: "02/08" },
+          mine: { mine: 4, opponent: 2, at: "16/08" },
           opponent: null,
-          official: { mine: 4, opponent: 2, at: "02/08" }
+          official: { mine: 4, opponent: 2, at: "16/08" }
         },
         cancellation: null,
         updatedLabel: "resultado oficial"
       },
       {
         id: "demo-partida-cancelada",
+        opponentPublicId: "55555555-5555-4555-8555-555555555555",
         state: "cancelled",
         version: 2,
         opponentName: "Tricolor da Ilha",
@@ -411,6 +418,50 @@
           result: { state: "empty", mine: null, opponent: null, official: null },
         cancellation: { reason: "Clima", byMe: false, at: "08/08/2026" },
         updatedLabel: "cancelada"
+      },
+      {
+        id: "demo-historico-empate",
+        opponentPublicId: "11111111-1111-4111-8111-111111111111",
+        state: "played",
+        version: 5,
+        opponentName: "União Vila Nova",
+        opponentInitials: "UV",
+        proposal: {
+          date: "19/07/2026", time: "16:00", duration: "2h",
+          modality: "Society", category: "Livre", city: "Joinville, SC", venue: "Visitante"
+        },
+        contact: { name: "Carlos, responsável", phone: "(47) 99999-0000" },
+        confirmation: { mine: true, opponent: true },
+        result: {
+          state: "verified",
+          mine: { mine: 2, opponent: 2, at: "19/07" },
+          opponent: null,
+          official: { mine: 2, opponent: 2, at: "19/07" }
+        },
+        cancellation: null,
+        updatedLabel: "resultado oficial"
+      },
+      {
+        id: "demo-historico-derrota",
+        opponentPublicId: "11111111-1111-4111-8111-111111111111",
+        state: "played",
+        version: 5,
+        opponentName: "União Vila Nova",
+        opponentInitials: "UV",
+        proposal: {
+          date: "28/06/2026", time: "10:00", duration: "2h",
+          modality: "Society", category: "Livre", city: "Joinville, SC", venue: "Mandante"
+        },
+        contact: { name: "Carlos, responsável", phone: "(47) 99999-0000" },
+        confirmation: { mine: true, opponent: true },
+        result: {
+          state: "verified",
+          mine: { mine: 1, opponent: 3, at: "28/06" },
+          opponent: null,
+          official: { mine: 1, opponent: 3, at: "28/06" }
+        },
+        cancellation: null,
+        updatedLabel: "resultado oficial"
       }
     ],
     availabilities: [

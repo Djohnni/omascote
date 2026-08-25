@@ -51,6 +51,10 @@
       selectedMatchId: source.matches?.[0]?.id || null,
       matchBox: "upcoming",
       matchListScrollY: 0,
+      historyFilters: { period: "all", situation: "all" },
+      historyVisibleLimit: 4,
+      historyListScrollY: 0,
+      selectedHistoryOpponentId: "11111111-1111-4111-8111-111111111111",
       scoreDraft: { mine: 0, opponent: 0 },
       scoreMode: "new",
       confirmedMatch: null,
@@ -77,6 +81,8 @@
         matches: Array.isArray(parsed.matches) ? parsed.matches : fresh.matches,
         selectedMatchId: parsed.selectedMatchId || fresh.selectedMatchId,
         matchBox: ["upcoming", "history"].includes(parsed.matchBox) ? parsed.matchBox : fresh.matchBox,
+        historyFilters: { ...fresh.historyFilters, ...(parsed.historyFilters || {}) },
+        selectedHistoryOpponentId: parsed.selectedHistoryOpponentId || fresh.selectedHistoryOpponentId,
         scoreDraft: { ...fresh.scoreDraft, ...(parsed.scoreDraft || {}) },
         scoreMode: parsed.scoreMode === "different" ? "different" : "new",
         confirmedMatch: parsed.confirmedMatch || null,
@@ -102,6 +108,8 @@
       matches: state.matches,
       selectedMatchId: state.selectedMatchId,
       matchBox: state.matchBox,
+      historyFilters: state.historyFilters,
+      selectedHistoryOpponentId: state.selectedHistoryOpponentId,
       scoreDraft: state.scoreDraft,
       scoreMode: state.scoreMode,
       confirmedMatch: state.confirmedMatch,
@@ -494,6 +502,40 @@
       state.matchBox = box === "history" ? "history" : "upcoming";
       state.matchListScrollY = 0;
       emit();
+    },
+
+    setHistoryFilter(name, value) {
+      if (name === "period" && ["30d", "90d", "365d", "all"].includes(value)) {
+        state.historyFilters.period = value;
+      }
+      if (name === "situation" && ["official", "divergent", "cancelled", "pending", "all"].includes(value)) {
+        state.historyFilters.situation = value;
+      }
+      state.historyVisibleLimit = 4;
+      state.historyListScrollY = 0;
+      emit();
+    },
+
+    loadMoreHistory() {
+      return delay("Carregando partidas", () => {
+        state.historyVisibleLimit += 3;
+        announce("Mais partidas carregadas.");
+      }, 360);
+    },
+
+    openHistoryMatch(id, scrollY) {
+      state.selectedMatchId = state.matches.some((item) => item.id === id) ? id : null;
+      state.historyListScrollY = Math.max(0, Number(scrollY) || 0);
+      emit({ persist: false });
+    },
+
+    selectHistoryOpponent(publicId, scrollY) {
+      const exists = state.matches.some((item) => item.opponentPublicId === publicId);
+      if (!exists) return false;
+      state.selectedHistoryOpponentId = publicId;
+      state.historyListScrollY = Math.max(0, Number(scrollY) || 0);
+      emit();
+      return true;
     },
 
     confirmMatchOccurrence(id) {

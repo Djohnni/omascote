@@ -9,7 +9,8 @@
     "match-cancel", "match-cancelled", "match-loading", "match-empty", "match-error",
     "match-access-denied", "score-form", "score-review", "score-waiting", "score-confirm",
     "score-divergent", "score-verified", "score-loading", "score-empty", "score-error",
-    "score-access-denied", "score-repeated", "notifications",
+    "score-access-denied", "score-repeated", "history", "head-to-head",
+    "history-loading", "history-empty", "history-error", "notifications",
     "invitations-empty", "invitations-error",
     "opponents-loading", "opponents-error", "states", "loading", "empty", "success", "error",
     "session-expired", "access-denied"
@@ -60,6 +61,8 @@
               ? "matches"
             : ["score-form", "score-review", "score-waiting", "score-confirm", "score-divergent", "score-verified", "score-loading", "score-empty", "score-error", "score-access-denied", "score-repeated"].includes(current)
               ? "match-detail"
+            : ["head-to-head", "history-loading", "history-empty", "history-error"].includes(current)
+              ? "history"
             : "home";
         navigate(fallback, { replace: true });
       }
@@ -73,6 +76,8 @@
         ? currentState.opponentListScrollY
         : view === "matches"
           ? currentState.matchListScrollY
+          : view === "history"
+            ? currentState.historyListScrollY
           : 0;
       window.requestAnimationFrame(() => window.scrollTo({ top, behavior: "auto" }));
     });

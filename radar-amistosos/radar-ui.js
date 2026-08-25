@@ -651,6 +651,136 @@
     </div>`;
   }
 
+  function historyDateValue(label) {
+    const parts = String(label || "").split("/").map(Number);
+    return parts.length === 3 ? new Date(parts[2], parts[1] - 1, parts[0]).getTime() : 0;
+  }
+
+  function historyStatus(match) {
+    if (match.state === "cancelled") return "cancelled";
+    if (match.result?.state === "verified") return "official";
+    if (match.result?.state === "divergent") return "divergent";
+    return "pending";
+  }
+
+  function filteredHistory(state, opponentPublicId) {
+    const filters = state.historyFilters || { period: "all", situation: "all" };
+    const now = new Date(2026, 7, 24).getTime();
+    const days = { "30d": 30, "90d": 90, "365d": 365 }[filters.period] || null;
+    return state.matches
+      .filter((match) => ["played", "cancelled", "no_show", "disputed"].includes(match.state))
+      .filter((match) => !opponentPublicId || match.opponentPublicId === opponentPublicId)
+      .filter((match) => days === null || historyDateValue(match.proposal.date) >= now - days * 86400000)
+      .filter((match) => filters.situation === "all" || historyStatus(match) === filters.situation)
+      .sort((first, second) => historyDateValue(second.proposal.date) - historyDateValue(first.proposal.date));
+  }
+
+  function historySummary(items) {
+    const official = items.filter((match) => historyStatus(match) === "official" && match.result?.official);
+    const result = official.reduce((summary, match) => {
+      const mine = Number(match.result.official.mine);
+      const opponent = Number(match.result.official.opponent);
+      summary.goalsFor += mine;
+      summary.goalsAgainst += opponent;
+      if (mine > opponent) summary.wins += 1;
+      else if (mine < opponent) summary.losses += 1;
+      else summary.draws += 1;
+      summary.form.push(mine > opponent ? "win" : mine < opponent ? "loss" : "draw");
+      return summary;
+    }, { wins: 0, draws: 0, losses: 0, goalsFor: 0, goalsAgainst: 0, form: [] });
+    result.form = result.form.slice(0, 5);
+    return result;
+  }
+
+  function historySummaryView(summary, compact) {
+    return `<section class="history-summary card${compact ? " history-summary--compact" : ""}" aria-label="Resumo">
+      <div class="history-summary__results">
+        <span><strong>${summary.wins}</strong><small>V</small></span>
+        <span><strong>${summary.draws}</strong><small>E</small></span>
+        <span><strong>${summary.losses}</strong><small>D</small></span>
+      </div>
+      <div class="history-summary__goals"><span><b>${summary.goalsFor}</b> GM</span><span><b>${summary.goalsAgainst}</b> GS</span></div>
+      <div class="history-form" aria-label="Forma recente">${summary.form.length ? summary.form.map((value) => `<i class="history-form__${value}">${value === "win" ? "V" : value === "draw" ? "E" : "D"}</i>`).join("") : '<small>Sem forma</small>'}</div>
+    </section>`;
+  }
+
+  function historyCard(match, headToHead) {
+    const status = historyStatus(match);
+    const official = status === "official" ? match.result.official : null;
+    const outcome = official ? (official.mine > official.opponent ? "win" : official.mine < official.opponent ? "loss" : "draw") : status;
+    const labels = {
+      official: "Oficial",
+      divergent: "Divergente",
+      cancelled: "Cancelada",
+      pending: "Pendente"
+    };
+    return `<article class="history-card card history-card--${esc(outcome)}">
+      <div class="history-card__meta"><time>${esc(match.proposal.date)}</time><span class="history-state history-state--${esc(status)}">${labels[status]}</span></div>
+      <div class="history-card__score">
+        <div><span>${crest("EN", "team-crest--tiny")}</span><strong>Estrela do Norte</strong></div>
+        <p><b>${official ? esc(official.mine) : "—"}</b><i>×</i><b>${official ? esc(official.opponent) : "—"}</b></p>
+        <div><span>${crest(match.opponentInitials, "team-crest--tiny")}</span><strong>${esc(match.opponentName)}</strong></div>
+      </div>
+      ${status === "divergent" ? '<div class="history-note">Placares não conferem</div>' : status === "cancelled" ? `<div class="history-note">${esc(match.cancellation?.reason || "Cancelada")}</div>` : ""}
+      ${button("Abrir partida", { action: "open-history-match", id: match.id, full: true, kind: "secondary" })}
+      ${!headToHead && match.opponentPublicId ? `<details class="history-card__details"><summary>Detalhes</summary><button type="button" data-action="open-head-to-head" data-id="${esc(match.opponentPublicId)}">Contra este time ${icon("arrow")}</button></details>` : ""}
+    </article>`;
+  }
+
+  function historyFilters(state) {
+    const filters = state.historyFilters || { period: "all", situation: "all" };
+    return `<details class="history-filters compact-details card">
+      <summary>Filtros <span>${filters.period === "all" ? "Todo período" : filters.period} · ${filters.situation === "all" ? "Tudo" : filters.situation}</span></summary>
+      <div>
+        <label><span>Período</span><select data-history-filter="period"><option value="all"${selected(filters.period, "all")}>Todo período</option><option value="30d"${selected(filters.period, "30d")}>30 dias</option><option value="90d"${selected(filters.period, "90d")}>90 dias</option><option value="365d"${selected(filters.period, "365d")}>1 ano</option></select></label>
+        <label><span>Situação</span><select data-history-filter="situation"><option value="all"${selected(filters.situation, "all")}>Tudo</option><option value="official"${selected(filters.situation, "official")}>Oficiais</option><option value="pending"${selected(filters.situation, "pending")}>Pendentes</option><option value="divergent"${selected(filters.situation, "divergent")}>Divergentes</option><option value="cancelled"${selected(filters.situation, "cancelled")}>Canceladas</option></select></label>
+      </div>
+    </details>`;
+  }
+
+  function renderHistory(state) {
+    const items = filteredHistory(state);
+    const visible = items.slice(0, state.historyVisibleLimit || 4);
+    const summary = historySummary(items);
+    return `<div class="screen screen--wide history-screen">
+      ${screenHeader("Radar", "Meus amistosos", "Resultados do seu time.")}
+      ${historySummaryView(summary)}
+      ${historyFilters(state)}
+      ${visible.length ? `<section class="history-grid">${visible.map((match) => historyCard(match, false)).join("")}</section>` : `<section class="history-empty card">${icon("trophy")}<h2>Nenhum resultado</h2><p>Ajuste os filtros.</p></section>`}
+      ${visible.length < items.length ? `<div class="history-load">${button("Carregar mais", { action: "load-more-history", kind: "secondary" })}</div>` : ""}
+    </div>`;
+  }
+
+  function renderHeadToHead(state) {
+    const opponentId = state.selectedHistoryOpponentId;
+    const allAgainst = state.matches.filter((match) => match.opponentPublicId === opponentId);
+    const opponent = allAgainst[0];
+    if (!opponent) return renderHistoryState("history-empty");
+    const items = filteredHistory(state, opponentId);
+    const summary = historySummary(items);
+    return `<div class="screen screen--narrow history-screen h2h-screen">
+      ${screenHeader("Confrontos", "Contra este time", opponent.opponentName)}
+      <section class="h2h-hero card">
+        <div>${crest("EN", "team-crest--medium")}<strong>Estrela do Norte</strong></div>
+        <b>${summary.wins + summary.draws + summary.losses}</b>
+        <div>${crest(opponent.opponentInitials, "team-crest--medium")}<strong>${esc(opponent.opponentName)}</strong></div>
+      </section>
+      ${historySummaryView(summary, true)}
+      ${historyFilters(state)}
+      ${items.length ? `<section class="history-grid history-grid--single">${items.slice(0, state.historyVisibleLimit || 4).map((match) => historyCard(match, true)).join("")}</section>` : `<section class="history-empty card">${icon("trophy")}<h2>Sem confrontos</h2><p>Ajuste os filtros.</p></section>`}
+      ${items.length > (state.historyVisibleLimit || 4) ? `<div class="history-load">${button("Carregar mais", { action: "load-more-history", kind: "secondary" })}</div>` : ""}
+    </div>`;
+  }
+
+  function renderHistoryState(view) {
+    const content = {
+      "history-loading": ["more", "Carregando histórico", "Só um instante."],
+      "history-empty": ["trophy", "Histórico vazio", "Nenhuma partida ainda."],
+      "history-error": ["close", "Histórico indisponível", "Tente novamente."]
+    }[view] || ["trophy", "Histórico vazio", "Nenhuma partida ainda."];
+    return `<div class="screen state-page state-page--${view === "history-error" ? "error" : view === "history-loading" ? "loading" : "empty"}"><section class="state-page__visual">${icon(content[0])}${view === "history-loading" ? '<span class="spinner-ring"></span>' : ""}</section><h1>${content[1]}</h1><p>${content[2]}</p>${view === "history-loading" ? "" : button(view === "history-error" ? "Tentar novamente" : "Ver Radar", { action: "navigate", target: view === "history-error" ? "history" : "opponents" })}</div>`;
+  }
+
   function confirmationPanel(match) {
     if (match.state === "played") {
       return `<section class="confirmation-panel confirmation-panel--done card">${icon("check")}<div><strong>Partida realizada</strong><span>Confirmação dos dois times</span></div><b>2/2</b></section>`;
@@ -951,6 +1081,11 @@
       "score-error": () => renderScoreState("score-error"),
       "score-access-denied": () => renderScoreState("score-access-denied"),
       "score-repeated": () => renderScoreState("score-repeated"),
+      history: renderHistory,
+      "head-to-head": renderHeadToHead,
+      "history-loading": () => renderHistoryState("history-loading"),
+      "history-empty": () => renderHistoryState("history-empty"),
+      "history-error": () => renderHistoryState("history-error"),
       notifications: renderNotifications,
       "invitations-empty": renderInvitationsEmptyPage,
       "invitations-error": renderInvitationsError,
@@ -982,6 +1117,7 @@
             <button class="nav-item${activeClass(state.view, ["opponents", "opponent-filters", "opponent-detail", "opponents-loading", "opponents-error"])}" type="button" data-action="navigate" data-target="opponents">${icon("radar")}<span>Encontrar amistoso</span><i>NOVO</i></button>
             <button class="nav-item${activeClass(state.view, ["invitations", "invitation-compose", "invitation-review", "invitation-sent", "invitation-detail", "invitation-counter", "notifications", "invitations-empty", "invitations-error"])}" type="button" data-action="navigate" data-target="invitations">${icon("send")}<span>Convites</span></button>
             <button class="nav-item${activeClass(state.view, ["matches", "match-confirmed", "match-detail", "match-cancel", "match-cancelled", "match-loading", "match-empty", "match-error", "match-access-denied"])}" type="button" data-action="navigate" data-target="matches">${icon("calendar")}<span>Partidas</span></button>
+            <button class="nav-item${activeClass(state.view, ["history", "head-to-head", "history-loading", "history-empty", "history-error"])}" type="button" data-action="navigate" data-target="history">${icon("trophy")}<span>Histórico</span></button>
             <button class="nav-item${activeClass(state.view, ["eligibility", "profile-manual", "print-import", "draft-review", "verification"])}" type="button" data-action="navigate" data-target="eligibility">${icon("shield")}<span>Cadastro e segurança</span></button>
             <button class="nav-item${activeClass(state.view, ["availabilities", "availability-form"])}" type="button" data-action="navigate" data-target="availabilities">${icon("calendar")}<span>Disponibilidades</span></button>
             <p>DEMONSTRAÇÃO</p>
@@ -994,7 +1130,7 @@
       <nav class="bottom-nav" aria-label="Navegação principal">
         <button class="${activeClass(state.view, ["opponents", "opponent-filters", "opponent-detail", "opponents-loading", "opponents-error"])}" type="button" data-action="navigate" data-target="opponents">${icon("radar")}<span>Radar</span></button>
         <button class="${activeClass(state.view, ["invitations", "invitation-compose", "invitation-review", "invitation-sent", "invitation-detail", "invitation-counter", "notifications", "invitations-empty", "invitations-error"])}" type="button" data-action="navigate" data-target="invitations">${icon("send")}<span>Convites</span></button>
-        <button class="${activeClass(state.view, ["matches", "match-confirmed", "match-detail", "match-cancel", "match-cancelled", "match-loading", "match-empty", "match-error", "match-access-denied"])}" type="button" data-action="navigate" data-target="matches">${icon("calendar")}<span>Partidas</span></button>
+        <button class="${activeClass(state.view, ["history", "head-to-head", "history-loading", "history-empty", "history-error", "matches", "match-detail"])}" type="button" data-action="navigate" data-target="history">${icon("trophy")}<span>Histórico</span></button>
         <button class="${activeClass(state.view, ["home", "eligibility", "profile-manual", "print-import", "draft-review", "verification", "availabilities", "availability-form"])}" type="button" data-action="navigate" data-target="home">${icon("user")}<span>Meu time</span></button>
       </nav>
       ${state.toast ? `<div class="toast toast--${esc(state.toast.tone)}" role="status">${icon(state.toast.tone === "success" ? "check" : "radar")}<span>${esc(state.toast.message)}</span><button type="button" data-action="dismiss-toast" aria-label="Fechar aviso">${icon("close")}</button></div>` : ""}
@@ -1062,6 +1198,9 @@
       if (action === "notifications-read") store.markNotificationsRead();
       if (action === "match-box") store.setMatchBox(target);
       if (action === "open-match") { store.selectMatch(id, window.scrollY); router.navigate("match-detail"); }
+      if (action === "open-history-match") { store.openHistoryMatch(id, window.scrollY); router.navigate("match-detail"); }
+      if (action === "open-head-to-head" && store.selectHistoryOpponent(id, window.scrollY)) router.navigate("head-to-head");
+      if (action === "load-more-history") await store.loadMoreHistory();
       if (action === "cancel-match") router.navigate("match-cancel");
       if (action === "confirm-match") await store.confirmMatchOccurrence(id || currentState.selectedMatchId);
       if (action === "begin-score") { store.beginScore(id || currentState.selectedMatchId); router.navigate("score-form"); }
@@ -1089,6 +1228,11 @@
     });
 
     root.addEventListener("change", (event) => {
+      const historyFilter = event.target.closest("[data-history-filter]");
+      if (historyFilter) {
+        store.setHistoryFilter(historyFilter.dataset.historyFilter, historyFilter.value);
+        return;
+      }
       const input = event.target.closest('[data-input="profile-print"]');
       if (!input || !input.files || !input.files[0]) return;
       const file = input.files[0];
