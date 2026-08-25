@@ -434,7 +434,7 @@
         <div class="opponent-hero__tags"><span>${esc(team.modality)}</span><span>${esc(team.category)}</span><span>${esc(team.level)}</span></div>
       </section>
       <section class="detail-availability card"><span>${icon("calendar")}</span><div><p>Próximo horário</p><h2>${esc(team.availability)}</h2><small>${esc(team.venue)}</small></div></section>
-      <details class="compact-details card"><summary>Detalhes</summary>${publicReputation ? `<div class="reputation-card__heading"><strong>${team.reputation.score.toFixed(1).replace(".", ",")} ${icon("star")}</strong><span>${esc(team.verifiedMatches)} jogos verificados</span></div>${reputationBar("Conduta", team.reputation.fairPlay)}${reputationBar("Compromisso", team.reputation.commitment)}` : `<p>Novo no Radar. Nota após três jogos.</p>`}</details>
+      <details class="compact-details card"><summary>Detalhes</summary>${publicReputation ? `<div class="reputation-card__heading"><strong>${team.reputation.score.toFixed(1).replace(".", ",")} ${icon("star")}</strong><span>${esc(team.verifiedMatches)} avaliações</span></div>${reputationBar("Fair play", team.reputation.fairPlay)}${reputationBar("Pontualidade", team.reputation.punctuality)}` : `<p>Reputação nova</p>`}<button class="details-link" type="button" data-action="open-reputation" data-id="${esc(team.publicId || "44444444-4444-4444-8444-444444444444")}">Ver reputação ${icon("arrow")}</button></details>
       <section class="contact-lock card">${icon("lock")}<div><strong>Contato protegido</strong><p>Liberado após o aceite.</p></div></section>
       <div class="detail-actions">${button("Convidar", { action: "invite-preview", id: team.slug, trailing: "arrow", full: true })}</div>
     </div>`;
@@ -801,7 +801,10 @@
     const canConfirm = !match.confirmation?.mine && match.state !== "played";
     const canCancel = !match.confirmation?.mine && !match.confirmation?.opponent && match.state === "scheduled";
     const resultState = match.result?.state || "empty";
-    const resultAction = match.state === "played"
+    const canReview = resultState === "verified" && !state.reviewedMatchIds.includes(match.id);
+    const resultAction = canReview
+      ? button("Avaliar adversário", { action: "begin-review", id: match.id, icon: "star", full: true })
+      : match.state === "played"
       ? resultState === "empty"
         ? button("Informar placar", { action: "begin-score", id: match.id, icon: "trophy", full: true })
         : button(resultState === "verified" ? "Ver resultado" : resultState === "divergent" ? "Ver divergência" : "Ver placar", {
@@ -970,6 +973,112 @@
     return `<div class="screen state-page state-page--error match-cancelled-state"><section class="state-page__visual">${icon("close")}</section><p class="eyebrow">Amistoso</p><h1>Partida cancelada</h1><p>${esc(match.opponentName)} · ${esc(match.cancellation?.reason || "Cancelada")}</p>${button("Ver partidas", { action: "navigate", target: "matches", kind: "secondary" })}</div>`;
   }
 
+  function reviewMatch(state) {
+    const selected = state.matches.find((item) => item.id === state.selectedReviewMatchId);
+    if (selected?.result?.state === "verified" && !state.reviewedMatchIds.includes(selected.id)) return selected;
+    return state.matches.find((item) => item.result?.state === "verified" && !state.reviewedMatchIds.includes(item.id)) || null;
+  }
+
+  function ratingField(name, label, value) {
+    return `<fieldset class="review-question card"><legend>${esc(label)}</legend><div class="star-picker" aria-label="${esc(label)}">${[1, 2, 3, 4, 5].map((score) => `<label><input type="radio" name="${esc(name)}" value="${score}"${Number(value) === score ? " checked" : ""} required><span>${icon("star")}<b>${score}</b></span></label>`).join("")}</div></fieldset>`;
+  }
+
+  function renderReviewForm(state) {
+    if (state.reviewedMatchIds.includes(state.selectedReviewMatchId)) return renderReviewComplete(state);
+    const match = reviewMatch(state);
+    if (!match) return renderReviewState("review-empty");
+    return `<div class="screen screen--narrow review-screen">
+      ${screenHeader("Partida verificada", "Avaliar adversário", `${match.opponentName} · ${match.proposal.date}`)}
+      <div class="review-team card">${crest(match.opponentInitials, "team-crest--small")}<div><strong>${esc(match.opponentName)}</strong><span>${esc(match.result.official.mine)} × ${esc(match.result.official.opponent)}</span></div><i>${icon("shield")}</i></div>
+      <form data-form="team-review" data-id="${esc(match.id)}">
+        ${ratingField("pontualidade", "Pontualidade", state.reviewDraft.pontualidade)}
+        ${ratingField("organizacao", "Organização", state.reviewDraft.organizacao)}
+        ${ratingField("comunicacao", "Comunicação", state.reviewDraft.comunicacao)}
+        ${ratingField("fair_play", "Fair play", state.reviewDraft.fair_play)}
+        <fieldset class="review-question card"><legend>Jogaria novamente?</legend><div class="review-binary"><label><input type="radio" name="jogaria_novamente" value="true"${state.reviewDraft.jogaria_novamente ? " checked" : ""} required><span>${icon("check")} Sim</span></label><label><input type="radio" name="jogaria_novamente" value="false"${state.reviewDraft.jogaria_novamente ? "" : " checked"} required><span>${icon("close")} Não</span></label></div></fieldset>
+        <div class="sticky-actions review-actions">${button("Revisar avaliação", { type: "submit", icon: "star", full: true })}</div>
+      </form>
+    </div>`;
+  }
+
+  function reviewSummary(draft) {
+    const values = [
+      ["Pontualidade", draft.pontualidade],
+      ["Organização", draft.organizacao],
+      ["Comunicação", draft.comunicacao],
+      ["Fair play", draft.fair_play]
+    ];
+    return `<div class="review-summary">${values.map(([label, value]) => `<span><small>${esc(label)}</small><strong>${esc(value)} ${icon("star")}</strong></span>`).join("")}<span><small>Jogaria de novo</small><strong>${draft.jogaria_novamente ? "Sim" : "Não"}</strong></span></div>`;
+  }
+
+  function renderReviewConfirm(state) {
+    if (state.reviewedMatchIds.includes(state.selectedReviewMatchId)) return renderReviewComplete(state);
+    const match = reviewMatch(state);
+    if (!match) return renderReviewState("review-empty");
+    return `<div class="screen screen--narrow review-screen review-confirm-screen">
+      ${screenHeader("Avaliação", "Tudo certo?", match.opponentName)}
+      <section class="review-confirm-card card">${crest(match.opponentInitials, "team-crest--detail")}<h2>${esc(match.opponentName)}</h2>${reviewSummary(state.reviewDraft)}</section>
+      <details class="compact-details card"><summary>Detalhes</summary><p>Envio anônimo e imutável.</p></details>
+      <div class="sticky-actions review-actions"><div>${button("Editar", { action: "navigate", target: "review-form", kind: "ghost" })}${button("Enviar avaliação", { action: "submit-review", id: match.id, icon: "send" })}</div></div>
+    </div>`;
+  }
+
+  function renderReviewComplete(state) {
+    const match = state.matches.find((item) => item.id === state.selectedReviewMatchId) || reviewMatch(state);
+    return `<div class="screen state-page state-page--success review-complete"><section class="state-page__visual">${icon("check")}</section><p class="eyebrow">Reputação</p><h1>Avaliação enviada</h1><p>${esc(match?.opponentName || "Adversário")}</p>${button("Ver partidas", { action: "navigate", target: "matches", kind: "secondary" })}</div>`;
+  }
+
+  function selectedReputationTeam(state, forceNew) {
+    if (forceNew) return data.nearbyTeams.find((item) => !item.reputation) || null;
+    return data.nearbyTeams.find((item) => item.publicId === state.selectedReputationTeamId) || data.nearbyTeams[0] || null;
+  }
+
+  function renderReputation(state, forceNew) {
+    const team = selectedReputationTeam(state, forceNew);
+    if (!team) return renderReputationState("reputation-empty");
+    const established = team.reputation && team.verifiedMatches >= 3;
+    if (!established) {
+      return `<div class="screen screen--narrow reputation-screen reputation-screen--new">
+        ${screenHeader("Time", "Reputação nova", team.name)}
+        <section class="new-reputation card">${crest(team.initials, "team-crest--detail")}<span>${icon("star")}</span><h2>Reputação nova</h2><small>Menos de 3 avaliações</small></section>
+        <details class="compact-details card"><summary>Detalhes</summary><p>Notas aparecem após 3 avaliações verificadas.</p></details>
+        <div class="reputation-back">${button("Ver time", { action: "navigate", target: "opponent-detail", kind: "secondary", full: true })}</div>
+      </div>`;
+    }
+    const reputation = team.reputation;
+    return `<div class="screen screen--narrow reputation-screen">
+      ${screenHeader("Time", "Reputação do time", team.name)}
+      <section class="reputation-hero card">${crest(team.initials, "team-crest--detail")}<div><strong>${reputation.score.toFixed(1).replace(".", ",")}</strong><span>${icon("star")} ${esc(team.verifiedMatches)} avaliações</span></div><i>${icon("shield")}</i></section>
+      <section class="reputation-breakdown card">
+        ${reputationBar("Pontualidade", reputation.punctuality)}
+        ${reputationBar("Organização", reputation.organization)}
+        ${reputationBar("Comunicação", reputation.communication)}
+        ${reputationBar("Fair play", reputation.fairPlay)}
+      </section>
+      <section class="play-again card"><strong>${esc(reputation.playAgain)}%</strong><span>jogariam novamente</span>${icon("check")}</section>
+      <details class="compact-details card"><summary>Detalhes</summary><p>Média anônima de partidas verificadas.</p></details>
+      <div class="reputation-back">${button("Ver time", { action: "navigate", target: "opponent-detail", kind: "secondary", full: true })}</div>
+    </div>`;
+  }
+
+  function renderReviewState(view) {
+    const content = {
+      "review-loading": ["more", "Carregando avaliação", "Só um instante."],
+      "review-empty": ["star", "Nada para avaliar", "Sem partidas pendentes."],
+      "review-error": ["close", "Avaliação indisponível", "Tente novamente."]
+    }[view] || ["close", "Avaliação indisponível", "Tente novamente."];
+    return `<div class="screen state-page state-page--${view.includes("error") ? "error" : view.includes("loading") ? "loading" : "empty"}"><section class="state-page__visual">${icon(content[0])}${view.includes("loading") ? '<span class="spinner-ring"></span>' : ""}</section><h1>${content[1]}</h1><p>${content[2]}</p>${view.includes("loading") ? "" : button("Ver partidas", { action: "navigate", target: "matches" })}</div>`;
+  }
+
+  function renderReputationState(view) {
+    const content = {
+      "reputation-loading": ["more", "Carregando reputação", "Só um instante."],
+      "reputation-empty": ["star", "Sem reputação", "Time indisponível."],
+      "reputation-error": ["close", "Reputação indisponível", "Tente novamente."]
+    }[view] || ["close", "Reputação indisponível", "Tente novamente."];
+    return `<div class="screen state-page state-page--${view.includes("error") ? "error" : view.includes("loading") ? "loading" : "empty"}"><section class="state-page__visual">${icon(content[0])}${view.includes("loading") ? '<span class="spinner-ring"></span>' : ""}</section><h1>${content[1]}</h1><p>${content[2]}</p>${view.includes("loading") ? "" : button("Ver Radar", { action: "navigate", target: "opponents" })}</div>`;
+  }
+
   function renderMatchState(view) {
     const content = {
       "match-loading": ["more", "Carregando partidas", "Só um instante.", "matches"],
@@ -1086,6 +1195,17 @@
       "history-loading": () => renderHistoryState("history-loading"),
       "history-empty": () => renderHistoryState("history-empty"),
       "history-error": () => renderHistoryState("history-error"),
+      "review-form": renderReviewForm,
+      "review-confirm": renderReviewConfirm,
+      "review-complete": renderReviewComplete,
+      "review-loading": () => renderReviewState("review-loading"),
+      "review-empty": () => renderReviewState("review-empty"),
+      "review-error": () => renderReviewState("review-error"),
+      reputation: renderReputation,
+      "reputation-new": (state) => renderReputation(state, true),
+      "reputation-loading": () => renderReputationState("reputation-loading"),
+      "reputation-empty": () => renderReputationState("reputation-empty"),
+      "reputation-error": () => renderReputationState("reputation-error"),
       notifications: renderNotifications,
       "invitations-empty": renderInvitationsEmptyPage,
       "invitations-error": renderInvitationsError,
@@ -1213,6 +1333,12 @@
         const confirmed = await store.confirmReceivedScore(id || currentState.selectedMatchId);
         router.navigate(confirmed ? "score-verified" : "score-error");
       }
+      if (action === "begin-review" && store.beginReview(id || currentState.selectedMatchId)) router.navigate("review-form");
+      if (action === "submit-review") {
+        const submitted = await store.submitReview(id || currentState.selectedReviewMatchId);
+        router.navigate(submitted ? "review-complete" : "review-error");
+      }
+      if (action === "open-reputation" && store.selectReputationTeam(id)) router.navigate("reputation");
       if (action === "copy-code") {
         try { await navigator.clipboard.writeText("MCF-4827"); } catch (_error) { /* A seleção manual continua disponível. */ }
         control.classList.add("is-copied");
@@ -1288,6 +1414,9 @@
       }
       if (form.dataset.form === "score-form") {
         if (store.reviewScore(values, form.dataset.id)) router.navigate("score-review");
+      }
+      if (form.dataset.form === "team-review") {
+        if (store.reviewEvaluation(values, form.dataset.id)) router.navigate("review-confirm");
       }
     });
 

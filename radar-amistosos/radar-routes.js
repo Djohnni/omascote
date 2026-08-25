@@ -11,6 +11,9 @@
     "score-divergent", "score-verified", "score-loading", "score-empty", "score-error",
     "score-access-denied", "score-repeated", "history", "head-to-head",
     "history-loading", "history-empty", "history-error", "notifications",
+    "review-form", "review-confirm", "review-complete", "review-loading", "review-empty",
+    "review-error", "reputation", "reputation-new", "reputation-loading",
+    "reputation-empty", "reputation-error",
     "invitations-empty", "invitations-error",
     "opponents-loading", "opponents-error", "states", "loading", "empty", "success", "error",
     "session-expired", "access-denied"
@@ -63,6 +66,10 @@
               ? "match-detail"
             : ["head-to-head", "history-loading", "history-empty", "history-error"].includes(current)
               ? "history"
+            : ["review-form", "review-confirm", "review-complete", "review-loading", "review-empty", "review-error"].includes(current)
+              ? "match-detail"
+            : ["reputation", "reputation-new", "reputation-loading", "reputation-empty", "reputation-error"].includes(current)
+              ? "opponent-detail"
             : "home";
         navigate(fallback, { replace: true });
       }

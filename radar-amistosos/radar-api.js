@@ -14,6 +14,9 @@
     teamInvitations: "/me/time/amistosos/convites",
     matches: "/me/time/amistosos",
     matchHistory: "/me/time/amistosos/historico",
+    pendingEvaluations: "/me/time/avaliacoes/pendentes",
+    ownReputation: "/me/time/reputacao",
+    publicTeamReputation: "/radar/times",
     notifications: "/me/notificacoes"
   });
 
@@ -228,6 +231,21 @@
       confirmMatchResult: (id, etag, idempotencyKey) => request(safeOpaquePath(ENDPOINTS.matches, id, "/resultado/confirmar"), {
         method: "POST", body: {}, etag, idempotent: true, idempotencyKey
       }),
+      listPendingEvaluations: () => request(ENDPOINTS.pendingEvaluations),
+      submitMatchEvaluation: (id, values, idempotencyKey) => request(safeOpaquePath(ENDPOINTS.matches, id, "/avaliacao"), {
+        method: "POST",
+        body: {
+          pontualidade: values.pontualidade,
+          organizacao: values.organizacao,
+          comunicacao: values.comunicacao,
+          fair_play: values.fair_play,
+          jogaria_novamente: values.jogaria_novamente
+        },
+        idempotent: true,
+        idempotencyKey
+      }),
+      getOwnReputation: () => request(ENDPOINTS.ownReputation),
+      getTeamReputation: (teamPublicId) => request(safeOpaquePath(ENDPOINTS.publicTeamReputation, teamPublicId, "/reputacao")),
       createAvailability: (values, idempotencyKey) => request(ENDPOINTS.availabilities, {
         method: "POST", body: values, idempotent: true, idempotencyKey
       }),

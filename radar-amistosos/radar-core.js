@@ -57,6 +57,16 @@
       selectedHistoryOpponentId: "11111111-1111-4111-8111-111111111111",
       scoreDraft: { mine: 0, opponent: 0 },
       scoreMode: "new",
+      selectedReviewMatchId: "demo-resultado-confirmado",
+      reviewDraft: {
+        pontualidade: 5,
+        organizacao: 5,
+        comunicacao: 5,
+        fair_play: 5,
+        jogaria_novamente: true
+      },
+      reviewedMatchIds: [],
+      selectedReputationTeamId: "11111111-1111-4111-8111-111111111111",
       confirmedMatch: null,
       sequence: 2
     };
@@ -85,6 +95,10 @@
         selectedHistoryOpponentId: parsed.selectedHistoryOpponentId || fresh.selectedHistoryOpponentId,
         scoreDraft: { ...fresh.scoreDraft, ...(parsed.scoreDraft || {}) },
         scoreMode: parsed.scoreMode === "different" ? "different" : "new",
+        selectedReviewMatchId: parsed.selectedReviewMatchId || fresh.selectedReviewMatchId,
+        reviewDraft: { ...fresh.reviewDraft, ...(parsed.reviewDraft || {}) },
+        reviewedMatchIds: Array.isArray(parsed.reviewedMatchIds) ? parsed.reviewedMatchIds : [],
+        selectedReputationTeamId: parsed.selectedReputationTeamId || fresh.selectedReputationTeamId,
         confirmedMatch: parsed.confirmedMatch || null,
         sequence: Number.isInteger(parsed.sequence) ? parsed.sequence : fresh.sequence
       };
@@ -112,6 +126,10 @@
       selectedHistoryOpponentId: state.selectedHistoryOpponentId,
       scoreDraft: state.scoreDraft,
       scoreMode: state.scoreMode,
+      selectedReviewMatchId: state.selectedReviewMatchId,
+      reviewDraft: state.reviewDraft,
+      reviewedMatchIds: state.reviewedMatchIds,
+      selectedReputationTeamId: state.selectedReputationTeamId,
       confirmedMatch: state.confirmedMatch,
       sequence: state.sequence
     };
@@ -660,6 +678,70 @@
         notify("Resultado confirmado.");
         return true;
       }, 560);
+    },
+
+    beginReview(id) {
+      const match = state.matches.find((item) => item.id === id && item.result?.state === "verified");
+      if (!match || state.reviewedMatchIds.includes(match.id)) return false;
+      state.selectedMatchId = match.id;
+      state.selectedReviewMatchId = match.id;
+      state.reviewDraft = {
+        pontualidade: 5,
+        organizacao: 5,
+        comunicacao: 5,
+        fair_play: 5,
+        jogaria_novamente: true
+      };
+      emit({ persist: false });
+      return true;
+    },
+
+    reviewEvaluation(values, id) {
+      const match = state.matches.find((item) => item.id === id && item.result?.state === "verified");
+      const fields = ["pontualidade", "organizacao", "comunicacao", "fair_play"];
+      const scores = Object.fromEntries(fields.map((field) => [field, Number(values?.[field])]));
+      if (!match || state.reviewedMatchIds.includes(match.id) || fields.some((field) => !Number.isInteger(scores[field]) || scores[field] < 1 || scores[field] > 5)) {
+        notify("Complete a avaliação.", "error");
+        return false;
+      }
+      if (!["true", "false"].includes(String(values?.jogaria_novamente))) {
+        notify("Escolha sim ou não.", "error");
+        return false;
+      }
+      state.selectedReviewMatchId = match.id;
+      state.reviewDraft = {
+        ...scores,
+        jogaria_novamente: String(values.jogaria_novamente) === "true"
+      };
+      emit({ persist: false });
+      return true;
+    },
+
+    submitReview(id) {
+      return delay("Enviando avaliação", () => {
+        const match = state.matches.find((item) => item.id === id && item.result?.state === "verified");
+        if (!match || state.reviewedMatchIds.includes(match.id)) return false;
+        state.reviewedMatchIds = [...state.reviewedMatchIds, match.id];
+        state.notifications = [{
+          id: `demo-aviso-${state.sequence++}`,
+          type: "review",
+          title: "Avaliação enviada",
+          detail: match.opponentName,
+          read: false,
+          time: "agora"
+        }, ...state.notifications];
+        notify("Avaliação enviada.");
+        return true;
+      }, 520);
+    },
+
+    selectReputationTeam(publicId) {
+      const exists = state.matches.some((item) => item.opponentPublicId === publicId) ||
+        source.nearbyTeams.some((item) => item.publicId === publicId);
+      if (!exists) return false;
+      state.selectedReputationTeamId = publicId;
+      emit({ persist: false });
+      return true;
     },
 
     markNotificationsRead() {

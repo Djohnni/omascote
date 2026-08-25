@@ -41,6 +41,7 @@
     ],
     nearbyTeams: [
       {
+        publicId: "11111111-1111-4111-8111-111111111111",
         slug: "uniao-vila-nova",
         name: "União Vila Nova",
         initials: "UV",
@@ -57,9 +58,10 @@
         compatibility: 94,
         reasons: ["mesma modalidade", "nível compatível", "disponível domingo", "aceita jogar fora"],
         verifiedMatches: 7,
-        reputation: { score: 4.8, fairPlay: 4.7, commitment: 4.9, organization: 4.6, playAgain: 86 }
+        reputation: { score: 4.8, punctuality: 4.9, organization: 4.6, communication: 4.8, fairPlay: 4.7, playAgain: 86 }
       },
       {
+        publicId: "22222222-2222-4222-8222-222222222222",
         slug: "guerreiros-do-bairro",
         name: "Guerreiros do Bairro",
         initials: "GB",
@@ -76,9 +78,10 @@
         compatibility: 92,
         reasons: ["mesma modalidade", "nível compatível", "disponível sábado", "aceita jogar fora"],
         verifiedMatches: 5,
-        reputation: { score: 4.7, fairPlay: 4.8, commitment: 4.6, organization: 4.7, playAgain: 81 }
+        reputation: { score: 4.7, punctuality: 4.6, organization: 4.7, communication: 4.7, fairPlay: 4.8, playAgain: 81 }
       },
       {
+        publicId: "44444444-4444-4444-8444-444444444444",
         slug: "bola-na-rede-fc",
         name: "Bola na Rede FC",
         initials: "BR",
@@ -98,6 +101,7 @@
         reputation: null
       },
       {
+        publicId: "33333333-3333-4333-8333-333333333333",
         slug: "atletico-rio-bonito",
         name: "Atlético Rio Bonito",
         initials: "AR",
@@ -114,7 +118,7 @@
         compatibility: 86,
         reasons: ["mesma modalidade", "nível próximo", "disponível sábado"],
         verifiedMatches: 4,
-        reputation: { score: 4.5, fairPlay: 4.6, commitment: 4.4, organization: 4.5, playAgain: 78 }
+        reputation: { score: 4.5, punctuality: 4.4, organization: 4.5, communication: 4.5, fairPlay: 4.6, playAgain: 78 }
       },
       {
         slug: "juventude-pirabeiraba",
@@ -152,7 +156,7 @@
         compatibility: 78,
         reasons: ["disponível domingo", "aceita jogar fora"],
         verifiedMatches: 3,
-        reputation: { score: 4.3, fairPlay: 4.4, commitment: 4.2, organization: 4.3, playAgain: 74 }
+        reputation: { score: 4.3, punctuality: 4.2, organization: 4.3, communication: 4.3, fairPlay: 4.4, playAgain: 74 }
       },
       {
         slug: "norte-futsal-clube",
@@ -171,7 +175,7 @@
         compatibility: 76,
         reasons: ["nível compatível", "perto do seu time"],
         verifiedMatches: 6,
-        reputation: { score: 4.6, fairPlay: 4.7, commitment: 4.5, organization: 4.6, playAgain: 80 }
+        reputation: { score: 4.6, punctuality: 4.5, organization: 4.6, communication: 4.6, fairPlay: 4.7, playAgain: 80 }
       },
       {
         slug: "esporte-clube-aventureiro",

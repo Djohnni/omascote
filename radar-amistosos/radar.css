@@ -955,6 +955,8 @@ h2, h3 { line-height: 1.2; }
 .confirmation-panel--done > .icon, .confirmation-panel--done b { color: var(--green); }
 .confirmation-panel--done b { background: var(--green-soft); }
 .details-danger { width: calc(100% - 28px); min-height: 40px; margin: 0 14px 14px; color: #ffaaa4; background: transparent; border: 1px solid rgba(255, 107, 107, .23); border-radius: 9px; font-size: 10px; font-weight: 850; }
+.details-link { display: flex; align-items: center; justify-content: space-between; width: calc(100% - 28px); min-height: 40px; margin: 0 14px 14px; padding: 0 11px; color: var(--gold); background: rgba(244, 196, 48, .06); border: 1px solid rgba(244, 196, 48, .18); border-radius: 9px; font-size: 10px; font-weight: 900; }
+.details-link .icon { width: 15px; height: 15px; }
 .match-primary-action { justify-content: flex-end; margin-top: 14px; }
 .match-primary-action > .button { min-width: 240px; }
 .match-cancel-form { display: grid; gap: 14px; margin-top: 14px; }
@@ -1058,10 +1060,63 @@ h2, h3 { line-height: 1.2; }
 .history-summary--compact { grid-template-columns: 1fr; }
 .history-summary--compact .history-summary__goals, .history-summary--compact .history-form { justify-content: center; }
 
+/* Fase 5A — avaliação anônima e reputação agregada. */
+.review-screen, .reputation-screen { padding-bottom: 22px; }
+.review-team { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; padding: 13px 14px; }
+.review-team > div { display: grid; min-width: 0; gap: 2px; }
+.review-team strong { overflow: hidden; font-size: 13px; text-overflow: ellipsis; white-space: nowrap; }
+.review-team span { color: var(--gold); font-size: 11px; font-weight: 900; }
+.review-team > i { display: grid; place-items: center; width: 30px; height: 30px; margin-left: auto; color: var(--green); background: var(--green-soft); border-radius: 50%; }
+.review-team > i .icon { width: 16px; height: 16px; }
+.review-question { min-width: 0; margin: 0 0 9px; padding: 12px 13px 13px; border: 1px solid var(--line); }
+.review-question legend { padding: 0 7px; color: var(--text); font-size: 11px; font-weight: 900; }
+.star-picker { display: grid; grid-template-columns: repeat(5, 1fr); gap: 7px; }
+.star-picker label, .review-binary label { position: relative; min-width: 0; }
+.star-picker input, .review-binary input { position: absolute; width: 1px; height: 1px; opacity: 0; }
+.star-picker label span { display: grid; place-items: center; min-height: 48px; color: var(--muted-2); background: #0d0f12; border: 1px solid var(--line); border-radius: 10px; transition: .15s ease; }
+.star-picker label span .icon { width: 18px; height: 18px; }
+.star-picker label span b { margin-top: -2px; font-size: 8px; }
+.star-picker input:checked + span { color: #111; background: var(--gold); border-color: var(--gold); box-shadow: 0 0 0 2px rgba(244, 196, 48, .14); }
+.star-picker input:focus-visible + span, .review-binary input:focus-visible + span { outline: 3px solid var(--gold-bright); outline-offset: 2px; }
+.review-binary { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.review-binary span { display: flex; align-items: center; justify-content: center; min-height: 44px; gap: 7px; color: var(--muted); background: #0d0f12; border: 1px solid var(--line); border-radius: 10px; font-size: 11px; font-weight: 900; }
+.review-binary span .icon { width: 16px; height: 16px; }
+.review-binary input:checked + span { color: var(--gold); background: rgba(244, 196, 48, .08); border-color: rgba(244, 196, 48, .46); }
+.review-confirm-card { display: grid; justify-items: center; padding: 22px 16px 16px; text-align: center; }
+.review-confirm-card h2 { margin: 10px 0 15px; font-size: 17px; }
+.review-summary { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); width: 100%; gap: 7px; }
+.review-summary span { display: grid; gap: 2px; padding: 10px; background: #0d0f12; border: 1px solid var(--line); border-radius: 10px; text-align: left; }
+.review-summary span:last-child { grid-column: 1 / -1; text-align: center; }
+.review-summary small { color: var(--muted-2); font-size: 8px; font-weight: 800; text-transform: uppercase; }
+.review-summary strong { color: var(--gold); font-size: 13px; }
+.review-summary strong .icon { width: 13px; height: 13px; }
+.review-complete .state-page__visual { color: var(--green); background: var(--green-soft); }
+.reputation-hero { display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 15px; padding: 18px; }
+.reputation-hero > div { display: grid; gap: 1px; }
+.reputation-hero > div > strong { color: var(--gold); font-family: Georgia, "Times New Roman", serif; font-size: 48px; line-height: .95; }
+.reputation-hero > div > span { display: flex; align-items: center; gap: 5px; color: var(--muted); font-size: 9px; font-weight: 800; }
+.reputation-hero > div .icon { width: 13px; height: 13px; color: var(--gold); }
+.reputation-hero > i { display: grid; place-items: center; width: 34px; height: 34px; color: var(--green); background: var(--green-soft); border-radius: 50%; }
+.reputation-hero > i .icon { width: 18px; height: 18px; }
+.reputation-breakdown { margin-top: 10px; padding: 15px; }
+.reputation-breakdown .reputation-row { margin: 0 0 12px; }
+.reputation-breakdown .reputation-row:last-child { margin-bottom: 0; }
+.play-again { display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 10px; margin-top: 10px; padding: 13px 15px; }
+.play-again strong { color: var(--green); font-size: 25px; line-height: 1; }
+.play-again span { color: var(--muted); font-size: 10px; font-weight: 800; }
+.play-again > .icon { width: 20px; height: 20px; color: var(--green); }
+.reputation-back { margin-top: 12px; }
+.new-reputation { display: grid; justify-items: center; min-height: 260px; padding: 35px 20px; text-align: center; }
+.new-reputation > span { display: grid; place-items: center; width: 52px; height: 52px; margin-top: -10px; color: var(--gold); background: rgba(244, 196, 48, .09); border-radius: 50%; }
+.new-reputation > span .icon { width: 25px; height: 25px; }
+.new-reputation h2 { margin: 13px 0 4px; font-size: 20px; }
+.new-reputation small { color: var(--muted); font-size: 10px; }
+
 .bottom-nav { display: none; }
 .capture-mode .bottom-nav { display: none !important; }
 .capture-mode .main { padding-bottom: 36px; }
 .capture-mode .topbar { position: relative; top: auto; }
+.capture-mode .review-actions { position: static; margin-top: 10px; padding: 0; background: transparent; border: 0; box-shadow: none; }
 
 @media (min-width: 1180px) {
   .availability-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
@@ -1211,6 +1266,8 @@ h2, h3 { line-height: 1.2; }
   .history-summary--compact .history-summary__results { grid-column: 1 / -1; }
   .history-summary--compact .history-summary__goals { justify-content: flex-start; }
   .history-summary--compact .history-form { justify-content: flex-end; }
+  .review-actions > div { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .review-actions > div .button { width: 100%; }
   .invitation-card__identity { grid-template-columns: auto minmax(0, 1fr); }
   .invitation-card__identity .invite-state { grid-column: 2; justify-self: start; }
   .invitation-actions > div { display: grid; grid-template-columns: 1fr 1fr; }
@@ -1260,6 +1317,11 @@ h2, h3 { line-height: 1.2; }
   .history-card__score { gap: 5px; }
   .history-card__score > div { gap: 4px; }
   .team-crest--tiny { width: 27px; height: 31px; }
+  .star-picker { gap: 5px; }
+  .star-picker label span { min-height: 44px; border-radius: 9px; }
+  .review-question { margin-bottom: 7px; padding: 9px 11px 11px; }
+  .reputation-hero { padding: 16px 14px; }
+  .reputation-hero > div > strong { font-size: 44px; }
 }
 
 @media (prefers-reduced-motion: reduce) {
