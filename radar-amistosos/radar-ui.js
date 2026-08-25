@@ -38,7 +38,9 @@
       star: '<path d="m12 3 2.8 5.7 6.2.9-4.5 4.4 1.1 6.2-5.6-2.9-5.6 2.9 1.1-6.2L3 9.6l6.2-.9z"/>',
       clock: '<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>',
       bell: '<path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9"/><path d="M10 21h4"/>',
-      send: '<path d="m22 2-7 20-4-9-9-4z"/><path d="M22 2 11 13"/>'
+      send: '<path d="m22 2-7 20-4-9-9-4z"/><path d="M22 2 11 13"/>',
+      trophy: '<path d="M8 4h8v4a4 4 0 0 1-8 0z"/><path d="M8 6H5a2 2 0 0 0 2 3M16 6h3a2 2 0 0 1-2 3M12 12v5m-4 3h8M9 17h6"/>',
+      alert: '<path d="M12 3 2.5 20h19z"/><path d="M12 9v5m0 3h.01"/>'
     };
     return `<svg class="icon" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">${paths[name] || paths.radar}</svg>`;
   }
@@ -614,7 +616,10 @@
     return state.matches.find((item) => item.id === state.selectedMatchId) || state.confirmedMatch || null;
   }
 
-  function matchState(value) {
+  function matchState(value, resultState) {
+    if (value === "played" && resultState === "verified") return ["Resultado", "accepted"];
+    if (value === "played" && resultState === "divergent") return ["Divergente", "cancelled"];
+    if (value === "played" && resultState === "waiting_other") return ["Placar pendente", "pending"];
     return {
       scheduled: ["Confirmada", "accepted"],
       awaiting_occurrence: ["Aguardando", "pending"],
@@ -624,7 +629,7 @@
   }
 
   function matchCard(match) {
-    const stateInfo = matchState(match.state);
+    const stateInfo = matchState(match.state, match.result?.state);
     return `<article class="match-card card match-card--${esc(match.state)}">
       <div class="match-card__top">${crest(match.opponentInitials, "team-crest--small")}<div><h2>${esc(match.opponentName)}</h2><p>${esc(match.proposal.date)} · ${esc(match.proposal.time)}</p></div><span class="invite-state invite-state--${esc(stateInfo[1])}">${esc(stateInfo[0])}</span></div>
       <div class="match-card__facts"><span>${icon("location")} ${esc(match.proposal.city)}</span><span>${esc(match.proposal.modality)}</span><small>${esc(match.updatedLabel)}</small></div>
@@ -665,16 +670,153 @@
     if (match.state === "cancelled") return renderMatchCancelled(state);
     const canConfirm = !match.confirmation?.mine && match.state !== "played";
     const canCancel = !match.confirmation?.mine && !match.confirmation?.opponent && match.state === "scheduled";
+    const resultState = match.result?.state || "empty";
+    const resultAction = match.state === "played"
+      ? resultState === "empty"
+        ? button("Informar placar", { action: "begin-score", id: match.id, icon: "trophy", full: true })
+        : button(resultState === "verified" ? "Ver resultado" : resultState === "divergent" ? "Ver divergência" : "Ver placar", {
+            action: "navigate",
+            target: resultState === "verified" ? "score-verified" : resultState === "divergent" ? "score-divergent" : match.result?.opponent ? "score-confirm" : "score-waiting",
+            icon: resultState === "divergent" ? "alert" : "trophy",
+            full: true
+          })
+      : "";
     return `<div class="screen screen--narrow match-screen">
       ${screenHeader("Amistoso", "Central da partida", `${match.proposal.date} · ${match.proposal.time}`)}
-      <div class="match-status-row"><span class="invite-state invite-state--${esc(matchState(match.state)[1])}">${esc(matchState(match.state)[0])}</span><small>v${esc(match.version)}</small></div>
+      <div class="match-status-row"><span class="invite-state invite-state--${esc(matchState(match.state, resultState)[1])}">${esc(matchState(match.state, resultState)[0])}</span><small>v${esc(match.version)}</small></div>
       ${matchup(match.opponentName, match.opponentInitials)}
       <section class="proposal-card card">${proposalFacts(match.proposal)}<div class="proposal-chips"><span>${esc(match.proposal.modality)}</span><span>${esc(match.proposal.category)}</span></div></section>
       ${confirmationPanel(match)}
       <section class="contact-revealed card"><span>${icon("user")}</span><div><small>Responsável</small><strong>${esc(match.contact.name)}</strong><a href="tel:+5547999990000">${esc(match.contact.phone)}</a></div><span class="invite-state invite-state--accepted">Liberado</span></section>
-      <details class="compact-details card"><summary>Detalhes</summary><p>Contato fictício. Sem placar nesta fase.</p>${canCancel ? `<button class="details-danger" type="button" data-action="cancel-match">Cancelar partida</button>` : ""}</details>
-      ${canConfirm ? `<div class="sticky-actions match-primary-action">${button("Confirmar realização", { action: "confirm-match", id: match.id, icon: "check", full: true })}</div>` : ""}
+      <details class="compact-details card"><summary>Detalhes</summary><p>Contato fictício da demonstração.</p>${canCancel ? `<button class="details-danger" type="button" data-action="cancel-match">Cancelar partida</button>` : ""}</details>
+      ${resultAction ? `<div class="sticky-actions match-primary-action">${resultAction}</div>` : canConfirm ? `<div class="sticky-actions match-primary-action">${button("Confirmar realização", { action: "confirm-match", id: match.id, icon: "check", full: true })}</div>` : ""}
     </div>`;
+  }
+
+  function scoreMatch(state, kind) {
+    const current = selectedMatch(state);
+    const matches = state.matches.filter((item) => item.state === "played");
+    if (kind === "form") {
+      if (current?.state === "played" && current.result?.state !== "verified") return current;
+      return matches.find((item) => (item.result?.state || "empty") === "empty") || matches[0] || null;
+    }
+    if (kind === "confirm") {
+      if (current?.result?.opponent && current.result.state !== "verified") return current;
+      return matches.find((item) => item.result?.opponent && item.result.state === "waiting_other") || null;
+    }
+    if (kind === "divergent") {
+      if (current?.result?.state === "divergent") return current;
+      return matches.find((item) => item.result?.state === "divergent") || null;
+    }
+    if (kind === "verified") {
+      if (current?.result?.state === "verified") return current;
+      return matches.find((item) => item.result?.state === "verified") || null;
+    }
+    if (kind === "waiting") {
+      if (current?.result?.state === "waiting_other" && current.result.mine) return current;
+      return matches.find((item) => item.result?.state === "waiting_other" && item.result.mine) || null;
+    }
+    return current?.state === "played" ? current : matches[0] || null;
+  }
+
+  function scoreTeams(match, values, editable) {
+    const mine = Number(values?.mine || 0);
+    const opponent = Number(values?.opponent || 0);
+    return `<section class="scoreboard card${editable ? " scoreboard--editable" : ""}" aria-label="Placar">
+      <div class="score-team">${crest("EN", "team-crest--small")}<strong>Estrela do Norte</strong>${editable ? `<input class="score-input" name="mine" type="number" inputmode="numeric" min="0" max="99" required value="${esc(mine)}" aria-label="Gols do Estrela do Norte">` : `<b>${esc(mine)}</b>`}</div>
+      <span class="score-versus">×</span>
+      <div class="score-team">${crest(match.opponentInitials, "team-crest--small")}<strong>${esc(match.opponentName)}</strong>${editable ? `<input class="score-input" name="opponent" type="number" inputmode="numeric" min="0" max="99" required value="${esc(opponent)}" aria-label="Gols do adversário">` : `<b>${esc(opponent)}</b>`}</div>
+    </section>`;
+  }
+
+  function renderScoreForm(state) {
+    const match = scoreMatch(state, "form");
+    if (!match) return renderScoreState("score-error");
+    const title = state.scoreMode === "different" ? "Outro placar" : "Informar placar";
+    return `<div class="screen screen--narrow score-screen">
+      ${screenHeader("Resultado", title, "Digite os gols.")}
+      <form data-form="score-form" data-id="${esc(match.id)}">
+        ${scoreTeams(match, state.scoreDraft, true)}
+        <details class="compact-details card"><summary>Detalhes</summary><p>Enviado ao rival para confirmar.</p></details>
+        <div class="sticky-actions score-actions">${button("Revisar placar", { type: "submit", icon: "trophy", full: true })}</div>
+      </form>
+    </div>`;
+  }
+
+  function renderScoreReview(state) {
+    const match = scoreMatch(state);
+    if (!match) return renderScoreState("score-error");
+    return `<div class="screen screen--narrow score-screen">
+      ${screenHeader("Resultado", "Revisar placar", "Confira antes de enviar.")}
+      ${scoreTeams(match, state.scoreDraft, false)}
+      <div class="score-status card">${icon("shield")}<span>Aguardará o rival</span></div>
+      <div class="sticky-actions score-actions">${button("Enviar placar", { action: "submit-score", id: match.id, icon: "send", full: true })}</div>
+    </div>`;
+  }
+
+  function renderScoreWaiting(state) {
+    const match = scoreMatch(state, "waiting");
+    if (!match) return renderScoreState("score-empty");
+    return `<div class="screen screen--narrow score-screen">
+      ${screenHeader("Resultado", "Aguardando rival", "Seu placar foi enviado.")}
+      ${scoreTeams(match, match.result.mine, false)}
+      <div class="score-status score-status--waiting card">${icon("clock")}<span>Confirmação pendente</span><b>1/2</b></div>
+      <div class="sticky-actions score-actions">${button("Ver partida", { action: "navigate", target: "match-detail", kind: "secondary", full: true })}</div>
+    </div>`;
+  }
+
+  function renderScoreConfirm(state) {
+    const match = scoreMatch(state, "confirm");
+    if (!match) return renderScoreState("score-empty");
+    return `<div class="screen screen--narrow score-screen">
+      ${screenHeader("Placar recebido", "Confirmar placar", `${match.opponentName} informou.`)}
+      ${scoreTeams(match, match.result.opponent, false)}
+      <div class="score-status card">${icon("bell")}<span>Aguardando você</span><b>1/2</b></div>
+      <details class="compact-details card"><summary>Não confere?</summary><button class="quiet-score-action" type="button" data-action="different-score" data-id="${esc(match.id)}">Informar outro placar</button></details>
+      <div class="sticky-actions score-actions">${button("Confirmar placar", { action: "confirm-score", id: match.id, icon: "check", full: true })}</div>
+    </div>`;
+  }
+
+  function renderScoreDivergent(state) {
+    const match = scoreMatch(state, "divergent");
+    if (!match) return renderScoreState("score-empty");
+    const mine = match.result.mine;
+    const opponent = match.result.opponent;
+    return `<div class="screen screen--narrow score-screen score-divergent-screen">
+      ${screenHeader("Sem resultado oficial", "Placares diferentes", "Nenhum vencedor definido.")}
+      <section class="divergence-card card">
+        <div class="divergence-head">${icon("alert")}<strong>Divergência</strong><span class="invite-state invite-state--cancelled">Não verificado</span></div>
+        <div class="divergence-grid">
+          <article><small>Seu time</small><b>${esc(mine.mine)} × ${esc(mine.opponent)}</b></article>
+          <article><small>${esc(match.opponentName)}</small><b>${esc(opponent.mine)} × ${esc(opponent.opponent)}</b></article>
+        </div>
+      </section>
+      <div class="score-status score-status--danger card">${icon("shield")}<span>Estatísticas intactas</span></div>
+      <details class="compact-details card"><summary>Detalhes</summary><p>O placar só vira oficial com consenso.</p></details>
+      <div class="sticky-actions score-actions">${button("Corrigir meu placar", { action: "different-score", id: match.id, icon: "edit", full: true })}</div>
+    </div>`;
+  }
+
+  function renderScoreVerified(state) {
+    const match = scoreMatch(state, "verified");
+    if (!match) return renderScoreState("score-empty");
+    return `<div class="screen screen--narrow score-screen score-verified-screen">
+      ${screenHeader("Consenso dos times", "Resultado confirmado", "Placar oficial.")}
+      ${scoreTeams(match, match.result.official, false)}
+      <div class="score-status score-status--verified card">${icon("trophy")}<span>Resultado oficial</span><b>2/2</b></div>
+      <div class="sticky-actions score-actions">${button("Ver partida", { action: "navigate", target: "match-detail", kind: "secondary", full: true })}</div>
+    </div>`;
+  }
+
+  function renderScoreState(view) {
+    const content = {
+      "score-loading": ["more", "Carregando placar", "Só um instante."],
+      "score-empty": ["trophy", "Placar indisponível", "Volte à partida."],
+      "score-error": ["close", "Erro no placar", "Tente novamente."],
+      "score-access-denied": ["lock", "Acesso negado", "Somente os participantes."],
+      "score-repeated": ["check", "Placar já enviado", "Nenhuma duplicação."]
+    }[view] || ["close", "Erro no placar", "Tente novamente."];
+    return `<div class="screen state-page state-page--${view.includes("error") ? "error" : view.includes("access") ? "denied" : view.includes("loading") ? "loading" : "empty"}"><section class="state-page__visual">${icon(content[0])}${view === "score-loading" ? '<span class="spinner-ring"></span>' : ""}</section><p class="eyebrow">Resultado</p><h1>${esc(content[1])}</h1><p>${esc(content[2])}</p>${view === "score-loading" ? "" : button("Ver partidas", { action: "navigate", target: "matches" })}</div>`;
   }
 
   function renderMatchCancel(state) {
@@ -798,6 +940,17 @@
       "match-empty": () => renderMatchState("match-empty"),
       "match-error": () => renderMatchState("match-error"),
       "match-access-denied": () => renderMatchState("match-access-denied"),
+      "score-form": renderScoreForm,
+      "score-review": renderScoreReview,
+      "score-waiting": renderScoreWaiting,
+      "score-confirm": renderScoreConfirm,
+      "score-divergent": renderScoreDivergent,
+      "score-verified": renderScoreVerified,
+      "score-loading": () => renderScoreState("score-loading"),
+      "score-empty": () => renderScoreState("score-empty"),
+      "score-error": () => renderScoreState("score-error"),
+      "score-access-denied": () => renderScoreState("score-access-denied"),
+      "score-repeated": () => renderScoreState("score-repeated"),
       notifications: renderNotifications,
       "invitations-empty": renderInvitationsEmptyPage,
       "invitations-error": renderInvitationsError,
@@ -911,6 +1064,16 @@
       if (action === "open-match") { store.selectMatch(id, window.scrollY); router.navigate("match-detail"); }
       if (action === "cancel-match") router.navigate("match-cancel");
       if (action === "confirm-match") await store.confirmMatchOccurrence(id || currentState.selectedMatchId);
+      if (action === "begin-score") { store.beginScore(id || currentState.selectedMatchId); router.navigate("score-form"); }
+      if (action === "different-score") { store.beginScore(id || currentState.selectedMatchId, "different"); router.navigate("score-form"); }
+      if (action === "submit-score") {
+        const result = await store.submitScore(id || currentState.selectedMatchId);
+        router.navigate(result === "verified" ? "score-verified" : result === "divergent" ? "score-divergent" : result === "waiting_other" ? "score-waiting" : "score-error");
+      }
+      if (action === "confirm-score") {
+        const confirmed = await store.confirmReceivedScore(id || currentState.selectedMatchId);
+        router.navigate(confirmed ? "score-verified" : "score-error");
+      }
       if (action === "copy-code") {
         try { await navigator.clipboard.writeText("MCF-4827"); } catch (_error) { /* A seleção manual continua disponível. */ }
         control.classList.add("is-copied");
@@ -978,6 +1141,9 @@
       if (form.dataset.form === "match-cancel") {
         await store.cancelMatch(currentState.selectedMatchId, values);
         router.navigate("match-cancelled");
+      }
+      if (form.dataset.form === "score-form") {
+        if (store.reviewScore(values, form.dataset.id)) router.navigate("score-review");
       }
     });
 

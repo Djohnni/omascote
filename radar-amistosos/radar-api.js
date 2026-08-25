@@ -198,6 +198,19 @@
       cancelMatch: (id, reason, etag, idempotencyKey) => request(safeOpaquePath(ENDPOINTS.matches, id, "/cancelar"), {
         method: "POST", body: { reason }, etag, idempotent: true, idempotencyKey
       }),
+      submitMatchResult: (id, goals, etag, idempotencyKey) => request(safeOpaquePath(ENDPOINTS.matches, id, "/resultado"), {
+        method: "POST",
+        body: {
+          gols_meu_time: goals.gols_meu_time,
+          gols_adversario: goals.gols_adversario
+        },
+        etag,
+        idempotent: true,
+        idempotencyKey
+      }),
+      confirmMatchResult: (id, etag, idempotencyKey) => request(safeOpaquePath(ENDPOINTS.matches, id, "/resultado/confirmar"), {
+        method: "POST", body: {}, etag, idempotent: true, idempotencyKey
+      }),
       createAvailability: (values, idempotencyKey) => request(ENDPOINTS.availabilities, {
         method: "POST", body: values, idempotent: true, idempotencyKey
       }),

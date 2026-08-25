@@ -7,7 +7,9 @@
     "invitation-compose", "invitation-review", "invitation-sent", "invitations",
     "invitation-detail", "invitation-counter", "match-confirmed", "matches", "match-detail",
     "match-cancel", "match-cancelled", "match-loading", "match-empty", "match-error",
-    "match-access-denied", "notifications",
+    "match-access-denied", "score-form", "score-review", "score-waiting", "score-confirm",
+    "score-divergent", "score-verified", "score-loading", "score-empty", "score-error",
+    "score-access-denied", "score-repeated", "notifications",
     "invitations-empty", "invitations-error",
     "opponents-loading", "opponents-error", "states", "loading", "empty", "success", "error",
     "session-expired", "access-denied"
@@ -56,6 +58,8 @@
             ? "invitations"
             : ["match-confirmed", "match-detail", "match-cancel", "match-cancelled", "match-loading", "match-empty", "match-error", "match-access-denied"].includes(current)
               ? "matches"
+            : ["score-form", "score-review", "score-waiting", "score-confirm", "score-divergent", "score-verified", "score-loading", "score-empty", "score-error", "score-access-denied", "score-repeated"].includes(current)
+              ? "match-detail"
             : "home";
         navigate(fallback, { replace: true });
       }

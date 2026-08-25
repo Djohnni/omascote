@@ -964,6 +964,38 @@ h2, h3 { line-height: 1.2; }
 .match-cancel-actions > div { display: flex; justify-content: flex-end; gap: 8px; width: 100%; }
 .match-cancelled-state .state-page__visual { width: 90px; height: 90px; }
 
+/* Fase 4B — placar por consenso. */
+.score-screen { padding-bottom: 18px; }
+.scoreboard { display: grid; grid-template-columns: minmax(0, 1fr) 34px minmax(0, 1fr); align-items: center; gap: 10px; padding: 28px 22px; text-align: center; }
+.score-team { display: flex; align-items: center; flex-direction: column; min-width: 0; gap: 9px; }
+.score-team strong { overflow: hidden; width: 100%; font-size: 11px; text-overflow: ellipsis; white-space: nowrap; }
+.score-team b, .score-input { display: grid; place-items: center; width: 92px; height: 92px; margin-top: 3px; color: var(--gold); background: #07080a; border: 1px solid var(--line); border-radius: 20px; font-size: 48px; font-weight: 900; line-height: 1; }
+.score-input { padding: 0 4px; border-color: rgba(244, 196, 48, .55); text-align: center; appearance: textfield; }
+.score-input::-webkit-inner-spin-button, .score-input::-webkit-outer-spin-button { margin: 0; appearance: none; }
+.score-input:focus { border-color: var(--gold); box-shadow: 0 0 0 4px rgba(244, 196, 48, .1); outline: none; }
+.score-versus { color: var(--muted-2); font-size: 17px; font-weight: 900; }
+.score-status { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; align-items: center; gap: 10px; margin-top: 13px; padding: 14px 16px; }
+.score-status .icon { width: 20px; height: 20px; color: var(--gold); }
+.score-status span { font-size: 10px; font-weight: 850; }
+.score-status b { min-width: 38px; padding: 5px 8px; color: var(--warning); background: rgba(255, 182, 72, .1); border-radius: 999px; font-size: 9px; text-align: center; }
+.score-status--verified { border-color: rgba(55, 214, 122, .26); }
+.score-status--verified .icon, .score-status--verified b { color: var(--green); }
+.score-status--verified b { background: var(--green-soft); }
+.score-status--danger { border-color: rgba(255, 107, 107, .28); }
+.score-status--danger .icon { color: var(--red); }
+.score-actions { justify-content: flex-end; margin-top: 14px; }
+.score-actions > .button { min-width: 250px; }
+.quiet-score-action { width: 100%; min-height: 42px; margin-top: 8px; color: var(--gold); background: transparent; border: 1px solid rgba(244, 196, 48, .2); border-radius: 9px; font-size: 10px; font-weight: 850; }
+.divergence-card { padding: 18px; border-color: rgba(255, 107, 107, .34); background: linear-gradient(145deg, rgba(56, 23, 25, .72), rgba(19, 21, 25, .98)); }
+.divergence-head { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; align-items: center; gap: 9px; }
+.divergence-head .icon { width: 20px; height: 20px; color: var(--red); }
+.divergence-head strong { font-size: 12px; }
+.divergence-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 16px; }
+.divergence-grid article { min-width: 0; padding: 14px; background: rgba(8, 9, 11, .55); border: 1px solid rgba(255, 255, 255, .08); border-radius: 13px; }
+.divergence-grid small, .divergence-grid b { display: block; }
+.divergence-grid small { overflow: hidden; color: var(--muted); font-size: 8px; text-overflow: ellipsis; white-space: nowrap; }
+.divergence-grid b { margin-top: 5px; color: var(--text); font-size: 24px; }
+
 .bottom-nav { display: none; }
 .capture-mode .bottom-nav { display: none !important; }
 .capture-mode .main { padding-bottom: 36px; }
@@ -1101,6 +1133,9 @@ h2, h3 { line-height: 1.2; }
   .match-cancel-actions > div { display: grid; grid-template-columns: 1fr; }
   .match-cancel-actions .button { width: 100%; }
   .match-cancel-actions .button--danger { grid-row: 1; }
+  .scoreboard { padding: 22px 12px; }
+  .score-team b, .score-input { width: 82px; height: 82px; border-radius: 18px; font-size: 44px; }
+  .score-actions > .button { width: 100%; min-width: 0; }
   .invitation-card__identity { grid-template-columns: auto minmax(0, 1fr); }
   .invitation-card__identity .invite-state { grid-column: 2; justify-self: start; }
   .invitation-actions > div { display: grid; grid-template-columns: 1fr 1fr; }

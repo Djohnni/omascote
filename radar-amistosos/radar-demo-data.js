@@ -2,7 +2,7 @@
   "use strict";
 
   window.RadarDemoData = {
-    storageKey: "meu-clube-fc:radar-demo:v1",
+    storageKey: "meu-clube-fc:radar-demo:v2",
     profile: {
       teamName: "Estrela do Norte FC",
       shortName: "Estrela do Norte",
@@ -298,7 +298,8 @@
           modality: "Society", category: "Livre", city: "Joinville, SC", venue: "Mandante"
         },
         contact: { name: "Carlos, responsável", phone: "(47) 99999-0000" },
-        confirmation: { mine: false, opponent: false },
+          confirmation: { mine: false, opponent: false },
+          result: { state: "empty", mine: null, opponent: null, official: null },
         cancellation: null,
         updatedLabel: "domingo"
       },
@@ -313,7 +314,8 @@
           modality: "Society", category: "Livre", city: "Joinville, SC", venue: "Visitante"
         },
         contact: { name: "Rafael, responsável", phone: "(47) 98888-1200" },
-        confirmation: { mine: true, opponent: false },
+          confirmation: { mine: true, opponent: false },
+          result: { state: "empty", mine: null, opponent: null, official: null },
         cancellation: null,
         updatedLabel: "aguardando rival"
       },
@@ -328,9 +330,71 @@
           modality: "Society", category: "Livre", city: "Joinville, SC", venue: "Mandante"
         },
         contact: { name: "Bruno, responsável", phone: "(47) 97777-4400" },
+          confirmation: { mine: true, opponent: true },
+          result: { state: "empty", mine: null, opponent: null, official: null },
+          cancellation: null,
+          updatedLabel: "realizada"
+      },
+      {
+        id: "demo-placar-recebido",
+        state: "played",
+        version: 4,
+        opponentName: "União Vila Nova",
+        opponentInitials: "UV",
+        proposal: {
+          date: "12/08/2026", time: "20:00", duration: "2h",
+          modality: "Society", category: "Livre", city: "Joinville, SC", venue: "Visitante"
+        },
+        contact: { name: "Carlos, responsável", phone: "(47) 99999-0000" },
         confirmation: { mine: true, opponent: true },
+        result: {
+          state: "waiting_other", mine: null,
+          opponent: { mine: 3, opponent: 2, at: "há 18 min" }, official: null
+        },
         cancellation: null,
-        updatedLabel: "realizada"
+        updatedLabel: "placar recebido"
+      },
+      {
+        id: "demo-placar-divergente",
+        state: "played",
+        version: 5,
+        opponentName: "Guerreiros do Bairro",
+        opponentInitials: "GB",
+        proposal: {
+          date: "08/08/2026", time: "19:30", duration: "2h",
+          modality: "Society", category: "Livre", city: "Joinville, SC", venue: "Mandante"
+        },
+        contact: { name: "Rafael, responsável", phone: "(47) 98888-1200" },
+        confirmation: { mine: true, opponent: true },
+        result: {
+          state: "divergent",
+          mine: { mine: 3, opponent: 2, at: "ontem" },
+          opponent: { mine: 2, opponent: 2, at: "ontem" },
+          official: null
+        },
+        cancellation: null,
+        updatedLabel: "placares diferentes"
+      },
+      {
+        id: "demo-resultado-confirmado",
+        state: "played",
+        version: 5,
+        opponentName: "Bola na Rede FC",
+        opponentInitials: "BR",
+        proposal: {
+          date: "02/08/2026", time: "18:00", duration: "2h",
+          modality: "Society", category: "Livre", city: "Joinville, SC", venue: "Mandante"
+        },
+        contact: { name: "Lucas, responsável", phone: "(47) 95555-2020" },
+        confirmation: { mine: true, opponent: true },
+        result: {
+          state: "verified",
+          mine: { mine: 4, opponent: 2, at: "02/08" },
+          opponent: null,
+          official: { mine: 4, opponent: 2, at: "02/08" }
+        },
+        cancellation: null,
+        updatedLabel: "resultado oficial"
       },
       {
         id: "demo-partida-cancelada",
@@ -343,7 +407,8 @@
           modality: "Society", category: "Veterano", city: "São Francisco do Sul, SC", venue: "Visitante"
         },
         contact: { name: "Diego, responsável", phone: "(47) 96666-3100" },
-        confirmation: { mine: false, opponent: false },
+          confirmation: { mine: false, opponent: false },
+          result: { state: "empty", mine: null, opponent: null, official: null },
         cancellation: { reason: "Clima", byMe: false, at: "08/08/2026" },
         updatedLabel: "cancelada"
       }

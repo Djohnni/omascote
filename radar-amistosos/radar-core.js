@@ -51,6 +51,8 @@
       selectedMatchId: source.matches?.[0]?.id || null,
       matchBox: "upcoming",
       matchListScrollY: 0,
+      scoreDraft: { mine: 0, opponent: 0 },
+      scoreMode: "new",
       confirmedMatch: null,
       sequence: 2
     };
@@ -75,6 +77,8 @@
         matches: Array.isArray(parsed.matches) ? parsed.matches : fresh.matches,
         selectedMatchId: parsed.selectedMatchId || fresh.selectedMatchId,
         matchBox: ["upcoming", "history"].includes(parsed.matchBox) ? parsed.matchBox : fresh.matchBox,
+        scoreDraft: { ...fresh.scoreDraft, ...(parsed.scoreDraft || {}) },
+        scoreMode: parsed.scoreMode === "different" ? "different" : "new",
         confirmedMatch: parsed.confirmedMatch || null,
         sequence: Number.isInteger(parsed.sequence) ? parsed.sequence : fresh.sequence
       };
@@ -98,6 +102,8 @@
       matches: state.matches,
       selectedMatchId: state.selectedMatchId,
       matchBox: state.matchBox,
+      scoreDraft: state.scoreDraft,
+      scoreMode: state.scoreMode,
       confirmedMatch: state.confirmedMatch,
       sequence: state.sequence
     };
@@ -426,6 +432,7 @@
           proposal: copy(invitation.proposal),
           contact: { name: "Carlos, responsável", phone: "(47) 99999-0000" },
           confirmation: { mine: false, opponent: false },
+          result: { state: "empty", mine: null, opponent: null, official: null },
           cancellation: null,
           updatedLabel: "agora"
         };
@@ -536,6 +543,81 @@
         }, ...state.notifications];
         notify("Partida cancelada.", "info");
       }, 520);
+    },
+
+    beginScore(id, mode) {
+      const match = state.matches.find((item) => item.id === id);
+      if (!match || match.state !== "played" || match.result?.state === "verified") return;
+      state.selectedMatchId = match.id;
+      state.scoreMode = mode === "different" ? "different" : "new";
+      state.scoreDraft = match.result?.mine
+        ? { mine: match.result.mine.mine, opponent: match.result.mine.opponent }
+        : { mine: 0, opponent: 0 };
+      emit({ persist: false });
+    },
+
+    reviewScore(values, id) {
+      const match = state.matches.find((item) => item.id === id);
+      const mine = Number(values?.mine);
+      const opponent = Number(values?.opponent);
+      if (!match || match.state !== "played" || match.result?.state === "verified") return false;
+      if (!Number.isInteger(mine) || !Number.isInteger(opponent) || mine < 0 || opponent < 0 || mine > 99 || opponent > 99) {
+        notify("Use gols entre 0 e 99.", "error");
+        return false;
+      }
+      state.selectedMatchId = match.id;
+      state.scoreDraft = { mine, opponent };
+      emit({ persist: false });
+      return true;
+    },
+
+    submitScore(id) {
+      return delay("Enviando placar", () => {
+        const match = state.matches.find((item) => item.id === id);
+        if (!match || match.state !== "played" || match.result?.state === "verified") return "error";
+        match.result = match.result || { state: "empty", mine: null, opponent: null, official: null };
+        match.result.mine = { ...state.scoreDraft, at: "agora" };
+        const received = match.result.opponent;
+        if (!received) {
+          match.result.state = "waiting_other";
+          match.updatedLabel = "aguardando placar";
+        } else if (received.mine === state.scoreDraft.mine && received.opponent === state.scoreDraft.opponent) {
+          match.result.state = "verified";
+          match.result.official = { ...state.scoreDraft, at: "agora" };
+          match.updatedLabel = "resultado oficial";
+        } else {
+          match.result.state = "divergent";
+          match.result.official = null;
+          match.updatedLabel = "placares diferentes";
+        }
+        match.version += 1;
+        state.notifications = [{
+          id: `demo-aviso-${state.sequence++}`,
+          type: match.result.state === "verified" ? "result" : match.result.state === "divergent" ? "divergent" : "score",
+          title: match.result.state === "verified" ? "Resultado confirmado" : match.result.state === "divergent" ? "Placar divergente" : "Placar enviado",
+          detail: match.opponentName, read: false, time: "agora"
+        }, ...state.notifications];
+        notify(match.result.state === "verified" ? "Resultado confirmado." : match.result.state === "divergent" ? "Placares diferentes." : "Placar enviado.", match.result.state === "divergent" ? "info" : "success");
+        return match.result.state;
+      }, 560);
+    },
+
+    confirmReceivedScore(id) {
+      return delay("Confirmando placar", () => {
+        const match = state.matches.find((item) => item.id === id);
+        const received = match?.result?.opponent;
+        if (!match || match.state !== "played" || !received || match.result.state === "verified") return false;
+        match.result.state = "verified";
+        match.result.official = { mine: received.mine, opponent: received.opponent, at: "agora" };
+        match.version += 1;
+        match.updatedLabel = "resultado oficial";
+        state.notifications = [{
+          id: `demo-aviso-${state.sequence++}`, type: "result", title: "Resultado confirmado",
+          detail: match.opponentName, read: false, time: "agora"
+        }, ...state.notifications];
+        notify("Resultado confirmado.");
+        return true;
+      }, 560);
     },
 
     markNotificationsRead() {
