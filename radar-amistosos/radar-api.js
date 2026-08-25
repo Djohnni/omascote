@@ -118,6 +118,7 @@
       }
 
       const config = { method: "GET", ...(requestOptions || {}) };
+      const startedAt = Date.now();
       const controller = new AbortController();
       const timeout = window.setTimeout(() => controller.abort(), settings.timeoutMs);
       const headers = new Headers({ Accept: "application/json", ...(config.headers || {}) });
@@ -134,11 +135,15 @@
       }
 
       try {
-        const response = await window.fetch(new URL(path, settings.baseUrl), {
+        const fetchImpl = typeof settings.fetchImpl === "function" ? settings.fetchImpl : window.fetch.bind(window);
+        if (typeof settings.onTrace === "function") {
+          settings.onTrace({ phase: "request", method: config.method, path });
+        }
+        const response = await fetchImpl(new URL(path, settings.baseUrl), {
           method: config.method,
           headers,
           body,
-          credentials: "include",
+          credentials: "omit",
           cache: "no-store",
           redirect: "error",
           signal: controller.signal
@@ -146,6 +151,17 @@
 
         const contentType = response.headers.get("content-type") || "";
         const payload = contentType.includes("application/json") ? await response.json() : null;
+        if (typeof settings.onTrace === "function") {
+          settings.onTrace({
+            phase: "response",
+            method: config.method,
+            path,
+            status: response.status,
+            ok: response.ok,
+            etag: response.headers.get("etag"),
+            duration_ms: Date.now() - startedAt
+          });
+        }
         if (!response.ok) {
           const publicCode = payload && typeof payload.code === "string" ? payload.code : `HTTP_${response.status}`;
           throw new RadarApiError(
@@ -190,7 +206,15 @@
       confirmInstagramVerification: (values, etag, idempotencyKey) => request(ENDPOINTS.confirmInstagramVerification, {
         method: "POST", body: values, etag, idempotent: true, idempotencyKey
       }),
-      listAvailabilities: () => request(ENDPOINTS.availabilities),
+      listAvailabilities: (filters) => {
+        const input = filters || {};
+        const parameters = new URLSearchParams();
+        if (["active", "paused", "expired", "cancelled"].includes(input.status)) parameters.set("status", input.status);
+        if (input.cursor) parameters.set("cursor", String(input.cursor));
+        if (Number.isInteger(Number(input.limit)) && Number(input.limit) > 0) parameters.set("limit", String(input.limit));
+        const query = parameters.toString();
+        return request(`${ENDPOINTS.availabilities}${query ? `?${query}` : ""}`);
+      },
       listNearbyTeams: (filters) => request(buildNearbyTeamsPath(filters)),
       listInvitations: (box) => request(`${ENDPOINTS.teamInvitations}?caixa=${box === "saida" ? "saida" : "entrada"}`),
       createInvitation: (values, idempotencyKey) => request(ENDPOINTS.invitations, {
@@ -296,5 +320,5 @@
     });
   }
 
-  window.RadarApi = { ENDPOINTS, ERROR_MESSAGES, RadarApiError, buildNearbyTeamsPath, buildMatchHistoryPath, create };
+  window.RadarApi = { ENDPOINTS, ERROR_MESSAGES, RadarApiError, buildNearbyTeamsPath, buildMatchHistoryPath, create, createIdempotencyKey };
 })();

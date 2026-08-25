@@ -1,22 +1,13 @@
 <!doctype html>
 <html lang="pt-br" translate="no">
 <head>
-  <script>
-    (() => {
-      const params = new URLSearchParams(window.location.search);
-      if (params.get("radar_demo") !== "1") return;
-      const demoUrl = new URL("./radar-amistosos/demo.html", window.location.href);
-      demoUrl.searchParams.set("demo", "1");
-      if (params.get("omascote_app") === "1") demoUrl.searchParams.set("omascote_app", "1");
-      window.location.replace(demoUrl);
-    })();
-  </script>
   <!-- Google tag carregado com atraso para não travar a primeira tela -->
 <script>
   window.dataLayer = window.dataLayer || [];
   function gtag(){dataLayer.push(arguments);}
 
   setTimeout(()=>{
+    if(document.querySelector('meta[name="omascote-environment"]')?.content === "local-real") return;
     const s = document.createElement("script");
     s.async = true;
     s.src = "https://www.googletagmanager.com/gtag/js?id=G-98RSV0WJ0J";
@@ -32,6 +23,8 @@
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <meta name="description" content="Meu Clube FC é uma plataforma para clubes com perfil do time, elenco, escalação, patrocinadores, ranking, galeria, jogos, resultados e artes automáticas para futebol.">
   <meta name="theme-color" content="#111827">
+  <meta name="omascote-api-base" content="https://api.omascote.com.br">
+  <meta name="omascote-environment" content="production">
   <link rel="manifest" href="/manifest.json">
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-capable" content="yes">
@@ -74,6 +67,7 @@
   <link rel="icon" href="/favicon.ico" type="image/x-icon">
   <link rel="shortcut icon" href="/favicon.ico?v=2" type="image/x-icon">
   <link rel="icon" href="/favicon.ico?v=2" sizes="32x32">
+  <link rel="stylesheet" href="./radar-amistosos/radar-live.css">
   <!-- favicon atualizado -->
 
   <style>
@@ -15024,6 +15018,10 @@ body.homeLandingClean[data-page="home"] > main > .wrap > .panel{
         <button class="perfilCentralCard" type="button" data-perfil-card="dividir-times">
           <strong>Dividir Times</strong>
         </button>
+        <button class="perfilCentralCard radar-profile-entry" id="radarLiveProfileButton" data-radar-live-entry type="button" hidden>
+          <strong>Encontrar amistoso</strong>
+          <span>Radar</span>
+        </button>
       </div>
 
       <div class="perfilSectionHeader" id="perfilSectionHeader" hidden>
@@ -15499,6 +15497,9 @@ body.homeLandingClean[data-page="home"] > main > .wrap > .panel{
       </section>
 
       <div class="perfilVisualActions">
+        <button class="perfilVisualBtn radar-visual-entry" id="radarLiveVisualButton" data-radar-live-entry type="button" hidden>
+          Encontrar amistoso <span>Radar</span>
+        </button>
         <button class="perfilVisualBtn" id="perfilVisualCriarArteBtn" type="button">Criar arte com este perfil</button>
         <button class="perfilVisualBtn secondary" id="perfilVisualCompartilharBtn" type="button">Compartilhar pagina</button>
         <button class="perfilVisualBtn secondary" id="perfilVisualEditarBtn" type="button">Editar Perfil do Time</button>
@@ -15778,7 +15779,18 @@ body.homeLandingClean[data-page="home"] > main > .wrap > .panel{
 </div>
 
 <script>
-const API_BASE = "https://api.omascote.com.br";
+const API_BASE = (()=>{
+  const fallback = "https://api.omascote.com.br";
+  const configured = document.querySelector('meta[name="omascote-api-base"]')?.content?.trim() || fallback;
+  try{
+    const parsed = new URL(configured);
+    if(!["http:", "https:"].includes(parsed.protocol) || parsed.username || parsed.password) return fallback;
+    return parsed.origin;
+  }catch(e){
+    return fallback;
+  }
+})();
+window.OMASCOTE_API_BASE_RESOLVED = API_BASE;
 const MEU_CLUBE_PLAY_STORE_URL = "https://play.google.com/store/apps/details?id=br.com.omascote.app";
 const MEU_CLUBE_APP_WEB_URL = "https://omascote.com.br/app.html";
 const MEU_CLUBE_ARTE_APP_MSG = "Para criar artes, baixe o app Meu Clube FC na Play Store.";
@@ -37735,6 +37747,8 @@ iniciarAvaliarJogadoresPublicoSeNecessario();
 iniciarRankingSeNecessario();
 iniciarPerfilPublicoSeNecessario();
 </script>
+  <script src="./radar-amistosos/radar-api.js"></script>
+  <script src="./radar-amistosos/radar-live.js"></script>
   </main>
 </body>
 </html>
