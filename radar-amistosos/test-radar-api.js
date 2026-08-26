@@ -107,6 +107,35 @@ test("WhatsApp is fetched only by the protected click endpoint", async () => {
   assert.equal(result.data.whatsapp_url, "https://wa.me/5547999999999");
 });
 
+test("match communication uses participant-scoped endpoints and protected mutations", async () => {
+  const calls = [];
+  const client = loadClient(async (url, options) => {
+    calls.push({ url: String(url), options, body: options.body ? JSON.parse(options.body) : null });
+    return response(options.method === "POST" ? 201 : 200, { ok: true, items: [], channels: {} }, {
+      "Cache-Control": "private, no-store"
+    });
+  });
+  const matchId = "11111111-1111-4111-8111-111111111111";
+  const messageId = "22222222-2222-4222-8222-222222222222";
+  await client.getMatchCommunication(matchId);
+  await client.listMatchMessages(matchId, "signed-chat-cursor", 20);
+  await client.sendMatchMessage(matchId, "Vamos às 19h?", "send-chat-0001");
+  await client.markMatchMessagesRead(matchId, messageId, "read-chat-0001");
+  await client.reportMatchMessage(matchId, messageId, "spam", "report-chat-0001");
+  assert.deepEqual(calls.map(call => call.url), [
+    `https://api.example.invalid/me/time/amistosos/${matchId}/comunicacao`,
+    `https://api.example.invalid/me/time/amistosos/${matchId}/mensagens?cursor=signed-chat-cursor&limit=20`,
+    `https://api.example.invalid/me/time/amistosos/${matchId}/mensagens`,
+    `https://api.example.invalid/me/time/amistosos/${matchId}/mensagens/lidas`,
+    `https://api.example.invalid/me/time/amistosos/${matchId}/mensagens/${messageId}/denunciar`
+  ]);
+  assert.deepEqual(calls[2].body, { texto: "Vamos às 19h?" });
+  assert.equal(calls[2].options.headers.get("Idempotency-Key"), "send-chat-0001");
+  assert.deepEqual(calls[3].body, { ultima_mensagem_id: messageId });
+  assert.deepEqual(calls[4].body, { categoria: "spam" });
+  assert.equal(JSON.stringify(calls.map(call => call.options.headers)).includes("Vamos às 19h"), false);
+});
+
 test("real client preserves pagination and maps session, conflict and API outage safely", async () => {
   const paths = [];
   const client = loadClient(async url => {

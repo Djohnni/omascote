@@ -27,10 +27,13 @@
     filters: { radiusKm: null, modality: "", category: "Todas" },
     invitationBox: "entrada",
     whatsappUrl: null,
+    communication: null,
+    reportMessageId: null,
     traces: []
   };
   let returnFocus = null;
   let backgroundDialogs = [];
+  let chatRefreshTimer = null;
 
   function token() {
     try { return localStorage.getItem("omascote_token") || ""; }
@@ -72,6 +75,21 @@
   const teamPublicId = item => teamOf(item)?.public_id || item?.public_id || item?.team_public_id || item?.opponent_public_id || "";
   const matchState = item => item?.state || item?.occurrence_state || "scheduled";
   const resultState = item => item?.result?.state || item?.result_state || "empty";
+  const matchStateLabel = item => ({
+    scheduled: "Agendada",
+    waiting_confirmation: "Aguardando",
+    played: "Realizada",
+    cancelled: "Cancelada"
+  })[matchState(item)] || "Agendada";
+  const resultStateLabel = item => ({
+    empty: "Sem placar",
+    waiting_other: "Aguardando placar",
+    divergent: "Placar divergente",
+    verified: "Placar confirmado",
+    invalidated: "Placar invalidado"
+  })[resultState(item)] || "Sem placar";
+  const unreadLabel = count => `${count} ${Number(count) === 1 ? "nova" : "novas"}`;
+  const unreadMessageLabel = count => `${count} ${Number(count) === 1 ? "não lida" : "não lidas"}`;
   const officialScore = item => item?.result?.placar_oficial || item?.official_score || null;
   const scoreLabel = item => {
     const score = officialScore(item);
@@ -115,6 +133,13 @@
   const teamCrest = item => crestUrl(item)
     ? `<img src="${esc(crestUrl(item))}" alt="" loading="lazy">`
     : `<span>${esc(initials(teamName(item)))}</span>`;
+
+  function safeChannelUrl(value, host) {
+    try {
+      const parsed = new URL(String(value || ""));
+      return parsed.protocol === "https:" && parsed.hostname === host ? parsed.href : "";
+    } catch { return ""; }
+  }
 
   const pendingLabels = Object.freeze({
     radar_profile_not_created: "Cadastro pendente",
@@ -298,7 +323,7 @@
   function renderMatches() {
     const items = list(state.data?.items);
     return shell(`${heading("Partidas", "Meus amistosos", "Contato só após aceite.")}
-      ${items.length ? `<section class="radar-live__list">${items.map((item, index) => `<article class="radar-live__card"><div class="radar-live__card-top"><div><strong>${esc(teamName(item))}</strong><p>${dateLabel(item.scheduled_at)} · ${esc(matchState(item))}</p></div>${scoreLabel(item) ? `<strong class="radar-live__score">${esc(scoreLabel(item))}</strong>` : chip(resultState(item) === "empty" ? "sem placar" : resultState(item))}</div><div class="radar-live__actions">${button("Abrir partida", "open-match", "", `data-index="${index}"`)}</div></article>`).join("")}</section>` : stateCard("⚽", "Nenhuma partida", "Aceite um convite primeiro.")}`);
+      ${items.length ? `<section class="radar-live__list">${items.map((item, index) => `<article class="radar-live__card"><div class="radar-live__card-top"><div><strong>${esc(teamName(item))}</strong><p>${dateLabel(item.scheduled_at)} · ${esc(matchStateLabel(item))}</p></div>${scoreLabel(item) ? `<strong class="radar-live__score">${esc(scoreLabel(item))}</strong>` : chip(resultStateLabel(item))}</div><div class="radar-live__actions">${button("Abrir partida", "open-match", "", `data-index="${index}"`)}</div></article>`).join("")}</section>` : stateCard("⚽", "Nenhuma partida", "Aceite um convite primeiro.")}`);
   }
 
   function renderMatchDetail() {
@@ -309,13 +334,43 @@
     const myConfirmed = item.confirmation?.by_me || item.occurrence?.my_team_confirmed || item.my_team_confirmed;
     const result = resultState(item);
     const score = scoreLabel(item);
+    const communication = state.communication;
+    const channels = communication?.channels || {};
+    const whatsapp = channels.whatsapp?.available
+      ? safeChannelUrl(channels.whatsapp.url, "wa.me") : "";
+    const instagram = channels.instagram?.available
+      ? safeChannelUrl(channels.instagram.url, "www.instagram.com") : "";
+    const combine = communication ? `<section class="radar-live__combine" aria-labelledby="radarCombineTitle">
+      <div class="radar-live__card-top"><div><strong id="radarCombineTitle">Combinar partida</strong><p>${communication.can_send ? "Escolha um canal" : "Envio pausado"}</p></div>${channels.internal?.unread ? chip(unreadLabel(channels.internal.unread), "warn") : chip("Privado", "ok")}</div>
+      <div class="radar-live__channel-list">
+        ${whatsapp ? `<a class="radar-live__channel radar-live__channel--primary" href="${esc(whatsapp)}" target="_blank" rel="noopener noreferrer"><b>◉</b><span><strong>WhatsApp</strong><small>Mensagem pronta</small></span><i>↗</i></a>` : ""}
+        ${instagram ? `<a class="radar-live__channel${whatsapp ? "" : " radar-live__channel--primary"}" href="${esc(instagram)}" target="_blank" rel="noopener noreferrer"><b>◎</b><span><strong>Instagram</strong><small>@${esc(channels.instagram.handle)} · ${channels.instagram.verified ? "Verificado" : "Não verificado"}</small></span><i>↗</i></a>` : ""}
+        <button class="radar-live__channel${!whatsapp && !instagram ? " radar-live__channel--primary" : ""}" type="button" data-action="open-chat"><b>●</b><span><strong>Chat do Radar</strong><small>${channels.internal?.unread ? unreadMessageLabel(channels.internal.unread) : "Sempre disponível"}</small></span><i>›</i></button>
+      </div>
+    </section>` : "";
     return shell(`${heading("Partida", teamName(item), dateLabel(item.scheduled_at))}
-      <section class="radar-live__hero"><div class="radar-live__hero-row"><div><strong>${esc(matchState(item))}</strong><small>${contact ? `Contato: ${esc(contact.value || contact)}` : "Contato protegido"}</small></div>${score ? `<strong class="radar-live__number">${esc(score)}</strong>` : chip(result, verified ? "ok" : "warn")}</div>${score ? `<div class="radar-live__chips">${chip("Placar oficial", "ok")}</div>` : ""}</section>
+      <section class="radar-live__hero"><div class="radar-live__hero-row"><div><strong>${esc(matchStateLabel(item))}</strong><small>${contact ? "Contato liberado" : "Contato protegido"}</small></div>${score ? `<strong class="radar-live__number">${esc(score)}</strong>` : chip(resultStateLabel(item), verified ? "ok" : "warn")}</div>${score ? `<div class="radar-live__chips">${chip("Placar oficial", "ok")}</div>` : ""}</section>
+      ${combine}
       <div class="radar-live__actions">${!played && !myConfirmed ? button("Confirmar realização", "confirm-occurrence") : ""}${played && result === "empty" ? button("Informar placar", "show-score") : ""}${played && result === "waiting_other" && !item.result?.meu_placar ? button("Confirmar placar", "confirm-score") : ""}${played && verified ? button("Avaliar adversário", "show-review") : ""}${played && ["verified", "divergent"].includes(result) ? button("Contestar", "show-dispute", "ghost") : ""}${button("Denunciar partida", "show-report-match", "ghost")}</div>
       <form class="radar-live__form" data-form="score" hidden><div class="radar-live__fields"><label class="radar-live__field"><span>Meu time</span><input name="mine" type="number" min="0" max="99" value="3" required></label><label class="radar-live__field"><span>Adversário</span><input name="other" type="number" min="0" max="99" value="1" required></label></div><div class="radar-live__form-actions">${formButton("Enviar placar")}</div></form>
       <form class="radar-live__form" data-form="review" hidden><div class="radar-live__fields">${["pontualidade", "organizacao", "comunicacao", "fair_play"].map(name => `<label class="radar-live__field"><span>${esc(name.replace("_", " "))}</span><select name="${name}"><option>5</option><option>4</option><option>3</option><option>2</option><option>1</option></select></label>`).join("")}<label class="radar-live__field"><span>Jogaria novamente</span><select name="jogaria"><option value="true">Sim</option><option value="false">Não</option></select></label></div><div class="radar-live__form-actions">${formButton("Enviar avaliação")}</div></form>
       <form class="radar-live__form" data-form="dispute" hidden><label class="radar-live__field"><span>Motivo</span><select name="reason"><option value="score_incorrect">Placar incorreto</option><option value="identity_fraud">Identidade</option><option value="other">Outro</option></select></label><div class="radar-live__form-actions">${formButton("Enviar contestação")}</div></form>
       <form class="radar-live__form" data-form="report-match" hidden><label class="radar-live__field"><span>Motivo</span><select name="category"><option value="unsafe_conduct">Conduta insegura</option><option value="harassment">Assédio</option><option value="spam">Spam</option><option value="other">Outro</option></select></label><div class="radar-live__form-actions">${formButton("Enviar denúncia")}</div></form>`);
+  }
+
+  function renderChat() {
+    const messages = list(state.data?.items);
+    const canSend = state.data?.can_send !== false;
+    return shell(`${heading("Partida", "Chat do Radar", teamName(state.selected))}
+      <div class="radar-live__chips">${chip(`${messages.length} ${messages.length === 1 ? "mensagem" : "mensagens"}`)}${state.data?.unread ? chip(unreadLabel(state.data.unread), "warn") : chip("Em dia", "ok")}</div>
+      <section class="radar-live__chat" aria-label="Mensagens da partida">${messages.length ? messages.map(message => `<article class="radar-live__message${message.mine ? " radar-live__message--mine" : ""}">
+        <strong>${esc(message.mine ? "Seu time" : message.sender?.name || "Adversário")}</strong>
+        <p>${message.removed ? "Mensagem removida" : esc(message.texto)}</p>
+        <small>${dateLabel(message.created_at)}</small>
+        ${!message.mine && !message.removed ? `<button type="button" data-action="show-report-message" data-message-id="${esc(message.message_id)}">Denunciar</button>` : ""}
+      </article>`).join("") : stateCard("●", "Comece a conversa", "Canal privado da partida.")}</section>
+      ${state.reportMessageId ? `<form class="radar-live__form" data-form="report-message"><label class="radar-live__field"><span>Motivo</span><select name="category"><option value="harassment">Assédio</option><option value="spam">Spam</option><option value="inappropriate_content">Conteúdo impróprio</option><option value="unsafe_conduct">Conduta insegura</option><option value="other">Outro</option></select></label><div class="radar-live__form-actions">${formButton("Enviar denúncia")}</div></form>` : ""}
+      ${canSend ? `<form class="radar-live__chat-form" data-form="chat"><label><span class="radar-sr-only">Mensagem</span><textarea name="texto" maxlength="1000" rows="2" placeholder="Escreva uma mensagem" required></textarea></label>${formButton("Enviar")}</form>` : stateCard("🔒", "Envio pausado", "O histórico continua visível.")}`);
   }
 
   function renderHistory() {
@@ -396,6 +451,7 @@
         "invitation-detail": renderInvitationDetail,
         matches: renderMatches,
         "match-detail": renderMatchDetail,
+        chat: renderChat,
         history: renderHistory,
         reviews: renderReviews,
         reputation: renderReputation,
@@ -407,10 +463,32 @@
       };
       root.innerHTML = (views[state.view] || renderHome)();
     }
-    requestAnimationFrame(() => document.getElementById("radarLiveMain")?.focus({ preventScroll: true }));
+    if (!root.contains(document.activeElement)) {
+      requestAnimationFrame(() => document.getElementById("radarLiveMain")?.focus({ preventScroll: true }));
+    }
+  }
+
+  function stopChatRefresh() {
+    if (chatRefreshTimer) window.clearInterval(chatRefreshTimer);
+    chatRefreshTimer = null;
+  }
+
+  function startChatRefresh() {
+    stopChatRefresh();
+    chatRefreshTimer = window.setInterval(async () => {
+      if (state.view !== "chat" || state.loading || state.busy || document.hidden) return;
+      if (root.querySelector('[data-form="chat"] textarea') === document.activeElement) return;
+      try {
+        state.data = payload(await api.listMatchMessages(idOf(state.selected)));
+        render();
+      } catch (error) {
+        if (error?.status === 401) { state.error = error; stopChatRefresh(); render(); }
+      }
+    }, 8000);
   }
 
   function closeRadar() {
+    stopChatRefresh();
     state.open = false;
     root.hidden = true;
     document.body.style.overflow = "";
@@ -465,6 +543,19 @@
     if (view === "search") return payload(await api.listNearbyTeams(state.filters));
     if (view === "invitations") return payload(await api.listInvitations(state.invitationBox));
     if (view === "matches") return payload(await api.listMatches("todas"));
+    if (view === "chat") {
+      const messages = payload(await api.listMatchMessages(idOf(state.selected)));
+      const lastUnread = [...list(messages.items)].reverse().find(item => !item.mine);
+      if (messages.unread > 0 && lastUnread?.message_id) {
+        try {
+          const read = payload(await api.markMatchMessagesRead(idOf(state.selected), lastUnread.message_id));
+          messages.unread = Number(read.unread || 0);
+        } catch (error) {
+          if (error?.status === 401) throw error;
+        }
+      }
+      return messages;
+    }
     if (view === "history") return payload(await api.listMatchHistory({ periodo: "all", situacao: "all" }));
     if (view === "reviews") return payload(await api.listPendingEvaluations());
     if (view === "reputation") return payload(await api.getOwnReputation());
@@ -505,6 +596,8 @@
     } finally {
       state.loading = false;
       render();
+      if (state.view === "chat") startChatRefresh();
+      else stopChatRefresh();
     }
   }
 
@@ -535,6 +628,12 @@
       const response = await api.getMatch(idOf(item));
       state.selected = payload(response).match || payload(response);
       state.selectedEtag = response.etag || etagOf(state.selected);
+      state.communication = null;
+      try {
+        state.communication = payload(await api.getMatchCommunication(idOf(state.selected)));
+      } catch (communicationError) {
+        if (![403, 404, 503].includes(communicationError?.status)) throw communicationError;
+      }
       state.error = null;
     } catch (error) { state.error = error; }
     state.loading = false;
@@ -587,10 +686,18 @@
       closeRadar(); return;
     }
     if (action === "back") {
+      if (state.view === "chat") { stopChatRefresh(); state.reportMessageId = null; }
       const previous = state.stack.pop() || "home";
       await load(previous, { replace: true }); return;
     }
     if (action === "refresh") { await load(state.view, { replace: true }); return; }
+    if (action === "open-chat") { state.reportMessageId = null; await load("chat"); return; }
+    if (action === "show-report-message") {
+      state.reportMessageId = target.dataset.messageId || null;
+      render();
+      requestAnimationFrame(() => root.querySelector('[data-form="report-message"] select')?.focus());
+      return;
+    }
     if (action === "toggle-radar-visibility") {
       const profile = state.data?.profile || {};
       await mutate(() => api.updateRadarProfile(
@@ -722,6 +829,11 @@
     }), "reviews");
     if (form.dataset.form === "dispute") await mutate(() => api.disputeMatchResult(idOf(state.selected), values.reason, "Contestação local estruturada"), "safety");
     if (form.dataset.form === "report-match") await mutate(() => api.reportRadarMatch(idOf(state.selected), values.category, "Denúncia local estruturada"), "safety");
+    if (form.dataset.form === "chat") await mutate(() => api.sendMatchMessage(idOf(state.selected), values.texto), "chat");
+    if (form.dataset.form === "report-message") await mutate(async () => {
+      await api.reportMatchMessage(idOf(state.selected), state.reportMessageId, values.category);
+      state.reportMessageId = null;
+    }, "chat");
     if (form.dataset.form === "block") await mutate(() => api.blockRadarTeam(values.team, values.reason), "safety");
     if (form.dataset.form === "report-team") await mutate(() => api.reportRadarTeam(values.team, values.category, "Denúncia local estruturada"), "safety");
     if (form.dataset.form === "verification-approve") await mutate(() => api.approveInstagramVerification(

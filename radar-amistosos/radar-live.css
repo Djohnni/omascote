@@ -202,6 +202,29 @@
 .radar-live__empty span { display: block; margin-top: 5px; color: #9ca3af; font-size: 10px; }
 .radar-live__error { border-color: rgba(248, 113, 113, .35); }
 .radar-live__trace { margin-top: 14px; color: #737b88; font-size: 8px; text-align: center; }
+.radar-sr-only { position: absolute !important; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; }
+
+.radar-live__combine { display: grid; gap: 10px; margin-top: 12px; padding: 14px; border: 1px solid #343942; border-radius: 16px; background: #101318; }
+.radar-live__combine > .radar-live__card-top p { margin: 4px 0 0; color: #9ca3af; font-size: 10px; }
+.radar-live__channel-list { display: grid; gap: 7px; }
+.radar-live__channel { width: 100%; min-height: 58px; display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 10px; padding: 10px 12px; border: 1px solid #353b45; border-radius: 13px; color: #f8fafc; text-align: left; text-decoration: none; background: #171a20; }
+.radar-live__channel--primary { border-color: #facc15; background: #201d0e; }
+.radar-live__channel > b { width: 35px; height: 35px; display: grid; place-items: center; border-radius: 11px; color: #facc15; background: rgba(250, 204, 21, .1); font-size: 18px; }
+.radar-live__channel strong, .radar-live__channel small { display: block; }
+.radar-live__channel strong { font-size: 12px; }
+.radar-live__channel small { margin-top: 2px; color: #9ca3af; font-size: 9px; }
+.radar-live__channel i { color: #fde68a; font-size: 19px; font-style: normal; }
+
+.radar-live__chat { min-height: 240px; display: flex; flex-direction: column; gap: 8px; padding: 12px; border: 1px solid #292e36; border-radius: 16px; background: #0d0f13; }
+.radar-live__message { width: min(88%, 520px); align-self: flex-start; padding: 10px 12px; border: 1px solid #303640; border-radius: 14px 14px 14px 4px; background: #171b21; overflow-wrap: anywhere; }
+.radar-live__message--mine { align-self: flex-end; border-color: rgba(250, 204, 21, .35); border-radius: 14px 14px 4px 14px; background: #201d0e; }
+.radar-live__message strong { font-size: 9px; color: #fde68a; }
+.radar-live__message p { margin: 5px 0; color: #f8fafc; font-size: 12px; line-height: 1.4; white-space: pre-wrap; }
+.radar-live__message small { color: #858e9b; font-size: 8px; }
+.radar-live__message button { float: right; padding: 2px 0; border: 0; color: #9ca3af; background: transparent; font-size: 8px; text-decoration: underline; }
+.radar-live__chat-form { position: sticky; bottom: 0; display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: end; gap: 8px; margin-top: 10px; padding: 10px; border: 1px solid #343942; border-radius: 15px; background: #101318; }
+.radar-live__chat-form label { min-width: 0; }
+.radar-live__chat-form textarea { width: 100%; min-height: 44px; max-height: 126px; resize: vertical; padding: 10px; border: 1px solid #353b45; border-radius: 10px; color: #f8fafc; background: #080a0d; font-size: 12px; }
 
 @media (min-width: 900px) {
   .radar-live { padding: 24px; }

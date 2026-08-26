@@ -28,7 +28,35 @@ test("real mode uses the API as its Radar data source", () => {
   assert.match(live, /api\.submitMatchResult/);
   assert.match(live, /api\.submitMatchEvaluation/);
   assert.match(live, /api\.resolveModerationCase/);
+  assert.match(live, /api\.getMatchCommunication/);
+  assert.match(live, /api\.listMatchMessages/);
+  assert.match(live, /api\.sendMatchMessage/);
   assert.doesNotMatch(live, /localStorage\.setItem|localStorage\.removeItem/);
+});
+
+test("match center offers WhatsApp, Instagram and a private internal chat in safe order", () => {
+  const whatsapp = live.indexOf("<strong>WhatsApp</strong>");
+  const instagram = live.indexOf("<strong>Instagram</strong>");
+  const internal = live.indexOf("<strong>Chat do Radar</strong>");
+  assert.equal(whatsapp >= 0 && instagram > whatsapp && internal > instagram, true);
+  assert.match(live, /Combinar partida/);
+  assert.match(live, /channels\.instagram\.verified/);
+  assert.match(live, /Sempre disponível/);
+  assert.match(live, /safeChannelUrl\(channels\.whatsapp\.url, "wa\.me"\)/);
+  assert.match(live, /safeChannelUrl\(channels\.instagram\.url, "www\.instagram\.com"\)/);
+  assert.match(live, /rel="noopener noreferrer"/);
+  assert.doesNotMatch(live, /innerHTML\s*\+=\s*message\.texto/);
+});
+
+test("private chat supports unread state, refresh, reports and accessible short copy", () => {
+  assert.match(live, /maxlength="1000"/);
+  assert.match(live, /data-action="show-report-message"/);
+  assert.match(live, /api\.markMatchMessagesRead/);
+  assert.match(live, /api\.reportMatchMessage/);
+  assert.match(live, /window\.setInterval/);
+  assert.match(live, /document\.hidden/);
+  assert.match(live, /aria-label="Mensagens da partida"/);
+  assert.match(live, /O histórico continua visível/);
 });
 
 test("first access automatically reconciles the active team without a second onboarding", () => {

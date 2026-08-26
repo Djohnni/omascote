@@ -268,6 +268,24 @@
       listMatchHistory: (filters) => request(buildMatchHistoryPath(filters)),
       getMatchHistoryAgainst: (opponentPublicId, filters) => request(buildMatchHistoryPath(filters, opponentPublicId)),
       getMatch: (id) => request(safeOpaquePath(ENDPOINTS.matches, id)),
+      getMatchCommunication: (id) => request(safeOpaquePath(ENDPOINTS.matches, id, "/comunicacao")),
+      listMatchMessages: (id, cursor, limit) => {
+        const parameters = new URLSearchParams();
+        if (cursor) parameters.set("cursor", String(cursor));
+        if (Number.isInteger(Number(limit)) && Number(limit) > 0) parameters.set("limit", String(limit));
+        const query = parameters.toString();
+        return request(`${safeOpaquePath(ENDPOINTS.matches, id, "/mensagens")}${query ? `?${query}` : ""}`);
+      },
+      sendMatchMessage: (id, text, idempotencyKey) => request(safeOpaquePath(ENDPOINTS.matches, id, "/mensagens"), {
+        method: "POST", body: { texto: text }, idempotent: true, idempotencyKey
+      }),
+      markMatchMessagesRead: (id, messageId, idempotencyKey) => request(safeOpaquePath(ENDPOINTS.matches, id, "/mensagens/lidas"), {
+        method: "POST", body: { ultima_mensagem_id: messageId }, idempotent: true, idempotencyKey
+      }),
+      reportMatchMessage: (id, messageId, category, idempotencyKey) => request(
+        safeOpaquePath(ENDPOINTS.matches, id, `/mensagens/${encodeURIComponent(messageId)}/denunciar`),
+        { method: "POST", body: { categoria: category }, idempotent: true, idempotencyKey }
+      ),
       confirmMatchOccurrence: (id, etag, idempotencyKey) => request(safeOpaquePath(ENDPOINTS.matches, id, "/confirmar-realizacao"), {
         method: "POST", body: {}, etag, idempotent: true, idempotencyKey
       }),
