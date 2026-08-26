@@ -9,6 +9,7 @@
     verification: "/me/time/verificacao",
     startInstagramVerification: "/me/time/verificacoes/instagram",
     confirmInstagramVerification: "/me/time/verificacoes/instagram/confirmar",
+    adminInstagramVerifications: "/admin/radar/verificacoes",
     availabilities: "/me/time/amistosos/disponibilidades",
     nearbyTeams: "/amistosos/times-proximos",
     invitations: "/amistosos/convites",
@@ -219,6 +220,20 @@
       confirmInstagramVerification: (values, etag, idempotencyKey) => request(ENDPOINTS.confirmInstagramVerification, {
         method: "POST", body: values, etag, idempotent: true, idempotencyKey
       }),
+      listInstagramVerifications: () => request(ENDPOINTS.adminInstagramVerifications),
+      approveInstagramVerification: (id, observedCode, idempotencyKey) => request(
+        safeOpaquePath(ENDPOINTS.adminInstagramVerifications, id, "/aprovar"),
+        { method: "POST", body: { observed_code: observedCode }, idempotent: true, idempotencyKey }
+      ),
+      rejectInstagramVerification: (id, reasonCode, notes, idempotencyKey) => request(
+        safeOpaquePath(ENDPOINTS.adminInstagramVerifications, id, "/rejeitar"),
+        {
+          method: "POST",
+          body: { reason_code: reasonCode, notes: String(notes || "").trim() || undefined },
+          idempotent: true,
+          idempotencyKey
+        }
+      ),
       listAvailabilities: (filters) => {
         const input = filters || {};
         const parameters = new URLSearchParams();

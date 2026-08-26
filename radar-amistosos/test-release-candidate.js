@@ -69,6 +69,22 @@ test("first access renders onboarding before loading notifications", () => {
   assert.doesNotMatch(live, /RADAR_CITY_NOT_SUPPORTED/);
 });
 
+test("live Instagram verification requires owner proof and independent review", () => {
+  assert.match(live, /Verificar Instagram/);
+  assert.match(live, /api\.getVerification\(\)/);
+  assert.match(live, /api\.startInstagramVerification/);
+  assert.match(live, /verification_id: verification\.verification_id/);
+  assert.match(live, /Já coloquei na bio/);
+  assert.match(live, /A aprovação é manual/);
+  assert.match(live, /api\.listInstagramVerifications/);
+  assert.match(live, /api\.approveInstagramVerification/);
+  assert.match(live, /Código observado/);
+  assert.match(live, /api\.rejectInstagramVerification/);
+  assert.match(live, /state\.verificationChallenge = null/);
+  assert.match(live, /if \(error\?\.status !== 403\) throw error/);
+  assert.doesNotMatch(live, /verificad[oa] automaticamente/i);
+});
+
 test("modal supports keyboard containment, escape and focus restoration", () => {
   assert.match(live, /role="dialog" aria-modal="true" aria-labelledby="radarLiveTitle"/);
   assert.match(live, /aria-live="polite"/);

@@ -121,6 +121,38 @@ test("real client preserves pagination and maps session, conflict and API outage
   assert.equal(paths[0].endsWith("/me/notificacoes?cursor=signed_cursor"), true);
 });
 
+test("Instagram verification uses protected owner and administrator contracts", async () => {
+  const calls = [];
+  const client = loadClient(async (url, options) => {
+    calls.push({ url: String(url), options, body: options.body ? JSON.parse(options.body) : null });
+    return response(200, { ok: true, items: [] }, { "Cache-Control": "private, no-store" });
+  });
+  const verificationId = "22222222-2222-4222-8222-222222222222";
+
+  await client.getVerification();
+  await client.startInstagramVerification({ instagram_handle: "time.oficial" }, "verify-start-0001");
+  await client.confirmInstagramVerification({
+    verification_id: verificationId,
+    code: "MCFC-ABCD-2345"
+  }, 'W/"2"', "verify-confirm-0001");
+  await client.listInstagramVerifications();
+  await client.approveInstagramVerification(verificationId, "MCFC-ABCD-2345", "verify-approve-0001");
+  await client.rejectInstagramVerification(verificationId, "bio_code_missing", "", "verify-reject-0001");
+
+  assert.deepEqual(calls.map(call => call.url), [
+    "https://api.example.invalid/me/time/verificacao",
+    "https://api.example.invalid/me/time/verificacoes/instagram",
+    "https://api.example.invalid/me/time/verificacoes/instagram/confirmar",
+    "https://api.example.invalid/admin/radar/verificacoes",
+    `https://api.example.invalid/admin/radar/verificacoes/${verificationId}/aprovar`,
+    `https://api.example.invalid/admin/radar/verificacoes/${verificationId}/rejeitar`
+  ]);
+  assert.equal(calls[1].options.headers.get("Idempotency-Key"), "verify-start-0001");
+  assert.equal(calls[2].options.headers.get("If-Match"), 'W/"2"');
+  assert.equal(calls[4].body.observed_code, "MCFC-ABCD-2345");
+  assert.deepEqual(calls[5].body, { reason_code: "bio_code_missing" });
+});
+
 test("demo remains network-blocked and separate from the real client", async () => {
   global.window = { crypto: { randomUUID: () => "unused" }, setTimeout, clearTimeout, fetch: async () => { throw new Error("must not run"); } };
   delete require.cache[require.resolve("./radar-api.js")];

@@ -29,6 +29,7 @@
     onboardingMode: "choice",
     onboardingDraft: null,
     onboardingValues: null,
+    verificationChallenge: null,
     whatsappUrl: null,
     traces: []
   };
@@ -69,7 +70,7 @@
   const esc = value => String(value ?? "").replace(/[&<>"']/g, character => ({
     "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"
   })[character]);
-  const idOf = item => item?.public_id || item?.match_id || item?.invitation_id || item?.case_id || item?.id || "";
+  const idOf = item => item?.public_id || item?.match_id || item?.invitation_id || item?.verification_id || item?.case_id || item?.id || "";
   const versionOf = item => Number(item?.version || item?.case?.version || 1);
   const etagOf = item => item?.etag || `W/\"${versionOf(item)}\"`;
   const teamOf = item => item?.team || item?.opponent || item?.adversary || item?.opponent_team || {};
@@ -156,6 +157,27 @@
     return `Próximo: ${pendingLabels[missing[0]] || "completar cadastro"}`;
   }
 
+  function verificationCode(challenge) {
+    const segments = list(challenge?.segments)
+      .map(value => String(value || "").trim().toUpperCase())
+      .filter(Boolean);
+    const separator = typeof challenge?.separator === "string" && challenge.separator.length <= 3
+      ? challenge.separator
+      : "-";
+    return segments.join(separator);
+  }
+
+  function verificationStatusLabel(status) {
+    return ({
+      not_started: "Não iniciada",
+      challenge_issued: "Código ativo",
+      pending_review: "Em revisão",
+      approved: "Verificado",
+      rejected: "Rejeitado",
+      expired: "Expirado"
+    })[status] || "Pendente";
+  }
+
   function shell(content, options = {}) {
     const canBack = state.stack.length > 0;
     return `<section class="radar-live__panel" role="dialog" aria-modal="true" aria-labelledby="radarLiveTitle" aria-busy="${state.loading || state.busy ? "true" : "false"}">
@@ -202,6 +224,9 @@
     const notifications = list(info.notifications?.items);
     const pending = list(eligibility.missing).filter(item => item !== "radar_profile_not_created");
     const menu = [
+      ...(pending.includes("instagram_not_verified")
+        ? [["◎", "Verificar Instagram", "Comprovar perfil", "verification"]]
+        : []),
       ["⌚", "Disponibilidade", "Quando jogar", "availability"],
       ["⌖", "Times próximos", "Buscar adversário", "search"],
       ["➤", "Convites", "Entrada e saída", "invitations"],
@@ -218,6 +243,32 @@
       <div class="radar-live__chips">${chip(eligibility.eligible ? "Elegível" : "Configuração pendente", eligibility.eligible ? "ok" : "warn")}${chip(eligibility.discoverable ? "Visível" : "Oculto")}${pending.slice(0, 3).map(item => chip(pendingLabels[item] || item, "warn")).join("")}</div><small class="radar-live__next">${esc(pendingSummary(eligibility))}</small></section>
       <section class="radar-live__menu">${menu.map(item => `<button type="button" data-action="nav" data-view="${item[3]}"><i>${item[0]}</i><span><strong>${item[1]}</strong><small>${item[2]}</small></span><b>›</b></button>`).join("")}</section>
       <p class="radar-live__trace">${state.traces.filter(item => item.phase === "response").length} respostas da API nesta sessão</p>`, { wide: true });
+  }
+
+  function renderVerification() {
+    const info = state.data || {};
+    const verification = info.verification || null;
+    const profileVerified = info.instagram_verification_status === "verified";
+    const status = profileVerified ? "approved" : (verification?.status || "not_started");
+    const code = verificationCode(state.verificationChallenge);
+    const canStart = ["not_started", "expired", "rejected"].includes(status) ||
+      (status === "challenge_issued" && !code);
+
+    if (status === "approved") {
+      return shell(`${heading("Segurança", "Instagram verificado", "Controle confirmado.")}
+        ${stateCard("✓", "Perfil verificado", `@${info.instagram_handle || "instagram"}`)}`);
+    }
+    if (status === "pending_review") {
+      return shell(`${heading("Segurança", "Em revisão", "Aguarde a análise.")}
+        ${stateCard("⌛", "Código informado", "A aprovação é manual.")}`);
+    }
+
+    return shell(`${heading("Segurança", "Verificar Instagram", "Comprove o controle do perfil.")}
+      <section class="radar-live__hero"><div class="radar-live__hero-row"><div><strong>@${esc(info.instagram_handle || "instagram")}</strong><small>${esc(verificationStatusLabel(status))}</small></div>${chip(verificationStatusLabel(status), status === "rejected" ? "danger" : "warn")}</div></section>
+      ${code ? `<section class="radar-live__code-card"><small>Coloque na bio</small><output class="radar-live__code">${esc(code)}</output><span>Depois confirme abaixo.</span></section>
+        <form class="radar-live__form" data-form="verification-confirm"><label class="radar-live__field"><span>Código da bio</span><input name="code" maxlength="14" value="${esc(code)}" autocomplete="off" required></label><div class="radar-live__form-actions">${formButton("Já coloquei na bio")}</div></form>` : ""}
+      ${canStart ? `<div class="radar-live__actions">${button(status === "challenge_issued" ? "Gerar outro código" : "Gerar código", "start-verification")}</div>` : ""}
+      ${status === "challenge_issued" && !code ? `<p class="radar-live__lead">Gere outro código para exibir.</p>` : ""}`);
   }
 
   function renderOnboarding(info) {
@@ -408,7 +459,20 @@
 
   function renderModeration() {
     const items = list(state.data?.items);
-    return shell(`${heading("Admin", "Fila de moderação", "Somente funções ativas.")}${items.length ? `<section class="radar-live__list">${items.map((item, index) => `<article class="radar-live__card"><div class="radar-live__card-top"><div><strong>${esc(item.category)}</strong><p>${esc(item.type || item.case_type)} · ${esc(item.status)}</p></div>${chip(`v${versionOf(item)}`)}</div><div class="radar-live__actions">${button("Abrir caso", "open-case", "", `data-index="${index}"`)}</div></article>`).join("")}</section>` : stateCard("◆", "Fila vazia", "Nenhum caso pendente.")}`);
+    const verificationItems = list(state.data?.verification_items);
+    return shell(`${heading("Admin", "Fila de moderação", "Somente funções ativas.")}
+      ${verificationItems.length ? `<div class="radar-live__chips">${chip(`${verificationItems.length} Instagram`, "warn")}</div><section class="radar-live__list">${verificationItems.map((item, index) => `<article class="radar-live__card"><div class="radar-live__card-top"><div><strong>Instagram</strong><p>@${esc(item.instagram_handle)} · ${esc(verificationStatusLabel(item.status))}</p></div>${chip(`v${versionOf(item)}`)}</div><div class="radar-live__actions">${button("Revisar", "open-verification-review", "", `data-index="${index}"`)}</div></article>`).join("")}</section>` : ""}
+      ${items.length ? `<div class="radar-live__chips">${chip(`${items.length} casos`)}</div><section class="radar-live__list">${items.map((item, index) => `<article class="radar-live__card"><div class="radar-live__card-top"><div><strong>${esc(item.category)}</strong><p>${esc(item.type || item.case_type)} · ${esc(item.status)}</p></div>${chip(`v${versionOf(item)}`)}</div><div class="radar-live__actions">${button("Abrir caso", "open-case", "", `data-index="${index}"`)}</div></article>`).join("")}</section>` : ""}
+      ${!items.length && !verificationItems.length ? stateCard("◆", "Fila vazia", "Nenhum caso pendente.") : ""}`);
+  }
+
+  function renderVerificationReview() {
+    const item = state.selected || {};
+    return shell(`${heading("Moderação", "Revisar Instagram", "Confira a bio real.")}
+      <section class="radar-live__hero"><div class="radar-live__hero-row"><div><strong>@${esc(item.instagram_handle || "instagram")}</strong><small>${esc(verificationStatusLabel(item.status))}</small></div>${chip(`v${versionOf(item)}`)}</div></section>
+      <form class="radar-live__form" data-form="verification-approve"><label class="radar-live__field"><span>Código observado</span><input name="observed_code" maxlength="14" autocomplete="off" placeholder="MCFC-XXXX-XXXX" required></label><div class="radar-live__form-actions">${formButton("Aprovar verificação")}</div></form>
+      <div class="radar-live__actions">${button("Rejeitar", "show-verification-reject", "danger")}</div>
+      <form class="radar-live__form" data-form="verification-reject" hidden><label class="radar-live__field"><span>Motivo</span><select name="reason_code"><option value="bio_code_missing">Código ausente</option><option value="instagram_mismatch">Instagram diferente</option><option value="account_not_controlled">Controle não comprovado</option><option value="policy_violation">Violação de política</option></select></label><label class="radar-live__field"><span>Nota privada</span><textarea name="notes" maxlength="500"></textarea></label><div class="radar-live__form-actions">${formButton("Confirmar rejeição")}</div></form>`);
   }
 
   function renderCase() {
@@ -426,6 +490,7 @@
     else {
       const views = {
         home: renderHome,
+        verification: renderVerification,
         availability: renderAvailability,
         search: renderSearch,
         invite: renderInvite,
@@ -439,6 +504,7 @@
         notifications: renderNotifications,
         safety: renderSafety,
         moderation: renderModeration,
+        "verification-review": renderVerificationReview,
         "moderation-case": renderCase
       };
       root.innerHTML = (views[state.view] || renderHome)();
@@ -448,6 +514,7 @@
 
   function closeRadar() {
     state.open = false;
+    state.verificationChallenge = null;
     root.hidden = true;
     document.body.style.overflow = "";
     for (const item of backgroundDialogs) {
@@ -492,6 +559,7 @@
       const notifications = await api.listNotifications();
       return { ...firstAccess, notifications: payload(notifications) };
     }
+    if (view === "verification") return payload(await api.getVerification());
     if (view === "availability") return payload(await api.listAvailabilities());
     if (view === "search") return payload(await api.listNearbyTeams(state.filters));
     if (view === "invitations") return payload(await api.listInvitations(state.invitationBox));
@@ -506,7 +574,20 @@
       ]);
       return { blocks: payload(blocks), cases: payload(cases), teams: payload(teams) };
     }
-    if (view === "moderation") return payload(await api.listModerationQueue());
+    if (view === "moderation") {
+      const cases = await api.listModerationQueue();
+      let verificationItems = [];
+      try {
+        const verifications = await api.listInstagramVerifications();
+        verificationItems = list(payload(verifications).items);
+      } catch (error) {
+        if (error?.status !== 403) throw error;
+      }
+      return {
+        ...payload(cases),
+        verification_items: verificationItems
+      };
+    }
     return state.data;
   }
 
@@ -632,6 +713,7 @@
     state.open = true;
     state.stack = [];
     state.view = "home";
+    state.verificationChallenge = null;
     document.body.style.overflow = "hidden";
     await load("home", { replace: true });
   }));
@@ -663,6 +745,20 @@
         hideCitySuggestions(form);
         cityInput.focus();
       }
+      return;
+    }
+    if (action === "start-verification") {
+      if (state.busy) return;
+      const instagramHandle = String(state.data?.instagram_handle || "").trim();
+      if (!instagramHandle) return;
+      state.busy = true; state.error = null; render();
+      try {
+        const response = await api.startInstagramVerification({ instagram_handle: instagramHandle });
+        const result = payload(response);
+        state.data = { ...state.data, ...result };
+        state.verificationChallenge = result.challenge || null;
+      } catch (error) { state.error = error; }
+      finally { state.busy = false; render(); }
       return;
     }
     if (action === "nav") { await load(target.dataset.view); return; }
@@ -710,6 +806,11 @@
       state.selected = list(state.data?.items)[Number(target.dataset.index)]; state.selectedEtag = etagOf(state.selected);
       state.stack.push(state.view); state.view = "moderation-case"; render(); return;
     }
+    if (action === "open-verification-review") {
+      state.selected = list(state.data?.verification_items)[Number(target.dataset.index)];
+      state.stack.push(state.view); state.view = "verification-review"; render(); return;
+    }
+    if (action === "show-verification-reject") { revealForm("verification-reject"); return; }
     if (action === "assign-case") await mutate(async () => {
       const response = await api.assignModerationCase(idOf(state.selected), "triage", state.selectedEtag);
       state.selected = payload(response).case; state.selectedEtag = response.etag || etagOf(state.selected);
@@ -778,6 +879,14 @@
       accept_terms: values.accept_terms === "true"
     }), "home");
     }
+    if (form.dataset.form === "verification-confirm") await mutate(async () => {
+      const verification = state.data?.verification || {};
+      await api.confirmInstagramVerification({
+        verification_id: verification.verification_id,
+        code: values.code
+      }, etagOf(verification));
+      state.verificationChallenge = null;
+    }, "verification");
     if (form.dataset.form === "availability") await mutate(() => api.createAvailability({
       modality: values.modality, category: values.category,
       starts_at: toIso(values.starts_at), ends_at: toIso(values.ends_at),
@@ -812,6 +921,12 @@
     if (form.dataset.form === "report-match") await mutate(() => api.reportRadarMatch(idOf(state.selected), values.category, "Denúncia local estruturada"), "safety");
     if (form.dataset.form === "block") await mutate(() => api.blockRadarTeam(values.team, values.reason), "safety");
     if (form.dataset.form === "report-team") await mutate(() => api.reportRadarTeam(values.team, values.category, "Denúncia local estruturada"), "safety");
+    if (form.dataset.form === "verification-approve") await mutate(() => api.approveInstagramVerification(
+      idOf(state.selected), values.observed_code
+    ), "moderation");
+    if (form.dataset.form === "verification-reject") await mutate(() => api.rejectInstagramVerification(
+      idOf(state.selected), values.reason_code, values.notes
+    ), "moderation");
     if (form.dataset.form === "resolve-case") await mutate(() => api.resolveModerationCase(
       idOf(state.selected), values.decision, values.reason, state.selectedEtag
     ), "moderation");
