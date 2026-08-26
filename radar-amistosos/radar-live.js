@@ -103,6 +103,11 @@
     return local.toISOString().slice(0, 16);
   };
   const toIso = value => new Date(value).toISOString();
+  const validWhatsappInput = value => {
+    const compact = String(value || "").trim().replace(/[\s().-]/g, "");
+    if (/^\+[1-9]\d{7,14}$/.test(compact)) return true;
+    return /^\d{10,11}$/.test(compact);
+  };
   const chip = (label, tone = "") => `<span class="radar-live__chip${tone ? ` radar-live__chip--${tone}` : ""}">${esc(label)}</span>`;
   const button = (label, action, kind = "", extra = "") => `<button class="radar-live__button${kind ? ` radar-live__button--${kind}` : ""}" type="button" data-action="${esc(action)}" ${extra}>${esc(label)}</button>`;
   const formButton = label => `<button class="radar-live__button" type="submit" ${state.busy ? "disabled" : ""}>${esc(label)}</button>`;
@@ -257,7 +262,7 @@
         <label class="radar-live__field"><span>Raio</span><select name="travel_radius_km" required><option value="10">10 km</option><option value="25" selected>25 km</option><option value="50">50 km</option><option value="100">100 km</option></select></label>
         <label class="radar-live__field radar-live__field--wide"><span>Mando</span><select name="venue_preference" required><option value="either">Casa ou fora</option><option value="home">Mandante</option><option value="away">Visitante</option></select></label>
         <label class="radar-live__field radar-live__field--wide"><span>WhatsApp <small>opcional</small></span><input name="whatsapp" inputmode="tel" autocomplete="tel" maxlength="32" placeholder="(47) 99999-9999"></label>
-        <label class="radar-live__terms radar-live__field--wide"><input name="whatsapp_visible" type="checkbox" value="true"><span>Deixar visível para outros times</span></label>
+        <label class="radar-live__terms radar-live__field--wide"><input name="whatsapp_visible" type="checkbox" value="true" disabled><span>Deixar visível para outros times</span></label>
         <label class="radar-live__terms radar-live__field--wide"><input name="accept_terms" type="checkbox" value="true" required><span>Aceito os termos do Radar</span></label>
       </div><div class="radar-live__form-actions">${formButton("Confirmar cadastro")}</div></form>
       <button type="button" class="radar-live__text-button" data-action="onboarding-choice">Voltar ao início</button>`, { wide: true });
@@ -647,6 +652,15 @@
     }, "moderation");
   });
 
+  root.addEventListener("input", event => {
+    if (!event.target.matches('[name="whatsapp"]')) return;
+    const consent = event.target.form?.querySelector('[name="whatsapp_visible"]');
+    if (!consent) return;
+    const valid = validWhatsappInput(event.target.value);
+    consent.disabled = !valid;
+    if (!valid) consent.checked = false;
+  });
+
   root.addEventListener("submit", async event => {
     event.preventDefault();
     const form = event.target;
@@ -678,7 +692,7 @@
       travel_radius_km: Number(values.travel_radius_km),
       venue_preference: values.venue_preference,
       whatsapp: values.whatsapp || "",
-      whatsapp_visible: values.whatsapp_visible === "true",
+      whatsapp_visible: validWhatsappInput(values.whatsapp) && values.whatsapp_visible === "true",
       accept_terms: values.accept_terms === "true"
     }), "home");
     }

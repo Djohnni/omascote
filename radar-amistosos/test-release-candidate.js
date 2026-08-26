@@ -51,6 +51,10 @@ test("first access renders onboarding before loading notifications", () => {
   assert.match(live, /api\.getTeamWhatsapp/);
   assert.match(live, /item\.whatsapp_disponivel === true/);
   assert.match(live, /requestedWhatsappVisible|whatsapp_visible/);
+  assert.match(live, /name="whatsapp_visible"[^>]*disabled/);
+  assert.match(live, /consent\.disabled = !valid/);
+  assert.match(live, /if \(!valid\) consent\.checked = false/);
+  assert.match(live, /validWhatsappInput\(values\.whatsapp\) && values\.whatsapp_visible/);
   assert.match(live, /legacyCrest\(\)/);
   assert.match(live, /legacyFormDefaults\(\)/);
   assert.doesNotMatch(live, /name="city_ibge_code"[^>]*value="4209102"/);
