@@ -249,7 +249,9 @@
         <label class="radar-live__field"><span>Categoria</span><select name="category"><option>Todas</option><option${state.filters.category === "Livre" ? " selected" : ""}>Livre</option></select></label>
         <label class="radar-live__field"><span>Distância</span><select name="radiusKm"><option value="">Qualquer</option><option value="10">10 km</option><option value="25"${state.filters.radiusKm === 25 ? " selected" : ""}>25 km</option><option value="50"${state.filters.radiusKm === 50 ? " selected" : ""}>50 km</option></select></label>
       </div><div class="radar-live__form-actions">${formButton("Buscar times")}</div></form>
-      <div class="radar-live__toolbar"><strong>${items.length} encontrados</strong>${state.data?.page?.has_more ? chip("Mais resultados") : ""}</div>
+      <div class="radar-live__toolbar"><strong>${items.length} encontrados</strong>${state.data?.page?.has_more
+        ? button(state.busy ? "Carregando" : "Carregar mais", "load-more-teams", "ghost", state.busy ? "disabled" : "")
+        : ""}</div>
       ${items.length ? `<section class="radar-live__list">${items.map((item, index) => `<article class="radar-live__card"><div class="radar-live__card-top"><div class="radar-live__team"><div class="radar-live__crest">${teamCrest(item)}</div><div><strong>${esc(teamName(item))}</strong><p>${esc(item.location?.label || item.city || "Cidade não informada")} · ${esc(item.availability?.label || "Horário a combinar")}</p></div></div>${chip(item.instagram?.verified ? "✓ Verificado" : "Não verificado", item.instagram?.verified ? "ok" : "")}</div><div class="radar-live__chips">${chip(`${Number(item.statistics?.matches || 0)} jogos`)}${chip(`${Number(item.statistics?.wins || 0)}V · ${Number(item.statistics?.draws || 0)}E · ${Number(item.statistics?.losses || 0)}D`)}${chip(item.reputation?.label || (item.reputation?.overall ? `${item.reputation.overall} ★` : "Sem nota"))}</div><div class="radar-live__actions">${button("Convidar", "select-team", "", `data-index="${index}"`)}</div></article>`).join("")}</section>` : stateCard("⌖", "Nenhum time", "Retire os filtros e tente.")}`);
   }
 
@@ -598,6 +600,31 @@
       return;
     }
     if (action === "nav") { await load(target.dataset.view); return; }
+    if (action === "load-more-teams") {
+      const cursor = state.data?.page?.next_cursor;
+      if (!cursor || state.busy) return;
+      state.busy = true;
+      state.error = null;
+      render();
+      try {
+        const next = payload(await api.listNearbyTeams({ ...state.filters, cursor }));
+        const currentItems = list(state.data?.items);
+        const known = new Set(currentItems.map(item => String(item?.public_id || "")));
+        const newItems = list(next.items).filter(item => {
+          const id = String(item?.public_id || "");
+          if (!id || known.has(id)) return false;
+          known.add(id);
+          return true;
+        });
+        state.data = { ...next, items: [...currentItems, ...newItems] };
+      } catch (error) {
+        state.error = error;
+      } finally {
+        state.busy = false;
+        render();
+      }
+      return;
+    }
     if (action === "select-team") {
       state.selected = list(state.data?.items)[Number(target.dataset.index)];
       state.whatsappUrl = null;

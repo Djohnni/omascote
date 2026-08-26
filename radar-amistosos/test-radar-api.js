@@ -121,6 +121,28 @@ test("real client preserves pagination and maps session, conflict and API outage
   assert.equal(paths[0].endsWith("/me/notificacoes?cursor=signed_cursor"), true);
 });
 
+test("team discovery forwards the signed cursor without exposing ownership identifiers", async () => {
+  let captured;
+  const client = loadClient(async url => {
+    captured = String(url);
+    return response(200, { items: [], page: { has_more: false, next_cursor: null } });
+  });
+  await client.listNearbyTeams({
+    modality: "Society",
+    category: "Livre",
+    radiusKm: 50,
+    cursor: "signed-search-cursor"
+  });
+  const parsed = new URL(captured);
+  assert.equal(parsed.pathname, "/amistosos/times-proximos");
+  assert.equal(parsed.searchParams.get("cursor"), "signed-search-cursor");
+  assert.equal(parsed.searchParams.get("modality"), "society");
+  assert.equal(parsed.searchParams.get("category"), "Livre");
+  assert.equal(parsed.searchParams.get("radius_km"), "50");
+  assert.equal(parsed.searchParams.has("account_id"), false);
+  assert.equal(parsed.searchParams.has("team_id"), false);
+});
+
 test("Instagram verification uses protected owner and administrator contracts", async () => {
   const calls = [];
   const client = loadClient(async (url, options) => {

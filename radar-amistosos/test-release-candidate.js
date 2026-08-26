@@ -82,6 +82,18 @@ test("general search cards show optional-state fallbacks and use the opaque publ
   assert.doesNotMatch(live, /opponent_slug: teamSlug\(state\.selected\)/);
 });
 
+test("general search exposes real cursor pagination without duplicating cards", () => {
+  assert.match(live, /Carregar mais/);
+  assert.match(live, /data-action="\$\{esc\(action\)\}"/);
+  assert.match(live, /action === "load-more-teams"/);
+  assert.match(live, /page\?\.next_cursor/);
+  assert.match(live, /api\.listNearbyTeams\(\{ \.\.\.state\.filters, cursor \}\)/);
+  assert.match(live, /new Set\(currentItems\.map/);
+  assert.match(live, /known\.has\(id\)/);
+  assert.match(live, /items: \[\.\.\.currentItems, \.\.\.newItems\]/);
+  assert.doesNotMatch(live, /chip\("Mais resultados"\)/);
+});
+
 test("modal supports keyboard containment, escape and focus restoration", () => {
   assert.match(live, /role="dialog" aria-modal="true" aria-labelledby="radarLiveTitle"/);
   assert.match(live, /aria-live="polite"/);
