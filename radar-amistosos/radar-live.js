@@ -24,19 +24,13 @@
     data: null,
     selected: null,
     selectedEtag: null,
-    filters: { radiusKm: 25, modality: "Society", category: "Livre" },
+    filters: { radiusKm: null, modality: "", category: "Todas" },
     invitationBox: "entrada",
-    onboardingMode: "choice",
-    onboardingDraft: null,
-    onboardingValues: null,
-    verificationChallenge: null,
     whatsappUrl: null,
     traces: []
   };
   let returnFocus = null;
   let backgroundDialogs = [];
-  let citySuggestionTimer = null;
-  let citySuggestionSequence = 0;
 
   function token() {
     try { return localStorage.getItem("omascote_token") || ""; }
@@ -75,8 +69,7 @@
   const etagOf = item => item?.etag || `W/\"${versionOf(item)}\"`;
   const teamOf = item => item?.team || item?.opponent || item?.adversary || item?.opponent_team || {};
   const teamName = item => teamOf(item)?.name || teamOf(item)?.public_name || item?.opponent_name || item?.team_name || item?.name || "Time";
-  const teamPublicId = item => teamOf(item)?.public_id || item?.team_public_id || item?.opponent_public_id || "";
-  const teamSlug = item => teamOf(item)?.slug || teamOf(item)?.public_slug || item?.opponent_slug || "";
+  const teamPublicId = item => teamOf(item)?.public_id || item?.public_id || item?.team_public_id || item?.opponent_public_id || "";
   const matchState = item => item?.state || item?.occurrence_state || "scheduled";
   const resultState = item => item?.result?.state || item?.result_state || "empty";
   const officialScore = item => item?.result?.placar_oficial || item?.official_score || null;
@@ -107,14 +100,21 @@
     return local.toISOString().slice(0, 16);
   };
   const toIso = value => new Date(value).toISOString();
-  const validWhatsappInput = value => {
-    const compact = String(value || "").trim().replace(/[\s().-]/g, "");
-    if (/^\+[1-9]\d{7,14}$/.test(compact)) return true;
-    return /^\d{10,11}$/.test(compact);
-  };
   const chip = (label, tone = "") => `<span class="radar-live__chip${tone ? ` radar-live__chip--${tone}` : ""}">${esc(label)}</span>`;
   const button = (label, action, kind = "", extra = "") => `<button class="radar-live__button${kind ? ` radar-live__button--${kind}` : ""}" type="button" data-action="${esc(action)}" ${extra}>${esc(label)}</button>`;
   const formButton = label => `<button class="radar-live__button" type="submit" ${state.busy ? "disabled" : ""}>${esc(label)}</button>`;
+  const initials = value => String(value || "Time").trim().split(/\s+/).slice(0, 2).map(part => part[0] || "").join("").toUpperCase() || "T";
+  const crestUrl = item => {
+    try {
+      const raw = String(item?.crest_url || "").trim();
+      if (!raw) return "";
+      const parsed = new URL(raw, `${resolvedApiBase}/`);
+      return parsed.origin === resolvedApiBase ? parsed.href : "";
+    } catch { return ""; }
+  };
+  const teamCrest = item => crestUrl(item)
+    ? `<img src="${esc(crestUrl(item))}" alt="" loading="lazy">`
+    : `<span>${esc(initials(teamName(item)))}</span>`;
 
   const pendingLabels = Object.freeze({
     radar_profile_not_created: "Cadastro pendente",
@@ -130,41 +130,10 @@
     terms_not_accepted: "Aceitar termos"
   });
 
-  function legacyCrest() {
-    const avatar = document.getElementById("perfilTimePreviewAvatar");
-    const image = avatar?.querySelector("img");
-    const source = image?.currentSrc || image?.src || "";
-    if (source) return `<img src="${esc(source)}" alt="">`;
-    const initial = String(avatar?.textContent || "⚽").trim().slice(0, 1) || "⚽";
-    return `<span>${esc(initial)}</span>`;
-  }
-
-  function legacyFormDefaults() {
-    const location = String(document.getElementById("perfilTimePreviewLocal")?.textContent || "").trim();
-    const locationMatch = location.match(/^(.+?)\s*[-–]\s*([A-Za-z]{2})$/);
-    const instagram = String(document.getElementById("perfilTimePreviewInstagram")?.textContent || "")
-      .trim().replace(/^@/, "");
-    return Object.freeze({
-      city: locationMatch ? locationMatch[1].trim() : "",
-      state: locationMatch ? locationMatch[2].toUpperCase() : "",
-      instagram: instagram && instagram.toLowerCase() !== "instagram" ? instagram : ""
-    });
-  }
-
   function pendingSummary(eligibility) {
     const missing = list(eligibility?.missing).filter(item => item !== "radar_profile_not_created");
     if (!missing.length) return "Próximo: publicar horários";
     return `Próximo: ${pendingLabels[missing[0]] || "completar cadastro"}`;
-  }
-
-  function verificationCode(challenge) {
-    const segments = list(challenge?.segments)
-      .map(value => String(value || "").trim().toUpperCase())
-      .filter(Boolean);
-    const separator = typeof challenge?.separator === "string" && challenge.separator.length <= 3
-      ? challenge.separator
-      : "-";
-    return segments.join(separator);
   }
 
   function verificationStatusLabel(status) {
@@ -210,22 +179,23 @@
     const denied = error.status === 403;
     const unavailable = !error.status || error.status === 503;
     const title = session ? "Sessão expirada" : denied ? "Acesso negado" : unavailable ? "API indisponível" : "Não foi possível";
-    const manual = state.data?.profile === null
-      ? `<div class="radar-live__actions" style="justify-content:center">${button("Preencher manualmente", "onboarding-manual", "ghost")}</div>`
-      : "";
-    return shell(`${heading("Radar", title, error.message || "Tente novamente.")}${stateCard(session ? "⌛" : denied ? "🔒" : "!", title, error.code || "Erro seguro", !session && !denied)}${manual}`);
+    return shell(`${heading("Radar", title, error.message || "Tente novamente.")}${stateCard(session ? "⌛" : denied ? "🔒" : "!", title, error.code || "Erro seguro", !session && !denied)}`);
   }
 
   function renderHome() {
     const info = state.data || {};
-    if (info.profile === null) return renderOnboarding(info);
+    if (info.profile === null) {
+      return shell(`${heading("Radar", "Ativando seu time", "Tente novamente.")}${stateCard("↻", "Sincronizando", "Sem novo cadastro.", true)}`);
+    }
     const eligibility = info.eligibility || {};
     const profile = info.profile || {};
     const notifications = list(info.notifications?.items);
-    const pending = list(eligibility.missing).filter(item => item !== "radar_profile_not_created");
+    const pending = list(eligibility.missing).filter(item => ![
+      "radar_profile_not_created", "radar_profile_hidden"
+    ].includes(item));
     const menu = [
       ...(pending.includes("instagram_not_verified")
-        ? [["◎", "Verificar Instagram", "Comprovar perfil", "verification"]]
+        ? [["◎", "Selo do Instagram", "Melhoria opcional", "verification"]]
         : []),
       ["⌚", "Disponibilidade", "Quando jogar", "availability"],
       ["⌖", "Times próximos", "Buscar adversário", "search"],
@@ -238,96 +208,22 @@
       ["⚑", "Segurança", "Bloquear e denunciar", "safety"],
       ["◆", "Moderação", "Acesso por função", "moderation"]
     ];
-    return shell(`${heading("Meu time", "Encontrar amistoso", "Dados reais do Radar.")}
-      <section class="radar-live__hero"><div class="radar-live__hero-row"><div><strong>${esc(profile.public_name || info.legacy_profile?.nome_time || "Seu time")}</strong><small>${esc(profile.city_name || "Perfil Radar")}</small></div><strong class="radar-live__number">${eligibility.eligible ? "✓" : "!"}</strong></div>
-      <div class="radar-live__chips">${chip(eligibility.eligible ? "Elegível" : "Configuração pendente", eligibility.eligible ? "ok" : "warn")}${chip(eligibility.discoverable ? "Visível" : "Oculto")}${pending.slice(0, 3).map(item => chip(pendingLabels[item] || item, "warn")).join("")}</div><small class="radar-live__next">${esc(pendingSummary(eligibility))}</small></section>
+    return shell(`${heading("Meu time", "Encontrar amistoso", "Seu time já participa.")}
+      <section class="radar-live__hero"><div class="radar-live__hero-row"><div><strong>${esc(profile.public_name || info.legacy_profile?.nome_time || "Seu time")}</strong><small>${esc(profile.city_name || "Cidade não informada")}</small></div><strong class="radar-live__number">${eligibility.eligible ? "✓" : "!"}</strong></div>
+      <div class="radar-live__chips">${chip(eligibility.eligible ? "Participando" : "Indisponível", eligibility.eligible ? "ok" : "warn")}${chip(profile.radar_visible === false ? "Oculto" : "Visível", profile.radar_visible === false ? "warn" : "ok")}${pending.slice(0, 2).map(item => chip(pendingLabels[item] || item)).join("")}</div><div class="radar-live__actions">${button(profile.radar_visible === false ? "Mostrar meu time" : "Ocultar meu time do Radar", "toggle-radar-visibility", "ghost")}</div></section>
       <section class="radar-live__menu">${menu.map(item => `<button type="button" data-action="nav" data-view="${item[3]}"><i>${item[0]}</i><span><strong>${item[1]}</strong><small>${item[2]}</small></span><b>›</b></button>`).join("")}</section>
       <p class="radar-live__trace">${state.traces.filter(item => item.phase === "response").length} respostas da API nesta sessão</p>`, { wide: true });
   }
 
   function renderVerification() {
     const info = state.data || {};
-    const verification = info.verification || null;
     const profileVerified = info.instagram_verification_status === "verified";
-    const status = profileVerified ? "approved" : (verification?.status || "not_started");
-    const code = verificationCode(state.verificationChallenge);
-    const canStart = ["not_started", "expired", "rejected"].includes(status) ||
-      (status === "challenge_issued" && !code);
-
-    if (status === "approved") {
+    if (profileVerified) {
       return shell(`${heading("Segurança", "Instagram verificado", "Controle confirmado.")}
         ${stateCard("✓", "Perfil verificado", `@${info.instagram_handle || "instagram"}`)}`);
     }
-    if (status === "pending_review") {
-      return shell(`${heading("Segurança", "Em revisão", "Aguarde a análise.")}
-        ${stateCard("⌛", "Código informado", "A aprovação é manual.")}`);
-    }
-
-    return shell(`${heading("Segurança", "Verificar Instagram", "Comprove o controle do perfil.")}
-      <section class="radar-live__hero"><div class="radar-live__hero-row"><div><strong>@${esc(info.instagram_handle || "instagram")}</strong><small>${esc(verificationStatusLabel(status))}</small></div>${chip(verificationStatusLabel(status), status === "rejected" ? "danger" : "warn")}</div></section>
-      ${code ? `<section class="radar-live__code-card"><small>Coloque na bio</small><output class="radar-live__code">${esc(code)}</output><span>Depois confirme abaixo.</span></section>
-        <form class="radar-live__form" data-form="verification-confirm"><label class="radar-live__field"><span>Código da bio</span><input name="code" maxlength="14" value="${esc(code)}" autocomplete="off" required></label><div class="radar-live__form-actions">${formButton("Já coloquei na bio")}</div></form>` : ""}
-      ${canStart ? `<div class="radar-live__actions">${button(status === "challenge_issued" ? "Gerar outro código" : "Gerar código", "start-verification")}</div>` : ""}
-      ${status === "challenge_issued" && !code ? `<p class="radar-live__lead">Gere outro código para exibir.</p>` : ""}`);
-  }
-
-  function renderOnboarding(info) {
-    const eligibility = info.eligibility || {};
-    const legacy = info.legacy_profile || {};
-    const name = legacy.nome_time || document.getElementById("perfilTimePreviewNome")?.textContent || "Seu time";
-    const missing = list(eligibility.missing);
-    const defaults = legacyFormDefaults();
-    const suggestions = state.onboardingDraft?.suggestions || {};
-    const saved = state.onboardingValues || {};
-    const draftValue = field => suggestions[field]?.value;
-    const selectedModalities = Array.isArray(saved.modalities) ? saved.modalities : list(draftValue("modalities"));
-    const formDefaults = {
-      city: saved.city_name ?? draftValue("city_name") ?? defaults.city,
-      state: saved.state_code ?? draftValue("state_code") ?? defaults.state,
-      instagram: saved.instagram_handle ?? draftValue("instagram_handle") ?? defaults.instagram,
-      category: saved.category ?? list(draftValue("categories"))[0] ?? "Livre",
-      radius: saved.travel_radius_km || "25",
-      venue: saved.venue_preference || "either",
-      whatsapp: saved.whatsapp || "",
-      whatsappVisible: saved.whatsapp_visible === "true",
-      termsAccepted: saved.accept_terms === "true"
-    };
-    const cityInvalid = state.error?.code === "RADAR_CITY_INVALID";
-    const teamHeader = `<section class="radar-live__team"><div class="radar-live__crest">${legacyCrest()}</div><div><strong>${esc(name)}</strong><small>Nome e escudo do perfil</small></div>${chip("Novo", "warn")}</section>`;
-    if (state.onboardingMode === "choice") {
-      return shell(`${heading("Primeiro acesso", "Cadastrar no Radar", "Escolha como começar.")}${teamHeader}
-        <section class="radar-live__onboarding-choice">
-          <button type="button" class="radar-live__choice" data-action="onboarding-print"><b>▣</b><span><strong>Enviar print do Instagram</strong><small>Cadastro inteligente</small></span><i>›</i></button>
-          <button type="button" class="radar-live__choice radar-live__choice--secondary" data-action="onboarding-manual"><b>✎</b><span><strong>Preencher manualmente</strong><small>Cadastro rápido</small></span><i>›</i></button>
-        </section>`, { wide: true });
-    }
-    if (state.onboardingMode === "print") {
-      return shell(`${heading("Cadastro inteligente", "Enviar print", "PNG, JPEG ou WebP.")}${teamHeader}
-        <form class="radar-live__form" data-form="profile-print">
-          <label class="radar-live__upload"><input name="imagem" type="file" accept="image/png,image/jpeg,image/webp" required><b>▣</b><span><strong>Escolher imagem</strong><small>O arquivo será apagado</small></span></label>
-          <div class="radar-live__form-actions">${formButton("Analisar print")}</div>
-        </form><button type="button" class="radar-live__text-button" data-action="onboarding-manual">Preencher manualmente</button>`, { wide: true });
-    }
-    const reviewing = state.onboardingMode === "review";
-    return shell(`${heading(reviewing ? "Rascunho" : "Primeiro acesso", reviewing ? "Revise os dados" : "Cadastrar no Radar", reviewing ? "Corrija antes de confirmar." : "Complete para começar.")}
-      ${teamHeader}
-      ${reviewing ? `<div class="radar-live__review-banner"><b>✓</b><span><strong>Revise os dados</strong><small>Nada foi publicado</small></span></div>` : ""}
-      ${cityInvalid ? `<div class="radar-live__city-error" role="alert">Confira a cidade e a UF.</div>` : ""}
-      <div class="radar-live__chips">${missing.slice(0, 4).map(item => chip(pendingLabels[item] || item, "warn")).join("")}</div>
-      <form class="radar-live__form radar-live__onboarding" data-form="onboarding"><div class="radar-live__fields">
-        <label class="radar-live__field${cityInvalid ? " radar-live__field--invalid" : ""}"><span>Cidade</span><input name="city_name" maxlength="120" autocomplete="address-level2" value="${esc(formDefaults.city)}" placeholder="Sua cidade" aria-invalid="${cityInvalid}" required></label>
-        <label class="radar-live__field${cityInvalid ? " radar-live__field--invalid" : ""}"><span>UF</span><input name="state_code" maxlength="2" pattern="[A-Za-z]{2}" autocomplete="address-level1" value="${esc(formDefaults.state)}" placeholder="UF" aria-invalid="${cityInvalid}" required></label>
-        <div class="radar-live__city-suggestions radar-live__field--wide" role="listbox" aria-label="Sugestões de cidade" hidden></div>
-        <label class="radar-live__field radar-live__field--wide"><span>Instagram</span><input name="instagram_handle" maxlength="80" autocomplete="off" value="${esc(formDefaults.instagram)}" placeholder="@seutime" required></label>
-        <fieldset class="radar-live__modalities radar-live__field--wide"><legend>Modalidades <small>1 a 3</small></legend>${[["society","Society"],["futsal","Futsal"],["futebol_campo","Campo"]].map(([value,label], index) => `<label><input type="checkbox" name="modalities" value="${value}" ${(selectedModalities.includes(value) || (!selectedModalities.length && !reviewing && index === 0)) ? "checked" : ""}><span>${label}</span></label>`).join("")}</fieldset>
-        <label class="radar-live__field"><span>Categoria</span><input name="category" maxlength="40" value="${esc(formDefaults.category)}" required></label>
-        <label class="radar-live__field"><span>Raio</span><select name="travel_radius_km" required>${[10,25,50,100].map(value => `<option value="${value}"${String(value) === String(formDefaults.radius) ? " selected" : ""}>${value} km</option>`).join("")}</select></label>
-        <label class="radar-live__field radar-live__field--wide"><span>Mando</span><select name="venue_preference" required><option value="either"${formDefaults.venue === "either" ? " selected" : ""}>Casa ou fora</option><option value="home"${formDefaults.venue === "home" ? " selected" : ""}>Mandante</option><option value="away"${formDefaults.venue === "away" ? " selected" : ""}>Visitante</option></select></label>
-        <label class="radar-live__field radar-live__field--wide"><span>WhatsApp <small>opcional</small></span><input name="whatsapp" inputmode="tel" autocomplete="tel" maxlength="32" value="${esc(formDefaults.whatsapp)}" placeholder="(47) 99999-9999"></label>
-        <label class="radar-live__terms radar-live__field--wide"><input name="whatsapp_visible" type="checkbox" value="true"${validWhatsappInput(formDefaults.whatsapp) ? "" : " disabled"}${formDefaults.whatsappVisible ? " checked" : ""}><span>Deixar visível para o time adversário chamar no WhatsApp</span></label>
-        <label class="radar-live__terms radar-live__field--wide"><input name="accept_terms" type="checkbox" value="true"${formDefaults.termsAccepted ? " checked" : ""} required><span>Aceito os termos do Radar</span></label>
-      </div><div class="radar-live__form-actions">${formButton("Confirmar cadastro")}</div></form>
-      <button type="button" class="radar-live__text-button" data-action="onboarding-choice">Voltar ao início</button>`, { wide: true });
+    return shell(`${heading("Selo opcional", "Não verificado", "Seu time continua visível.")}
+      ${stateCard("◎", "Sem selo", "Busca e convites liberados.")}`);
   }
 
   function renderAvailability() {
@@ -347,14 +243,14 @@
 
   function renderSearch() {
     const items = list(state.data?.items);
-    return shell(`${heading("Radar", "Times próximos", "Somente perfis elegíveis.")}
+    return shell(`${heading("Radar", "Encontrar times", "Filtros são opcionais.")}
       <form class="radar-live__form" data-form="search"><div class="radar-live__fields">
-        <label class="radar-live__field"><span>Modalidade</span><select name="modality"><option${state.filters.modality === "Society" ? " selected" : ""}>Society</option><option>Futsal</option><option>Campo</option></select></label>
-        <label class="radar-live__field"><span>Categoria</span><select name="category"><option>Livre</option><option>Todas</option></select></label>
-        <label class="radar-live__field"><span>Distância</span><select name="radiusKm"><option value="10">10 km</option><option value="25"${state.filters.radiusKm === 25 ? " selected" : ""}>25 km</option><option value="50"${state.filters.radiusKm === 50 ? " selected" : ""}>50 km</option></select></label>
+        <label class="radar-live__field"><span>Modalidade</span><select name="modality"><option value="">Todas</option><option${state.filters.modality === "Society" ? " selected" : ""}>Society</option><option>Futsal</option><option>Campo</option></select></label>
+        <label class="radar-live__field"><span>Categoria</span><select name="category"><option>Todas</option><option${state.filters.category === "Livre" ? " selected" : ""}>Livre</option></select></label>
+        <label class="radar-live__field"><span>Distância</span><select name="radiusKm"><option value="">Qualquer</option><option value="10">10 km</option><option value="25"${state.filters.radiusKm === 25 ? " selected" : ""}>25 km</option><option value="50"${state.filters.radiusKm === 50 ? " selected" : ""}>50 km</option></select></label>
       </div><div class="radar-live__form-actions">${formButton("Buscar times")}</div></form>
       <div class="radar-live__toolbar"><strong>${items.length} encontrados</strong>${state.data?.page?.has_more ? chip("Mais resultados") : ""}</div>
-      ${items.length ? `<section class="radar-live__list">${items.map((item, index) => `<article class="radar-live__card"><div class="radar-live__card-top"><div><strong>${esc(teamName(item))}</strong><p>${esc(item.distance_label || item.city_name || item.team?.city || "Mesma cidade")} · ${esc(item.compatibility?.score || item.compatibility_score || "Compatível")}</p></div>${chip(item.next_availability ? dateLabel(item.next_availability.starts_at) : "Disponível", "ok")}</div><div class="radar-live__actions">${button("Convidar", "select-team", "", `data-index="${index}"`)}</div></article>`).join("")}</section>` : stateCard("⌖", "Nenhum time", "Ajuste os filtros ou horários.")}`);
+      ${items.length ? `<section class="radar-live__list">${items.map((item, index) => `<article class="radar-live__card"><div class="radar-live__card-top"><div class="radar-live__team"><div class="radar-live__crest">${teamCrest(item)}</div><div><strong>${esc(teamName(item))}</strong><p>${esc(item.location?.label || item.city || "Cidade não informada")} · ${esc(item.availability?.label || "Horário a combinar")}</p></div></div>${chip(item.instagram?.verified ? "✓ Verificado" : "Não verificado", item.instagram?.verified ? "ok" : "")}</div><div class="radar-live__chips">${chip(`${Number(item.statistics?.matches || 0)} jogos`)}${chip(`${Number(item.statistics?.wins || 0)}V · ${Number(item.statistics?.draws || 0)}E · ${Number(item.statistics?.losses || 0)}D`)}${chip(item.reputation?.label || (item.reputation?.overall ? `${item.reputation.overall} ★` : "Sem nota"))}</div><div class="radar-live__actions">${button("Convidar", "select-team", "", `data-index="${index}"`)}</div></article>`).join("")}</section>` : stateCard("⌖", "Nenhum time", "Retire os filtros e tente.")}`);
   }
 
   function renderInvite() {
@@ -486,7 +382,7 @@
     if (!state.open) { root.hidden = true; return; }
     root.hidden = false;
     if (state.loading) root.innerHTML = renderLoading();
-    else if (state.error && !(state.error.code === "RADAR_CITY_INVALID" && state.data?.profile === null)) root.innerHTML = renderError();
+    else if (state.error) root.innerHTML = renderError();
     else {
       const views = {
         home: renderHome,
@@ -514,7 +410,6 @@
 
   function closeRadar() {
     state.open = false;
-    state.verificationChallenge = null;
     root.hidden = true;
     document.body.style.overflow = "";
     for (const item of backgroundDialogs) {
@@ -554,7 +449,11 @@
       const [profile, eligibility] = await Promise.all([
         api.getRadarProfile(), api.getEligibility()
       ]);
-      const firstAccess = { ...payload(profile), ...payload(eligibility) };
+      const firstAccess = {
+        ...payload(profile),
+        ...payload(eligibility),
+        profile_etag: profile.etag || eligibility.etag || null
+      };
       if (firstAccess.profile === null) return firstAccess;
       const notifications = await api.listNotifications();
       return { ...firstAccess, notifications: payload(notifications) };
@@ -624,45 +523,6 @@
     }
   }
 
-  function captureOnboardingForm(form) {
-    const formData = new FormData(form);
-    state.onboardingValues = {
-      ...Object.fromEntries(formData.entries()),
-      modalities: formData.getAll("modalities")
-    };
-  }
-
-  function hideCitySuggestions(form) {
-    const box = form?.querySelector(".radar-live__city-suggestions");
-    if (!box) return;
-    box.hidden = true;
-    box.replaceChildren();
-  }
-
-  function scheduleCitySuggestions(form) {
-    window.clearTimeout(citySuggestionTimer);
-    const sequence = ++citySuggestionSequence;
-    const cityInput = form?.querySelector('[name="city_name"]');
-    const stateInput = form?.querySelector('[name="state_code"]');
-    if (!cityInput || String(cityInput.value || "").trim().length < 2) {
-      hideCitySuggestions(form);
-      return;
-    }
-    citySuggestionTimer = window.setTimeout(async () => {
-      try {
-        const response = await api.suggestCities(cityInput.value, stateInput?.value || "");
-        if (!form.isConnected || sequence !== citySuggestionSequence) return;
-        const items = list(payload(response).items);
-        const box = form.querySelector(".radar-live__city-suggestions");
-        if (!box) return;
-        box.innerHTML = items.map(item => `<button type="button" role="option" data-action="choose-city" data-city="${esc(item.city_name)}" data-state="${esc(item.state_code)}"><strong>${esc(item.city_name)}</strong><span>${esc(item.state_code)}</span></button>`).join("");
-        box.hidden = items.length === 0;
-      } catch {
-        hideCitySuggestions(form);
-      }
-    }, 180);
-  }
-
   async function openMatch(item) {
     state.selected = item;
     state.stack.push(state.view);
@@ -713,7 +573,6 @@
     state.open = true;
     state.stack = [];
     state.view = "home";
-    state.verificationChallenge = null;
     document.body.style.overflow = "hidden";
     await load("home", { replace: true });
   }));
@@ -730,35 +589,12 @@
       await load(previous, { replace: true }); return;
     }
     if (action === "refresh") { await load(state.view, { replace: true }); return; }
-    if (action === "onboarding-choice") { state.error = null; state.onboardingMode = "choice"; state.onboardingDraft = null; render(); return; }
-    if (action === "onboarding-print") { state.error = null; state.onboardingMode = "print"; render(); return; }
-    if (action === "onboarding-manual") { state.error = null; state.onboardingMode = "manual"; render(); return; }
-    if (action === "choose-city") {
-      const form = target.closest("form");
-      const cityInput = form?.querySelector('[name="city_name"]');
-      const stateInput = form?.querySelector('[name="state_code"]');
-      if (cityInput && stateInput) {
-        cityInput.value = target.dataset.city || "";
-        stateInput.value = target.dataset.state || "";
-        captureOnboardingForm(form);
-        state.error = null;
-        hideCitySuggestions(form);
-        cityInput.focus();
-      }
-      return;
-    }
-    if (action === "start-verification") {
-      if (state.busy) return;
-      const instagramHandle = String(state.data?.instagram_handle || "").trim();
-      if (!instagramHandle) return;
-      state.busy = true; state.error = null; render();
-      try {
-        const response = await api.startInstagramVerification({ instagram_handle: instagramHandle });
-        const result = payload(response);
-        state.data = { ...state.data, ...result };
-        state.verificationChallenge = result.challenge || null;
-      } catch (error) { state.error = error; }
-      finally { state.busy = false; render(); }
+    if (action === "toggle-radar-visibility") {
+      const profile = state.data?.profile || {};
+      await mutate(() => api.updateRadarProfile(
+        { radar_visible: profile.radar_visible === false },
+        state.data?.profile_etag || etagOf(profile)
+      ), "home");
       return;
     }
     if (action === "nav") { await load(target.dataset.view); return; }
@@ -817,76 +653,11 @@
     }, "moderation");
   });
 
-  root.addEventListener("input", event => {
-    const form = event.target.form;
-    if (form?.dataset.form === "onboarding") {
-      captureOnboardingForm(form);
-      if (event.target.matches('[name="city_name"], [name="state_code"]')) {
-        state.error = null;
-        form.querySelectorAll(".radar-live__field--invalid").forEach(field => field.classList.remove("radar-live__field--invalid"));
-        form.closest(".radar-live__screen")?.querySelector(".radar-live__city-error")?.remove();
-        scheduleCitySuggestions(form);
-      }
-    }
-    if (event.target.matches('[name="whatsapp"]')) {
-      const consent = form?.querySelector('[name="whatsapp_visible"]');
-      if (!consent) return;
-      const valid = validWhatsappInput(event.target.value);
-      consent.disabled = !valid;
-      if (!valid) consent.checked = false;
-      captureOnboardingForm(form);
-    }
-  });
-
-  root.addEventListener("change", event => {
-    const form = event.target.form;
-    if (form?.dataset.form === "onboarding") captureOnboardingForm(form);
-  });
-
   root.addEventListener("submit", async event => {
     event.preventDefault();
     const form = event.target;
     const formData = new FormData(form);
     const values = Object.fromEntries(formData.entries());
-    if (form.dataset.form === "profile-print") {
-      if (state.busy) return;
-      const file = formData.get("imagem");
-      state.busy = true; state.error = null; render();
-      try {
-        const response = await api.importProfilePrint(file);
-        state.onboardingDraft = payload(response).draft || null;
-        state.onboardingMode = "review";
-      } catch (error) { state.error = error; }
-      state.busy = false; render(); return;
-    }
-    if (form.dataset.form === "onboarding") {
-      captureOnboardingForm(form);
-      const modalities = formData.getAll("modalities");
-      if (!modalities.length) {
-        form.querySelector('[name="modalities"]')?.focus();
-        return;
-      }
-      await mutate(() => api.createRadarProfile({
-      city_name: values.city_name,
-      state_code: String(values.state_code || "").toUpperCase(),
-      instagram_handle: values.instagram_handle,
-      modalities,
-      categories: [values.category],
-      travel_radius_km: Number(values.travel_radius_km),
-      venue_preference: values.venue_preference,
-      whatsapp: values.whatsapp || "",
-      whatsapp_visible: validWhatsappInput(values.whatsapp) && values.whatsapp_visible === "true",
-      accept_terms: values.accept_terms === "true"
-    }), "home");
-    }
-    if (form.dataset.form === "verification-confirm") await mutate(async () => {
-      const verification = state.data?.verification || {};
-      await api.confirmInstagramVerification({
-        verification_id: verification.verification_id,
-        code: values.code
-      }, etagOf(verification));
-      state.verificationChallenge = null;
-    }, "verification");
     if (form.dataset.form === "availability") await mutate(() => api.createAvailability({
       modality: values.modality, category: values.category,
       starts_at: toIso(values.starts_at), ends_at: toIso(values.ends_at),
@@ -894,11 +665,16 @@
       status: "active"
     }), "availability");
     if (form.dataset.form === "search") {
-      state.filters = { ...state.filters, modality: values.modality, category: values.category, radiusKm: Number(values.radiusKm) };
+      state.filters = {
+        ...state.filters,
+        modality: values.modality,
+        category: values.category,
+        radiusKm: values.radiusKm ? Number(values.radiusKm) : null
+      };
       await load("search", { replace: true });
     }
     if (form.dataset.form === "invitation") await mutate(() => api.createInvitation({
-      opponent_slug: teamSlug(state.selected), starts_at: toIso(values.starts_at), ends_at: toIso(values.ends_at),
+      opponent_public_id: teamPublicId(state.selected), starts_at: toIso(values.starts_at), ends_at: toIso(values.ends_at),
       modality: values.modality, category: values.category,
       venue_preference: values.venue_preference, message: values.message
     }), "invitations");

@@ -31,58 +31,55 @@ test("real mode uses the API as its Radar data source", () => {
   assert.doesNotMatch(live, /localStorage\.setItem|localStorage\.removeItem/);
 });
 
-test("first access renders onboarding before loading notifications", () => {
+test("first access automatically reconciles the active team without a second onboarding", () => {
   assert.match(live, /const \[profile, eligibility\] = await Promise\.all/);
   assert.match(live, /if \(firstAccess\.profile === null\) return firstAccess/);
   assert.ok(live.indexOf("if (firstAccess.profile === null) return firstAccess") < live.indexOf("await api.listNotifications()"));
-  assert.match(live, /data-form="onboarding"/);
-  for (const field of [
-    "city_name", "state_code", "instagram_handle", "modalities",
-    "category", "travel_radius_km", "venue_preference", "whatsapp",
-    "whatsapp_visible", "accept_terms"
-  ]) assert.match(live, new RegExp(`name="${field}"`));
-  assert.match(live, /Enviar print do Instagram/);
-  assert.match(live, /Preencher manualmente/);
-  assert.match(live, /Revise os dados/);
-  assert.doesNotMatch(live, /name="city_ibge_code"/);
-  assert.doesNotMatch(live, /name="declared_level"/);
-  assert.doesNotMatch(live, /name="level"/);
-  assert.match(live, /api\.createRadarProfile/);
+  assert.match(live, /Ativando seu time/);
+  assert.match(live, /Sem novo cadastro/);
+  assert.match(live, /Seu time já participa/);
+  assert.match(live, /Ocultar meu time do Radar/);
+  assert.match(live, /radar_visible/);
+  assert.doesNotMatch(live, /data-form="onboarding"/);
+  assert.doesNotMatch(live, /Cadastrar no Radar/);
+  assert.doesNotMatch(live, /api\.createRadarProfile/);
+  assert.doesNotMatch(live, /api\.importProfilePrint/);
+  assert.doesNotMatch(live, /api\.suggestCities/);
   assert.match(live, /api\.getTeamWhatsapp/);
   assert.match(live, /item\.whatsapp_disponivel === true/);
-  assert.match(live, /requestedWhatsappVisible|whatsapp_visible/);
-  assert.match(live, /name="whatsapp_visible"[^>]*disabled/);
-  assert.match(live, /consent\.disabled = !valid/);
-  assert.match(live, /if \(!valid\) consent\.checked = false/);
-  assert.match(live, /validWhatsappInput\(values\.whatsapp\) && values\.whatsapp_visible/);
-  assert.match(live, /legacyCrest\(\)/);
-  assert.match(live, /legacyFormDefaults\(\)/);
-  assert.doesNotMatch(live, /name="city_ibge_code"[^>]*value="4209102"/);
-  assert.match(live, /api\.suggestCities/);
-  assert.match(live, /captureOnboardingForm/);
-  assert.match(live, /state\.onboardingValues/);
-  assert.match(live, /Confira a cidade e a UF\./);
-  assert.match(live, /radar-live__field--invalid/);
-  assert.match(live, /Deixar visível para o time adversário chamar no WhatsApp/);
-  assert.doesNotMatch(live, /Enviar print \/ Instagram do time/);
-  assert.doesNotMatch(live, /Deixar visível para outros times/);
-  assert.doesNotMatch(live, /RADAR_CITY_NOT_SUPPORTED/);
 });
 
-test("live Instagram verification requires owner proof and independent review", () => {
-  assert.match(live, /Verificar Instagram/);
+test("Instagram is an optional badge and the owner flow never generates a code", () => {
+  assert.match(live, /Selo opcional/);
+  assert.match(live, /Não verificado/);
+  assert.match(live, /Seu time continua visível/);
+  assert.match(live, /Busca e convites liberados/);
   assert.match(live, /api\.getVerification\(\)/);
-  assert.match(live, /api\.startInstagramVerification/);
-  assert.match(live, /verification_id: verification\.verification_id/);
-  assert.match(live, /Já coloquei na bio/);
-  assert.match(live, /A aprovação é manual/);
+  assert.doesNotMatch(live, /api\.startInstagramVerification/);
+  assert.doesNotMatch(live, /api\.confirmInstagramVerification/);
+  assert.doesNotMatch(live, /Já coloquei na bio/);
   assert.match(live, /api\.listInstagramVerifications/);
   assert.match(live, /api\.approveInstagramVerification/);
   assert.match(live, /Código observado/);
   assert.match(live, /api\.rejectInstagramVerification/);
-  assert.match(live, /state\.verificationChallenge = null/);
   assert.match(live, /if \(error\?\.status !== 403\) throw error/);
   assert.doesNotMatch(live, /verificad[oa] automaticamente/i);
+});
+
+test("general search cards show optional-state fallbacks and use the opaque public id", () => {
+  assert.match(live, /Filtros são opcionais/);
+  assert.match(live, /Horário a combinar/);
+  assert.match(live, /Não verificado/);
+  assert.match(live, /Sem nota/);
+  assert.match(live, /statistics\?\.matches/);
+  assert.match(live, /statistics\?\.wins/);
+  assert.match(live, /statistics\?\.draws/);
+  assert.match(live, /statistics\?\.losses/);
+  assert.match(live, /if \(!raw\) return ""/);
+  assert.match(live, /new URL\(raw/);
+  assert.match(live, /parsed\.origin === resolvedApiBase/);
+  assert.match(live, /opponent_public_id: teamPublicId\(state\.selected\)/);
+  assert.doesNotMatch(live, /opponent_slug: teamSlug\(state\.selected\)/);
 });
 
 test("modal supports keyboard containment, escape and focus restoration", () => {
