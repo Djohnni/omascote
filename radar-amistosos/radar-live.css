@@ -173,6 +173,13 @@
 .radar-live__field--wide { grid-column: 1 / -1; }
 .radar-live__field span { color: #aab1bc; font-size: 9px; font-weight: 850; }
 .radar-live__field input, .radar-live__field select, .radar-live__field textarea { width: 100%; min-height: 43px; padding: 9px 10px; border: 1px solid #353b45; border-radius: 10px; color: #f8fafc; background: #0c0e12; font-size: 12px; }
+.radar-live__field--invalid span { color: #fca5a5; }
+.radar-live__field--invalid input { border-color: #ef4444; box-shadow: 0 0 0 2px rgba(239, 68, 68, .12); }
+.radar-live__city-error { margin-top: 10px; padding: 9px 11px; border: 1px solid rgba(248, 113, 113, .45); border-radius: 10px; color: #fecaca; background: rgba(127, 29, 29, .18); font-size: 10px; font-weight: 850; }
+.radar-live__city-suggestions { display: grid; gap: 5px; margin-top: -4px; }
+.radar-live__city-suggestions button { min-height: 38px; display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 8px 10px; border: 1px solid #353b45; border-radius: 9px; color: #f8fafc; text-align: left; background: #171a20; }
+.radar-live__city-suggestions strong { font-size: 11px; }
+.radar-live__city-suggestions span { color: #fde68a; font-size: 9px; font-weight: 900; }
 .radar-live__field textarea { min-height: 76px; resize: vertical; }
 .radar-live__form-actions { position: sticky; bottom: 0; display: grid; grid-template-columns: 1fr; padding-top: 5px; background: linear-gradient(transparent, #101217 25%); }
 .radar-live__terms { min-height: 43px; display: flex; align-items: center; gap: 9px; color: #d9dee5; font-size: 10px; font-weight: 800; }

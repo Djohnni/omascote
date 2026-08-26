@@ -41,7 +41,7 @@ test("first access renders onboarding before loading notifications", () => {
     "category", "travel_radius_km", "venue_preference", "whatsapp",
     "whatsapp_visible", "accept_terms"
   ]) assert.match(live, new RegExp(`name="${field}"`));
-  assert.match(live, /Enviar print/);
+  assert.match(live, /Enviar print do Instagram/);
   assert.match(live, /Preencher manualmente/);
   assert.match(live, /Revise os dados/);
   assert.doesNotMatch(live, /name="city_ibge_code"/);
@@ -58,6 +58,15 @@ test("first access renders onboarding before loading notifications", () => {
   assert.match(live, /legacyCrest\(\)/);
   assert.match(live, /legacyFormDefaults\(\)/);
   assert.doesNotMatch(live, /name="city_ibge_code"[^>]*value="4209102"/);
+  assert.match(live, /api\.suggestCities/);
+  assert.match(live, /captureOnboardingForm/);
+  assert.match(live, /state\.onboardingValues/);
+  assert.match(live, /Confira a cidade e a UF\./);
+  assert.match(live, /radar-live__field--invalid/);
+  assert.match(live, /Deixar visível para o time adversário chamar no WhatsApp/);
+  assert.doesNotMatch(live, /Enviar print \/ Instagram do time/);
+  assert.doesNotMatch(live, /Deixar visível para outros times/);
+  assert.doesNotMatch(live, /RADAR_CITY_NOT_SUPPORTED/);
 });
 
 test("modal supports keyboard containment, escape and focus restoration", () => {

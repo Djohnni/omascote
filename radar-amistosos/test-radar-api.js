@@ -63,6 +63,19 @@ test("first Radar profile uses PATCH with idempotency and no If-Match", async ()
   assert.equal(captured.options.headers.has("If-Match"), false);
 });
 
+test("city suggestions use the protected local API contract without exposing municipal codes", async () => {
+  let captured;
+  const client = loadClient(async (url, options) => {
+    captured = { url: String(url), options };
+    return response(200, { ok: true, items: [{ city_name: "Ascurra", state_code: "SC" }] });
+  });
+  const result = await client.suggestCities("  ascur  ", "sc");
+  assert.equal(captured.url, "https://api.example.invalid/me/time/radar/cidades?busca=ascur&uf=SC");
+  assert.equal(captured.options.headers.get("Authorization"), "Bearer test-token-not-logged");
+  assert.deepEqual(result.data.items, [{ city_name: "Ascurra", state_code: "SC" }]);
+  assert.equal(JSON.stringify(result).toLowerCase().includes("ibge"), false);
+});
+
 test("smart onboarding uploads only the selected image under the real API contract", async () => {
   let captured;
   const client = loadClient(async (url, options) => {

@@ -4,6 +4,7 @@
   const ENDPOINTS = Object.freeze({
     radarProfile: "/me/time/radar",
     eligibility: "/me/time/radar/elegibilidade",
+    citySuggestions: "/me/time/radar/cidades",
     importPrint: "/me/time/perfil/importar-print",
     verification: "/me/time/verificacao",
     startInstagramVerification: "/me/time/verificacoes/instagram",
@@ -33,6 +34,9 @@
     428: "Atualize a partida antes de continuar.",
     429: "Muitas tentativas. Aguarde um pouco e tente novamente.",
     503: "O Radar está temporariamente indisponível."
+  });
+  const ERROR_CODE_MESSAGES = Object.freeze({
+    RADAR_CITY_INVALID: "Confira a cidade e a UF."
   });
 
   class RadarApiError extends Error {
@@ -166,7 +170,7 @@
           throw new RadarApiError(
             publicCode,
             response.status,
-            ERROR_MESSAGES[response.status] || "Não foi possível concluir esta ação.",
+            ERROR_CODE_MESSAGES[publicCode] || ERROR_MESSAGES[response.status] || "Não foi possível concluir esta ação.",
             payload && payload.details ? payload.details : null
           );
         }
@@ -190,6 +194,12 @@
     return Object.freeze({
       getRadarProfile: () => request(ENDPOINTS.radarProfile),
       getEligibility: () => request(ENDPOINTS.eligibility),
+      suggestCities: (query, stateCode) => {
+        const parameters = new URLSearchParams();
+        parameters.set("busca", String(query || "").replace(/\s+/g, " ").trim().slice(0, 120));
+        if (stateCode) parameters.set("uf", String(stateCode).trim().slice(0, 2).toUpperCase());
+        return request(`${ENDPOINTS.citySuggestions}?${parameters.toString()}`);
+      },
       createRadarProfile: (values, idempotencyKey) => request(ENDPOINTS.radarProfile, {
         method: "PATCH", body: values, idempotent: true, idempotencyKey
       }),

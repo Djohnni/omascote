@@ -28,11 +28,14 @@
     invitationBox: "entrada",
     onboardingMode: "choice",
     onboardingDraft: null,
+    onboardingValues: null,
     whatsappUrl: null,
     traces: []
   };
   let returnFocus = null;
   let backgroundDialogs = [];
+  let citySuggestionTimer = null;
+  let citySuggestionSequence = 0;
 
   function token() {
     try { return localStorage.getItem("omascote_token") || ""; }
@@ -123,8 +126,7 @@
     modality_missing: "Modalidade",
     category_missing: "Categoria",
     instagram_not_verified: "Verificar Instagram",
-    terms_not_accepted: "Aceitar termos",
-    outside_pilot_city: "Fora da cidade piloto"
+    terms_not_accepted: "Aceitar termos"
   });
 
   function legacyCrest() {
@@ -225,19 +227,26 @@
     const missing = list(eligibility.missing);
     const defaults = legacyFormDefaults();
     const suggestions = state.onboardingDraft?.suggestions || {};
+    const saved = state.onboardingValues || {};
     const draftValue = field => suggestions[field]?.value;
-    const selectedModalities = list(draftValue("modalities"));
+    const selectedModalities = Array.isArray(saved.modalities) ? saved.modalities : list(draftValue("modalities"));
     const formDefaults = {
-      city: draftValue("city_name") || defaults.city,
-      state: draftValue("state_code") || defaults.state,
-      instagram: draftValue("instagram_handle") || defaults.instagram,
-      category: list(draftValue("categories"))[0] || "Livre"
+      city: saved.city_name ?? draftValue("city_name") ?? defaults.city,
+      state: saved.state_code ?? draftValue("state_code") ?? defaults.state,
+      instagram: saved.instagram_handle ?? draftValue("instagram_handle") ?? defaults.instagram,
+      category: saved.category ?? list(draftValue("categories"))[0] ?? "Livre",
+      radius: saved.travel_radius_km || "25",
+      venue: saved.venue_preference || "either",
+      whatsapp: saved.whatsapp || "",
+      whatsappVisible: saved.whatsapp_visible === "true",
+      termsAccepted: saved.accept_terms === "true"
     };
+    const cityInvalid = state.error?.code === "RADAR_CITY_INVALID";
     const teamHeader = `<section class="radar-live__team"><div class="radar-live__crest">${legacyCrest()}</div><div><strong>${esc(name)}</strong><small>Nome e escudo do perfil</small></div>${chip("Novo", "warn")}</section>`;
     if (state.onboardingMode === "choice") {
       return shell(`${heading("Primeiro acesso", "Cadastrar no Radar", "Escolha como começar.")}${teamHeader}
         <section class="radar-live__onboarding-choice">
-          <button type="button" class="radar-live__choice" data-action="onboarding-print"><b>▣</b><span><strong>Enviar print</strong><small>Instagram do time</small></span><i>›</i></button>
+          <button type="button" class="radar-live__choice" data-action="onboarding-print"><b>▣</b><span><strong>Enviar print do Instagram</strong><small>Cadastro inteligente</small></span><i>›</i></button>
           <button type="button" class="radar-live__choice radar-live__choice--secondary" data-action="onboarding-manual"><b>✎</b><span><strong>Preencher manualmente</strong><small>Cadastro rápido</small></span><i>›</i></button>
         </section>`, { wide: true });
     }
@@ -252,18 +261,20 @@
     return shell(`${heading(reviewing ? "Rascunho" : "Primeiro acesso", reviewing ? "Revise os dados" : "Cadastrar no Radar", reviewing ? "Corrija antes de confirmar." : "Complete para começar.")}
       ${teamHeader}
       ${reviewing ? `<div class="radar-live__review-banner"><b>✓</b><span><strong>Revise os dados</strong><small>Nada foi publicado</small></span></div>` : ""}
+      ${cityInvalid ? `<div class="radar-live__city-error" role="alert">Confira a cidade e a UF.</div>` : ""}
       <div class="radar-live__chips">${missing.slice(0, 4).map(item => chip(pendingLabels[item] || item, "warn")).join("")}</div>
       <form class="radar-live__form radar-live__onboarding" data-form="onboarding"><div class="radar-live__fields">
-        <label class="radar-live__field"><span>Cidade</span><input name="city_name" maxlength="120" autocomplete="address-level2" value="${esc(formDefaults.city)}" placeholder="Sua cidade" required></label>
-        <label class="radar-live__field"><span>UF</span><input name="state_code" maxlength="2" pattern="[A-Za-z]{2}" autocomplete="address-level1" value="${esc(formDefaults.state)}" placeholder="UF" required></label>
+        <label class="radar-live__field${cityInvalid ? " radar-live__field--invalid" : ""}"><span>Cidade</span><input name="city_name" maxlength="120" autocomplete="address-level2" value="${esc(formDefaults.city)}" placeholder="Sua cidade" aria-invalid="${cityInvalid}" required></label>
+        <label class="radar-live__field${cityInvalid ? " radar-live__field--invalid" : ""}"><span>UF</span><input name="state_code" maxlength="2" pattern="[A-Za-z]{2}" autocomplete="address-level1" value="${esc(formDefaults.state)}" placeholder="UF" aria-invalid="${cityInvalid}" required></label>
+        <div class="radar-live__city-suggestions radar-live__field--wide" role="listbox" aria-label="Sugestões de cidade" hidden></div>
         <label class="radar-live__field radar-live__field--wide"><span>Instagram</span><input name="instagram_handle" maxlength="80" autocomplete="off" value="${esc(formDefaults.instagram)}" placeholder="@seutime" required></label>
-        <fieldset class="radar-live__modalities radar-live__field--wide"><legend>Modalidades <small>1 a 3</small></legend>${[["society","Society"],["futsal","Futsal"],["futebol_campo","Campo"]].map(([value,label], index) => `<label><input type="checkbox" name="modalities" value="${value}" ${(selectedModalities.includes(value) || (!reviewing && index === 0)) ? "checked" : ""}><span>${label}</span></label>`).join("")}</fieldset>
+        <fieldset class="radar-live__modalities radar-live__field--wide"><legend>Modalidades <small>1 a 3</small></legend>${[["society","Society"],["futsal","Futsal"],["futebol_campo","Campo"]].map(([value,label], index) => `<label><input type="checkbox" name="modalities" value="${value}" ${(selectedModalities.includes(value) || (!selectedModalities.length && !reviewing && index === 0)) ? "checked" : ""}><span>${label}</span></label>`).join("")}</fieldset>
         <label class="radar-live__field"><span>Categoria</span><input name="category" maxlength="40" value="${esc(formDefaults.category)}" required></label>
-        <label class="radar-live__field"><span>Raio</span><select name="travel_radius_km" required><option value="10">10 km</option><option value="25" selected>25 km</option><option value="50">50 km</option><option value="100">100 km</option></select></label>
-        <label class="radar-live__field radar-live__field--wide"><span>Mando</span><select name="venue_preference" required><option value="either">Casa ou fora</option><option value="home">Mandante</option><option value="away">Visitante</option></select></label>
-        <label class="radar-live__field radar-live__field--wide"><span>WhatsApp <small>opcional</small></span><input name="whatsapp" inputmode="tel" autocomplete="tel" maxlength="32" placeholder="(47) 99999-9999"></label>
-        <label class="radar-live__terms radar-live__field--wide"><input name="whatsapp_visible" type="checkbox" value="true" disabled><span>Deixar visível para outros times</span></label>
-        <label class="radar-live__terms radar-live__field--wide"><input name="accept_terms" type="checkbox" value="true" required><span>Aceito os termos do Radar</span></label>
+        <label class="radar-live__field"><span>Raio</span><select name="travel_radius_km" required>${[10,25,50,100].map(value => `<option value="${value}"${String(value) === String(formDefaults.radius) ? " selected" : ""}>${value} km</option>`).join("")}</select></label>
+        <label class="radar-live__field radar-live__field--wide"><span>Mando</span><select name="venue_preference" required><option value="either"${formDefaults.venue === "either" ? " selected" : ""}>Casa ou fora</option><option value="home"${formDefaults.venue === "home" ? " selected" : ""}>Mandante</option><option value="away"${formDefaults.venue === "away" ? " selected" : ""}>Visitante</option></select></label>
+        <label class="radar-live__field radar-live__field--wide"><span>WhatsApp <small>opcional</small></span><input name="whatsapp" inputmode="tel" autocomplete="tel" maxlength="32" value="${esc(formDefaults.whatsapp)}" placeholder="(47) 99999-9999"></label>
+        <label class="radar-live__terms radar-live__field--wide"><input name="whatsapp_visible" type="checkbox" value="true"${validWhatsappInput(formDefaults.whatsapp) ? "" : " disabled"}${formDefaults.whatsappVisible ? " checked" : ""}><span>Deixar visível para o time adversário chamar no WhatsApp</span></label>
+        <label class="radar-live__terms radar-live__field--wide"><input name="accept_terms" type="checkbox" value="true"${formDefaults.termsAccepted ? " checked" : ""} required><span>Aceito os termos do Radar</span></label>
       </div><div class="radar-live__form-actions">${formButton("Confirmar cadastro")}</div></form>
       <button type="button" class="radar-live__text-button" data-action="onboarding-choice">Voltar ao início</button>`, { wide: true });
   }
@@ -411,7 +422,7 @@
     if (!state.open) { root.hidden = true; return; }
     root.hidden = false;
     if (state.loading) root.innerHTML = renderLoading();
-    else if (state.error) root.innerHTML = renderError();
+    else if (state.error && !(state.error.code === "RADAR_CITY_INVALID" && state.data?.profile === null)) root.innerHTML = renderError();
     else {
       const views = {
         home: renderHome,
@@ -532,6 +543,45 @@
     }
   }
 
+  function captureOnboardingForm(form) {
+    const formData = new FormData(form);
+    state.onboardingValues = {
+      ...Object.fromEntries(formData.entries()),
+      modalities: formData.getAll("modalities")
+    };
+  }
+
+  function hideCitySuggestions(form) {
+    const box = form?.querySelector(".radar-live__city-suggestions");
+    if (!box) return;
+    box.hidden = true;
+    box.replaceChildren();
+  }
+
+  function scheduleCitySuggestions(form) {
+    window.clearTimeout(citySuggestionTimer);
+    const sequence = ++citySuggestionSequence;
+    const cityInput = form?.querySelector('[name="city_name"]');
+    const stateInput = form?.querySelector('[name="state_code"]');
+    if (!cityInput || String(cityInput.value || "").trim().length < 2) {
+      hideCitySuggestions(form);
+      return;
+    }
+    citySuggestionTimer = window.setTimeout(async () => {
+      try {
+        const response = await api.suggestCities(cityInput.value, stateInput?.value || "");
+        if (!form.isConnected || sequence !== citySuggestionSequence) return;
+        const items = list(payload(response).items);
+        const box = form.querySelector(".radar-live__city-suggestions");
+        if (!box) return;
+        box.innerHTML = items.map(item => `<button type="button" role="option" data-action="choose-city" data-city="${esc(item.city_name)}" data-state="${esc(item.state_code)}"><strong>${esc(item.city_name)}</strong><span>${esc(item.state_code)}</span></button>`).join("");
+        box.hidden = items.length === 0;
+      } catch {
+        hideCitySuggestions(form);
+      }
+    }, 180);
+  }
+
   async function openMatch(item) {
     state.selected = item;
     state.stack.push(state.view);
@@ -601,6 +651,20 @@
     if (action === "onboarding-choice") { state.error = null; state.onboardingMode = "choice"; state.onboardingDraft = null; render(); return; }
     if (action === "onboarding-print") { state.error = null; state.onboardingMode = "print"; render(); return; }
     if (action === "onboarding-manual") { state.error = null; state.onboardingMode = "manual"; render(); return; }
+    if (action === "choose-city") {
+      const form = target.closest("form");
+      const cityInput = form?.querySelector('[name="city_name"]');
+      const stateInput = form?.querySelector('[name="state_code"]');
+      if (cityInput && stateInput) {
+        cityInput.value = target.dataset.city || "";
+        stateInput.value = target.dataset.state || "";
+        captureOnboardingForm(form);
+        state.error = null;
+        hideCitySuggestions(form);
+        cityInput.focus();
+      }
+      return;
+    }
     if (action === "nav") { await load(target.dataset.view); return; }
     if (action === "select-team") {
       state.selected = list(state.data?.items)[Number(target.dataset.index)];
@@ -653,12 +717,29 @@
   });
 
   root.addEventListener("input", event => {
-    if (!event.target.matches('[name="whatsapp"]')) return;
-    const consent = event.target.form?.querySelector('[name="whatsapp_visible"]');
-    if (!consent) return;
-    const valid = validWhatsappInput(event.target.value);
-    consent.disabled = !valid;
-    if (!valid) consent.checked = false;
+    const form = event.target.form;
+    if (form?.dataset.form === "onboarding") {
+      captureOnboardingForm(form);
+      if (event.target.matches('[name="city_name"], [name="state_code"]')) {
+        state.error = null;
+        form.querySelectorAll(".radar-live__field--invalid").forEach(field => field.classList.remove("radar-live__field--invalid"));
+        form.closest(".radar-live__screen")?.querySelector(".radar-live__city-error")?.remove();
+        scheduleCitySuggestions(form);
+      }
+    }
+    if (event.target.matches('[name="whatsapp"]')) {
+      const consent = form?.querySelector('[name="whatsapp_visible"]');
+      if (!consent) return;
+      const valid = validWhatsappInput(event.target.value);
+      consent.disabled = !valid;
+      if (!valid) consent.checked = false;
+      captureOnboardingForm(form);
+    }
+  });
+
+  root.addEventListener("change", event => {
+    const form = event.target.form;
+    if (form?.dataset.form === "onboarding") captureOnboardingForm(form);
   });
 
   root.addEventListener("submit", async event => {
@@ -678,6 +759,7 @@
       state.busy = false; render(); return;
     }
     if (form.dataset.form === "onboarding") {
+      captureOnboardingForm(form);
       const modalities = formData.getAll("modalities");
       if (!modalities.length) {
         form.querySelector('[name="modalities"]')?.focus();
