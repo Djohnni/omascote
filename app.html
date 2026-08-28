@@ -11349,6 +11349,12 @@ body.fotoJogosProductFocus #fotoJogosProductReturn{
   object-position:top center;
 }
 
+.cleanProductBlock[data-clean-product-block="contratacao"] .cleanProductImage{
+  aspect-ratio:9 / 16 !important;
+  min-height:0;
+  background:#071426;
+}
+
 .cleanProductImage.is-processing img{
   filter:brightness(.48) blur(1px);
 }
@@ -18579,6 +18585,11 @@ function renderCleanPeopleField(field, step){
 const CONTRATACAO_BASE_PRICE = 7.8;
 const CONTRATACAO_JERSEY_PRICE = 2;
 const CONTRATACAO_MAX_PLAYERS = 3;
+const CONTRATACAO_SAMPLE_PREVIEWS = Object.freeze({
+  contratacao_modelo_01_v1:"produtos/contratacao-modelo-01.png",
+  contratacao_modelo_02_v1:"produtos/contratacao-modelo-02.png",
+  contratacao_modelo_03_v1:"produtos/contratacao-modelo-03.png"
+});
 
 function renderContratacaoPlayerRow(index = 0){
   const numero = index + 1;
@@ -18629,6 +18640,10 @@ function renderContratacaoBuilder(field, step){
         <label class="contratacaoStyleCard">
           <input type="radio" name="contratacao_style_mode" value="catalog" data-contratacao-style data-sample-id="contratacao_modelo_02_v1">
           <span><img src="produtos/contratacao-modelo-02.png" alt="Amostra 2"><strong>Amostra 2</strong></span>
+        </label>
+        <label class="contratacaoStyleCard">
+          <input type="radio" name="contratacao_style_mode" value="catalog" data-contratacao-style data-sample-id="contratacao_modelo_03_v1">
+          <span><img src="produtos/contratacao-modelo-03.png" alt="Amostra 3"><strong>Amostra 3</strong></span>
         </label>
         <label class="contratacaoStyleCard contratacaoStyleText">
           <input type="radio" name="contratacao_style_mode" value="custom" data-contratacao-style>
@@ -18682,11 +18697,16 @@ function getContratacaoBuilderData(form){
 function updateContratacaoBuilder(form){
   if(!form || form.dataset.productForm !== "contratacao") return;
   const data = getContratacaoBuilderData(form);
+  const preview = form.closest("[data-clean-product-block]")?.querySelector("[data-clean-product-preview]");
   const customWrap = form.querySelector("[data-contratacao-reference-wrap]");
   const jerseyWrap = form.querySelector("[data-contratacao-jersey-wrap]");
   const addBtn = form.querySelector("[data-contratacao-add]");
   const advance = form.querySelector("[data-contratacao-advance]");
   const summary = form.querySelector("[data-contratacao-price-summary]");
+  if(preview){
+    preview.src = CONTRATACAO_SAMPLE_PREVIEWS[data.sampleId] || PRODUCTS.contratacao.image;
+    preview.alt = data.styleMode === "catalog" ? `Amostra completa escolhida: ${data.sampleId.replace("contratacao_modelo_", "").replace("_v1", "")}` : PRODUCTS.contratacao.title;
+  }
   if(customWrap) customWrap.hidden = data.styleMode !== "custom";
   if(jerseyWrap) jerseyWrap.hidden = !data.players.some(player => player.jersey);
   if(addBtn) addBtn.hidden = data.players.length >= CONTRATACAO_MAX_PLAYERS;
@@ -23711,7 +23731,7 @@ function renderCleanProductForms(){
     return `
       <section class="cleanProductBlock" data-clean-product-block="${htmlEscape(productKey)}">
         <div class="cleanProductImage" aria-hidden="true">
-          <img src="${htmlEscape(product.image || "")}" alt="" width="860" height="1075" loading="lazy" decoding="async">
+          <img src="${htmlEscape(product.image || "")}" alt="" width="860" height="1075" loading="lazy" decoding="async" data-clean-product-preview="${htmlEscape(productKey)}">
         </div>
         <form class="cleanProductForm" data-product-form="${htmlEscape(productKey)}" enctype="multipart/form-data" novalidate>
           <div class="cleanProductHeader">
@@ -24241,7 +24261,7 @@ function validateCleanProductForm(productKey, form){
         markError(field);
       }
       const invalidStyle = !["catalog", "custom", "auto"].includes(data.styleMode);
-      const invalidSample = data.styleMode === "catalog" && !["contratacao_modelo_01_v1", "contratacao_modelo_02_v1"].includes(data.sampleId);
+      const invalidSample = data.styleMode === "catalog" && !Object.hasOwn(CONTRATACAO_SAMPLE_PREVIEWS, data.sampleId);
       const missingReference = data.styleMode === "custom" && !data.referenceFile;
       const invalidPlayers = !data.players.length || data.players.length > CONTRATACAO_MAX_PLAYERS || data.players.some(player => (
         !player.name || !player.position || !["contratado", "renovado"].includes(player.announcement) || !player.photo
