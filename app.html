@@ -13838,7 +13838,236 @@ body.homeLandingClean[data-page="home"] > main > .wrap > .panel{
   overflow-wrap:anywhere;
 }
 
+.contratacaoBuilder{
+  gap:16px;
+  background:linear-gradient(180deg,#f8fff9,#ffffff);
+}
+
+.contratacaoIntro,
+.contratacaoPriceSummary{
+  display:grid;
+  gap:4px;
+}
+
+.contratacaoIntro span,
+.contratacaoPreserveNote,
+.contratacaoPriceSummary span{
+  margin:0;
+  color:#52606d;
+  font-size:13px;
+  line-height:1.45;
+  font-weight:700;
+}
+
+.contratacaoStyleGrid{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:10px;
+}
+
+.contratacaoStyleCard{
+  position:relative;
+  cursor:pointer;
+}
+
+.contratacaoStyleCard input{
+  position:absolute;
+  width:1px;
+  height:1px;
+  opacity:0;
+}
+
+.contratacaoStyleCard > span{
+  min-height:100%;
+  display:grid;
+  gap:7px;
+  overflow:hidden;
+  border:2px solid #dbe3ec;
+  border-radius:16px;
+  background:#fff;
+  color:#111827;
+  text-align:center;
+  box-shadow:0 7px 18px rgba(15,23,42,.07);
+}
+
+.contratacaoStyleCard input:checked + span{
+  border-color:#16a34a;
+  box-shadow:0 0 0 3px rgba(22,163,74,.14);
+}
+
+.contratacaoStyleCard input:focus-visible + span{
+  outline:3px solid rgba(22,163,74,.3);
+  outline-offset:2px;
+}
+
+.contratacaoStyleCard img{
+  width:100%;
+  height:150px;
+  display:block;
+  object-fit:cover;
+  object-position:center 24%;
+}
+
+.contratacaoStyleCard strong{
+  padding:0 9px 10px;
+  font-size:13px;
+}
+
+.contratacaoStyleText > span{
+  align-content:center;
+  min-height:116px;
+  padding:14px;
+}
+
+.contratacaoStyleText b{
+  color:#16a34a;
+  font-size:25px;
+}
+
+.contratacaoStyleText strong{
+  padding:0;
+}
+
+.contratacaoStyleText small{
+  color:#64748b;
+  font-size:11px;
+  font-weight:700;
+}
+
+.contratacaoPlayers{
+  display:grid;
+  gap:12px;
+}
+
+.contratacaoPlayer{
+  display:grid;
+  gap:12px;
+  padding:14px;
+  border:1px solid #dbe3ec;
+  border-radius:17px;
+  background:#fff;
+}
+
+.contratacaoPlayerHeader{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+}
+
+.contratacaoRemoveBtn{
+  border:0;
+  background:transparent;
+  color:#b91c1c;
+  font-weight:900;
+  cursor:pointer;
+}
+
+.contratacaoPlayerGrid{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:10px;
+}
+
+.contratacaoPlayerGrid label,
+.contratacaoSharedUpload{
+  display:grid;
+  gap:6px;
+  color:#334155;
+  font-size:12px;
+  font-weight:900;
+}
+
+.contratacaoPlayerGrid input,
+.contratacaoPlayerGrid select,
+.contratacaoSharedUpload input{
+  width:100%;
+  min-height:44px;
+  box-sizing:border-box;
+  padding:10px 12px;
+  border:1px solid #cbd5e1;
+  border-radius:12px;
+  background:#fff;
+  color:#111827;
+  font:inherit;
+}
+
+.contratacaoPhotoLabel span,
+.contratacaoSharedUpload span{
+  overflow-wrap:anywhere;
+  color:#64748b;
+  font-size:11px;
+  font-weight:700;
+}
+
+.contratacaoJerseyToggle{
+  display:flex;
+  align-items:flex-start;
+  gap:10px;
+  padding:11px;
+  border-radius:13px;
+  background:#f0fdf4;
+  color:#14532d;
+  cursor:pointer;
+}
+
+.contratacaoJerseyToggle input{
+  width:19px;
+  height:19px;
+  margin:1px 0 0;
+  accent-color:#16a34a;
+}
+
+.contratacaoJerseyToggle span{
+  display:grid;
+  gap:2px;
+}
+
+.contratacaoJerseyToggle small{
+  color:#3f684c;
+  font-weight:700;
+}
+
+.contratacaoPriceSummary{
+  padding:14px;
+  border:1px solid #bbf7d0;
+  border-radius:15px;
+  background:#ecfdf3;
+  color:#166534;
+}
+
+.contratacaoPriceSummary strong{
+  font-size:18px;
+}
+
+.contratacaoAdvanceNotice{
+  padding:14px;
+  border:1px solid #fcd34d;
+  border-radius:15px;
+  background:#fffbeb;
+  color:#78350f;
+  font-size:13px;
+  line-height:1.45;
+  font-weight:800;
+}
+
+.contratacaoSharedUpload[hidden],
+.contratacaoAdvanceNotice[hidden],
+.contratacaoRemoveBtn[hidden],
+.contratacaoAddBtn[hidden]{
+  display:none !important;
+}
+
 @media (max-width:680px){
+  .contratacaoStyleGrid,
+  .contratacaoPlayerGrid{
+    grid-template-columns:1fr;
+  }
+
+  .contratacaoStyleCard img{
+    height:210px;
+  }
+
   .ia4WebviewNotice{
     grid-template-columns:1fr;
     width:calc(100% - 8px);
@@ -14380,8 +14609,8 @@ body.homeLandingClean[data-page="home"] > main > .wrap > .panel{
             </button>
 
             <button type="button" class="optionBtn" data-product="contratacao">
-              <img src="produtos/contratacao.jpg" class="imgProduto" loading="lazy" decoding="async" alt="Contratação">
-              <div class="optLabel">Anuncie sua<br>contratação<br><span style="color:#1fbf63;font-weight:900;">R$7,00</span></div>
+              <img src="produtos/contratacao-modelo-02.jpeg" class="imgProduto" loading="lazy" decoding="async" alt="Contratação ou renovação">
+              <div class="optLabel">Contratação ou<br>renovação<br><span style="color:#1fbf63;font-weight:900;">R$7,80</span></div>
             </button>
 
             <button type="button" class="optionBtn" data-product="proximo_jogo">
@@ -17100,8 +17329,8 @@ const PRODUCTS = {
 
   contratacao: {
     mode: "flyer",
-    title: "Anuncie sua contratação",
-    hint: "Preencha só o essencial para anunciar o novo jogador.",
+    title: "Contratação / Renovação",
+    hint: "Escolha uma amostra ou envie sua referência. A arte será adaptada às cores do seu time.",
     flyerTipo: "zz1fm",
     labels: {
       rodada: "Título da arte",
@@ -17337,10 +17566,11 @@ const PRODUCT_CONFIG_DETAILS = {
 
   contratacao: {
     id: "contratacao",
-    name: "Anuncie sua contratação",
-    price: 7,
-    visualCategory: "time",
-    image: "produtos/contratacao.jpg",
+    name: "Contratação / Renovação",
+    title: "Contratação / Renovação",
+    price: 7.8,
+    visualCategory: "jogador",
+    image: "produtos/contratacao-modelo-02.jpeg",
     fields: {
       rodada: { visible: true, required: true },
       data: { visible: true, required: true },
@@ -17976,13 +18206,10 @@ const CLEAN_PRODUCT_FORM_SCHEMAS = {
   },
   contratacao: {
     endpoint: "/pedidos",
-    validationMessage: "Preencha o título da arte, nome do jogador, envie o escudo do time e a foto do jogador.",
+    validationMessage: "Complete os dados de cada jogador, escolha o estilo e envie o escudo do time.",
     fields: [
-      { key: "title", type: "text", legacyName: "rodada", labelKey: "rodada", placeholderKey: "rodada", required: true },
-      { key: "player_name", type: "text", legacyName: "data", labelKey: "data", placeholderKey: "data", required: true },
-      { key: "player_info", type: "text", legacyName: "hora", labelKey: "hora", placeholderKey: "hora", required: false },
-      { key: "team_crest", type: "file", legacyName: "escudo1", labelKey: "esc1", required: true, savedFallback: true },
-      { key: "player_photo", type: "file", legacyName: "escudo2", labelKey: "esc2", required: true }
+      { key: "contratacao_options", type: "contratacao_builder", label: "Estilo e jogadores", required: true, visualNormal: true },
+      { key: "team_crest", type: "file", legacyName: "escudo1", label: "Escudo do time", required: true, savedFallback: true }
     ]
   },
   proximo_jogo: {
@@ -18075,7 +18302,7 @@ Object.keys(CLEAN_PRODUCT_FORM_SCHEMAS).forEach(productKey => {
   const schema = CLEAN_PRODUCT_FORM_SCHEMAS[productKey];
   const hasCoupon = schema.fields.some(field => field.legacyName === "cupom_codigo");
 
-  if(product && Number(product.price || 0) > 0 && !hasCoupon){
+  if(productKey !== "contratacao" && product && Number(product.price || 0) > 0 && !hasCoupon){
     schema.fields.push({ ...CLEAN_COUPON_FIELD });
   }
 });
@@ -18346,6 +18573,136 @@ function renderCleanPeopleField(field, step){
   `;
 }
 
+const CONTRATACAO_BASE_PRICE = 7.8;
+const CONTRATACAO_JERSEY_PRICE = 2;
+const CONTRATACAO_MAX_PLAYERS = 3;
+
+function renderContratacaoPlayerRow(index = 0){
+  const numero = index + 1;
+  return `
+    <div class="contratacaoPlayer" data-contratacao-player>
+      <div class="contratacaoPlayerHeader">
+        <strong>Jogador ${numero}</strong>
+        <button type="button" class="contratacaoRemoveBtn" data-contratacao-remove aria-label="Remover jogador ${numero}">Remover</button>
+      </div>
+      <div class="contratacaoPlayerGrid">
+        <label>Nome
+          <input data-contratacao-name maxlength="80" placeholder="Ex: Jhuan">
+        </label>
+        <label>Posição
+          <input data-contratacao-position maxlength="60" placeholder="Ex: Zagueiro">
+        </label>
+        <label>Tipo do anúncio
+          <select data-contratacao-announcement>
+            <option value="contratado">Contratado</option>
+            <option value="renovado">Renovado</option>
+          </select>
+        </label>
+        <label class="contratacaoPhotoLabel">Foto do jogador
+          <input type="file" accept="image/*" data-contratacao-player-photo>
+          <span data-contratacao-player-file>Nenhuma foto selecionada</span>
+        </label>
+      </div>
+      <label class="contratacaoJerseyToggle">
+        <input type="checkbox" data-contratacao-jersey>
+        <span><strong>Colocar a camiseta do time</strong><small>Opcional: acrescenta R$ 2,00 para este jogador.</small></span>
+      </label>
+    </div>
+  `;
+}
+
+function renderContratacaoBuilder(field, step){
+  return `
+    <div class="cleanFieldCard contratacaoBuilder" data-clean-field-card="${htmlEscape(field.key)}">
+      <div class="contratacaoIntro">
+        <strong>Escolha como sua arte será criada</strong>
+        <span>A amostra serve como modelo de layout. As cores serão adaptadas ao escudo ou uniforme do seu time.</span>
+      </div>
+      <div class="contratacaoStyleGrid" role="radiogroup" aria-label="Estilo da arte">
+        <label class="contratacaoStyleCard">
+          <input type="radio" name="contratacao_style_mode" value="catalog" data-contratacao-style data-sample-id="contratacao_modelo_01_v1" checked>
+          <span><img src="produtos/contratacao.jpg" alt="Amostra 1"><strong>Amostra 1</strong></span>
+        </label>
+        <label class="contratacaoStyleCard">
+          <input type="radio" name="contratacao_style_mode" value="catalog" data-contratacao-style data-sample-id="contratacao_modelo_02_v1">
+          <span><img src="produtos/contratacao-modelo-02.jpeg" alt="Amostra 2"><strong>Amostra 2</strong></span>
+        </label>
+        <label class="contratacaoStyleCard contratacaoStyleText">
+          <input type="radio" name="contratacao_style_mode" value="custom" data-contratacao-style>
+          <span><b>+</b><strong>Enviar meu modelo</strong><small>Use outra arte como referência.</small></span>
+        </label>
+        <label class="contratacaoStyleCard contratacaoStyleText">
+          <input type="radio" name="contratacao_style_mode" value="auto" data-contratacao-style>
+          <span><b>✨</b><strong>Criar sem referência</strong><small>A IA cria um visual novo.</small></span>
+        </label>
+      </div>
+      <label class="contratacaoSharedUpload" data-contratacao-reference-wrap hidden>
+        Referência de layout
+        <input type="file" accept="image/*" data-contratacao-reference>
+        <span data-contratacao-reference-file>Nenhum modelo selecionado</span>
+      </label>
+      <div class="contratacaoPlayers" data-contratacao-players>
+        ${renderContratacaoPlayerRow(0)}
+      </div>
+      <button type="button" class="escActionBtn escActionSave contratacaoAddBtn" data-contratacao-add>Adicionar outro jogador</button>
+      <label class="contratacaoSharedUpload" data-contratacao-jersey-wrap hidden>
+        Foto da camiseta do time
+        <input type="file" accept="image/*" data-contratacao-jersey-reference>
+        <span data-contratacao-jersey-file>Nenhuma camiseta selecionada</span>
+      </label>
+      <div class="contratacaoPriceSummary" data-contratacao-price-summary></div>
+      <div class="contratacaoAdvanceNotice" data-contratacao-advance hidden>
+        Para vários jogadores, o pagamento é antecipado em um único PIX. Você segue com tranquilidade: se precisar de algum ajuste na imagem, nosso WhatsApp estará à disposição para ajudar.
+      </div>
+      <p class="contratacaoPreserveNote">A foto enviada é a referência do jogador: o pedido orienta a IA a preservar rosto e posição e alterar somente o texto, as cores e, quando escolhido, a camiseta.</p>
+    </div>
+  `;
+}
+
+function getContratacaoBuilderData(form){
+  const styleInput = form?.querySelector('[data-contratacao-style]:checked');
+  const styleMode = styleInput?.value || "";
+  const sampleId = styleMode === "catalog" ? (styleInput?.dataset?.sampleId || "") : "";
+  const referenceFile = form?.querySelector("[data-contratacao-reference]")?.files?.[0] || null;
+  const jerseyReference = form?.querySelector("[data-contratacao-jersey-reference]")?.files?.[0] || null;
+  const players = Array.from(form?.querySelectorAll?.("[data-contratacao-player]") || []).map((row, index) => ({
+    index,
+    name:row.querySelector("[data-contratacao-name]")?.value?.trim() || "",
+    position:row.querySelector("[data-contratacao-position]")?.value?.trim() || "",
+    announcement:row.querySelector("[data-contratacao-announcement]")?.value || "contratado",
+    photo:row.querySelector("[data-contratacao-player-photo]")?.files?.[0] || null,
+    jersey:!!row.querySelector("[data-contratacao-jersey]")?.checked
+  }));
+  return { styleMode, sampleId, referenceFile, jerseyReference, players };
+}
+
+function updateContratacaoBuilder(form){
+  if(!form || form.dataset.productForm !== "contratacao") return;
+  const data = getContratacaoBuilderData(form);
+  const customWrap = form.querySelector("[data-contratacao-reference-wrap]");
+  const jerseyWrap = form.querySelector("[data-contratacao-jersey-wrap]");
+  const addBtn = form.querySelector("[data-contratacao-add]");
+  const advance = form.querySelector("[data-contratacao-advance]");
+  const summary = form.querySelector("[data-contratacao-price-summary]");
+  if(customWrap) customWrap.hidden = data.styleMode !== "custom";
+  if(jerseyWrap) jerseyWrap.hidden = !data.players.some(player => player.jersey);
+  if(addBtn) addBtn.hidden = data.players.length >= CONTRATACAO_MAX_PLAYERS;
+  if(advance) advance.hidden = data.players.length <= 1;
+  form.querySelectorAll("[data-contratacao-player]").forEach((row, index) => {
+    const title = row.querySelector(".contratacaoPlayerHeader strong");
+    const remove = row.querySelector("[data-contratacao-remove]");
+    if(title) title.textContent = `Jogador ${index + 1}`;
+    if(remove) remove.hidden = data.players.length <= 1;
+  });
+  const jerseyCount = data.players.filter(player => player.jersey).length;
+  const base = data.players.length * CONTRATACAO_BASE_PRICE;
+  const extra = jerseyCount * CONTRATACAO_JERSEY_PRICE;
+  const total = base + extra;
+  if(summary){
+    summary.innerHTML = `<strong>Total: R$ ${total.toFixed(2).replace(".", ",")}</strong><span>${data.players.length} jogador${data.players.length === 1 ? "" : "es"} × R$ 7,80${jerseyCount ? ` + ${jerseyCount} camiseta${jerseyCount === 1 ? "" : "s"} × R$ 2,00` : ""}</span>`;
+  }
+}
+
 function renderCleanProductFieldContent(product, field, step){
   if(field.type === "text") return renderCleanTextField(product, field, step);
   if(field.type === "scenario") return renderProductScenarioField(product, field);
@@ -18353,6 +18710,7 @@ function renderCleanProductFieldContent(product, field, step){
   if(field.type === "score") return renderCleanScoreField(field, step);
   if(field.type === "matchup") return renderCleanMatchupField(field, step);
   if(field.type === "players" || field.type === "scorers") return renderCleanPeopleField(field, step);
+  if(field.type === "contratacao_builder") return renderContratacaoBuilder(field, step);
   return "";
 }
 
@@ -18471,6 +18829,12 @@ function cleanAccordionControlHasValue(control){
 }
 
 function cleanAccordionItemHasValue(item){
+  if(item?.querySelector?.(".contratacaoBuilder")){
+    const data = getContratacaoBuilderData(item.closest("[data-product-form]"));
+    return data.players.length > 0 && data.players.every(player => (
+      player.name && player.position && player.photo
+    ));
+  }
   return Array.from(item?.querySelectorAll?.("input, textarea, select") || [])
     .some(control => cleanAccordionControlHasValue(control));
 }
@@ -19083,12 +19447,12 @@ function atualizarBrindeEscudo3dAppVisual(){
 
 const CLEAN_PRODUCT_RENDER_ORDER = [
   "jogador_escudo",
+  "contratacao",
   "mascote_uniforme",
   "proximo_jogo",
   "resultado",
   "escalacao",
-  "patrocinador",
-  "contratacao"
+  "patrocinador"
 ];
 
 const PRODUCT_CHOOSER_COPY = {
@@ -19121,8 +19485,8 @@ const PRODUCT_CHOOSER_COPY = {
     desc: "Valorize quem apoia seu time"
   },
   contratacao: {
-    name: "Poste como Profissional",
-    desc: "Anuncie reforços e destaques"
+    name: "Contratação / Renovação",
+    desc: "A partir de R$ 7,80 por jogador"
   }
 };
 
@@ -19150,7 +19514,7 @@ function getCleanProductPickerSelectedRaw(){
 }
 
 function getProductChooserOrder(){
-  return ["mascote_uniforme", "escudo3d", "jogador_escudo", "proximo_jogo", "resultado", "escalacao", "patrocinador"].filter(productKey => PRODUCTS[productKey]);
+  return ["mascote_uniforme", "escudo3d", "jogador_escudo", "contratacao", "proximo_jogo", "resultado", "escalacao", "patrocinador"].filter(productKey => PRODUCTS[productKey]);
 }
 
 function getProductChooserImage(product){
@@ -23865,6 +24229,25 @@ function validateCleanProductForm(productKey, form){
   }
 
   schema.fields.forEach(field => {
+    if(field.type === "contratacao_builder"){
+      const data = getContratacaoBuilderData(form);
+      const files = [data.referenceFile, data.jerseyReference, ...data.players.map(player => player.photo)].filter(Boolean);
+      const sizeMsg = ia4ValidarTamanhoArquivos(files);
+      if(sizeMsg && !fileSizeError){
+        fileSizeError = sizeMsg;
+        markError(field);
+      }
+      const invalidStyle = !["catalog", "custom", "auto"].includes(data.styleMode);
+      const invalidSample = data.styleMode === "catalog" && !["contratacao_modelo_01_v1", "contratacao_modelo_02_v1"].includes(data.sampleId);
+      const missingReference = data.styleMode === "custom" && !data.referenceFile;
+      const invalidPlayers = !data.players.length || data.players.length > CONTRATACAO_MAX_PLAYERS || data.players.some(player => (
+        !player.name || !player.position || !["contratado", "renovado"].includes(player.announcement) || !player.photo
+      ));
+      const missingJersey = data.players.some(player => player.jersey) && !data.jerseyReference;
+      if(invalidStyle || invalidSample || missingReference || invalidPlayers || missingJersey) markError(field);
+      return;
+    }
+
     if(field.type === "scenario"){
       const selection = getProductScenarioSelection(productKey, form);
       if(!selection.valid){
@@ -23928,6 +24311,32 @@ function serializeCleanProductForm(productKey, form){
   const assets = {};
 
   schema.fields.forEach(field => {
+    if(field.type === "contratacao_builder"){
+      const data = getContratacaoBuilderData(form);
+      const player = data.players[0] || {};
+      const announcement = player.announcement || "contratado";
+      fields.contratacao_version = 3;
+      fields.style_mode = data.styleMode;
+      fields.sample_id = data.sampleId;
+      fields.announcement_type = announcement;
+      fields.title = announcement === "renovado" ? "RENOVADO" : "CONTRATADO";
+      fields.headline = fields.title;
+      fields.player_name = player.name || "";
+      fields.player_position = player.position || "";
+      fields.player_info = player.position || "";
+      fields.jersey_enabled = !!player.jersey;
+      fields.players = data.players.map(item => ({
+        nome:item.name,
+        posicao:item.position,
+        tipo_anuncio:item.announcement,
+        camiseta_time:!!item.jersey
+      }));
+      assets.player_photo = { legacyName:"escudo2", files:player.photo ? [player.photo] : [] };
+      assets.design_reference = { legacyName:"referencia", files:data.referenceFile ? [data.referenceFile] : [] };
+      assets.jersey_reference = { legacyName:"camiseta", files:player.jersey && data.jerseyReference ? [data.jerseyReference] : [] };
+      return;
+    }
+
     if(field.type === "text"){
       const value = getCleanFieldValue(form, field.key);
       if(!field.orderTitleKey || value){
@@ -23978,7 +24387,7 @@ function serializeCleanProductForm(productKey, form){
   });
 
   return {
-    schema_version: CLEAN_PRODUCT_SCHEMA_VERSION,
+    schema_version: productKey === "contratacao" ? 3 : CLEAN_PRODUCT_SCHEMA_VERSION,
     product_id: productKey,
     fields,
     assets
@@ -24467,6 +24876,15 @@ function buildLegacyFormDataFromClean(productKey, cleanOrder, options = {}){
     }
   });
 
+  if(productKey === "contratacao"){
+    appendCleanTextLegacy(fd, "rodada", cleanOrder.fields.title || "CONTRATADO");
+    appendCleanTextLegacy(fd, "data", cleanOrder.fields.player_name || "");
+    appendCleanTextLegacy(fd, "hora", cleanOrder.fields.player_position || "");
+    appendCleanAssetLegacy(fd, cleanOrder, "player_photo", "escudo2");
+    appendCleanAssetLegacy(fd, cleanOrder, "design_reference", "referencia");
+    appendCleanAssetLegacy(fd, cleanOrder, "jersey_reference", "camiseta");
+  }
+
   if(cleanOrder.fields.score){
     const s = cleanOrder.fields.score;
     const rodada = `${s.home_team || ""} ${s.home_score || "0"} x ${s.away_score || "0"} ${s.away_team || ""}`.trim();
@@ -24494,7 +24912,16 @@ function buildLegacyFormDataFromClean(productKey, cleanOrder, options = {}){
     fd.set("time_adversario", times.away || "");
   }
 
-  if(productKey === "jogador_escudo" || productKey === "mascote_uniforme"){
+  if(productKey === "contratacao"){
+    const jogadores = [{
+      nome:cleanOrder.fields.player_name || "",
+      posicao:cleanOrder.fields.player_position || "",
+      tipo_anuncio:cleanOrder.fields.announcement_type || "contratado",
+      camiseta_time:!!cleanOrder.fields.jersey_enabled
+    }];
+    fd.append("jogadores_json", JSON.stringify(jogadores));
+    fd.append("jogadores_texto", `${jogadores[0].nome} - ${jogadores[0].posicao}`.trim());
+  }else if(productKey === "jogador_escudo" || productKey === "mascote_uniforme"){
     const nome = cleanOrder.fields.player_name || cleanOrder.fields.mascot_animal || product?.title || "";
     const jogadores = nome ? [{ nome, posicao: "" }] : [];
     fd.append("jogadores_json", JSON.stringify(jogadores));
@@ -24565,6 +24992,17 @@ function resetCleanFormAfterSend(form){
   form.querySelectorAll("[data-clean-file-name]").forEach(el => {
     el.textContent = "Nenhum arquivo";
   });
+  if(productKey === "contratacao"){
+    const players = form.querySelector("[data-contratacao-players]");
+    Array.from(players?.querySelectorAll?.("[data-contratacao-player]") || []).slice(1).forEach(row => row.remove());
+    form.querySelectorAll("[data-contratacao-player-file]").forEach(el => { el.textContent = "Nenhuma foto selecionada"; });
+    const referenceLabel = form.querySelector("[data-contratacao-reference-file]");
+    const jerseyLabel = form.querySelector("[data-contratacao-jersey-file]");
+    if(referenceLabel) referenceLabel.textContent = "Nenhum modelo selecionado";
+    if(jerseyLabel) jerseyLabel.textContent = "Nenhuma camiseta selecionada";
+    delete form.__contratacaoBatchState;
+    updateContratacaoBuilder(form);
+  }
   form.querySelectorAll(".campoObrigatorioErro").forEach(el => el.classList.remove("campoObrigatorioErro"));
   updateCleanAccordionsCompletion(form);
 }
@@ -25137,6 +25575,140 @@ async function tratarFalhaCleanOrderIndeterminada({ form, productKey, product, e
   return { found:false };
 }
 
+function contratacaoCleanOrderForPlayer(form, data, player){
+  const cleanOrder = serializeCleanProductForm("contratacao", form);
+  const announcement = player.announcement === "renovado" ? "renovado" : "contratado";
+  cleanOrder.fields = {
+    ...cleanOrder.fields,
+    contratacao_version:3,
+    style_mode:data.styleMode,
+    sample_id:data.sampleId,
+    announcement_type:announcement,
+    title:announcement === "renovado" ? "RENOVADO" : "CONTRATADO",
+    headline:announcement === "renovado" ? "RENOVADO" : "CONTRATADO",
+    player_name:player.name,
+    player_position:player.position,
+    player_info:player.position,
+    jersey_enabled:!!player.jersey,
+    players:[{
+      nome:player.name,
+      posicao:player.position,
+      tipo_anuncio:announcement,
+      camiseta_time:!!player.jersey
+    }]
+  };
+  cleanOrder.assets = {
+    ...cleanOrder.assets,
+    player_photo:{ legacyName:"escudo2", files:[player.photo] },
+    design_reference:{ legacyName:"referencia", files:data.referenceFile ? [data.referenceFile] : [] },
+    jersey_reference:{ legacyName:"camiseta", files:player.jersey && data.jerseyReference ? [data.jerseyReference] : [] }
+  };
+  return cleanOrder;
+}
+
+async function getOrCreateContratacaoBatchState(form, data){
+  const crest = getCleanAssetFiles(form, "team_crest")[0] || getSavedEscudo1File() || null;
+  const fingerprint = JSON.stringify(await normalizeOrderFingerprintValueAsync({
+    style_mode:data.styleMode,
+    sample_id:data.sampleId,
+    reference:data.referenceFile,
+    jersey_reference:data.jerseyReference,
+    crest,
+    players:data.players.map(player => ({
+      name:player.name,
+      position:player.position,
+      announcement:player.announcement,
+      jersey:player.jersey,
+      photo:player.photo
+    }))
+  }));
+  if(form.__contratacaoBatchState?.fingerprint === fingerprint){
+    return form.__contratacaoBatchState;
+  }
+  const state = {
+    fingerprint,
+    batchId:criarClientRequestId("contratacao_lote"),
+    itemIds:data.players.map(() => criarClientRequestId("contratacao"))
+  };
+  form.__contratacaoBatchState = state;
+  return state;
+}
+
+async function enviarContratacaoLote(form){
+  if(isCleanOrderSubmitBusy(form)) return;
+  const data = getContratacaoBuilderData(form);
+  if(data.players.length <= 1) return;
+
+  setCleanOrderSubmitBusy(form, true);
+  try{
+    if(!token){
+      const okAuto = await criarContaAutomaticaAntesPedido();
+      if(!okAuto) return;
+    }
+
+    setCleanProductMsg(form, "Preparando o pagamento antecipado do lote...");
+    const state = await getOrCreateContratacaoBatchState(form, data);
+    const fd = new FormData();
+    const payloadItems = [];
+    fd.append("batch_id", state.batchId);
+
+    data.players.forEach((player, index) => {
+      const cleanOrder = contratacaoCleanOrderForPlayer(form, data, player);
+      const legacy = fotoJogosPayloadFromLegacyFormData(
+        buildLegacyFormDataFromClean("contratacao", cleanOrder)
+      );
+      const filesMap = {};
+      Object.entries(legacy.files || {}).forEach(([legacyName, file]) => {
+        fotoJogosAppendBatchFile(fd, index, legacyName, file, filesMap);
+      });
+      payloadItems.push({
+        product_id:"contratacao",
+        client_request_id:state.itemIds[index],
+        modalidade_criacao:"com_suporte",
+        fields:legacy.body,
+        files:filesMap
+      });
+    });
+    fd.append("items_json", JSON.stringify(payloadItems));
+
+    const response = await fetch(`${API_BASE}${FOTO_JOGOS_BATCH_ENDPOINT}`, {
+      method:"POST",
+      headers:buildOrderCreationHeaders(state.batchId),
+      body:fd
+    });
+    const out = await ia4LerJsonSeguro(response);
+    const authMsg = ia4TratarAuthInvalida(response, out);
+    if(authMsg) throw new Error(authMsg);
+
+    let criados = Array.isArray(out?.criados) ? out.criados : [];
+    const falhas = Array.isArray(out?.falhas) ? out.falhas : [];
+    if(!criados.length){
+      throw new Error(falhas[0]?.error || out?.error || "Não foi possível criar o lote.");
+    }
+
+    criados = await fotoJogosGerarPixAntesDaCriacao(criados, "com_suporte");
+    criados.forEach(item => registrarPedidoAguardandoPixLocal(item.pedido_id, "contratacao"));
+    fotoJogosAbrirPrimeiroPixGerado(criados);
+
+    const pixOk = criados.some(item => item.pix_copia_cola && !item.pix_error);
+    const total = data.players.reduce((sum, player) => sum + CONTRATACAO_BASE_PRICE + (player.jersey ? CONTRATACAO_JERSEY_PRICE : 0), 0);
+    const totalLabel = `R$ ${total.toFixed(2).replace(".", ",")}`;
+    const falhaLabel = falhas.length ? ` ${falhas.length} item(ns) precisam ser enviados novamente.` : "";
+    setCleanProductMsg(form, pixOk
+      ? `Lote criado. Faça o PIX antecipado de ${totalLabel} para liberar as ${criados.length} artes.${falhaLabel}`
+      : `O lote foi criado, mas não foi possível abrir o PIX agora. Acesse Meus pedidos para pagar.${falhaLabel}`,
+      !pixOk || falhas.length > 0
+    );
+    lockCleanOrderSubmitAfterSuccess(form, criados.map(item => item.pedido_id).filter(Boolean).join(", "));
+    await refreshMe();
+    carregarHistorico();
+  }catch(error){
+    setCleanProductMsg(form, error?.message || "Não foi possível criar o lote. Tente novamente.", true);
+  }finally{
+    setCleanOrderSubmitBusy(form, false);
+  }
+}
+
 async function submitCleanProductForm(e){
   e.preventDefault();
 
@@ -25179,6 +25751,10 @@ async function submitCleanProductForm(e){
 
   setCleanProductMsg(form, "");
   closeCleanAccordions(form);
+  if(productKey === "contratacao" && getContratacaoBuilderData(form).players.length > 1){
+    await enviarContratacaoLote(form);
+    return;
+  }
   await enviarCleanProductFormConfirmado(form, { registrarTentativa:false });
 }
 
@@ -25411,6 +25987,56 @@ async function enviarCleanProductFormConfirmado(form, options = {}){
 }
 
 function bindCleanProductForms(root){
+  root.querySelectorAll('[data-product-form="contratacao"]').forEach(form => {
+    form.addEventListener("click", event => {
+      const add = event.target.closest("[data-contratacao-add]");
+      if(add){
+        const players = form.querySelector("[data-contratacao-players]");
+        const count = players?.querySelectorAll("[data-contratacao-player]").length || 0;
+        if(players && count < CONTRATACAO_MAX_PLAYERS){
+          players.insertAdjacentHTML("beforeend", renderContratacaoPlayerRow(count));
+          delete form.__contratacaoBatchState;
+          updateContratacaoBuilder(form);
+          updateCleanAccordionForField(form, "contratacao_options");
+        }
+        return;
+      }
+      const remove = event.target.closest("[data-contratacao-remove]");
+      if(remove){
+        const rows = form.querySelectorAll("[data-contratacao-player]");
+        if(rows.length > 1){
+          remove.closest("[data-contratacao-player]")?.remove();
+          delete form.__contratacaoBatchState;
+          updateContratacaoBuilder(form);
+          updateCleanAccordionForField(form, "contratacao_options");
+        }
+      }
+    });
+    form.addEventListener("change", event => {
+      const input = event.target;
+      if(input.matches("[data-contratacao-player-photo]")){
+        const fileLabel = input.closest("[data-contratacao-player]")?.querySelector("[data-contratacao-player-file]");
+        if(fileLabel) fileLabel.textContent = input.files?.[0]?.name || "Nenhuma foto selecionada";
+      }
+      if(input.matches("[data-contratacao-reference]")){
+        const fileLabel = form.querySelector("[data-contratacao-reference-file]");
+        if(fileLabel) fileLabel.textContent = input.files?.[0]?.name || "Nenhum modelo selecionado";
+      }
+      if(input.matches("[data-contratacao-jersey-reference]")){
+        const fileLabel = form.querySelector("[data-contratacao-jersey-file]");
+        if(fileLabel) fileLabel.textContent = input.files?.[0]?.name || "Nenhuma camiseta selecionada";
+      }
+      if(input.closest("[data-contratacao-player], .contratacaoBuilder")){
+        delete form.__contratacaoBatchState;
+        updateContratacaoBuilder(form);
+      }
+    });
+    form.addEventListener("input", event => {
+      if(event.target.closest("[data-contratacao-player]")) delete form.__contratacaoBatchState;
+    });
+    updateContratacaoBuilder(form);
+  });
+
   root.querySelectorAll("[data-clean-accordion-toggle]").forEach(btn => {
     btn.addEventListener("click", () => {
       const item = btn.closest("[data-clean-accordion-item]");
