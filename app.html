@@ -11353,6 +11353,7 @@ body.fotoJogosProductFocus #fotoJogosProductReturn{
   aspect-ratio:9 / 16 !important;
   min-height:0;
   background:#071426;
+  scroll-margin-top:clamp(74px,10vh,112px);
 }
 
 .cleanProductImage.is-processing img{
@@ -18724,6 +18725,16 @@ function updateContratacaoBuilder(form){
   }
 }
 
+function scrollContratacaoSamplePreview(form){
+  const preview = form?.closest("[data-clean-product-block]")?.querySelector(".cleanProductImage");
+  if(!preview) return;
+  window.clearTimeout(form.__contratacaoPreviewScrollTimer);
+  form.__contratacaoPreviewScrollTimer = window.setTimeout(() => {
+    const reducedMotion = window.matchMedia?.("(prefers-reduced-motion: reduce)")?.matches;
+    preview.scrollIntoView({ behavior:reducedMotion ? "auto" : "smooth", block:"start" });
+  }, 0);
+}
+
 function renderCleanProductFieldContent(product, field, step){
   if(field.type === "text") return renderCleanTextField(product, field, step);
   if(field.type === "scenario") return renderProductScenarioField(product, field);
@@ -26010,6 +26021,8 @@ async function enviarCleanProductFormConfirmado(form, options = {}){
 function bindCleanProductForms(root){
   root.querySelectorAll('[data-product-form="contratacao"]').forEach(form => {
     form.addEventListener("click", event => {
+      const sampleInput = event.target.closest(".contratacaoStyleCard")?.querySelector('[data-contratacao-style][value="catalog"]');
+      if(sampleInput) scrollContratacaoSamplePreview(form);
       const add = event.target.closest("[data-contratacao-add]");
       if(add){
         const players = form.querySelector("[data-contratacao-players]");
