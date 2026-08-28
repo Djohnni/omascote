@@ -14609,7 +14609,7 @@ body.homeLandingClean[data-page="home"] > main > .wrap > .panel{
             </button>
 
             <button type="button" class="optionBtn" data-product="contratacao">
-              <img src="produtos/contratacao-modelo-02.jpeg" class="imgProduto" loading="lazy" decoding="async" alt="Contratação ou renovação">
+              <img src="produtos/contratacao-modelo-02.png" class="imgProduto" loading="lazy" decoding="async" alt="Contratação ou renovação">
               <div class="optLabel">Contratação ou<br>renovação<br><span style="color:#1fbf63;font-weight:900;">R$7,80</span></div>
             </button>
 
@@ -17570,7 +17570,7 @@ const PRODUCT_CONFIG_DETAILS = {
     title: "Contratação / Renovação",
     price: 7.8,
     visualCategory: "jogador",
-    image: "produtos/contratacao-modelo-02.jpeg",
+    image: "produtos/contratacao-modelo-02.png",
     fields: {
       rodada: { visible: true, required: true },
       data: { visible: true, required: true },
@@ -18206,10 +18206,10 @@ const CLEAN_PRODUCT_FORM_SCHEMAS = {
   },
   contratacao: {
     endpoint: "/pedidos",
-    validationMessage: "Complete os dados de cada jogador, escolha o estilo e envie o escudo do time.",
+    validationMessage: "Envie o logo ou escudo do time, escolha o estilo e complete os dados de cada jogador.",
     fields: [
-      { key: "contratacao_options", type: "contratacao_builder", label: "Estilo e jogadores", required: true, visualNormal: true },
-      { key: "team_crest", type: "file", legacyName: "escudo1", label: "Escudo do time", required: true, savedFallback: true }
+      { key: "team_crest", type: "file", legacyName: "escudo1", label: "Logo / escudo do time (obrigatório)", required: true, savedFallback: true },
+      { key: "contratacao_options", type: "contratacao_builder", label: "Estilo e jogadores", required: true, visualNormal: true }
     ]
   },
   proximo_jogo: {
@@ -18473,8 +18473,11 @@ function renderCleanFileField(product, field, step){
 
 function usesCleanInlineReferenceUploads(product, field){
   const productKey = String(product?.id || product?.key || "");
-  return ["proximo_jogo", "resultado"].includes(productKey)
-    && ["home_crest", "away_crest", "match_photo"].includes(field?.key || "");
+  return (
+    (["proximo_jogo", "resultado"].includes(productKey)
+      && ["home_crest", "away_crest", "match_photo"].includes(field?.key || "")) ||
+    (productKey === "contratacao" && field?.key === "team_crest")
+  );
 }
 
 function renderCleanInlineCrestField(product, field, step){
@@ -18621,11 +18624,11 @@ function renderContratacaoBuilder(field, step){
       <div class="contratacaoStyleGrid" role="radiogroup" aria-label="Estilo da arte">
         <label class="contratacaoStyleCard">
           <input type="radio" name="contratacao_style_mode" value="catalog" data-contratacao-style data-sample-id="contratacao_modelo_01_v1" checked>
-          <span><img src="produtos/contratacao.jpg" alt="Amostra 1"><strong>Amostra 1</strong></span>
+          <span><img src="produtos/contratacao-modelo-01.png" alt="Amostra 1"><strong>Amostra 1</strong></span>
         </label>
         <label class="contratacaoStyleCard">
           <input type="radio" name="contratacao_style_mode" value="catalog" data-contratacao-style data-sample-id="contratacao_modelo_02_v1">
-          <span><img src="produtos/contratacao-modelo-02.jpeg" alt="Amostra 2"><strong>Amostra 2</strong></span>
+          <span><img src="produtos/contratacao-modelo-02.png" alt="Amostra 2"><strong>Amostra 2</strong></span>
         </label>
         <label class="contratacaoStyleCard contratacaoStyleText">
           <input type="radio" name="contratacao_style_mode" value="custom" data-contratacao-style>
