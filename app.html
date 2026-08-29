@@ -14616,7 +14616,7 @@ body.homeLandingClean[data-page="home"] > main > .wrap > .panel{
             </button>
 
             <button type="button" class="optionBtn" data-product="contratacao">
-              <img src="produtos/contratacao-modelo-02.png" class="imgProduto" loading="lazy" decoding="async" alt="Contratação ou renovação">
+              <img src="produtos/contratacao-modelo-02.webp" class="imgProduto" loading="lazy" decoding="async" alt="Contratação ou renovação">
               <div class="optLabel">Contratação ou<br>renovação<br><span style="color:#1fbf63;font-weight:900;">R$7,80</span></div>
             </button>
 
@@ -14661,7 +14661,7 @@ body.homeLandingClean[data-page="home"] > main > .wrap > .panel{
 
             <button type="button" class="optionBtn" data-product="jogador_escudo">
               <div class="optLabel">Poste como jogador<br>profissional<br><span style="color:#1fbf63;font-weight:900;">R$6,00</span></div>
-              <img src="produtos/jogador-escudo-amostra-1.png" class="imgProduto" fetchpriority="high" loading="eager" alt="Jogador mais escudo">
+              <img src="produtos/jogador-escudo-amostra-1.webp" class="imgProduto" fetchpriority="high" loading="eager" decoding="async" alt="Jogador mais escudo">
             </button>
           </div>
         </div>
@@ -17577,7 +17577,7 @@ const PRODUCT_CONFIG_DETAILS = {
     title: "Contratação / Renovação",
     price: 7.8,
     visualCategory: "jogador",
-    image: "produtos/contratacao-modelo-02.png",
+    image: "produtos/contratacao-modelo-02.webp",
     fields: {
       rodada: { visible: true, required: true },
       data: { visible: true, required: true },
@@ -17745,7 +17745,7 @@ const PRODUCT_CONFIG_DETAILS = {
     name: "Poste como jogador profissional",
     price: 6,
     visualCategory: "jogador",
-    image: "produtos/jogador-escudo-amostra-1.png",
+    image: "produtos/jogador-escudo-amostra-1.webp",
     fields: {
       data: { visible: true, required: true },
       esc1: { visible: true, required: true },
@@ -18089,7 +18089,7 @@ const SCENARIO_ASSISTANT_PRODUCT_IDS = Object.freeze([
 const SCENARIO_CURRENT_THUMBNAILS = Object.freeze({
   resultado:"produtos/cenarios/resultado_atual_v1.png",
   proximo_jogo:"produtos/proximo_jogo.jpg",
-  jogador_escudo:"produtos/jogador-escudo-amostra-1.png",
+  jogador_escudo:"produtos/jogador-escudo-amostra-1.webp",
   mascote_uniforme:"produtos/mascote_uniforme.jpg",
   escalacao:"produtos/escalacao.jpg"
 });
@@ -18104,12 +18104,12 @@ const SCENARIO_VARIANTS = Object.freeze([
   Object.freeze({ key:"futsal", suffix:"futsal_v1", label:"Futsal", status:"Disponível", thumbnail:"produtos/cenarios/resultado_futsal_v1.jpg", objectY:"70%" })
 ]);
 const JOGADOR_ESCUDO_SAMPLE_CONFIG = Object.freeze({
-  atual:Object.freeze({ label:"Amostra 1", thumbnail:"produtos/jogador-escudo-amostra-1.png" }),
-  sol:Object.freeze({ label:"Amostra 2", thumbnail:"produtos/jogador-escudo-amostra-2.png" }),
-  noite:Object.freeze({ label:"Amostra 3", thumbnail:"produtos/jogador-escudo-amostra-3.png" }),
-  chuva:Object.freeze({ label:"Amostra 4", thumbnail:"produtos/jogador-escudo-amostra-4.png" }),
-  estadio_grande_dia:Object.freeze({ label:"Amostra 5", thumbnail:"produtos/jogador-escudo-amostra-5.png" }),
-  fumaca:Object.freeze({ label:"Amostra 6", thumbnail:"produtos/jogador-escudo-amostra-6.png" })
+  atual:Object.freeze({ label:"Amostra 1", thumbnail:"produtos/jogador-escudo-amostra-1.webp" }),
+  sol:Object.freeze({ label:"Amostra 2", thumbnail:"produtos/jogador-escudo-amostra-2.webp" }),
+  noite:Object.freeze({ label:"Amostra 3", thumbnail:"produtos/jogador-escudo-amostra-3.webp" }),
+  chuva:Object.freeze({ label:"Amostra 4", thumbnail:"produtos/jogador-escudo-amostra-4.webp" }),
+  estadio_grande_dia:Object.freeze({ label:"Amostra 5", thumbnail:"produtos/jogador-escudo-amostra-5.webp" }),
+  fumaca:Object.freeze({ label:"Amostra 6", thumbnail:"produtos/jogador-escudo-amostra-6.webp" })
 });
 
 function productSupportsScenario(productKey){
@@ -18286,10 +18286,9 @@ const CLEAN_PRODUCT_FORM_SCHEMAS = {
     endpoint: "/pedidos",
     validationMessage: "Preencha o nome do jogador, envie o escudo do time e a foto do jogador.",
     fields: [
-      { key: "player_name", type: "text", legacyName: "data", labelKey: "data", placeholderKey: "data", required: true },
       { key: "scenario_id", type: "scenario", label: "Escolha uma amostra", required: true, visualNormal: true, defaultValue: "jogador_escudo_atual_v1" },
       { key: "team_crest", type: "file", legacyName: "escudo1", labelKey: "esc1", required: true, savedFallback: true },
-      { key: "player_photo", type: "file", legacyName: "mascote", labelKey: "mascote", required: true },
+      { key: "jogador_escudo_players", type: "jogador_escudo_builder", label: "Jogadores", required: true, visualNormal: true },
       { key: "coupon_code", type: "text", legacyName: "cupom_codigo", label: "Cupom", placeholder: "Digite seu cupom", required: false, visualNormal: true }
     ],
     legacyDefaults: { rodada: "Jogador + escudo" }
@@ -18596,13 +18595,15 @@ function renderCleanPeopleField(field, step){
   `;
 }
 
+const PLAYER_ART_BATCH_MAX_ITEMS = 10;
 const CONTRATACAO_BASE_PRICE = 7.8;
 const CONTRATACAO_JERSEY_PRICE = 2;
-const CONTRATACAO_MAX_PLAYERS = 3;
+const CONTRATACAO_MAX_PLAYERS = PLAYER_ART_BATCH_MAX_ITEMS;
+const JOGADOR_ESCUDO_BASE_PRICE = 6;
 const CONTRATACAO_SAMPLE_PREVIEWS = Object.freeze({
-  contratacao_modelo_01_v1:"produtos/contratacao-modelo-01.png",
-  contratacao_modelo_02_v1:"produtos/contratacao-modelo-02.png",
-  contratacao_modelo_03_v1:"produtos/contratacao-modelo-03.png"
+  contratacao_modelo_01_v1:"produtos/contratacao-modelo-01.webp",
+  contratacao_modelo_02_v1:"produtos/contratacao-modelo-02.webp",
+  contratacao_modelo_03_v1:"produtos/contratacao-modelo-03.webp"
 });
 
 function renderContratacaoPlayerRow(index = 0){
@@ -18644,20 +18645,20 @@ function renderContratacaoBuilder(field, step){
     <div class="cleanFieldCard contratacaoBuilder" data-clean-field-card="${htmlEscape(field.key)}">
       <div class="contratacaoIntro">
         <strong>Escolha como sua arte será criada</strong>
-        <span>A amostra serve como modelo de layout. As cores serão adaptadas ao escudo ou uniforme do seu time.</span>
+        <span>A amostra serve como modelo de layout. As cores serão adaptadas ao escudo ou uniforme do seu time. Você pode adicionar até ${CONTRATACAO_MAX_PLAYERS} jogadores.</span>
       </div>
       <div class="contratacaoStyleGrid" role="radiogroup" aria-label="Estilo da arte">
         <label class="contratacaoStyleCard">
           <input type="radio" name="contratacao_style_mode" value="catalog" data-contratacao-style data-sample-id="contratacao_modelo_01_v1" checked>
-          <span><img src="produtos/contratacao-modelo-01.png" alt="Amostra 1"><strong>Amostra 1</strong></span>
+          <span><img src="produtos/contratacao-modelo-01.webp" alt="Amostra 1" loading="lazy" decoding="async"><strong>Amostra 1</strong></span>
         </label>
         <label class="contratacaoStyleCard">
           <input type="radio" name="contratacao_style_mode" value="catalog" data-contratacao-style data-sample-id="contratacao_modelo_02_v1">
-          <span><img src="produtos/contratacao-modelo-02.png" alt="Amostra 2"><strong>Amostra 2</strong></span>
+          <span><img src="produtos/contratacao-modelo-02.webp" alt="Amostra 2" loading="lazy" decoding="async"><strong>Amostra 2</strong></span>
         </label>
         <label class="contratacaoStyleCard">
           <input type="radio" name="contratacao_style_mode" value="catalog" data-contratacao-style data-sample-id="contratacao_modelo_03_v1">
-          <span><img src="produtos/contratacao-modelo-03.png" alt="Amostra 3"><strong>Amostra 3</strong></span>
+          <span><img src="produtos/contratacao-modelo-03.webp" alt="Amostra 3" loading="lazy" decoding="async"><strong>Amostra 3</strong></span>
         </label>
         <label class="contratacaoStyleCard contratacaoStyleText">
           <input type="radio" name="contratacao_style_mode" value="custom" data-contratacao-style>
@@ -18684,7 +18685,7 @@ function renderContratacaoBuilder(field, step){
       </label>
       <div class="contratacaoPriceSummary" data-contratacao-price-summary></div>
       <div class="contratacaoAdvanceNotice" data-contratacao-advance hidden>
-        Para vários jogadores, o pagamento é antecipado em um único PIX. Você segue com tranquilidade: se precisar de algum ajuste na imagem, nosso WhatsApp estará à disposição para ajudar.
+        Para vários jogadores, o pagamento é antecipado em um único PIX e as artes só são liberadas após a confirmação. Você segue com tranquilidade: se precisar de algum ajuste na imagem, nosso WhatsApp estará à disposição para ajudar.
       </div>
     </div>
   `;
@@ -18705,6 +18706,15 @@ function getContratacaoBuilderData(form){
     jersey:!!row.querySelector("[data-contratacao-jersey]")?.checked
   }));
   return { styleMode, sampleId, referenceFile, jerseyReference, players };
+}
+
+function setCleanSubmitIdleLabel(form, label){
+  const btn = form?.querySelector?.(".cleanSubmitBtn");
+  if(!btn) return;
+  btn.dataset.idleLabel = label;
+  if(!isCleanOrderSubmitBusy(form) && !isCleanOrderSubmitLocked(form)){
+    btn.textContent = label;
+  }
 }
 
 function updateContratacaoBuilder(form){
@@ -18737,6 +18747,103 @@ function updateContratacaoBuilder(form){
   if(summary){
     summary.innerHTML = `<strong>Total: R$ ${total.toFixed(2).replace(".", ",")}</strong><span>${data.players.length} jogador${data.players.length === 1 ? "" : "es"} × R$ 7,80${jerseyCount ? ` + ${jerseyCount} camiseta${jerseyCount === 1 ? "" : "s"} × R$ 2,00` : ""}</span>`;
   }
+  setCleanSubmitIdleLabel(form, data.players.length > 1
+    ? `Gerar PIX antecipado · ${data.players.length} artes`
+    : "Criar arte");
+}
+
+function renderJogadorEscudoPlayerRow(index = 0){
+  const numero = index + 1;
+  return `
+    <div class="contratacaoPlayer" data-jogador-escudo-player>
+      <div class="contratacaoPlayerHeader">
+        <strong>Jogador ${numero}</strong>
+        <button type="button" class="contratacaoRemoveBtn" data-jogador-escudo-remove aria-label="Remover jogador ${numero}">Remover</button>
+      </div>
+      <div class="contratacaoPlayerGrid">
+        <label>Nome
+          <input data-jogador-escudo-name maxlength="80" placeholder="Ex: Carlos">
+        </label>
+        <label class="contratacaoPhotoLabel">Foto do jogador
+          <input type="file" accept="image/*" data-jogador-escudo-photo>
+          <span data-jogador-escudo-file>Nenhuma foto selecionada</span>
+        </label>
+      </div>
+    </div>
+  `;
+}
+
+function renderJogadorEscudoBuilder(field, step){
+  return `
+    <div class="cleanFieldCard contratacaoBuilder jogadorEscudoBuilder" data-clean-field-card="${htmlEscape(field.key)}">
+      <div class="contratacaoIntro">
+        <strong>Adicione até ${PLAYER_ART_BATCH_MAX_ITEMS} jogadores</strong>
+        <span>A amostra e o escudo escolhidos serão usados em todas as artes deste lote.</span>
+      </div>
+      <div class="contratacaoPlayers" data-jogador-escudo-players>
+        ${renderJogadorEscudoPlayerRow(0)}
+      </div>
+      <button type="button" class="escActionBtn escActionSave contratacaoAddBtn" data-jogador-escudo-add>Adicionar outro jogador</button>
+      <div class="contratacaoPriceSummary" data-jogador-escudo-price-summary></div>
+      <div class="contratacaoAdvanceNotice" data-jogador-escudo-advance hidden>
+        Para vários jogadores, o pagamento é antecipado em um único PIX e as artes só são liberadas após a confirmação. Se precisar de algum ajuste na imagem, nosso WhatsApp estará à disposição para ajudar.
+      </div>
+    </div>
+  `;
+}
+
+function getJogadorEscudoBuilderData(form){
+  const players = Array.from(form?.querySelectorAll?.("[data-jogador-escudo-player]") || []).map((row, index) => ({
+    index,
+    name:row.querySelector("[data-jogador-escudo-name]")?.value?.trim() || "",
+    photo:row.querySelector("[data-jogador-escudo-photo]")?.files?.[0] || null
+  }));
+  return { players };
+}
+
+function updateJogadorEscudoBuilder(form){
+  if(!form || form.dataset.productForm !== "jogador_escudo") return;
+  const data = getJogadorEscudoBuilderData(form);
+  const addBtn = form.querySelector("[data-jogador-escudo-add]");
+  const advance = form.querySelector("[data-jogador-escudo-advance]");
+  const summary = form.querySelector("[data-jogador-escudo-price-summary]");
+  if(addBtn) addBtn.hidden = data.players.length >= PLAYER_ART_BATCH_MAX_ITEMS;
+  if(advance) advance.hidden = data.players.length <= 1;
+  form.querySelectorAll("[data-jogador-escudo-player]").forEach((row, index) => {
+    const title = row.querySelector(".contratacaoPlayerHeader strong");
+    const remove = row.querySelector("[data-jogador-escudo-remove]");
+    if(title) title.textContent = `Jogador ${index + 1}`;
+    if(remove) remove.hidden = data.players.length <= 1;
+  });
+  const total = data.players.length * JOGADOR_ESCUDO_BASE_PRICE;
+  if(summary){
+    summary.innerHTML = `<strong>Total: R$ ${total.toFixed(2).replace(".", ",")}</strong><span>${data.players.length} jogador${data.players.length === 1 ? "" : "es"} × R$ 6,00</span>`;
+  }
+  setCleanSubmitIdleLabel(form, data.players.length > 1
+    ? `Gerar PIX antecipado · ${data.players.length} artes`
+    : "Criar arte");
+}
+
+function setJogadorEscudoFirstPlayer(form, options = {}){
+  const row = form?.querySelector?.("[data-jogador-escudo-player]");
+  if(!row) return false;
+  let changed = false;
+  const nameInput = row.querySelector("[data-jogador-escudo-name]");
+  const name = String(options.name || "").trim();
+  if(name && nameInput){
+    nameInput.value = name;
+    nameInput.dispatchEvent(new Event("input", { bubbles:true }));
+    changed = true;
+  }
+  const photo = options.photo && typeof options.photo === "object" && options.photo.file
+    ? options.photo.file
+    : options.photo;
+  const photoInput = row.querySelector("[data-jogador-escudo-photo]");
+  if(photo && photoInput){
+    changed = fotoJogosSetFileInput(photoInput, photo) || changed;
+  }
+  updateJogadorEscudoBuilder(form);
+  return changed;
 }
 
 function scrollContratacaoSamplePreview(form){
@@ -18775,6 +18882,7 @@ function renderCleanProductFieldContent(product, field, step){
   if(field.type === "matchup") return renderCleanMatchupField(field, step);
   if(field.type === "players" || field.type === "scorers") return renderCleanPeopleField(field, step);
   if(field.type === "contratacao_builder") return renderContratacaoBuilder(field, step);
+  if(field.type === "jogador_escudo_builder") return renderJogadorEscudoBuilder(field, step);
   return "";
 }
 
@@ -18894,9 +19002,12 @@ function cleanAccordionControlHasValue(control){
 
 function cleanAccordionItemHasValue(item){
   if(item?.querySelector?.(".contratacaoBuilder")){
-    const data = getContratacaoBuilderData(item.closest("[data-product-form]"));
+    const form = item.closest("[data-product-form]");
+    const data = form?.dataset?.productForm === "jogador_escudo"
+      ? getJogadorEscudoBuilderData(form)
+      : getContratacaoBuilderData(form);
     return data.players.length > 0 && data.players.every(player => (
-      player.name && player.position && player.photo
+      player.name && player.photo && (form?.dataset?.productForm === "jogador_escudo" || player.position)
     ));
   }
   return Array.from(item?.querySelectorAll?.("input, textarea, select") || [])
@@ -22427,12 +22538,12 @@ function fotoJogosAplicarJogadorEscudo(jogo){
     return;
   }
 
-  fotoJogosPreencherCampo(form, "player_name", jogo.foto?.nome || "");
+  setJogadorEscudoFirstPlayer(form, {
+    name:jogo.foto?.nome || "",
+    photo:jogo.foto?.tipo === "jogador" ? jogo.foto.file : null
+  });
   setProductScenarioSelection("jogador_escudo", form, jogo.scenario_id || getProductDefaultScenarioId("jogador_escudo"), { dispatch:true });
   fotoJogosAplicarArquivoClean(form, "team_crest", jogo.escudos?.[side]);
-  if(jogo.foto?.tipo === "jogador"){
-    fotoJogosAplicarArquivoClean(form, "player_photo", jogo.foto.file);
-  }
   fotoJogosAbrirProduto(form, "jogador_escudo", "Dados enviados para Jogador + Escudo");
 }
 
@@ -24293,6 +24404,21 @@ function validateCleanProductForm(productKey, form){
   }
 
   schema.fields.forEach(field => {
+    if(field.type === "jogador_escudo_builder"){
+      const data = getJogadorEscudoBuilderData(form);
+      const files = data.players.map(player => player.photo).filter(Boolean);
+      const sizeMsg = ia4ValidarTamanhoArquivos(files);
+      if(sizeMsg && !fileSizeError){
+        fileSizeError = sizeMsg;
+        markError(field);
+      }
+      const invalidPlayers = !data.players.length || data.players.length > PLAYER_ART_BATCH_MAX_ITEMS || data.players.some(player => (
+        !player.name || !player.photo
+      ));
+      if(invalidPlayers) markError(field);
+      return;
+    }
+
     if(field.type === "contratacao_builder"){
       const data = getContratacaoBuilderData(form);
       const files = [data.referenceFile, data.jerseyReference, ...data.players.map(player => player.photo)].filter(Boolean);
@@ -24375,6 +24501,15 @@ function serializeCleanProductForm(productKey, form){
   const assets = {};
 
   schema.fields.forEach(field => {
+    if(field.type === "jogador_escudo_builder"){
+      const data = getJogadorEscudoBuilderData(form);
+      const player = data.players[0] || {};
+      fields.player_name = player.name || "";
+      fields.players = data.players.map(item => ({ nome:item.name, posicao:"" }));
+      assets.player_photo = { legacyName:"mascote", files:player.photo ? [player.photo] : [] };
+      return;
+    }
+
     if(field.type === "contratacao_builder"){
       const data = getContratacaoBuilderData(form);
       const player = data.players[0] || {};
@@ -24947,6 +25082,9 @@ function buildLegacyFormDataFromClean(productKey, cleanOrder, options = {}){
     appendCleanAssetLegacy(fd, cleanOrder, "player_photo", "escudo2");
     appendCleanAssetLegacy(fd, cleanOrder, "design_reference", "referencia");
     appendCleanAssetLegacy(fd, cleanOrder, "jersey_reference", "camiseta");
+  }else if(productKey === "jogador_escudo"){
+    appendCleanTextLegacy(fd, "data", cleanOrder.fields.player_name || "");
+    appendCleanAssetLegacy(fd, cleanOrder, "player_photo", "mascote");
   }
 
   if(cleanOrder.fields.score){
@@ -25069,6 +25207,13 @@ function resetCleanFormAfterSend(form){
     if(jerseyLabel) jerseyLabel.textContent = "Nenhuma camiseta selecionada";
     delete form.__contratacaoBatchState;
     updateContratacaoBuilder(form);
+  }
+  if(productKey === "jogador_escudo"){
+    const players = form.querySelector("[data-jogador-escudo-players]");
+    Array.from(players?.querySelectorAll?.("[data-jogador-escudo-player]") || []).slice(1).forEach(row => row.remove());
+    form.querySelectorAll("[data-jogador-escudo-file]").forEach(el => { el.textContent = "Nenhuma foto selecionada"; });
+    delete form.__jogadorEscudoBatchState;
+    updateJogadorEscudoBuilder(form);
   }
   form.querySelectorAll(".campoObrigatorioErro").forEach(el => el.classList.remove("campoObrigatorioErro"));
   updateCleanAccordionsCompletion(form);
@@ -25776,6 +25921,115 @@ async function enviarContratacaoLote(form){
   }
 }
 
+function jogadorEscudoCleanOrderForPlayer(form, player){
+  const cleanOrder = serializeCleanProductForm("jogador_escudo", form);
+  cleanOrder.fields = {
+    ...cleanOrder.fields,
+    player_name:player.name,
+    players:[{ nome:player.name, posicao:"" }]
+  };
+  cleanOrder.assets = {
+    ...cleanOrder.assets,
+    player_photo:{ legacyName:"mascote", files:[player.photo] }
+  };
+  return cleanOrder;
+}
+
+async function getOrCreateJogadorEscudoBatchState(form, data){
+  const crest = getCleanAssetFiles(form, "team_crest")[0] || getSavedEscudo1File() || null;
+  const scenarioId = getProductScenarioSelection("jogador_escudo", form).id || "";
+  const fingerprint = JSON.stringify(await normalizeOrderFingerprintValueAsync({
+    scenario_id:scenarioId,
+    crest,
+    players:data.players.map(player => ({ name:player.name, photo:player.photo }))
+  }));
+  if(form.__jogadorEscudoBatchState?.fingerprint === fingerprint){
+    return form.__jogadorEscudoBatchState;
+  }
+  const state = {
+    fingerprint,
+    batchId:criarClientRequestId("jogador_escudo_lote"),
+    itemIds:data.players.map(() => criarClientRequestId("jogador_escudo"))
+  };
+  form.__jogadorEscudoBatchState = state;
+  return state;
+}
+
+async function enviarJogadorEscudoLote(form){
+  if(isCleanOrderSubmitBusy(form)) return;
+  const data = getJogadorEscudoBuilderData(form);
+  if(data.players.length <= 1) return;
+
+  setCleanOrderSubmitBusy(form, true);
+  try{
+    if(!token){
+      const okAuto = await criarContaAutomaticaAntesPedido();
+      if(!okAuto) return;
+    }
+
+    setCleanProductMsg(form, "Preparando o pagamento antecipado do lote...");
+    const state = await getOrCreateJogadorEscudoBatchState(form, data);
+    const fd = new FormData();
+    const payloadItems = [];
+    fd.append("batch_id", state.batchId);
+
+    data.players.forEach((player, index) => {
+      const cleanOrder = jogadorEscudoCleanOrderForPlayer(form, player);
+      const legacy = fotoJogosPayloadFromLegacyFormData(
+        buildLegacyFormDataFromClean("jogador_escudo", cleanOrder)
+      );
+      const filesMap = {};
+      Object.entries(legacy.files || {}).forEach(([legacyName, file]) => {
+        fotoJogosAppendBatchFile(fd, index, legacyName, file, filesMap);
+      });
+      payloadItems.push({
+        product_id:"jogador_escudo",
+        client_request_id:state.itemIds[index],
+        modalidade_criacao:"com_suporte",
+        fields:legacy.body,
+        files:filesMap
+      });
+    });
+    fd.append("items_json", JSON.stringify(payloadItems));
+
+    const response = await fetch(`${API_BASE}${FOTO_JOGOS_BATCH_ENDPOINT}`, {
+      method:"POST",
+      headers:buildOrderCreationHeaders(state.batchId),
+      body:fd
+    });
+    const out = await ia4LerJsonSeguro(response);
+    const authMsg = ia4TratarAuthInvalida(response, out);
+    if(authMsg) throw new Error(authMsg);
+
+    let criados = Array.isArray(out?.criados) ? out.criados : [];
+    const falhas = Array.isArray(out?.falhas) ? out.falhas : [];
+    if(!criados.length){
+      throw new Error(falhas[0]?.error || out?.error || "Não foi possível criar o lote.");
+    }
+
+    criados = await fotoJogosGerarPixAntesDaCriacao(criados, "com_suporte");
+    criados.forEach(item => registrarPedidoAguardandoPixLocal(item.pedido_id, "jogador_escudo"));
+    fotoJogosAbrirPrimeiroPixGerado(criados);
+
+    const pixOk = criados.some(item => item.pix_copia_cola && !item.pix_error);
+    const total = data.players.length * JOGADOR_ESCUDO_BASE_PRICE;
+    const totalLabel = `R$ ${total.toFixed(2).replace(".", ",")}`;
+    const falhaLabel = falhas.length ? ` ${falhas.length} item(ns) precisam ser enviados novamente.` : "";
+    setCleanProductMsg(form, pixOk
+      ? `Lote criado. Faça o PIX antecipado de ${totalLabel} para liberar as ${criados.length} artes.${falhaLabel}`
+      : `O lote foi criado, mas não foi possível abrir o PIX agora. Acesse Meus pedidos para pagar.${falhaLabel}`,
+      !pixOk || falhas.length > 0
+    );
+    lockCleanOrderSubmitAfterSuccess(form, criados.map(item => item.pedido_id).filter(Boolean).join(", "));
+    await refreshMe();
+    carregarHistorico();
+  }catch(error){
+    setCleanProductMsg(form, error?.message || "Não foi possível criar o lote. Tente novamente.", true);
+  }finally{
+    setCleanOrderSubmitBusy(form, false);
+  }
+}
+
 async function submitCleanProductForm(e){
   e.preventDefault();
 
@@ -25820,6 +26074,10 @@ async function submitCleanProductForm(e){
   closeCleanAccordions(form);
   if(productKey === "contratacao" && getContratacaoBuilderData(form).players.length > 1){
     await enviarContratacaoLote(form);
+    return;
+  }
+  if(productKey === "jogador_escudo" && getJogadorEscudoBuilderData(form).players.length > 1){
+    await enviarJogadorEscudoLote(form);
     return;
   }
   await enviarCleanProductFormConfirmado(form, { registrarTentativa:false });
@@ -26058,15 +26316,53 @@ function bindCleanProductForms(root){
     form.addEventListener("click", event => {
       const card = event.target.closest("[data-product-scenario-card]");
       const input = card?.querySelector('input[name="scenario_id"]');
-      if(!input || input.disabled) return;
-      updateJogadorEscudoSamplePreview(form, input.value);
-      scrollJogadorEscudoSamplePreview(form);
+      if(input && !input.disabled){
+        updateJogadorEscudoSamplePreview(form, input.value);
+        scrollJogadorEscudoSamplePreview(form);
+      }
+      const add = event.target.closest("[data-jogador-escudo-add]");
+      if(add){
+        const players = form.querySelector("[data-jogador-escudo-players]");
+        const count = players?.querySelectorAll("[data-jogador-escudo-player]").length || 0;
+        if(players && count < PLAYER_ART_BATCH_MAX_ITEMS){
+          players.insertAdjacentHTML("beforeend", renderJogadorEscudoPlayerRow(count));
+          delete form.__jogadorEscudoBatchState;
+          updateJogadorEscudoBuilder(form);
+          updateCleanAccordionForField(form, "jogador_escudo_players");
+        }
+        return;
+      }
+      const remove = event.target.closest("[data-jogador-escudo-remove]");
+      if(remove){
+        const rows = form.querySelectorAll("[data-jogador-escudo-player]");
+        if(rows.length > 1){
+          remove.closest("[data-jogador-escudo-player]")?.remove();
+          delete form.__jogadorEscudoBatchState;
+          updateJogadorEscudoBuilder(form);
+          updateCleanAccordionForField(form, "jogador_escudo_players");
+        }
+      }
     });
     form.addEventListener("change", event => {
       if(event.target.matches('input[name="scenario_id"]')){
         updateJogadorEscudoSamplePreview(form, event.target.value);
       }
+      if(event.target.matches("[data-jogador-escudo-photo]")){
+        const fileLabel = event.target.closest("[data-jogador-escudo-player]")?.querySelector("[data-jogador-escudo-file]");
+        if(fileLabel) fileLabel.textContent = event.target.files?.[0]?.name || "Nenhuma foto selecionada";
+      }
+      if(event.target.closest("[data-jogador-escudo-player], .jogadorEscudoBuilder")){
+        delete form.__jogadorEscudoBatchState;
+        updateJogadorEscudoBuilder(form);
+      }
     });
+    form.addEventListener("input", event => {
+      if(event.target.closest("[data-jogador-escudo-player]")){
+        delete form.__jogadorEscudoBatchState;
+        updateJogadorEscudoBuilder(form);
+      }
+    });
+    updateJogadorEscudoBuilder(form);
   });
 
   root.querySelectorAll('[data-product-form="contratacao"]').forEach(form => {
@@ -32628,6 +32924,14 @@ function perfilAssistLimparCleanProduto(form, productKey){
       return;
     }
 
+    if(field.type === "jogador_escudo_builder"){
+      const players = form.querySelector("[data-jogador-escudo-players]");
+      if(players) players.innerHTML = renderJogadorEscudoPlayerRow(0);
+      delete form.__jogadorEscudoBatchState;
+      updateJogadorEscudoBuilder(form);
+      return;
+    }
+
     if(field.type === "file" || field.type === "multi-file"){
       const input = getCleanFormAsset(form, field.key);
       if(input) input.value = "";
@@ -32710,7 +33014,7 @@ async function perfilAssistAplicarClean(productKey, form, box, opcoes = {}){
   if(productKey === "jogador_escudo"){
     alterou = await perfilAssistAplicarEscudoClean(productKey, form) || alterou;
     if(jogador){
-      alterou = perfilAssistSetCleanField(form, "player_name", jogador.apelido || jogador.nome) || alterou;
+      alterou = setJogadorEscudoFirstPlayer(form, { name:jogador.apelido || jogador.nome }) || alterou;
     }
     if(!jogador && !alterou) return { ok:false, message:"Cadastre um jogador ou escudo no Perfil do Time para preencher este produto." };
   }
