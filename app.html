@@ -8680,16 +8680,6 @@ body.saldoMenuAberto .ia4WhatsappBtn{
   color:#334155;
 }
 
-body.omascoteAppMode [data-price-preview],
-body.omascoteAppMode [data-app-payment-cta]{
-  display:none !important;
-}
-
-body.omascoteAppMode .cleanProductPrice,
-body.omascoteAppMode .optLabel span{
-  display:none !important;
-}
-
 body.homeLandingClean.visitanteNaoLogado.visitantePrimeiroAcessoReal > main > .wrap{
   padding-top:0 !important;
 }
@@ -19572,9 +19562,6 @@ function formatCleanProductPrice(product){
   if(product?.id === "escudo3d" && ia4Escudo3dBrindeGratisNoApp()){
     return "Grátis no app";
   }
-  if(typeof ia4EstaEmModoApp === "function" && ia4EstaEmModoApp()){
-    return "";
-  }
   const price = Number(product?.price || 0);
   return price ? `R$${price.toFixed(2).replace(".", ",")}` : "";
 }
@@ -19628,10 +19615,6 @@ function schedulePricePreviewUpdate(target, delay = 250){
 
 async function updatePricePreview(target){
   if(!target) return;
-  if(typeof ia4EstaEmModoApp === "function" && ia4EstaEmModoApp()){
-    target.innerHTML = "";
-    return;
-  }
 
   const block = target.closest("[data-clean-product-block]") || document;
   const productKey = getPricePreviewProductKey(target);
@@ -24730,10 +24713,6 @@ function ia4AppModeHeaders(){
     : {};
 }
 
-function ia4MensagemRecursoIndisponivelApp(){
-  return "Pagamentos e desbloqueios pagos não estão disponíveis no app.";
-}
-
 function ia4Escudo3dBrindeGratisNoApp(){
   return (
     brindeEscudo3dAppDisponivel === true &&
@@ -24756,24 +24735,6 @@ function ia4PedidoGratisPermitidoNoApp(productKey = "", dados = {}){
 
   const basePrice = Number(PRODUCTS[key]?.price);
   return !!key && Number.isFinite(basePrice) && basePrice <= 0;
-}
-
-function ia4BloquearRecursoPagoNoApp(target = null, options = {}){
-  if(!(typeof ia4EstaEmModoApp === "function" && ia4EstaEmModoApp())) return false;
-
-  const opcoes = typeof options === "string" ? { productKey: options } : (options || {});
-  if(ia4PedidoGratisPermitidoNoApp(opcoes.productKey || opcoes.product_id || opcoes.produto, opcoes)){
-    return false;
-  }
-
-  const msg = ia4MensagemRecursoIndisponivelApp();
-  if(target && typeof target === "object" && "textContent" in target){
-    target.textContent = msg;
-  }else{
-    alert(msg);
-  }
-
-  return true;
 }
 
 const cleanOrderSubmitInFlight = new WeakSet();
@@ -27356,10 +27317,6 @@ const SALDO_PIX_LABELS = {
 };
 
 async function comprarCreditos(pacote, metodo = "checkout", triggerBtn = null){
-  if(metodo !== "pix" && ia4BloquearRecursoPagoNoApp()){
-    return;
-  }
-
   if(!token){
     acaoDepoisDoCadastro = () => comprarCreditos(pacote, metodo);
     abrirCadastroVisitanteModal();
@@ -27392,7 +27349,7 @@ async function comprarCreditos(pacote, metodo = "checkout", triggerBtn = null){
       headers:{
         "Authorization": "Bearer " + token,
         "Content-Type": "application/json",
-        ...(metodo === "pix" ? {} : ia4AppModeHeaders())
+        ...ia4AppModeHeaders()
       },
       body: JSON.stringify({ pacote, ...getIa4AccessContext() }),
       ...(timeoutMs ? { signal: controller.signal } : {})
@@ -30584,15 +30541,6 @@ function pedidoEconomicoAntesPagamentoUI(p){
 }
 
 function cardPagamentoPendente(p) {
-  if(typeof ia4EstaEmModoApp === "function" && ia4EstaEmModoApp()){
-    return `
-      <div class="pagamentoPendenteBox">
-        <div class="pagamentoPendenteTitulo">Recurso indisponível no app</div>
-        <div class="pagamentoPendenteTexto">${ia4MensagemRecursoIndisponivelApp()}</div>
-      </div>
-    `;
-  }
-
   const valorNumero = Number(p.valor_pendente || 0);
   const valor = Number.isInteger(valorNumero)
     ? String(valorNumero)
@@ -30626,10 +30574,6 @@ function cardPagamentoPendente(p) {
 }
 
 async function gerarPixPedido(id) {
-  if(ia4BloquearRecursoPagoNoApp()){
-    return null;
-  }
-
   if(!token){
     alert("Faça login para pagar com Pix.");
     return null;
@@ -30710,10 +30654,6 @@ function mostrarCodigoPixCopiaManual(texto){
 }
 
 async function copiarPixPedido(id) {
-  if(ia4BloquearRecursoPagoNoApp()){
-    return;
-  }
-
   try{
     const data = await gerarPixPedido(id);
     if(!data?.pix_copia_cola){
@@ -30735,10 +30675,6 @@ async function copiarPixPedido(id) {
 }
 
 async function verQrCodePedido(id) {
-  if(ia4BloquearRecursoPagoNoApp()){
-    return;
-  }
-
   try{
     const data = await gerarPixPedido(id);
 
@@ -30755,10 +30691,6 @@ async function verQrCodePedido(id) {
 }
 
 async function usarSaldoPedido(id) {
-  if(ia4BloquearRecursoPagoNoApp()){
-    return;
-  }
-
   if(!token){
     alert("Faça login para usar seu saldo Meu Clube FC.");
     return;
@@ -30795,10 +30727,6 @@ async function usarSaldoPedido(id) {
 }
 
 function abrirModalPixQr(id, data) {
-  if(ia4BloquearRecursoPagoNoApp()){
-    return;
-  }
-
   pararPollingSaldoPix();
   saldoPixAtual = null;
   const modal = document.getElementById("pixQrModal");
@@ -31091,7 +31019,7 @@ function atualizarMenuPedidosTopo(pedidos){
         <div class="menuPedidoTipo">${p.tipo || "Arte"}</div>
         ${criacaoEconomica ? `<div class="ajustePedidoBox">Cria\u00e7\u00e3o Econ\u00f4mica — sem altera\u00e7\u00f5es personalizadas.</div>` : ``}
         <div class="menuPedidoStatus">${ajustePendente ? "⏳ Ajustando sua arte..." : textoStatusPedido(p.status)}</div>
-        ${mostrarPagamentoPendente ? cardPagamentoPendente(p) : pagamentoPendente ? `<div class="ajustePedidoBox">${typeof ia4EstaEmModoApp === "function" && ia4EstaEmModoApp() ? ia4MensagemRecursoIndisponivelApp() : "Pagamento pendente."}</div>` : ``}
+        ${mostrarPagamentoPendente ? cardPagamentoPendente(p) : pagamentoPendente ? `<div class="ajustePedidoBox">Pagamento pendente.</div>` : ``}
         ${p.status === "pronto" ? `<div class="descLabelInstagram">Sugestão de descrição para Instagram</div>` : ``}
         ${barraProducaoPedido(p)}
         ${p.status === "pronto" ? `
@@ -31265,7 +31193,7 @@ async function carregarHistorico(){
         ${criacaoEconomica ? `<div class="ajustePedidoBox">Cria\u00e7\u00e3o Econ\u00f4mica — sem altera\u00e7\u00f5es personalizadas.</div>` : ``}
         ID: ${p.id}<br>
         Status: ${ajustePendente ? "⏳ Ajustando sua arte..." : textoStatusPedido(p.status)}<br>
-        ${mostrarPagamentoPendente ? cardPagamentoPendente(p) : pagamentoPendente ? `<div class="ajustePedidoBox">${typeof ia4EstaEmModoApp === "function" && ia4EstaEmModoApp() ? ia4MensagemRecursoIndisponivelApp() : "Pagamento pendente."}</div>` : ``}
+        ${mostrarPagamentoPendente ? cardPagamentoPendente(p) : pagamentoPendente ? `<div class="ajustePedidoBox">Pagamento pendente.</div>` : ``}
         ${p.status === "pronto" ? `<div class="descLabelInstagram">Sugestão de descrição para Instagram</div>` : ``}
         ${barraProducaoPedido(p)}
 
@@ -38465,8 +38393,8 @@ function ia4EstaEmModoApp(){
     modoForcadoTeste = false;
   }
 
-  // Bloqueio de pagamento vale apenas para app Android/TWA com sinal explicito.
-  // PWA instalado tambem usa display-mode standalone, mas deve funcionar como site.
+  // Identifica o Android/TWA para brindes, avisos e contexto de acesso.
+  // Pagamentos usam o mesmo fluxo autenticado no app e no site.
   return (
     modoForcadoTeste ||
     document.referrer.startsWith("android-app://")
