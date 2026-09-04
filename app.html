@@ -11471,6 +11471,82 @@ body.fotoJogosProductFocus #fotoJogosProductReturn{
   gap:12px;
 }
 
+.resultadoVisualStyleChoice{
+  align-self:end;
+  display:grid;
+  gap:8px;
+  min-width:0;
+  padding:12px;
+  border:1px solid #e2e8f0;
+  border-radius:14px;
+  background:#f8fafc;
+  color:#475569;
+}
+
+.resultadoVisualStyleTitle{
+  font-size:12px;
+  line-height:1.2;
+  font-weight:900;
+}
+
+.resultadoVisualStyleOptions{
+  display:flex;
+  gap:6px;
+}
+
+.resultadoVisualStyleOption{
+  position:relative;
+  min-width:0;
+  cursor:pointer;
+  -webkit-tap-highlight-color:transparent;
+}
+
+.resultadoVisualStyleRadio{
+  position:absolute;
+  width:1px;
+  height:1px;
+  margin:-1px;
+  overflow:hidden;
+  clip:rect(0, 0, 0, 0);
+  white-space:nowrap;
+  opacity:0;
+}
+
+.resultadoVisualStyleText{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  min-width:46px;
+  min-height:32px;
+  padding:6px 10px;
+  border:1px solid #cbd5e1;
+  border-radius:9px;
+  background:#ffffff;
+  color:#475569;
+  font-size:12px;
+  line-height:1;
+  font-weight:900;
+  transition:border-color .16s ease, background .16s ease, color .16s ease;
+}
+
+.resultadoVisualStyleRadio:focus-visible + .resultadoVisualStyleText{
+  outline:3px solid rgba(22,163,74,.24);
+  outline-offset:2px;
+}
+
+.resultadoVisualStyleRadio:checked + .resultadoVisualStyleText{
+  border-color:#86efac;
+  background:#ecfdf3;
+  color:#15803d;
+}
+
+.resultadoVisualStyleHint{
+  font-size:10px;
+  line-height:1.25;
+  color:#94a3b8;
+  font-weight:750;
+}
+
 .resultadoScenarioCard{
   position:relative;
   display:block;
@@ -18538,6 +18614,20 @@ function renderProductScenarioField(product, field){
               </label>
             `;
           }).join("")}
+          <div class="resultadoVisualStyleChoice" role="radiogroup" aria-label="Estilo da arte">
+            <span class="resultadoVisualStyleTitle">Estilo da arte</span>
+            <span class="resultadoVisualStyleOptions">
+              <label class="resultadoVisualStyleOption">
+                <input class="resultadoVisualStyleRadio" type="radio" name="visual_style" value="3d" checked>
+                <span class="resultadoVisualStyleText">3D</span>
+              </label>
+              <label class="resultadoVisualStyleOption">
+                <input class="resultadoVisualStyleRadio" type="radio" name="visual_style" value="2d">
+                <span class="resultadoVisualStyleText">2D</span>
+              </label>
+            </span>
+            <span class="resultadoVisualStyleHint">3D é o padrão</span>
+          </div>
         </div>
       </fieldset>
     </div>
@@ -24081,6 +24171,11 @@ function getProductScenarioSelection(productKey, form){
   return { valid, id, option, reserved, checkedCount:checked.length };
 }
 
+function getProductVisualStyle(form){
+  const selected = String(form?.querySelector?.('input[name="visual_style"]:checked')?.value || "").toLowerCase();
+  return selected === "2d" ? "2d" : "3d";
+}
+
 function getResultadoScenarioSelection(form){
   return getProductScenarioSelection("resultado", form);
 }
@@ -24651,6 +24746,10 @@ function serializeCleanProductForm(productKey, form){
       }
     }
   });
+
+  if(productSupportsScenario(productKey)){
+    fields.visual_style = getProductVisualStyle(form);
+  }
 
   return {
     schema_version: productKey === "contratacao" ? 3 : CLEAN_PRODUCT_SCHEMA_VERSION,
