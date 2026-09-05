@@ -38,9 +38,7 @@ const catalog = {
   pagamento: "pix",
   planos: [
     { codigo: "semanal_1", nome: "1 imagem por semana", imagens_por_semana: 1, imagens_no_ciclo: 4, valor_centavos: 1890 },
-    { codigo: "semanal_2", nome: "2 imagens por semana", imagens_por_semana: 2, imagens_no_ciclo: 8, valor_centavos: 2890 },
-    { codigo: "semanal_4", nome: "4 imagens por semana", imagens_por_semana: 4, imagens_no_ciclo: 16, valor_centavos: 3890 },
-    { codigo: "semanal_6", nome: "6 imagens por semana", imagens_por_semana: 6, imagens_no_ciclo: 24, valor_centavos: 4890 }
+    { codigo: "semanal_2", nome: "2 imagens por semana", imagens_por_semana: 2, imagens_no_ciclo: 8, valor_centavos: 2890 }
   ]
 };
 
@@ -140,12 +138,13 @@ async function verify() {
 
   const render = makeContext("", true);
   render.context.renderizarPlanosSemanais();
-  for (const value of ["R$ 18,90", "R$ 28,90", "R$ 38,90", "R$ 48,90"]) {
+  for (const value of ["R$ 18,90", "R$ 28,90"]) {
     assert.ok(render.nodes.weeklyPlansBody.innerHTML.includes(value), value);
   }
-  for (const weekly of [1, 2, 4, 6]) {
+  for (const weekly of [1, 2]) {
     assert.ok(render.nodes.weeklyPlansBody.innerHTML.includes("Até " + weekly + " imagem"));
   }
+  assert.doesNotMatch(render.nodes.weeklyPlansBody.innerHTML, /R\$ (?:38|48),90/);
   assert.match(render.nodes.weeklyPlansBody.innerHTML, /qualquer dia/);
   assert.match(render.nodes.weeklyPlansBody.innerHTML, /artes padrão de até R\$ 8/);
   assert.match(render.nodes.weeklyPlansBody.innerHTML, /Mascote \+ uniforme e adicionais não entram/);
@@ -158,8 +157,8 @@ async function verify() {
     imagens_por_semana:2,
     disponiveis_na_semana:1,
     proximo_plano:{
-      codigo:"semanal_4",
-      nome:"4 imagens por semana",
+      codigo:"semanal_1",
+      nome:"1 imagem por semana",
       inicia_em:"2026-10-05T15:00:00.000Z"
     }
   };
