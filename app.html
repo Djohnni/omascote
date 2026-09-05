@@ -13490,6 +13490,54 @@ body.homeLandingClean.fotoJogosProductFocus[data-page="home"] #tempoEstimadoBox{
   letter-spacing:.04em;
 }
 
+.weeklyPlanAccountCard{
+  order:1;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:14px;
+  padding:12px;
+  border:1px solid #ead493;
+  border-radius:12px;
+  background:linear-gradient(135deg,#fffdf5,#fff7d6);
+  color:#111827;
+}
+
+.weeklyPlanAccountCard[hidden]{
+  display:none !important;
+}
+
+.weeklyPlanAccountCopy{
+  min-width:0;
+  display:grid;
+  gap:3px;
+}
+
+.weeklyPlanAccountCopy strong{
+  font-size:15px;
+  line-height:1.2;
+}
+
+.weeklyPlanAccountCopy small{
+  color:#5f5130;
+  font-size:12px;
+  line-height:1.35;
+  font-weight:750;
+}
+
+.weeklyPlanAccountBtn{
+  flex:0 0 auto;
+  min-height:40px;
+  padding:9px 13px;
+  border:1px solid #d6a51f;
+  border-radius:9px;
+  background:#11110f;
+  color:#ffffff;
+  font-size:12px;
+  font-weight:900;
+  cursor:pointer;
+}
+
 body[data-page="home"] .accountMenuPanel .logoutTopBar.logoutOnlyTop{
   order:3;
   display:grid !important;
@@ -13607,6 +13655,16 @@ body[data-page="home"] .accountMenuPanel .saldoTopoExtra{
   .accountMenuBalance strong{
     font-size:15px;
   }
+
+  .weeklyPlanAccountCard{
+    align-items:stretch;
+    flex-direction:column;
+    gap:9px;
+  }
+
+  .weeklyPlanAccountBtn{
+    width:100%;
+  }
 }
 
 @media (max-width:390px){
@@ -13616,6 +13674,190 @@ body[data-page="home"] .accountMenuPanel .saldoTopoExtra{
   .accountMenuPanel #btnSair{
     padding-inline:7px !important;
     font-size:12px !important;
+  }
+}
+
+/* ===== PLANOS SEMANAIS ===== */
+#weeklyPlansModal.modalMask{
+  align-items:flex-start;
+  justify-content:center;
+  min-height:100vh;
+  min-height:100dvh;
+  padding:clamp(10px, 3vh, 20px) 12px max(28px, calc(env(safe-area-inset-bottom, 0px) + 24px));
+  overflow-y:auto;
+  -webkit-overflow-scrolling:touch;
+  overscroll-behavior:contain;
+}
+
+#weeklyPlansModal .modalCard{
+  width:min(760px, calc(100vw - 24px));
+  max-height:calc(100dvh - 44px);
+  margin:auto 0;
+  display:flex;
+  flex-direction:column;
+  overflow:hidden;
+  border:1px solid #ead493;
+  border-radius:22px;
+  background:#fffdf8;
+  color:#111827;
+}
+
+#weeklyPlansModal .modalTop{
+  flex:0 0 auto;
+  border-bottom:1px solid #eee3c2;
+  background:linear-gradient(135deg,#11110f,#272418);
+}
+
+.weeklyPlansBody{
+  flex:1 1 auto;
+  min-height:0;
+  padding:18px;
+  overflow-y:auto;
+  -webkit-overflow-scrolling:touch;
+}
+
+.weeklyPlansIntro{
+  margin:0 0 15px;
+  color:#475569;
+  font-size:13px;
+  line-height:1.45;
+  font-weight:750;
+  text-align:center;
+}
+
+.weeklyPlansGrid{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:12px;
+}
+
+.weeklyPlanOption{
+  position:relative;
+  display:grid;
+  gap:9px;
+  padding:16px;
+  border:1px solid #e5d7ab;
+  border-radius:16px;
+  background:#ffffff;
+  box-shadow:0 10px 25px rgba(53,41,8,.07);
+}
+
+.weeklyPlanOption.is-featured{
+  border-color:#d6a51f;
+  box-shadow:0 12px 28px rgba(214,165,31,.18);
+}
+
+.weeklyPlanBadge{
+  justify-self:start;
+  padding:4px 8px;
+  border-radius:999px;
+  background:#fff1b5;
+  color:#674d08;
+  font-size:10px;
+  font-weight:950;
+  text-transform:uppercase;
+  letter-spacing:.04em;
+}
+
+.weeklyPlanName{
+  color:#111827;
+  font-size:16px;
+  line-height:1.2;
+  font-weight:950;
+}
+
+.weeklyPlanPrice{
+  color:#111827;
+  font-size:25px;
+  line-height:1;
+  font-weight:950;
+}
+
+.weeklyPlanPrice small{
+  color:#64748b;
+  font-size:11px;
+  font-weight:800;
+}
+
+.weeklyPlanDetails{
+  color:#5d6470;
+  font-size:12px;
+  line-height:1.4;
+  font-weight:750;
+}
+
+.weeklyPlanChooseBtn,
+.weeklyPlanPixCopyBtn{
+  width:100%;
+  min-height:43px;
+  padding:10px 13px;
+  border:1px solid #d6a51f;
+  border-radius:10px;
+  background:#11110f;
+  color:#ffffff;
+  font-size:13px;
+  font-weight:950;
+  cursor:pointer;
+}
+
+.weeklyPlanChooseBtn:disabled,
+.weeklyPlanPixCopyBtn:disabled{
+  cursor:wait;
+  opacity:.62;
+}
+
+.weeklyPlanFinePrint,
+.weeklyPlanModalStatus{
+  margin-top:14px;
+  color:#64748b;
+  font-size:12px;
+  line-height:1.45;
+  font-weight:750;
+  text-align:center;
+}
+
+.weeklyPlanPayment{
+  display:grid;
+  gap:12px;
+  max-width:440px;
+  margin:0 auto;
+  text-align:center;
+}
+
+.weeklyPlanPayment .pixQrImagem{
+  margin-bottom:0;
+}
+
+.weeklyPlanPaymentTitle{
+  color:#111827;
+  font-size:18px;
+  line-height:1.25;
+  font-weight:950;
+}
+
+.weeklyPlanPaymentText{
+  color:#475569;
+  font-size:13px;
+  line-height:1.45;
+  font-weight:750;
+}
+
+.weeklyPlanSuccess{
+  padding:20px;
+  border:1px solid #9dd9b2;
+  border-radius:16px;
+  background:#effcf3;
+  color:#166534;
+  text-align:center;
+}
+
+@media (max-width:560px){
+  .weeklyPlansGrid{
+    grid-template-columns:1fr;
+  }
+
+  .weeklyPlansBody{
+    padding:14px;
   }
 }
 
@@ -14559,6 +14801,15 @@ body.omascoteAppMode .appTestNotice{
             <strong id="accountMenuMessage" aria-live="polite">—</strong>
           </div>
         </div>
+
+        <section class="weeklyPlanAccountCard" id="weeklyPlanAccountCard" aria-label="Plano semanal de imagens" aria-live="polite" hidden>
+          <div class="weeklyPlanAccountCopy">
+            <span class="accountMenuLabel">Plano de imagens</span>
+            <strong id="weeklyPlanAccountTitle">Imagens toda semana</strong>
+            <small id="weeklyPlanAccountText">Planos pagos por Pix, sem cobrança automática.</small>
+          </div>
+          <button class="weeklyPlanAccountBtn" id="weeklyPlanOpenBtn" type="button">Ver planos</button>
+        </section>
 
         <div class="logoutTopBar logoutOnlyTop">
           <button id="btnSair" type="button">Sair</button>
@@ -16013,6 +16264,16 @@ body.omascoteAppMode .appTestNotice{
   </div>
 </div>
 
+<div class="modalMask" id="weeklyPlansModal" aria-hidden="true">
+  <div class="modalCard" role="dialog" aria-modal="true" aria-labelledby="weeklyPlansModalTitle">
+    <div class="modalTop">
+      <div class="modalTitle" id="weeklyPlansModalTitle">Planos de imagens</div>
+      <button class="modalClose btnGhost" id="weeklyPlansCloseBtn" type="button" aria-label="Fechar planos">×</button>
+    </div>
+    <div class="weeklyPlansBody" id="weeklyPlansBody"></div>
+  </div>
+</div>
+
 <div class="modalMask" id="pixQrModal" aria-hidden="true">
   <div class="modalCard" role="dialog" aria-modal="true" aria-label="QR Code Pix">
     <div class="modalTop">
@@ -16902,6 +17163,7 @@ function ia4LimparSessaoInvalida(out, options = {}){
 
   token = "";
   try{ if(typeof pararPollingSaldoPix === "function") pararPollingSaldoPix(); }catch(e){}
+  try{ if(typeof limparEstadoPlanoSemanal === "function") limparEstadoPlanoSemanal(); }catch(e){}
   document.body.classList.add("visitanteNaoLogado");
   if(historicoListaEl) historicoListaEl.innerHTML = "";
   if(historicoVazioEl) historicoVazioEl.textContent = "Sua sessão expirou. Entre novamente para ver seus pedidos.";
@@ -26043,18 +26305,37 @@ async function enviarContratacaoLote(form){
     }
 
     criados = await fotoJogosGerarPixAntesDaCriacao(criados, "com_suporte");
-    criados.forEach(item => registrarPedidoAguardandoPixLocal(item.pedido_id, "contratacao"));
+    const pendentes = criados.filter(item => item.pagamento_pendente === true);
+    const liberados = criados.filter(item => item.pagamento_pendente !== true);
+    const cobertosPeloPlano = liberados.filter(item => item.coberto_pelo_plano === true);
+    const liberadosForaDoPlano = liberados.filter(item => item.coberto_pelo_plano !== true);
+    pendentes.forEach(item => registrarPedidoAguardandoPixLocal(item.pedido_id, "contratacao"));
+    liberados.forEach(item => salvarPedidoAtivoLocal(item.pedido_id, "contratacao"));
+    if(liberados.length){
+      atualizarTopoProducao(liberados.map(item => ({ id:item.pedido_id, status:"processando" })));
+      mostrarAvisoPedido();
+    }
     fotoJogosAbrirPrimeiroPixGerado(criados);
 
-    const pixOk = criados.some(item => item.pix_copia_cola && !item.pix_error);
-    const total = data.players.reduce((sum, player) => sum + CONTRATACAO_BASE_PRICE + (player.jersey ? CONTRATACAO_JERSEY_PRICE : 0), 0);
+    const pixOk = pendentes.some(item => item.pix_copia_cola && !item.pix_error);
+    const total = pendentes.reduce(
+      (sum, item) => sum + Number(item.valor_pendente || item.valor_final || 0),
+      0
+    );
     const totalLabel = `R$ ${total.toFixed(2).replace(".", ",")}`;
     const falhaLabel = falhas.length ? ` ${falhas.length} item(ns) precisam ser enviados novamente.` : "";
-    setCleanProductMsg(form, pixOk
-      ? `Lote criado. Faça o PIX antecipado de ${totalLabel} para liberar as ${criados.length} artes.${falhaLabel}`
-      : `O lote foi criado, mas não foi possível abrir o PIX agora. Acesse Meus pedidos para pagar.${falhaLabel}`,
-      !pixOk || falhas.length > 0
-    );
+    const resumoLiberados = [
+      cobertosPeloPlano.length ? `${cobertosPeloPlano.length} arte(s) incluída(s) no plano` : "",
+      liberadosForaDoPlano.length ? `${liberadosForaDoPlano.length} arte(s) liberada(s) sem PIX` : ""
+    ].filter(Boolean).join(" e ");
+    const mensagem = !pendentes.length
+      ? `Lote criado. ${resumoLiberados} e enviado para criação.${falhaLabel}`
+      : pixOk
+        ? (liberados.length
+          ? `${resumoLiberados}. Faça o PIX de ${totalLabel} para liberar a(s) ${pendentes.length} restante(s).${falhaLabel}`
+          : `Lote criado. Faça o PIX antecipado de ${totalLabel} para liberar as ${pendentes.length} artes.${falhaLabel}`)
+        : `O lote foi criado, mas não foi possível abrir o PIX agora. Acesse Meus pedidos para pagar.${falhaLabel}`;
+    setCleanProductMsg(form, mensagem, (pendentes.length > 0 && !pixOk) || falhas.length > 0);
     lockCleanOrderSubmitAfterSuccess(form, criados.map(item => item.pedido_id).filter(Boolean).join(", "));
     await refreshMe();
     carregarHistorico();
@@ -26152,18 +26433,37 @@ async function enviarJogadorEscudoLote(form){
     }
 
     criados = await fotoJogosGerarPixAntesDaCriacao(criados, "com_suporte");
-    criados.forEach(item => registrarPedidoAguardandoPixLocal(item.pedido_id, "jogador_escudo"));
+    const pendentes = criados.filter(item => item.pagamento_pendente === true);
+    const liberados = criados.filter(item => item.pagamento_pendente !== true);
+    const cobertosPeloPlano = liberados.filter(item => item.coberto_pelo_plano === true);
+    const liberadosForaDoPlano = liberados.filter(item => item.coberto_pelo_plano !== true);
+    pendentes.forEach(item => registrarPedidoAguardandoPixLocal(item.pedido_id, "jogador_escudo"));
+    liberados.forEach(item => salvarPedidoAtivoLocal(item.pedido_id, "jogador_escudo"));
+    if(liberados.length){
+      atualizarTopoProducao(liberados.map(item => ({ id:item.pedido_id, status:"processando" })));
+      mostrarAvisoPedido();
+    }
     fotoJogosAbrirPrimeiroPixGerado(criados);
 
-    const pixOk = criados.some(item => item.pix_copia_cola && !item.pix_error);
-    const total = data.players.length * JOGADOR_ESCUDO_BASE_PRICE;
+    const pixOk = pendentes.some(item => item.pix_copia_cola && !item.pix_error);
+    const total = pendentes.reduce(
+      (sum, item) => sum + Number(item.valor_pendente || item.valor_final || 0),
+      0
+    );
     const totalLabel = `R$ ${total.toFixed(2).replace(".", ",")}`;
     const falhaLabel = falhas.length ? ` ${falhas.length} item(ns) precisam ser enviados novamente.` : "";
-    setCleanProductMsg(form, pixOk
-      ? `Lote criado. Faça o PIX antecipado de ${totalLabel} para liberar as ${criados.length} artes.${falhaLabel}`
-      : `O lote foi criado, mas não foi possível abrir o PIX agora. Acesse Meus pedidos para pagar.${falhaLabel}`,
-      !pixOk || falhas.length > 0
-    );
+    const resumoLiberados = [
+      cobertosPeloPlano.length ? `${cobertosPeloPlano.length} arte(s) incluída(s) no plano` : "",
+      liberadosForaDoPlano.length ? `${liberadosForaDoPlano.length} arte(s) liberada(s) sem PIX` : ""
+    ].filter(Boolean).join(" e ");
+    const mensagem = !pendentes.length
+      ? `Lote criado. ${resumoLiberados} e enviado para criação.${falhaLabel}`
+      : pixOk
+        ? (liberados.length
+          ? `${resumoLiberados}. Faça o PIX de ${totalLabel} para liberar a(s) ${pendentes.length} restante(s).${falhaLabel}`
+          : `Lote criado. Faça o PIX antecipado de ${totalLabel} para liberar as ${pendentes.length} artes.${falhaLabel}`)
+        : `O lote foi criado, mas não foi possível abrir o PIX agora. Acesse Meus pedidos para pagar.${falhaLabel}`;
+    setCleanProductMsg(form, mensagem, (pendentes.length > 0 && !pixOk) || falhas.length > 0);
     lockCleanOrderSubmitAfterSuccess(form, criados.map(item => item.pedido_id).filter(Boolean).join(", "));
     await refreshMe();
     carregarHistorico();
@@ -27269,6 +27569,9 @@ function applyLocal(){
 async function refreshMe(){
   if(!token){
     pararPollingSaldoPix();
+    weeklyPlanSummary = null;
+    weeklyPlanSummaryState = "anonymous";
+    renderizarResumoPlanoSemanal();
     applyLocal();
     if(typeof ia4AtualizarModoAppUi === "function") ia4AtualizarModoAppUi();
     return { ok:false, semToken:true };
@@ -27308,6 +27611,7 @@ async function refreshMe(){
     localStorage.setItem("omascote_plano", data.plano ?? "");
     localStorage.setItem("omascote_usados", data.usados_no_ciclo ?? "");
     applyLocal();
+    void carregarResumoPlanoSemanal();
     brindeEscudo3dAppDisponivel = data.brinde_escudo3d_app_disponivel === true;
     atualizarBrindeEscudo3dAppVisual();
     if(statusEl) statusEl.textContent = data.ativo ? "Status: ativo" : "Status: inativo";
@@ -27353,6 +27657,817 @@ if(typeof ia4AtualizarModoAppUi === "function") ia4AtualizarModoAppUi();
     });
     return { ok:false, rede:true };
   }
+}
+
+function formatarValorPlanoSemanal(valorCentavos){
+  const centavos = Math.max(0, Math.round(Number(valorCentavos || 0)));
+  return (centavos / 100).toLocaleString("pt-BR", {
+    style:"currency",
+    currency:"BRL"
+  });
+}
+
+function formatarDataPlanoSemanal(valor){
+  const data = new Date(valor || "");
+  if(!Number.isFinite(data.getTime())) return "";
+  return data.toLocaleDateString("pt-BR", {
+    day:"2-digit",
+    month:"2-digit",
+    year:"numeric"
+  });
+}
+
+function formatarIntervaloPlanoSemanal(valor){
+  const data = new Date(valor || "");
+  if(!Number.isFinite(data.getTime())) return "";
+  const diferenca = data.getTime() - Date.now();
+  if(diferenca <= 0) return "agora";
+  const minutos = Math.max(1, Math.ceil(diferenca / 60000));
+  if(minutos < 60) return "em " + minutos + " min";
+  const horas = Math.ceil(minutos / 60);
+  if(horas < 48) return "em " + horas + " h";
+  const dias = Math.ceil(horas / 24);
+  return "em " + dias + " dia" + (dias === 1 ? "" : "s");
+}
+
+function weeklyPlansDisponiveis(){
+  return weeklyPlansCatalog?.disponivel === true &&
+    Array.isArray(weeklyPlansCatalog?.planos) &&
+    weeklyPlansCatalog.planos.length > 0;
+}
+
+function pagamentoPlanoSemanalEmAberto(pagamento){
+  const status = String(pagamento?.status || "pending").toLowerCase();
+  return Boolean(pagamento?.tentativa_id) && ["creating", "pending"].includes(status);
+}
+
+function referenciaContaPlanoSemanal(){
+  try{
+    return String(localStorage.getItem("omascote_perfil_id") || "").trim();
+  }catch(e){
+    return "";
+  }
+}
+
+function limparPersistenciaPlanoSemanal(){
+  try{ sessionStorage.removeItem(WEEKLY_PLAN_SESSION_KEY); }catch(e){}
+}
+
+function salvarPersistenciaPlanoSemanal(){
+  const intencao = weeklyPlanPurchaseIntent;
+  const pagamento = weeklyPlanPayment;
+  if(!intencao?.planoId || !intencao?.requestId){
+    limparPersistenciaPlanoSemanal();
+    return;
+  }
+  try{
+    sessionStorage.setItem(WEEKLY_PLAN_SESSION_KEY, JSON.stringify({
+      owner:referenciaContaPlanoSemanal(),
+      planId:String(intencao.planoId),
+      requestId:String(intencao.requestId),
+      attemptId:String(pagamento?.tentativa_id || intencao.tentativaId || ""),
+      status:String(pagamento?.status || "creating"),
+      expiresAt:String(pagamento?.expira_em || "")
+    }));
+  }catch(e){}
+}
+
+function restaurarPersistenciaPlanoSemanal(){
+  let salvo = null;
+  try{ salvo = JSON.parse(sessionStorage.getItem(WEEKLY_PLAN_SESSION_KEY) || "null"); }catch(e){}
+  const ownerAtual = referenciaContaPlanoSemanal();
+  const ownerSalvo = String(salvo?.owner || "");
+  const planoId = String(salvo?.planId || "");
+  const requestId = String(salvo?.requestId || "");
+  const tentativaId = String(salvo?.attemptId || "");
+  const status = String(salvo?.status || "creating").toLowerCase();
+  const valido = (!ownerAtual || !ownerSalvo || ownerAtual === ownerSalvo) &&
+    /^semanal_(1|2|4|6)$/.test(planoId) &&
+    requestId.length >= 12 && requestId.length <= 180 &&
+    (!tentativaId || /^[0-9a-f]{24}$/.test(tentativaId)) &&
+    ["creating", "pending"].includes(status);
+  if(!valido){
+    limparPersistenciaPlanoSemanal();
+    return;
+  }
+  weeklyPlanPurchaseIntent = {
+    planoId,
+    requestId,
+    tentativaId,
+    terminal:false
+  };
+  if(tentativaId){
+    weeklyPlanPayment = {
+      tentativa_id:tentativaId,
+      status,
+      expira_em:String(salvo?.expiresAt || ""),
+      plano:{ codigo:planoId }
+    };
+  }
+}
+
+function renderizarResumoPlanoSemanal(){
+  const card = document.getElementById("weeklyPlanAccountCard");
+  const titulo = document.getElementById("weeklyPlanAccountTitle");
+  const texto = document.getElementById("weeklyPlanAccountText");
+  const botao = document.getElementById("weeklyPlanOpenBtn");
+  if(!card || !titulo || !texto || !botao) return;
+
+  const resumo = weeklyPlanSummary;
+  const possuiPlano = token && (resumo?.ativa === true || Boolean(resumo?.proximo_plano));
+  botao.disabled = false;
+  if(!weeklyPlansDisponiveis() && !possuiPlano){
+    card.hidden = true;
+    return;
+  }
+  if(token && weeklyPlanSummaryState === "error"){
+    card.hidden = false;
+    titulo.textContent = "Plano semanal";
+    texto.textContent = "Não foi possível consultar seu plano agora.";
+    botao.textContent = "Tentar novamente";
+    return;
+  }
+  if(token && weeklyPlanSummaryState !== "loaded"){
+    card.hidden = false;
+    titulo.textContent = "Plano semanal";
+    texto.textContent = "Consultando sua cota...";
+    botao.textContent = "Aguarde";
+    botao.disabled = true;
+    return;
+  }
+  card.hidden = false;
+  if(token && resumo?.ativa === true){
+    const limite = Number(resumo.imagens_por_semana || 0);
+    const disponiveis = Number(resumo.disponiveis_na_semana || 0);
+    const restantes = Number(resumo.restantes_no_ciclo || 0);
+    const semana = Number(resumo.semana_do_ciclo || 0);
+    const proximoTexto = formatarIntervaloPlanoSemanal(resumo.proxima_liberacao_em);
+    titulo.textContent = resumo.plano?.nome || (limite + " imagens por semana");
+    texto.textContent =
+      disponiveis + " de " + limite + " disponíveis nesta semana • " +
+      restantes + " no ciclo" +
+      (proximoTexto
+        ? (semana < 4 ? " • Nova cota " : " • Ciclo termina ") + proximoTexto
+        : "") +
+      (resumo.proximo_plano
+        ? " • Próximo: " + (resumo.proximo_plano.nome || "plano semanal") +
+          " em " + formatarDataPlanoSemanal(resumo.proximo_plano.inicia_em)
+        : "");
+    botao.textContent = weeklyPlansDisponiveis() && !resumo.proximo_plano
+      ? "Renovar ou trocar"
+      : "Ver meu plano";
+    return;
+  }
+
+  if(token && resumo?.proximo_plano){
+    titulo.textContent = "Próximo plano agendado";
+    texto.textContent =
+      (resumo.proximo_plano.nome || "Plano semanal") +
+      " • começa " + formatarDataPlanoSemanal(resumo.proximo_plano.inicia_em);
+    botao.textContent = "Ver planos";
+    return;
+  }
+
+  const menorValor = weeklyPlansCatalog.planos.reduce((menor, plano) => {
+    const valor = Number(plano?.valor_centavos || 0);
+    return valor > 0 && (!menor || valor < menor) ? valor : menor;
+  }, 0);
+  titulo.textContent = "Imagens toda semana";
+  texto.textContent =
+    "Planos a partir de " + formatarValorPlanoSemanal(menorValor) +
+    ", pagos por Pix e sem cobrança automática.";
+  botao.textContent = "Ver planos";
+}
+
+async function carregarCatalogoPlanosSemanais(){
+  try{
+    const r = await fetch(API_BASE + "/planos-semanais?ts=" + Date.now(), {
+      cache:"no-store"
+    });
+    const data = await ia4LerJsonSeguro(r);
+    weeklyPlansCatalog = r.ok && data?.ok ? data : null;
+  }catch(e){
+    weeklyPlansCatalog = null;
+  }
+  renderizarResumoPlanoSemanal();
+  return weeklyPlansCatalog;
+}
+
+async function carregarResumoPlanoSemanal(){
+  if(!token){
+    weeklyPlanSummary = null;
+    weeklyPlanSummaryState = "anonymous";
+    renderizarResumoPlanoSemanal();
+    return null;
+  }
+
+  weeklyPlanSummaryState = "loading";
+  renderizarResumoPlanoSemanal();
+  try{
+    const r = await fetch(API_BASE + "/me/plano-semanal?ts=" + Date.now(), {
+      cache:"no-store",
+      headers:{
+        "Authorization":"Bearer " + token,
+        ...ia4AppModeHeaders()
+      }
+    });
+    const data = await ia4LerJsonSeguro(r);
+    const authMsg = ia4TratarAuthInvalida(r, data) || ia4TratarContaInexistente(r, data);
+    if(authMsg){
+      weeklyPlanSummaryState = token ? "error" : "anonymous";
+      return null;
+    }
+    if(!r.ok || !data?.ok){
+      weeklyPlanSummaryState = "error";
+      renderizarResumoPlanoSemanal();
+      return null;
+    }
+    weeklyPlanSummary = data.plano_semanal || null;
+    weeklyPlanSummaryState = "loaded";
+    renderizarResumoPlanoSemanal();
+    return weeklyPlanSummary;
+  }catch(e){
+    weeklyPlanSummaryState = "error";
+    renderizarResumoPlanoSemanal();
+    return null;
+  }
+}
+
+function definirTituloModalPlanosSemanais(texto){
+  const titulo = document.getElementById("weeklyPlansModalTitle");
+  if(titulo) titulo.textContent = texto || "Planos de imagens";
+}
+
+function definirStatusModalPlanoSemanal(texto, erro = false){
+  const status = document.getElementById("weeklyPlanModalStatus");
+  if(!status) return;
+  status.textContent = texto || "";
+  status.style.color = erro ? "#b42318" : "#64748b";
+}
+
+function renderizarPlanosSemanais(){
+  const body = document.getElementById("weeklyPlansBody");
+  if(!body) return;
+  definirTituloModalPlanosSemanais("Planos de imagens");
+
+  if(token && weeklyPlanSummaryState !== "loaded"){
+    const falhou = weeklyPlanSummaryState === "error";
+    body.innerHTML = falhou
+      ? '<div class="weeklyPlanSuccess"><strong>Não foi possível confirmar seu plano.</strong>' +
+        '<div class="weeklyPlanPaymentText">Tente consultar novamente antes de fazer uma compra.</div>' +
+        '<button type="button" class="weeklyPlanChooseBtn" id="weeklyPlanSummaryRetryBtn">Tentar novamente</button></div>'
+      : '<p class="weeklyPlansIntro">Consultando seu plano...</p>';
+    document.getElementById("weeklyPlanSummaryRetryBtn")?.addEventListener("click", async () => {
+      body.innerHTML = '<p class="weeklyPlansIntro">Consultando seu plano...</p>';
+      await carregarResumoPlanoSemanal();
+      renderizarPlanosSemanais();
+    });
+    return;
+  }
+
+  if(!weeklyPlansDisponiveis()){
+    const resumo = weeklyPlanSummary;
+    body.innerHTML = resumo?.ativa === true
+      ? '<div class="weeklyPlanSuccess"><strong>' + htmlEscape(resumo.plano?.nome || "Plano semanal") + '</strong>' +
+        '<div class="weeklyPlanPaymentText">Você tem ' + Number(resumo.disponiveis_na_semana || 0) +
+        ' de ' + Number(resumo.imagens_por_semana || 0) +
+        ' imagens disponíveis nesta semana. As novas compras estão pausadas, mas sua cota continua válida.' +
+        (resumo.proximo_plano
+          ? ' Próximo plano: ' + htmlEscape(resumo.proximo_plano.nome || "Plano semanal") +
+            ', em ' + htmlEscape(formatarDataPlanoSemanal(resumo.proximo_plano.inicia_em)) + '.'
+          : '') + '</div></div>'
+      : resumo?.proximo_plano
+        ? '<div class="weeklyPlanSuccess"><strong>Próximo plano agendado</strong>' +
+          '<div class="weeklyPlanPaymentText">' + htmlEscape(resumo.proximo_plano.nome || "Plano semanal") +
+          ' começa em ' + htmlEscape(formatarDataPlanoSemanal(resumo.proximo_plano.inicia_em)) +
+          '. As novas compras estão pausadas.</div></div>'
+      : '<div class="weeklyPlanSuccess"><strong>Planos indisponíveis agora.</strong>' +
+        '<div class="weeklyPlanPaymentText">Tente novamente mais tarde.</div></div>';
+    return;
+  }
+
+  const resumo = weeklyPlanSummary;
+  const renovacaoAgendada = Boolean(resumo?.proximo_plano);
+  const introducao = renovacaoAgendada
+    ? "Sua próxima compra já está agendada: " +
+      (resumo.proximo_plano.nome || "plano semanal") + " começa em " +
+      formatarDataPlanoSemanal(resumo.proximo_plano.inicia_em) + "."
+    : resumo?.ativa === true
+    ? "Você tem " + Number(resumo.disponiveis_na_semana || 0) +
+      " de " + Number(resumo.imagens_por_semana || 0) +
+      " imagens disponíveis nesta semana. Uma nova compra começa quando o ciclo atual terminar."
+    : "Escolha quantas imagens quer criar por semana. Você pode pedir em qualquer dia dentro do período semanal.";
+
+  const cards = weeklyPlansCatalog.planos.map(plano => {
+    const codigo = String(plano?.codigo || "");
+    const nome = htmlEscape(plano?.nome || "");
+    const semanal = Number(plano?.imagens_por_semana || 0);
+    const ciclo = Number(plano?.imagens_no_ciclo || 0);
+    const destaque = semanal === 2;
+    const planoAtual = resumo?.ativa === true && resumo?.plano?.codigo === codigo;
+    const planoAgendado = resumo?.proximo_plano?.codigo === codigo;
+    const selo = planoAtual
+      ? '<span class="weeklyPlanBadge">Seu plano atual</span>'
+      : planoAgendado
+        ? '<span class="weeklyPlanBadge">Próximo plano</span>'
+      : destaque
+        ? '<span class="weeklyPlanBadge">Mais escolhido</span>'
+        : "";
+    return [
+      '<article class="weeklyPlanOption' + (destaque ? " is-featured" : "") + '">',
+      selo,
+      '<div class="weeklyPlanName">' + nome + '</div>',
+      '<div class="weeklyPlanPrice">' + formatarValorPlanoSemanal(plano?.valor_centavos) + ' <small>/ 30 dias</small></div>',
+      '<div class="weeklyPlanDetails">Até ' + semanal + ' imagem' + (semanal === 1 ? "" : "s") +
+        ' por semana • ' + ciclo + ' no ciclo completo.</div>',
+      '<button type="button" class="weeklyPlanChooseBtn" data-weekly-plan-code="' +
+        htmlEscape(codigo) + '"' + (renovacaoAgendada ? " disabled" : "") + '>' +
+        (renovacaoAgendada
+          ? "Renovação já agendada"
+          : planoAtual
+            ? "Renovar este plano"
+            : "Escolher e pagar por Pix") + '</button>',
+      '</article>'
+    ].join("");
+  }).join("");
+
+  body.innerHTML = [
+    '<p class="weeklyPlansIntro">' + htmlEscape(introducao) + '</p>',
+    '<div class="weeklyPlansGrid">' + cards + '</div>',
+    '<div class="weeklyPlanFinePrint">Use as imagens quando quiser dentro de cada período semanal. ' +
+      'A cota não acumula. Válido para artes padrão de até R$ 8; Mascote + uniforme e adicionais não entram. ' +
+      'Renovação manual por Pix, sem cobrança automática.</div>',
+    '<div class="weeklyPlanModalStatus" id="weeklyPlanModalStatus" role="status" aria-live="polite"></div>'
+  ].join("");
+
+  body.querySelectorAll("[data-weekly-plan-code]").forEach(botao => {
+    botao.addEventListener("click", () => comprarPlanoSemanal(
+      botao.getAttribute("data-weekly-plan-code"),
+      botao
+    ));
+  });
+}
+
+async function abrirModalPlanosSemanais(){
+  const modal = document.getElementById("weeklyPlansModal");
+  const body = document.getElementById("weeklyPlansBody");
+  if(!modal || !body) return;
+
+  const focoAtual = document.activeElement;
+  if(
+    typeof HTMLElement !== "undefined" &&
+    focoAtual instanceof HTMLElement &&
+    !modal.contains(focoAtual)
+  ){
+    weeklyPlanModalReturnFocus = focoAtual;
+  }
+  modal.classList.add("open");
+  modal.setAttribute("aria-hidden", "false");
+  requestAnimationFrame(() => document.getElementById("weeklyPlansCloseBtn")?.focus());
+  if(!weeklyPlansDisponiveis()){
+    definirTituloModalPlanosSemanais("Planos de imagens");
+    body.innerHTML = '<p class="weeklyPlansIntro">Carregando planos...</p>';
+    await carregarCatalogoPlanosSemanais();
+  }
+  if(token){
+    body.innerHTML = '<p class="weeklyPlansIntro">Consultando seu plano...</p>';
+    await carregarResumoPlanoSemanal();
+  }
+
+  if(pagamentoPlanoSemanalEmAberto(weeklyPlanPayment)){
+    renderizarPagamentoPlanoSemanal(weeklyPlanPayment);
+    iniciarPollingPlanoSemanal();
+  }else{
+    renderizarPlanosSemanais();
+  }
+}
+
+function fecharModalPlanosSemanais(){
+  const modal = document.getElementById("weeklyPlansModal");
+  if(!modal) return;
+  const estavaAberto = modal.classList.contains("open");
+  pararPollingPlanoSemanal();
+  modal.classList.remove("open");
+  modal.setAttribute("aria-hidden", "true");
+  if(estavaAberto && weeklyPlanModalReturnFocus?.isConnected){
+    weeklyPlanModalReturnFocus.focus();
+  }
+  weeklyPlanModalReturnFocus = null;
+}
+
+function navegarTecladoModalPlanosSemanais(event){
+  const modal = document.getElementById("weeklyPlansModal");
+  if(!modal?.classList.contains("open")) return;
+  if(event.key === "Escape"){
+    event.preventDefault();
+    fecharModalPlanosSemanais();
+    return;
+  }
+  if(event.key !== "Tab") return;
+  const focaveis = [...modal.querySelectorAll(
+    'button:not([disabled]), [href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])'
+  )].filter(element => element.offsetParent !== null);
+  if(!focaveis.length){
+    event.preventDefault();
+    return;
+  }
+  const primeiro = focaveis[0];
+  const ultimo = focaveis[focaveis.length - 1];
+  if(!modal.contains(document.activeElement)){
+    event.preventDefault();
+    (event.shiftKey ? ultimo : primeiro).focus();
+  }else if(event.shiftKey && document.activeElement === primeiro){
+    event.preventDefault();
+    ultimo.focus();
+  }else if(!event.shiftKey && document.activeElement === ultimo){
+    event.preventDefault();
+    primeiro.focus();
+  }
+}
+
+function criarIdempotenciaPlanoSemanal(){
+  try{
+    if(window.crypto?.randomUUID) return "weekly-plan-" + window.crypto.randomUUID();
+    if(window.crypto?.getRandomValues){
+      const bytes = new Uint32Array(4);
+      window.crypto.getRandomValues(bytes);
+      return "weekly-plan-" + Array.from(bytes, valor => valor.toString(16)).join("-");
+    }
+  }catch(e){}
+  return "weekly-plan-" + Date.now().toString(36) + "-" + Math.random().toString(36).slice(2, 14);
+}
+
+function obterIntencaoCompraPlanoSemanal(planoId){
+  if(
+    weeklyPlanPurchaseIntent &&
+    weeklyPlanPurchaseIntent.planoId === planoId &&
+    weeklyPlanPurchaseIntent.terminal !== true
+  ){
+    return weeklyPlanPurchaseIntent;
+  }
+  weeklyPlanPurchaseIntent = {
+    planoId,
+    requestId:criarIdempotenciaPlanoSemanal(),
+    tentativaId:"",
+    terminal:false
+  };
+  salvarPersistenciaPlanoSemanal();
+  return weeklyPlanPurchaseIntent;
+}
+
+async function comprarPlanoSemanal(planoId, triggerBtn = null){
+  const plano = weeklyPlansCatalog?.planos?.find(item => item?.codigo === planoId);
+  if(!plano) return;
+  if(!token){
+    acaoDepoisDoCadastro = () => abrirModalPlanosSemanais();
+    fecharModalPlanosSemanais();
+    abrirCadastroVisitanteModal();
+    return;
+  }
+  if(weeklyPlanSummaryState !== "loaded"){
+    definirStatusModalPlanoSemanal(
+      "Confirme seu plano atual antes de iniciar uma compra.",
+      true
+    );
+    return;
+  }
+  if(weeklyPlanSummary?.proximo_plano){
+    definirStatusModalPlanoSemanal("Você já tem uma renovação agendada.", true);
+    return;
+  }
+
+  const intencao = obterIntencaoCompraPlanoSemanal(planoId);
+  const botoes = [...document.querySelectorAll(".weeklyPlanChooseBtn")];
+  botoes.forEach(botao => { botao.disabled = true; });
+  if(triggerBtn) triggerBtn.textContent = "Gerando Pix...";
+  definirStatusModalPlanoSemanal("Gerando seu Pix seguro...");
+
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), 30000);
+  let recebeuTentativa = false;
+  try{
+    const r = await fetch(API_BASE + "/me/plano-semanal/gerar-pix", {
+      method:"POST",
+      headers:{
+        "Authorization":"Bearer " + token,
+        "Content-Type":"application/json",
+        "X-Idempotency-Key":intencao.requestId,
+        ...ia4AppModeHeaders()
+      },
+      body:JSON.stringify({ plano_id:planoId }),
+      signal:controller.signal
+    });
+    const data = await ia4LerJsonSeguro(r);
+    const authMsg = ia4TratarAuthInvalida(r, data) || ia4TratarContaInexistente(r, data);
+    if(authMsg) return;
+    if(!r.ok || !data?.ok){
+      const terminal = [
+        "WEEKLY_PLAN_ALREADY_PAID",
+        "WEEKLY_PLAN_PIX_EXPIRED",
+        "WEEKLY_PLAN_INVALID",
+        "WEEKLY_PLAN_CLIENT_IDEMPOTENCY_CONFLICT",
+        "WEEKLY_PLAN_RENEWAL_ALREADY_SCHEDULED"
+      ].includes(String(data?.code || ""));
+      if(terminal){
+        intencao.terminal = true;
+        weeklyPlanPurchaseIntent = null;
+        weeklyPlanPayment = null;
+        limparPersistenciaPlanoSemanal();
+        if([
+          "WEEKLY_PLAN_ALREADY_PAID",
+          "WEEKLY_PLAN_RENEWAL_ALREADY_SCHEDULED"
+        ].includes(String(data?.code || ""))){
+          await carregarResumoPlanoSemanal();
+          renderizarPlanosSemanais();
+        }
+      }
+      definirStatusModalPlanoSemanal(
+        data?.error || "Não foi possível gerar o Pix. Tente novamente.",
+        true
+      );
+      return;
+    }
+    if(!data.tentativa_id || !data.pix_copia_cola){
+      definirStatusModalPlanoSemanal("O Pix ainda não ficou disponível. Tente novamente.", true);
+      return;
+    }
+
+    recebeuTentativa = true;
+    intencao.tentativaId = String(data.tentativa_id);
+    weeklyPlanPayment = {
+      ...data,
+      status:"pending"
+    };
+    salvarPersistenciaPlanoSemanal();
+    renderizarPagamentoPlanoSemanal(weeklyPlanPayment);
+    iniciarPollingPlanoSemanal();
+    try{
+      ia4Track("iniciou_pagamento_plano_semanal", {
+        plano_id:planoId,
+        valor_centavos:Number(plano.valor_centavos || 0)
+      });
+    }catch(e){}
+  }catch(e){
+    definirStatusModalPlanoSemanal(
+      e?.name === "AbortError"
+        ? "A geração demorou. Tente novamente: usaremos a mesma compra com segurança."
+        : "Falha de conexão. Tente novamente.",
+      true
+    );
+  }finally{
+    clearTimeout(timeoutId);
+    if(!recebeuTentativa){
+      botoes.forEach(botao => { botao.disabled = false; });
+      if(triggerBtn) triggerBtn.textContent =
+        weeklyPlanSummary?.plano?.codigo === planoId
+          ? "Renovar este plano"
+          : "Escolher e pagar por Pix";
+    }
+  }
+}
+
+function renderizarPagamentoPlanoSemanal(pagamento){
+  const body = document.getElementById("weeklyPlansBody");
+  if(!body || !pagamento) return;
+  definirTituloModalPlanosSemanais("Pagamento Pix do plano");
+
+  const planoRecebido = pagamento.plano || {};
+  const planoCatalogo = weeklyPlansCatalog?.planos?.find(
+    item => item?.codigo === planoRecebido.codigo
+  ) || {};
+  const plano = { ...planoCatalogo, ...planoRecebido };
+  const base64 = String(pagamento.qr_code_base64 || "");
+  const qrSeguro = base64 && /^[A-Za-z0-9+/=]+$/.test(base64)
+    ? '<img class="pixQrImagem" src="data:image/png;base64,' + base64 + '" alt="QR Code Pix do plano">'
+    : "";
+  const possuiCodigoPix = Boolean(String(pagamento.pix_copia_cola || "").trim());
+  const possuiValorConfiavel = Number(plano.valor_centavos || 0) > 0;
+  const textoPagamento = possuiValorConfiavel
+    ? 'Pague ' + formatarValorPlanoSemanal(plano.valor_centavos) +
+      ' por Pix. O plano será ativado somente após a confirmação.'
+    : 'Estamos recuperando os dados deste Pix com segurança.';
+  body.innerHTML = [
+    '<div class="weeklyPlanPayment">',
+    '<div class="weeklyPlanPaymentTitle">' + htmlEscape(plano.nome || "Plano semanal") + '</div>',
+    '<div class="weeklyPlanPaymentText">' + textoPagamento + '</div>',
+    qrSeguro,
+    '<button type="button" class="weeklyPlanPixCopyBtn" id="weeklyPlanPixCopyBtn"' +
+      (possuiCodigoPix ? "" : " disabled") + '>' +
+      (possuiCodigoPix ? "Copiar código Pix" : "Recuperando código Pix...") + '</button>',
+    '<div class="weeklyPlanModalStatus" id="weeklyPlanModalStatus" role="status" aria-live="polite">' +
+      (possuiCodigoPix
+        ? 'Aguardando confirmação do pagamento...'
+        : 'Consultando seu pagamento seguro...') + '</div>',
+    '<div class="weeklyPlanFinePrint">Renovação manual. Não haverá cobrança automática.</div>',
+    '</div>'
+  ].join("");
+  document.getElementById("weeklyPlanPixCopyBtn")?.addEventListener("click", copiarPixPlanoSemanalAtual);
+}
+
+async function copiarPixPlanoSemanalAtual(){
+  const pix = String(weeklyPlanPayment?.pix_copia_cola || "").trim();
+  if(!pix){
+    definirStatusModalPlanoSemanal("Código Pix indisponível.", true);
+    return;
+  }
+  try{
+    const copiado = await copiarTextoPix(pix);
+    if(!copiado){
+      window.prompt("Selecione e copie o código Pix:", pix);
+      return;
+    }
+    definirStatusModalPlanoSemanal("Pix copiado. Aguardando o pagamento...");
+  }catch(e){
+    window.prompt("Selecione e copie o código Pix:", pix);
+  }
+}
+
+function planoSemanalModalAberto(){
+  return document.getElementById("weeklyPlansModal")?.classList?.contains("open") === true;
+}
+
+function pararPollingPlanoSemanal(){
+  if(weeklyPlanPollingTimer){
+    clearTimeout(weeklyPlanPollingTimer);
+    weeklyPlanPollingTimer = null;
+  }
+  if(weeklyPlanPollingController){
+    weeklyPlanPollingController.abort();
+    weeklyPlanPollingController = null;
+  }
+  weeklyPlanPollingDeadline = 0;
+}
+
+function agendarPollingPlanoSemanal(atraso = WEEKLY_PLAN_POLL_INTERVAL_MS){
+  if(!pagamentoPlanoSemanalEmAberto(weeklyPlanPayment) || !token || !planoSemanalModalAberto()) return;
+  if(weeklyPlanPollingTimer) clearTimeout(weeklyPlanPollingTimer);
+  weeklyPlanPollingTimer = setTimeout(() => {
+    weeklyPlanPollingTimer = null;
+    void verificarPagamentoPlanoSemanal();
+  }, Math.max(0, Number(atraso || 0)));
+}
+
+function iniciarPollingPlanoSemanal(){
+  pararPollingPlanoSemanal();
+  if(!pagamentoPlanoSemanalEmAberto(weeklyPlanPayment) || !token || !planoSemanalModalAberto()) return;
+  weeklyPlanPollingDeadline = Date.now() + WEEKLY_PLAN_POLL_TIMEOUT_MS;
+  agendarPollingPlanoSemanal(0);
+}
+
+async function verificarPagamentoPlanoSemanal(){
+  const tentativaId = String(weeklyPlanPayment?.tentativa_id || "");
+  if(!tentativaId || !token || !planoSemanalModalAberto()){
+    pararPollingPlanoSemanal();
+    return;
+  }
+  if(weeklyPlanPollingInFlight) return;
+
+  const verificacaoFinal = weeklyPlanPollingDeadline > 0 && Date.now() >= weeklyPlanPollingDeadline;
+  if(verificacaoFinal && weeklyPlanPollingTimer){
+    clearTimeout(weeklyPlanPollingTimer);
+    weeklyPlanPollingTimer = null;
+  }
+
+  weeklyPlanPollingInFlight = true;
+  let continuar = false;
+  const controller = new AbortController();
+  weeklyPlanPollingController = controller;
+  const timeoutId = setTimeout(() => controller.abort(), WEEKLY_PLAN_STATUS_TIMEOUT_MS);
+  try{
+    const r = await fetch(
+      API_BASE + "/me/plano-semanal/pagamentos/" + encodeURIComponent(tentativaId) + "?ts=" + Date.now(),
+      {
+        cache:"no-store",
+        headers:{
+          "Authorization":"Bearer " + token,
+          ...ia4AppModeHeaders()
+        },
+        signal:controller.signal
+      }
+    );
+    const data = await ia4LerJsonSeguro(r);
+    const authMsg = ia4TratarAuthInvalida(r, data) || ia4TratarContaInexistente(r, data);
+    if(authMsg){
+      pararPollingPlanoSemanal();
+      return;
+    }
+    if(!r.ok || !data?.ok){
+      if(verificacaoFinal){
+        pararPollingPlanoSemanal();
+        definirStatusModalPlanoSemanal(
+          "O acompanhamento foi pausado. Abra novamente para consultar este Pix.",
+          true
+        );
+      }else{
+        continuar = true;
+      }
+      return;
+    }
+
+    if(data.confirmado === true){
+      pararPollingPlanoSemanal();
+      weeklyPlanPayment = null;
+      weeklyPlanPurchaseIntent = null;
+      limparPersistenciaPlanoSemanal();
+      if(data.plano_semanal){
+        weeklyPlanSummary = data.plano_semanal;
+        weeklyPlanSummaryState = "loaded";
+      }else{
+        await carregarResumoPlanoSemanal();
+      }
+      renderizarResumoPlanoSemanal();
+      const renovacaoAgendada = Boolean(weeklyPlanSummary?.proximo_plano);
+      const body = document.getElementById("weeklyPlansBody");
+      if(body){
+        body.innerHTML = [
+          '<div class="weeklyPlanSuccess">',
+          '<strong>' + (renovacaoAgendada
+            ? 'Pagamento confirmado. Renovação agendada!'
+            : 'Pagamento confirmado. Seu plano está ativo!') + '</strong>',
+          '<div class="weeklyPlanPaymentText">' + (renovacaoAgendada
+            ? 'O próximo plano começa em ' +
+              htmlEscape(formatarDataPlanoSemanal(weeklyPlanSummary.proximo_plano.inicia_em)) + '.'
+            : 'Você já pode criar imagens usando a cota desta semana.') + '</div>',
+          '<button type="button" class="weeklyPlanChooseBtn" id="weeklyPlanSuccessCloseBtn">Fechar</button>',
+          '</div>'
+        ].join("");
+        document.getElementById("weeklyPlanSuccessCloseBtn")?.addEventListener(
+          "click",
+          fecharModalPlanosSemanais
+        );
+      }
+      return;
+    }
+
+    const status = String(data.status || "").toLowerCase();
+    if(["expired","cancelled","rejected","divergent","failed","refunded","charged_back"].includes(status)){
+      pararPollingPlanoSemanal();
+      weeklyPlanPayment = null;
+      if(weeklyPlanPurchaseIntent) weeklyPlanPurchaseIntent.terminal = true;
+      weeklyPlanPurchaseIntent = null;
+      limparPersistenciaPlanoSemanal();
+      renderizarPlanosSemanais();
+      definirStatusModalPlanoSemanal(
+        "Este Pix não pode mais ser usado. Escolha o plano e gere um novo.",
+        true
+      );
+      return;
+    }
+
+    const tinhaCodigo = Boolean(String(weeklyPlanPayment?.pix_copia_cola || "").trim());
+    weeklyPlanPayment = {
+      ...weeklyPlanPayment,
+      ...data,
+      status:["creating", "pending"].includes(status) ? status : "pending"
+    };
+    if(weeklyPlanPurchaseIntent){
+      weeklyPlanPurchaseIntent.tentativaId = tentativaId;
+    }
+    salvarPersistenciaPlanoSemanal();
+    if(!tinhaCodigo && weeklyPlanPayment.pix_copia_cola){
+      renderizarPagamentoPlanoSemanal(weeklyPlanPayment);
+    }
+    if(verificacaoFinal){
+      pararPollingPlanoSemanal();
+      definirStatusModalPlanoSemanal(
+        "O acompanhamento foi pausado. Abra novamente para consultar este Pix.",
+        false
+      );
+      return;
+    }
+    definirStatusModalPlanoSemanal("Aguardando confirmação do pagamento...");
+    continuar = true;
+  }catch(e){
+    if(verificacaoFinal){
+      pararPollingPlanoSemanal();
+      definirStatusModalPlanoSemanal(
+        "O acompanhamento foi pausado. Abra novamente para consultar este Pix.",
+        true
+      );
+    }else{
+      continuar = true;
+    }
+  }finally{
+    clearTimeout(timeoutId);
+    if(weeklyPlanPollingController === controller){
+      weeklyPlanPollingController = null;
+    }
+    weeklyPlanPollingInFlight = false;
+    if(continuar && pagamentoPlanoSemanalEmAberto(weeklyPlanPayment) && planoSemanalModalAberto()){
+      agendarPollingPlanoSemanal();
+    }
+  }
+}
+
+function limparEstadoPlanoSemanal(){
+  pararPollingPlanoSemanal();
+  weeklyPlanSummary = null;
+  weeklyPlanSummaryState = "anonymous";
+  weeklyPlanPayment = null;
+  weeklyPlanPurchaseIntent = null;
+  limparPersistenciaPlanoSemanal();
+  fecharModalPlanosSemanais();
+  renderizarResumoPlanoSemanal();
 }
 
 function formatarTempoEstimado(segundos){
@@ -27407,6 +28522,20 @@ let saldoPixPollingDeadline = 0;
 let saldoPixPollingSaldoInicial = null;
 const SALDO_PIX_POLL_INTERVAL_MS = 7000;
 const SALDO_PIX_POLL_TIMEOUT_MS = 5 * 60 * 1000;
+let weeklyPlansCatalog = null;
+let weeklyPlanSummary = null;
+let weeklyPlanSummaryState = token ? "idle" : "anonymous";
+let weeklyPlanPayment = null;
+let weeklyPlanPurchaseIntent = null;
+let weeklyPlanPollingTimer = null;
+let weeklyPlanPollingDeadline = 0;
+let weeklyPlanPollingInFlight = false;
+let weeklyPlanPollingController = null;
+let weeklyPlanModalReturnFocus = null;
+const WEEKLY_PLAN_POLL_INTERVAL_MS = 6000;
+const WEEKLY_PLAN_POLL_TIMEOUT_MS = 30 * 60 * 1000;
+const WEEKLY_PLAN_STATUS_TIMEOUT_MS = 15000;
+const WEEKLY_PLAN_SESSION_KEY = "omascote_weekly_plan_purchase_v1";
 
 const SALDO_PIX_LABELS = {
   saldo_800: { pago: "R$8,00", credito: "R$10,00", texto: "Pague R$8,00 e receba R$10,00 de saldo" },
@@ -32001,6 +33130,14 @@ document.getElementById("pixQrModal")?.addEventListener("click", (e)=>{
     fecharModalPixQr();
   }
 });
+document.getElementById("weeklyPlanOpenBtn")?.addEventListener("click", abrirModalPlanosSemanais);
+document.getElementById("weeklyPlansCloseBtn")?.addEventListener("click", fecharModalPlanosSemanais);
+document.getElementById("weeklyPlansModal")?.addEventListener("click", (e)=>{
+  if(e.target && e.target.id === "weeklyPlansModal"){
+    fecharModalPlanosSemanais();
+  }
+});
+document.addEventListener("keydown", navegarTecladoModalPlanosSemanais);
 
 async function acompanharResultado(pedidoId){
   const boxEl = document.getElementById("resultadoBox");
@@ -32107,6 +33244,8 @@ function iniciarFlipCampos(){
 
 setArtilheirosMode("resultado");
 applyLocal();
+restaurarPersistenciaPlanoSemanal();
+void carregarCatalogoPlanosSemanais();
 
 if(token){
   document.body.classList.remove("visitanteNaoLogado");
@@ -33360,6 +34499,7 @@ document.getElementById("btnSair")?.addEventListener("click", ()=>{
   }
 
   localStorage.removeItem("omascote_token");
+  limparPersistenciaPlanoSemanal();
   window.location.href = "app.html";
 });
 
