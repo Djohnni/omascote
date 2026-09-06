@@ -1,0 +1,179 @@
+const assert = require("node:assert/strict");
+const fs = require("node:fs");
+
+const html = fs.readFileSync("app.html", "utf8");
+const start = html.indexOf("const omascoteChatOrderInFlight");
+const end = html.indexOf("const MEU_CLUBE_PLAY_STORE_URL", start);
+assert.ok(start >= 0 && end > start, "bloco da integração não encontrado");
+
+class TestFile {
+  constructor(chunks, name, options = {}) {
+    this.name = name;
+    this.type = options.type || "";
+    this.size = chunks.reduce((total, chunk) => total + (chunk.byteLength || chunk.length || 0), 0);
+  }
+}
+
+const productIds = [
+  "proximo_jogo", "resultado", "jogador_escudo", "contratacao", "escalacao",
+  "patrocinador", "escudo3d", "mascote_uniforme", "proximo_jogo_jogador",
+  "resultado_jogo_jogador"
+];
+const products = Object.fromEntries(productIds.map(id => [id, { id }]));
+const scenarios = [{ id:"cenario_atual_v1", label:"Cenário atual" }, { id:"amostra_2_v1", label:"Amostra 2" }];
+const listeners = new Map();
+const windowStub = {
+  location:{ hostname:"localhost" },
+  addEventListener(type, listener){ listeners.set(type, listener); }
+};
+const integratedChatFrame = { contentWindow:{} };
+const session = new Map();
+const sessionStorage = { getItem:key => session.get(key) || null, setItem:(key, value) => session.set(key, String(value)) };
+const splitCleanMatchupText = value => {
+  const parts = String(value || "").split(/\s+(?:x|vs\.?|versus)\s+/i).map(item => item.trim()).filter(Boolean);
+  return { home:parts[0] || "", away:parts.slice(1).join(" x ") };
+};
+
+const submitted = [];
+global.token = "token-de-teste";
+global.getCleanProductSchema = () => ({ endpoint:"/pedidos" });
+global.buildEscudo3dLegacyFormData = () => ({ append(){} });
+global.buildLegacyFormDataFromClean = (productKey, order) => ({ productKey, order, entries:[], append(key, value){ this.entries.push([key, value]); } });
+global.appendOrderClientRequest = (form, value) => form.append("client_request_id", value);
+global.API_BASE = "https://api.omascote.test";
+global.buildOrderCreationHeaders = value => ({ Authorization:"Bearer token-de-teste", "X-Idempotency-Key":value });
+global.fetch = async (url, options) => {
+  submitted.push({ url, options });
+  return { ok:true, status:200, async json(){ return { ok:true, pedido_id:"pedido-chat-1", pagamento_pendente:false }; } };
+};
+global.ia4LerJsonSeguro = response => response.json();
+global.ia4TratarAuthInvalida = () => "";
+global.salvarPedidoAtivoLocal = () => {};
+global.ia4Track = () => {};
+global.fotoJogosGerarPixAntesDaCriacao = async items => items;
+global.fotoJogosAbrirPrimeiroPixGerado = () => {};
+global.atualizarTopoProducao = () => {};
+global.mostrarAvisoPedido = () => {};
+global.refreshMe = async () => ({ ok:true });
+global.carregarHistorico = async () => ({ ok:true });
+global.destacarMeusPedidos = () => {};
+
+const factory = new Function(
+  "window", "integratedChatFrame", "OMASCOTE_CHAT_PUBLIC_ORIGIN", "PRODUCTS",
+  "getProductPublicScenarios", "getProductDefaultScenarioId", "splitCleanMatchupText",
+  "CLEAN_PRODUCT_SCHEMA_VERSION", "File", "sessionStorage", "omascoteChatLocalPreview", "criarClientRequestId",
+  `${html.slice(start, end)}\nreturn {omascoteChatAllowedOrigin,omascoteChatBuildCleanOrders,omascoteChatClientRequestId,omascoteChatSubmitOrders};`
+);
+const bridge = factory(
+  windowStub,
+  integratedChatFrame,
+  "https://omascote-atendimento-teste.djohnni1.chatgpt.site",
+  products,
+  () => scenarios,
+  () => "cenario_atual_v1",
+  splitCleanMatchupText,
+  2,
+  TestFile,
+  sessionStorage,
+  () => true,
+  prefix => `${prefix}_00000000-0000-4000-8000-000000000000`
+);
+
+const bytes = () => new Uint8Array([1, 2, 3]).buffer;
+const file = field => ({ field, name:`${field}.png`, type:"image/png", bytes:bytes() });
+const draft = (flow, values) => ({ id:`rascunho-${flow}`, flow, values:{ sport:"Futebol", ...values } });
+
+assert.equal(bridge.omascoteChatAllowedOrigin("https://omascote-atendimento-teste.djohnni1.chatgpt.site"), true);
+assert.equal(bridge.omascoteChatAllowedOrigin("https://exemplo.com"), false);
+assert.equal(bridge.omascoteChatAllowedOrigin("http://localhost:3000"), true);
+assert.equal(bridge.omascoteChatAllowedOrigin("http://localhost:3001"), false);
+
+const next = bridge.omascoteChatBuildCleanOrders(
+  draft("proximo_jogo", { matchup:"Meu Time x Rival", match_datetime:"domingo 16h", competition:"Copa", scenario_id:"Cenário atual" }),
+  [file("home_crest"), file("away_crest")]
+)[0].order;
+assert.deepEqual(next.fields.matchup, { home_team:"Meu Time", away_team:"Rival" });
+assert.equal(next.fields.scenario_id, "cenario_atual_v1");
+assert.equal(next.assets.home_crest.files.length, 1);
+
+const result = bridge.omascoteChatBuildCleanOrders(
+  draft("resultado", { score:"Meu Time 3 x 2 Rival", competition:"Copa" }),
+  [file("home_crest")]
+)[0].order;
+assert.deepEqual(result.fields.score, { home_team:"Meu Time", home_score:"3", away_score:"2", away_team:"Rival" });
+
+const lineup = bridge.omascoteChatBuildCleanOrders(
+  draft("escalacao", { matchup:"Meu Time x Rival", players:"Ana | Goleira\nBia | Ala" }),
+  []
+)[0].order;
+assert.deepEqual(lineup.fields.players, [{ nome:"Ana", posicao:"Goleira" }, { nome:"Bia", posicao:"Ala" }]);
+
+const sponsor = bridge.omascoteChatBuildCleanOrders(
+  draft("patrocinador", { title:"Nossos parceiros" }),
+  [file("team_crest"), file("sponsor_logos"), file("sponsor_logos")]
+)[0].order;
+assert.equal(sponsor.assets.sponsor_logos.files.length, 2);
+
+const mascot = bridge.omascoteChatBuildCleanOrders(
+  draft("mascote_uniforme", { mascot_animal:"Leão" }),
+  [file("team_crest")]
+)[0].order;
+assert.equal(mascot.fields.mascot_animal, "Leão");
+
+const crest3d = bridge.omascoteChatBuildCleanOrders(
+  draft("escudo3d", {}),
+  [file("team_crest")]
+)[0];
+assert.equal(crest3d.special, "escudo3d");
+
+const athleteNext = bridge.omascoteChatBuildCleanOrders(
+  draft("proximo_jogo_jogador", { matchup:"Meu Time x Rival", match_datetime:"domingo 16h", competition:"Copa" }),
+  [file("home_crest"), file("away_crest"), file("athlete_photos")]
+)[0].order;
+assert.equal(athleteNext.assets.player_photo.files.length, 1);
+
+const athleteResult = bridge.omascoteChatBuildCleanOrders(
+  draft("resultado_jogo_jogador", { score:"Meu Time 1 x 0 Rival" }),
+  [file("home_crest"), file("away_crest"), file("athlete_photos")]
+)[0].order;
+assert.equal(athleteResult.assets.player_photo.files.length, 1);
+
+const playerCards = bridge.omascoteChatBuildCleanOrders(
+  draft("jogador_escudo", { players:"Ana\nBia", sample:"Amostra 2" }),
+  [file("team_crest"), file("player_photos"), file("player_photos")]
+);
+assert.equal(playerCards.length, 2);
+assert.equal(playerCards[1].order.fields.player_name, "Bia");
+assert.equal(playerCards[0].order.assets.player_photo.files.length, 1);
+
+const contracts = bridge.omascoteChatBuildCleanOrders(
+  draft("contratacao", { style:"Amostra 2", players:"Ana | Ala | Contratado | Não\nBia | Pivô | Renovado | Sim" }),
+  [file("team_crest"), file("player_photos"), file("player_photos"), file("jersey_reference")]
+);
+assert.equal(contracts.length, 2);
+assert.equal(contracts[1].order.fields.announcement_type, "renovado");
+assert.equal(contracts[1].order.fields.jersey_enabled, true);
+assert.equal(contracts[0].order.fields.sample_id, "contratacao_modelo_02_v1");
+
+const firstId = bridge.omascoteChatClientRequestId("mesmo-rascunho", 0);
+const secondId = bridge.omascoteChatClientRequestId("mesmo-rascunho", 0);
+assert.equal(firstId, secondId, "a repetição precisa preservar a idempotência");
+
+assert.equal(listeners.has("message"), true, "listener seguro do iframe não foi registrado");
+
+(async () => {
+  const submission = await bridge.omascoteChatSubmitOrders(
+    draft("proximo_jogo", { matchup:"Meu Time x Rival", match_datetime:"domingo 16h", competition:"Copa" }),
+    [file("home_crest"), file("away_crest")]
+  );
+  assert.equal(submission.ok, true);
+  assert.equal(submission.orders[0].id, "pedido-chat-1");
+  assert.equal(submitted.length, 1);
+  assert.equal(submitted[0].url, "https://api.omascote.test/pedidos");
+  assert.match(submitted[0].options.headers.Authorization, /^Bearer /);
+  assert.ok(submitted[0].options.headers["X-Idempotency-Key"]);
+  console.log("OK - chat integrado mapeia os 10 produtos pagos, usa a API do motor e preserva idempotência e origem permitida");
+})().catch(error => {
+  console.error(error);
+  process.exitCode = 1;
+});

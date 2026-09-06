@@ -14465,6 +14465,62 @@ body.omascoteAppMode .appTestNotice{
     height:36px;
   }
 }
+/* Atendimento conversacional: acesso discreto pelo rodapé. */
+.integratedChatModal{
+  position:fixed;
+  inset:0;
+  z-index:12050;
+  display:none;
+  place-items:center;
+  padding:18px;
+  background:rgba(4,20,12,.72);
+  backdrop-filter:blur(7px);
+}
+.integratedChatModal.open{display:grid}
+.integratedChatDialog{
+  width:min(1180px,100%);
+  height:min(860px,calc(100vh - 36px));
+  overflow:hidden;
+  border:1px solid rgba(255,255,255,.2);
+  border-radius:24px;
+  background:#f5faf7;
+  box-shadow:0 28px 80px rgba(0,0,0,.38);
+}
+.integratedChatHeader{
+  height:58px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:16px;
+  padding:0 18px;
+  color:#fff;
+  background:#075c38;
+}
+.integratedChatHeader strong{font-size:16px}
+.integratedChatHeader span{display:block;font-size:12px;opacity:.78}
+.integratedChatClose{
+  width:38px;
+  height:38px;
+  border:1px solid rgba(255,255,255,.28);
+  border-radius:50%;
+  color:#fff;
+  background:rgba(255,255,255,.1);
+  font-size:25px;
+  line-height:1;
+  cursor:pointer;
+}
+.integratedChatFrame{
+  display:block;
+  width:100%;
+  height:calc(100% - 58px);
+  border:0;
+  background:#f5faf7;
+}
+body.integratedChatOpen{overflow:hidden}
+@media(max-width:680px){
+  .integratedChatModal{padding:0}
+  .integratedChatDialog{width:100%;height:100%;border:0;border-radius:0}
+}
 </style>
 </head>
 
@@ -15164,7 +15220,7 @@ body.omascoteAppMode .appTestNotice{
               <button class="legalLinkBtn" id="btnExcluirContaFooter" type="button">Excluir Conta</button>
               <button class="legalLinkBtn" id="btnDenunciarIaFooter" type="button">Denunciar Conteúdo Gerado por IA</button>
               <button class="legalLinkBtn" id="btnAbrirSuporteFooter" type="button">Suporte</button>
-              <a class="legalLinkBtn" id="btnTesteNovoAtendimentoFooter" href="https://omascote-atendimento-teste.djohnni1.chatgpt.site" target="_blank" rel="noopener noreferrer">Testar novo atendimento</a>
+              <a class="legalLinkBtn" id="btnTesteNovoAtendimentoFooter" href="https://omascote-atendimento-teste.djohnni1.chatgpt.site/?integrado=1">Testar novo atendimento</a>
             </div>
             <div class="brandFootnote">Meu Clube FC é uma plataforma da O Mascote</div>
           </div>
@@ -16426,6 +16482,19 @@ body.omascoteAppMode .appTestNotice{
   </div>
 </div>
 
+<div class="integratedChatModal" id="integratedChatModal" aria-hidden="true">
+  <section class="integratedChatDialog" role="dialog" aria-modal="true" aria-labelledby="integratedChatTitle">
+    <header class="integratedChatHeader">
+      <div>
+        <strong id="integratedChatTitle">Novo atendimento</strong>
+        <span>Teste integrado ao O Mascote</span>
+      </div>
+      <button class="integratedChatClose" id="integratedChatClose" type="button" aria-label="Fechar atendimento">×</button>
+    </header>
+    <iframe class="integratedChatFrame" id="integratedChatFrame" title="Novo atendimento O Mascote" loading="lazy" allow="clipboard-write"></iframe>
+  </section>
+</div>
+
 <script>
 const API_BASE = (()=>{
   const fallback = "https://api.omascote.com.br";
@@ -16439,6 +16508,308 @@ const API_BASE = (()=>{
   }
 })();
 window.OMASCOTE_API_BASE_RESOLVED = API_BASE;
+const OMASCOTE_CHAT_PUBLIC_ORIGIN = "https://omascote-atendimento-teste.djohnni1.chatgpt.site";
+const integratedChatModal = document.getElementById("integratedChatModal");
+const integratedChatFrame = document.getElementById("integratedChatFrame");
+const integratedChatClose = document.getElementById("integratedChatClose");
+
+function omascoteChatLocalPreview(){
+  return ["localhost", "127.0.0.1", "[::1]"].includes(window.location.hostname);
+}
+
+function omascoteChatUrl(){
+  const base = omascoteChatLocalPreview() ? "http://localhost:3000" : OMASCOTE_CHAT_PUBLIC_ORIGIN;
+  return `${base}/?integrado=1`;
+}
+
+function abrirAtendimentoIntegrado(){
+  if(!integratedChatModal || !integratedChatFrame) return;
+  if(!integratedChatFrame.src) integratedChatFrame.src = omascoteChatUrl();
+  integratedChatModal.classList.add("open");
+  integratedChatModal.setAttribute("aria-hidden", "false");
+  document.body.classList.add("integratedChatOpen");
+  integratedChatClose?.focus();
+}
+
+function fecharAtendimentoIntegrado(){
+  if(!integratedChatModal) return;
+  integratedChatModal.classList.remove("open");
+  integratedChatModal.setAttribute("aria-hidden", "true");
+  document.body.classList.remove("integratedChatOpen");
+  document.getElementById("btnTesteNovoAtendimentoFooter")?.focus();
+}
+
+document.getElementById("btnTesteNovoAtendimentoFooter")?.addEventListener("click", event => {
+  event.preventDefault();
+  abrirAtendimentoIntegrado();
+});
+integratedChatClose?.addEventListener("click", fecharAtendimentoIntegrado);
+integratedChatModal?.addEventListener("click", event => {
+  if(event.target === integratedChatModal) fecharAtendimentoIntegrado();
+});
+document.addEventListener("keydown", event => {
+  if(event.key === "Escape" && integratedChatModal?.classList.contains("open")) fecharAtendimentoIntegrado();
+});
+if(omascoteChatLocalPreview() && new URLSearchParams(window.location.search).get("chat_preview") === "1"){
+  requestAnimationFrame(abrirAtendimentoIntegrado);
+}
+
+const omascoteChatOrderInFlight = new Set();
+
+function omascoteChatAllowedOrigin(origin){
+  if(origin === OMASCOTE_CHAT_PUBLIC_ORIGIN) return true;
+  if(!omascoteChatLocalPreview()) return false;
+  try{
+    const parsed = new URL(origin);
+    return parsed.protocol === "http:" && ["localhost", "127.0.0.1", "[::1]"].includes(parsed.hostname) && parsed.port === "3000";
+  }catch(e){
+    return false;
+  }
+}
+
+function omascoteChatLines(value){
+  return String(value || "").split("\n").map(item => item.trim()).filter(Boolean);
+}
+
+function omascoteChatFile(record){
+  if(!record || !(record.bytes instanceof ArrayBuffer)) throw new Error("Uma imagem do pedido ficou inválida. Envie novamente.");
+  const name = String(record.name || "imagem.jpg").replace(/[\\/:*?"<>|]/g, "_").slice(0, 140) || "imagem.jpg";
+  const type = /^image\/(png|jpe?g|webp)$/i.test(String(record.type || "")) ? String(record.type) : "image/jpeg";
+  if(record.bytes.byteLength < 1 || record.bytes.byteLength > 10 * 1024 * 1024) throw new Error("Cada imagem deve ter no máximo 10 MB.");
+  return new File([record.bytes], name, { type, lastModified:Date.now() });
+}
+
+function omascoteChatFilesByField(records){
+  const grouped = {};
+  let total = 0;
+  for(const record of Array.isArray(records) ? records.slice(0, 50) : []){
+    const field = String(record?.field || "").replace(/[^a-z0-9_]/gi, "").slice(0, 60);
+    if(!field) continue;
+    const file = omascoteChatFile(record);
+    total += file.size;
+    if(total > 30 * 1024 * 1024) throw new Error("As imagens deste pedido passam de 30 MB. Envie arquivos menores.");
+    (grouped[field] ||= []).push(file);
+  }
+  return grouped;
+}
+
+function omascoteChatScenarioId(productKey, value){
+  const options = typeof getProductPublicScenarios === "function" ? getProductPublicScenarios(productKey) : [];
+  const wanted = String(value || "").trim().toLowerCase();
+  const selected = options.find(option => String(option.id || "").toLowerCase() === wanted || String(option.label || "").trim().toLowerCase() === wanted);
+  return selected?.id || getProductDefaultScenarioId(productKey);
+}
+
+function omascoteChatSplitScore(value){
+  const text = String(value || "").trim();
+  const match = text.match(/^(.*?)\s+(\d+)\s*(?:x|×|a)\s*(\d+)\s+(.*?)$/i);
+  if(!match) throw new Error("Confira os dois participantes e os dois valores do resultado.");
+  return { home_team:match[1].trim(), home_score:match[2], away_score:match[3], away_team:match[4].trim() };
+}
+
+function omascoteChatAsset(files, field, legacyName, sourceField = field){
+  return { legacyName, files:[...(files[sourceField] || [])] };
+}
+
+function omascoteChatBaseCleanOrder(productKey, values, files){
+  const fields = {
+    visual_style:String(values.visual_style || "3D").toLowerCase(),
+    coupon_code:String(values.coupon_code || "").trim()
+  };
+  const assets = {};
+  if(["proximo_jogo", "proximo_jogo_jogador"].includes(productKey)){
+    const matchup = splitCleanMatchupText(values.matchup);
+    if(!matchup.home || !matchup.away) throw new Error("Confira os dois participantes do confronto.");
+    Object.assign(fields, {
+      matchup:{ home_team:matchup.home, away_team:matchup.away },
+      match_datetime:String(values.match_datetime || "").trim(),
+      competition:String(values.competition || "").trim(),
+      venue:String(values.venue || "").trim()
+    });
+    if(productKey === "proximo_jogo"){
+      fields.titulo_secao_proximo_jogo = String(values.section_title || "").trim();
+      fields.scenario_id = omascoteChatScenarioId(productKey, values.scenario_id);
+      assets.home_crest = omascoteChatAsset(files, "home_crest", "escudo1");
+      assets.away_crest = omascoteChatAsset(files, "away_crest", "escudo2");
+      assets.match_photo = omascoteChatAsset(files, "match_photo", "mascote");
+      if(assets.match_photo.files.length){
+        const role = ({Jogador:"jogador", Time:"time", Mascote:"mascote"})[values.photo_mode] || "jogador";
+        assets.match_photo.roles = assets.match_photo.files.map(() => role);
+        fields.match_photo_roles = [...assets.match_photo.roles];
+        fields.match_photo_type = role;
+      }
+    }else{
+      assets.team_crest = omascoteChatAsset(files, "team_crest", "escudo1", "home_crest");
+      assets.opponent_crest = omascoteChatAsset(files, "opponent_crest", "escudo2", "away_crest");
+      assets.player_photo = omascoteChatAsset(files, "player_photo", "mascote", "athlete_photos");
+    }
+  }else if(["resultado", "resultado_jogo_jogador"].includes(productKey)){
+    Object.assign(fields, {
+      score:omascoteChatSplitScore(values.score),
+      competition:String(values.competition || "").trim(),
+      headline:String(values.headline || "Resultado do jogo").trim() || "Resultado do jogo"
+    });
+    if(productKey === "resultado"){
+      fields.titulo_secao_resultados = String(values.section_title || "").trim();
+      fields.scenario_id = omascoteChatScenarioId(productKey, values.scenario_id);
+      fields.scorers = omascoteChatLines(values.scorers).map(line => {const [nome, gols] = line.split("|").map(item => item.trim());return { nome, gols:Number(gols || 0) };}).filter(item => item.nome && Number.isFinite(item.gols));
+      assets.home_crest = omascoteChatAsset(files, "home_crest", "escudo1");
+      assets.away_crest = omascoteChatAsset(files, "away_crest", "escudo2");
+      assets.match_photo = omascoteChatAsset(files, "match_photo", "mascote");
+    }else{
+      assets.team_crest = omascoteChatAsset(files, "team_crest", "escudo1", "home_crest");
+      assets.opponent_crest = omascoteChatAsset(files, "opponent_crest", "escudo2", "away_crest");
+      assets.player_photo = omascoteChatAsset(files, "player_photo", "mascote", "athlete_photos");
+    }
+  }else if(productKey === "escalacao"){
+    Object.assign(fields, {
+      matchup:String(values.matchup || "").trim(),
+      match_datetime:String(values.match_datetime || "").trim(),
+      competition:String(values.competition || "").trim(),
+      venue:String(values.venue || "").trim(),
+      scenario_id:omascoteChatScenarioId(productKey, values.scenario_id),
+      players:omascoteChatLines(values.players).map(line => {const [nome, posicao = ""] = line.split("|").map(item => item.trim());return { nome, posicao };}).filter(item => item.nome)
+    });
+    assets.team_crest = omascoteChatAsset(files, "team_crest", "escudo1");
+    assets.opponent_crest = omascoteChatAsset(files, "opponent_crest", "escudo2");
+    assets.team_photo = omascoteChatAsset(files, "team_photo", "mascote");
+  }else if(productKey === "patrocinador"){
+    Object.assign(fields, { title:String(values.title || "").trim(), headline:String(values.headline || "").trim() });
+    assets.team_crest = omascoteChatAsset(files, "team_crest", "escudo1");
+    assets.sponsor_logos = omascoteChatAsset(files, "sponsor_logos", "patrocinadores");
+  }else if(productKey === "mascote_uniforme"){
+    Object.assign(fields, { mascot_animal:String(values.mascot_animal || "").trim(), scenario_id:omascoteChatScenarioId(productKey, values.scenario_id) });
+    assets.team_crest = omascoteChatAsset(files, "team_crest", "escudo1");
+    assets.uniform_image = omascoteChatAsset(files, "uniform_image", "mascote");
+  }
+  return { schema_version:productKey === "contratacao" ? 3 : CLEAN_PRODUCT_SCHEMA_VERSION, product_id:productKey, fields, assets };
+}
+
+function omascoteChatBuildCleanOrders(draft, records){
+  const productKey = String(draft?.flow || "");
+  if(!Object.hasOwn(PRODUCTS, productKey) || productKey === "personalizada") throw new Error("Este tipo de pedido ainda precisa de atendimento antes de entrar no motor.");
+  const values = draft?.values && typeof draft.values === "object" ? Object.fromEntries(Object.entries(draft.values).map(([key, value]) => [key, String(value || "").slice(0, 12000)])) : {};
+  const files = omascoteChatFilesByField(records);
+  if(productKey === "escudo3d"){
+    const crest = files.team_crest?.[0];
+    if(!crest) throw new Error("Envie o escudo que será transformado em 3D.");
+    return [{ productKey, special:"escudo3d", file:crest, coupon:String(values.coupon_code || "").trim() }];
+  }
+  if(productKey === "jogador_escudo"){
+    const players = omascoteChatLines(values.players).map(line => line.split("|").map(item => item.trim())).filter(row => row[0]);
+    const photos = files.player_photos || [];
+    if(!players.length || photos.length !== players.length) throw new Error("Envie uma foto para cada jogador, na mesma ordem dos nomes.");
+    return players.map((player, index) => {
+      const order = omascoteChatBaseCleanOrder(productKey, values, files);
+      order.fields.player_name = player[0];
+      order.fields.players = [{ nome:player[0], posicao:"" }];
+      order.fields.scenario_id = omascoteChatScenarioId(productKey, values.sample);
+      order.assets.team_crest = omascoteChatAsset(files, "team_crest", "escudo1");
+      order.assets.player_photo = { legacyName:"mascote", files:[photos[index]] };
+      return { productKey, order };
+    });
+  }
+  if(productKey === "contratacao"){
+    const players = omascoteChatLines(values.players).map(line => {const [name = "", position = "", announcement = "Contratado", jersey = "Não"] = line.split("|").map(item => item.trim());return { name, position, announcement, jersey };}).filter(item => item.name);
+    const photos = files.player_photos || [];
+    if(!players.length || photos.length !== players.length) throw new Error("Envie uma foto para cada jogador, na mesma ordem dos nomes.");
+    return players.map((player, index) => {
+      const order = omascoteChatBaseCleanOrder(productKey, values, files);
+      const style = String(values.style || "Amostra 1");
+      const sampleNumber = Math.min(3, Math.max(1, Number(style.match(/\d+/)?.[0] || 1)));
+      order.fields = {
+        ...order.fields,
+        contratacao_version:3,
+        style_mode:style === "Enviar meu modelo" ? "custom" : style === "Criar sem referência" ? "auto" : "catalog",
+        sample_id:style.startsWith("Amostra") ? `contratacao_modelo_0${sampleNumber}_v1` : "",
+        announcement_type:player.announcement === "Renovado" ? "renovado" : "contratado",
+        title:player.announcement === "Renovado" ? "RENOVADO" : "CONTRATADO",
+        headline:player.announcement === "Renovado" ? "RENOVADO" : "CONTRATADO",
+        player_name:player.name,
+        player_position:player.position,
+        player_info:player.position,
+        jersey_enabled:player.jersey === "Sim",
+        players:[{ nome:player.name, posicao:player.position, tipo_anuncio:player.announcement, camiseta_time:player.jersey === "Sim" }]
+      };
+      order.assets.team_crest = omascoteChatAsset(files, "team_crest", "escudo1");
+      order.assets.player_photo = { legacyName:"escudo2", files:[photos[index]] };
+      order.assets.design_reference = omascoteChatAsset(files, "design_reference", "referencia", "reference_layout");
+      order.assets.jersey_reference = omascoteChatAsset(files, "jersey_reference", "camiseta");
+      return { productKey, order };
+    });
+  }
+  return [{ productKey, order:omascoteChatBaseCleanOrder(productKey, values, files) }];
+}
+
+function omascoteChatClientRequestId(draftId, index){
+  const storageKey = `omascote_chat_request_${String(draftId || "").replace(/[^a-z0-9_-]/gi, "_").slice(0, 80)}_${index}`;
+  const previous = sessionStorage.getItem(storageKey);
+  if(previous) return previous;
+  const created = criarClientRequestId("chat_pedido");
+  sessionStorage.setItem(storageKey, created);
+  return created;
+}
+
+async function omascoteChatSubmitOrders(draft, records){
+  if(!token) throw new Error("Faça login no O Mascote antes de enviar o pedido.");
+  const prepared = omascoteChatBuildCleanOrders(draft, records);
+  const results = [];
+  for(let index = 0; index < prepared.length; index++){
+    const item = prepared[index];
+    const product = PRODUCTS[item.productKey];
+    const schema = getCleanProductSchema(item.productKey);
+    const requestId = omascoteChatClientRequestId(draft.id, index);
+    const fd = item.special === "escudo3d"
+      ? buildEscudo3dLegacyFormData(item.file, item.coupon)
+      : buildLegacyFormDataFromClean(item.productKey, item.order);
+    appendOrderClientRequest(fd, requestId);
+    const endpoint = item.special === "escudo3d" ? "/pedidos" : schema?.endpoint;
+    if(!endpoint) throw new Error("Este produto ainda não está pronto para o motor.");
+    const response = await fetch(`${API_BASE}${endpoint}`, { method:"POST", headers:buildOrderCreationHeaders(requestId), body:fd });
+    const out = await ia4LerJsonSeguro(response);
+    const authMsg = ia4TratarAuthInvalida(response, out);
+    if(authMsg) throw new Error(authMsg);
+    if(!response.ok || !out?.ok) throw new Error(out?.error || "Não foi possível criar o pedido no motor.");
+    results.push(out);
+    if(out.pedido_id) salvarPedidoAtivoLocal(out.pedido_id, item.productKey);
+    ia4Track("pedido_chat_integrado", { produto:item.productKey, pedido_id:out.pedido_id || "" });
+  }
+  let finalResults = results;
+  if(results.some(item => item.pagamento_pendente === true)){
+    finalResults = await fotoJogosGerarPixAntesDaCriacao(results, "com_suporte");
+    fotoJogosAbrirPrimeiroPixGerado(finalResults);
+  }
+  atualizarTopoProducao(finalResults.map(item => ({ id:item.pedido_id || "novo", status:item.pagamento_pendente ? "aguardando_pagamento" : "processando" })));
+  mostrarAvisoPedido();
+  void refreshMe();
+  void carregarHistorico();
+  destacarMeusPedidos();
+  const ids = finalResults.map(item => item.pedido_id).filter(Boolean);
+  const pending = finalResults.some(item => item.pagamento_pendente === true);
+  return {
+    ok:true,
+    message:pending
+      ? `${ids.length} pedido(s) criado(s). Conclua o Pix aberto para liberar ao motor.`
+      : `${ids.length} pedido(s) enviado(s) ao motor. Acompanhe em Meus pedidos.`,
+    orders:finalResults.map(item => ({ id:item.pedido_id || "", paymentPending:item.pagamento_pendente === true }))
+  };
+}
+
+window.addEventListener("message", async event => {
+  if(event.source !== integratedChatFrame?.contentWindow || !omascoteChatAllowedOrigin(event.origin) || event.data?.type !== "omascote-chat:create-order") return;
+  const requestId = String(event.data.requestId || "");
+  if(!/^[a-f0-9-]{36}$/i.test(requestId) || omascoteChatOrderInFlight.has(requestId)) return;
+  omascoteChatOrderInFlight.add(requestId);
+  let result;
+  try{
+    result = await omascoteChatSubmitOrders(event.data.draft, event.data.files);
+  }catch(error){
+    result = { ok:false, error:error?.message || "Não foi possível enviar o pedido." };
+  }finally{
+    omascoteChatOrderInFlight.delete(requestId);
+  }
+  event.source.postMessage({ type:"omascote-chat:order-result", requestId, result }, event.origin);
+});
 const MEU_CLUBE_PLAY_STORE_URL = "https://play.google.com/store/apps/details?id=br.com.omascote.app";
 const MEU_CLUBE_APP_WEB_URL = "https://omascote.com.br/app.html";
 const MEU_CLUBE_ARTE_APP_MSG = "Para criar artes, baixe o app Meu Clube FC na Play Store.";
