@@ -23,7 +23,7 @@ const products = Object.fromEntries(productIds.map(id => [id, { id }]));
 const scenarios = [{ id:"cenario_atual_v1", label:"Cenário atual" }, { id:"amostra_2_v1", label:"Amostra 2" }];
 const listeners = new Map();
 const windowStub = {
-  location:{ hostname:"localhost" },
+  location:{ hostname:"localhost", origin:"http://localhost:4173" },
   addEventListener(type, listener){ listeners.set(type, listener); }
 };
 const integratedChatFrame = { contentWindow:{} };
@@ -59,7 +59,7 @@ global.carregarHistorico = async () => ({ ok:true });
 global.destacarMeusPedidos = () => {};
 
 const factory = new Function(
-  "window", "integratedChatFrame", "OMASCOTE_CHAT_PUBLIC_ORIGIN", "PRODUCTS",
+  "window", "integratedChatFrame", "PRODUCTS",
   "getProductPublicScenarios", "getProductDefaultScenarioId", "splitCleanMatchupText",
   "CLEAN_PRODUCT_SCHEMA_VERSION", "File", "sessionStorage", "omascoteChatLocalPreview", "criarClientRequestId",
   `${html.slice(start, end)}\nreturn {omascoteChatAllowedOrigin,omascoteChatBuildCleanOrders,omascoteChatClientRequestId,omascoteChatSubmitOrders};`
@@ -67,7 +67,6 @@ const factory = new Function(
 const bridge = factory(
   windowStub,
   integratedChatFrame,
-  "https://omascote-atendimento-teste.djohnni1.chatgpt.site",
   products,
   () => scenarios,
   () => "cenario_atual_v1",
@@ -83,10 +82,9 @@ const bytes = () => new Uint8Array([1, 2, 3]).buffer;
 const file = field => ({ field, name:`${field}.png`, type:"image/png", bytes:bytes() });
 const draft = (flow, values) => ({ id:`rascunho-${flow}`, flow, values:{ sport:"Futebol", ...values } });
 
-assert.equal(bridge.omascoteChatAllowedOrigin("https://omascote-atendimento-teste.djohnni1.chatgpt.site"), true);
+assert.equal(bridge.omascoteChatAllowedOrigin("http://localhost:4173"), true);
 assert.equal(bridge.omascoteChatAllowedOrigin("https://exemplo.com"), false);
-assert.equal(bridge.omascoteChatAllowedOrigin("http://localhost:3000"), true);
-assert.equal(bridge.omascoteChatAllowedOrigin("http://localhost:3001"), false);
+assert.equal(bridge.omascoteChatAllowedOrigin("http://localhost:3000"), false);
 
 const next = bridge.omascoteChatBuildCleanOrders(
   draft("proximo_jogo", { matchup:"Meu Time x Rival", match_datetime:"domingo 16h", competition:"Copa", scenario_id:"Cenário atual" }),

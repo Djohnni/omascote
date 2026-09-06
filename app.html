@@ -15220,7 +15220,7 @@ body.integratedChatOpen{overflow:hidden}
               <button class="legalLinkBtn" id="btnExcluirContaFooter" type="button">Excluir Conta</button>
               <button class="legalLinkBtn" id="btnDenunciarIaFooter" type="button">Denunciar Conteúdo Gerado por IA</button>
               <button class="legalLinkBtn" id="btnAbrirSuporteFooter" type="button">Suporte</button>
-              <a class="legalLinkBtn" id="btnTesteNovoAtendimentoFooter" href="https://omascote-atendimento-teste.djohnni1.chatgpt.site/?integrado=1">Testar novo atendimento</a>
+              <a class="legalLinkBtn" id="btnTesteNovoAtendimentoFooter" href="/atendimento/index.html?integrado=1">Novo atendimento</a>
             </div>
             <div class="brandFootnote">Meu Clube FC é uma plataforma da O Mascote</div>
           </div>
@@ -16487,7 +16487,7 @@ body.integratedChatOpen{overflow:hidden}
     <header class="integratedChatHeader">
       <div>
         <strong id="integratedChatTitle">Novo atendimento</strong>
-        <span>Teste integrado ao O Mascote</span>
+        <span>Atendimento dentro do O Mascote</span>
       </div>
       <button class="integratedChatClose" id="integratedChatClose" type="button" aria-label="Fechar atendimento">×</button>
     </header>
@@ -16508,7 +16508,6 @@ const API_BASE = (()=>{
   }
 })();
 window.OMASCOTE_API_BASE_RESOLVED = API_BASE;
-const OMASCOTE_CHAT_PUBLIC_ORIGIN = "https://omascote-atendimento-teste.djohnni1.chatgpt.site";
 const integratedChatModal = document.getElementById("integratedChatModal");
 const integratedChatFrame = document.getElementById("integratedChatFrame");
 const integratedChatClose = document.getElementById("integratedChatClose");
@@ -16518,8 +16517,7 @@ function omascoteChatLocalPreview(){
 }
 
 function omascoteChatUrl(){
-  const base = omascoteChatLocalPreview() ? "http://localhost:3000" : OMASCOTE_CHAT_PUBLIC_ORIGIN;
-  return `${base}/?integrado=1`;
+  return new URL("/atendimento/index.html?integrado=1", window.location.origin).href;
 }
 
 function abrirAtendimentoIntegrado(){
@@ -16557,14 +16555,7 @@ if(omascoteChatLocalPreview() && new URLSearchParams(window.location.search).get
 const omascoteChatOrderInFlight = new Set();
 
 function omascoteChatAllowedOrigin(origin){
-  if(origin === OMASCOTE_CHAT_PUBLIC_ORIGIN) return true;
-  if(!omascoteChatLocalPreview()) return false;
-  try{
-    const parsed = new URL(origin);
-    return parsed.protocol === "http:" && ["localhost", "127.0.0.1", "[::1]"].includes(parsed.hostname) && parsed.port === "3000";
-  }catch(e){
-    return false;
-  }
+  return origin === window.location.origin;
 }
 
 function omascoteChatLines(value){
