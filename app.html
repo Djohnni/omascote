@@ -16562,6 +16562,19 @@ function omascoteChatLines(value){
   return String(value || "").split("\n").map(item => item.trim()).filter(Boolean);
 }
 
+function omascoteChatSportContext(values = {}){
+  const selected = String(values.sport === "Outro esporte" ? values.other_sport || values.sport : values.sport || "").trim();
+  const key = selected.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+  if(/basquete/.test(key)) return { sport:selected, individual:false, structuredScore:true };
+  if(/volei|voleibol/.test(key)) return { sport:selected, individual:false, structuredScore:false };
+  if(/futsal|handebol/.test(key)) return { sport:selected, individual:false, structuredScore:true };
+  if(/tenis|tennis|padel/.test(key)) return { sport:selected, individual:true, structuredScore:false };
+  if(/corrida|atletismo|ciclismo|natacao|triatlo/.test(key)) return { sport:selected, individual:true, structuredScore:false };
+  if(/jiu|judo|boxe|mma|karate|taekwondo|luta/.test(key)) return { sport:selected, individual:true, structuredScore:false };
+  if(/^futebol$/.test(key)) return { sport:selected, individual:false, structuredScore:true };
+  return { sport:selected, individual:true, structuredScore:false };
+}
+
 function omascoteChatFile(record){
   if(!record || !(record.bytes instanceof ArrayBuffer)) throw new Error("Uma imagem do pedido ficou inválida. Envie novamente.");
   const name = String(record.name || "imagem.jpg").replace(/[\\/:*?"<>|]/g, "_").slice(0, 140) || "imagem.jpg";
@@ -16603,16 +16616,21 @@ function omascoteChatAsset(files, field, legacyName, sourceField = field){
 }
 
 function omascoteChatBaseCleanOrder(productKey, values, files){
+  const sportContext = omascoteChatSportContext(values);
   const fields = {
     visual_style:String(values.visual_style || "3D").toLowerCase(),
-    coupon_code:String(values.coupon_code || "").trim()
+    coupon_code:String(values.coupon_code || "").trim(),
+    sport:sportContext.sport,
+    sport_context:String(values.sport_context || "").trim()
   };
   const assets = {};
   if(["proximo_jogo", "proximo_jogo_jogador"].includes(productKey)){
-    const matchup = splitCleanMatchupText(values.matchup);
-    if(!matchup.home || !matchup.away) throw new Error("Confira os dois participantes do confronto.");
+    const matchupText = String(values.matchup || "").trim();
+    if(!matchupText) throw new Error("Informe quem participa e qual é o evento.");
+    const matchup = splitCleanMatchupText(matchupText);
+    if(!sportContext.individual && (!matchup.home || !matchup.away)) throw new Error("Confira os dois participantes do confronto.");
     Object.assign(fields, {
-      matchup:{ home_team:matchup.home, away_team:matchup.away },
+      matchup:sportContext.individual ? { text:matchupText } : { home_team:matchup.home, away_team:matchup.away },
       match_datetime:String(values.match_datetime || "").trim(),
       competition:String(values.competition || "").trim(),
       venue:String(values.venue || "").trim()
@@ -16635,8 +16653,10 @@ function omascoteChatBaseCleanOrder(productKey, values, files){
       assets.player_photo = omascoteChatAsset(files, "player_photo", "mascote", "athlete_photos");
     }
   }else if(["resultado", "resultado_jogo_jogador"].includes(productKey)){
+    const resultText = String(values.score || "").trim();
+    if(!resultText) throw new Error("Informe o resultado.");
     Object.assign(fields, {
-      score:omascoteChatSplitScore(values.score),
+      score:sportContext.structuredScore ? omascoteChatSplitScore(resultText) : { text:resultText },
       competition:String(values.competition || "").trim(),
       headline:String(values.headline || "Resultado do jogo").trim() || "Resultado do jogo"
     });
@@ -25870,18 +25890,29 @@ function buildLegacyFormDataFromClean(productKey, cleanOrder, options = {}){
 
   if(cleanOrder.fields.score){
     const s = cleanOrder.fields.score;
-    const rodada = `${s.home_team || ""} ${s.home_score || "0"} x ${s.away_score || "0"} ${s.away_team || ""}`.trim();
-    appendCleanTextLegacy(fd, "rodada", rodada || "Resultado do jogo");
-    if(!fd.has("data")) appendCleanTextLegacy(fd, "data", cleanOrder.fields.headline || "Resultado do jogo");
-    fd.append("time_principal", s.home_team || "");
-    fd.append("gols_time_principal", s.home_score || "");
-    fd.append("gols_adversario", s.away_score || "");
-    fd.append("time_adversario", s.away_team || "");
+    const writtenResult = String(s.text || s.result_text || "").trim();
+    if(writtenResult){
+      appendCleanTextLegacy(fd, "rodada", writtenResult);
+      if(!fd.has("data")) appendCleanTextLegacy(fd, "data", cleanOrder.fields.headline || "Resultado");
+      fd.append("time_principal", "");
+      fd.append("gols_time_principal", "");
+      fd.append("gols_adversario", "");
+      fd.append("time_adversario", "");
+    }else{
+      const rodada = `${s.home_team || ""} ${s.home_score || "0"} x ${s.away_score || "0"} ${s.away_team || ""}`.trim();
+      appendCleanTextLegacy(fd, "rodada", rodada || "Resultado do jogo");
+      if(!fd.has("data")) appendCleanTextLegacy(fd, "data", cleanOrder.fields.headline || "Resultado do jogo");
+      fd.append("time_principal", s.home_team || "");
+      fd.append("gols_time_principal", s.home_score || "");
+      fd.append("gols_adversario", s.away_score || "");
+      fd.append("time_adversario", s.away_team || "");
+    }
   }
 
   if(cleanOrder.fields.matchup && typeof cleanOrder.fields.matchup === "object" && !Array.isArray(cleanOrder.fields.matchup)){
     const m = cleanOrder.fields.matchup;
-    const confronto = `${m.home_team || ""} x ${m.away_team || ""}`.trim();
+    const writtenMatchup = String(m.text || m.title || "").trim();
+    const confronto = writtenMatchup || `${m.home_team || ""} x ${m.away_team || ""}`.trim();
     if(confronto) fd.set("rodada", confronto);
     fd.set("time_principal", m.home_team || "");
     fd.set("time_adversario", m.away_team || "");

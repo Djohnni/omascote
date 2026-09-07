@@ -81,6 +81,30 @@ const bridge = factory(
   () => { accountOpened += 1; }
 );
 
+class TestFormData {
+  constructor(){ this.values = new Map(); }
+  append(key, value){ if(!this.values.has(key)) this.values.set(key, value); }
+  set(key, value){ this.values.set(key, value); }
+  has(key){ return this.values.has(key); }
+  get(key){ return this.values.get(key); }
+}
+const legacyStart = html.indexOf("function buildLegacyFormDataFromClean");
+const legacyEnd = html.indexOf("function buildEscudo3dLegacyFormData", legacyStart);
+assert.ok(legacyStart >= 0 && legacyEnd > legacyStart, "serializador oficial não encontrado");
+const legacyFactory = new Function(
+  "PRODUCTS", "getCleanProductSchema", "FormData", "appendCleanTextLegacy", "appendCleanAssetLegacy", "appendIa4AccessContext", "splitCleanMatchupText",
+  `${html.slice(legacyStart, legacyEnd)}\nreturn buildLegacyFormDataFromClean;`
+);
+const buildOfficialFormData = legacyFactory(
+  products,
+  () => ({ fields:[], legacyDefaults:{} }),
+  TestFormData,
+  (form, key, value) => form.append(key, String(value || "")),
+  () => {},
+  () => {},
+  splitCleanMatchupText
+);
+
 const bytes = () => new Uint8Array([1, 2, 3]).buffer;
 const file = field => ({ field, name:`${field}.png`, type:"image/png", bytes:bytes() });
 const draft = (flow, values) => ({ id:`rascunho-${flow}`, flow, values:{ sport:"Futebol", ...values } });
@@ -96,12 +120,34 @@ const next = bridge.omascoteChatBuildCleanOrders(
 assert.deepEqual(next.fields.matchup, { home_team:"Meu Time", away_team:"Rival" });
 assert.equal(next.fields.scenario_id, "cenario_atual_v1");
 assert.equal(next.assets.home_crest.files.length, 1);
+assert.equal(next.fields.sport, "Futebol");
+
+const individualNext = bridge.omascoteChatBuildCleanOrders(
+  draft("proximo_jogo", { sport:"Jiu-jítsu", matchup:"Carlos no Open Estadual", match_datetime:"domingo 16h", competition:"Open Estadual" }),
+  []
+)[0].order;
+assert.deepEqual(individualNext.fields.matchup, { text:"Carlos no Open Estadual" });
+assert.equal(individualNext.fields.sport, "Jiu-jítsu");
+const individualNextLegacy = buildOfficialFormData("proximo_jogo", individualNext);
+assert.equal(individualNextLegacy.get("rodada"), "Carlos no Open Estadual");
+assert.equal(individualNextLegacy.get("time_adversario"), "");
 
 const result = bridge.omascoteChatBuildCleanOrders(
   draft("resultado", { score:"Meu Time 3 x 2 Rival", competition:"Copa" }),
   [file("home_crest")]
 )[0].order;
 assert.deepEqual(result.fields.score, { home_team:"Meu Time", home_score:"3", away_score:"2", away_team:"Rival" });
+
+for(const [sport, score] of [["Jiu-jítsu", "Carlos venceu por finalização"], ["Vôlei", "Aurora venceu por 3 sets a 1"]]){
+  const writtenResult = bridge.omascoteChatBuildCleanOrders(
+    draft("resultado", { sport, score, competition:"Estadual" }),
+    []
+  )[0].order;
+  assert.deepEqual(writtenResult.fields.score, { text:score });
+  const writtenResultLegacy = buildOfficialFormData("resultado", writtenResult);
+  assert.equal(writtenResultLegacy.get("rodada"), score);
+  assert.equal(writtenResultLegacy.get("gols_adversario"), "");
+}
 
 const lineup = bridge.omascoteChatBuildCleanOrders(
   draft("escalacao", { matchup:"Meu Time x Rival", players:"Ana | Goleira\nBia | Ala" }),
@@ -133,11 +179,23 @@ const athleteNext = bridge.omascoteChatBuildCleanOrders(
 )[0].order;
 assert.equal(athleteNext.assets.player_photo.files.length, 1);
 
+const individualAthleteNext = bridge.omascoteChatBuildCleanOrders(
+  draft("proximo_jogo_jogador", { sport:"Corrida", matchup:"Ana na Corrida da Cidade", match_datetime:"domingo 7h", competition:"10 km" }),
+  [file("athlete_photos")]
+)[0].order;
+assert.deepEqual(individualAthleteNext.fields.matchup, { text:"Ana na Corrida da Cidade" });
+
 const athleteResult = bridge.omascoteChatBuildCleanOrders(
   draft("resultado_jogo_jogador", { score:"Meu Time 1 x 0 Rival" }),
   [file("home_crest"), file("away_crest"), file("athlete_photos")]
 )[0].order;
 assert.equal(athleteResult.assets.player_photo.files.length, 1);
+
+const individualAthleteResult = bridge.omascoteChatBuildCleanOrders(
+  draft("resultado_jogo_jogador", { sport:"Natação", score:"Ana ficou em 2º lugar nos 100 m livre" }),
+  [file("athlete_photos")]
+)[0].order;
+assert.deepEqual(individualAthleteResult.fields.score, { text:"Ana ficou em 2º lugar nos 100 m livre" });
 
 const playerCards = bridge.omascoteChatBuildCleanOrders(
   draft("jogador_escudo", { players:"Ana\nBia", sample:"Amostra 2" }),
