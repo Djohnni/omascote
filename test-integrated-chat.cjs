@@ -64,7 +64,7 @@ const factory = new Function(
   "getProductPublicScenarios", "getProductDefaultScenarioId", "splitCleanMatchupText",
   "CLEAN_PRODUCT_SCHEMA_VERSION", "File", "sessionStorage", "omascoteChatLocalPreview", "criarClientRequestId",
   "abrirMinhaContaPeloAtendimento",
-  `${html.slice(start, end)}\nreturn {omascoteChatAllowedOrigin,omascoteChatBuildCleanOrders,omascoteChatClientRequestId,omascoteChatSubmitOrders};`
+  `${html.slice(start, end)}\nreturn {omascoteChatAllowedOrigin,omascoteChatSportContext,omascoteChatBuildCleanOrders,omascoteChatClientRequestId,omascoteChatSubmitOrders};`
 );
 const bridge = factory(
   windowStub,
@@ -104,6 +104,15 @@ const buildOfficialFormData = legacyFactory(
   () => {},
   splitCleanMatchupText
 );
+
+const crestSerializerStart = html.indexOf("function buildEscudo3dLegacyFormData");
+const crestSerializerEnd = html.indexOf("function setCleanProductMsg", crestSerializerStart);
+assert.ok(crestSerializerStart >= 0 && crestSerializerEnd > crestSerializerStart, "serializador do Escudo 3D não encontrado");
+const crestSerializerFactory = new Function(
+  "FormData", "CLEAN_PRODUCT_SCHEMA_VERSION", "omascoteChatSportContext", "appendIa4AccessContext",
+  `${html.slice(crestSerializerStart, crestSerializerEnd)}\nreturn buildEscudo3dLegacyFormData;`
+);
+const buildOfficialCrestFormData = crestSerializerFactory(TestFormData, 2, bridge.omascoteChatSportContext, () => {});
 
 const bytes = () => new Uint8Array([1, 2, 3]).buffer;
 const file = field => ({ field, name:`${field}.png`, type:"image/png", bytes:bytes() });
@@ -168,10 +177,14 @@ const mascot = bridge.omascoteChatBuildCleanOrders(
 assert.equal(mascot.fields.mascot_animal, "Leão");
 
 const crest3d = bridge.omascoteChatBuildCleanOrders(
-  draft("escudo3d", {}),
+  draft("escudo3d", { sport:"Natação" }),
   [file("team_crest")]
 )[0];
 assert.equal(crest3d.special, "escudo3d");
+assert.equal(crest3d.values.sport, "Natação");
+const crest3dForm = buildOfficialCrestFormData(new TestFile([new Uint8Array([1])], "logo.png", {type:"image/png"}), "", crest3d.values);
+assert.equal(JSON.parse(crest3dForm.get("fields_json")).sport, "Natação");
+assert.equal(JSON.parse(crest3dForm.get("assets_json")).team_crest.files[0], "logo.png");
 
 const athleteNext = bridge.omascoteChatBuildCleanOrders(
   draft("proximo_jogo_jogador", { matchup:"Meu Time x Rival", match_datetime:"domingo 16h", competition:"Copa" }),

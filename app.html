@@ -16565,14 +16565,15 @@ function omascoteChatLines(value){
 function omascoteChatSportContext(values = {}){
   const selected = String(values.sport === "Outro esporte" ? values.other_sport || values.sport : values.sport || "").trim();
   const key = selected.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
-  if(/basquete/.test(key)) return { sport:selected, individual:false, structuredScore:true };
-  if(/volei|voleibol/.test(key)) return { sport:selected, individual:false, structuredScore:false };
-  if(/futsal|handebol/.test(key)) return { sport:selected, individual:false, structuredScore:true };
-  if(/tenis|tennis|padel/.test(key)) return { sport:selected, individual:true, structuredScore:false };
-  if(/corrida|atletismo|ciclismo|natacao|triatlo/.test(key)) return { sport:selected, individual:true, structuredScore:false };
-  if(/jiu|judo|boxe|mma|karate|taekwondo|luta/.test(key)) return { sport:selected, individual:true, structuredScore:false };
-  if(/^futebol$/.test(key)) return { sport:selected, individual:false, structuredScore:true };
-  return { sport:selected, individual:true, structuredScore:false };
+  const base = { sport:selected, resultTitle:key === "futebol" ? "Resultado do jogo" : "Resultado" };
+  if(/basquete/.test(key)) return { ...base, individual:false, structuredScore:true };
+  if(/volei|voleibol/.test(key)) return { ...base, individual:false, structuredScore:false };
+  if(/futsal|handebol/.test(key)) return { ...base, individual:false, structuredScore:true };
+  if(/tenis|tennis|padel/.test(key)) return { ...base, individual:true, structuredScore:false };
+  if(/corrida|atletismo|ciclismo|natacao|triatlo/.test(key)) return { ...base, individual:true, structuredScore:false };
+  if(/jiu|judo|boxe|mma|karate|taekwondo|luta/.test(key)) return { ...base, individual:true, structuredScore:false };
+  if(/^futebol$/.test(key)) return { ...base, individual:false, structuredScore:true };
+  return { ...base, individual:true, structuredScore:false };
 }
 
 function omascoteChatFile(record){
@@ -16642,7 +16643,7 @@ function omascoteChatBaseCleanOrder(productKey, values, files){
       assets.away_crest = omascoteChatAsset(files, "away_crest", "escudo2");
       assets.match_photo = omascoteChatAsset(files, "match_photo", "mascote");
       if(assets.match_photo.files.length){
-        const role = ({Jogador:"jogador", Time:"time", Mascote:"mascote"})[values.photo_mode] || "jogador";
+        const role = ({Jogador:"jogador", Atleta:"jogador", Time:"time", Equipe:"time", Mascote:"mascote"})[values.photo_mode] || "jogador";
         assets.match_photo.roles = assets.match_photo.files.map(() => role);
         fields.match_photo_roles = [...assets.match_photo.roles];
         fields.match_photo_type = role;
@@ -16658,7 +16659,7 @@ function omascoteChatBaseCleanOrder(productKey, values, files){
     Object.assign(fields, {
       score:sportContext.structuredScore ? omascoteChatSplitScore(resultText) : { text:resultText },
       competition:String(values.competition || "").trim(),
-      headline:String(values.headline || "Resultado do jogo").trim() || "Resultado do jogo"
+      headline:String(values.headline || sportContext.resultTitle).trim() || sportContext.resultTitle
     });
     if(productKey === "resultado"){
       fields.titulo_secao_resultados = String(values.section_title || "").trim();
@@ -16704,7 +16705,7 @@ function omascoteChatBuildCleanOrders(draft, records){
   if(productKey === "escudo3d"){
     const crest = files.team_crest?.[0];
     if(!crest) throw new Error("Envie o escudo que será transformado em 3D.");
-    return [{ productKey, special:"escudo3d", file:crest, coupon:String(values.coupon_code || "").trim() }];
+    return [{ productKey, special:"escudo3d", file:crest, coupon:String(values.coupon_code || "").trim(), values }];
   }
   if(productKey === "jogador_escudo"){
     const players = omascoteChatLines(values.players).map(line => line.split("|").map(item => item.trim())).filter(row => row[0]);
@@ -16771,7 +16772,7 @@ async function omascoteChatSubmitOrders(draft, records){
     const schema = getCleanProductSchema(item.productKey);
     const requestId = omascoteChatClientRequestId(draft.id, index);
     const fd = item.special === "escudo3d"
-      ? buildEscudo3dLegacyFormData(item.file, item.coupon)
+      ? buildEscudo3dLegacyFormData(item.file, item.coupon, item.values)
       : buildLegacyFormDataFromClean(item.productKey, item.order);
     appendOrderClientRequest(fd, requestId);
     const endpoint = item.special === "escudo3d" ? "/pedidos" : schema?.endpoint;
@@ -25969,12 +25970,23 @@ function buildLegacyFormDataFromClean(productKey, cleanOrder, options = {}){
   return fd;
 }
 
-function buildEscudo3dLegacyFormData(file, cupomCodigo = ""){
+function buildEscudo3dLegacyFormData(file, cupomCodigo = "", values = {}){
   const fd = new FormData();
   fd.append("flyer_tipo", "escudo3d");
   fd.append("rodada", "Escudo 3D");
   fd.append("data", "Escudo 3D");
   if(file) fd.append("escudo1", file, file.name || "escudo1.png");
+  const sportContext = omascoteChatSportContext(values);
+  fd.append("schema_version", String(CLEAN_PRODUCT_SCHEMA_VERSION));
+  fd.append("product_id", "escudo3d");
+  fd.append("fields_json", JSON.stringify({
+    sport:sportContext.sport,
+    sport_context:String(values.sport_context || "").trim(),
+    visual_style:String(values.visual_style || "3D").toLowerCase()
+  }));
+  fd.append("assets_json", JSON.stringify({
+    team_crest:{ legacyName:"escudo1", files:file ? [file.name || "escudo1.png"] : [] }
+  }));
   const cupom = String(cupomCodigo || "").trim();
   if(cupom) fd.append("cupom_codigo", cupom);
   appendIa4AccessContext(fd);
