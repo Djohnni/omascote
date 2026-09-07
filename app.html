@@ -16773,7 +16773,7 @@ async function omascoteChatSubmitOrders(draft, records){
     const requestId = omascoteChatClientRequestId(draft.id, index);
     const fd = item.special === "escudo3d"
       ? buildEscudo3dLegacyFormData(item.file, item.coupon, item.values)
-      : buildLegacyFormDataFromClean(item.productKey, item.order);
+      : buildLegacyFormDataFromClean(item.productKey, item.order, { allowSavedEscudoFallback:false });
     appendOrderClientRequest(fd, requestId);
     const endpoint = item.special === "escudo3d" ? "/pedidos" : schema?.endpoint;
     if(!endpoint) throw new Error("Este produto ainda não está pronto para o motor.");

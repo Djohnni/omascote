@@ -36,10 +36,14 @@ const splitCleanMatchupText = value => {
 };
 
 const submitted = [];
+const legacyBuildCalls = [];
 global.token = "token-de-teste";
 global.getCleanProductSchema = () => ({ endpoint:"/pedidos" });
 global.buildEscudo3dLegacyFormData = () => ({ append(){} });
-global.buildLegacyFormDataFromClean = (productKey, order) => ({ productKey, order, entries:[], append(key, value){ this.entries.push([key, value]); } });
+global.buildLegacyFormDataFromClean = (productKey, order, options) => {
+  legacyBuildCalls.push({ productKey, order, options });
+  return { productKey, order, entries:[], append(key, value){ this.entries.push([key, value]); } };
+};
 global.appendOrderClientRequest = (form, value) => form.append("client_request_id", value);
 global.API_BASE = "https://api.omascote.test";
 global.buildOrderCreationHeaders = value => ({ Authorization:"Bearer token-de-teste", "X-Idempotency-Key":value });
@@ -141,6 +145,14 @@ const individualNextLegacy = buildOfficialFormData("proximo_jogo", individualNex
 assert.equal(individualNextLegacy.get("rodada"), "Carlos no Open Estadual");
 assert.equal(individualNextLegacy.get("time_adversario"), "");
 
+const nextWithoutImages = bridge.omascoteChatBuildCleanOrders(
+  draft("proximo_jogo", { matchup:"Meu Time x Rival", match_datetime:"domingo 16h", competition:"Copa", photo_mode:"Sem foto" }),
+  []
+)[0].order;
+assert.equal(nextWithoutImages.assets.home_crest.files.length, 0);
+assert.equal(nextWithoutImages.assets.away_crest.files.length, 0);
+assert.equal(nextWithoutImages.assets.match_photo.files.length, 0);
+
 const result = bridge.omascoteChatBuildCleanOrders(
   draft("resultado", { score:"Meu Time 3 x 2 Rival", competition:"Copa" }),
   [file("home_crest")]
@@ -241,6 +253,15 @@ assert.equal(listeners.has("message"), true, "listener seguro do iframe não foi
   });
   assert.equal(accountOpened, 1, "Minha conta precisa abrir somente pelo iframe autorizado");
 
+  const noImageSubmission = await bridge.omascoteChatSubmitOrders(
+    draft("proximo_jogo", { matchup:"Meu Time x Rival", match_datetime:"domingo 16h", competition:"Copa", photo_mode:"Sem foto" }),
+    []
+  );
+  assert.equal(noImageSubmission.ok, true, "o pedido sem nenhuma imagem precisa chegar à API");
+  assert.equal(legacyBuildCalls[0].options.allowSavedEscudoFallback, false, "o pedido sem imagem não pode anexar escudo salvo");
+  submitted.length = 0;
+  legacyBuildCalls.length = 0;
+
   const submission = await bridge.omascoteChatSubmitOrders(
     draft("proximo_jogo", { matchup:"Meu Time x Rival", match_datetime:"domingo 16h", competition:"Copa" }),
     [file("home_crest"), file("away_crest")]
@@ -251,6 +272,7 @@ assert.equal(listeners.has("message"), true, "listener seguro do iframe não foi
   assert.equal(submitted[0].url, "https://api.omascote.test/pedidos");
   assert.match(submitted[0].options.headers.Authorization, /^Bearer /);
   assert.ok(submitted[0].options.headers["X-Idempotency-Key"]);
+  assert.equal(legacyBuildCalls[0].options.allowSavedEscudoFallback, false, "o chat não pode anexar escudo salvo de pedido ou perfil anterior");
   console.log("OK - chat integrado mapeia os 10 produtos pagos, usa a API do motor e preserva idempotência e origem permitida");
 })().catch(error => {
   console.error(error);
