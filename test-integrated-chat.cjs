@@ -22,6 +22,7 @@ const productIds = [
 const products = Object.fromEntries(productIds.map(id => [id, { id }]));
 const scenarios = [{ id:"cenario_atual_v1", label:"Cenário atual" }, { id:"amostra_2_v1", label:"Amostra 2" }];
 const listeners = new Map();
+let accountOpened = 0;
 const windowStub = {
   location:{ hostname:"localhost", origin:"http://localhost:4173" },
   addEventListener(type, listener){ listeners.set(type, listener); }
@@ -62,6 +63,7 @@ const factory = new Function(
   "window", "integratedChatFrame", "PRODUCTS",
   "getProductPublicScenarios", "getProductDefaultScenarioId", "splitCleanMatchupText",
   "CLEAN_PRODUCT_SCHEMA_VERSION", "File", "sessionStorage", "omascoteChatLocalPreview", "criarClientRequestId",
+  "abrirMinhaContaPeloAtendimento",
   `${html.slice(start, end)}\nreturn {omascoteChatAllowedOrigin,omascoteChatBuildCleanOrders,omascoteChatClientRequestId,omascoteChatSubmitOrders};`
 );
 const bridge = factory(
@@ -75,7 +77,8 @@ const bridge = factory(
   TestFile,
   sessionStorage,
   () => true,
-  prefix => `${prefix}_00000000-0000-4000-8000-000000000000`
+  prefix => `${prefix}_00000000-0000-4000-8000-000000000000`,
+  () => { accountOpened += 1; }
 );
 
 const bytes = () => new Uint8Array([1, 2, 3]).buffer;
@@ -160,6 +163,13 @@ assert.equal(firstId, secondId, "a repetição precisa preservar a idempotência
 assert.equal(listeners.has("message"), true, "listener seguro do iframe não foi registrado");
 
 (async () => {
+  await listeners.get("message")({
+    source:integratedChatFrame.contentWindow,
+    origin:"http://localhost:4173",
+    data:{ type:"omascote-chat:open-account" }
+  });
+  assert.equal(accountOpened, 1, "Minha conta precisa abrir somente pelo iframe autorizado");
+
   const submission = await bridge.omascoteChatSubmitOrders(
     draft("proximo_jogo", { matchup:"Meu Time x Rival", match_datetime:"domingo 16h", competition:"Copa" }),
     [file("home_crest"), file("away_crest")]

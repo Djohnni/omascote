@@ -16787,7 +16787,12 @@ async function omascoteChatSubmitOrders(draft, records){
 }
 
 window.addEventListener("message", async event => {
-  if(event.source !== integratedChatFrame?.contentWindow || !omascoteChatAllowedOrigin(event.origin) || event.data?.type !== "omascote-chat:create-order") return;
+  if(event.source !== integratedChatFrame?.contentWindow || !omascoteChatAllowedOrigin(event.origin)) return;
+  if(event.data?.type === "omascote-chat:open-account"){
+    abrirMinhaContaPeloAtendimento();
+    return;
+  }
+  if(event.data?.type !== "omascote-chat:create-order") return;
   const requestId = String(event.data.requestId || "");
   if(!/^[a-f0-9-]{36}$/i.test(requestId) || omascoteChatOrderInFlight.has(requestId)) return;
   omascoteChatOrderInFlight.add(requestId);
@@ -17145,6 +17150,13 @@ function definirMenuContaAberto(aberto){
     document.getElementById("menuPedidosTopo")?.classList.remove("open");
     document.body.classList.remove("saldoMenuAberto");
   }
+}
+
+function abrirMinhaContaPeloAtendimento(){
+  fecharAtendimentoIntegrado();
+  definirMenuContaAberto(true);
+  accountAccordion?.scrollIntoView({ behavior:"smooth", block:"start" });
+  window.setTimeout(()=>accountMenuToggle?.focus(), 250);
 }
 
 function atualizarMenuContaResumo(){
