@@ -2,6 +2,11 @@ const assert = require("node:assert/strict");
 const fs = require("node:fs");
 
 const html = fs.readFileSync("app.html", "utf8");
+assert.match(html, /class="homeChatStage" id="integratedChatModal"/, "o chat precisa aparecer entre os menus da página inicial");
+assert.match(html, /id="productsMenuToggle"[^>]+aria-expanded="false"/, "os produtos precisam começar recolhidos");
+assert.match(html, /id="productsMenuPanel" hidden/, "a área antiga de produtos precisa iniciar fechada");
+assert.match(html, /event\.target\.matches\("\.composer textarea"\)/, "o campo principal do chat precisa ativar a ampliação");
+assert.match(html, /classList\.toggle\("is-expanded"/, "o chat precisa ampliar sem trocar de página");
 const start = html.indexOf("const omascoteChatOrderInFlight");
 const end = html.indexOf("const MEU_CLUBE_PLAY_STORE_URL", start);
 assert.ok(start >= 0 && end > start, "bloco da integração não encontrado");

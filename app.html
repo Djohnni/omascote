@@ -14465,61 +14465,85 @@ body.omascoteAppMode .appTestNotice{
     height:36px;
   }
 }
-/* Atendimento conversacional: acesso discreto pelo rodapé. */
-.integratedChatModal{
-  position:fixed;
-  inset:0;
-  z-index:12050;
-  display:none;
-  place-items:center;
-  padding:18px;
-  background:rgba(4,20,12,.72);
-  backdrop-filter:blur(7px);
-}
-.integratedChatModal.open{display:grid}
-.integratedChatDialog{
-  width:min(1180px,100%);
-  height:min(860px,calc(100vh - 36px));
+/* Atendimento principal entre a conta e os produtos. */
+.homeChatStage{
+  position:relative;
+  z-index:70;
+  width:calc(100% - 20px);
+  max-width:1080px;
+  height:min(820px,calc(100dvh - 174px));
+  min-height:560px;
+  margin:0 auto 12px;
   overflow:hidden;
-  border:1px solid rgba(255,255,255,.2);
-  border-radius:24px;
+  border:1px solid rgba(214,165,31,.42);
+  border-radius:14px;
   background:#f5faf7;
-  box-shadow:0 28px 80px rgba(0,0,0,.38);
-}
-.integratedChatHeader{
-  height:58px;
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  gap:16px;
-  padding:0 18px;
-  color:#fff;
-  background:#075c38;
-}
-.integratedChatHeader strong{font-size:16px}
-.integratedChatHeader span{display:block;font-size:12px;opacity:.78}
-.integratedChatClose{
-  width:38px;
-  height:38px;
-  border:1px solid rgba(255,255,255,.28);
-  border-radius:50%;
-  color:#fff;
-  background:rgba(255,255,255,.1);
-  font-size:25px;
-  line-height:1;
-  cursor:pointer;
+  box-shadow:0 12px 28px rgba(15,23,42,.12);
 }
 .integratedChatFrame{
   display:block;
   width:100%;
-  height:calc(100% - 58px);
+  height:100%;
   border:0;
   background:#f5faf7;
 }
+.integratedChatClose{
+  position:absolute;
+  top:max(10px,env(safe-area-inset-top,0px));
+  right:10px;
+  z-index:4;
+  display:none;
+  min-height:42px;
+  padding:8px 13px;
+  border:1px solid rgba(255,255,255,.35);
+  border-radius:999px;
+  color:#fff;
+  background:#075c38;
+  box-shadow:0 5px 18px rgba(0,0,0,.22);
+  font-size:13px;
+  font-weight:900;
+  cursor:pointer;
+}
+.homeChatStage.is-expanded{
+  position:fixed;
+  inset:0;
+  z-index:12050;
+  width:100%;
+  max-width:none;
+  height:100dvh;
+  min-height:0;
+  margin:0;
+  border:0;
+  border-radius:0;
+  box-shadow:none;
+}
+.homeChatStage.is-expanded .integratedChatClose{display:block}
 body.integratedChatOpen{overflow:hidden}
+.productsMenuAccordion{
+  width:calc(100% - 20px);
+  max-width:1080px;
+  margin:0 auto 12px;
+  position:relative;
+  z-index:69;
+}
+.productsMenuAccordion .accountMenuToggle{
+  border:1px solid rgba(214,165,31,.42);
+  box-shadow:0 12px 28px rgba(15,23,42,.12);
+}
+.productsMenuAccordion.is-open .accountMenuChevron{transform:rotate(180deg)}
+.panel.productsMenuPanel[hidden]{display:none !important}
 @media(max-width:680px){
-  .integratedChatModal{padding:0}
-  .integratedChatDialog{width:100%;height:100%;border:0;border-radius:0}
+  .homeChatStage{
+    width:calc(100% - 16px);
+    height:calc(100dvh - 154px);
+    min-height:470px;
+    margin-bottom:10px;
+    border-radius:10px;
+  }
+  .productsMenuAccordion{
+    width:calc(100% - 16px);
+    margin-bottom:10px;
+  }
 }
 </style>
 </head>
@@ -14971,7 +14995,29 @@ body.integratedChatOpen{overflow:hidden}
       </div>
     </section>
 
-      <div class="panel">
+    <section class="homeChatStage" id="integratedChatModal" aria-label="Atendimento O Mascote">
+      <iframe
+        class="integratedChatFrame"
+        id="integratedChatFrame"
+        title="Atendimento O Mascote"
+        src="/atendimento/index.html?integrado=1"
+        allow="clipboard-write"
+      ></iframe>
+      <button class="integratedChatClose" id="integratedChatClose" type="button" aria-label="Reduzir atendimento">Reduzir</button>
+    </section>
+
+    <section class="productsMenuAccordion" id="productsMenuAccordion" aria-label="Artes e serviços">
+      <button class="accountMenuToggle" id="productsMenuToggle" type="button" aria-expanded="false" aria-controls="productsMenuPanel">
+        <span class="accountMenuToggleIcon" aria-hidden="true">🎨</span>
+        <span class="accountMenuToggleText">
+          <strong>Artes e serviços</strong>
+          <small>Ver produtos</small>
+        </span>
+        <span class="accountMenuChevron" aria-hidden="true">⌄</span>
+      </button>
+    </section>
+
+      <div class="panel productsMenuPanel" id="productsMenuPanel" hidden>
       <div class="welcomeBox">
         <div class="welcomeLabel">Bem-vindo</div>
         <h1 id="welcome">Seu time</h1>
@@ -16482,19 +16528,6 @@ body.integratedChatOpen{overflow:hidden}
   </div>
 </div>
 
-<div class="integratedChatModal" id="integratedChatModal" aria-hidden="true">
-  <section class="integratedChatDialog" role="dialog" aria-modal="true" aria-labelledby="integratedChatTitle">
-    <header class="integratedChatHeader">
-      <div>
-        <strong id="integratedChatTitle">Novo atendimento</strong>
-        <span>Atendimento dentro do O Mascote</span>
-      </div>
-      <button class="integratedChatClose" id="integratedChatClose" type="button" aria-label="Fechar atendimento">×</button>
-    </header>
-    <iframe class="integratedChatFrame" id="integratedChatFrame" title="Novo atendimento O Mascote" loading="lazy" allow="clipboard-write"></iframe>
-  </section>
-</div>
-
 <script>
 const API_BASE = (()=>{
   const fallback = "https://api.omascote.com.br";
@@ -16511,6 +16544,9 @@ window.OMASCOTE_API_BASE_RESOLVED = API_BASE;
 const integratedChatModal = document.getElementById("integratedChatModal");
 const integratedChatFrame = document.getElementById("integratedChatFrame");
 const integratedChatClose = document.getElementById("integratedChatClose");
+const productsMenuAccordion = document.getElementById("productsMenuAccordion");
+const productsMenuToggle = document.getElementById("productsMenuToggle");
+const productsMenuPanel = document.getElementById("productsMenuPanel");
 
 function omascoteChatLocalPreview(){
   return ["localhost", "127.0.0.1", "[::1]"].includes(window.location.hostname);
@@ -16523,18 +16559,45 @@ function omascoteChatUrl(){
 function abrirAtendimentoIntegrado(){
   if(!integratedChatModal || !integratedChatFrame) return;
   if(!integratedChatFrame.src) integratedChatFrame.src = omascoteChatUrl();
-  integratedChatModal.classList.add("open");
-  integratedChatModal.setAttribute("aria-hidden", "false");
-  document.body.classList.add("integratedChatOpen");
-  integratedChatClose?.focus();
+  integratedChatModal.scrollIntoView({ behavior:"smooth", block:"start" });
 }
 
 function fecharAtendimentoIntegrado(){
   if(!integratedChatModal) return;
-  integratedChatModal.classList.remove("open");
-  integratedChatModal.setAttribute("aria-hidden", "true");
+  integratedChatModal.classList.remove("is-expanded");
   document.body.classList.remove("integratedChatOpen");
-  document.getElementById("btnTesteNovoAtendimentoFooter")?.focus();
+}
+
+function definirProdutosMenuAberto(aberto){
+  const mostrar = !!aberto;
+  if(productsMenuPanel) productsMenuPanel.hidden = !mostrar;
+  if(productsMenuToggle) productsMenuToggle.setAttribute("aria-expanded", String(mostrar));
+  productsMenuAccordion?.classList.toggle("is-open", mostrar);
+}
+
+function ampliarAtendimentoAoDigitar(aberto){
+  if(!integratedChatModal) return;
+  integratedChatModal.classList.toggle("is-expanded", !!aberto);
+  document.body.classList.toggle("integratedChatOpen", !!aberto);
+}
+
+function vincularAmpliacaoDoAtendimento(){
+  const documentoChat = integratedChatFrame?.contentDocument;
+  if(!documentoChat || documentoChat.documentElement.dataset.omascoteExpandBound === "1") return;
+  documentoChat.documentElement.dataset.omascoteExpandBound = "1";
+  documentoChat.addEventListener("focusin", event => {
+    if(typeof event.target?.matches === "function" && event.target.matches(".composer textarea")){
+      ampliarAtendimentoAoDigitar(true);
+    }
+  });
+  documentoChat.addEventListener("focusout", ()=>{
+    window.setTimeout(()=>{
+      const ativo = documentoChat.activeElement;
+      if(typeof ativo?.matches !== "function" || !ativo.matches(".composer textarea")){
+        ampliarAtendimentoAoDigitar(false);
+      }
+    }, 160);
+  });
 }
 
 document.getElementById("btnTesteNovoAtendimentoFooter")?.addEventListener("click", event => {
@@ -16542,15 +16605,17 @@ document.getElementById("btnTesteNovoAtendimentoFooter")?.addEventListener("clic
   abrirAtendimentoIntegrado();
 });
 integratedChatClose?.addEventListener("click", fecharAtendimentoIntegrado);
-integratedChatModal?.addEventListener("click", event => {
-  if(event.target === integratedChatModal) fecharAtendimentoIntegrado();
+productsMenuToggle?.addEventListener("click", ()=>{
+  definirProdutosMenuAberto(productsMenuToggle.getAttribute("aria-expanded") !== "true");
 });
+integratedChatFrame?.addEventListener("load", vincularAmpliacaoDoAtendimento);
 document.addEventListener("keydown", event => {
-  if(event.key === "Escape" && integratedChatModal?.classList.contains("open")) fecharAtendimentoIntegrado();
+  if(event.key === "Escape" && integratedChatModal?.classList.contains("is-expanded")) fecharAtendimentoIntegrado();
 });
 if(omascoteChatLocalPreview() && new URLSearchParams(window.location.search).get("chat_preview") === "1"){
   requestAnimationFrame(abrirAtendimentoIntegrado);
 }
+definirProdutosMenuAberto(false);
 
 const omascoteChatOrderInFlight = new Set();
 
