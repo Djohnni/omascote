@@ -2,6 +2,14 @@ const assert = require("node:assert/strict");
 const fs = require("node:fs");
 
 const html = fs.readFileSync("app.html", "utf8");
+const atendimentoHtml = fs.readFileSync("atendimento/index.html", "utf8");
+const atendimentoJsName = atendimentoHtml.match(/assets\/(index-[^"']+\.js)/)?.[1];
+assert.ok(atendimentoJsName, "bundle do atendimento não encontrado");
+const atendimentoBundle = fs.readFileSync(`atendimento/assets/${atendimentoJsName}`, "utf8");
+assert.doesNotMatch(atendimentoBundle, /Revisar informações|Confira o resumo/, "a revisão não deve aparecer antes do envio");
+assert.doesNotMatch(atendimentoBundle, /imagem\(ns\) salva\(s\)/, "o envio de arquivos não deve lotar a conversa");
+assert.match(atendimentoBundle, /Pedido enviado\./, "o sucesso precisa ser curto");
+assert.match(atendimentoBundle, /omascote-chat:open-orders/, "o botão verde precisa abrir os pedidos reais");
 assert.match(html, /class="homeChatStage" id="integratedChatModal"/, "o chat precisa aparecer entre os menus da página inicial");
 assert.match(html, /id="productsMenuToggle"[^>]+aria-expanded="false"/, "os produtos precisam começar recolhidos");
 assert.match(html, /id="productsMenuPanel" hidden/, "a área antiga de produtos precisa iniciar fechada");
@@ -28,6 +36,7 @@ const products = Object.fromEntries(productIds.map(id => [id, { id }]));
 const scenarios = [{ id:"cenario_atual_v1", label:"Cenário atual" }, { id:"amostra_2_v1", label:"Amostra 2" }];
 const listeners = new Map();
 let accountOpened = 0;
+let ordersOpened = 0;
 const windowStub = {
   location:{ hostname:"localhost", origin:"http://localhost:4173" },
   addEventListener(type, listener){ listeners.set(type, listener); }
@@ -72,7 +81,7 @@ const factory = new Function(
   "window", "integratedChatFrame", "PRODUCTS",
   "getProductPublicScenarios", "getProductDefaultScenarioId", "splitCleanMatchupText",
   "CLEAN_PRODUCT_SCHEMA_VERSION", "File", "sessionStorage", "omascoteChatLocalPreview", "criarClientRequestId",
-  "abrirMinhaContaPeloAtendimento",
+  "abrirMinhaContaPeloAtendimento", "abrirPedidosPeloAtendimento",
   `${html.slice(start, end)}\nreturn {omascoteChatAllowedOrigin,omascoteChatSportContext,omascoteChatBuildCleanOrders,omascoteChatClientRequestId,omascoteChatSubmitOrders};`
 );
 const bridge = factory(
@@ -87,7 +96,8 @@ const bridge = factory(
   sessionStorage,
   () => true,
   prefix => `${prefix}_00000000-0000-4000-8000-000000000000`,
-  () => { accountOpened += 1; }
+  () => { accountOpened += 1; },
+  () => { ordersOpened += 1; }
 );
 
 class TestFormData {
@@ -257,6 +267,13 @@ assert.equal(listeners.has("message"), true, "listener seguro do iframe não foi
     data:{ type:"omascote-chat:open-account" }
   });
   assert.equal(accountOpened, 1, "Minha conta precisa abrir somente pelo iframe autorizado");
+
+  await listeners.get("message")({
+    source:integratedChatFrame.contentWindow,
+    origin:"http://localhost:4173",
+    data:{ type:"omascote-chat:open-orders" }
+  });
+  assert.equal(ordersOpened, 1, "Pedidos precisa abrir o histórico real pelo iframe autorizado");
 
   const noImageSubmission = await bridge.omascoteChatSubmitOrders(
     draft("proximo_jogo", { matchup:"Meu Time x Rival", match_datetime:"domingo 16h", competition:"Copa", photo_mode:"Sem foto" }),

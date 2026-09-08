@@ -16878,6 +16878,10 @@ window.addEventListener("message", async event => {
     abrirMinhaContaPeloAtendimento();
     return;
   }
+  if(event.data?.type === "omascote-chat:open-orders"){
+    abrirPedidosPeloAtendimento();
+    return;
+  }
   if(event.data?.type !== "omascote-chat:create-order") return;
   const requestId = String(event.data.requestId || "");
   if(!/^[a-f0-9-]{36}$/i.test(requestId) || omascoteChatOrderInFlight.has(requestId)) return;
@@ -17243,6 +17247,17 @@ function abrirMinhaContaPeloAtendimento(){
   definirMenuContaAberto(true);
   accountAccordion?.scrollIntoView({ behavior:"smooth", block:"start" });
   window.setTimeout(()=>accountMenuToggle?.focus(), 250);
+}
+
+function abrirPedidosPeloAtendimento(){
+  fecharAtendimentoIntegrado();
+  definirMenuContaAberto(true);
+  accountAccordion?.scrollIntoView({ behavior:"smooth", block:"start" });
+  window.setTimeout(()=>{
+    const menu = document.getElementById("menuPedidosTopo");
+    if(menu && !menu.classList.contains("open")) togglePedidosTopo();
+    document.getElementById("btnMeusPedidos")?.focus();
+  }, 250);
 }
 
 function atualizarMenuContaResumo(){
