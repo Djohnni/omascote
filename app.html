@@ -16780,7 +16780,7 @@ function omascoteChatBuildCleanOrders(draft, records){
       const order = omascoteChatBaseCleanOrder(productKey, values, files);
       order.fields.player_name = player[0];
       order.fields.players = [{ nome:player[0], posicao:"" }];
-      order.fields.scenario_id = omascoteChatScenarioId(productKey, values.sample);
+      order.fields.scenario_id = omascoteChatScenarioId(productKey, "");
       order.assets.team_crest = omascoteChatAsset(files, "team_crest", "escudo1");
       order.assets.player_photo = { legacyName:"mascote", files:[photos[index]] };
       return { productKey, order };
@@ -16792,13 +16792,12 @@ function omascoteChatBuildCleanOrders(draft, records){
     if(!players.length || photos.length !== players.length) throw new Error("Envie uma foto para cada jogador, na mesma ordem dos nomes.");
     return players.map((player, index) => {
       const order = omascoteChatBaseCleanOrder(productKey, values, files);
-      const style = String(values.style || "Amostra 1");
-      const sampleNumber = Math.min(3, Math.max(1, Number(style.match(/\d+/)?.[0] || 1)));
+      const hasDesignReference = Boolean((files.reference_layout || []).length);
       order.fields = {
         ...order.fields,
         contratacao_version:3,
-        style_mode:style === "Enviar meu modelo" ? "custom" : style === "Criar sem referência" ? "auto" : "catalog",
-        sample_id:style.startsWith("Amostra") ? `contratacao_modelo_0${sampleNumber}_v1` : "",
+        style_mode:hasDesignReference ? "custom" : "auto",
+        sample_id:"",
         announcement_type:player.announcement === "Renovado" ? "renovado" : "contratado",
         title:player.announcement === "Renovado" ? "RENOVADO" : "CONTRATADO",
         headline:player.announcement === "Renovado" ? "RENOVADO" : "CONTRATADO",
