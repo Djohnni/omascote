@@ -10,6 +10,9 @@ assert.doesNotMatch(atendimentoBundle, /Revisar informações|Confira o resumo/,
 assert.doesNotMatch(atendimentoBundle, /imagem\(ns\) salva\(s\)/, "o envio de arquivos não deve lotar a conversa");
 assert.match(atendimentoBundle, /Pedido enviado\./, "o sucesso precisa ser curto");
 assert.match(atendimentoBundle, /omascote-chat:open-orders/, "o botão verde precisa abrir os pedidos reais");
+assert.match(atendimentoBundle, /jogo\(s\) encontrado\(s\)/, "o chat precisa mostrar todos os jogos identificados");
+assert.match(atendimentoBundle, /Envie os escudos/, "o chat precisa pedir os escudos depois da leitura");
+assert.match(atendimentoBundle, /omascote-chat:create-order-batch/, "o chat precisa enviar os jogos escolhidos em lote");
 assert.match(html, /class="homeChatStage" id="integratedChatModal"/, "o chat precisa aparecer entre os menus da página inicial");
 assert.match(html, /id="productsMenuToggle"[^>]+aria-expanded="false"/, "os produtos precisam começar recolhidos");
 assert.match(html, /id="productsMenuPanel" hidden/, "a área antiga de produtos precisa iniciar fechada");
@@ -82,7 +85,7 @@ const factory = new Function(
   "getProductPublicScenarios", "getProductDefaultScenarioId", "splitCleanMatchupText",
   "CLEAN_PRODUCT_SCHEMA_VERSION", "File", "sessionStorage", "omascoteChatLocalPreview", "criarClientRequestId",
   "abrirMinhaContaPeloAtendimento", "abrirPedidosPeloAtendimento",
-  `${html.slice(start, end)}\nreturn {omascoteChatAllowedOrigin,omascoteChatSportContext,omascoteChatBuildCleanOrders,omascoteChatClientRequestId,omascoteChatSubmitOrders};`
+  `${html.slice(start, end)}\nreturn {omascoteChatAllowedOrigin,omascoteChatSportContext,omascoteChatBuildCleanOrders,omascoteChatClientRequestId,omascoteChatSubmitOrders,omascoteChatSubmitOrderBatch};`
 );
 const bridge = factory(
   windowStub,
@@ -252,7 +255,7 @@ const contracts = bridge.omascoteChatBuildCleanOrders(
 assert.equal(contracts.length, 2);
 assert.equal(contracts[1].order.fields.announcement_type, "renovado");
 assert.equal(contracts[1].order.fields.jersey_enabled, true);
-assert.equal(contracts[0].order.fields.sample_id, "contratacao_modelo_02_v1");
+assert.equal(contracts[0].order.fields.sample_id, "", "as amostras antigas não podem voltar no pedido");
 
 const firstId = bridge.omascoteChatClientRequestId("mesmo-rascunho", 0);
 const secondId = bridge.omascoteChatClientRequestId("mesmo-rascunho", 0);
@@ -295,6 +298,16 @@ assert.equal(listeners.has("message"), true, "listener seguro do iframe não foi
   assert.match(submitted[0].options.headers.Authorization, /^Bearer /);
   assert.ok(submitted[0].options.headers["X-Idempotency-Key"]);
   assert.equal(legacyBuildCalls[0].options.allowSavedEscudoFallback, false, "o chat não pode anexar escudo salvo de pedido ou perfil anterior");
+  submitted.length = 0;
+  legacyBuildCalls.length = 0;
+
+  const batch = await bridge.omascoteChatSubmitOrderBatch([
+    { draft:draft("proximo_jogo", { matchup:"Meu Time x Rival", match_datetime:"2026-09-20T16:00", competition:"Copa" }), files:[file("home_crest"), file("away_crest")] },
+    { draft:{...draft("proximo_jogo", { matchup:"Meu Time x União", match_datetime:"2026-09-27T16:00", competition:"Copa" }),id:"rascunho-proximo-jogo-2"}, files:[file("home_crest"), file("away_crest")] }
+  ]);
+  assert.equal(batch.ok, true);
+  assert.equal(submitted.length, 2, "dois jogos escolhidos precisam criar dois pedidos reais");
+  assert.equal(legacyBuildCalls.length, 2);
   console.log("OK - chat integrado mapeia os 10 produtos pagos, usa a API do motor e preserva idempotência e origem permitida");
 })().catch(error => {
   console.error(error);

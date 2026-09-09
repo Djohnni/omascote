@@ -16826,15 +16826,15 @@ function omascoteChatClientRequestId(draftId, index){
   return created;
 }
 
-async function omascoteChatSubmitOrders(draft, records){
+async function omascoteChatSubmitPreparedOrders(prepared){
   if(!token) throw new Error("Faça login no O Mascote antes de enviar o pedido.");
-  const prepared = omascoteChatBuildCleanOrders(draft, records);
+  if(!prepared.length) throw new Error("Nenhum pedido foi preparado.");
   const results = [];
   for(let index = 0; index < prepared.length; index++){
     const item = prepared[index];
     const product = PRODUCTS[item.productKey];
     const schema = getCleanProductSchema(item.productKey);
-    const requestId = omascoteChatClientRequestId(draft.id, index);
+    const requestId = omascoteChatClientRequestId(item.chatDraftId, item.chatOrderIndex);
     const fd = item.special === "escudo3d"
       ? buildEscudo3dLegacyFormData(item.file, item.coupon, item.values)
       : buildLegacyFormDataFromClean(item.productKey, item.order, { allowSavedEscudoFallback:false });
@@ -16871,6 +16871,31 @@ async function omascoteChatSubmitOrders(draft, records){
   };
 }
 
+async function omascoteChatSubmitOrders(draft, records){
+  const prepared = omascoteChatBuildCleanOrders(draft, records).map((item, index) => ({
+    ...item,
+    chatDraftId:draft.id,
+    chatOrderIndex:index
+  }));
+  return omascoteChatSubmitPreparedOrders(prepared);
+}
+
+async function omascoteChatSubmitOrderBatch(items){
+  if(!Array.isArray(items) || !items.length || items.length > 3) throw new Error("Escolha de 1 a 3 jogos por vez.");
+  const prepared = [];
+  for(const entry of items){
+    const draft = entry?.draft;
+    const orders = omascoteChatBuildCleanOrders(draft, entry?.files);
+    for(let index = 0; index < orders.length; index++) prepared.push({
+      ...orders[index],
+      chatDraftId:draft.id,
+      chatOrderIndex:index
+    });
+  }
+  if(prepared.length > 3) throw new Error("Escolha de 1 a 3 jogos por vez.");
+  return omascoteChatSubmitPreparedOrders(prepared);
+}
+
 window.addEventListener("message", async event => {
   if(event.source !== integratedChatFrame?.contentWindow || !omascoteChatAllowedOrigin(event.origin)) return;
   if(event.data?.type === "omascote-chat:open-account"){
@@ -16881,13 +16906,15 @@ window.addEventListener("message", async event => {
     abrirPedidosPeloAtendimento();
     return;
   }
-  if(event.data?.type !== "omascote-chat:create-order") return;
+  if(!["omascote-chat:create-order", "omascote-chat:create-order-batch"].includes(event.data?.type)) return;
   const requestId = String(event.data.requestId || "");
   if(!/^[a-f0-9-]{36}$/i.test(requestId) || omascoteChatOrderInFlight.has(requestId)) return;
   omascoteChatOrderInFlight.add(requestId);
   let result;
   try{
-    result = await omascoteChatSubmitOrders(event.data.draft, event.data.files);
+    result = event.data.type === "omascote-chat:create-order-batch"
+      ? await omascoteChatSubmitOrderBatch(event.data.items)
+      : await omascoteChatSubmitOrders(event.data.draft, event.data.files);
   }catch(error){
     result = { ok:false, error:error?.message || "Não foi possível enviar o pedido." };
   }finally{
