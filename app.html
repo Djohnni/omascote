@@ -16834,25 +16834,60 @@ async function omascoteChatSubmitPreparedOrders(prepared){
     if(authMsg) throw new Error(authMsg);
     if(!response.ok || !out?.ok) throw new Error(out?.error || "Não foi possível criar o pedido no motor.");
     results.push(out);
-    if(out.pedido_id) salvarPedidoAtivoLocal(out.pedido_id, item.productKey);
+    if(out.pedido_id && out.requer_pix_antes_criacao === true){
+      registrarPedidoAguardandoPixLocal(out.pedido_id, item.productKey);
+    }else if(out.pedido_id){
+      salvarPedidoAtivoLocal(out.pedido_id, item.productKey);
+    }
     ia4Track("pedido_chat_integrado", { produto:item.productKey, pedido_id:out.pedido_id || "" });
+    if(out.pagamento_pendente === true) break;
   }
   let finalResults = results;
-  if(results.some(item => item.pagamento_pendente === true)){
-    finalResults = await fotoJogosGerarPixAntesDaCriacao(results, "com_suporte");
+  const exigemPixAntes = results.filter(item =>
+    item.pagamento_pendente === true &&
+    item.requer_pix_antes_criacao === true &&
+    item.pedido_id
+  );
+  if(exigemPixAntes.length){
+    finalResults = await Promise.all(results.map(async item => {
+      if(!exigemPixAntes.includes(item)) return item;
+      try{
+        const pix = await gerarPixPedido(item.pedido_id);
+        return { ...item, ...pix, pedido_id:item.pedido_id, pix_error:"" };
+      }catch(error){
+        return { ...item, pix_error:error?.message || "Não foi possível gerar o Pix." };
+      }
+    }));
     fotoJogosAbrirPrimeiroPixGerado(finalResults);
   }
-  atualizarTopoProducao(finalResults.map(item => ({ id:item.pedido_id || "novo", status:item.pagamento_pendente ? "aguardando_pagamento" : "processando" })));
-  mostrarAvisoPedido();
+  const enviadosParaProducao = finalResults.filter(item => item.requer_pix_antes_criacao !== true);
+  if(enviadosParaProducao.length){
+    atualizarTopoProducao(enviadosParaProducao.map(item => ({ id:item.pedido_id || "novo", status:"processando" })));
+  }
+  const demonstracaoCriada = finalResults.some(item => item.demonstracao_apos_pagamento === true);
+  mostrarAvisoPedido(
+    exigemPixAntes.length ? "💳 Pagamento necessário" : "✅ Pedido recebido!",
+    exigemPixAntes.length
+      ? "A criação começa depois da confirmação do Pix."
+      : demonstracaoCriada
+        ? "Sua demonstração entrou em produção. Pague-a antes de pedir uma nova arte."
+        : "Sua arte entrou em produção.",
+    7000
+  );
   void refreshMe();
   void carregarHistorico();
   destacarMeusPedidos();
   const ids = finalResults.map(item => item.pedido_id).filter(Boolean);
   const pending = finalResults.some(item => item.pagamento_pendente === true);
+  const cicloLimitouLote = results.length < prepared.length;
   return {
     ok:true,
-    message:pending
-      ? `${ids.length} pedido(s) criado(s). Conclua o Pix aberto para liberar ao motor.`
+    message:exigemPixAntes.length
+      ? `${ids.length} pedido(s) criado(s). Conclua o Pix aberto para liberar ao motor.${cicloLimitouLote ? " Os demais poderão ser pedidos depois deste pagamento." : ""}`
+      : demonstracaoCriada
+        ? `Demonstração criada. Pague esta arte antes de pedir a próxima.${cicloLimitouLote ? " Os demais pedidos não foram criados." : ""}`
+      : pending
+        ? `${ids.length} pedido(s) criado(s) com pagamento pendente.`
       : `${ids.length} pedido(s) enviado(s) ao motor. Acompanhe em Meus pedidos.`,
     orders:finalResults.map(item => ({ id:item.pedido_id || "", paymentPending:item.pagamento_pendente === true }))
   };
@@ -26511,6 +26546,25 @@ function restaurarPedidosAtivos(pedidos){
 function finalizarCleanOrderCriado(form, productKey, product, out, options = {}){
   setCleanProductMsg(form, "");
   marcarProductChooserVisto();
+
+  if(out.pagamento_pendente === true && out.requer_pix_antes_criacao === true){
+    if(out.pedido_id) registrarPedidoAguardandoPixLocal(out.pedido_id, productKey);
+    cancelarProgressoNoProduto(form);
+    setCleanProductMsg(form, "Faça o Pix para iniciar a criação desta primeira arte.");
+    mostrarAvisoPedido(
+      "💳 Pagamento necessário",
+      "A criação começa assim que o Pix for confirmado. Depois, você ganha uma demonstração da próxima arte.",
+      7000
+    );
+    if(options.resetForm !== false) resetCleanFormAfterSend(form);
+    lockCleanOrderSubmitAfterSuccess(form, out.pedido_id || "");
+    refreshMe();
+    carregarHistorico();
+    destacarMeusPedidos();
+    if(out.pedido_id) setTimeout(()=>{ void verQrCodePedido(out.pedido_id); }, 120);
+    return;
+  }
+
   if(out.pedido_id){
     salvarPedidoAtivoLocal(out.pedido_id, productKey);
   }
@@ -27186,6 +27240,19 @@ async function enviarCleanProductFormConfirmado(form, options = {}){
           out.error || "Esta tentativa entrou em conflito com outro conteúdo. Revise o pedido e tente novamente; uma nova chave será usada.",
           true
         );
+        return;
+      }
+
+      if(r.status === 409 && out?.code === "DEMONSTRACAO_PENDENTE"){
+        clearCleanOrderRequestState(form);
+        cancelarProgressoNoProduto(form);
+        setCleanProductMsg(
+          form,
+          out.error || "Pague a demonstração pendente antes de criar outra arte.",
+          true
+        );
+        carregarHistorico();
+        destacarMeusPedidos();
         return;
       }
 
@@ -30574,6 +30641,26 @@ function finalizarEscudo3dPedidoCriado(out, progressTarget = null, options = {})
   marcarProductChooserVisto();
   const inicioPrimeiroEscudo = localStorage.getItem(PRIMEIRO_ESCUDO_INICIO_KEY);
 
+  if(out.pagamento_pendente === true && out.requer_pix_antes_criacao === true){
+    if(out.pedido_id) registrarPedidoAguardandoPixLocal(out.pedido_id, "escudo3d");
+    localStorage.removeItem(PRIMEIRO_ESCUDO_INICIO_KEY);
+    if(progressTarget) cancelarProgressoNoProduto(progressTarget);
+    const paymentMessage = "Faça o Pix para iniciar a criação. Depois do pagamento, a próxima arte pode ser uma demonstração.";
+    if(escudo3dMsg) escudo3dMsg.textContent = paymentMessage;
+    const msg = progressTarget?.querySelector("[data-clean-msg]");
+    if(msg){
+      msg.textContent = paymentMessage;
+      msg.style.color = "#166534";
+    }
+    mostrarAvisoPedido("💳 Pagamento necessário", paymentMessage, 7000);
+    refreshMe();
+    carregarHistorico();
+    destacarMeusPedidos();
+    if(out.pedido_id) setTimeout(()=>{ void verQrCodePedido(out.pedido_id); }, 120);
+    if(options.closeModal !== false) setTimeout(fecharEscudo3dModal, 900);
+    return;
+  }
+
   if(inicioPrimeiroEscudo && out.pedido_id){
     localStorage.setItem("ia4tube_pedido_inicio_" + out.pedido_id, inicioPrimeiroEscudo);
     localStorage.removeItem(PRIMEIRO_ESCUDO_INICIO_KEY);
@@ -30868,6 +30955,21 @@ async function enviarPedidoEscudo3dComArquivo(file, progressTarget = null){
           msg.style.color = "#dc2626";
         }
         if(progressTarget) cancelarProgressoNoProduto(progressTarget);
+        return;
+      }
+
+      if(r.status === 409 && out?.code === "DEMONSTRACAO_PENDENTE"){
+        clearEscudo3dOrderRequestState();
+        const pendingMessage = out.error || "Pague a demonstração pendente antes de criar outra arte.";
+        if(escudo3dMsg) escudo3dMsg.textContent = pendingMessage;
+        const msg = progressTarget?.querySelector("[data-clean-msg]");
+        if(msg){
+          msg.textContent = pendingMessage;
+          msg.style.color = "#dc2626";
+        }
+        if(progressTarget) cancelarProgressoNoProduto(progressTarget);
+        carregarHistorico();
+        destacarMeusPedidos();
         return;
       }
 
@@ -31802,6 +31904,22 @@ document.getElementById("pedidoForm").addEventListener("submit", async (e)=>{
       markLegacyOrderRequestConfirmed(requestState, out.pedido_id || "");
       msgPedidoEl.textContent = "";
       marcarProductChooserVisto();
+      if(out.pagamento_pendente === true && out.requer_pix_antes_criacao === true){
+        registrarPedidoAguardandoPixLocal(out.pedido_id, productKey || "legado");
+        msgPedidoEl.textContent = "Faça o Pix para iniciar a criação. Depois do pagamento, a próxima arte pode ser uma demonstração.";
+        limparCamposAposEnviar();
+        clearLegacyOrderRequestState();
+        refreshMe();
+        carregarHistorico();
+        destacarMeusPedidos();
+        mostrarAvisoPedido(
+          "💳 Pagamento necessário",
+          "A criação começa assim que o Pix for confirmado.",
+          7000
+        );
+        if(out.pedido_id) setTimeout(()=>{ void verQrCodePedido(out.pedido_id); }, 120);
+        return;
+      }
       atualizarTopoProducao([{ id: out.pedido_id || "novo", status: "processando" }]);
       mostrarAvisoPedido();
 
@@ -31828,6 +31946,14 @@ document.getElementById("pedidoForm").addEventListener("submit", async (e)=>{
       if(r.status === 409 && out?.code === "IDEMPOTENCY_CONFLICT"){
         clearLegacyOrderRequestState();
         msgPedidoEl.textContent = out.error || "Esta tentativa entrou em conflito com outro conteúdo. Revise o pedido e tente novamente; uma nova chave será usada.";
+        return;
+      }
+
+      if(r.status === 409 && out?.code === "DEMONSTRACAO_PENDENTE"){
+        clearLegacyOrderRequestState();
+        msgPedidoEl.textContent = out.error || "Pague a demonstração pendente antes de criar outra arte.";
+        carregarHistorico();
+        destacarMeusPedidos();
         return;
       }
 
@@ -32270,6 +32396,8 @@ function pedidoEconomicoAntesPagamentoUI(p){
   return (
     p?.pagamento_pendente === true &&
     (
+      p?.requer_pix_antes_criacao === true ||
+      p?.motivo_pagamento_pendente === "pix_obrigatorio_primeira_arte" ||
       p?.motivo_pagamento_pendente === "pix_obrigatorio_assistente" ||
       (
         p?.modalidade_criacao === "economica" &&
@@ -32286,12 +32414,17 @@ function cardPagamentoPendente(p) {
     : valorNumero.toFixed(2).replace(".", ",");
   const resumoCupom = couponSummaryText(p);
   const economicaAntesDoPagamento = pedidoEconomicoAntesPagamentoUI(p);
+  const demonstracaoAposPagamento = p?.demonstracao_apos_pagamento === true;
   const titulo = economicaAntesDoPagamento
     ? "Pague antes de iniciar a criação"
-    : "Sua prévia está pronta ✅";
+    : demonstracaoAposPagamento
+      ? "Sua demonstração está pronta ✅"
+      : "Sua prévia está pronta ✅";
   const texto = economicaAntesDoPagamento
-    ? `Esta arte de R$${valor} só entra na fila depois da aprovação do PIX.`
-    : `Gostou da arte? Oferta do dia: pague R$${valor} e receba R$${valor} de bônus para criar a próxima arte. ⚽`;
+    ? `Esta arte de R$${valor} só entra na fila depois da aprovação do PIX. Depois do pagamento, a próxima arte pode ser criada como demonstração.`
+    : demonstracaoAposPagamento
+      ? `Esta é a demonstração liberada pelo seu pagamento anterior. Pague R$${valor} para retirar a proteção e liberar uma nova demonstração.`
+      : `Gostou da arte? Pague R$${valor} para retirar a proteção e liberar a próxima demonstração.`;
   return `
     <div class="pagamentoPendenteBox">
       <div class="pagamentoPendenteTitulo">${titulo}</div>
@@ -32879,6 +33012,9 @@ async function carregarHistorico(){
       pagamento_pendente: p.pagamento_pendente,
       valor_pendente: p.valor_pendente,
       motivo_pagamento_pendente: p.motivo_pagamento_pendente,
+      requer_pix_antes_criacao: p.requer_pix_antes_criacao,
+      demonstracao_apos_pagamento: p.demonstracao_apos_pagamento,
+      ciclo_demonstracao_versao: p.ciclo_demonstracao_versao,
       modalidade_criacao: p.modalidade_criacao,
       pode_pedir_ajuste: p.pode_pedir_ajuste,
       ajuste_automatico_usado: p.ajuste_automatico_usado,
