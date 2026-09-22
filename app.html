@@ -16864,14 +16864,11 @@ async function omascoteChatSubmitPreparedOrders(prepared){
   if(enviadosParaProducao.length){
     atualizarTopoProducao(enviadosParaProducao.map(item => ({ id:item.pedido_id || "novo", status:"processando" })));
   }
-  const demonstracaoCriada = finalResults.some(item => item.demonstracao_apos_pagamento === true);
   mostrarAvisoPedido(
     exigemPixAntes.length ? "💳 Pagamento necessário" : "✅ Pedido recebido!",
     exigemPixAntes.length
-      ? "A criação começa depois da confirmação do Pix."
-      : demonstracaoCriada
-        ? "Sua demonstração entrou em produção. Pague-a antes de pedir uma nova arte."
-        : "Sua arte entrou em produção.",
+      ? "A arte será enviada automaticamente para produção depois da confirmação do Pix."
+      : "Sua arte entrou em produção.",
     7000
   );
   void refreshMe();
@@ -16883,9 +16880,7 @@ async function omascoteChatSubmitPreparedOrders(prepared){
   return {
     ok:true,
     message:exigemPixAntes.length
-      ? `${ids.length} pedido(s) criado(s). Conclua o Pix aberto para liberar ao motor.${cicloLimitouLote ? " Os demais poderão ser pedidos depois deste pagamento." : ""}`
-      : demonstracaoCriada
-        ? `Demonstração criada. Pague esta arte antes de pedir a próxima.${cicloLimitouLote ? " Os demais pedidos não foram criados." : ""}`
+      ? `${ids.length} pedido(s) criado(s). Conclua o Pix aberto para enviar a arte à produção.${cicloLimitouLote ? " Cada nova arte terá seu próprio Pix." : ""}`
       : pending
         ? `${ids.length} pedido(s) criado(s) com pagamento pendente.`
       : `${ids.length} pedido(s) enviado(s) ao motor. Acompanhe em Meus pedidos.`,
@@ -26550,10 +26545,10 @@ function finalizarCleanOrderCriado(form, productKey, product, out, options = {})
   if(out.pagamento_pendente === true && out.requer_pix_antes_criacao === true){
     if(out.pedido_id) registrarPedidoAguardandoPixLocal(out.pedido_id, productKey);
     cancelarProgressoNoProduto(form);
-    setCleanProductMsg(form, "Faça o Pix para iniciar a criação desta primeira arte.");
+    setCleanProductMsg(form, "Faça o Pix para enviar esta arte à produção.");
     mostrarAvisoPedido(
       "💳 Pagamento necessário",
-      "A criação começa assim que o Pix for confirmado. Depois, você ganha uma demonstração da próxima arte.",
+      "A criação começa automaticamente assim que o Pix for confirmado.",
       7000
     );
     if(options.resetForm !== false) resetCleanFormAfterSend(form);
@@ -27240,19 +27235,6 @@ async function enviarCleanProductFormConfirmado(form, options = {}){
           out.error || "Esta tentativa entrou em conflito com outro conteúdo. Revise o pedido e tente novamente; uma nova chave será usada.",
           true
         );
-        return;
-      }
-
-      if(r.status === 409 && out?.code === "DEMONSTRACAO_PENDENTE"){
-        clearCleanOrderRequestState(form);
-        cancelarProgressoNoProduto(form);
-        setCleanProductMsg(
-          form,
-          out.error || "Pague a demonstração pendente antes de criar outra arte.",
-          true
-        );
-        carregarHistorico();
-        destacarMeusPedidos();
         return;
       }
 
@@ -30645,7 +30627,7 @@ function finalizarEscudo3dPedidoCriado(out, progressTarget = null, options = {})
     if(out.pedido_id) registrarPedidoAguardandoPixLocal(out.pedido_id, "escudo3d");
     localStorage.removeItem(PRIMEIRO_ESCUDO_INICIO_KEY);
     if(progressTarget) cancelarProgressoNoProduto(progressTarget);
-    const paymentMessage = "Faça o Pix para iniciar a criação. Depois do pagamento, a próxima arte pode ser uma demonstração.";
+    const paymentMessage = "Faça o Pix para enviar esta arte à produção. A criação começa automaticamente após a confirmação.";
     if(escudo3dMsg) escudo3dMsg.textContent = paymentMessage;
     const msg = progressTarget?.querySelector("[data-clean-msg]");
     if(msg){
@@ -30955,21 +30937,6 @@ async function enviarPedidoEscudo3dComArquivo(file, progressTarget = null){
           msg.style.color = "#dc2626";
         }
         if(progressTarget) cancelarProgressoNoProduto(progressTarget);
-        return;
-      }
-
-      if(r.status === 409 && out?.code === "DEMONSTRACAO_PENDENTE"){
-        clearEscudo3dOrderRequestState();
-        const pendingMessage = out.error || "Pague a demonstração pendente antes de criar outra arte.";
-        if(escudo3dMsg) escudo3dMsg.textContent = pendingMessage;
-        const msg = progressTarget?.querySelector("[data-clean-msg]");
-        if(msg){
-          msg.textContent = pendingMessage;
-          msg.style.color = "#dc2626";
-        }
-        if(progressTarget) cancelarProgressoNoProduto(progressTarget);
-        carregarHistorico();
-        destacarMeusPedidos();
         return;
       }
 
@@ -31906,7 +31873,7 @@ document.getElementById("pedidoForm").addEventListener("submit", async (e)=>{
       marcarProductChooserVisto();
       if(out.pagamento_pendente === true && out.requer_pix_antes_criacao === true){
         registrarPedidoAguardandoPixLocal(out.pedido_id, productKey || "legado");
-        msgPedidoEl.textContent = "Faça o Pix para iniciar a criação. Depois do pagamento, a próxima arte pode ser uma demonstração.";
+        msgPedidoEl.textContent = "Faça o Pix para enviar esta arte à produção. A criação começa automaticamente após a confirmação.";
         limparCamposAposEnviar();
         clearLegacyOrderRequestState();
         refreshMe();
@@ -31946,14 +31913,6 @@ document.getElementById("pedidoForm").addEventListener("submit", async (e)=>{
       if(r.status === 409 && out?.code === "IDEMPOTENCY_CONFLICT"){
         clearLegacyOrderRequestState();
         msgPedidoEl.textContent = out.error || "Esta tentativa entrou em conflito com outro conteúdo. Revise o pedido e tente novamente; uma nova chave será usada.";
-        return;
-      }
-
-      if(r.status === 409 && out?.code === "DEMONSTRACAO_PENDENTE"){
-        clearLegacyOrderRequestState();
-        msgPedidoEl.textContent = out.error || "Pague a demonstração pendente antes de criar outra arte.";
-        carregarHistorico();
-        destacarMeusPedidos();
         return;
       }
 
@@ -32392,11 +32351,12 @@ function ia4ContaAutoPendente(){
   return localStorage.getItem("ia4tube_conta_auto_pendente") === "1";
 }
 
-function pedidoEconomicoAntesPagamentoUI(p){
+function pedidoExigePixAntesCriacaoUI(p){
   return (
     p?.pagamento_pendente === true &&
     (
       p?.requer_pix_antes_criacao === true ||
+      p?.motivo_pagamento_pendente === "pix_obrigatorio_toda_arte" ||
       p?.motivo_pagamento_pendente === "pix_obrigatorio_primeira_arte" ||
       p?.motivo_pagamento_pendente === "pix_obrigatorio_assistente" ||
       (
@@ -32413,18 +32373,11 @@ function cardPagamentoPendente(p) {
     ? String(valorNumero)
     : valorNumero.toFixed(2).replace(".", ",");
   const resumoCupom = couponSummaryText(p);
-  const economicaAntesDoPagamento = pedidoEconomicoAntesPagamentoUI(p);
-  const demonstracaoAposPagamento = p?.demonstracao_apos_pagamento === true;
-  const titulo = economicaAntesDoPagamento
-    ? "Pague antes de iniciar a criação"
-    : demonstracaoAposPagamento
-      ? "Sua demonstração está pronta ✅"
-      : "Sua prévia está pronta ✅";
-  const texto = economicaAntesDoPagamento
-    ? `Esta arte de R$${valor} só entra na fila depois da aprovação do PIX. Depois do pagamento, a próxima arte pode ser criada como demonstração.`
-    : demonstracaoAposPagamento
-      ? `Esta é a demonstração liberada pelo seu pagamento anterior. Pague R$${valor} para retirar a proteção e liberar uma nova demonstração.`
-      : `Gostou da arte? Pague R$${valor} para retirar a proteção e liberar a próxima demonstração.`;
+  const exigePixAntesCriacao = pedidoExigePixAntesCriacaoUI(p);
+  const titulo = "Pague para iniciar a criação";
+  const texto = exigePixAntesCriacao
+    ? `Esta arte de R$${valor} só será enviada para produção depois da aprovação do PIX.`
+    : `Pague R$${valor} por PIX para liberar esta arte.`;
   return `
     <div class="pagamentoPendenteBox">
       <div class="pagamentoPendenteTitulo">${titulo}</div>
@@ -32436,11 +32389,6 @@ function cardPagamentoPendente(p) {
       <button type="button" class="menuPedidoBtn" data-app-payment-cta onclick="verQrCodePedido('${p.id}')">
         Ver QR Code
       </button>
-      ${economicaAntesDoPagamento ? "" : `
-        <button type="button" class="menuPedidoBtn" data-app-payment-cta onclick="usarSaldoPedido('${p.id}')">
-          Usar saldo Meu Clube FC
-        </button>
-      `}
     </div>
   `;
 }
@@ -32559,42 +32507,6 @@ async function verQrCodePedido(id) {
     carregarHistorico();
   }catch(e){
     alert(e.message || "Erro ao abrir QR Code.");
-  }
-}
-
-async function usarSaldoPedido(id) {
-  if(!token){
-    alert("Faça login para usar seu saldo Meu Clube FC.");
-    return;
-  }
-
-  try{
-    const r = await fetch(`${API_BASE}/pedidos/${id}/pagar-com-saldo`, {
-      method:"POST",
-      headers:{
-        "Authorization":"Bearer " + token,
-        ...ia4AppModeHeaders()
-      }
-    });
-
-    const data = await ia4LerJsonSeguro(r);
-    const authMsg = ia4TratarAuthInvalida(r, data);
-
-    if(authMsg){
-      alert(authMsg);
-      return;
-    }
-
-    if(!r.ok || !data.ok){
-      alert(data.error || "Não foi possível desbloquear com saldo.");
-      return;
-    }
-
-    alert("Imagem desbloqueada com saldo Meu Clube FC.");
-    await refreshMe();
-    await carregarHistorico();
-  }catch(e){
-    alert("Erro de rede ao usar saldo Meu Clube FC.");
   }
 }
 
@@ -32857,8 +32769,8 @@ function atualizarMenuPedidosTopo(pedidos){
     const ajustePendente = statusPedido === "ajuste_pendente";
     const aprovado = p.aprovado_cliente === true;
     const pagamentoPendente = p.pagamento_pendente === true;
-    const economicaAntesDoPagamento = pedidoEconomicoAntesPagamentoUI(p);
-    const mostrarPagamentoPendente = pagamentoPendente && (!!p.imagem_url || economicaAntesDoPagamento);
+    const exigePixAntesCriacao = pedidoExigePixAntesCriacaoUI(p);
+    const mostrarPagamentoPendente = pagamentoPendente && (!!p.imagem_url || exigePixAntesCriacao);
     const usouAjuste = p.ajuste_automatico_usado === true;
     const criacaoEconomica = p.modalidade_criacao === "economica";
 
@@ -32876,7 +32788,7 @@ function atualizarMenuPedidosTopo(pedidos){
           </div>
           `}
         </div>
-      ` : economicaAntesDoPagamento ? `
+      ` : exigePixAntesCriacao ? `
         <div class="menuPedidoThumb" style="display:flex;align-items:center;justify-content:center;padding:18px;text-align:center;color:#ffffff;font-size:16px;font-weight:950;line-height:1.35;background:#0f172a;">
           Aguardando pagamento PIX.<br><br>A criação ainda não foi enviada para produção.
         </div>
@@ -33015,6 +32927,7 @@ async function carregarHistorico(){
       requer_pix_antes_criacao: p.requer_pix_antes_criacao,
       demonstracao_apos_pagamento: p.demonstracao_apos_pagamento,
       ciclo_demonstracao_versao: p.ciclo_demonstracao_versao,
+      regra_pagamento_versao: p.regra_pagamento_versao,
       modalidade_criacao: p.modalidade_criacao,
       pode_pedir_ajuste: p.pode_pedir_ajuste,
       ajuste_automatico_usado: p.ajuste_automatico_usado,
@@ -33057,8 +32970,8 @@ async function carregarHistorico(){
       const ajustePendente = statusPedido === "ajuste_pendente";
       const aprovado = p.aprovado_cliente === true;
       const pagamentoPendente = p.pagamento_pendente === true;
-      const economicaAntesDoPagamento = pedidoEconomicoAntesPagamentoUI(p);
-      const mostrarPagamentoPendente = pagamentoPendente && (!!p.imagem_url || economicaAntesDoPagamento);
+      const exigePixAntesCriacao = pedidoExigePixAntesCriacaoUI(p);
+      const mostrarPagamentoPendente = pagamentoPendente && (!!p.imagem_url || exigePixAntesCriacao);
       const usouAjuste = p.ajuste_automatico_usado === true;
       const criacaoEconomica = p.modalidade_criacao === "economica";
 
