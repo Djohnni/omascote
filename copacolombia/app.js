@@ -4,6 +4,31 @@
   const copa = window.COPA_COLOMBIA;
   if(!copa) return;
 
+  const COPA_ORDER_MAP_KEY = "copa_colombia_pedidos_por_jogo";
+
+  const accountMapKey = () => {
+    const authToken = String(localStorage.getItem("omascote_token") || "");
+    if(!authToken) return "";
+
+    let accountIdentity = authToken;
+    try{
+      const payloadPart = authToken.split(".")[1] || "";
+      const normalized = payloadPart.replace(/-/g, "+").replace(/_/g, "/");
+      const padded = normalized.padEnd(Math.ceil(normalized.length / 4) * 4, "=");
+      const payload = JSON.parse(decodeURIComponent(Array.from(atob(padded), char => `%${char.charCodeAt(0).toString(16).padStart(2, "0")}`).join("")));
+      accountIdentity = String(payload?.whatsapp || payload?.sub || authToken);
+    }catch{
+      accountIdentity = authToken;
+    }
+
+    let hash = 2166136261;
+    for(let index = 0; index < accountIdentity.length; index += 1){
+      hash ^= accountIdentity.charCodeAt(index);
+      hash = Math.imul(hash, 16777619);
+    }
+    return `${COPA_ORDER_MAP_KEY}:${(hash >>> 0).toString(16)}`;
+  };
+
   const money = value => new Intl.NumberFormat("pt-BR", {
     style: "currency",
     currency: "BRL",
@@ -68,6 +93,44 @@
     return `/app.html?${params.toString()}`;
   };
 
+  const localOrderMap = () => {
+    try{
+      const key = accountMapKey();
+      if(!key) return {};
+      const parsed = JSON.parse(localStorage.getItem(key) || "{}");
+      return parsed && typeof parsed === "object" && !Array.isArray(parsed) ? parsed : {};
+    }catch{
+      return {};
+    }
+  };
+
+  const artOrderForMatch = match => {
+    const local = localOrderMap()[String(match?.id || "")];
+    const pedidoId = String(local?.pedido_id || "").trim();
+    if(pedidoId) return { pedido_id: pedidoId, status: String(local?.status || "processando") };
+    return match?.arteDisponivel === true ? { pedido_id: "", status: "pronto", generic: true } : null;
+  };
+
+  const orderUrl = (match, order) => {
+    const params = new URLSearchParams({ origem: "copacolombia-download", jogo: match.id });
+    if(order.generic) params.set("pedidos", "1");
+    else params.set("pedido", order.pedido_id);
+    return `/app.html?${params.toString()}`;
+  };
+
+  const artActionMarkup = match => {
+    const order = artOrderForMatch(match);
+    if(!order) return "";
+
+    const ready = order.status === "pronto";
+    return `
+      <a class="matchArtButton${ready ? " isReady" : ""}" href="${escapeHtml(orderUrl(match, order))}"${order.pedido_id ? ` data-art-order="${escapeHtml(order.pedido_id)}"` : ""} data-art-match="${escapeHtml(match.id)}">
+        <span aria-hidden="true">${ready ? "⬇️" : "⏳"}</span>
+        ${ready ? "Baixar arte agora" : "Acompanhar minha arte"}
+      </a>
+    `;
+  };
+
   function renderPrizes(){
     const root = document.getElementById("prizeGrid");
     if(!root) return;
@@ -100,9 +163,10 @@
             <strong>${escapeHtml(match.fora)}</strong>
           </div>
         </div>
+        ${artActionMarkup(match)}
         <div class="matchDetails"><span>📅 ${escapeHtml(formattedDate(match.data))}</span><span>📍 Arena do Vasco</span></div>
         <a class="flyerButton" href="${escapeHtml(flyerUrl(match))}" data-flyer-match="${escapeHtml(match.id)}">
-          <span>✨</span> Gerar flyer deste jogo
+          <span>✨</span> ${artOrderForMatch(match) ? "Gerar outro flyer" : "Gerar flyer deste jogo"}
         </a>
       </article>
     `;

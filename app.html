@@ -26602,7 +26602,31 @@ const cleanProductProgressTimers = new WeakMap();
 const cleanProductResultWatchers = new Map();
 const IA4_ACTIVE_ORDERS_KEY = "ia4tube_pedidos_ativos";
 const IA4_PENDING_PIX_ORDERS_KEY = "ia4tube_pedidos_aguardando_pix";
+const COPA_COLOMBIA_ORDER_MAP_KEY = "copa_colombia_pedidos_por_jogo";
 const IA4_ACTIVE_ORDER_MAX_AGE = 48 * 60 * 60 * 1000;
+
+function chaveContaMapaCopaColombia(){
+  const authToken = String(localStorage.getItem("omascote_token") || "");
+  if(!authToken) return "";
+
+  let accountIdentity = authToken;
+  try{
+    const payloadPart = authToken.split(".")[1] || "";
+    const normalized = payloadPart.replace(/-/g, "+").replace(/_/g, "/");
+    const padded = normalized.padEnd(Math.ceil(normalized.length / 4) * 4, "=");
+    const payload = JSON.parse(decodeURIComponent(Array.from(atob(padded), char => `%${char.charCodeAt(0).toString(16).padStart(2, "0")}`).join("")));
+    accountIdentity = String(payload?.whatsapp || payload?.sub || authToken);
+  }catch{
+    accountIdentity = authToken;
+  }
+
+  let hash = 2166136261;
+  for(let index = 0; index < accountIdentity.length; index += 1){
+    hash ^= accountIdentity.charCodeAt(index);
+    hash = Math.imul(hash, 16777619);
+  }
+  return `${COPA_COLOMBIA_ORDER_MAP_KEY}:${(hash >>> 0).toString(16)}`;
+}
 
 function getCleanProductImageFromForm(form){
   return form?.closest(".cleanProductBlock")?.querySelector(".cleanProductImage") || null;
@@ -26632,6 +26656,53 @@ function salvarPedidoAtivoLocal(pedidoId, productId){
   });
 
   salvarPedidosAtivosLocal(lista);
+}
+
+function salvarPedidoCopaColombiaLocal(pedidoId, status = "processando"){
+  if(!pedidoId) return;
+
+  try{
+    const params = new URLSearchParams(window.location.search || "");
+    if(params.get("origem") !== "copacolombia") return;
+
+    const jogoId = String(params.get("jogo") || "").trim();
+    if(!jogoId) return;
+
+    const mapKey = chaveContaMapaCopaColombia();
+    if(!mapKey) return;
+    const parsed = JSON.parse(localStorage.getItem(mapKey) || "{}");
+    const pedidos = parsed && typeof parsed === "object" && !Array.isArray(parsed) ? parsed : {};
+    pedidos[jogoId] = {
+      pedido_id: String(pedidoId),
+      status: String(status || "processando"),
+      atualizado_em: Date.now()
+    };
+    localStorage.setItem(mapKey, JSON.stringify(pedidos));
+  }catch(e){
+    console.warn("[copa-colombia] não foi possível salvar o atalho do pedido", e?.message || e);
+  }
+}
+
+function atualizarPedidoCopaColombiaLocal(pedidoId, status){
+  if(!pedidoId) return;
+
+  try{
+    const mapKey = chaveContaMapaCopaColombia();
+    if(!mapKey) return;
+    const parsed = JSON.parse(localStorage.getItem(mapKey) || "{}");
+    const pedidos = parsed && typeof parsed === "object" && !Array.isArray(parsed) ? parsed : {};
+    let alterou = false;
+
+    Object.keys(pedidos).forEach(jogoId => {
+      if(String(pedidos[jogoId]?.pedido_id || "") !== String(pedidoId)) return;
+      pedidos[jogoId] = { ...pedidos[jogoId], status:String(status || "processando"), atualizado_em:Date.now() };
+      alterou = true;
+    });
+
+    if(alterou) localStorage.setItem(mapKey, JSON.stringify(pedidos));
+  }catch(e){
+    console.warn("[copa-colombia] não foi possível atualizar o atalho do pedido", e?.message || e);
+  }
 }
 
 function listarPedidosAguardandoPixLocal(){
@@ -26882,6 +26953,7 @@ async function acompanharResultadoClean(pedidoId, form){
         clearInterval(timer);
         cleanProductResultWatchers.delete(pedidoId);
         finalizarProgressoNoProduto(form, pedidoId);
+        atualizarPedidoCopaColombiaLocal(pedidoId, "pronto");
         const previewUrl = `${API_BASE}/pedidos/${pedidoId}/preview?ts=${Date.now()}`;
         if(statusElLocal) statusElLocal.textContent = "Confira sua arte antes de baixar";
         if(imgEl){
@@ -26954,6 +27026,7 @@ function restaurarPedidosAtivos(pedidos){
     }
 
     if(pedido.imagem_pronta === true){
+      atualizarPedidoCopaColombiaLocal(pedido.id, "pronto");
       const imageBox = getCleanProductImageFromForm(form);
       if(imageBox?.dataset.previewPedidoId !== pedido.id){
         finalizarProgressoNoProduto(form, pedido.id);
@@ -26994,6 +27067,7 @@ function finalizarCleanOrderCriado(form, productKey, product, out, options = {})
 
   if(out.pedido_id){
     salvarPedidoAtivoLocal(out.pedido_id, productKey);
+    salvarPedidoCopaColombiaLocal(out.pedido_id, "processando");
   }
 
   ia4Track("pedido_concluido", {
@@ -33090,6 +33164,8 @@ function fecharModalPixQr() {
 async function abrirPedidoDireto(pedidoId) {
   if(!pedidoId) return;
 
+  const pedidoSeletor = seletorPedidoSeguro(pedidoId);
+
   const menu = document.getElementById("menuPedidosTopo");
   if(menu){
     menu.classList.add("open");
@@ -33104,8 +33180,8 @@ async function abrirPedidoDireto(pedidoId) {
 
   setTimeout(() => {
     const pedidoEl =
-      menu?.querySelector(`[data-pedido-id="${pedidoId}"]`) ||
-      document.querySelector(`[data-historico-pedido-id="${pedidoId}"]`);
+      menu?.querySelector(`[data-pedido-id="${pedidoSeletor}"]`) ||
+      document.querySelector(`[data-historico-pedido-id="${pedidoSeletor}"]`);
 
     console.log("[abrirPedidoDireto]", {
       pedidoId,
@@ -33113,7 +33189,14 @@ async function abrirPedidoDireto(pedidoId) {
       pedidoEl
     });
 
-    if(!pedidoEl) return;
+    if(!pedidoEl){
+      mostrarAvisoPedido(
+        "Pedido não encontrado nesta conta",
+        "Entre com a mesma conta usada para criar a arte ou abra Meus pedidos para conferir os pedidos recentes.",
+        7000
+      );
+      return;
+    }
 
     pedidoEl.scrollIntoView({ behavior:"smooth", block:"center" });
     pedidoEl.classList.add("pedidoHighlight");
@@ -33122,6 +33205,15 @@ async function abrirPedidoDireto(pedidoId) {
       pedidoEl.classList.remove("pedidoHighlight");
     }, 3200);
   }, 120);
+}
+
+async function abrirListaPedidosDireto(){
+  const menu = document.getElementById("menuPedidosTopo");
+  if(menu){
+    menu.classList.add("open");
+    menu.style.transform = "";
+  }
+  await carregarHistorico();
 }
 
 async function ia4RenomearContaAutoTopo(){
@@ -34255,6 +34347,39 @@ if(token){
   if(historicoVazioEl) historicoVazioEl.textContent = "Crie sua conta para ver seus pedidos.";
 
   document.querySelector(".topRightArea")?.style.setProperty("display", "flex", "important");
+}
+
+const pedidoDiretoUrl = (() => {
+  try{
+    const valor = new URLSearchParams(window.location.search || "").get("pedido") || "";
+    return /^[A-Za-z0-9_-]{6,100}$/.test(valor) ? valor : "";
+  }catch{
+    return "";
+  }
+})();
+
+const abrirListaPedidosUrl = (() => {
+  try{
+    return new URLSearchParams(window.location.search || "").get("pedidos") === "1";
+  }catch{
+    return false;
+  }
+})();
+
+if(pedidoDiretoUrl || abrirListaPedidosUrl){
+  setTimeout(() => {
+    const abrirDestino = () => pedidoDiretoUrl
+      ? abrirPedidoDireto(pedidoDiretoUrl)
+      : abrirListaPedidosDireto();
+
+    if(token){
+      abrirDestino();
+      return;
+    }
+
+    acaoDepoisDoCadastro = abrirDestino;
+    abrirLoginVisitanteModal();
+  }, 350);
 }
 atualizarBrindeEscudo3dAppVisual();
 setTimeout(()=>{
