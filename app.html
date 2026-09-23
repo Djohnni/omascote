@@ -13757,11 +13757,114 @@ body.copaColombiaOrderMode [data-product-form="proximo_jogo"] .cleanSubmitBtn{
   cursor:pointer;
 }
 
+body.copaColombiaOrderMode.copaColombiaResultMode .cleanProductBlock[data-clean-product-block="proximo_jogo"]{
+  display:none !important;
+}
+
+body.copaColombiaOrderMode.copaColombiaResultMode .cleanProductBlock[data-clean-product-block="resultado"]{
+  width:100%;
+  display:block !important;
+  margin:0;
+  padding:0;
+  border:0;
+  background:transparent;
+  box-shadow:none;
+}
+
+body.copaColombiaOrderMode.copaColombiaResultMode .cleanProductBlock[data-clean-product-block="resultado"] .cleanProductImage{
+  display:none !important;
+}
+
+body.copaColombiaOrderMode.copaColombiaResultMode .cleanProductBlock[data-clean-product-block="resultado"] .cleanProductForm{
+  width:100%;
+  padding:0;
+  gap:12px;
+  background:transparent;
+}
+
+body.copaColombiaOrderMode.copaColombiaResultMode .cleanProductBlock[data-clean-product-block="resultado"] .cleanProductHeader{
+  padding:0 4px;
+}
+
+body.copaColombiaOrderMode.copaColombiaResultMode .cleanProductBlock[data-clean-product-block="resultado"] .cleanProductTitle{
+  color:#0f2138;
+  font-size:24px;
+}
+
+body.copaColombiaOrderMode.copaColombiaResultMode .cleanProductBlock[data-clean-product-block="resultado"] .cleanFieldsShell{
+  gap:10px;
+}
+
+body.copaColombiaOrderMode.copaColombiaResultMode [data-product-form="resultado"] [data-clean-field-card="competition"],
+body.copaColombiaOrderMode.copaColombiaResultMode [data-product-form="resultado"] [data-clean-field-card="headline"],
+body.copaColombiaOrderMode.copaColombiaResultMode [data-product-form="resultado"] [data-clean-field-card="home_crest"],
+body.copaColombiaOrderMode.copaColombiaResultMode [data-product-form="resultado"] [data-clean-field-card="away_crest"],
+body.copaColombiaOrderMode.copaColombiaResultMode [data-product-form="resultado"] [data-clean-field-card="scenario_id"],
+body.copaColombiaOrderMode.copaColombiaResultMode [data-product-form="resultado"] [data-clean-coupon-extra]{
+  display:none !important;
+}
+
+body.copaColombiaOrderMode.copaColombiaResultMode.copaColombiaShowScenario [data-product-form="resultado"] [data-clean-field-card="scenario_id"]{
+  display:block !important;
+}
+
+body.copaColombiaOrderMode.copaColombiaResultMode.copaColombiaCrestError [data-product-form="resultado"] [data-clean-field-card="home_crest"],
+body.copaColombiaOrderMode.copaColombiaResultMode.copaColombiaCrestError [data-product-form="resultado"] [data-clean-field-card="away_crest"]{
+  display:flex !important;
+}
+
+body.copaColombiaOrderMode.copaColombiaResultMode [data-product-form="resultado"] [data-clean-field-card="score"]{
+  border-color:#bfd1e5;
+  background:#ffffff;
+  box-shadow:0 12px 30px rgba(8,31,59,.08);
+}
+
+body.copaColombiaOrderMode.copaColombiaResultMode [data-product-form="resultado"] [data-clean-field-card="match_photo"]{
+  min-height:92px;
+  padding:14px;
+  align-items:flex-start;
+  flex-wrap:wrap;
+  border-radius:18px;
+  border-color:#d7e0ea;
+  background:#ffffff;
+}
+
+body.copaColombiaOrderMode.copaColombiaResultMode [data-product-form="resultado"] [data-clean-field-card="match_photo"] .cleanInlineUploadTitle{
+  width:100%;
+}
+
+body.copaColombiaOrderMode.copaColombiaResultMode [data-product-form="resultado"] [data-clean-field-card="match_photo"] .cleanFieldStep,
+body.copaColombiaOrderMode.copaColombiaResultMode [data-product-form="resultado"] [data-clean-field-card="scorers"] .cleanFieldStep,
+body.copaColombiaOrderMode.copaColombiaResultMode [data-product-form="resultado"] [data-clean-field-card="titulo_secao_resultados"] .cleanFieldStep{
+  display:none;
+}
+
+body.copaColombiaOrderMode.copaColombiaResultMode [data-product-form="resultado"] [data-clean-field-card="score"] .cleanFieldLabel[data-step]::before{
+  display:none;
+}
+
+body.copaColombiaOrderMode.copaColombiaResultMode [data-product-form="resultado"] [data-clean-field-card="match_photo"] .cleanInlinePhotoActions{
+  flex:1 1 100%;
+  justify-content:flex-start;
+}
+
+body.copaColombiaOrderMode.copaColombiaResultMode [data-product-form="resultado"] .cleanSubmitBtn{
+  min-height:54px;
+  margin-top:2px;
+  border-radius:14px;
+  background:linear-gradient(135deg,#0d67d8,#074896);
+  box-shadow:0 14px 30px rgba(13,103,216,.22);
+  font-size:15px;
+}
+
 @media (max-width:560px){
   body.copaColombiaOrderMode #productsMenuPanel > .hero{
     padding:12px 10px 42px;
   }
   body.copaColombiaOrderMode .cleanProductBlock[data-clean-product-block="proximo_jogo"] .cleanProductTitle{
+    font-size:20px;
+  }
+  body.copaColombiaOrderMode.copaColombiaResultMode .cleanProductBlock[data-clean-product-block="resultado"] .cleanProductTitle{
     font-size:20px;
   }
   .copaChampionshipOrderTop{
@@ -19931,9 +20034,9 @@ function renderCleanScoreField(field, step){
       <label class="cleanFieldLabel" data-step="${htmlEscape(step)}">${htmlEscape(field.label || "Placar")}</label>
       <div class="cleanScoreGrid" data-field="${htmlEscape(field.key)}">
         <input name="home_team" data-field="home_team" placeholder="Time A" aria-label="Time A">
-        <input name="home_score" data-field="home_score" type="number" min="0" placeholder="0" aria-label="Gols Time A">
+        <input name="home_score" data-field="home_score" type="number" min="0" step="1" inputmode="numeric" placeholder="0" aria-label="Gols Time A">
         <div class="cleanScoreX">x</div>
-        <input name="away_score" data-field="away_score" type="number" min="0" placeholder="0" aria-label="Gols Time B">
+        <input name="away_score" data-field="away_score" type="number" min="0" step="1" inputmode="numeric" placeholder="0" aria-label="Gols Time B">
         <input name="away_team" data-field="away_team" placeholder="Time B" aria-label="Time B">
       </div>
     </div>
@@ -25761,6 +25864,7 @@ function validateCleanProductForm(productKey, form){
   let hasError = false;
   let fileSizeError = "";
   let scenarioError = "";
+  let scoreError = "";
 
   if(!schema) return ["Produto sem configuração."];
 
@@ -25844,7 +25948,12 @@ function validateCleanProductForm(productKey, form){
     if(field.type === "score"){
       const required = ["home_team", "home_score", "away_score", "away_team"];
       const missing = required.some(key => !getCleanFieldValue(form, key));
-      if(missing) markError(field);
+      const scoreValues = [getCleanFieldValue(form, "home_score"), getCleanFieldValue(form, "away_score")];
+      const invalidScore = scoreValues.some(value => !/^\d+$/.test(value));
+      if(missing || invalidScore){
+        scoreError = "Informe um placar válido, usando números inteiros a partir de zero.";
+        markError(field);
+      }
     }
 
     if(field.type === "matchup"){
@@ -25867,6 +25976,7 @@ function validateCleanProductForm(productKey, form){
 
   if(scenarioError) return [scenarioError];
   if(fileSizeError) return [fileSizeError];
+  if(scoreError) return [scoreError];
   return hasError ? [schema.validationMessage || "Preencha os campos obrigatórios."] : [];
 }
 
@@ -26658,7 +26768,7 @@ function salvarPedidoAtivoLocal(pedidoId, productId){
   salvarPedidosAtivosLocal(lista);
 }
 
-function salvarPedidoCopaColombiaLocal(pedidoId, status = "processando"){
+function salvarPedidoCopaColombiaLocal(pedidoId, status = "processando", productKey = ""){
   if(!pedidoId) return;
 
   try{
@@ -26667,13 +26777,15 @@ function salvarPedidoCopaColombiaLocal(pedidoId, status = "processando"){
 
     const jogoId = String(params.get("jogo") || "").trim();
     if(!jogoId) return;
+    const produto = String(productKey || params.get("produto") || "proximo_jogo").trim() || "proximo_jogo";
 
     const mapKey = chaveContaMapaCopaColombia();
     if(!mapKey) return;
     const parsed = JSON.parse(localStorage.getItem(mapKey) || "{}");
     const pedidos = parsed && typeof parsed === "object" && !Array.isArray(parsed) ? parsed : {};
-    pedidos[jogoId] = {
+    pedidos[`${jogoId}:${produto}`] = {
       pedido_id: String(pedidoId),
+      produto,
       status: String(status || "processando"),
       atualizado_em: Date.now()
     };
@@ -27048,7 +27160,10 @@ function finalizarCleanOrderCriado(form, productKey, product, out, options = {})
   marcarProductChooserVisto();
 
   if(out.pagamento_pendente === true && out.requer_pix_antes_criacao === true){
-    if(out.pedido_id) registrarPedidoAguardandoPixLocal(out.pedido_id, productKey);
+    if(out.pedido_id){
+      registrarPedidoAguardandoPixLocal(out.pedido_id, productKey);
+      salvarPedidoCopaColombiaLocal(out.pedido_id, "aguardando_pagamento", productKey);
+    }
     cancelarProgressoNoProduto(form);
     setCleanProductMsg(form, "Faça o Pix para enviar esta arte à produção.");
     mostrarAvisoPedido(
@@ -27067,7 +27182,7 @@ function finalizarCleanOrderCriado(form, productKey, product, out, options = {})
 
   if(out.pedido_id){
     salvarPedidoAtivoLocal(out.pedido_id, productKey);
-    salvarPedidoCopaColombiaLocal(out.pedido_id, "processando");
+    salvarPedidoCopaColombiaLocal(out.pedido_id, "processando", productKey);
   }
 
   ia4Track("pedido_concluido", {
@@ -36667,7 +36782,7 @@ function carregarConfigCopaColombia(){
 
   copaColombiaConfigPromise = new Promise((resolve, reject) => {
     const script = document.createElement("script");
-    script.src = "/copacolombia/dados.js?v=20260923-2";
+    script.src = "/copacolombia/dados.js?v=20260923-5";
     script.async = true;
     script.onload = () => window.COPA_COLOMBIA
       ? resolve(window.COPA_COLOMBIA)
@@ -36826,7 +36941,10 @@ function copaColombiaResumoEscudo(config, nomeTime){
 
 function iniciarModoPedidoCopaColombia(form, params, config, escudosAplicados){
   if(!form) return;
+  const productKey = String(form.dataset.productForm || "");
+  const isResult = productKey === "resultado";
   document.body.classList.add("copaColombiaOrderMode");
+  document.body.classList.toggle("copaColombiaResultMode", isResult);
   document.body.classList.toggle("copaColombiaCrestError", Number(escudosAplicados || 0) < 2);
 
   const timeA = String(params.get("time_a") || "Time A").slice(0, 100);
@@ -36838,7 +36956,7 @@ function iniciarModoPedidoCopaColombia(form, params, config, escudosAplicados){
   form.querySelector(".copaChampionshipOrderSummary")?.remove();
   const resumo = document.createElement("section");
   resumo.className = "copaChampionshipOrderSummary";
-  resumo.setAttribute("aria-label", "Jogo selecionado");
+  resumo.setAttribute("aria-label", isResult ? "Resultado selecionado" : "Jogo selecionado");
   resumo.innerHTML = `
     <div class="copaChampionshipOrderTop">
       <a class="copaChampionshipOrderBack" href="/copacolombia/">← Voltar aos jogos</a>
@@ -36849,7 +36967,7 @@ function iniciarModoPedidoCopaColombia(form, params, config, escudosAplicados){
         ${copaColombiaResumoEscudo(config, timeA)}
         <strong>${htmlEscape(timeA)}</strong>
       </div>
-      <div class="copaChampionshipSummaryVersus"><strong>×</strong><small>próximo jogo</small></div>
+      <div class="copaChampionshipSummaryVersus"><strong>×</strong><small>${isResult ? "resultado" : "próximo jogo"}</small></div>
       <div class="copaChampionshipSummaryTeam">
         ${copaColombiaResumoEscudo(config, timeB)}
         <strong>${htmlEscape(timeB)}</strong>
@@ -36863,7 +36981,10 @@ function iniciarModoPedidoCopaColombia(form, params, config, escudosAplicados){
     <div class="copaChampionshipOptionalIntro">
       <div>
         <strong>Personalize somente se quiser</strong>
-        <span>O jogo e os escudos já estão prontos. Você pode adicionar uma foto ou mudar o título.</span>
+        <span>${isResult
+          ? "Os times e escudos já estão prontos. Informe o placar e, se quiser, quem fez os gols, adicione uma foto ou mude o título."
+          : "O jogo e os escudos já estão prontos. Você pode adicionar uma foto ou mudar o título."
+        }</span>
       </div>
       <button class="copaChampionshipScenarioBtn" type="button" data-copa-change-scenario>Mudar cenário</button>
     </div>
@@ -36871,15 +36992,28 @@ function iniciarModoPedidoCopaColombia(form, params, config, escudosAplicados){
   form.prepend(resumo);
 
   const title = form.querySelector(".cleanProductTitle");
-  if(title) title.textContent = "Seu flyer está quase pronto";
+  if(title) title.textContent = isResult ? "Informe o resultado" : "Seu flyer está quase pronto";
   const photoTitle = form.querySelector('[data-clean-field-card="match_photo"] .cleanInlineUploadTitleText');
   if(photoTitle) photoTitle.textContent = "Adicionar foto (opcional)";
   const optionalPhoto = form.querySelector('[data-clean-field-card="match_photo"] .cleanInlineUploadOptional');
   if(optionalPhoto) optionalPhoto.textContent = "jogador, time ou mascote";
-  const titleField = form.querySelector('[data-clean-field-card="titulo_secao_proximo_jogo"] .cleanFieldAccordionTitleText');
+  const titleFieldKey = isResult ? "titulo_secao_resultados" : "titulo_secao_proximo_jogo";
+  const titleField = form.querySelector(`[data-clean-field-card="${titleFieldKey}"] .cleanFieldAccordionTitleText`);
   if(titleField) titleField.textContent = "Mudar título (opcional)";
+  if(isResult){
+    const scoreCard = form.querySelector('[data-clean-accordion-item][data-clean-field-card="score"]');
+    const scoreLabel = scoreCard?.querySelector(".cleanFieldLabel");
+    if(scoreLabel) scoreLabel.textContent = "Informe o placar";
+    setCleanAccordionItemOpen(scoreCard, true);
+    ["home_team", "away_team"].forEach(key => {
+      const input = getCleanFormField(form, key);
+      if(input) input.readOnly = true;
+    });
+    const scorersTitle = form.querySelector('[data-clean-field-card="scorers"] .cleanFieldAccordionTitleText');
+    if(scorersTitle) scorersTitle.textContent = "Quem fez os gols (opcional)";
+  }
   const submit = form.querySelector(".cleanSubmitBtn");
-  if(submit) submit.textContent = "Gerar flyer deste jogo";
+  if(submit) submit.textContent = isResult ? "Gerar flyer do resultado" : "Gerar flyer deste jogo";
 
   resumo.querySelector("[data-copa-change-scenario]")?.addEventListener("click", event => {
     document.body.classList.toggle("copaColombiaShowScenario");
@@ -36909,7 +37043,8 @@ function preencherProdutoComParametrosUrl(form, params){
     match_datetime: params.get("data_hora"),
     competition: params.get("competicao"),
     venue: params.get("local"),
-    titulo_secao_proximo_jogo: params.get("titulo")
+    titulo_secao_proximo_jogo: params.get("titulo"),
+    titulo_secao_resultados: params.get("titulo")
   };
   Object.entries(campos).forEach(([key, value]) => {
     if(value) fotoJogosPreencherCampo(form, key, String(value).slice(0, 160));
@@ -36937,7 +37072,10 @@ function parametrosOficiaisJogoCopaColombia(params, config, jogo){
   oficiais.set("data_hora", `${data} - ${String(jogo.hora || "")}`);
   oficiais.set("competicao", `${String(config?.nome || "Copa Colômbia Society")} · ${String(jogo.rodada || "")} · Grupo ${String(jogo.grupo || "")}`);
   oficiais.set("local", String(config?.local || ""));
-  oficiais.set("titulo", `${String(jogo.rodada || "")} · Grupo ${String(jogo.grupo || "")}`);
+  oficiais.set("titulo", oficiais.get("produto") === "resultado"
+    ? `Resultado · Grupo ${String(jogo.grupo || "")}`
+    : `${String(jogo.rodada || "")} · Grupo ${String(jogo.grupo || "")}`
+  );
   return oficiais;
 }
 
@@ -36958,7 +37096,7 @@ function inicializarProdutoPorUrl(){
     selectCleanProductForPicker(produto, { scroll:false, track:false, perfilAuto:false });
     const form = document.querySelector(`[data-product-form="${CSS.escape(produto)}"]`);
     const origemCopaColombia = ["copacolombia", "copa-colombia"].includes(params.get("origem"));
-    const pedidoCopaColombia = origemCopaColombia && produto === "proximo_jogo";
+    const pedidoCopaColombia = origemCopaColombia && ["proximo_jogo", "resultado"].includes(produto);
     let parametrosProduto = params;
     let configCopaColombia = null;
     let jogoCopaColombia = null;
@@ -36981,7 +37119,7 @@ function inicializarProdutoPorUrl(){
       if(jogoCopaColombia && dadosObrigatorios && escudosAplicados === 2 && arquivosProntos){
         iniciarModoPedidoCopaColombia(form, parametrosProduto, configCopaColombia, escudosAplicados);
       }else if(form){
-        document.body.classList.remove("copaColombiaOrderMode", "copaColombiaShowScenario", "copaColombiaCrestError");
+        document.body.classList.remove("copaColombiaOrderMode", "copaColombiaResultMode", "copaColombiaShowScenario", "copaColombiaCrestError");
         setCleanProductMsg(form, "Não consegui confirmar todos os dados deste jogo. O formulário completo ficou aberto para você corrigir o que faltar.", true);
       }
     }

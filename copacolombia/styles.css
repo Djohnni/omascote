@@ -87,22 +87,16 @@ button,a{-webkit-tap-highlight-color:transparent}
 .editionPill span{display:inline-block;width:7px;height:7px;margin-right:7px;border-radius:50%;background:var(--yellow);box-shadow:0 0 0 5px rgba(255,211,32,.12)}
 .championshipBadge{
   position:relative;
-  width:270px;
-  aspect-ratio:546/636;
+  width:250px;
+  aspect-ratio:15/16;
   margin:0 auto 16px;
-  overflow:hidden;
-  clip-path:polygon(33% 0,67% 0,72% 25%,86% 34%,96% 65%,73% 90%,50% 100%,27% 90%,4% 65%,14% 34%,28% 25%);
   filter:drop-shadow(0 20px 24px rgba(0,0,0,.4));
 }
 .championshipBadge img{
-  position:absolute;
-  width:164.835%;
-  height:251.572%;
-  left:-32.601%;
-  top:-14.780%;
+  width:100%;
+  height:100%;
   display:block;
-  max-width:none;
-  object-fit:fill;
+  object-fit:contain;
   user-select:none;
 }
 .eyebrow{margin:4px 0 8px;color:#ffd84a;font-size:13px;font-weight:950;letter-spacing:.17em;text-transform:uppercase}
@@ -113,7 +107,7 @@ button,a{-webkit-tap-highlight-color:transparent}
 .primaryButton,.secondaryButton{min-height:50px;padding:13px 20px;border-radius:12px;display:inline-flex;align-items:center;justify-content:center;gap:12px;font-size:14px;font-weight:950;transition:transform .18s ease,box-shadow .18s ease}
 .primaryButton{background:linear-gradient(135deg,var(--yellow),#ffa800);color:#081831;box-shadow:0 14px 34px rgba(255,188,0,.22)}
 .secondaryButton{border:1px solid rgba(255,255,255,.23);background:rgba(255,255,255,.07);color:#fff}
-.primaryButton:hover,.secondaryButton:hover,.flyerButton:hover,.matchArtButton:hover{transform:translateY(-2px)}
+.primaryButton:hover,.secondaryButton:hover,.flyerButton:hover,.resultButton:hover,.matchArtButton:hover{transform:translateY(-2px)}
 .heroMeta{max-width:760px;margin:38px auto 0;padding:18px;display:grid;grid-template-columns:repeat(3,1fr);gap:4px;border:1px solid rgba(255,255,255,.13);border-radius:16px;background:rgba(3,15,30,.64);box-shadow:0 20px 50px rgba(0,0,0,.22)}
 .heroMeta>div{display:flex;align-items:center;justify-content:center;gap:10px;padding:4px 14px;border-right:1px solid rgba(255,255,255,.11);text-align:left}
 .heroMeta>div:last-child{border-right:0}
@@ -124,7 +118,7 @@ button,a{-webkit-tap-highlight-color:transparent}
 
 .flyerHubHero{min-height:0}
 .flyerHubHero .heroContent{padding:28px 0 34px}
-.flyerHubHero .championshipBadge{width:145px;margin-bottom:8px}
+.flyerHubHero .championshipBadge{width:190px;margin-bottom:8px}
 .flyerHubHero h1{max-width:860px;font-size:clamp(36px,5vw,58px)}
 .flyerHubHero h1 span{margin-top:8px;color:#ffd83d;-webkit-text-stroke:0;font-size:.72em;letter-spacing:.04em}
 .flyerHubHero .heroLead{max-width:650px;margin-top:18px}
@@ -177,10 +171,14 @@ button,a{-webkit-tap-highlight-color:transparent}
 .versus{display:grid;justify-items:center;gap:3px;color:#8294aa}
 .versus span{font-size:25px;font-weight:300}
 .versus small{font-size:9px;text-transform:uppercase;white-space:nowrap}
-.matchArtButton{min-height:43px;margin:-4px 0 10px;display:flex;align-items:center;justify-content:center;gap:8px;border:1px solid rgba(255,214,49,.52);border-radius:11px;background:rgba(255,214,49,.1);color:#ffe76f;font-size:12px;font-weight:1000;transition:transform .18s ease,box-shadow .18s ease,background .18s ease}
+.matchArtActions{margin:-4px 0 10px;display:grid;gap:8px}
+.matchArtButton{min-height:43px;display:flex;align-items:center;justify-content:center;gap:8px;border:1px solid rgba(255,214,49,.52);border-radius:11px;background:rgba(255,214,49,.1);color:#ffe76f;font-size:12px;font-weight:1000;transition:transform .18s ease,box-shadow .18s ease,background .18s ease}
 .matchArtButton.isReady{border-color:#34d399;background:linear-gradient(135deg,#16a34a,#0f8a3f);color:#fff;box-shadow:0 10px 24px rgba(22,163,74,.22)}
 .matchDetails{padding:12px 0;display:flex;justify-content:center;gap:18px;border-top:1px solid rgba(255,255,255,.09);color:#aebed0;font-size:10px;font-weight:750}
-.flyerButton{min-height:48px;display:flex;align-items:center;justify-content:center;gap:8px;border-radius:11px;background:linear-gradient(135deg,#ffd82f,#ffb000);color:#08203c;font-size:13px;font-weight:1000;box-shadow:0 10px 24px rgba(255,184,0,.18);transition:transform .18s ease,box-shadow .18s ease}
+.matchFlyerActions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}
+.flyerButton,.resultButton{min-height:48px;padding:9px 10px;display:flex;align-items:center;justify-content:center;gap:7px;border-radius:11px;font-size:12px;font-weight:1000;text-align:center;transition:transform .18s ease,box-shadow .18s ease}
+.flyerButton{background:linear-gradient(135deg,#ffd82f,#ffb000);color:#08203c;box-shadow:0 10px 24px rgba(255,184,0,.18)}
+.resultButton{border:1px solid rgba(112,199,255,.55);background:linear-gradient(135deg,rgba(24,132,224,.32),rgba(12,86,165,.44));color:#e8f6ff;box-shadow:0 10px 24px rgba(4,92,178,.14)}
 
 .confirmedTeamsGrid{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:12px}
 .confirmedTeamCard{min-width:0;min-height:150px;padding:16px 10px;display:grid;place-items:center;align-content:center;gap:12px;border:1px solid var(--line);border-radius:16px;background:#fff;box-shadow:0 8px 28px rgba(7,28,52,.055);text-align:center}
@@ -252,7 +250,7 @@ footer{padding:28px 0;background:#041326;color:#fff}
   .hero{min-height:0}
   .heroContent{padding:42px 0 38px}
   .flyerHubHero .heroContent{padding:22px 0 26px}
-  .flyerHubHero .championshipBadge{width:118px}
+  .flyerHubHero .championshipBadge{width:150px}
   .hero.flyerHubHero h1{font-size:34px}
   .flyerHubHero .heroLead{font-size:14px}
   .championshipBadge{width:220px}
@@ -279,6 +277,7 @@ footer{padding:28px 0;background:#041326;color:#fff}
   .prizeCard strong{font-size:20px}
   .matchGrid{grid-template-columns:1fr}
   .matchTeams{grid-template-columns:1fr 52px 1fr}
+  .matchFlyerActions{grid-template-columns:1fr}
   .confirmedTeamsGrid{grid-template-columns:repeat(3,1fr);gap:9px}
   .confirmedTeamCard{min-height:132px;padding:12px 7px}
   .confirmedTeamCrest{width:66px;height:66px;border-radius:15px}

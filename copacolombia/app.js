@@ -93,6 +93,21 @@
     return `/app.html?${params.toString()}`;
   };
 
+  const resultUrl = match => {
+    const params = new URLSearchParams({
+      produto: "resultado",
+      origem: "copacolombia",
+      jogo: match.id,
+      time_a: match.casa,
+      time_b: match.fora,
+      data_hora: `${formattedDate(match.data)} - ${match.hora}`,
+      competicao: `${copa.nome} · ${match.rodada} · Grupo ${match.grupo}`,
+      local: copa.local,
+      titulo: `Resultado · Grupo ${match.grupo}`
+    });
+    return `/app.html?${params.toString()}`;
+  };
+
   const localOrderMap = () => {
     try{
       const key = accountMapKey();
@@ -104,11 +119,15 @@
     }
   };
 
-  const artOrderForMatch = match => {
-    const local = localOrderMap()[String(match?.id || "")];
+  const artOrderForMatch = (match, product = "proximo_jogo") => {
+    const orders = localOrderMap();
+    const matchId = String(match?.id || "");
+    const local = orders[`${matchId}:${product}`] || (product === "proximo_jogo" ? orders[matchId] : null);
     const pedidoId = String(local?.pedido_id || "").trim();
-    if(pedidoId) return { pedido_id: pedidoId, status: String(local?.status || "processando") };
-    return match?.arteDisponivel === true ? { pedido_id: "", status: "pronto", generic: true } : null;
+    if(pedidoId) return { pedido_id: pedidoId, status: String(local?.status || "processando"), product };
+    return product === "proximo_jogo" && match?.arteDisponivel === true
+      ? { pedido_id: "", status: "pronto", generic: true, product }
+      : null;
   };
 
   const orderUrl = (match, order) => {
@@ -119,16 +138,21 @@
   };
 
   const artActionMarkup = match => {
-    const order = artOrderForMatch(match);
-    if(!order) return "";
+    const actions = [
+      { order: artOrderForMatch(match, "proximo_jogo"), readyLabel: "Baixar flyer do jogo" },
+      { order: artOrderForMatch(match, "resultado"), readyLabel: "Baixar flyer do resultado" }
+    ].filter(item => item.order);
+    if(!actions.length) return "";
 
-    const ready = order.status === "pronto";
-    return `
-      <a class="matchArtButton${ready ? " isReady" : ""}" href="${escapeHtml(orderUrl(match, order))}"${order.pedido_id ? ` data-art-order="${escapeHtml(order.pedido_id)}"` : ""} data-art-match="${escapeHtml(match.id)}">
-        <span aria-hidden="true">${ready ? "⬇️" : "⏳"}</span>
-        ${ready ? "Baixar arte agora" : "Acompanhar minha arte"}
-      </a>
-    `;
+    return `<div class="matchArtActions">${actions.map(({ order, readyLabel }) => {
+      const ready = order.status === "pronto";
+      return `
+        <a class="matchArtButton${ready ? " isReady" : ""}" href="${escapeHtml(orderUrl(match, order))}"${order.pedido_id ? ` data-art-order="${escapeHtml(order.pedido_id)}"` : ""} data-art-match="${escapeHtml(match.id)}" data-art-product="${escapeHtml(order.product)}">
+          <span aria-hidden="true">${ready ? "⬇️" : "⏳"}</span>
+          ${ready ? readyLabel : "Acompanhar minha arte"}
+        </a>
+      `;
+    }).join("")}</div>`;
   };
 
   function renderPrizes(){
@@ -165,9 +189,14 @@
         </div>
         ${artActionMarkup(match)}
         <div class="matchDetails"><span>📅 ${escapeHtml(formattedDate(match.data))}</span><span>📍 Arena do Vasco</span></div>
-        <a class="flyerButton" href="${escapeHtml(flyerUrl(match))}" data-flyer-match="${escapeHtml(match.id)}">
-          <span>✨</span> ${artOrderForMatch(match) ? "Gerar outro flyer" : "Gerar flyer deste jogo"}
-        </a>
+        <div class="matchFlyerActions">
+          <a class="flyerButton" href="${escapeHtml(flyerUrl(match))}" data-flyer-match="${escapeHtml(match.id)}">
+            <span>✨</span> Flyer do jogo
+          </a>
+          <a class="resultButton" href="${escapeHtml(resultUrl(match))}" data-result-match="${escapeHtml(match.id)}">
+            <span>🏁</span> Gerar resultado
+          </a>
+        </div>
       </article>
     `;
   }
