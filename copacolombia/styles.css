@@ -122,6 +122,13 @@ button,a{-webkit-tap-highlight-color:transparent}
 .heroMeta small{color:#94a7bd;font-size:10px;text-transform:uppercase;letter-spacing:.08em}
 .heroMeta strong{font-size:13px}
 
+.flyerHubHero{min-height:0}
+.flyerHubHero .heroContent{padding:28px 0 34px}
+.flyerHubHero .championshipBadge{width:145px;margin-bottom:8px}
+.flyerHubHero h1{max-width:860px;font-size:clamp(36px,5vw,58px)}
+.flyerHubHero h1 span{margin-top:8px;color:#ffd83d;-webkit-text-stroke:0;font-size:.72em;letter-spacing:.04em}
+.flyerHubHero .heroLead{max-width:650px;margin-top:18px}
+
 .quickStats{position:relative;z-index:4;margin-top:-1px;background:#fff;border-bottom:1px solid var(--line)}
 .quickStatsGrid{display:grid;grid-template-columns:repeat(4,1fr)}
 .quickStatsGrid>div{padding:25px 20px;display:flex;align-items:baseline;justify-content:center;gap:9px;border-right:1px solid var(--line)}
@@ -147,6 +154,7 @@ button,a{-webkit-tap-highlight-color:transparent}
 .sectionDark{position:relative;background:linear-gradient(160deg,#06172b,#0a2544);color:#fff;overflow:hidden}
 .sectionDark::before{content:"";position:absolute;inset:0;opacity:.18;background-image:radial-gradient(rgba(255,255,255,.18) 1px,transparent 1px);background-size:22px 22px;mask-image:linear-gradient(100deg,#000,transparent 80%)}
 .sectionDark>.shell{position:relative;z-index:2}
+.flyerGamesSection{min-height:60vh;padding-top:58px}
 .sectionHeadingDark .sectionKicker{color:#ffd631}
 .sectionHeadingDark>p{color:#aabbd0}
 .filterRow,.standingsTabs{display:flex;gap:8px;overflow:auto;padding:0 0 16px;scrollbar-width:none}
@@ -172,7 +180,7 @@ button,a{-webkit-tap-highlight-color:transparent}
 .matchArtButton{min-height:43px;margin:-4px 0 10px;display:flex;align-items:center;justify-content:center;gap:8px;border:1px solid rgba(255,214,49,.52);border-radius:11px;background:rgba(255,214,49,.1);color:#ffe76f;font-size:12px;font-weight:1000;transition:transform .18s ease,box-shadow .18s ease,background .18s ease}
 .matchArtButton.isReady{border-color:#34d399;background:linear-gradient(135deg,#16a34a,#0f8a3f);color:#fff;box-shadow:0 10px 24px rgba(22,163,74,.22)}
 .matchDetails{padding:12px 0;display:flex;justify-content:center;gap:18px;border-top:1px solid rgba(255,255,255,.09);color:#aebed0;font-size:10px;font-weight:750}
-.flyerButton{min-height:45px;display:flex;align-items:center;justify-content:center;gap:8px;border-radius:11px;background:#fff;color:#08203c;font-size:12px;font-weight:1000;transition:transform .18s ease,box-shadow .18s ease}
+.flyerButton{min-height:48px;display:flex;align-items:center;justify-content:center;gap:8px;border-radius:11px;background:linear-gradient(135deg,#ffd82f,#ffb000);color:#08203c;font-size:13px;font-weight:1000;box-shadow:0 10px 24px rgba(255,184,0,.18);transition:transform .18s ease,box-shadow .18s ease}
 
 .confirmedTeamsGrid{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:12px}
 .confirmedTeamCard{min-width:0;min-height:150px;padding:16px 10px;display:grid;place-items:center;align-content:center;gap:12px;border:1px solid var(--line);border-radius:16px;background:#fff;box-shadow:0 8px 28px rgba(7,28,52,.055);text-align:center}
@@ -223,7 +231,7 @@ button,a{-webkit-tap-highlight-color:transparent}
 .creatorCta p:not(.sectionKicker){max-width:650px;margin:0;color:#c9d8ea;line-height:1.55}
 .creatorCta .sectionKicker{color:#ffdc3c}
 
-footer{padding:28px 0 96px;background:#041326;color:#fff}
+footer{padding:28px 0;background:#041326;color:#fff}
 .footerInner{display:flex;align-items:center;justify-content:space-between;gap:24px}
 .footerInner p{margin:0;display:grid;gap:4px}
 .footerInner p span{color:#90a2b8;font-size:11px}
@@ -243,6 +251,10 @@ footer{padding:28px 0 96px;background:#041326;color:#fff}
   .topbarAction{padding:8px 11px;font-size:10px}
   .hero{min-height:0}
   .heroContent{padding:42px 0 38px}
+  .flyerHubHero .heroContent{padding:22px 0 26px}
+  .flyerHubHero .championshipBadge{width:118px}
+  .hero.flyerHubHero h1{font-size:34px}
+  .flyerHubHero .heroLead{font-size:14px}
   .championshipBadge{width:220px}
   .hero h1{font-size:42px}
   .heroLead{font-size:14px;line-height:1.55}
@@ -256,6 +268,7 @@ footer{padding:28px 0 96px;background:#041326;color:#fff}
   .quickStats strong{font-size:23px}
   .quickStats span{font-size:9px}
   .section{padding-block:54px}
+  .flyerGamesSection{padding-top:44px}
   .sectionHeading{margin-bottom:22px;display:block}
   .sectionHeading>p{margin-top:10px;text-align:left}
   .prizeGrid{grid-template-columns:repeat(2,1fr);gap:9px}
