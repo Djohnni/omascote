@@ -12,7 +12,7 @@
   <meta property="og:url" content="https://omascote.com.br/copacolombia/">
   <meta property="og:image" content="https://omascote.com.br/og-image.jpg">
   <link rel="icon" href="/favicon.ico">
-  <link rel="stylesheet" href="./styles.css?v=20260923-7">
+  <link rel="stylesheet" href="./styles.css?v=20260923-8">
 </head>
 <body>
   <a class="skipLink" href="#jogos">Ir para os jogos</a>
@@ -52,6 +52,13 @@
     </section>
   </main>
 
+  <dialog class="flyerModal" id="flyerModal" aria-label="Gerar flyer do jogo">
+    <div class="flyerModalPanel">
+      <button class="flyerModalClose" id="flyerModalClose" type="button" aria-label="Fechar e voltar aos jogos">×</button>
+      <iframe class="flyerModalFrame" id="flyerModalFrame" title="Gerar flyer do jogo" src="about:blank" allow="clipboard-write"></iframe>
+    </div>
+  </dialog>
+
   <footer>
     <div class="shell footerInner">
       <p><strong>Copa Colômbia Society</strong><span>Flyers oficiais · 4ª edição</span></p>
@@ -60,6 +67,6 @@
   </footer>
 
   <script src="./dados.js?v=20260923-5"></script>
-  <script src="./app.js?v=20260923-6"></script>
+  <script src="./app.js?v=20260923-7"></script>
 </body>
 </html>

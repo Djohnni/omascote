@@ -5,6 +5,10 @@
   if(!copa) return;
 
   const COPA_ORDER_MAP_KEY = "copa_colombia_pedidos_por_jogo";
+  const matchGrid = document.getElementById("matchGrid");
+  const flyerModal = document.getElementById("flyerModal");
+  const flyerModalFrame = document.getElementById("flyerModalFrame");
+  const flyerModalClose = document.getElementById("flyerModalClose");
 
   const accountMapKey = () => {
     const authToken = String(localStorage.getItem("omascote_token") || "");
@@ -108,6 +112,85 @@
     return `/app.html?${params.toString()}`;
   };
 
+  const flyerModalUrl = rawUrl => {
+    const url = new URL(rawUrl, location.href);
+    url.searchParams.set("copa_embed", "1");
+    return url.href;
+  };
+
+  function replaceFlyerFrameLocation(url){
+    try{
+      flyerModalFrame?.contentWindow?.location.replace(url);
+    }catch(error){
+      if(flyerModalFrame) flyerModalFrame.src = url;
+    }
+  }
+
+  function openFlyerModal(rawUrl, matchId, options = {}){
+    if(!flyerModal || !flyerModalFrame || typeof flyerModal.showModal !== "function") return false;
+    const src = flyerModalUrl(rawUrl);
+    flyerModal.dataset.matchId = String(matchId || "");
+    document.body.classList.add("flyerModalOpen");
+    if(!flyerModal.open) flyerModal.showModal();
+
+    if(options.pushHistory !== false){
+      const currentState = history.state && typeof history.state === "object" ? history.state : {};
+      history.pushState({ ...currentState, copaFlyerModal:true, flyerSrc:src, matchId:String(matchId || "") }, "", `#flyer-${encodeURIComponent(matchId || "jogo")}`);
+    }
+    replaceFlyerFrameLocation(src);
+    return true;
+  }
+
+  function closeFlyerModalDirect(){
+    if(flyerModal?.open) flyerModal.close();
+  }
+
+  function requestFlyerModalClose(){
+    if(history.state?.copaFlyerModal) history.back();
+    else closeFlyerModalDirect();
+  }
+
+  flyerModalClose?.addEventListener("click", requestFlyerModalClose);
+  flyerModal?.addEventListener("cancel", event => {
+    event.preventDefault();
+    requestFlyerModalClose();
+  });
+  flyerModal?.addEventListener("click", event => {
+    if(event.target === flyerModal) requestFlyerModalClose();
+  });
+  flyerModal?.addEventListener("close", () => {
+    const matchId = String(flyerModal.dataset.matchId || "");
+    document.body.classList.remove("flyerModalOpen");
+    replaceFlyerFrameLocation("about:blank");
+    renderMatches();
+    requestAnimationFrame(() => {
+      document.querySelector(`[data-flyer-match="${CSS.escape(matchId)}"]`)?.focus();
+    });
+  });
+
+  window.addEventListener("popstate", event => {
+    if(event.state?.copaFlyerModal && event.state.flyerSrc){
+      openFlyerModal(event.state.flyerSrc, event.state.matchId, { pushHistory:false });
+    }else{
+      closeFlyerModalDirect();
+    }
+  });
+
+  window.addEventListener("storage", event => {
+    if(String(event.key || "").startsWith(`${COPA_ORDER_MAP_KEY}:`)) renderMatches();
+  });
+
+  window.addEventListener("message", event => {
+    if(event.origin !== location.origin || event.source !== flyerModalFrame?.contentWindow) return;
+    if(event.data?.type === "omascote:copa-flyer-close") requestFlyerModalClose();
+  });
+
+  matchGrid?.addEventListener("click", event => {
+    const target = event.target instanceof Element ? event.target.closest("[data-flyer-match]") : null;
+    if(!target || event.defaultPrevented || event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+    if(openFlyerModal(target.href, target.dataset.flyerMatch)) event.preventDefault();
+  });
+
   const localOrderMap = () => {
     try{
       const key = accountMapKey();
@@ -202,9 +285,8 @@
   }
 
   function renderMatches(){
-    const root = document.getElementById("matchGrid");
-    if(!root) return;
-    root.innerHTML = copa.jogos.map(matchCard).join("");
+    if(!matchGrid) return;
+    matchGrid.innerHTML = copa.jogos.map(matchCard).join("");
   }
 
   function renderGroups(){
