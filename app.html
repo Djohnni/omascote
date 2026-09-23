@@ -13365,6 +13365,428 @@ body.homeLandingClean.fotoJogosProductFocus[data-page="home"] #tempoEstimadoBox{
   z-index:80;
 }
 
+.championshipFeatureCard{
+  width:calc(100% - 20px);
+  max-width:1080px;
+  min-height:82px;
+  margin:0 auto 12px;
+  padding:14px 16px;
+  display:flex;
+  align-items:center;
+  gap:13px;
+  border:1px solid rgba(37,99,235,.26);
+  border-radius:12px;
+  background:
+    radial-gradient(circle at 88% 12%,rgba(250,204,21,.28),transparent 30%),
+    linear-gradient(135deg,#071a33,#0b3870);
+  color:#ffffff;
+  box-shadow:0 12px 30px rgba(7,26,51,.18);
+}
+
+.championshipFeatureIcon{
+  width:48px;
+  height:48px;
+  flex:0 0 auto;
+  display:grid;
+  place-items:center;
+  border:1px solid rgba(255,255,255,.2);
+  border-radius:13px;
+  background:rgba(255,255,255,.09);
+  font-size:25px;
+}
+
+.championshipFeatureCopy{
+  min-width:0;
+  flex:1 1 auto;
+  display:grid;
+  gap:4px;
+}
+
+.championshipFeatureCopy small{
+  color:#facc15;
+  font-size:10px;
+  font-weight:950;
+  letter-spacing:.08em;
+  text-transform:uppercase;
+}
+
+.championshipFeatureCopy strong{
+  font-size:16px;
+  line-height:1.2;
+}
+
+.championshipFeatureCopy span{
+  color:#c9d8e8;
+  font-size:11px;
+  line-height:1.3;
+  font-weight:700;
+}
+
+.championshipFeatureArrow{
+  flex:0 0 auto;
+  color:#facc15;
+  font-size:24px;
+  font-weight:900;
+}
+
+body.copaColombiaOrderMode{
+  background:#eef3f8;
+}
+
+body.copaColombiaOrderMode #accountAccordion,
+body.copaColombiaOrderMode .championshipFeatureCard,
+body.copaColombiaOrderMode #tempoEstimadoBox,
+body.copaColombiaOrderMode #integratedChatModal,
+body.copaColombiaOrderMode #productsMenuAccordion,
+body.copaColombiaOrderMode .welcomeBox,
+body.copaColombiaOrderMode .hero > .heroBrand,
+body.copaColombiaOrderMode .hero > .heroTitle,
+body.copaColombiaOrderMode .hero > .heroSub,
+body.copaColombiaOrderMode .hero > .seoHomeText,
+body.copaColombiaOrderMode .hero > .preTempoHeadline,
+body.copaColombiaOrderMode .hero > .ia4WebviewNotice,
+body.copaColombiaOrderMode .hero > #brindeEscudo3dAppBox,
+body.copaColombiaOrderMode .hero > #instalarAppCentralBox,
+body.copaColombiaOrderMode .hero > #cartasAppBox,
+body.copaColombiaOrderMode .selectorStage,
+body.copaColombiaOrderMode .examplesLink,
+body.copaColombiaOrderMode .switchModeRow,
+body.copaColombiaOrderMode #productChooser,
+body.copaColombiaOrderMode #fotoJogosEntry,
+body.copaColombiaOrderMode #fotoJogosWorkspace,
+body.copaColombiaOrderMode #fotoJogosProductReturn,
+body.copaColombiaOrderMode .legacyOrderFormArea,
+body.copaColombiaOrderMode .perfilAssistBox,
+body.copaColombiaOrderMode .productsMenuPanel > .logoutTopBar,
+body.copaColombiaOrderMode .ia4SupportBtn,
+body.copaColombiaOrderMode .ia4WhatsappBtn{
+  display:none !important;
+}
+
+body.copaColombiaOrderMode .wrap{
+  width:100%;
+  max-width:none;
+  padding:0;
+}
+
+body.copaColombiaOrderMode #productsMenuPanel{
+  display:block !important;
+  width:100%;
+  max-width:none;
+  margin:0;
+  padding:0;
+  border:0;
+  background:transparent;
+  box-shadow:none;
+}
+
+body.copaColombiaOrderMode #productsMenuPanel > .hero{
+  width:100%;
+  max-width:none;
+  margin:0;
+  padding:24px 12px 54px;
+  background:transparent;
+  box-shadow:none;
+}
+
+body.copaColombiaOrderMode #builderArea,
+body.copaColombiaOrderMode #builderArea > .card{
+  width:100%;
+  max-width:none;
+  margin:0;
+  padding:0;
+  border:0;
+  background:transparent;
+  box-shadow:none;
+}
+
+body.copaColombiaOrderMode #productFormsRoot{
+  width:min(100%,680px);
+  margin:0 auto;
+}
+
+body.copaColombiaOrderMode .cleanProductBlock{
+  display:none !important;
+}
+
+body.copaColombiaOrderMode .cleanProductBlock[data-clean-product-block="proximo_jogo"]{
+  width:100%;
+  display:block !important;
+  margin:0;
+  padding:0;
+  border:0;
+  background:transparent;
+  box-shadow:none;
+}
+
+body.copaColombiaOrderMode .cleanProductBlock[data-clean-product-block="proximo_jogo"] .cleanProductImage{
+  display:none !important;
+}
+
+body.copaColombiaOrderMode .cleanProductBlock[data-clean-product-block="proximo_jogo"] .cleanProductForm{
+  width:100%;
+  padding:0;
+  gap:12px;
+  background:transparent;
+}
+
+body.copaColombiaOrderMode .cleanProductBlock[data-clean-product-block="proximo_jogo"] .cleanProductHeader{
+  padding:0 4px;
+}
+
+body.copaColombiaOrderMode .cleanProductBlock[data-clean-product-block="proximo_jogo"] .cleanProductTitle{
+  color:#0f2138;
+  font-size:24px;
+}
+
+body.copaColombiaOrderMode .cleanProductBlock[data-clean-product-block="proximo_jogo"] .cleanFieldsShell{
+  gap:10px;
+}
+
+body.copaColombiaOrderMode [data-product-form="proximo_jogo"] [data-clean-field-card="matchup"],
+body.copaColombiaOrderMode [data-product-form="proximo_jogo"] [data-clean-field-card="match_datetime"],
+body.copaColombiaOrderMode [data-product-form="proximo_jogo"] [data-clean-field-card="competition"],
+body.copaColombiaOrderMode [data-product-form="proximo_jogo"] [data-clean-field-card="venue"],
+body.copaColombiaOrderMode [data-product-form="proximo_jogo"] [data-clean-field-card="home_crest"],
+body.copaColombiaOrderMode [data-product-form="proximo_jogo"] [data-clean-field-card="away_crest"],
+body.copaColombiaOrderMode [data-product-form="proximo_jogo"] [data-clean-field-card="scenario_id"],
+body.copaColombiaOrderMode [data-product-form="proximo_jogo"] [data-clean-coupon-extra]{
+  display:none !important;
+}
+
+body.copaColombiaOrderMode.copaColombiaShowScenario [data-product-form="proximo_jogo"] [data-clean-field-card="scenario_id"]{
+  display:block !important;
+}
+
+body.copaColombiaOrderMode.copaColombiaCrestError [data-product-form="proximo_jogo"] [data-clean-field-card="home_crest"],
+body.copaColombiaOrderMode.copaColombiaCrestError [data-product-form="proximo_jogo"] [data-clean-field-card="away_crest"]{
+  display:flex !important;
+}
+
+body.copaColombiaOrderMode [data-product-form="proximo_jogo"] [data-clean-field-card="match_photo"]{
+  min-height:92px;
+  padding:14px;
+  align-items:flex-start;
+  flex-wrap:wrap;
+  border-radius:18px;
+  border-color:#d7e0ea;
+  background:#ffffff;
+}
+
+body.copaColombiaOrderMode [data-product-form="proximo_jogo"] [data-clean-field-card="match_photo"] .cleanInlineUploadTitle{
+  width:100%;
+}
+
+body.copaColombiaOrderMode [data-product-form="proximo_jogo"] [data-clean-field-card="match_photo"] .cleanFieldStep{
+  display:none;
+}
+
+body.copaColombiaOrderMode [data-product-form="proximo_jogo"] [data-clean-field-card="match_photo"] .cleanInlinePhotoActions{
+  flex:1 1 100%;
+  justify-content:flex-start;
+}
+
+body.copaColombiaOrderMode [data-product-form="proximo_jogo"] [data-clean-field-card="titulo_secao_proximo_jogo"] .cleanFieldStep{
+  display:none;
+}
+
+body.copaColombiaOrderMode [data-product-form="proximo_jogo"] .cleanSubmitBtn{
+  min-height:54px;
+  margin-top:2px;
+  border-radius:14px;
+  background:linear-gradient(135deg,#0d67d8,#074896);
+  box-shadow:0 14px 30px rgba(13,103,216,.22);
+  font-size:15px;
+}
+
+.copaChampionshipOrderSummary{
+  overflow:hidden;
+  border:1px solid #d6e0eb;
+  border-radius:22px;
+  background:#ffffff;
+  box-shadow:0 18px 45px rgba(8,31,59,.10);
+}
+
+.copaChampionshipOrderTop{
+  padding:13px 16px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:16px;
+  background:linear-gradient(135deg,#071a33,#0b4388);
+  color:#ffffff;
+}
+
+.copaChampionshipOrderBack{
+  color:#dbeafe;
+  font-size:12px;
+  font-weight:900;
+}
+
+.copaChampionshipOrderReady{
+  padding:6px 9px;
+  border-radius:999px;
+  background:rgba(34,197,94,.18);
+  color:#bbf7d0;
+  font-size:9px;
+  font-weight:950;
+  letter-spacing:.05em;
+  text-transform:uppercase;
+}
+
+.copaChampionshipMatchSummary{
+  padding:20px 16px 16px;
+  display:grid;
+  grid-template-columns:minmax(0,1fr) 58px minmax(0,1fr);
+  align-items:center;
+  gap:8px;
+}
+
+.copaChampionshipSummaryTeam{
+  min-width:0;
+  display:grid;
+  justify-items:center;
+  gap:8px;
+  text-align:center;
+}
+
+.copaChampionshipSummaryCrest{
+  position:relative;
+  width:68px;
+  height:68px;
+  display:grid;
+  place-items:center;
+  overflow:hidden;
+  border:1px solid #dce4ed;
+  border-radius:18px;
+  background:#f4f7fa;
+  color:#174d8b;
+  font-size:16px;
+  font-weight:950;
+}
+
+.copaChampionshipSummaryCrest img{
+  width:100%;
+  height:100%;
+  object-fit:contain;
+  background:#ffffff;
+}
+
+.copaChampionshipSummaryCrest img.copaChampionshipSummaryCrestCrop{
+  position:absolute;
+  display:block;
+  max-width:none;
+  max-height:none;
+  object-fit:initial;
+}
+
+.copaChampionshipSummaryTeam strong{
+  max-width:190px;
+  color:#12233a;
+  font-size:13px;
+  line-height:1.25;
+}
+
+.copaChampionshipSummaryVersus{
+  display:grid;
+  justify-items:center;
+  gap:4px;
+  color:#64748b;
+}
+
+.copaChampionshipSummaryVersus strong{
+  color:#0f2138;
+  font-size:24px;
+}
+
+.copaChampionshipSummaryVersus small{
+  font-size:9px;
+  font-weight:900;
+  text-transform:uppercase;
+}
+
+.copaChampionshipMatchMeta{
+  margin:0 16px;
+  padding:13px 0;
+  display:flex;
+  justify-content:center;
+  gap:16px;
+  flex-wrap:wrap;
+  border-top:1px solid #e8edf2;
+  color:#5f6e82;
+  font-size:11px;
+  font-weight:800;
+}
+
+.copaChampionshipOptionalIntro{
+  padding:15px 16px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:16px;
+  border-top:1px solid #e8edf2;
+  background:#f8fafc;
+}
+
+.copaChampionshipOptionalIntro div{
+  display:grid;
+  gap:3px;
+}
+
+.copaChampionshipOptionalIntro strong{
+  color:#10233b;
+  font-size:13px;
+}
+
+.copaChampionshipOptionalIntro span{
+  color:#6b788b;
+  font-size:10px;
+  line-height:1.35;
+}
+
+.copaChampionshipScenarioBtn{
+  flex:0 0 auto;
+  min-height:34px;
+  padding:8px 10px;
+  border:1px solid #c9d5e2;
+  border-radius:10px;
+  background:#ffffff;
+  color:#174d8b;
+  font-size:10px;
+  font-weight:950;
+  cursor:pointer;
+}
+
+@media (max-width:560px){
+  body.copaColombiaOrderMode #productsMenuPanel > .hero{
+    padding:12px 10px 42px;
+  }
+  body.copaColombiaOrderMode .cleanProductBlock[data-clean-product-block="proximo_jogo"] .cleanProductTitle{
+    font-size:20px;
+  }
+  .copaChampionshipOrderTop{
+    padding:11px 13px;
+  }
+  .copaChampionshipOrderReady{
+    font-size:8px;
+  }
+  .copaChampionshipSummaryCrest{
+    width:58px;
+    height:58px;
+    border-radius:15px;
+  }
+  .copaChampionshipSummaryTeam strong{
+    font-size:11px;
+  }
+  .copaChampionshipOptionalIntro{
+    align-items:flex-start;
+    flex-direction:column;
+  }
+  .copaChampionshipScenarioBtn{
+    width:100%;
+  }
+}
+
 .accountMenuToggle{
   width:100%;
   min-height:56px;
@@ -14981,6 +15403,16 @@ body.integratedChatOpen{overflow:hidden}
         </div>
       </div>
     </section>
+
+    <a class="championshipFeatureCard" href="/copacolombia/" aria-label="Abrir a página da Copa Colômbia Society">
+      <span class="championshipFeatureIcon" aria-hidden="true">🏆</span>
+      <span class="championshipFeatureCopy">
+        <small>Campeonato em destaque</small>
+        <strong>Copa Colômbia Society · 4ª edição</strong>
+        <span>Jogos, grupos, premiação e flyer automático por partida</span>
+      </span>
+      <span class="championshipFeatureArrow" aria-hidden="true">›</span>
+    </a>
 
     <div id="tempoEstimadoBox" class="tempoEstimadoBox">
       ⏱ Calculando tempo estimado...
@@ -36101,6 +36533,289 @@ function perfilGaleriaAbrirProduto(productKey){
   document.getElementById("productFormsRoot")?.scrollIntoView({ behavior:"smooth", block:"start" });
 }
 
+let copaColombiaConfigPromise = null;
+const copaColombiaImagePromises = new Map();
+
+function carregarConfigCopaColombia(){
+  if(window.COPA_COLOMBIA) return Promise.resolve(window.COPA_COLOMBIA);
+  if(copaColombiaConfigPromise) return copaColombiaConfigPromise;
+
+  copaColombiaConfigPromise = new Promise((resolve, reject) => {
+    const script = document.createElement("script");
+    script.src = "/copacolombia/dados.js?v=20260923-2";
+    script.async = true;
+    script.onload = () => window.COPA_COLOMBIA
+      ? resolve(window.COPA_COLOMBIA)
+      : reject(new Error("Cadastro de escudos indisponivel."));
+    script.onerror = () => reject(new Error("Nao foi possivel carregar os escudos do campeonato."));
+    document.head.appendChild(script);
+  });
+
+  return copaColombiaConfigPromise;
+}
+
+function carregarImagemCopaColombia(src){
+  if(copaColombiaImagePromises.has(src)) return copaColombiaImagePromises.get(src);
+  const promise = new Promise((resolve, reject) => {
+    const image = new Image();
+    image.decoding = "async";
+    image.onload = () => resolve(image);
+    image.onerror = () => reject(new Error("Nao foi possivel abrir a biblioteca de escudos."));
+    image.src = src;
+  });
+  copaColombiaImagePromises.set(src, promise);
+  promise.catch(() => copaColombiaImagePromises.delete(src));
+  return promise;
+}
+
+function copaColombiaFileName(nome){
+  return String(nome || "time")
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/[^a-zA-Z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "")
+    .toLowerCase() || "time";
+}
+
+async function copaColombiaEscudoComoFile(nomeTime){
+  const config = await carregarConfigCopaColombia();
+  const asset = config?.escudos?.[nomeTime];
+  const assetSrc = String(asset?.arquivo || "").trim();
+  if(!asset || !assetSrc.startsWith("/copacolombia/escudos/")) return null;
+
+  const image = await carregarImagemCopaColombia(assetSrc);
+  const sourceWidth = Number(image.naturalWidth || image.width || 0);
+  const sourceHeight = Number(image.naturalHeight || image.height || 0);
+  if(sourceWidth <= 0 || sourceHeight <= 0) return null;
+
+  const cropValues = [asset.x, asset.y, asset.w, asset.h].map(Number);
+  const hasCrop = cropValues.every(Number.isFinite) && cropValues[0] >= 0 && cropValues[1] >= 0 && cropValues[2] > 0 && cropValues[3] > 0;
+  const x = hasCrop ? Math.min(cropValues[0], sourceWidth - 1) : 0;
+  const y = hasCrop ? Math.min(cropValues[1], sourceHeight - 1) : 0;
+  const w = hasCrop ? Math.min(cropValues[2], sourceWidth - x) : sourceWidth;
+  const h = hasCrop ? Math.min(cropValues[3], sourceHeight - y) : sourceHeight;
+  if(w <= 0 || h <= 0) return null;
+
+  const outputSize = 600;
+  const canvas = document.createElement("canvas");
+  canvas.width = outputSize;
+  canvas.height = outputSize;
+  const context = canvas.getContext("2d");
+  if(!context) return null;
+  context.imageSmoothingEnabled = true;
+  context.imageSmoothingQuality = "high";
+  const contentSize = outputSize - 32;
+  const scale = Math.min(contentSize / w, contentSize / h);
+  const targetWidth = w * scale;
+  const targetHeight = h * scale;
+  const targetX = (outputSize - targetWidth) / 2;
+  const targetY = (outputSize - targetHeight) / 2;
+  context.clearRect(0, 0, outputSize, outputSize);
+  context.drawImage(image, x, y, w, h, targetX, targetY, targetWidth, targetHeight);
+
+  const blob = await new Promise(resolve => canvas.toBlob(resolve, "image/png", 1));
+  if(!blob) return null;
+  return new File([blob], `escudo-${copaColombiaFileName(nomeTime)}.png`, { type:"image/png" });
+}
+
+function aplicarEscudoCopaColombiaNoFormulario(form, key, file){
+  if(!form || !key || !file) return false;
+  const input = getCleanFormAsset(form, key);
+  if(!input) return false;
+
+  if(typeof DataTransfer !== "undefined"){
+    try{
+      const transfer = new DataTransfer();
+      transfer.items.add(file);
+      input.files = transfer.files;
+    }catch(error){}
+  }
+
+  setCleanStableAssetState(form, key, {
+    status:"ready",
+    files:[file],
+    originalFiles:[orderFileFingerprint(file)],
+    capturedAt:Date.now(),
+    source:"copa-colombia"
+  });
+  setCleanFilePreview(form, key, [file]);
+  updateCleanAccordionForField(form, key);
+  const card = form.querySelector(`[data-clean-field-card="${CSS.escape(key)}"]`);
+  if(card) card.classList.remove("campoObrigatorioErro");
+  return true;
+}
+
+async function aplicarEscudosCopaColombia(form, timeA, timeB){
+  if(!form || !timeA || !timeB) return 0;
+  try{
+    const [escudoA, escudoB] = await Promise.all([
+      copaColombiaEscudoComoFile(timeA),
+      copaColombiaEscudoComoFile(timeB)
+    ]);
+    let aplicados = 0;
+    if(escudoA && aplicarEscudoCopaColombiaNoFormulario(form, "home_crest", escudoA)) aplicados += 1;
+    if(escudoB && aplicarEscudoCopaColombiaNoFormulario(form, "away_crest", escudoB)) aplicados += 1;
+    if(aplicados === 2){
+      setCleanProductMsg(form, "Escudos do campeonato carregados automaticamente.");
+    }
+    return aplicados;
+  }catch(error){
+    console.warn("[copa_colombia_escudos]", error?.message || error);
+    return 0;
+  }
+}
+
+function copaColombiaIniciais(nome){
+  return String(nome || "")
+    .split(/\s+/)
+    .filter(Boolean)
+    .slice(0, 2)
+    .map(parte => parte[0])
+    .join("")
+    .toUpperCase();
+}
+
+function copaColombiaEscudoUrl(config, nomeTime){
+  const raw = String(config?.escudos?.[nomeTime]?.arquivo || "").trim();
+  return raw.startsWith("/copacolombia/escudos/") ? raw : "";
+}
+
+function copaColombiaResumoEscudo(config, nomeTime){
+  const asset = config?.escudos?.[nomeTime];
+  const url = copaColombiaEscudoUrl(config, nomeTime);
+  if(!url) return `<span class="copaChampionshipSummaryCrest">${htmlEscape(copaColombiaIniciais(nomeTime))}</span>`;
+
+  const values = [asset?.sourceW, asset?.sourceH, asset?.x, asset?.y, asset?.w, asset?.h].map(Number);
+  if(values.every(Number.isFinite) && values[0] > 0 && values[1] > 0 && values[4] > 0 && values[5] > 0){
+    const [sourceW, sourceH, x, y, w, h] = values;
+    const scale = Math.min(100 / w, 100 / h);
+    const width = sourceW * scale;
+    const height = sourceH * scale;
+    const left = ((100 - (w * scale)) / 2) - (x * scale);
+    const top = ((100 - (h * scale)) / 2) - (y * scale);
+    return `<span class="copaChampionshipSummaryCrest"><img class="copaChampionshipSummaryCrestCrop" src="${htmlEscape(url)}" alt="Escudo ${htmlEscape(nomeTime)}" style="width:${width.toFixed(3)}%;height:${height.toFixed(3)}%;left:${left.toFixed(3)}%;top:${top.toFixed(3)}%"></span>`;
+  }
+
+  return `<span class="copaChampionshipSummaryCrest"><img src="${htmlEscape(url)}" alt="Escudo ${htmlEscape(nomeTime)}"></span>`;
+}
+
+function iniciarModoPedidoCopaColombia(form, params, config, escudosAplicados){
+  if(!form) return;
+  document.body.classList.add("copaColombiaOrderMode");
+  document.body.classList.toggle("copaColombiaCrestError", Number(escudosAplicados || 0) < 2);
+
+  const timeA = String(params.get("time_a") || "Time A").slice(0, 100);
+  const timeB = String(params.get("time_b") || "Time B").slice(0, 100);
+  const dataHora = String(params.get("data_hora") || "").slice(0, 100);
+  const competicao = String(params.get("competicao") || "Copa Colômbia Society").slice(0, 160);
+  const local = String(params.get("local") || "").slice(0, 140);
+
+  form.querySelector(".copaChampionshipOrderSummary")?.remove();
+  const resumo = document.createElement("section");
+  resumo.className = "copaChampionshipOrderSummary";
+  resumo.setAttribute("aria-label", "Jogo selecionado");
+  resumo.innerHTML = `
+    <div class="copaChampionshipOrderTop">
+      <a class="copaChampionshipOrderBack" href="/copacolombia/">← Voltar aos jogos</a>
+      <span class="copaChampionshipOrderReady">✓ dados carregados</span>
+    </div>
+    <div class="copaChampionshipMatchSummary">
+      <div class="copaChampionshipSummaryTeam">
+        ${copaColombiaResumoEscudo(config, timeA)}
+        <strong>${htmlEscape(timeA)}</strong>
+      </div>
+      <div class="copaChampionshipSummaryVersus"><strong>×</strong><small>próximo jogo</small></div>
+      <div class="copaChampionshipSummaryTeam">
+        ${copaColombiaResumoEscudo(config, timeB)}
+        <strong>${htmlEscape(timeB)}</strong>
+      </div>
+    </div>
+    <div class="copaChampionshipMatchMeta">
+      ${dataHora ? `<span>📅 ${htmlEscape(dataHora)}</span>` : ""}
+      <span>🏆 ${htmlEscape(competicao)}</span>
+      ${local ? `<span>📍 ${htmlEscape(local)}</span>` : ""}
+    </div>
+    <div class="copaChampionshipOptionalIntro">
+      <div>
+        <strong>Personalize somente se quiser</strong>
+        <span>O jogo e os escudos já estão prontos. Você pode adicionar uma foto ou mudar o título.</span>
+      </div>
+      <button class="copaChampionshipScenarioBtn" type="button" data-copa-change-scenario>Mudar cenário</button>
+    </div>
+  `;
+  form.prepend(resumo);
+
+  const title = form.querySelector(".cleanProductTitle");
+  if(title) title.textContent = "Seu flyer está quase pronto";
+  const photoTitle = form.querySelector('[data-clean-field-card="match_photo"] .cleanInlineUploadTitleText');
+  if(photoTitle) photoTitle.textContent = "Adicionar foto (opcional)";
+  const optionalPhoto = form.querySelector('[data-clean-field-card="match_photo"] .cleanInlineUploadOptional');
+  if(optionalPhoto) optionalPhoto.textContent = "jogador, time ou mascote";
+  const titleField = form.querySelector('[data-clean-field-card="titulo_secao_proximo_jogo"] .cleanFieldAccordionTitleText');
+  if(titleField) titleField.textContent = "Mudar título (opcional)";
+  const submit = form.querySelector(".cleanSubmitBtn");
+  if(submit) submit.textContent = "Gerar flyer deste jogo";
+
+  resumo.querySelector("[data-copa-change-scenario]")?.addEventListener("click", event => {
+    document.body.classList.toggle("copaColombiaShowScenario");
+    const card = form.querySelector('[data-clean-field-card="scenario_id"]');
+    const aberto = document.body.classList.contains("copaColombiaShowScenario");
+    if(aberto){
+      setCleanAccordionItemOpen(card, true);
+      setTimeout(() => card?.scrollIntoView({ behavior:"smooth", block:"center" }), 0);
+      event.currentTarget.textContent = "Ocultar cenários";
+    }else{
+      event.currentTarget.textContent = "Mudar cenário";
+    }
+  });
+
+  if(Number(escudosAplicados || 0) < 2){
+    setCleanProductMsg(form, "Não consegui carregar um dos escudos. Selecione somente o escudo indicado abaixo.", true);
+  }else{
+    setCleanProductMsg(form, "");
+  }
+}
+
+function preencherProdutoComParametrosUrl(form, params){
+  if(!form) return;
+  const campos = {
+    home_team: params.get("time_a"),
+    away_team: params.get("time_b"),
+    match_datetime: params.get("data_hora"),
+    competition: params.get("competicao"),
+    venue: params.get("local"),
+    titulo_secao_proximo_jogo: params.get("titulo")
+  };
+  Object.entries(campos).forEach(([key, value]) => {
+    if(value) fotoJogosPreencherCampo(form, key, String(value).slice(0, 160));
+  });
+}
+
+function resolverJogoCopaColombia(params, config){
+  const jogos = Array.isArray(config?.jogos) ? config.jogos : [];
+  const jogoId = String(params.get("jogo") || "").trim();
+  const timeA = String(params.get("time_a") || "").trim();
+  const timeB = String(params.get("time_b") || "").trim();
+  return jogos.find(jogo => String(jogo?.id || "") === jogoId)
+    || jogos.find(jogo => jogo?.casa === timeA && jogo?.fora === timeB)
+    || null;
+}
+
+function parametrosOficiaisJogoCopaColombia(params, config, jogo){
+  if(!jogo) return null;
+  const oficiais = new URLSearchParams(params);
+  const [ano, mes, dia] = String(jogo.data || "").split("-");
+  const data = ano && mes && dia ? `${dia}/${mes}/${ano}` : String(jogo.data || "");
+  oficiais.set("jogo", String(jogo.id || ""));
+  oficiais.set("time_a", String(jogo.casa || ""));
+  oficiais.set("time_b", String(jogo.fora || ""));
+  oficiais.set("data_hora", `${data} - ${String(jogo.hora || "")}`);
+  oficiais.set("competicao", `${String(config?.nome || "Copa Colômbia Society")} · ${String(jogo.rodada || "")} · Grupo ${String(jogo.grupo || "")}`);
+  oficiais.set("local", String(config?.local || ""));
+  oficiais.set("titulo", `${String(jogo.rodada || "")} · Grupo ${String(jogo.grupo || "")}`);
+  return oficiais;
+}
+
 function inicializarProdutoPorUrl(){
   const params = new URLSearchParams(location.search);
   if(params.get("time")) return;
@@ -36111,10 +36826,43 @@ function inicializarProdutoPorUrl(){
 
   if(bloquearCriacaoArteForaDoApp(`url:${produto}`)) return;
 
-  setTimeout(()=>{
+  setTimeout(async ()=>{
+    definirProdutosMenuAberto(true);
     showProductCategory(["mascote_uniforme", "jogador_escudo"].includes(produto) ? "jogador" : "time");
     selectProduct(produto);
-    document.getElementById("productFormsRoot")?.scrollIntoView({ behavior:"smooth", block:"start" });
+    selectCleanProductForPicker(produto, { scroll:false, track:false, perfilAuto:false });
+    const form = document.querySelector(`[data-product-form="${CSS.escape(produto)}"]`);
+    const origemCopaColombia = ["copacolombia", "copa-colombia"].includes(params.get("origem"));
+    const pedidoCopaColombia = origemCopaColombia && produto === "proximo_jogo";
+    let parametrosProduto = params;
+    let configCopaColombia = null;
+    let jogoCopaColombia = null;
+    if(pedidoCopaColombia){
+      configCopaColombia = await carregarConfigCopaColombia().catch(() => null);
+      jogoCopaColombia = resolverJogoCopaColombia(params, configCopaColombia);
+      parametrosProduto = parametrosOficiaisJogoCopaColombia(params, configCopaColombia, jogoCopaColombia) || params;
+    }
+
+    preencherProdutoComParametrosUrl(form, parametrosProduto);
+    let escudosAplicados = 0;
+    if(pedidoCopaColombia){
+      if(jogoCopaColombia){
+        escudosAplicados = await aplicarEscudosCopaColombia(form, parametrosProduto.get("time_a"), parametrosProduto.get("time_b"));
+      }
+      const dadosObrigatorios = ["time_a", "time_b", "data_hora", "competicao", "local"].every(key => String(parametrosProduto.get(key) || "").trim());
+      const arquivosProntos = form
+        && getCleanAssetFiles(form, "home_crest").length > 0
+        && getCleanAssetFiles(form, "away_crest").length > 0;
+      if(jogoCopaColombia && dadosObrigatorios && escudosAplicados === 2 && arquivosProntos){
+        iniciarModoPedidoCopaColombia(form, parametrosProduto, configCopaColombia, escudosAplicados);
+      }else if(form){
+        document.body.classList.remove("copaColombiaOrderMode", "copaColombiaShowScenario", "copaColombiaCrestError");
+        setCleanProductMsg(form, "Não consegui confirmar todos os dados deste jogo. O formulário completo ficou aberto para você corrigir o que faltar.", true);
+      }
+    }
+    setTimeout(() => {
+      (form || document.getElementById("productFormsRoot"))?.scrollIntoView({ behavior:"smooth", block:"start" });
+    }, 180);
   }, 250);
 }
 
