@@ -1,0 +1,167 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <title>Copa Colômbia Society | 4ª edição</title>
+  <meta name="description" content="Acompanhe a 4ª edição da Copa Colômbia Society: premiação, grupos, jogos, classificação e flyers das partidas.">
+  <meta name="theme-color" content="#06182d">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Copa Colômbia Society | 4ª edição">
+  <meta property="og:description" content="24 times confirmados e R$ 7.400 em premiação. Veja os próximos jogos e gere o flyer da sua partida.">
+  <meta property="og:url" content="https://omascote.com.br/copacolombia/">
+  <meta property="og:image" content="https://omascote.com.br/og-image.jpg">
+  <link rel="icon" href="/favicon.ico">
+  <link rel="stylesheet" href="./styles.css?v=20260923-3">
+</head>
+<body>
+  <a class="skipLink" href="#proximos-jogos">Ir para os próximos jogos</a>
+
+  <header class="topbar">
+    <a class="siteBrand" href="/app.html" aria-label="Voltar para Meu Clube FC">
+      <span class="siteBrandMark">M</span>
+      <span><strong>Meu Clube FC</strong><small>uma plataforma O Mascote</small></span>
+    </a>
+    <a class="topbarAction" href="#proximos-jogos">Próximos jogos</a>
+  </header>
+
+  <main>
+    <section class="hero" aria-labelledby="championship-title">
+      <div class="heroGlow heroGlowOne"></div>
+      <div class="heroGlow heroGlowTwo"></div>
+      <div class="heroContent shell">
+        <div class="editionPill"><span></span> 4ª edição · 2026</div>
+        <div class="championshipBadge">
+          <img src="./logo-copa-colombia-oficial.jpeg" alt="Logo oficial da Copa Colômbia Society">
+        </div>
+        <p class="eyebrow">Aqui o futebol é mais que um jogo</p>
+        <h1 id="championship-title">Copa Colômbia <span>Society</span></h1>
+        <p class="heroLead">Acompanhe a competição, confira os confrontos e crie o flyer oficial do seu próximo jogo em poucos passos.</p>
+        <div class="heroActions">
+          <a class="primaryButton" href="#proximos-jogos">Ver 1ª rodada <span>↓</span></a>
+          <a class="secondaryButton" href="#premiacao">Ver premiação</a>
+        </div>
+        <div class="heroMeta" aria-label="Informações principais">
+          <div><span>📅</span><p><small>Início</small><strong>27 de setembro</strong></p></div>
+          <div><span>📍</span><p><small>Local</small><strong>Arena do Vasco</strong></p></div>
+          <div><span>🏆</span><p><small>Premiação total</small><strong>R$ 7.400</strong></p></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="quickStats" aria-label="Números do campeonato">
+      <div class="shell quickStatsGrid">
+        <div><strong>24</strong><span>times confirmados</span></div>
+        <div><strong>10</strong><span>jogos divulgados</span></div>
+        <div><strong>5</strong><span>grupos nesta rodada</span></div>
+        <div><strong>6</strong><span>premiações</span></div>
+      </div>
+    </section>
+
+    <section class="section shell" id="premiacao">
+      <div class="sectionHeading">
+        <div>
+          <p class="sectionKicker">Prêmios da competição</p>
+          <h2>R$ 7.400 em premiação</h2>
+        </div>
+        <p>Premiação atualizada para a 4ª edição.</p>
+      </div>
+      <div class="prizeGrid" id="prizeGrid"></div>
+    </section>
+
+    <section class="section sectionDark" id="proximos-jogos">
+      <div class="shell">
+        <div class="sectionHeading sectionHeadingDark">
+          <div>
+            <p class="sectionKicker">Domingo · 27 de setembro</p>
+            <h2>1ª rodada</h2>
+          </div>
+          <p>Toque em um confronto para iniciar o flyer com os dados já preenchidos.</p>
+        </div>
+        <div class="filterRow" id="matchFilters" aria-label="Filtrar jogos por grupo"></div>
+        <div class="matchGrid" id="matchGrid"></div>
+      </div>
+    </section>
+
+    <section class="section shell" id="times-confirmados">
+      <div class="sectionHeading">
+        <div>
+          <p class="sectionKicker">4ª edição</p>
+          <h2>24 times confirmados</h2>
+        </div>
+        <p>Escudos oficiais enviados pela organização e já cadastrados no sistema.</p>
+      </div>
+      <div class="confirmedTeamsGrid" id="confirmedTeamsGrid"></div>
+    </section>
+
+    <section class="section shell" id="grupos">
+      <div class="sectionHeading">
+        <div>
+          <p class="sectionKicker">Tabela divulgada</p>
+          <h2>Grupos da 1ª rodada</h2>
+        </div>
+        <p>Estes são os grupos presentes na tabela enviada para a abertura do campeonato.</p>
+      </div>
+      <div class="groupGrid" id="groupGrid"></div>
+      <p class="groupsPendingNote"><strong>Também confirmados:</strong> PMZ, Residencial Vila Jardim F.C., Diamante Vinotinto e Barça de Madrid. Os grupos e jogos entram aqui assim que forem divulgados pela organização.</p>
+    </section>
+
+    <section class="section standingsSection" id="classificacao">
+      <div class="shell">
+        <div class="sectionHeading">
+          <div>
+            <p class="sectionKicker">Tabela do campeonato</p>
+            <h2>Classificação</h2>
+          </div>
+          <p>A tabela começa zerada e fica pronta para receber os resultados.</p>
+        </div>
+        <div class="standingsTabs" id="standingsTabs" aria-label="Escolher grupo da classificação"></div>
+        <div class="standingsCard" id="standingsCard"></div>
+      </div>
+    </section>
+
+    <section class="section shell" id="informacoes">
+      <div class="sectionHeading">
+        <div>
+          <p class="sectionKicker">Serviço</p>
+          <h2>Informações da competição</h2>
+        </div>
+      </div>
+      <div class="infoGrid">
+        <article><span>📍</span><div><small>Local dos jogos</small><strong>Arena do Vasco</strong><p>Jóquei Clube</p></div></article>
+        <article><span>📅</span><div><small>Congresso técnico</small><strong>22 de setembro</strong><p>Terça-feira</p></div></article>
+        <article><span>🏁</span><div><small>Início da competição</small><strong>27 de setembro</strong><p>Domingo, a partir das 9h</p></div></article>
+        <article><span>💳</span><div><small>Inscrição</small><strong>R$ 550</strong><p>Parcelas conforme regulamento</p></div></article>
+      </div>
+    </section>
+
+    <section class="creatorCta">
+      <div class="shell creatorCtaInner">
+        <div>
+          <p class="sectionKicker">Divulgação profissional</p>
+          <h2>Seu jogo merece uma arte à altura.</h2>
+          <p>Escolha uma partida. Os escudos e os dados do jogo já estão cadastrados no sistema.</p>
+        </div>
+        <a class="primaryButton" href="#proximos-jogos">Escolher meu jogo</a>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="shell footerInner">
+      <p><strong>Copa Colômbia Society</strong><span>4ª edição · 2026</span></p>
+      <a href="/app.html">Criado com Meu Clube FC</a>
+    </div>
+  </footer>
+
+  <nav class="mobileNav" aria-label="Atalhos do campeonato">
+    <a href="#proximos-jogos"><span>⚽</span>Jogos</a>
+    <a href="#times-confirmados"><span>👥</span>Times</a>
+    <a href="#classificacao"><span>📊</span>Tabela</a>
+    <a href="#premiacao"><span>🏆</span>Prêmios</a>
+  </nav>
+
+  <script src="./dados.js?v=20260923-2"></script>
+  <script src="./app.js?v=20260923-2"></script>
+</body>
+</html>
