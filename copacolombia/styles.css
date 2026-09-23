@@ -179,6 +179,15 @@ button,a{-webkit-tap-highlight-color:transparent}
 .flyerButton{background:linear-gradient(135deg,#ffd82f,#ffb000);color:#08203c;box-shadow:0 10px 24px rgba(255,184,0,.18)}
 .resultButton{border:1px solid rgba(112,199,255,.55);background:linear-gradient(135deg,rgba(24,132,224,.32),rgba(12,86,165,.44));color:#e8f6ff;box-shadow:0 10px 24px rgba(4,92,178,.14)}
 
+body.flyerModalOpen{overflow:hidden}
+.flyerModal{width:min(720px,calc(100vw - 24px));height:min(760px,calc(100dvh - 24px));max-width:none;max-height:none;margin:auto;padding:0;border:0;border-radius:24px;background:transparent;overflow:hidden;box-shadow:0 28px 90px rgba(0,0,0,.48)}
+.flyerModal[open]{display:block}
+.flyerModal::backdrop{background:rgba(2,12,25,.78);backdrop-filter:blur(7px)}
+.flyerModalPanel{position:relative;width:100%;height:100%;overflow:hidden;border:1px solid rgba(255,255,255,.18);border-radius:24px;background:#eef3f8}
+.flyerModalClose{position:absolute;z-index:3;top:12px;right:12px;width:44px;height:44px;display:grid;place-items:center;padding:0;border:1px solid #d5dfe9;border-radius:50%;background:#fff;color:#10233b;box-shadow:0 8px 22px rgba(8,31,59,.16);font:900 28px/1 Arial,sans-serif;cursor:pointer}
+.flyerModalClose:focus-visible{outline:3px solid rgba(13,103,216,.32);outline-offset:2px}
+.flyerModalFrame{display:block;width:100%;height:100%;border:0;background:#eef3f8}
+
 .confirmedTeamsGrid{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:12px}
 .confirmedTeamCard{min-width:0;min-height:150px;padding:16px 10px;display:grid;place-items:center;align-content:center;gap:12px;border:1px solid var(--line);border-radius:16px;background:#fff;box-shadow:0 8px 28px rgba(7,28,52,.055);text-align:center}
 .confirmedTeamCrest{width:76px;height:76px;display:grid;place-items:center;border:1px solid #dfe6ed;border-radius:18px;background:#fff;color:#0b4ea7;font-size:15px;font-weight:1000;box-shadow:0 8px 18px rgba(7,28,52,.08)}
@@ -277,6 +286,9 @@ footer{padding:28px 0;background:#041326;color:#fff}
   .matchGrid{grid-template-columns:1fr}
   .matchTeams{grid-template-columns:1fr 52px 1fr}
   .matchFlyerActions{grid-template-columns:1fr}
+  .flyerModal{width:100vw;height:100dvh;border-radius:0}
+  .flyerModalPanel{border:0;border-radius:0}
+  .flyerModalClose{top:max(10px,env(safe-area-inset-top));right:10px}
   .confirmedTeamsGrid{grid-template-columns:repeat(3,1fr);gap:9px}
   .confirmedTeamCard{min-height:132px;padding:12px 7px}
   .confirmedTeamCrest{width:66px;height:66px;border-radius:15px}
