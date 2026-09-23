@@ -113,7 +113,7 @@ button,a{-webkit-tap-highlight-color:transparent}
 .primaryButton,.secondaryButton{min-height:50px;padding:13px 20px;border-radius:12px;display:inline-flex;align-items:center;justify-content:center;gap:12px;font-size:14px;font-weight:950;transition:transform .18s ease,box-shadow .18s ease}
 .primaryButton{background:linear-gradient(135deg,var(--yellow),#ffa800);color:#081831;box-shadow:0 14px 34px rgba(255,188,0,.22)}
 .secondaryButton{border:1px solid rgba(255,255,255,.23);background:rgba(255,255,255,.07);color:#fff}
-.primaryButton:hover,.secondaryButton:hover,.flyerButton:hover{transform:translateY(-2px)}
+.primaryButton:hover,.secondaryButton:hover,.flyerButton:hover,.matchArtButton:hover{transform:translateY(-2px)}
 .heroMeta{max-width:760px;margin:38px auto 0;padding:18px;display:grid;grid-template-columns:repeat(3,1fr);gap:4px;border:1px solid rgba(255,255,255,.13);border-radius:16px;background:rgba(3,15,30,.64);box-shadow:0 20px 50px rgba(0,0,0,.22)}
 .heroMeta>div{display:flex;align-items:center;justify-content:center;gap:10px;padding:4px 14px;border-right:1px solid rgba(255,255,255,.11);text-align:left}
 .heroMeta>div:last-child{border-right:0}
@@ -169,6 +169,8 @@ button,a{-webkit-tap-highlight-color:transparent}
 .versus{display:grid;justify-items:center;gap:3px;color:#8294aa}
 .versus span{font-size:25px;font-weight:300}
 .versus small{font-size:9px;text-transform:uppercase;white-space:nowrap}
+.matchArtButton{min-height:43px;margin:-4px 0 10px;display:flex;align-items:center;justify-content:center;gap:8px;border:1px solid rgba(255,214,49,.52);border-radius:11px;background:rgba(255,214,49,.1);color:#ffe76f;font-size:12px;font-weight:1000;transition:transform .18s ease,box-shadow .18s ease,background .18s ease}
+.matchArtButton.isReady{border-color:#34d399;background:linear-gradient(135deg,#16a34a,#0f8a3f);color:#fff;box-shadow:0 10px 24px rgba(22,163,74,.22)}
 .matchDetails{padding:12px 0;display:flex;justify-content:center;gap:18px;border-top:1px solid rgba(255,255,255,.09);color:#aebed0;font-size:10px;font-weight:750}
 .flyerButton{min-height:45px;display:flex;align-items:center;justify-content:center;gap:8px;border-radius:11px;background:#fff;color:#08203c;font-size:12px;font-weight:1000;transition:transform .18s ease,box-shadow .18s ease}
 

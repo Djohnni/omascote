@@ -53,7 +53,16 @@ window.COPA_COLOMBIA = {
     E: ["Máquina FC", "Parceros FC", "João de Barro FC", "Flash Sport"]
   },
   jogos: [
-    { id: "j01", grupo: "C", rodada: "1ª rodada", data: "2026-09-27", hora: "09:00", casa: "Rey Sport", fora: "Esporting Colombia" },
+    {
+      id: "j01",
+      grupo: "C",
+      rodada: "1ª rodada",
+      data: "2026-09-27",
+      hora: "09:00",
+      casa: "Rey Sport",
+      fora: "Esporting Colombia",
+      arteDisponivel: true
+    },
     { id: "j02", grupo: "A", rodada: "1ª rodada", data: "2026-09-27", hora: "09:40", casa: "Residencial Vila Jardim Tottenham", fora: "Exiliados FC" },
     { id: "j03", grupo: "E", rodada: "1ª rodada", data: "2026-09-27", hora: "10:20", casa: "Máquina FC", fora: "Parceros FC" },
     { id: "j04", grupo: "E", rodada: "1ª rodada", data: "2026-09-27", hora: "11:00", casa: "João de Barro FC", fora: "Flash Sport" },
