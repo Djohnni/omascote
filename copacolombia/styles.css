@@ -151,10 +151,9 @@ button,a{-webkit-tap-highlight-color:transparent}
 .flyerGamesSection{min-height:60vh;padding-top:58px}
 .sectionHeadingDark .sectionKicker{color:#ffd631}
 .sectionHeadingDark>p{color:#aabbd0}
-.filterRow,.standingsTabs{display:flex;gap:8px;overflow:auto;padding:0 0 16px;scrollbar-width:none}
-.filterRow::-webkit-scrollbar,.standingsTabs::-webkit-scrollbar{display:none}
-.filterButton,.standingsTab{flex:0 0 auto;min-height:39px;padding:9px 14px;border:1px solid rgba(255,255,255,.17);border-radius:999px;background:rgba(255,255,255,.06);color:#c6d4e4;font:inherit;font-size:12px;font-weight:900;cursor:pointer}
-.filterButton.isActive{border-color:#ffd320;background:#ffd320;color:#06182d}
+.standingsTabs{display:flex;gap:8px;overflow:auto;padding:0 0 16px;scrollbar-width:none}
+.standingsTabs::-webkit-scrollbar{display:none}
+.standingsTab{flex:0 0 auto;min-height:39px;padding:9px 14px;border:1px solid rgba(255,255,255,.17);border-radius:999px;background:rgba(255,255,255,.06);color:#c6d4e4;font:inherit;font-size:12px;font-weight:900;cursor:pointer}
 .matchGrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:15px}
 .matchCard{--group:#1b72e8;padding:18px;border:1px solid rgba(255,255,255,.12);border-radius:17px;background:linear-gradient(145deg,rgba(255,255,255,.095),rgba(255,255,255,.035));box-shadow:0 18px 45px rgba(0,0,0,.16);backdrop-filter:blur(10px)}
 .group-a{--group:#0e7cc6}.group-b{--group:#8156d9}.group-c{--group:#e34242}.group-d{--group:#e59018}.group-e{--group:#19a674}

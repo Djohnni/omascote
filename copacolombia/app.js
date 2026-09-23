@@ -201,33 +201,10 @@
     `;
   }
 
-  function renderMatches(filter = "todos"){
+  function renderMatches(){
     const root = document.getElementById("matchGrid");
     if(!root) return;
-    const matches = filter === "todos" ? copa.jogos : copa.jogos.filter(match => match.grupo === filter);
-    root.innerHTML = matches.map(matchCard).join("");
-  }
-
-  function renderFilters(){
-    const root = document.getElementById("matchFilters");
-    if(!root) return;
-    const filters = ["todos", ...Object.keys(copa.grupos)];
-    root.innerHTML = filters.map((filter, index) => `
-      <button type="button" class="filterButton${index === 0 ? " isActive" : ""}" data-filter="${escapeHtml(filter)}" aria-pressed="${index === 0 ? "true" : "false"}">
-        ${filter === "todos" ? "Todos" : `Grupo ${escapeHtml(filter)}`}
-      </button>
-    `).join("");
-
-    root.addEventListener("click", event => {
-      const button = event.target.closest("[data-filter]");
-      if(!button) return;
-      root.querySelectorAll("[data-filter]").forEach(item => {
-        const active = item === button;
-        item.classList.toggle("isActive", active);
-        item.setAttribute("aria-pressed", active ? "true" : "false");
-      });
-      renderMatches(button.dataset.filter || "todos");
-    });
+    root.innerHTML = copa.jogos.map(matchCard).join("");
   }
 
   function renderGroups(){
@@ -315,7 +292,6 @@
   }
 
   renderPrizes();
-  renderFilters();
   renderMatches();
   renderConfirmedTeams();
   renderGroups();
