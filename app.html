@@ -27875,6 +27875,15 @@ async function enviarCleanProductFormConfirmado(form, options = {}){
 
   envioEtapa = "montar_payload";
   const cleanOrder = serializeCleanProductForm(productKey, form);
+  const comissaoOrigem = String(form.dataset.comissaoOrigem || "").trim();
+  if(["proximo_jogo", "resultado"].includes(productKey) && comissaoOrigem === "copacolombia"){
+    cleanOrder.fields = {
+      ...cleanOrder.fields,
+      comissao_origem: comissaoOrigem,
+      comissao_jogo_id: String(form.dataset.comissaoJogoId || "").trim(),
+      comissao_jogo: String(form.dataset.comissaoJogo || "").trim()
+    };
+  }
   const scenarioObservationError = resultadoScenarioObservationConflict(productKey, cleanOrder);
   if(scenarioObservationError){
     setCleanProductMsg(form, scenarioObservationError, true);
@@ -37073,6 +37082,10 @@ function iniciarModoPedidoCopaColombia(form, params, config, escudosAplicados){
   const dataHora = String(params.get("data_hora") || "").slice(0, 100);
   const competicao = String(params.get("competicao") || "Copa Colômbia Society").slice(0, 160);
   const local = String(params.get("local") || "").slice(0, 140);
+
+  form.dataset.comissaoOrigem = "copacolombia";
+  form.dataset.comissaoJogoId = String(params.get("jogo") || "").trim().slice(0, 120);
+  form.dataset.comissaoJogo = `${timeA} x ${timeB}`;
 
   form.querySelector(".copaChampionshipOrderSummary")?.remove();
   const resumo = document.createElement("section");
