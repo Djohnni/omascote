@@ -12671,6 +12671,54 @@ body.cleanReviewModalOpen{
   background:linear-gradient(135deg, #2ecc71, #1b9b51);
 }
 
+.cleanResultDownload.cleanVideoDownload{
+  margin-left:8px;
+  background:linear-gradient(135deg, #2563eb, #1d4ed8);
+}
+
+[data-internal-veo-field][hidden]{
+  display:none !important;
+}
+
+.internalVeoCard{
+  padding:16px;
+  border:1px solid rgba(37,99,235,.28);
+  border-radius:16px;
+  background:linear-gradient(145deg, rgba(239,246,255,.98), rgba(255,255,255,.98));
+}
+
+.internalVeoBadge{
+  display:inline-flex;
+  margin-bottom:8px;
+  padding:4px 8px;
+  border-radius:999px;
+  background:#dbeafe;
+  color:#1d4ed8;
+  font-size:11px;
+  font-weight:950;
+  text-transform:uppercase;
+  letter-spacing:.04em;
+}
+
+.internalVeoCard select{
+  width:100%;
+  min-height:48px;
+  padding:10px 12px;
+  border:1px solid #bfdbfe;
+  border-radius:12px;
+  background:#fff;
+  color:#0f172a;
+  font-weight:850;
+}
+
+.internalVeoHint{
+  display:block;
+  margin-top:8px;
+  color:#475569;
+  font-size:12px;
+  line-height:1.45;
+}
+
 .legacyOrderFormArea{
   display:none !important;
 }
@@ -18845,6 +18893,7 @@ const mainCreateBtn = document.getElementById("mainCreateBtn");
 const selectorStage = document.querySelector(".selectorStage");
 let categoriaSelecionada = "";
 let brindeEscudo3dAppDisponivel = false;
+let internalVeoTestEnabled = false;
 
 const escudo3dModal = document.getElementById("escudo3dModal");
 const escudo3dCloseBtn = document.getElementById("escudo3dCloseBtn");
@@ -19824,7 +19873,8 @@ const CLEAN_PRODUCT_FORM_SCHEMAS = {
       { key: "scenario_id", type: "scenario", label: "Escolha o cenário", required: true, visualNormal: true, defaultValue: "proximo_jogo_atual_v1" },
       { key: "home_crest", type: "file", legacyName: "escudo1", labelKey: "esc1", required: true, savedFallback: true },
       { key: "away_crest", type: "file", legacyName: "escudo2", labelKey: "esc2", required: true },
-      { key: "match_photo", type: "multi-file", legacyName: "mascote", labelKey: "mascote", required: false, maxFiles: 4, visualNormal: true }
+      { key: "match_photo", type: "multi-file", legacyName: "mascote", labelKey: "mascote", required: false, maxFiles: 4, visualNormal: true },
+      { key: "video_model", type: "veo_model", label: "Vídeo de 8 segundos", required: false, visualNormal: true }
     ]
   },
   patrocinador: {
@@ -20477,6 +20527,20 @@ function renderCleanProductFieldContent(product, field, step){
   if(field.type === "players" || field.type === "scorers") return renderCleanPeopleField(field, step);
   if(field.type === "contratacao_builder") return renderContratacaoBuilder(field, step);
   if(field.type === "jogador_escudo_builder") return renderJogadorEscudoBuilder(field, step);
+  if(field.type === "veo_model"){
+    return `
+      <div class="cleanFieldCard internalVeoCard" data-clean-field-card="${htmlEscape(field.key)}">
+        <span class="internalVeoBadge">Somente interno · teste</span>
+        <label class="cleanFieldLabel" for="internal-veo-${htmlEscape(product?.id || "produto")}">${htmlEscape(field.label || "Vídeo de 8 segundos")}</label>
+        <select id="internal-veo-${htmlEscape(product?.id || "produto")}" name="${htmlEscape(field.key)}" data-field="${htmlEscape(field.key)}">
+          <option value="">Sem vídeo</option>
+          <option value="lite">Veo Lite · menor custo</option>
+          <option value="fast">Veo Fast · mais rápido</option>
+        </select>
+        <span class="internalVeoHint">Vertical 9:16, 720p, 8 segundos e sem áudio. A geração só começa quando Lite ou Fast estiver selecionado.</span>
+      </div>
+    `;
+  }
   return "";
 }
 
@@ -20495,8 +20559,9 @@ function renderCleanProductField(product, field, step){
     ? `<span class="cleanFieldOptionalBadge">Opcional</span>`
     : "";
 
+  const internalVeoAttrs = field.type === "veo_model" ? " data-internal-veo-field hidden" : "";
   return `
-    <div class="cleanFieldAccordion" data-clean-accordion-item data-clean-field-card="${htmlEscape(field.key)}">
+    <div class="cleanFieldAccordion" data-clean-accordion-item data-clean-field-card="${htmlEscape(field.key)}"${internalVeoAttrs}>
       <button class="cleanFieldAccordionToggle" type="button" data-clean-accordion-toggle aria-expanded="false">
         <span class="cleanFieldAccordionTitle">
           <span class="cleanFieldStep">${htmlEscape(step)}</span>
@@ -20510,6 +20575,15 @@ function renderCleanProductField(product, field, step){
       </div>
     </div>
   `;
+}
+
+function atualizarInternalVeoUi(enabled){
+  internalVeoTestEnabled = enabled === true;
+  document.querySelectorAll("[data-internal-veo-field]").forEach(card => {
+    card.hidden = !internalVeoTestEnabled;
+    const select = card.querySelector('[data-field="video_model"]');
+    if(select && !internalVeoTestEnabled) select.value = "";
+  });
 }
 
 function renderCleanCouponExtra(product, field){
@@ -25486,6 +25560,7 @@ function renderCleanProductForms(){
             <div class="cleanResultStatus" data-clean-result-status>Estamos montando sua imagem...</div>
             <img alt="Resultado pronto" data-clean-result-preview oncontextmenu="return false;" draggable="false">
             <a href="#" class="cleanResultDownload" data-clean-result-download>Baixar imagem</a>
+            <a href="#" class="cleanResultDownload cleanVideoDownload" data-clean-video-download>Baixar vídeo de 8s</a>
           </div>
         </form>
       </section>
@@ -26146,6 +26221,13 @@ function serializeCleanProductForm(productKey, form){
       const selection = getProductScenarioSelection(productKey, form);
       if(selection.valid){
         fields[field.key] = selection.id;
+      }
+    }
+
+    if(field.type === "veo_model"){
+      const selected = getCleanFieldValue(form, field.key).toLowerCase();
+      if(internalVeoTestEnabled && ["lite", "fast"].includes(selected)){
+        fields.video_model = selected;
       }
     }
 
@@ -27154,11 +27236,13 @@ async function acompanharResultadoClean(pedidoId, form){
   const statusElLocal = form.querySelector("[data-clean-result-status]");
   const imgEl = form.querySelector("[data-clean-result-preview]");
   const downloadEl = form.querySelector("[data-clean-result-download]");
+  const videoDownloadEl = form.querySelector("[data-clean-video-download]");
 
   if(boxEl) boxEl.style.display = "block";
   if(statusElLocal) statusElLocal.textContent = "Estamos montando sua imagem...";
   if(imgEl) imgEl.style.display = "none";
   if(downloadEl) downloadEl.style.display = "none";
+  if(videoDownloadEl) videoDownloadEl.style.display = "none";
 
   const timer = setInterval(async () => {
     try{
@@ -27198,6 +27282,20 @@ async function acompanharResultadoClean(pedidoId, form){
             }
             restaurarImagemOriginalDoProduto(form);
           };
+        }
+        if(videoDownloadEl && data.video_pronto === true){
+          videoDownloadEl.style.display = "inline-block";
+          videoDownloadEl.onclick = async (ev) => {
+            ev.preventDefault();
+            if(data.aprovado_cliente === true){
+              await baixarVideoPedido(pedidoId);
+            }else{
+              alert("Aprove a arte primeiro. Depois o botão de vídeo ficará disponível em Meus pedidos.");
+            }
+          };
+        }
+        if(statusElLocal && data.video_generation?.status === "failed"){
+          statusElLocal.textContent = "Imagem pronta. O teste de vídeo não foi concluído.";
         }
         registrarStatusDownloadPedido(statusElLocal, pedidoId);
       }else{
@@ -28872,6 +28970,7 @@ function applyLocal(){
 
 async function refreshMe(){
   if(!token){
+    atualizarInternalVeoUi(false);
     pararPollingSaldoPix();
     weeklyPlanSummary = null;
     weeklyPlanSummaryState = "anonymous";
@@ -28917,6 +29016,7 @@ async function refreshMe(){
     applyLocal();
     void carregarResumoPlanoSemanal();
     brindeEscudo3dAppDisponivel = data.brinde_escudo3d_app_disponivel === true;
+    atualizarInternalVeoUi(data.internal_features?.next_match_veo === true);
     atualizarBrindeEscudo3dAppVisual();
     if(statusEl) statusEl.textContent = data.ativo ? "Status: ativo" : "Status: inativo";
 
@@ -33580,6 +33680,7 @@ ${pagamentoPendente ? `
 <button type="button" class="menuPedidoBtn" data-pedido-download data-pedido-id="${p.id}" onclick="baixarPedido('${p.id}')">Baixar novamente</button>
 <div class="pedidoDownloadFeedback" data-pedido-download-status data-pedido-id="${p.id}" aria-live="polite"></div>
 <button type="button" class="menuPedidoBtn" onclick="compartilharImagemPedido('${p.id}')">Compartilhar imagem</button>
+${p.video_pronto === true ? `<button type="button" class="menuPedidoBtn" onclick="baixarVideoPedido('${p.id}')">Baixar vídeo de 8s</button>` : ``}
 ` : `
 <button type="button" class="menuPedidoBtn" data-pedido-download data-pedido-id="${p.id}" onclick="aprovarPedido('${p.id}')">✅ Está boa, baixar</button>
 <div class="pedidoDownloadFeedback" data-pedido-download-status data-pedido-id="${p.id}" aria-live="polite"></div>
@@ -33693,7 +33794,9 @@ async function carregarHistorico(){
       modalidade_criacao: p.modalidade_criacao,
       pode_pedir_ajuste: p.pode_pedir_ajuste,
       ajuste_automatico_usado: p.ajuste_automatico_usado,
-      motivo_ajuste: p.motivo_ajuste
+      motivo_ajuste: p.motivo_ajuste,
+      video_pronto: p.video_pronto,
+      video_status: p.video_generation?.status || ""
     })));
 
     if(pedidos.length === 0){
@@ -33788,6 +33891,7 @@ ${pagamentoPendente ? `
         <button onclick="compartilharImagemPedido('${p.id}')" style="margin-top:8px;padding:8px 12px;border-radius:10px;border:none;background:#0f172a;color:#fff;font-weight:900;cursor:pointer;width:100%;">
           Compartilhar imagem
         </button>
+        ${p.video_pronto === true ? `<button onclick="baixarVideoPedido('${p.id}')" style="margin-top:8px;padding:8px 12px;border-radius:10px;border:none;background:#2563eb;color:#fff;font-weight:900;cursor:pointer;width:100%;">Baixar vídeo de 8s</button>` : ``}
 ` : `
         <button data-pedido-download data-pedido-id="${p.id}" onclick="aprovarPedido('${p.id}')" style="margin-top:8px;padding:8px 12px;border-radius:10px;border:none;background:#16a34a;color:#fff;font-weight:900;cursor:pointer;width:100%;">
           ✅ Está boa, baixar imagem
@@ -34314,6 +34418,30 @@ async function iniciarDownloadDiretoSeguro({
   }finally{
     setTimeout(() => downloadsDiretosEmAndamento.delete(chave), 2500);
   }
+}
+
+async function baixarVideoPedido(id){
+  const pedidoId = String(id || "");
+  if(!pedidoId || !internalVeoTestEnabled) return false;
+
+  const chave = `pedido:${pedidoId}:video`;
+  if(downloadsDiretosEmAndamento.has(chave)) return false;
+
+  const iniciou = await iniciarDownloadDiretoSeguro({
+    id: pedidoId,
+    ticketEndpoint: `/pedidos/${encodeURIComponent(pedidoId)}/download-ticket`,
+    formato: "video",
+    recurso: "pedido_video"
+  });
+
+  if(iniciou){
+    ia4Track("baixou_video_teste", {
+      pedido_id: pedidoId,
+      produto: "proximo_jogo",
+      modelo: "veo"
+    });
+  }
+  return iniciou;
 }
 
 async function baixarPedido(id, { aprovadoAgora = false } = {}){
