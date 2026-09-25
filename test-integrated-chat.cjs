@@ -209,6 +209,31 @@ const result = bridge.omascoteChatBuildCleanOrders(
 )[0].order;
 assert.deepEqual(result.fields.score, { home_team:"Meu Time", home_score:"3", away_score:"2", away_team:"Rival" });
 
+const resultMascotVideo = bridge.omascoteChatBuildCleanOrders(
+  draft("resultado", {
+    score:"Meu Time 3 x 2 Rival",
+    competition:"Copa",
+    photo_mode:"Mascote",
+    delivery_mode:"image_video",
+    video_model:"fast"
+  }),
+  [file("home_crest"), file("away_crest"), file("match_photo")]
+)[0].order;
+assert.deepEqual(resultMascotVideo.assets.match_photo.roles, ["mascot_photo"]);
+assert.deepEqual(resultMascotVideo.fields.match_photo_roles, ["mascot_photo"]);
+assert.equal(resultMascotVideo.fields.match_photo_type, "mascot_photo");
+assert.equal(resultMascotVideo.fields.delivery_mode, "image_video");
+assert.equal(resultMascotVideo.fields.video_model, "fast");
+
+for(const [photoMode, expectedRole] of [["Jogador", "player_photo"], ["Time", "team_photo"]]){
+  const resultWithPhoto = bridge.omascoteChatBuildCleanOrders(
+    draft("resultado", { score:"Meu Time 3 x 2 Rival", competition:"Copa", photo_mode:photoMode }),
+    [file("match_photo")]
+  )[0].order;
+  assert.equal(resultWithPhoto.fields.match_photo_type, expectedRole);
+  assert.deepEqual(resultWithPhoto.assets.match_photo.roles, [expectedRole]);
+}
+
 for(const [sport, score] of [["Jiu-jítsu", "Carlos venceu por finalização"], ["Vôlei", "Aurora venceu por 3 sets a 1"]]){
   const writtenResult = bridge.omascoteChatBuildCleanOrders(
     draft("resultado", { sport, score, competition:"Estadual" }),

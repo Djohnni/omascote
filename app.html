@@ -17393,6 +17393,24 @@ function omascoteChatAsset(files, field, legacyName, sourceField = field){
   return { legacyName, files:[...(files[sourceField] || [])] };
 }
 
+function omascoteChatMatchPhotoRole(photoMode){
+  return ({
+    Jogador:"player_photo",
+    Atleta:"player_photo",
+    Time:"team_photo",
+    Equipe:"team_photo",
+    Mascote:"mascot_photo"
+  })[String(photoMode || "").trim()] || "player_photo";
+}
+
+function omascoteChatApplyMatchPhotoRole(fields, asset, photoMode){
+  if(!asset?.files?.length) return;
+  const role = omascoteChatMatchPhotoRole(photoMode);
+  asset.roles = asset.files.map(() => role);
+  fields.match_photo_roles = [...asset.roles];
+  fields.match_photo_type = role;
+}
+
 const OMASCOTE_CHAT_IMAGE_ONLY_PRODUCTS = new Set([
   "jogador_escudo",
   "contratacao",
@@ -17433,12 +17451,7 @@ function omascoteChatBaseCleanOrder(productKey, values, files){
       assets.home_crest = omascoteChatAsset(files, "home_crest", "escudo1");
       assets.away_crest = omascoteChatAsset(files, "away_crest", "escudo2");
       assets.match_photo = omascoteChatAsset(files, "match_photo", "mascote");
-      if(assets.match_photo.files.length){
-        const role = ({Jogador:"jogador", Atleta:"jogador", Time:"time", Equipe:"time", Mascote:"mascote"})[values.photo_mode] || "jogador";
-        assets.match_photo.roles = assets.match_photo.files.map(() => role);
-        fields.match_photo_roles = [...assets.match_photo.roles];
-        fields.match_photo_type = role;
-      }
+      omascoteChatApplyMatchPhotoRole(fields, assets.match_photo, values.photo_mode);
     }else{
       assets.team_crest = omascoteChatAsset(files, "team_crest", "escudo1", "home_crest");
       assets.opponent_crest = omascoteChatAsset(files, "opponent_crest", "escudo2", "away_crest");
@@ -17459,6 +17472,7 @@ function omascoteChatBaseCleanOrder(productKey, values, files){
       assets.home_crest = omascoteChatAsset(files, "home_crest", "escudo1");
       assets.away_crest = omascoteChatAsset(files, "away_crest", "escudo2");
       assets.match_photo = omascoteChatAsset(files, "match_photo", "mascote");
+      omascoteChatApplyMatchPhotoRole(fields, assets.match_photo, values.photo_mode);
     }else{
       assets.team_crest = omascoteChatAsset(files, "team_crest", "escudo1", "home_crest");
       assets.opponent_crest = omascoteChatAsset(files, "opponent_crest", "escudo2", "away_crest");
