@@ -13,6 +13,9 @@ assert.match(atendimentoBundle, /omascote-chat:open-orders/, "o botão verde pre
 assert.match(atendimentoBundle, /jogo\(s\) encontrado\(s\)/, "o chat precisa mostrar todos os jogos identificados");
 assert.match(atendimentoBundle, /Envie os escudos/, "o chat precisa pedir os escudos depois da leitura");
 assert.match(atendimentoBundle, /omascote-chat:create-order-batch/, "o chat precisa enviar os jogos escolhidos em lote");
+assert.match(atendimentoBundle, /Somente imagem/, "o envio precisa oferecer somente imagem");
+assert.match(atendimentoBundle, /Imagem \+ vídeo/, "o envio precisa oferecer imagem com vídeo");
+assert.match(atendimentoBundle, /8 a 12 segundos/, "o vídeo precisa informar a duração vendida");
 assert.match(html, /class="homeChatStage" id="integratedChatModal"/, "o chat precisa aparecer entre os menus da página inicial");
 assert.match(html, /id="productsMenuToggle"[^>]+aria-expanded="false"/, "os produtos precisam começar recolhidos");
 assert.match(html, /id="productsMenuPanel" hidden/, "a área antiga de produtos precisa iniciar fechada");
@@ -145,13 +148,15 @@ assert.equal(bridge.omascoteChatAllowedOrigin("https://exemplo.com"), false);
 assert.equal(bridge.omascoteChatAllowedOrigin("http://localhost:3000"), false);
 
 const next = bridge.omascoteChatBuildCleanOrders(
-  draft("proximo_jogo", { matchup:"Meu Time x Rival", match_datetime:"domingo 16h", competition:"Copa", scenario_id:"Cenário atual" }),
+  draft("proximo_jogo", { matchup:"Meu Time x Rival", match_datetime:"domingo 16h", competition:"Copa", scenario_id:"Cenário atual", delivery_mode:"image_video", video_model:"fast" }),
   [file("home_crest"), file("away_crest")]
 )[0].order;
 assert.deepEqual(next.fields.matchup, { home_team:"Meu Time", away_team:"Rival" });
 assert.equal(next.fields.scenario_id, "cenario_atual_v1");
 assert.equal(next.assets.home_crest.files.length, 1);
 assert.equal(next.fields.sport, "Futebol");
+assert.equal(next.fields.delivery_mode, "image_video");
+assert.equal(next.fields.video_model, "fast");
 
 const individualNext = bridge.omascoteChatBuildCleanOrders(
   draft("proximo_jogo", { sport:"Jiu-jítsu", matchup:"Carlos no Open Estadual", match_datetime:"domingo 16h", competition:"Open Estadual" }),
@@ -207,13 +212,15 @@ const mascot = bridge.omascoteChatBuildCleanOrders(
 assert.equal(mascot.fields.mascot_animal, "Leão");
 
 const crest3d = bridge.omascoteChatBuildCleanOrders(
-  draft("escudo3d", { sport:"Natação" }),
+  draft("escudo3d", { sport:"Natação", delivery_mode:"image_video", video_model:"fast" }),
   [file("team_crest")]
 )[0];
 assert.equal(crest3d.special, "escudo3d");
 assert.equal(crest3d.values.sport, "Natação");
 const crest3dForm = buildOfficialCrestFormData(new TestFile([new Uint8Array([1])], "logo.png", {type:"image/png"}), "", crest3d.values);
 assert.equal(JSON.parse(crest3dForm.get("fields_json")).sport, "Natação");
+assert.equal(JSON.parse(crest3dForm.get("fields_json")).delivery_mode, "image_video");
+assert.equal(JSON.parse(crest3dForm.get("fields_json")).video_model, "fast");
 assert.equal(JSON.parse(crest3dForm.get("assets_json")).team_crest.files[0], "logo.png");
 
 const athleteNext = bridge.omascoteChatBuildCleanOrders(

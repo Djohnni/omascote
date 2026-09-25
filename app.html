@@ -17367,11 +17367,16 @@ function omascoteChatAsset(files, field, legacyName, sourceField = field){
 
 function omascoteChatBaseCleanOrder(productKey, values, files){
   const sportContext = omascoteChatSportContext(values);
+  const deliveryMode = values.delivery_mode === "image_video" ? "image_video" : "image";
   const fields = {
     visual_style:String(values.visual_style || "3D").toLowerCase(),
     coupon_code:String(values.coupon_code || "").trim(),
     sport:sportContext.sport,
-    sport_context:String(values.sport_context || "").trim()
+    sport_context:String(values.sport_context || "").trim(),
+    delivery_mode:deliveryMode,
+    video_model:deliveryMode === "image_video" && ["lite", "fast"].includes(String(values.video_model || "").toLowerCase())
+      ? String(values.video_model).toLowerCase()
+      : (deliveryMode === "image_video" ? "fast" : "")
   };
   const assets = {};
   if(["proximo_jogo", "proximo_jogo_jogador"].includes(productKey)){
@@ -26843,7 +26848,11 @@ function buildEscudo3dLegacyFormData(file, cupomCodigo = "", values = {}){
   fd.append("fields_json", JSON.stringify({
     sport:sportContext.sport,
     sport_context:String(values.sport_context || "").trim(),
-    visual_style:String(values.visual_style || "3D").toLowerCase()
+    visual_style:String(values.visual_style || "3D").toLowerCase(),
+    delivery_mode:values.delivery_mode === "image_video" ? "image_video" : "image",
+    video_model:values.delivery_mode === "image_video" && ["lite", "fast"].includes(String(values.video_model || "").toLowerCase())
+      ? String(values.video_model).toLowerCase()
+      : (values.delivery_mode === "image_video" ? "fast" : "")
   }));
   fd.append("assets_json", JSON.stringify({
     team_crest:{ legacyName:"escudo1", files:file ? [file.name || "escudo1.png"] : [] }
