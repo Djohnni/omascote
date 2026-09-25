@@ -21,6 +21,12 @@ assert.match(html, /id="productsMenuToggle"[^>]+aria-expanded="false"/, "os prod
 assert.match(html, /id="productsMenuPanel" hidden/, "a área antiga de produtos precisa iniciar fechada");
 assert.match(html, /event\.target\.matches\("\.composer textarea"\)/, "o campo principal do chat precisa ativar a ampliação");
 assert.match(html, /classList\.toggle\("is-expanded"/, "o chat precisa ampliar sem trocar de página");
+const videoDownloadStart = html.indexOf("async function baixarVideoPedido");
+const videoDownloadEnd = html.indexOf("async function compartilharImagemPedido", videoDownloadStart);
+assert.ok(videoDownloadStart >= 0 && videoDownloadEnd > videoDownloadStart, "função pública de download do vídeo não encontrada");
+const videoDownloadBlock = html.slice(videoDownloadStart, videoDownloadEnd);
+assert.doesNotMatch(videoDownloadBlock, /internalVeoTestEnabled/, "o download de vídeo comprado não pode depender da opção interna de teste");
+assert.match(videoDownloadBlock, /if\(!pedidoId\) return false;/, "o download precisa validar somente a presença do pedido antes de pedir o ticket seguro");
 const start = html.indexOf("const omascoteChatOrderInFlight");
 const end = html.indexOf("const MEU_CLUBE_PLAY_STORE_URL", start);
 assert.ok(start >= 0 && end > start, "bloco da integração não encontrado");
