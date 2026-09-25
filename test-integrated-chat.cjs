@@ -36,7 +36,7 @@ assert.match(atendimentoBundle, /"aria-label":`Preparando envio`/, "o indicador 
 assert.match(atendimentoBundle, /className:`size-4 animate-spin`/, "o indicador de envio precisa girar sem usar os três pontos");
 assert.match(atendimentoBundle, /"aria-label":`Envio indisponível`/, "uma falha não pode deixar o indicador girando para sempre");
 assert.doesNotMatch(atendimentoBundle, /disabled:c\|\|!n\|\|!o\.trim\(\)/, "o botão de enviar não pode aparecer desativado por causa da inicialização");
-assert.match(atendimentoBundle, /className:`size-9 shrink-0 inline-flex/, "o indicador precisa ter o mesmo tamanho do botão de enviar");
+assert.match(atendimentoBundle, /className:`shrink-0 inline-flex[^`]+lab-send-loading`,style:\{width:43,height:43\}/, "o indicador precisa ter os mesmos 43 por 43 pixels do botão de enviar");
 assert.match(atendimentoHtml, /index-GwVL5Yzi\.js\?v=20260925-chat-menu-loading/, "o navegador precisa buscar o bundle atualizado");
 assert.match(html, /class="homeChatStage" id="integratedChatModal"/, "o chat precisa aparecer entre os menus da página inicial");
 assert.match(html, /id="productsMenuToggle"[^>]+aria-expanded="false"/, "os produtos precisam começar recolhidos");
