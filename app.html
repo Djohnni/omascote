@@ -6633,6 +6633,33 @@ body{
   box-shadow:none !important;
 }
 
+.menuPedidoBtn.menuPedidoBtnVideo{
+  background:#2563eb !important;
+}
+
+.pedidoEntregaVideoInfo,
+.pedidoVideoStatus{
+  margin-top:8px;
+  padding:9px 10px;
+  border-radius:10px;
+  font-size:12px;
+  font-weight:900;
+  line-height:1.35;
+  text-align:center;
+}
+
+.pedidoEntregaVideoInfo{
+  border:1px solid #bfdbfe;
+  background:#eff6ff;
+  color:#1d4ed8;
+}
+
+.pedidoVideoStatus{
+  border:1px solid #dbeafe;
+  background:#f8fafc;
+  color:#475569;
+}
+
 .pedidoDownloadFeedback{
   display:none;
   margin-top:8px;
@@ -6651,7 +6678,8 @@ body{
   display:block;
 }
 
-[data-pedido-download][aria-busy="true"]{
+[data-pedido-download][aria-busy="true"],
+[data-pedido-video-download][aria-busy="true"]{
   opacity:.72;
   cursor:wait !important;
   pointer-events:none;
@@ -27262,7 +27290,22 @@ async function acompanharResultadoClean(pedidoId, form){
   if(downloadEl) downloadEl.style.display = "none";
   if(videoDownloadEl) videoDownloadEl.style.display = "none";
 
-  const timer = setInterval(async () => {
+  const watcher = {
+    timer: null,
+    iniciadoEm: Date.now(),
+    imagemProntaConhecida: false
+  };
+  const limitePollingMs = 30 * 60 * 1000;
+
+  const encerrarWatcher = () => {
+    if(watcher.timer) clearTimeout(watcher.timer);
+    if(cleanProductResultWatchers.get(pedidoId) === watcher){
+      cleanProductResultWatchers.delete(pedidoId);
+    }
+  };
+
+  const consultar = async () => {
+    let continuar = true;
     try{
       const r = await fetch(`${API_BASE}/pedidos/${pedidoId}/info`, {
         headers: { "Authorization": "Bearer " + token }
@@ -27271,49 +27314,69 @@ async function acompanharResultadoClean(pedidoId, form){
 
       const authMsg = ia4TratarAuthInvalida(r, data);
       if(authMsg){
-        clearInterval(timer);
-        cleanProductResultWatchers.delete(pedidoId);
+        continuar = false;
         if(statusElLocal) statusElLocal.textContent = authMsg;
         return;
       }
 
       if(data.ok && data.imagem_pronta){
-        clearInterval(timer);
-        cleanProductResultWatchers.delete(pedidoId);
-        finalizarProgressoNoProduto(form, pedidoId);
-        atualizarPedidoCopaColombiaLocal(pedidoId, "pronto");
-        const previewUrl = `${API_BASE}/pedidos/${pedidoId}/preview?ts=${Date.now()}`;
-        if(statusElLocal) statusElLocal.textContent = "Confira sua arte antes de baixar";
-        if(imgEl){
-          imgEl.src = previewUrl;
-          imgEl.classList.add("previewProtegida");
-          imgEl.style.display = "block";
+        const pagamentoPendente = data.pagamento_pendente === true;
+        const videoPago = pedidoIncluiVideoPago(data);
+        const estadoVideo = estadoEntregaVideoPedido(data);
+        const videoEncerrado = !videoPago || estadoVideo === "pronto" || estadoVideo === "falhou";
+        continuar = !pagamentoPendente && !videoEncerrado;
+
+        if(!watcher.imagemProntaConhecida){
+          finalizarProgressoNoProduto(form, pedidoId);
+          atualizarPedidoCopaColombiaLocal(pedidoId, "pronto");
+          const previewUrl = `${API_BASE}/pedidos/${pedidoId}/preview?ts=${Date.now()}`;
+          if(imgEl){
+            imgEl.src = previewUrl;
+            imgEl.classList.add("previewProtegida");
+            imgEl.style.display = "block";
+          }
+          watcher.imagemProntaConhecida = true;
+        }
+
+        if(statusElLocal){
+          statusElLocal.textContent = pagamentoPendente
+            ? "Imagem pronta. Conclua o pagamento em Meus pedidos para baixar."
+            : estadoVideo === "pronto"
+              ? "Sua imagem e seu vídeo estão prontos"
+              : estadoVideo === "processando"
+                ? "Imagem pronta. Seu vídeo está em produção..."
+                : estadoVideo === "falhou"
+                  ? "Imagem pronta. O vídeo não foi concluído; fale com o suporte."
+                  : "Confira sua arte antes de baixar";
         }
         if(downloadEl){
-          configurarAcaoDownloadPedido(downloadEl, pedidoId, data.aprovado_cliente === true);
-          downloadEl.onclick = async (ev) => {
-            ev.preventDefault();
-            if(data.aprovado_cliente === true){
-              await baixarPedido(pedidoId);
-            }else{
-              await aprovarPedido(pedidoId);
-            }
-            restaurarImagemOriginalDoProduto(form);
-          };
+          if(pagamentoPendente){
+            downloadEl.style.display = "none";
+            downloadEl.onclick = null;
+          }else{
+            configurarAcaoDownloadPedido(downloadEl, pedidoId, data.aprovado_cliente === true);
+            downloadEl.onclick = async (ev) => {
+              ev.preventDefault();
+              if(data.aprovado_cliente === true){
+                await baixarPedido(pedidoId);
+              }else{
+                await aprovarPedido(pedidoId);
+              }
+              restaurarImagemOriginalDoProduto(form);
+            };
+          }
         }
-        if(videoDownloadEl && data.video_pronto === true){
-          videoDownloadEl.style.display = "inline-block";
-          videoDownloadEl.onclick = async (ev) => {
-            ev.preventDefault();
-            if(data.aprovado_cliente === true){
-              await baixarVideoPedido(pedidoId);
-            }else{
-              alert("Aprove a arte primeiro. Depois o botão de vídeo ficará disponível em Meus pedidos.");
-            }
-          };
-        }
-        if(statusElLocal && data.video_generation?.status === "failed"){
-          statusElLocal.textContent = "Imagem pronta. O teste de vídeo não foi concluído.";
+        if(videoDownloadEl){
+          if(!pagamentoPendente && estadoVideo === "pronto"){
+            configurarAcaoDownloadVideoPedido(
+              videoDownloadEl,
+              pedidoId,
+              data.aprovado_cliente === true
+            );
+          }else{
+            videoDownloadEl.style.display = "none";
+            videoDownloadEl.onclick = null;
+          }
         }
         registrarStatusDownloadPedido(statusElLocal, pedidoId);
       }else{
@@ -27321,10 +27384,28 @@ async function acompanharResultadoClean(pedidoId, form){
       }
     }catch{
       if(statusElLocal) statusElLocal.textContent = "Erro ao consultar status da imagem.";
-    }
-  }, 5000);
+    }finally{
+      if(!continuar){
+        encerrarWatcher();
+        return;
+      }
 
-  if(pedidoId) cleanProductResultWatchers.set(pedidoId, timer);
+      if(Date.now() - watcher.iniciadoEm >= limitePollingMs){
+        if(statusElLocal){
+          statusElLocal.textContent = watcher.imagemProntaConhecida
+            ? "Imagem pronta. O vídeo continua sendo preparado; acompanhe em Meus pedidos."
+            : "A criação continua em andamento; acompanhe em Meus pedidos.";
+        }
+        encerrarWatcher();
+        return;
+      }
+
+      watcher.timer = setTimeout(consultar, 5000);
+    }
+  };
+
+  if(pedidoId) cleanProductResultWatchers.set(pedidoId, watcher);
+  await consultar();
 }
 
 function restaurarPedidosAtivos(pedidos){
@@ -33229,6 +33310,49 @@ function pedidoExigePixAntesCriacaoUI(p){
   );
 }
 
+function pedidoIncluiVideoPago(p){
+  const video = p?.video_generation;
+  if(p?.video_pronto === true) return true;
+  if(!video || typeof video !== "object") return false;
+
+  const entrega = String(video.delivery_mode || p?.fields?.delivery_mode || "")
+    .trim()
+    .toLowerCase();
+
+  return (
+    video.requested === true &&
+    (video.commercial === true || entrega === "image_video")
+  );
+}
+
+function estadoEntregaVideoPedido(p){
+  if(!pedidoIncluiVideoPago(p)) return "sem_video";
+  if(p?.video_pronto === true) return "pronto";
+
+  const status = String(p?.video_generation?.status || "").trim().toLowerCase();
+  if([
+    "failed",
+    "error",
+    "not_generated",
+    "blocked",
+    "cancelled",
+    "canceled",
+    "rejected"
+  ].includes(status)) return "falhou";
+  return "processando";
+}
+
+function htmlEstadoVideoPedido(p){
+  const estado = estadoEntregaVideoPedido(p);
+  if(estado === "processando"){
+    return `<div class="pedidoVideoStatus">🎬 Imagem pronta · vídeo em produção.</div>`;
+  }
+  if(estado === "falhou"){
+    return `<div class="pedidoVideoStatus">⚠️ O vídeo não foi concluído. Fale com o suporte para receber sua entrega.</div>`;
+  }
+  return "";
+}
+
 function cardPagamentoPendente(p) {
   const valorNumero = Number(p.valor_pendente || 0);
   const valor = Number.isInteger(valorNumero)
@@ -33653,6 +33777,8 @@ function atualizarMenuPedidosTopo(pedidos){
     const mostrarPagamentoPendente = pagamentoPendente && (!!p.imagem_url || exigePixAntesCriacao);
     const usouAjuste = p.ajuste_automatico_usado === true;
     const criacaoEconomica = p.modalidade_criacao === "economica";
+    const videoPago = pedidoIncluiVideoPago(p);
+    const videoPronto = videoPago && p.video_pronto === true;
 
     return `
     <div class="menuPedidoItem" data-pedido-id="${p.id}">
@@ -33664,7 +33790,9 @@ function atualizarMenuPedidosTopo(pedidos){
             👇 Esta é apenas a prévia da imagem abaixo.<br>
             ${criacaoEconomica
               ? `A Cria\u00e7\u00e3o Econ\u00f4mica n\u00e3o inclui edi\u00e7\u00e3o personalizada.`
-              : `Voc\u00ea pode baixar a imagem final<br>ou pedir 1 edi\u00e7\u00e3o gratuita antes de baixar 🚀`}
+              : videoPago
+                ? `Voc\u00ea receber\u00e1 a imagem e o v\u00eddeo finais<br>ou pode pedir 1 edi\u00e7\u00e3o gratuita antes de aprovar 🚀`
+                : `Voc\u00ea pode baixar a imagem final<br>ou pedir 1 edi\u00e7\u00e3o gratuita antes de baixar 🚀`}
           </div>
           `}
         </div>
@@ -33693,14 +33821,16 @@ function atualizarMenuPedidosTopo(pedidos){
   <button class="btnCopiar" onclick="copiarDescricaoTopo('${p.id}')">📋</button>
 </div>
 
+${videoPago && !pagamentoPendente ? `<div class="pedidoEntregaVideoInfo">Sua entrega inclui imagem + vídeo.</div>` : ``}
 ${pagamentoPendente ? `
 ` : aprovado ? `
-<button type="button" class="menuPedidoBtn" data-pedido-download data-pedido-id="${p.id}" onclick="baixarPedido('${p.id}')">Baixar novamente</button>
+<button type="button" class="menuPedidoBtn" data-pedido-download data-pedido-id="${p.id}" onclick="baixarPedido('${p.id}')">Baixar imagem</button>
+${videoPronto ? `<button type="button" class="menuPedidoBtn menuPedidoBtnVideo" data-pedido-video-download data-pedido-id="${p.id}" onclick="baixarVideoPedido('${p.id}')">Baixar vídeo de 8s</button>` : htmlEstadoVideoPedido(p)}
 <div class="pedidoDownloadFeedback" data-pedido-download-status data-pedido-id="${p.id}" aria-live="polite"></div>
 <button type="button" class="menuPedidoBtn" onclick="compartilharImagemPedido('${p.id}')">Compartilhar imagem</button>
-${p.video_pronto === true ? `<button type="button" class="menuPedidoBtn" onclick="baixarVideoPedido('${p.id}')">Baixar vídeo de 8s</button>` : ``}
 ` : `
-<button type="button" class="menuPedidoBtn" data-pedido-download data-pedido-id="${p.id}" onclick="aprovarPedido('${p.id}')">✅ Está boa, baixar</button>
+<button type="button" class="menuPedidoBtn" data-pedido-download data-pedido-id="${p.id}" onclick="aprovarPedido('${p.id}')">✅ Está boa, baixar imagem</button>
+${videoPronto ? `<button type="button" class="menuPedidoBtn menuPedidoBtnVideo" data-pedido-video-download data-pedido-id="${p.id}" onclick="aprovarEBaixarVideoPedido('${p.id}')">✅ Está boa, baixar vídeo de 8s</button>` : htmlEstadoVideoPedido(p)}
 <div class="pedidoDownloadFeedback" data-pedido-download-status data-pedido-id="${p.id}" aria-live="polite"></div>
 <button type="button" class="menuPedidoBtn" onclick="aprovarECompartilharPedido('${p.id}')">Compartilhar imagem</button>
 ${criacaoEconomica ? `
@@ -33857,6 +33987,8 @@ async function carregarHistorico(){
       const mostrarPagamentoPendente = pagamentoPendente && (!!p.imagem_url || exigePixAntesCriacao);
       const usouAjuste = p.ajuste_automatico_usado === true;
       const criacaoEconomica = p.modalidade_criacao === "economica";
+      const videoPago = pedidoIncluiVideoPago(p);
+      const videoPronto = videoPago && p.video_pronto === true;
 
       return `
       <div data-pedido-id="${p.id}" data-historico-pedido-id="${p.id}" style="background:#fff;color:#000;padding:10px;border-radius:10px;border:1px solid #e5e7eb;">
@@ -33875,7 +34007,9 @@ async function carregarHistorico(){
   👇 Esta é apenas a prévia da sua arte.<br>
   ${criacaoEconomica
     ? `A Cria\u00e7\u00e3o Econ\u00f4mica n\u00e3o inclui edi\u00e7\u00e3o personalizada.`
-    : `Voc\u00ea pode baixar a imagem final em alta qualidade<br>ou pedir 1 edi\u00e7\u00e3o gratuita antes de baixar 🚀`}
+    : videoPago
+      ? `Voc\u00ea receber\u00e1 a imagem e o v\u00eddeo finais em alta qualidade<br>ou pode pedir 1 edi\u00e7\u00e3o gratuita antes de aprovar 🚀`
+      : `Voc\u00ea pode baixar a imagem final em alta qualidade<br>ou pedir 1 edi\u00e7\u00e3o gratuita antes de baixar 🚀`}
 </div>`}
           </div>
         ` : economicaAntesDoPagamento ? `
@@ -33900,20 +34034,22 @@ ${p.status === "pronto" ? `
   <button class="btnCopiar" onclick="copiarDescricao('${p.id}')">📋</button>
 </div>
 
+${videoPago && !pagamentoPendente ? `<div class="pedidoEntregaVideoInfo">Sua entrega inclui imagem + vídeo.</div>` : ``}
 ${pagamentoPendente ? `
 ` : aprovado ? `
         <button data-pedido-download data-pedido-id="${p.id}" onclick="baixarPedido('${p.id}')" style="margin-top:8px;padding:8px 12px;border-radius:10px;border:none;background:#2ecc71;color:#fff;font-weight:900;cursor:pointer;width:100%;">
-          Baixar novamente
+          Baixar imagem
         </button>
+        ${videoPronto ? `<button class="menuPedidoBtn menuPedidoBtnVideo" data-pedido-video-download data-pedido-id="${p.id}" onclick="baixarVideoPedido('${p.id}')">Baixar vídeo de 8s</button>` : htmlEstadoVideoPedido(p)}
         <div class="pedidoDownloadFeedback" data-pedido-download-status data-pedido-id="${p.id}" aria-live="polite"></div>
         <button onclick="compartilharImagemPedido('${p.id}')" style="margin-top:8px;padding:8px 12px;border-radius:10px;border:none;background:#0f172a;color:#fff;font-weight:900;cursor:pointer;width:100%;">
           Compartilhar imagem
         </button>
-        ${p.video_pronto === true ? `<button onclick="baixarVideoPedido('${p.id}')" style="margin-top:8px;padding:8px 12px;border-radius:10px;border:none;background:#2563eb;color:#fff;font-weight:900;cursor:pointer;width:100%;">Baixar vídeo de 8s</button>` : ``}
 ` : `
         <button data-pedido-download data-pedido-id="${p.id}" onclick="aprovarPedido('${p.id}')" style="margin-top:8px;padding:8px 12px;border-radius:10px;border:none;background:#16a34a;color:#fff;font-weight:900;cursor:pointer;width:100%;">
           ✅ Está boa, baixar imagem
         </button>
+        ${videoPronto ? `<button class="menuPedidoBtn menuPedidoBtnVideo" data-pedido-video-download data-pedido-id="${p.id}" onclick="aprovarEBaixarVideoPedido('${p.id}')">✅ Está boa, baixar vídeo de 8s</button>` : htmlEstadoVideoPedido(p)}
         <div class="pedidoDownloadFeedback" data-pedido-download-status data-pedido-id="${p.id}" aria-live="polite"></div>
         <button onclick="aprovarECompartilharPedido('${p.id}')" style="margin-top:8px;padding:8px 12px;border-radius:10px;border:none;background:#0f172a;color:#fff;font-weight:900;cursor:pointer;width:100%;">
           Compartilhar imagem
@@ -34092,13 +34228,37 @@ function configurarAcaoDownloadPedido(el, id, aprovado){
   el.disabled = false;
   el.removeAttribute("aria-busy");
   el.removeAttribute("aria-disabled");
-  el.textContent = aprovado ? "Baixar novamente" : "\u2705 Est\u00e1 boa, baixar imagem";
+  el.textContent = aprovado ? "Baixar imagem" : "\u2705 Est\u00e1 boa, baixar imagem";
   el.onclick = async (ev) => {
     ev?.preventDefault?.();
     if(aprovado){
       await baixarPedido(pedidoId);
     }else{
       await aprovarPedido(pedidoId);
+    }
+  };
+  el.style.display = "inline-block";
+}
+
+function configurarAcaoDownloadVideoPedido(el, id, aprovado){
+  if(!el) return;
+  const pedidoId = String(id || "");
+  el.removeAttribute("href");
+  el.removeAttribute("target");
+  el.dataset.pedidoVideoDownload = "";
+  el.dataset.pedidoId = pedidoId;
+  el.disabled = false;
+  el.removeAttribute("aria-busy");
+  el.removeAttribute("aria-disabled");
+  el.textContent = aprovado
+    ? "Baixar vídeo de 8s"
+    : "\u2705 Est\u00e1 boa, baixar vídeo de 8s";
+  el.onclick = async (ev) => {
+    ev?.preventDefault?.();
+    if(aprovado){
+      await baixarVideoPedido(pedidoId);
+    }else{
+      await aprovarEBaixarVideoPedido(pedidoId);
     }
   };
   el.style.display = "inline-block";
@@ -34111,7 +34271,7 @@ function atualizarEstadoVisualDownloadPedido(id, estado, mensagem = ""){
   const textos = {
     aprovando: "Aprovando\u2026",
     preparando: "Preparando download\u2026",
-    liberado: "Baixar novamente",
+    liberado: "Baixar imagem",
     aguardando_aprovacao: "\u2705 Est\u00e1 boa, baixar imagem"
   };
 
@@ -34146,9 +34306,58 @@ function atualizarEstadoVisualDownloadPedido(id, estado, mensagem = ""){
     });
 }
 
-async function aprovarPedido(id){
+function atualizarEstadoVisualDownloadVideoPedido(id, estado, mensagem = ""){
+  const pedidoId = String(id || "");
+  const seletorId = seletorPedidoSeguro(pedidoId);
+  const processando = estado === "aprovando" || estado === "preparando";
+  const textos = {
+    aprovando: "Aprovando\u2026",
+    preparando: "Preparando vídeo\u2026",
+    liberado: "Baixar vídeo de 8s",
+    aguardando_aprovacao: "\u2705 Est\u00e1 boa, baixar vídeo de 8s"
+  };
+
+  document
+    .querySelectorAll(`[data-pedido-video-download][data-pedido-id="${seletorId}"]`)
+    .forEach((el) => {
+      if(textos[estado]) el.textContent = textos[estado];
+      el.disabled = processando;
+      el.setAttribute("aria-busy", processando ? "true" : "false");
+      el.setAttribute("aria-disabled", processando ? "true" : "false");
+
+      if(estado === "liberado"){
+        el.onclick = async (ev) => {
+          ev?.preventDefault?.();
+          await baixarVideoPedido(pedidoId);
+        };
+      }else if(estado === "aguardando_aprovacao"){
+        el.onclick = async (ev) => {
+          ev?.preventDefault?.();
+          await aprovarEBaixarVideoPedido(pedidoId);
+        };
+      }
+    });
+
+  if(mensagem){
+    document
+      .querySelectorAll(`[data-pedido-download-status][data-pedido-id="${seletorId}"]`)
+      .forEach((el) => {
+        el.textContent = mensagem;
+        if(el.classList.contains("pedidoDownloadFeedback")){
+          el.classList.toggle("show", true);
+        }
+      });
+  }
+}
+
+async function aprovarPedidoParaDownload(id, formato = "resultado"){
   const pedidoId = String(id || "");
   if(!pedidoId) return false;
+  const baixarVideo = formato === "video";
+  const atualizarAprovacaoNosDoisBotoes = (estado, mensagem = "") => {
+    atualizarEstadoVisualDownloadPedido(pedidoId, estado, mensagem);
+    atualizarEstadoVisualDownloadVideoPedido(pedidoId, estado, mensagem);
+  };
 
   if(aprovacoesPedidoEmAndamento.has(pedidoId)){
     mostrarAvisoPedido(
@@ -34159,7 +34368,9 @@ async function aprovarPedido(id){
     return false;
   }
 
-  const chaveDownload = `pedido:${pedidoId}:resultado`;
+  const chaveDownload = baixarVideo
+    ? `pedido_video:${pedidoId}:video`
+    : `pedido:${pedidoId}:resultado`;
   if(downloadsDiretosEmAndamento.has(chaveDownload)){
     mostrarAvisoPedido(
       "Download em prepara\u00e7\u00e3o",
@@ -34170,13 +34381,12 @@ async function aprovarPedido(id){
   }
 
   aprovacoesPedidoEmAndamento.add(pedidoId);
-  atualizarEstadoVisualDownloadPedido(
-    pedidoId,
+  atualizarAprovacaoNosDoisBotoes(
     "aprovando",
     "Aprovando seu pedido\u2026"
   );
 
-  ia4Track("clicou_esta_boa_baixar", {
+  ia4Track(baixarVideo ? "clicou_esta_boa_baixar_video" : "clicou_esta_boa_baixar", {
     pedido_id: pedidoId,
     produto: selectedProductInput?.value || "",
     categoria: categoriaSelecionada || "",
@@ -34197,21 +34407,20 @@ async function aprovarPedido(id){
 
     if(authMsg){
       alert(authMsg);
-      atualizarEstadoVisualDownloadPedido(pedidoId, "aguardando_aprovacao", authMsg);
+      atualizarAprovacaoNosDoisBotoes("aguardando_aprovacao", authMsg);
       return false;
     }
 
     if(!r.ok || !out.ok || out.pode_baixar === false){
       const mensagem = out.error || out.mensagem || "Não foi possível liberar o download deste pedido.";
       alert(mensagem);
-      atualizarEstadoVisualDownloadPedido(pedidoId, "aguardando_aprovacao", mensagem);
+      atualizarAprovacaoNosDoisBotoes("aguardando_aprovacao", mensagem);
       carregarHistorico();
       return false;
     }
   }catch(e){
     alert("Erro de rede ao aprovar pedido");
-    atualizarEstadoVisualDownloadPedido(
-      pedidoId,
+    atualizarAprovacaoNosDoisBotoes(
       "aguardando_aprovacao",
       "Erro de rede ao aprovar. Tente novamente."
     );
@@ -34220,12 +34429,37 @@ async function aprovarPedido(id){
     aprovacoesPedidoEmAndamento.delete(pedidoId);
   }
 
-  atualizarEstadoVisualDownloadPedido(
-    pedidoId,
-    "preparando",
-    "Pedido aprovado. Preparando download\u2026"
-  );
-  return baixarPedido(pedidoId, { aprovadoAgora: true });
+  if(baixarVideo){
+    atualizarEstadoVisualDownloadPedido(pedidoId, "liberado");
+    atualizarEstadoVisualDownloadVideoPedido(
+      pedidoId,
+      "preparando",
+      "Pedido aprovado. Preparando vídeo\u2026"
+    );
+  }else{
+    atualizarEstadoVisualDownloadVideoPedido(pedidoId, "liberado");
+    atualizarEstadoVisualDownloadPedido(
+      pedidoId,
+      "preparando",
+      "Pedido aprovado. Preparando imagem\u2026"
+    );
+  }
+  const iniciou = baixarVideo
+    ? await baixarVideoPedido(pedidoId)
+    : await baixarPedido(pedidoId, { aprovadoAgora: true });
+
+  if(baixarVideo){
+    await carregarHistorico();
+  }
+  return iniciou;
+}
+
+async function aprovarPedido(id){
+  return aprovarPedidoParaDownload(id, "resultado");
+}
+
+async function aprovarEBaixarVideoPedido(id){
+  return aprovarPedidoParaDownload(id, "video");
 }
 
 async function aprovarECompartilharPedido(id){
@@ -34442,8 +34676,14 @@ async function baixarVideoPedido(id){
   const pedidoId = String(id || "");
   if(!pedidoId) return false;
 
-  const chave = `pedido:${pedidoId}:video`;
+  const chave = `pedido_video:${pedidoId}:video`;
   if(downloadsDiretosEmAndamento.has(chave)) return false;
+
+  atualizarEstadoVisualDownloadVideoPedido(
+    pedidoId,
+    "preparando",
+    "Preparando download do vídeo\u2026"
+  );
 
   const iniciou = await iniciarDownloadDiretoSeguro({
     id: pedidoId,
@@ -34453,12 +34693,19 @@ async function baixarVideoPedido(id){
   });
 
   if(iniciou){
-    ia4Track("baixou_video_teste", {
+    ia4Track("baixou_video", {
       pedido_id: pedidoId,
-      produto: "proximo_jogo",
       modelo: "veo"
     });
   }
+
+  atualizarEstadoVisualDownloadVideoPedido(
+    pedidoId,
+    "liberado",
+    iniciou
+      ? "Vídeo liberado. Verifique a pasta Downloads do celular."
+      : "Não foi possível iniciar o vídeo. Toque em Baixar vídeo para tentar novamente."
+  );
   return iniciou;
 }
 
@@ -34504,7 +34751,7 @@ async function baixarPedido(id, { aprovadoAgora = false } = {}){
     atualizarEstadoVisualDownloadPedido(
       pedidoId,
       "liberado",
-      "N\u00e3o foi poss\u00edvel iniciar o download. Toque em Baixar novamente para tentar."
+      "N\u00e3o foi poss\u00edvel iniciar o download. Toque em Baixar imagem para tentar."
     );
     return false;
   }
@@ -34534,7 +34781,7 @@ async function baixarPedido(id, { aprovadoAgora = false } = {}){
   }else{
     mostrarAvisoPedido(
       "\u2705 Imagem liberada!",
-      "Verifique a pasta Downloads do celular. Para baixar outra c\u00f3pia, use o bot\u00e3o \u201cBaixar novamente\u201d.",
+      "Verifique a pasta Downloads do celular. Para baixar outra c\u00f3pia, use o bot\u00e3o \u201cBaixar imagem\u201d.",
       8000
     );
   }
