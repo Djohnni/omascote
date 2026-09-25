@@ -17365,9 +17365,18 @@ function omascoteChatAsset(files, field, legacyName, sourceField = field){
   return { legacyName, files:[...(files[sourceField] || [])] };
 }
 
+const OMASCOTE_CHAT_IMAGE_ONLY_PRODUCTS = new Set([
+  "jogador_escudo",
+  "contratacao",
+  "proximo_jogo_jogador",
+  "resultado_jogo_jogador"
+]);
+
 function omascoteChatBaseCleanOrder(productKey, values, files){
   const sportContext = omascoteChatSportContext(values);
-  const deliveryMode = values.delivery_mode === "image_video" ? "image_video" : "image";
+  const deliveryMode = !OMASCOTE_CHAT_IMAGE_ONLY_PRODUCTS.has(productKey) && values.delivery_mode === "image_video"
+    ? "image_video"
+    : "image";
   const fields = {
     visual_style:String(values.visual_style || "3D").toLowerCase(),
     coupon_code:String(values.coupon_code || "").trim(),

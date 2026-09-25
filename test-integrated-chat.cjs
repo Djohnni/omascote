@@ -16,6 +16,11 @@ assert.match(atendimentoBundle, /omascote-chat:create-order-batch/, "o chat prec
 assert.match(atendimentoBundle, /Somente imagem/, "o envio precisa oferecer somente imagem");
 assert.match(atendimentoBundle, /Imagem \+ vídeo/, "o envio precisa oferecer imagem com vídeo");
 assert.match(atendimentoBundle, /8 a 12 segundos/, "o vídeo precisa informar a duração vendida");
+assert.match(atendimentoBundle, /videoProdutosSomenteImagem/, "o chat precisa separar os produtos com pessoa que aceitam apenas imagem");
+assert.match(atendimentoBundle, /Este produto está disponível somente como imagem/, "o chat precisa explicar quando vídeo não estiver disponível");
+for(const productId of ["jogador_escudo", "contratacao", "proximo_jogo_jogador", "resultado_jogo_jogador"]){
+  assert.match(atendimentoBundle, new RegExp(productId), `${productId} precisa estar protegido contra venda de vídeo`);
+}
 assert.match(html, /class="homeChatStage" id="integratedChatModal"/, "o chat precisa aparecer entre os menus da página inicial");
 assert.match(html, /id="productsMenuToggle"[^>]+aria-expanded="false"/, "os produtos precisam começar recolhidos");
 assert.match(html, /id="productsMenuPanel" hidden/, "a área antiga de produtos precisa iniciar fechada");
@@ -230,10 +235,12 @@ assert.equal(JSON.parse(crest3dForm.get("fields_json")).video_model, "fast");
 assert.equal(JSON.parse(crest3dForm.get("assets_json")).team_crest.files[0], "logo.png");
 
 const athleteNext = bridge.omascoteChatBuildCleanOrders(
-  draft("proximo_jogo_jogador", { matchup:"Meu Time x Rival", match_datetime:"domingo 16h", competition:"Copa" }),
+  draft("proximo_jogo_jogador", { matchup:"Meu Time x Rival", match_datetime:"domingo 16h", competition:"Copa", delivery_mode:"image_video", video_model:"fast" }),
   [file("home_crest"), file("away_crest"), file("athlete_photos")]
 )[0].order;
 assert.equal(athleteNext.assets.player_photo.files.length, 1);
+assert.equal(athleteNext.fields.delivery_mode, "image");
+assert.equal(athleteNext.fields.video_model, "");
 
 const individualAthleteNext = bridge.omascoteChatBuildCleanOrders(
   draft("proximo_jogo_jogador", { sport:"Corrida", matchup:"Ana na Corrida da Cidade", match_datetime:"domingo 7h", competition:"10 km" }),
@@ -242,10 +249,12 @@ const individualAthleteNext = bridge.omascoteChatBuildCleanOrders(
 assert.deepEqual(individualAthleteNext.fields.matchup, { text:"Ana na Corrida da Cidade" });
 
 const athleteResult = bridge.omascoteChatBuildCleanOrders(
-  draft("resultado_jogo_jogador", { score:"Meu Time 1 x 0 Rival" }),
+  draft("resultado_jogo_jogador", { score:"Meu Time 1 x 0 Rival", delivery_mode:"image_video", video_model:"fast" }),
   [file("home_crest"), file("away_crest"), file("athlete_photos")]
 )[0].order;
 assert.equal(athleteResult.assets.player_photo.files.length, 1);
+assert.equal(athleteResult.fields.delivery_mode, "image");
+assert.equal(athleteResult.fields.video_model, "");
 
 const individualAthleteResult = bridge.omascoteChatBuildCleanOrders(
   draft("resultado_jogo_jogador", { sport:"Natação", score:"Ana ficou em 2º lugar nos 100 m livre" }),
@@ -254,21 +263,25 @@ const individualAthleteResult = bridge.omascoteChatBuildCleanOrders(
 assert.deepEqual(individualAthleteResult.fields.score, { text:"Ana ficou em 2º lugar nos 100 m livre" });
 
 const playerCards = bridge.omascoteChatBuildCleanOrders(
-  draft("jogador_escudo", { players:"Ana\nBia", sample:"Amostra 2" }),
+  draft("jogador_escudo", { players:"Ana\nBia", sample:"Amostra 2", delivery_mode:"image_video", video_model:"fast" }),
   [file("team_crest"), file("player_photos"), file("player_photos")]
 );
 assert.equal(playerCards.length, 2);
 assert.equal(playerCards[1].order.fields.player_name, "Bia");
 assert.equal(playerCards[0].order.assets.player_photo.files.length, 1);
+assert.equal(playerCards[0].order.fields.delivery_mode, "image");
+assert.equal(playerCards[0].order.fields.video_model, "");
 
 const contracts = bridge.omascoteChatBuildCleanOrders(
-  draft("contratacao", { style:"Amostra 2", players:"Ana | Ala | Contratado | Não\nBia | Pivô | Renovado | Sim" }),
+  draft("contratacao", { style:"Amostra 2", players:"Ana | Ala | Contratado | Não\nBia | Pivô | Renovado | Sim", delivery_mode:"image_video", video_model:"fast" }),
   [file("team_crest"), file("player_photos"), file("player_photos"), file("jersey_reference")]
 );
 assert.equal(contracts.length, 2);
 assert.equal(contracts[1].order.fields.announcement_type, "renovado");
 assert.equal(contracts[1].order.fields.jersey_enabled, true);
 assert.equal(contracts[0].order.fields.sample_id, "", "as amostras antigas não podem voltar no pedido");
+assert.equal(contracts[0].order.fields.delivery_mode, "image");
+assert.equal(contracts[0].order.fields.video_model, "");
 
 const firstId = bridge.omascoteChatClientRequestId("mesmo-rascunho", 0);
 const secondId = bridge.omascoteChatClientRequestId("mesmo-rascunho", 0);
