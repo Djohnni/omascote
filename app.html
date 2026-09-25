@@ -34431,7 +34431,7 @@ async function iniciarDownloadDiretoSeguro({
 
 async function baixarVideoPedido(id){
   const pedidoId = String(id || "");
-  if(!pedidoId || !internalVeoTestEnabled) return false;
+  if(!pedidoId) return false;
 
   const chave = `pedido:${pedidoId}:video`;
   if(downloadsDiretosEmAndamento.has(chave)) return false;
