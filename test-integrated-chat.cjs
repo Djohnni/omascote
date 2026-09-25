@@ -21,6 +21,23 @@ assert.match(atendimentoBundle, /Este produto está disponível somente como ima
 for(const productId of ["jogador_escudo", "contratacao", "proximo_jogo_jogador", "resultado_jogo_jogador"]){
   assert.match(atendimentoBundle, new RegExp(productId), `${productId} precisa estar protegido contra venda de vídeo`);
 }
+const productMenuStart = atendimentoBundle.indexOf("lab-products-list");
+assert.ok(productMenuStart >= 0, "menu lateral dos produtos não encontrado");
+const productMenuBlock = atendimentoBundle.slice(productMenuStart, productMenuStart + 1800);
+const createArtIndex = productMenuBlock.indexOf("Criar uma arte");
+const sportsImagesIndex = productMenuBlock.indexOf("Imagens e informações");
+assert.ok(createArtIndex >= 0 && sportsImagesIndex >= 0, "as duas seções precisam continuar no menu lateral");
+assert.ok(createArtIndex < sportsImagesIndex, "Criar uma arte precisa aparecer antes de Imagens e informações");
+assert.match(atendimentoBundle, /className:`typing-bubble`/, "o carregamento das opções precisa usar três pontos");
+assert.match(atendimentoBundle, /"aria-label":`Carregando opções`/, "os três pontos precisam explicar o carregamento");
+assert.doesNotMatch(atendimentoBundle, /className:`lab-products-trigger`,variant:`outline`,disabled:!n/, "Ver opções não pode aparecer verde claro durante a inicialização");
+assert.match(atendimentoBundle, /lab-send-loading/, "o envio precisa ter um indicador próprio durante a inicialização");
+assert.match(atendimentoBundle, /"aria-label":`Preparando envio`/, "o indicador de envio precisa ser acessível");
+assert.match(atendimentoBundle, /className:`size-4 animate-spin`/, "o indicador de envio precisa girar sem usar os três pontos");
+assert.match(atendimentoBundle, /"aria-label":`Envio indisponível`/, "uma falha não pode deixar o indicador girando para sempre");
+assert.doesNotMatch(atendimentoBundle, /disabled:c\|\|!n\|\|!o\.trim\(\)/, "o botão de enviar não pode aparecer desativado por causa da inicialização");
+assert.match(atendimentoBundle, /className:`shrink-0 inline-flex[^`]+lab-send-loading`,style:\{width:43,height:43\}/, "o indicador precisa ter os mesmos 43 por 43 pixels do botão de enviar");
+assert.match(atendimentoHtml, /index-GwVL5Yzi\.js\?v=20260925-chat-menu-loading/, "o navegador precisa buscar o bundle atualizado");
 assert.match(html, /class="homeChatStage" id="integratedChatModal"/, "o chat precisa aparecer entre os menus da página inicial");
 assert.match(html, /id="productsMenuToggle"[^>]+aria-expanded="false"/, "os produtos precisam começar recolhidos");
 assert.match(html, /id="productsMenuPanel" hidden/, "a área antiga de produtos precisa iniciar fechada");
