@@ -45,7 +45,17 @@ for(const productKey of ['proximo_jogo', 'resultado']){
     },
   };
 
-  for(const currentRole of ['', 'player_photo', 'team_photo']){
+  role = '';
+  video.checked = true;
+  api.updateCopaColombiaDeliveryUi(form);
+  assert.equal(video.disabled, false);
+  assert.equal(videoLabel.hidden, false);
+  const simpleOrder = api.serializeCleanProductForm(productKey, form);
+  assert.equal(simpleOrder.fields.delivery_mode, 'image_video');
+  assert.equal(simpleOrder.fields.match_photo_type, undefined);
+  assert.equal(simpleOrder.fields.mascot_description, undefined);
+
+  for(const currentRole of ['player_photo', 'team_photo']){
     role = currentRole;
     delete form.dataset.copaPhotoMode;
     video.checked = true;
@@ -76,4 +86,4 @@ for(const productKey of ['proximo_jogo', 'resultado']){
   assert.equal(order.fields.match_photo_type, 'mascot_photo');
   assert.equal(order.fields.delivery_mode, 'image_video');
 }
-console.log('OK: Copa só oferece vídeo com mascote; jogador, time e sem foto são somente imagem');
+console.log('OK: Copa oferece vídeo com mascote ou sem foto; jogador e time são somente imagem');
