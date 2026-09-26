@@ -17620,7 +17620,14 @@ function omascoteChatAwaitRegistration(prepared, authContext){
 
 async function omascoteChatSubmitPreparedOrders(prepared, authContext){
   if(!prepared.length) throw new Error("Nenhum pedido foi preparado.");
-  if(!token) return omascoteChatAwaitRegistration(prepared, authContext);
+  if(!token){
+    const contaPreparada = await criarContaAutomaticaAntesPedido({
+      nome_time:"Meu time",
+      produto:prepared[0].productKey,
+      silent:true
+    });
+    if(!contaPreparada) throw new Error("Não foi possível preparar sua conta provisória. Toque em Enviar pedido para tentar novamente.");
+  }
   const results = [];
   for(let index = 0; index < prepared.length; index++){
     const item = prepared[index];
@@ -27167,6 +27174,7 @@ function processarPedidosPagosParaProducao(pedidos){
   if(liberados.length){
     atualizarTopoProducao(liberados.map(({ pedido }) => pedido));
     mostrarAvisoPedido();
+    if(ia4ContaAutoPendente()) setTimeout(abrirFinalizacaoContaAutoAposPix, 300);
   }
 }
 
@@ -30242,14 +30250,14 @@ function ia4GetDeviceIdAuto(){
   return id;
 }
 
-async function criarContaAutomaticaAntesPedido(){
-  const nomeBase =
+async function criarContaAutomaticaAntesPedido(options = {}){
+  const nomeBase = String(options.nome_time ||
     document.getElementById("dataJogo")?.value?.trim() ||
     document.getElementById("timePrincipal")?.value?.trim() ||
-    "Jogador";
+    "Jogador").trim();
 
   try{
-    msgPedidoEl.textContent = "Preparando sua arte...";
+    if(!options.silent) msgPedidoEl.textContent = "Preparando sua arte...";
 
     const r = await fetch(`${API_BASE}/auth/auto-register`, {
       method:"POST",
@@ -30257,7 +30265,7 @@ async function criarContaAutomaticaAntesPedido(){
       body:JSON.stringify({
         nome_time:nomeBase,
         login:nomeBase,
-        produto:selectedProductInput?.value || "",
+        produto:options.produto || selectedProductInput?.value || "",
         device_id:ia4GetDeviceIdAuto()
       })
     });
@@ -30265,7 +30273,7 @@ async function criarContaAutomaticaAntesPedido(){
     const data = await r.json().catch(()=>({}));
 
     if(!r.ok || !data.ok || !data.token){
-      msgPedidoEl.textContent = data.error || "Não foi possível preparar seu acesso automático.";
+      if(!options.silent) msgPedidoEl.textContent = data.error || "Não foi possível preparar seu acesso automático.";
       return false;
     }
 
@@ -30296,7 +30304,7 @@ async function criarContaAutomaticaAntesPedido(){
 
     return true;
   }catch(e){
-    msgPedidoEl.textContent = "Erro de rede ao preparar seu acesso automático.";
+    if(!options.silent) msgPedidoEl.textContent = "Erro de rede ao preparar seu acesso automático.";
     return false;
   }
 }
@@ -30349,8 +30357,16 @@ abrirCadastroHomeCamposBtn?.addEventListener("click", mostrarCadastroHomeCampos)
 
 let modoCadastro = false;
 let authVisitanteSubmitting = false;
+let authFinalizacaoAutoAposPix = false;
 
 function aplicarTextoAuthVisitante(modo){
+  if(authFinalizacaoAutoAposPix){
+    const titulo = document.querySelector(".authPromoBox h2");
+    const texto = document.querySelector(".authPromoBox p");
+    if(titulo) titulo.textContent = "Pagamento confirmado!";
+    if(texto) texto.textContent = "Sua arte entrou em produção. Agora escolha um login e uma senha para acompanhar o pedido na sua conta.";
+    return;
+  }
   if(omascoteChatAuthPending){
     const titulo = document.querySelector(".authPromoBox h2");
     const texto = document.querySelector(".authPromoBox p");
@@ -30433,6 +30449,25 @@ function abrirCadastroVisitanteModal(){
   setTimeout(()=>document.getElementById("authWhatsapp")?.focus(), 120);
 }
 
+function abrirFinalizacaoContaAutoAposPix(){
+  if(!token || !ia4ContaAutoPendente() || authFinalizacaoAutoAposPix || authVisitanteModal?.classList.contains("open")) return;
+  authFinalizacaoAutoAposPix = true;
+  fecharModalPixQr();
+  abrirCadastroVisitanteModal();
+  authVisitanteModal?.querySelector(".modalTitle")?.replaceChildren(document.createTextNode("Proteja sua conta"));
+  document.getElementById("googleLoginBox")?.style.setProperty("display", "none");
+  document.getElementById("googleLoginSeparator")?.style.setProperty("display", "none");
+  if(authBtnsRow) authBtnsRow.style.display = "none";
+  const loginInput = document.getElementById("authWhatsapp");
+  if(loginInput){
+    loginInput.value = "";
+    loginInput.placeholder = "Escolha um login (nome ou WhatsApp)";
+  }
+  const senhaInput = document.getElementById("authSenha");
+  if(senhaInput) senhaInput.value = "";
+  if(authCriarContaBtn) authCriarContaBtn.textContent = "Salvar login e senha";
+}
+
 function abrirLoginVisitanteModal(){
   inicializarLoginGoogle();
   fluxoEscudo3dCadastro = false;
@@ -30509,6 +30544,14 @@ function abrirCadastroEscudo3dModal(){
 
 function fecharCadastroVisitanteModal(){
   if(!authVisitanteModal) return;
+  if(authFinalizacaoAutoAposPix){
+    authFinalizacaoAutoAposPix = false;
+    authVisitanteModal.querySelector(".modalTitle")?.replaceChildren(document.createTextNode("Finalizar arte"));
+    document.getElementById("googleLoginBox")?.style.removeProperty("display");
+    document.getElementById("googleLoginSeparator")?.style.removeProperty("display");
+    if(authBtnsRow) authBtnsRow.style.display = "flex";
+    document.getElementById("authWhatsapp")?.setAttribute("placeholder", "WhatsApp ou nome do time");
+  }
   authVisitanteModal.classList.remove("open");
   authVisitanteModal.setAttribute("aria-hidden", "true");
 }
@@ -30574,16 +30617,28 @@ async function finalizarCadastroVisitante(){
   }
 
   const authModoCadastro = modoCadastro;
+  const finalizarContaAutoAposPix = authModoCadastro && authFinalizacaoAutoAposPix && ia4ContaAutoPendente() && Boolean(token);
   authVisitanteSubmitting = true;
   authCriarContaBtn.disabled = true;
   if(authEntrarBtn) authEntrarBtn.disabled = true;
   if(authCriarContaToggle) authCriarContaToggle.disabled = true;
-  authCriarContaBtn.textContent = fluxoEscudo3dCadastro ? "Criando seu time..." : "Criando conta...";
+  authCriarContaBtn.textContent = finalizarContaAutoAposPix
+    ? "Salvando seu acesso..."
+    : fluxoEscudo3dCadastro ? "Criando seu time..." : "Criando conta...";
 
   try{
     let r;
 
-if(authModoCadastro){
+if(finalizarContaAutoAposPix){
+  r = await fetch(`${API_BASE}/auth/finalizar-conta-auto`, {
+    method:"POST",
+    headers:{
+      "Authorization":"Bearer " + token,
+      "Content-Type":"application/json"
+    },
+    body:JSON.stringify({ login:whatsapp, senha })
+  });
+}else if(authModoCadastro){
   r = await fetch(`${API_BASE}/auth/register`, {
     method:"POST",
     headers:{ "Content-Type":"application/json" },
@@ -30608,7 +30663,9 @@ if(authModoCadastro){
       authCriarContaBtn.disabled = false;
       if(authEntrarBtn) authEntrarBtn.disabled = false;
       if(authCriarContaToggle) authCriarContaToggle.disabled = false;
-      authCriarContaBtn.textContent = fluxoEscudo3dCadastro ? "Criar meu time e gerar escudo 3D 🚀" : "Criar conta e continuar 🚀";
+      authCriarContaBtn.textContent = finalizarContaAutoAposPix
+        ? "Salvar login e senha"
+        : fluxoEscudo3dCadastro ? "Criar meu time e gerar escudo 3D 🚀" : "Criar conta e continuar 🚀";
       return;
     }
 
@@ -30625,10 +30682,12 @@ if(authModoCadastro){
     localStorage.setItem("omascote_usados", String(data.usados_no_ciclo ?? ""));
     localStorage.removeItem("ia4tube_conta_auto_pendente");
 
-    setAuthVisitanteMsg(authModoCadastro ? "Conta criada com sucesso!" : "Login realizado com sucesso!", "ok");
+    setAuthVisitanteMsg(finalizarContaAutoAposPix
+      ? "Login e senha salvos na sua conta!"
+      : authModoCadastro ? "Conta criada com sucesso!" : "Login realizado com sucesso!", "ok");
 
     const retomarPedidoChat = Boolean(omascoteChatAuthPending);
-    if(authModoCadastro && !retomarAssistente && !retomarPedidoChat){
+    if(authModoCadastro && !retomarAssistente && !retomarPedidoChat && !finalizarContaAutoAposPix){
       document.body.classList.remove("visitanteNaoLogado");
 
       const desbloqueio = document.createElement("div");
