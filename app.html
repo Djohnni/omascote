@@ -13768,6 +13768,38 @@ body.copaColombiaOrderMode [data-product-form="proximo_jogo"] .cleanSubmitBtn{
   font-size:15px;
 }
 
+.copaChampionshipDelivery{
+  min-width:0;
+  margin:0;
+  padding:15px;
+  border:1px solid #cddcec;
+  border-radius:18px;
+  background:#ffffff;
+  text-align:left;
+}
+.copaChampionshipDelivery legend{
+  padding:0 5px;
+  color:#0f2138;
+  font-size:15px;
+  font-weight:900;
+}
+.copaChampionshipDeliveryChoices{display:grid;gap:9px}
+.copaChampionshipDeliveryChoice{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  padding:12px 13px;
+  border:1px solid #d8e2ec;
+  border-radius:12px;
+  color:#16304d;
+  font-weight:750;
+  cursor:pointer;
+}
+.copaChampionshipDeliveryChoice:has(input:checked){border-color:#0d67d8;background:#edf6ff}
+.copaChampionshipDeliveryChoice input{accent-color:#0d67d8}
+.copaChampionshipDeliveryChoice strong{white-space:nowrap;color:#07559f}
+
 .copaChampionshipOrderSummary{
   overflow:hidden;
   border:1px solid #d6e0eb;
@@ -21149,6 +21181,16 @@ function getCleanReviewItems(productKey, form){
     if(coupon) items.push({ label:"Cupom", value:coupon });
   }
 
+  if(form.dataset.comissaoOrigem === "copacolombia" && ["proximo_jogo", "resultado"].includes(productKey)){
+    const comVideo = form.querySelector('[data-copa-delivery-option="image_video"]')?.checked === true;
+    items.push({
+      label:"Entrega",
+      value:comVideo
+        ? "Imagem + vídeo de 8 segundos — R$14,90"
+        : `Somente imagem — ${formatCleanProductPrice(product)}`
+    });
+  }
+
   return items;
 }
 
@@ -26383,6 +26425,13 @@ function serializeCleanProductForm(productKey, form){
       }
     }
   });
+
+  if(form.dataset.comissaoOrigem === "copacolombia" && ["proximo_jogo", "resultado"].includes(productKey)){
+    const comVideo = form.querySelector('[data-copa-delivery-option="image_video"]')?.checked === true;
+    fields.delivery_mode = comVideo ? "image_video" : "image";
+    if(comVideo) fields.video_model = "fast";
+    else delete fields.video_model;
+  }
 
   if(productSupportsScenario(productKey)){
     fields.visual_style = getProductVisualStyle(form);
@@ -37664,6 +37713,24 @@ function iniciarModoPedidoCopaColombia(form, params, config, escudosAplicados){
   `;
   form.prepend(resumo);
 
+  form.querySelector(".copaChampionshipDelivery")?.remove();
+  const delivery = document.createElement("fieldset");
+  delivery.className = "copaChampionshipDelivery";
+  delivery.innerHTML = `
+    <legend>Como você quer receber?</legend>
+    <div class="copaChampionshipDeliveryChoices">
+      <label class="copaChampionshipDeliveryChoice">
+        <span><input type="radio" name="copa_delivery_${htmlEscape(productKey)}" value="image" data-copa-delivery-option="image" checked> Somente imagem</span>
+        <strong>${htmlEscape(formatCleanProductPrice(PRODUCTS[productKey]))}</strong>
+      </label>
+      <label class="copaChampionshipDeliveryChoice">
+        <span><input type="radio" name="copa_delivery_${htmlEscape(productKey)}" value="image_video" data-copa-delivery-option="image_video"> Imagem + vídeo de 8 segundos</span>
+        <strong>R$14,90</strong>
+      </label>
+    </div>
+  `;
+  form.querySelector(".cleanSubmitBtn")?.before(delivery);
+
   const title = form.querySelector(".cleanProductTitle");
   if(title) title.textContent = isResult ? "Informe o resultado" : "Seu flyer está quase pronto";
   const photoTitle = form.querySelector('[data-clean-field-card="match_photo"] .cleanInlineUploadTitleText');
@@ -37686,7 +37753,16 @@ function iniciarModoPedidoCopaColombia(form, params, config, escudosAplicados){
     if(scorersTitle) scorersTitle.textContent = "Quem fez os gols (opcional)";
   }
   const submit = form.querySelector(".cleanSubmitBtn");
-  if(submit) submit.textContent = isResult ? "Gerar flyer do resultado" : "Gerar flyer";
+  const updateDeliveryUi = () => {
+    const comVideo = delivery.querySelector('[data-copa-delivery-option="image_video"]')?.checked === true;
+    const price = form.querySelector(".cleanProductPrice");
+    if(price) price.textContent = comVideo ? "R$14,90" : formatCleanProductPrice(PRODUCTS[productKey]);
+    if(submit) submit.textContent = isResult
+      ? (comVideo ? "Gerar resultado + vídeo" : "Gerar flyer do resultado")
+      : (comVideo ? "Gerar flyer + vídeo" : "Gerar flyer");
+  };
+  delivery.addEventListener("change", updateDeliveryUi);
+  updateDeliveryUi();
 
   resumo.querySelector("[data-copa-change-scenario]")?.addEventListener("click", event => {
     document.body.classList.toggle("copaColombiaShowScenario");
