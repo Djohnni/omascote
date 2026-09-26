@@ -13653,10 +13653,6 @@ body.copaColombiaOrderMode:not(.copaColombiaResultMode) [data-product-form="prox
   display:none !important;
 }
 
-body.copaColombiaOrderMode:not(.copaColombiaResultMode) [data-product-form="proximo_jogo"] [data-clean-photo-type="crests_only"]{
-  display:none !important;
-}
-
 body.copaColombiaOrderMode:not(.copaColombiaResultMode) #productsMenuPanel > .hero{
   display:none !important;
 }
@@ -13799,6 +13795,17 @@ body.copaColombiaOrderMode [data-product-form="proximo_jogo"] .cleanSubmitBtn{
 .copaChampionshipDeliveryChoice:has(input:checked){border-color:#0d67d8;background:#edf6ff}
 .copaChampionshipDeliveryChoice input{accent-color:#0d67d8}
 .copaChampionshipDeliveryChoice strong{white-space:nowrap;color:#07559f}
+.copaChampionshipMascotDescription{
+  flex:1 1 100%;
+  min-width:0;
+  padding:10px 12px;
+  border:1px solid #cbd5e1;
+  border-radius:12px;
+  font:inherit;
+}
+.copaChampionshipMascotDescription[hidden],
+.copaChampionshipDeliveryChoice[hidden]{display:none !important}
+body.copaColombiaOrderMode [data-clean-field-card="match_photo"] .cleanInlinePhotoActions{flex-wrap:wrap}
 
 .copaChampionshipOrderSummary{
   overflow:hidden;
@@ -21182,7 +21189,21 @@ function getCleanReviewItems(productKey, form){
   }
 
   if(form.dataset.comissaoOrigem === "copacolombia" && ["proximo_jogo", "resultado"].includes(productKey)){
-    const comVideo = form.querySelector('[data-copa-delivery-option="image_video"]')?.checked === true;
+    const photoMode = getCopaColombiaPhotoMode(form);
+    const labels = {
+      crests_only:"Sem foto (somente escudos)",
+      player_photo:"Jogador",
+      team_photo:"Time",
+      mascot_photo:"Mascote",
+      mascot_description:"Mascote descrito por você"
+    };
+    items.push({ label:"Foto da arte", value:labels[photoMode] || labels.crests_only });
+    if(photoMode === "mascot_description"){
+      const description = form.querySelector("[data-copa-mascot-description]")?.value.trim();
+      if(description) items.push({ label:"Mascote desejado", value:description });
+    }
+    const comVideo = copaColombiaMascotVideoEligible(form)
+      && form.querySelector('[data-copa-delivery-option="image_video"]')?.checked === true;
     items.push({
       label:"Entrega",
       value:comVideo
@@ -26115,12 +26136,46 @@ function updateCleanInlinePhotoButtons(form, key){
     if(hasFile && !selectedRole) selectedRole = role;
   });
 
+  if(key === "match_photo" && form?.dataset?.comissaoOrigem === "copacolombia" && form.dataset.copaPhotoMode === "mascot_description"){
+    selectedRole = "mascot_description";
+  }
   form?.querySelectorAll?.(`[data-clean-photo-type-for="${CSS.escape(key)}"]`).forEach(button => {
     const role = button.dataset.cleanPhotoType || "";
     const selected = role === (selectedRole || "crests_only");
     button.classList.toggle("is-selected", selected);
     button.setAttribute("aria-pressed", selected ? "true" : "false");
   });
+}
+
+function getCopaColombiaPhotoMode(form){
+  if(form?.dataset?.copaPhotoMode === "mascot_description") return "mascot_description";
+  return getCleanAssetRoles(form, "match_photo")[0] || "crests_only";
+}
+
+function copaColombiaMascotVideoEligible(form){
+  return form?.dataset?.comissaoOrigem === "copacolombia"
+    && ["mascot_photo", "mascot_description"].includes(getCopaColombiaPhotoMode(form));
+}
+
+function updateCopaColombiaDeliveryUi(form){
+  if(form?.dataset?.comissaoOrigem !== "copacolombia") return;
+  const delivery = form.querySelector(".copaChampionshipDelivery");
+  const videoOption = delivery?.querySelector('[data-copa-delivery-option="image_video"]');
+  const imageOption = delivery?.querySelector('[data-copa-delivery-option="image"]');
+  const videoAllowed = copaColombiaMascotVideoEligible(form);
+  if(videoOption){
+    videoOption.disabled = !videoAllowed;
+    videoOption.closest("label").hidden = !videoAllowed;
+    if(!videoAllowed && imageOption) imageOption.checked = true;
+  }
+  const comVideo = videoAllowed && videoOption?.checked === true;
+  const productKey = form.dataset.productForm;
+  const price = form.querySelector(".cleanProductPrice");
+  if(price) price.textContent = comVideo ? "R$14,90" : formatCleanProductPrice(PRODUCTS[productKey]);
+  const submit = form.querySelector(".cleanSubmitBtn");
+  if(submit) submit.textContent = productKey === "resultado"
+    ? (comVideo ? "Gerar resultado + vídeo" : "Gerar flyer do resultado")
+    : (comVideo ? "Gerar flyer + vídeo" : "Gerar flyer");
 }
 
 function clearCleanPhotoRoleSelections(form, key, exceptRole = ""){
@@ -26326,6 +26381,13 @@ function validateCleanProductForm(productKey, form){
   if(scenarioError) return [scenarioError];
   if(fileSizeError) return [fileSizeError];
   if(scoreError) return [scoreError];
+  if(form.dataset.comissaoOrigem === "copacolombia" && getCopaColombiaPhotoMode(form) === "mascot_description"){
+    const description = form.querySelector("[data-copa-mascot-description]")?.value.trim();
+    if(!description){
+      form.querySelector('[data-clean-field-card="match_photo"]')?.classList.add("campoObrigatorioErro");
+      return ["Escreva qual animal ou personagem você quer como mascote."];
+    }
+  }
   return hasError ? [schema.validationMessage || "Preencha os campos obrigatórios."] : [];
 }
 
@@ -26427,7 +26489,13 @@ function serializeCleanProductForm(productKey, form){
   });
 
   if(form.dataset.comissaoOrigem === "copacolombia" && ["proximo_jogo", "resultado"].includes(productKey)){
-    const comVideo = form.querySelector('[data-copa-delivery-option="image_video"]')?.checked === true;
+    if(getCopaColombiaPhotoMode(form) === "mascot_description"){
+      fields.photo_mode = "mascot_description";
+      fields.mascot_description = String(form.querySelector("[data-copa-mascot-description]")?.value || "").trim().slice(0, 160);
+      fields.match_photo_type = "mascot_photo";
+    }
+    const comVideo = copaColombiaMascotVideoEligible(form)
+      && form.querySelector('[data-copa-delivery-option="image_video"]')?.checked === true;
     fields.delivery_mode = comVideo ? "image_video" : "image";
     if(comVideo) fields.video_model = "fast";
     else delete fields.video_model;
@@ -28520,8 +28588,15 @@ function bindCleanProductForms(root){
       if(productKey) selectCleanProductForPicker(productKey, { scroll:false });
       if(role === "crests_only"){
         clearCleanPhotoRoleSelections(form, key);
+        if(form?.dataset?.comissaoOrigem === "copacolombia"){
+          delete form.dataset.copaPhotoMode;
+          const description = form.querySelector("[data-copa-mascot-description]");
+          if(description) description.value = "";
+          if(description) description.hidden = true;
+        }
         setCleanFilePreview(form, key, []);
         updateCleanAccordionForField(form, key);
+        updateCopaColombiaDeliveryUi(form);
         setCleanProductMsg(form, "");
         return;
       }
@@ -28602,6 +28677,12 @@ function bindCleanProductForms(root){
       const selectedPhotoRole = input.dataset.cleanPhotoRole || "";
       if(selectedPhotoRole){
         clearCleanPhotoRoleSelections(form, assetKey, selectedPhotoRole);
+        if(form?.dataset?.comissaoOrigem === "copacolombia"){
+          delete form.dataset.copaPhotoMode;
+          const description = form.querySelector("[data-copa-mascot-description]");
+          if(description) description.value = "";
+          if(description) description.hidden = true;
+        }
       }
 
       setCleanStableAssetState(form, assetStateKey, {
@@ -28618,6 +28699,7 @@ function bindCleanProductForms(root){
       }
       setCleanFilePreview(form, assetKey, getCleanAssetFiles(form, assetKey));
       updateCleanAccordionForField(form, assetKey);
+      if(selectedPhotoRole) updateCopaColombiaDeliveryUi(form);
     });
   });
 
@@ -37676,6 +37758,47 @@ function iniciarModoPedidoCopaColombia(form, params, config, escudosAplicados){
   form.dataset.comissaoJogoId = String(params.get("jogo") || "").trim().slice(0, 120);
   form.dataset.comissaoJogo = `${timeA} x ${timeB}`;
 
+  const photoRow = form.querySelector('[data-clean-field-card="match_photo"]');
+  const photoActions = photoRow?.querySelector(".cleanInlinePhotoActions");
+  const noPhotoButton = photoActions?.querySelector('[data-clean-photo-type="crests_only"]');
+  if(noPhotoButton) noPhotoButton.lastElementChild.textContent = "Sem foto";
+  photoRow?.querySelector("[data-copa-mascot-description]")?.remove();
+  photoActions?.querySelector('[data-clean-photo-type="mascot_description"]')?.remove();
+  if(photoActions){
+    const mascotTextButton = document.createElement("button");
+    mascotTextButton.className = "cleanInlinePhotoButton";
+    mascotTextButton.type = "button";
+    mascotTextButton.dataset.cleanPhotoTypeFor = "match_photo";
+    mascotTextButton.dataset.cleanPhotoType = "mascot_description";
+    mascotTextButton.setAttribute("aria-pressed", "false");
+    mascotTextButton.innerHTML = '<span class="cleanInlinePhotoPlus" aria-hidden="true">+</span><span>Não tenho foto do mascote</span>';
+    photoActions.append(mascotTextButton);
+    const mascotDescription = document.createElement("input");
+    mascotDescription.className = "copaChampionshipMascotDescription";
+    mascotDescription.type = "text";
+    mascotDescription.maxLength = 160;
+    mascotDescription.placeholder = "Qual animal ou personagem você quer como mascote?";
+    mascotDescription.setAttribute("aria-label", mascotDescription.placeholder);
+    mascotDescription.dataset.copaMascotDescription = "";
+    mascotDescription.hidden = true;
+    photoActions.after(mascotDescription);
+    mascotTextButton.addEventListener("click", () => {
+      clearCleanPhotoRoleSelections(form, "match_photo");
+      form.dataset.copaPhotoMode = "mascot_description";
+      setCleanFilePreview(form, "match_photo", []);
+      mascotDescription.hidden = false;
+      updateCleanInlinePhotoButtons(form, "match_photo");
+      updateCopaColombiaDeliveryUi(form);
+      setCleanProductMsg(form, "");
+      mascotDescription.focus();
+    });
+    mascotDescription.addEventListener("input", () => {
+      clearCleanOrderRequestState(form);
+      resetCleanReviewState(form);
+      photoRow?.classList.remove("campoObrigatorioErro");
+    });
+  }
+
   form.querySelector(".copaChampionshipOrderSummary")?.remove();
   const resumo = document.createElement("section");
   resumo.className = "copaChampionshipOrderSummary";
@@ -37752,17 +37875,8 @@ function iniciarModoPedidoCopaColombia(form, params, config, escudosAplicados){
     const scorersTitle = form.querySelector('[data-clean-field-card="scorers"] .cleanFieldAccordionTitleText');
     if(scorersTitle) scorersTitle.textContent = "Quem fez os gols (opcional)";
   }
-  const submit = form.querySelector(".cleanSubmitBtn");
-  const updateDeliveryUi = () => {
-    const comVideo = delivery.querySelector('[data-copa-delivery-option="image_video"]')?.checked === true;
-    const price = form.querySelector(".cleanProductPrice");
-    if(price) price.textContent = comVideo ? "R$14,90" : formatCleanProductPrice(PRODUCTS[productKey]);
-    if(submit) submit.textContent = isResult
-      ? (comVideo ? "Gerar resultado + vídeo" : "Gerar flyer do resultado")
-      : (comVideo ? "Gerar flyer + vídeo" : "Gerar flyer");
-  };
-  delivery.addEventListener("change", updateDeliveryUi);
-  updateDeliveryUi();
+  delivery.addEventListener("change", () => updateCopaColombiaDeliveryUi(form));
+  updateCopaColombiaDeliveryUi(form);
 
   resumo.querySelector("[data-copa-change-scenario]")?.addEventListener("click", event => {
     document.body.classList.toggle("copaColombiaShowScenario");
