@@ -21202,7 +21202,7 @@ function getCleanReviewItems(productKey, form){
       const description = form.querySelector("[data-copa-mascot-description]")?.value.trim();
       if(description) items.push({ label:"Mascote desejado", value:description });
     }
-    const comVideo = copaColombiaMascotVideoEligible(form)
+    const comVideo = copaColombiaVideoEligible(form)
       && form.querySelector('[data-copa-delivery-option="image_video"]')?.checked === true;
     items.push({
       label:"Entrega",
@@ -26152,9 +26152,9 @@ function getCopaColombiaPhotoMode(form){
   return getCleanAssetRoles(form, "match_photo")[0] || "crests_only";
 }
 
-function copaColombiaMascotVideoEligible(form){
+function copaColombiaVideoEligible(form){
   return form?.dataset?.comissaoOrigem === "copacolombia"
-    && ["mascot_photo", "mascot_description"].includes(getCopaColombiaPhotoMode(form));
+    && ["crests_only", "mascot_photo", "mascot_description"].includes(getCopaColombiaPhotoMode(form));
 }
 
 function updateCopaColombiaDeliveryUi(form){
@@ -26162,7 +26162,7 @@ function updateCopaColombiaDeliveryUi(form){
   const delivery = form.querySelector(".copaChampionshipDelivery");
   const videoOption = delivery?.querySelector('[data-copa-delivery-option="image_video"]');
   const imageOption = delivery?.querySelector('[data-copa-delivery-option="image"]');
-  const videoAllowed = copaColombiaMascotVideoEligible(form);
+  const videoAllowed = copaColombiaVideoEligible(form);
   if(videoOption){
     videoOption.disabled = !videoAllowed;
     videoOption.closest("label").hidden = !videoAllowed;
@@ -26494,7 +26494,7 @@ function serializeCleanProductForm(productKey, form){
       fields.mascot_description = String(form.querySelector("[data-copa-mascot-description]")?.value || "").trim().slice(0, 160);
       fields.match_photo_type = "mascot_photo";
     }
-    const comVideo = copaColombiaMascotVideoEligible(form)
+    const comVideo = copaColombiaVideoEligible(form)
       && form.querySelector('[data-copa-delivery-option="image_video"]')?.checked === true;
     fields.delivery_mode = comVideo ? "image_video" : "image";
     if(comVideo) fields.video_model = "fast";
