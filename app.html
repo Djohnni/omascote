@@ -17420,6 +17420,9 @@ const OMASCOTE_CHAT_IMAGE_ONLY_PRODUCTS = new Set([
 
 function omascoteChatBaseCleanOrder(productKey, values, files){
   const sportContext = omascoteChatSportContext(values);
+  const mascotByDescription = ["proximo_jogo", "resultado"].includes(productKey) && values.photo_mode === "Não tenho mascote";
+  const mascotDescription = mascotByDescription ? String(values.mascot_description || "").trim().slice(0, 160) : "";
+  if(mascotByDescription && !mascotDescription) throw new Error("Descreva qual animal ou personagem você quer como mascote.");
   const deliveryMode = !OMASCOTE_CHAT_IMAGE_ONLY_PRODUCTS.has(productKey) && values.delivery_mode === "image_video"
     ? "image_video"
     : "image";
@@ -17434,6 +17437,11 @@ function omascoteChatBaseCleanOrder(productKey, values, files){
       : (deliveryMode === "image_video" ? "fast" : "")
   };
   const assets = {};
+  if(mascotByDescription){
+    fields.photo_mode = "mascot_description";
+    fields.mascot_description = mascotDescription;
+    fields.match_photo_type = "mascot_photo";
+  }
   if(["proximo_jogo", "proximo_jogo_jogador"].includes(productKey)){
     const matchupText = String(values.matchup || "").trim();
     if(!matchupText) throw new Error("Informe quem participa e qual é o evento.");
