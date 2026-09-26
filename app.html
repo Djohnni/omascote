@@ -15706,7 +15706,7 @@ body.integratedChatOpen{overflow:hidden}
         class="integratedChatFrame"
         id="integratedChatFrame"
         title="Atendimento O Mascote"
-        src="/atendimento/index.html?integrado=1&v=20260926-mascot-photo-option"
+        src="/atendimento/index.html?integrado=1&v=20260926-chat-auth-pix"
         allow="clipboard-write"
       ></iframe>
       <button class="integratedChatClose" id="integratedChatClose" type="button" aria-label="Reduzir atendimento">Reduzir</button>
@@ -15968,7 +15968,7 @@ body.integratedChatOpen{overflow:hidden}
               <button class="legalLinkBtn" id="btnExcluirContaFooter" type="button">Excluir Conta</button>
               <button class="legalLinkBtn" id="btnDenunciarIaFooter" type="button">Denunciar Conteúdo Gerado por IA</button>
               <button class="legalLinkBtn" id="btnAbrirSuporteFooter" type="button">Suporte</button>
-              <a class="legalLinkBtn" id="btnTesteNovoAtendimentoFooter" href="/atendimento/index.html?integrado=1&v=20260926-mascot-photo-option">Novo atendimento</a>
+              <a class="legalLinkBtn" id="btnTesteNovoAtendimentoFooter" href="/atendimento/index.html?integrado=1&v=20260926-chat-auth-pix">Novo atendimento</a>
             </div>
             <div class="brandFootnote">Meu Clube FC é uma plataforma da O Mascote</div>
           </div>
@@ -16365,6 +16365,16 @@ body.integratedChatOpen{overflow:hidden}
         </div>
       </div>
 
+      <div class="googleLoginBox" id="googleLoginBox">
+        <div id="googleLoginModal"></div>
+      </div>
+
+      <div id="googleLoginSeparator" style="display:flex;align-items:center;gap:10px;margin:16px 0 8px;">
+        <div style="height:1px;background:#d1d5db;flex:1;"></div>
+        <div style="font-size:13px;font-weight:950;color:#64748b;">OU</div>
+        <div style="height:1px;background:#d1d5db;flex:1;"></div>
+      </div>
+
       <label for="authNomeTime" id="labelNomeTime" style="display:none;">Nome do time</label>
       <input id="authNomeTime" placeholder="Ex: Los Hermanos" style="display:none;">
 
@@ -16401,16 +16411,6 @@ body.integratedChatOpen{overflow:hidden}
 <button class="btnGreen" id="authCriarContaBtn" type="button" style="width:100%;margin-top:10px;display:none;">
   Criar meu time e gerar Minha Arte Brinde 🚀
 </button>
-
-      <div id="googleLoginSeparator" style="display:flex;align-items:center;gap:10px;margin:16px 0 8px;">
-        <div style="height:1px;background:#d1d5db;flex:1;"></div>
-        <div style="font-size:13px;font-weight:950;color:#64748b;">OU</div>
-        <div style="height:1px;background:#d1d5db;flex:1;"></div>
-      </div>
-
-      <div class="googleLoginBox" id="googleLoginBox">
-        <div id="googleLoginModal"></div>
-      </div>
 
       <div class="authVisitanteMsg" id="authVisitanteMsg"></div>
     </div>
@@ -17265,7 +17265,7 @@ function omascoteChatLocalPreview(){
 }
 
 function omascoteChatUrl(){
-  return new URL("/atendimento/index.html?integrado=1&v=20260926-mascot-photo-option", window.location.origin).href;
+  return new URL("/atendimento/index.html?integrado=1&v=20260926-chat-auth-pix", window.location.origin).href;
 }
 
 function abrirAtendimentoIntegrado(){
@@ -17574,9 +17574,53 @@ function omascoteChatClientRequestId(draftId, index){
   return created;
 }
 
-async function omascoteChatSubmitPreparedOrders(prepared){
-  if(!token) throw new Error("Faça login no O Mascote antes de enviar o pedido.");
+const OMASCOTE_CHAT_AUTH_WAIT_MS = 10 * 60 * 1000;
+let omascoteChatAuthPending = null;
+
+function omascoteChatCancelPendingAuth(message = "Cadastro cancelado. Seu pedido continua no chat."){
+  const pending = omascoteChatAuthPending;
+  if(!pending) return;
+  omascoteChatAuthPending = null;
+  clearTimeout(pending.timeoutId);
+  pending.resolve({ ok:false, error:message });
+}
+
+function omascoteChatResumeAfterAuth(){
+  const pending = omascoteChatAuthPending;
+  if(!pending) return;
+  omascoteChatAuthPending = null;
+  clearTimeout(pending.timeoutId);
+  if(!token){
+    pending.resolve({ ok:false, error:"Não foi possível confirmar o login. Seu pedido continua no chat." });
+    return;
+  }
+  Promise.resolve(omascoteChatSubmitPreparedOrders(pending.prepared))
+    .then(pending.resolve)
+    .catch(error => pending.resolve({ ok:false, error:error?.message || "Não foi possível enviar o pedido." }));
+}
+
+function omascoteChatAwaitRegistration(prepared, authContext){
+  if(omascoteChatAuthPending) throw new Error("Conclua primeiro o cadastro aberto para enviar seu pedido.");
+  return new Promise(resolve => {
+    const pending = { prepared, resolve, timeoutId:null };
+    pending.timeoutId = setTimeout(() => {
+      if(omascoteChatAuthPending === pending){
+        omascoteChatCancelPendingAuth("O cadastro demorou muito. Seu pedido continua no chat; toque em Enviar pedido para tentar novamente.");
+      }
+    }, OMASCOTE_CHAT_AUTH_WAIT_MS);
+    omascoteChatAuthPending = pending;
+    try{
+      authContext?.source?.postMessage({ type:"omascote-chat:auth-required", requestId:authContext.requestId }, authContext.origin);
+      abrirCadastroVisitanteModal();
+    }catch(error){
+      omascoteChatCancelPendingAuth(error?.message || "Não foi possível abrir o cadastro. Tente novamente.");
+    }
+  });
+}
+
+async function omascoteChatSubmitPreparedOrders(prepared, authContext){
   if(!prepared.length) throw new Error("Nenhum pedido foi preparado.");
+  if(!token) return omascoteChatAwaitRegistration(prepared, authContext);
   const results = [];
   for(let index = 0; index < prepared.length; index++){
     const item = prepared[index];
@@ -17649,16 +17693,16 @@ async function omascoteChatSubmitPreparedOrders(prepared){
   };
 }
 
-async function omascoteChatSubmitOrders(draft, records){
+async function omascoteChatSubmitOrders(draft, records, authContext){
   const prepared = omascoteChatBuildCleanOrders(draft, records).map((item, index) => ({
     ...item,
     chatDraftId:draft.id,
     chatOrderIndex:index
   }));
-  return omascoteChatSubmitPreparedOrders(prepared);
+  return omascoteChatSubmitPreparedOrders(prepared, authContext);
 }
 
-async function omascoteChatSubmitOrderBatch(items){
+async function omascoteChatSubmitOrderBatch(items, authContext){
   if(!Array.isArray(items) || !items.length || items.length > 3) throw new Error("Escolha de 1 a 3 jogos por vez.");
   const prepared = [];
   for(const entry of items){
@@ -17671,7 +17715,7 @@ async function omascoteChatSubmitOrderBatch(items){
     });
   }
   if(prepared.length > 3) throw new Error("Escolha de 1 a 3 jogos por vez.");
-  return omascoteChatSubmitPreparedOrders(prepared);
+  return omascoteChatSubmitPreparedOrders(prepared, authContext);
 }
 
 window.addEventListener("message", async event => {
@@ -17690,9 +17734,10 @@ window.addEventListener("message", async event => {
   omascoteChatOrderInFlight.add(requestId);
   let result;
   try{
+    const authContext = { source:event.source, origin:event.origin, requestId };
     result = event.data.type === "omascote-chat:create-order-batch"
-      ? await omascoteChatSubmitOrderBatch(event.data.items)
-      : await omascoteChatSubmitOrders(event.data.draft, event.data.files);
+      ? await omascoteChatSubmitOrderBatch(event.data.items, authContext)
+      : await omascoteChatSubmitOrders(event.data.draft, event.data.files, authContext);
   }catch(error){
     result = { ok:false, error:error?.message || "Não foi possível enviar o pedido." };
   }finally{
@@ -18691,7 +18736,9 @@ async function entrarComGoogle(response){
     const acao = acaoDepoisDoCadastro;
     acaoDepoisDoCadastro = null;
 
-    if(retomarAssistente){
+    if(omascoteChatAuthPending){
+      setTimeout(()=>void omascoteChatResumeAfterAuth(), 250);
+    }else if(retomarAssistente){
       setAuthVisitanteMsg("Login realizado com sucesso!", "ok");
       setTimeout(()=>fotoJogosRetomarAposAutenticacao({ created:false }), 250);
     }else if(typeof acao === "function"){
@@ -30304,6 +30351,13 @@ let modoCadastro = false;
 let authVisitanteSubmitting = false;
 
 function aplicarTextoAuthVisitante(modo){
+  if(omascoteChatAuthPending){
+    const titulo = document.querySelector(".authPromoBox h2");
+    const texto = document.querySelector(".authPromoBox p");
+    if(titulo) titulo.textContent = modo === "cadastro" ? "Crie sua conta para continuar" : "Entre para continuar";
+    if(texto) texto.textContent = "Seu pedido está salvo. Depois de entrar, você receberá o Pix. A arte só será produzida após a confirmação do pagamento.";
+    return;
+  }
   const assistentePendente = fotoJogosTemRetomadaAuthPendente();
   const titulo = document.querySelector(".authPromoBox h2");
   const texto = document.querySelector(".authPromoBox p");
@@ -30573,7 +30627,8 @@ if(authModoCadastro){
 
     setAuthVisitanteMsg(authModoCadastro ? "Conta criada com sucesso!" : "Login realizado com sucesso!", "ok");
 
-    if(authModoCadastro && !retomarAssistente){
+    const retomarPedidoChat = Boolean(omascoteChatAuthPending);
+    if(authModoCadastro && !retomarAssistente && !retomarPedidoChat){
       document.body.classList.remove("visitanteNaoLogado");
 
       const desbloqueio = document.createElement("div");
@@ -30690,6 +30745,11 @@ if(authModoCadastro){
     acaoDepoisDoCadastro = null;
 
     setTimeout(()=>{
+      if(retomarPedidoChat){
+        omascoteChatResumeAfterAuth();
+        return;
+      }
+
       if(retomarAssistente){
         fotoJogosRetomarAposAutenticacao({ created:authModoCadastro });
         return;
@@ -30904,9 +30964,15 @@ authCriarContaBtn?.addEventListener("click", ()=>{
   modoCadastro = true;
   finalizarCadastroVisitante();
 });
-authVisitanteCloseBtn?.addEventListener("click", fecharCadastroVisitanteModal);
+authVisitanteCloseBtn?.addEventListener("click", ()=>{
+  omascoteChatCancelPendingAuth();
+  fecharCadastroVisitanteModal();
+});
 authVisitanteModal?.addEventListener("click", (e)=>{
-  if(e.target === authVisitanteModal) fecharCadastroVisitanteModal();
+  if(e.target === authVisitanteModal){
+    omascoteChatCancelPendingAuth();
+    fecharCadastroVisitanteModal();
+  }
 });
 
 function setRequired(inputId, isRequired){
