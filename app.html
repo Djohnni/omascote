@@ -15745,7 +15745,7 @@ body.integratedChatOpen{overflow:hidden}
         class="integratedChatFrame"
         id="integratedChatFrame"
         title="Atendimento O Mascote"
-        src="/atendimento/index.html?integrado=1&v=20260926-menu-video-prices"
+        src="/atendimento/index.html?integrado=1&v=20260926-mascot-shirt"
         allow="clipboard-write"
       ></iframe>
       <button class="integratedChatClose" id="integratedChatClose" type="button" aria-label="Reduzir atendimento">Reduzir</button>
@@ -16007,7 +16007,7 @@ body.integratedChatOpen{overflow:hidden}
               <button class="legalLinkBtn" id="btnExcluirContaFooter" type="button">Excluir Conta</button>
               <button class="legalLinkBtn" id="btnDenunciarIaFooter" type="button">Denunciar Conteúdo Gerado por IA</button>
               <button class="legalLinkBtn" id="btnAbrirSuporteFooter" type="button">Suporte</button>
-              <a class="legalLinkBtn" id="btnTesteNovoAtendimentoFooter" href="/atendimento/index.html?integrado=1&v=20260926-menu-video-prices">Novo atendimento</a>
+              <a class="legalLinkBtn" id="btnTesteNovoAtendimentoFooter" href="/atendimento/index.html?integrado=1&v=20260926-mascot-shirt">Novo atendimento</a>
             </div>
             <div class="brandFootnote">Meu Clube FC é uma plataforma da O Mascote</div>
           </div>
@@ -17304,7 +17304,7 @@ function omascoteChatLocalPreview(){
 }
 
 function omascoteChatUrl(){
-  return new URL("/atendimento/index.html?integrado=1&v=20260926-menu-video-prices", window.location.origin).href;
+  return new URL("/atendimento/index.html?integrado=1&v=20260926-mascot-shirt", window.location.origin).href;
 }
 
 function abrirAtendimentoIntegrado(){
@@ -17499,6 +17499,9 @@ function omascoteChatBaseCleanOrder(productKey, values, files){
       assets.away_crest = omascoteChatAsset(files, "away_crest", "escudo2");
       assets.match_photo = omascoteChatAsset(files, "match_photo", "mascote");
       omascoteChatApplyMatchPhotoRole(fields, assets.match_photo, values.photo_mode);
+      if(["Mascote", "Não tenho mascote"].includes(values.photo_mode)){
+        assets.uniform_image = omascoteChatAsset(files, "uniform_image", "camiseta");
+      }
     }else{
       assets.team_crest = omascoteChatAsset(files, "team_crest", "escudo1", "home_crest");
       assets.opponent_crest = omascoteChatAsset(files, "opponent_crest", "escudo2", "away_crest");
@@ -17520,6 +17523,9 @@ function omascoteChatBaseCleanOrder(productKey, values, files){
       assets.away_crest = omascoteChatAsset(files, "away_crest", "escudo2");
       assets.match_photo = omascoteChatAsset(files, "match_photo", "mascote");
       omascoteChatApplyMatchPhotoRole(fields, assets.match_photo, values.photo_mode);
+      if(["Mascote", "Não tenho mascote"].includes(values.photo_mode)){
+        assets.uniform_image = omascoteChatAsset(files, "uniform_image", "camiseta");
+      }
     }else{
       assets.team_crest = omascoteChatAsset(files, "team_crest", "escudo1", "home_crest");
       assets.opponent_crest = omascoteChatAsset(files, "opponent_crest", "escudo2", "away_crest");
@@ -26980,6 +26986,8 @@ function buildLegacyFormDataFromClean(productKey, cleanOrder, options = {}){
     appendCleanAssetLegacy(fd, cleanOrder, "player_photo", "escudo2");
     appendCleanAssetLegacy(fd, cleanOrder, "design_reference", "referencia");
     appendCleanAssetLegacy(fd, cleanOrder, "jersey_reference", "camiseta");
+  }else if(productKey === "proximo_jogo" || productKey === "resultado"){
+    appendCleanAssetLegacy(fd, cleanOrder, "uniform_image", "camiseta");
   }else if(productKey === "jogador_escudo"){
     appendCleanTextLegacy(fd, "data", cleanOrder.fields.player_name || "");
     appendCleanAssetLegacy(fd, cleanOrder, "player_photo", "mascote");
