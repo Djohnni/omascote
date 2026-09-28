@@ -15302,6 +15302,43 @@ body.omascoteAppMode .appTestNotice{
 }
 .homeChatStage.is-expanded .integratedChatClose{display:block}
 body.integratedChatOpen{overflow:hidden}
+.artReviewSection{
+  width:calc(100% - 20px);
+  max-width:1080px;
+  margin:0 auto 12px;
+  padding:18px;
+  border:1px solid #dbe8df;
+  border-radius:14px;
+  background:#f7fbf8;
+  color:#163a29;
+}
+.artReviewSection h2{margin:0 0 4px;font-size:18px;line-height:1.25}
+.artReviewSection p{margin:0;color:#476657;font-size:13px}
+.artReviewList{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:10px;margin-top:14px}
+.artReviewCard{padding:14px;border:1px solid #dbe8df;border-radius:12px;background:#fff;min-width:0}
+.artReviewCardHeader{display:flex;justify-content:space-between;gap:8px;align-items:flex-start;font-size:12px;color:#476657}
+.artReviewCardHeader strong{color:#173d2a;font-size:13px;overflow-wrap:anywhere}
+.artReviewCard p{margin-top:10px;white-space:pre-wrap;overflow-wrap:anywhere;color:#243b2e;font-size:14px;line-height:1.45}
+.artReviewCardFooter{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-top:10px;font-size:11px;color:#6b8172}
+.artReviewCardFooter button,.artReviewMore{border:0;background:none;color:#087c43;font-weight:800;cursor:pointer}
+.artReviewMore{margin-top:12px;padding:5px 0}
+.artReviewModal.modalMask{z-index:12060}
+.artReviewModal .modalCard{background:#fff;color:#173d2a;border-color:#dbe8df;max-height:calc(100dvh - 32px);overflow:auto}
+.artReviewModal .modalTop{background:#f1f8f3;border-bottom-color:#dbe8df}
+.artReviewModal .modalTitle{color:#173d2a;font-size:17px}
+.artReviewModal .modalClose{color:#173d2a;border-color:#dbe8df}
+.artReviewForm{display:grid;gap:11px;padding:16px}
+.artReviewForm p{margin:0;font-size:14px;line-height:1.45;color:#355845}
+.artReviewForm label{display:grid;gap:5px;font-size:13px;font-weight:800}
+.artReviewForm input[type="text"],.artReviewForm textarea{width:100%;padding:10px 11px;border:1px solid #c9d8ce;border-radius:9px;background:#fff;color:#173d2a;font:inherit}
+.artReviewForm textarea{min-height:105px;resize:vertical}
+.artReviewForm .artReviewConsent{display:flex;align-items:flex-start;gap:8px;font-weight:600;line-height:1.35}
+.artReviewForm .artReviewConsent input{margin-top:3px;accent-color:#128748}
+.artReviewForm small{color:#6b8172}
+.artReviewActions{display:flex;justify-content:flex-end;gap:9px;flex-wrap:wrap}
+.artReviewActions button{padding:10px 14px;border-radius:9px;border:1px solid #c9d8ce;font-weight:800;cursor:pointer}
+.artReviewActions button[type="submit"]{background:#128748;border-color:#128748;color:#fff}
+.artReviewStatus{min-height:18px;font-size:13px;color:#b42318}
 .productsMenuAccordion{
   width:calc(100% - 20px);
   max-width:1080px;
@@ -15800,6 +15837,38 @@ body.integratedChatOpen{overflow:hidden}
       ></iframe>
       <button class="integratedChatClose" id="integratedChatClose" type="button" aria-label="Reduzir atendimento">Reduzir</button>
     </section>
+
+    <section class="artReviewSection" id="artReviewSection" aria-labelledby="artReviewTitle">
+      <h2 id="artReviewTitle">O que acharam das artes entregues</h2>
+      <p>Comentários de clientes que baixaram suas imagens ou vídeos.</p>
+      <div class="artReviewList" id="artReviewList" aria-live="polite">Carregando comentários...</div>
+      <button class="artReviewMore" id="artReviewMore" type="button" hidden>Ver mais comentários</button>
+    </section>
+
+    <div class="modalMask artReviewModal" id="artReviewModal" aria-hidden="true">
+      <div class="modalCard" role="dialog" aria-modal="true" aria-labelledby="artReviewModalTitle">
+        <div class="modalTop">
+          <div class="modalTitle" id="artReviewModalTitle">Conte o que achou da arte</div>
+          <button class="modalClose btnGhost" id="artReviewClose" type="button" aria-label="Fechar avaliação">×</button>
+        </div>
+        <form class="artReviewForm" id="artReviewForm">
+          <p id="artReviewPrompt">Diga o que achou da sua imagem ou vídeo. Seu comentário aparecerá abaixo da conversa e ajudará outras pessoas a saber se receberam o que pediram.</p>
+          <label>Nome para aparecer no site (opcional)
+            <input id="artReviewName" type="text" maxlength="40" placeholder="Cliente do O Mascote" autocomplete="off">
+          </label>
+          <label>Seu comentário
+            <textarea id="artReviewComment" minlength="8" maxlength="400" required placeholder="Como ficou sua arte?"></textarea>
+          </label>
+          <label class="artReviewConsent"><input id="artReviewConsent" type="checkbox" required> Concordo em publicar meu comentário e o nome de exibição no site.</label>
+          <small>Não inclua telefone nem dados pessoais no comentário.</small>
+          <div class="artReviewStatus" id="artReviewStatus" role="status" aria-live="polite"></div>
+          <div class="artReviewActions">
+            <button id="artReviewLater" type="button">Agora não</button>
+            <button id="artReviewSubmit" type="submit">Publicar comentário</button>
+          </div>
+        </form>
+      </div>
+    </div>
 
     <section class="productsMenuAccordion" id="productsMenuAccordion" aria-label="Artes e serviços">
       <button class="accountMenuToggle" id="productsMenuToggle" type="button" aria-expanded="false" aria-controls="productsMenuPanel">
@@ -18177,6 +18246,142 @@ function ia4ValidarTamanhoArquivos(files){
 }
 
 let token = localStorage.getItem("omascote_token");
+const artReviewSection = document.getElementById("artReviewSection");
+const artReviewList = document.getElementById("artReviewList");
+const artReviewMore = document.getElementById("artReviewMore");
+const artReviewModal = document.getElementById("artReviewModal");
+const artReviewForm = document.getElementById("artReviewForm");
+const artReviewStatus = document.getElementById("artReviewStatus");
+const ART_REVIEW_PAGE_SIZE = 6;
+let artReviewPage = 0;
+let artReviewLoading = false;
+let artReviewOrder = null;
+let artReviewAuthToken = token;
+
+function artReviewCard(item){
+  const card = document.createElement("article");
+  card.className = "artReviewCard";
+  const header = document.createElement("div");
+  header.className = "artReviewCardHeader";
+  const nome = document.createElement("strong");
+  nome.textContent = item.nome || "Cliente do O Mascote";
+  const tipo = document.createElement("span");
+  tipo.textContent = item.tipo === "vídeo" ? "Vídeo" : "Imagem";
+  header.append(nome, tipo);
+  const comentario = document.createElement("p");
+  comentario.textContent = item.comentario || "";
+  const footer = document.createElement("div");
+  footer.className = "artReviewCardFooter";
+  const entregue = document.createElement("span");
+  const data = Date.parse(item.criado_em || "");
+  entregue.textContent = `Arte entregue${Number.isFinite(data) ? ` · ${new Date(data).toLocaleDateString("pt-BR")}` : ""}`;
+  footer.append(entregue);
+  if(item.minha === true && token){
+    const excluir = document.createElement("button");
+    excluir.type = "button";
+    excluir.textContent = "Excluir meu comentário";
+    excluir.addEventListener("click", () => excluirAvaliacaoArte(item.id));
+    footer.append(excluir);
+  }
+  card.append(header, comentario, footer);
+  return card;
+}
+
+async function carregarAvaliacoesArtes(reiniciar = false){
+  if(!artReviewList || artReviewLoading) return;
+  if(reiniciar){
+    artReviewPage = 0;
+    artReviewList.replaceChildren();
+  }
+  artReviewLoading = true;
+  if(artReviewMore) artReviewMore.disabled = true;
+  try{
+    const headers = token ? { "Authorization":"Bearer " + token } : {};
+    const r = await fetch(`${API_BASE}/avaliacoes-artes?pagina=${artReviewPage}&limite=${ART_REVIEW_PAGE_SIZE}`, { headers, cache:"no-store" });
+    const out = await ia4LerJsonSeguro(r);
+    if(!r.ok || !out?.ok) throw new Error("Falha ao carregar comentários");
+    if(artReviewPage === 0) artReviewList.replaceChildren();
+    for(const item of out.avaliacoes || []) artReviewList.append(artReviewCard(item));
+    artReviewPage++;
+    if(!artReviewList.childElementCount) artReviewList.textContent = "Ainda não há comentários. Os primeiros aparecerão aqui.";
+    if(artReviewMore) artReviewMore.hidden = artReviewPage * ART_REVIEW_PAGE_SIZE >= Number(out.total || 0);
+  }catch{
+    if(!artReviewList.childElementCount) artReviewList.textContent = "Não foi possível carregar os comentários agora.";
+  }finally{
+    artReviewLoading = false;
+    if(artReviewMore) artReviewMore.disabled = false;
+  }
+}
+
+async function excluirAvaliacaoArte(id){
+  if(!token || !window.confirm("Excluir seu comentário público?")) return;
+  try{
+    const r = await fetch(`${API_BASE}/avaliacoes-artes/${encodeURIComponent(id)}`, {
+      method:"DELETE", headers:{ "Authorization":"Bearer " + token }
+    });
+    const out = await ia4LerJsonSeguro(r);
+    if(!r.ok || !out?.ok) throw new Error(out?.error || "Não foi possível excluir o comentário.");
+    await carregarAvaliacoesArtes(true);
+  }catch(error){
+    alert(error?.message || "Não foi possível excluir o comentário.");
+  }
+}
+
+function fecharAvaliacaoArte(){
+  artReviewModal?.classList.remove("open");
+  artReviewModal?.setAttribute("aria-hidden", "true");
+  artReviewForm?.reset();
+  if(artReviewStatus) artReviewStatus.textContent = "";
+  artReviewOrder = null;
+}
+
+function convidarAvaliacaoArte(pedidoId, tipo){
+  if(!token || !artReviewModal || artReviewModal.classList.contains("open")) return;
+  const chave = `omascote_avaliacao_enviada_${pedidoId}_${tipo}`;
+  if(localStorage.getItem(chave) === "1") return;
+  artReviewOrder = { pedidoId, tipo, chave };
+  document.getElementById("artReviewModalTitle").textContent = tipo === "vídeo"
+    ? "O que achou do vídeo?" : "O que achou da imagem?";
+  if(artReviewStatus) artReviewStatus.textContent = "";
+  artReviewModal.classList.add("open");
+  artReviewModal.setAttribute("aria-hidden", "false");
+  window.setTimeout(()=>document.getElementById("artReviewComment")?.focus(), 80);
+}
+
+artReviewForm?.addEventListener("submit", async event => {
+  event.preventDefault();
+  if(!artReviewOrder || !token) return;
+  const submit = document.getElementById("artReviewSubmit");
+  submit.disabled = true;
+  if(artReviewStatus) artReviewStatus.textContent = "Publicando...";
+  try{
+    const r = await fetch(`${API_BASE}/pedidos/${encodeURIComponent(artReviewOrder.pedidoId)}/avaliacao-arte`, {
+      method:"POST",
+      headers:{ "Authorization":"Bearer " + token, "Content-Type":"application/json" },
+      body:JSON.stringify({
+        tipo:artReviewOrder.tipo,
+        nome:document.getElementById("artReviewName")?.value || "",
+        comentario:document.getElementById("artReviewComment")?.value || "",
+        publicar:document.getElementById("artReviewConsent")?.checked === true
+      })
+    });
+    const out = await ia4LerJsonSeguro(r);
+    if(!r.ok || !out?.ok) throw new Error(out?.error || "Não foi possível publicar o comentário.");
+    localStorage.setItem(artReviewOrder.chave, "1");
+    fecharAvaliacaoArte();
+    await carregarAvaliacoesArtes(true);
+    artReviewSection?.scrollIntoView({ behavior:"smooth", block:"start" });
+  }catch(error){
+    if(artReviewStatus) artReviewStatus.textContent = error?.message || "Não foi possível publicar o comentário.";
+  }finally{
+    submit.disabled = false;
+  }
+});
+document.getElementById("artReviewClose")?.addEventListener("click", fecharAvaliacaoArte);
+document.getElementById("artReviewLater")?.addEventListener("click", fecharAvaliacaoArte);
+artReviewModal?.addEventListener("click", event => { if(event.target === artReviewModal) fecharAvaliacaoArte(); });
+artReviewMore?.addEventListener("click", ()=>carregarAvaliacoesArtes());
+void carregarAvaliacoesArtes();
 const accountAccordion = document.getElementById("accountAccordion");
 const accountMenuToggle = document.getElementById("accountMenuToggle");
 const accountMenuPanel = document.getElementById("accountMenuPanel");
@@ -34334,6 +34539,10 @@ function iniciarAtualizacaoHistorico(){
 
 async function carregarHistorico(){
   if(!historicoListaEl || !historicoVazioEl) return;
+  if(artReviewAuthToken !== token){
+    artReviewAuthToken = token;
+    void carregarAvaliacoesArtes(true);
+  }
 
   const produtoAtualOnline = selectedProductInput?.value || "";
   const chatBoxOnline = document.getElementById("ia4ChatBox");
@@ -35179,6 +35388,7 @@ async function baixarVideoPedido(id){
       ? "Vídeo liberado. Verifique a pasta Downloads do celular."
       : "Não foi possível iniciar o vídeo. Toque em Baixar vídeo para tentar novamente."
   );
+  if(iniciou) window.setTimeout(()=>convidarAvaliacaoArte(pedidoId, "vídeo"), 1200);
   return iniciou;
 }
 
@@ -35267,6 +35477,7 @@ async function baixarPedido(id, { aprovadoAgora = false } = {}){
       ? "Outro download foi liberado. Confirme no Chrome se ele solicitar."
       : "Download liberado. Verifique a pasta Downloads do celular."
   );
+  window.setTimeout(()=>convidarAvaliacaoArte(pedidoId, "imagem"), 1200);
   return true;
 }
 
