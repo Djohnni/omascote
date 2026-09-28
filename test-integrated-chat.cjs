@@ -17,7 +17,7 @@ assert.match(atendimentoBundle, /Somente imagem/, "o envio precisa oferecer some
 assert.match(atendimentoBundle, /Imagem \+ vídeo/, "o envio precisa oferecer imagem com vídeo");
 assert.match(atendimentoBundle, /8 a 12 segundos/, "o vídeo precisa informar a duração vendida");
 assert.match(atendimentoBundle, /Este produto está disponível somente como imagem/, "o chat precisa explicar quando vídeo não estiver disponível");
-for(const productId of ["jogador_escudo", "contratacao", "proximo_jogo_jogador", "resultado_jogo_jogador"]){
+for(const productId of ["contratacao", "proximo_jogo_jogador", "resultado_jogo_jogador"]){
   assert.match(atendimentoBundle, new RegExp(productId), `${productId} precisa estar protegido contra venda de vídeo`);
 }
 const productMenuStart = atendimentoBundle.indexOf("lab-products-list");
@@ -36,7 +36,7 @@ assert.match(atendimentoBundle, /className:`size-4 animate-spin`/, "o indicador 
 assert.match(atendimentoBundle, /"aria-label":`Envio indisponível`/, "uma falha não pode deixar o indicador girando para sempre");
 assert.doesNotMatch(atendimentoBundle, /disabled:c\|\|!n\|\|!o\.trim\(\)/, "o botão de enviar não pode aparecer desativado por causa da inicialização");
 assert.match(atendimentoBundle, /className:`shrink-0 inline-flex[^`]+lab-send-loading`,style:\{width:43,height:43\}/, "o indicador precisa ter os mesmos 43 por 43 pixels do botão de enviar");
-assert.match(atendimentoHtml, /index-DAdKPjD_\.js\?v=20260925-team-a-space/, "o navegador precisa buscar o bundle atualizado");
+assert.match(atendimentoHtml, /index-DJBBuUzD\.js\?v=20260928-jogador-video/, "o navegador precisa buscar o bundle atualizado");
 assert.match(html, /class="homeChatStage" id="integratedChatModal"/, "o chat precisa aparecer entre os menus da página inicial");
 assert.match(html, /id="productsMenuToggle"[^>]+aria-expanded="false"/, "os produtos precisam começar recolhidos");
 assert.match(html, /id="productsMenuPanel" hidden/, "a área antiga de produtos precisa iniciar fechada");
@@ -310,8 +310,9 @@ const playerCards = bridge.omascoteChatBuildCleanOrders(
 assert.equal(playerCards.length, 2);
 assert.equal(playerCards[1].order.fields.player_name, "Bia");
 assert.equal(playerCards[0].order.assets.player_photo.files.length, 1);
-assert.equal(playerCards[0].order.fields.delivery_mode, "image");
-assert.equal(playerCards[0].order.fields.video_model, "");
+assert.equal(playerCards[0].order.fields.delivery_mode, "image_video");
+assert.equal(playerCards[0].order.fields.video_model, "fast");
+assert.equal(playerCards[1].order.fields.delivery_mode, "image_video");
 
 const contracts = bridge.omascoteChatBuildCleanOrders(
   draft("contratacao", { style:"Amostra 2", players:"Ana | Ala | Contratado | Não\nBia | Pivô | Renovado | Sim", delivery_mode:"image_video", video_model:"fast" }),
