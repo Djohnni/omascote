@@ -33687,6 +33687,29 @@ const IA4_ENTREGA_ATRASO_MS = 90 * 60 * 1000;
 const ia4WhatsappBtn = document.getElementById("ia4WhatsappBtn");
 const ia4WhatsappFailureNotice = document.getElementById("ia4WhatsappFailureNotice");
 const ia4WhatsappHrefOriginal = ia4WhatsappBtn?.href || "";
+const IA4_WHATSAPP_AVISOS_LIDOS_KEY = "ia4tube_whatsapp_avisos_lidos_v1";
+let ia4WhatsappPedidosAtuais = [];
+
+function lerAvisosWhatsappLidos(){
+  try{
+    const salvos = JSON.parse(localStorage.getItem(IA4_WHATSAPP_AVISOS_LIDOS_KEY) || "[]");
+    return new Set(Array.isArray(salvos) ? salvos.filter(chave => typeof chave === "string") : []);
+  }catch{
+    return new Set();
+  }
+}
+
+const ia4WhatsappAvisosLidos = lerAvisosWhatsappLidos();
+
+function salvarAvisosWhatsappLidos(){
+  try{
+    localStorage.setItem(IA4_WHATSAPP_AVISOS_LIDOS_KEY, JSON.stringify([...ia4WhatsappAvisosLidos]));
+  }catch{}
+}
+
+function chaveAvisoWhatsapp(pedido, problema){
+  return `${pedido.id}:${problema.tipo}`;
+}
 
 function pedidoProblemaEntrega(p){
   if(!p || p.pagamento_pendente === true) return null;
@@ -33732,7 +33755,21 @@ function pedidoEntregaProblemaHtml(p){
 
 function atualizarAlertaEntregaWhatsapp(pedidos){
   if(!ia4WhatsappBtn || !ia4WhatsappFailureNotice) return;
-  const pedido = (Array.isArray(pedidos) ? pedidos : []).find(p => pedidoProblemaEntrega(p));
+  ia4WhatsappPedidosAtuais = Array.isArray(pedidos) ? pedidos : [];
+  let avisosAtualizados = false;
+  for(const pedidoAtual of ia4WhatsappPedidosAtuais){
+    if(pedidoAtual?.id && !pedidoProblemaEntrega(pedidoAtual)){
+      for(const tipo of ["imagem", "vídeo"]){
+        avisosAtualizados = ia4WhatsappAvisosLidos.delete(`${pedidoAtual.id}:${tipo}`) || avisosAtualizados;
+      }
+    }
+  }
+  if(avisosAtualizados) salvarAvisosWhatsappLidos();
+
+  const pedido = ia4WhatsappPedidosAtuais.find(p => {
+    const problemaAtual = pedidoProblemaEntrega(p);
+    return problemaAtual && !ia4WhatsappAvisosLidos.has(chaveAvisoWhatsapp(p, problemaAtual));
+  });
   const problema = pedido && pedidoProblemaEntrega(pedido);
   if(!problema){
     ia4WhatsappBtn.classList.remove("ia4WhatsappBtnFalha");
@@ -33753,6 +33790,22 @@ function atualizarAlertaEntregaWhatsapp(pedidos){
   if(ia4WhatsappFailureNotice.textContent !== aviso) ia4WhatsappFailureNotice.textContent = aviso;
   ia4WhatsappFailureNotice.hidden = false;
 }
+
+ia4WhatsappBtn?.addEventListener("click", () => {
+  let avisoReconhecido = false;
+  for(const pedido of ia4WhatsappPedidosAtuais){
+    const problema = pedidoProblemaEntrega(pedido);
+    if(!problema) continue;
+    ia4WhatsappAvisosLidos.add(chaveAvisoWhatsapp(pedido, problema));
+    avisoReconhecido = true;
+  }
+  if(avisoReconhecido){
+    salvarAvisosWhatsappLidos();
+    ia4WhatsappFailureNotice.hidden = true;
+    ia4WhatsappFailureNotice.textContent = "";
+    ia4WhatsappBtn.classList.remove("ia4WhatsappBtnFalha");
+  }
+});
 
 function htmlEstadoVideoPedido(p){
   const estado = estadoEntregaVideoPedido(p);
