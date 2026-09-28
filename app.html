@@ -27441,22 +27441,25 @@ function renderCleanProgressOverlay(imageBox, percent, text){
   return overlay;
 }
 
-function calcularPercentualProgressoProduto(startedAt){
+function calcularPercentualProgressoPedido(startedAt, percentualInicial = 1){
   const elapsed = Math.max(0, Date.now() - Number(startedAt || Date.now()));
-  const timeTo50 = 35000;
-  const timeFrom51To90 = 45000;
-  const timeTo90 = timeTo50 + timeFrom51To90;
-  const timePerPercentAfter90 = 5000;
+  const timeTo50 = 45000;
+  const timeTo80 = 120000;
+  const timeTo93 = 180000;
 
   if(elapsed <= timeTo50){
-    return Math.min(50, 1 + Math.floor((elapsed / timeTo50) * 49));
+    return Math.min(50, percentualInicial + Math.floor((elapsed / timeTo50) * (50 - percentualInicial)));
   }
 
-  if(elapsed <= timeTo90){
-    return Math.min(90, 51 + Math.floor(((elapsed - timeTo50) / timeFrom51To90) * 39));
+  if(elapsed <= timeTo80){
+    return Math.min(80, 50 + Math.floor(((elapsed - timeTo50) / (timeTo80 - timeTo50)) * 30));
   }
 
-  return Math.min(99, 91 + Math.floor((elapsed - timeTo90) / timePerPercentAfter90));
+  return Math.min(93, 80 + Math.floor(((elapsed - timeTo80) / (timeTo93 - timeTo80)) * 13));
+}
+
+function calcularPercentualProgressoProduto(startedAt){
+  return calcularPercentualProgressoPedido(startedAt);
 }
 
 function iniciarProgressoNoProduto(form, pedidoId, startedAt){
@@ -33496,8 +33499,7 @@ function atualizarTopoProducao(pedidos){
       localStorage.setItem(key, inicio);
     }
 
-    const passouMs = Date.now() - Number(inicio || Date.now());
-    const pct = Math.min(96, Math.max(4, Math.round((passouMs / 105000) * 100)));
+    const pct = calcularPercentualProgressoPedido(inicio, 4);
 
     texto.textContent = "Aguarde";
     fill.style.width = pct + "%";
@@ -33554,7 +33556,7 @@ function progressoFakePedido(id){
     localStorage.setItem(inicioKey, inicio);
   }
 
-  return calcularProgressoPorInicio(inicio);
+  return calcularPercentualProgressoPedido(inicio, 8);
 }
 
 function barraProducaoPedido(p){
@@ -34214,7 +34216,7 @@ function atualizarMenuPedidosTopo(pedidos){
       ` : `
         <div class="menuPedidoThumb" style="display:flex;align-items:center;justify-content:center;padding:18px;text-align:center;color:#ffffff;font-size:16px;font-weight:950;line-height:1.35;background:#0f172a;">
           🚀 Meu Clube FC está criando sua arte profissional.<br><br>
-          Sua imagem já vai com descrição pronta para copiar e postar no Instagram.
+          Imagens normalmente demoram 1 minuto e 30 segundos; vídeos, 4 minutos.
         </div>
       `}
 
