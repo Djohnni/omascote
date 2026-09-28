@@ -8,18 +8,25 @@ const end = html.indexOf('function cardPagamentoPendente(', start);
 assert.ok(start >= 0 && end > start, 'regras de entrega encontradas');
 
 const classes = new Set();
+const handlers = {};
+const storage = new Map();
 const button = {
   href: 'https://wa.me/5547992536917?text=ajuda',
   classList: {
     add: (name) => classes.add(name),
     remove: (name) => classes.delete(name),
   },
+  addEventListener(name, handler) { handlers[name] = handler; },
   setAttribute(name, value) { this[name] = value; },
   removeAttribute(name) { delete this[name]; },
 };
 const notice = { hidden: true, textContent: '' };
 const sandbox = {
   document: { getElementById: (id) => id === 'ia4WhatsappBtn' ? button : notice },
+  localStorage: {
+    getItem: key => storage.get(key) || null,
+    setItem: (key, value) => storage.set(key, value),
+  },
   htmlEscape: (value) => String(value).replaceAll('&', '&amp;').replaceAll('"', '&quot;'),
 };
 const rules = vm.runInNewContext(`${html.slice(start, end)}\n({ pedidoProblemaEntrega, pedidoEntregaProblemaHtml, atualizarAlertaEntregaWhatsapp })`, sandbox);
@@ -56,6 +63,38 @@ rules.atualizarAlertaEntregaWhatsapp([falhaVideo]);
 assert.equal(classes.has('ia4WhatsappBtnFalha'), true);
 assert.equal(notice.hidden, false);
 assert.match(button.href, /pedido-123/);
+handlers.click();
+assert.equal(notice.hidden, true, 'clicar no WhatsApp esconde o aviso imediatamente');
+assert.match(button.href, /pedido-123/, 'o clique mantém o link específico do pedido');
+rules.atualizarAlertaEntregaWhatsapp([falhaVideo]);
+assert.equal(notice.hidden, true, 'o mesmo erro não reaparece na atualização do histórico');
+assert.match(storage.get('ia4tube_whatsapp_avisos_lidos_v1'), /pedido-123:vídeo/);
+const noticeAfterReload = { hidden: true, textContent: '' };
+const buttonAfterReload = {
+  ...button,
+  classList: { add() {}, remove() {} },
+  addEventListener() {},
+};
+const afterReload = vm.runInNewContext(`${html.slice(start, end)}\n({ atualizarAlertaEntregaWhatsapp })`, {
+  ...sandbox,
+  document: { getElementById: id => id === 'ia4WhatsappBtn' ? buttonAfterReload : noticeAfterReload },
+});
+afterReload.atualizarAlertaEntregaWhatsapp([falhaVideo]);
+assert.equal(noticeAfterReload.hidden, true, 'o erro reconhecido continua oculto após recarregar a página');
+
+const novaFalha = { ...falhaImagem, id: 'pedido-456' };
+rules.atualizarAlertaEntregaWhatsapp([falhaVideo, novaFalha]);
+assert.equal(notice.hidden, false, 'um pedido novo com erro volta a mostrar o aviso');
+assert.match(button.href, /pedido-456/);
+handlers.click();
+rules.atualizarAlertaEntregaWhatsapp([falhaVideo, novaFalha]);
+assert.equal(notice.hidden, true, 'os erros já reconhecidos permanecem ocultos');
+
+rules.atualizarAlertaEntregaWhatsapp([{ ...falhaVideo, video_pronto: true }, novaFalha]);
+rules.atualizarAlertaEntregaWhatsapp([falhaVideo, novaFalha]);
+assert.equal(notice.hidden, false, 'um pedido recuperado que falha outra vez gera novo aviso');
+assert.match(button.href, /pedido-123/);
+
 rules.atualizarAlertaEntregaWhatsapp([]);
 assert.equal(classes.has('ia4WhatsappBtnFalha'), false);
 assert.equal(notice.hidden, true);
