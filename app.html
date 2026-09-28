@@ -35222,8 +35222,7 @@ async function iniciarDownloadDiretoSeguro({
   id,
   ticketEndpoint,
   formato = "resultado",
-  recurso = "pedido",
-  navegadorInternoOrientado = false
+  recurso = "pedido"
 } = {}){
   const recursoId = String(id || "");
   const chave = `${recurso}:${recursoId}:${formato}`;
@@ -35243,21 +35242,6 @@ async function iniciarDownloadDiretoSeguro({
     return false;
   }
 
-  if(
-    ambiente.navegadorInterno &&
-    !navegadorInternoOrientado &&
-    !await orientarDownloadNavegadorInterno(ambiente)
-  ){
-    ia4Track("download_redirecionado_navegador_externo", {
-      pedido_id: recursoId,
-      navegador: ambiente.navegador,
-      sistema_operacional: ambiente.sistema,
-      rota: "orientacao_navegador_externo",
-      fallback: "abrir_navegador_padrao"
-    });
-    return false;
-  }
-
   downloadsDiretosEmAndamento.add(chave);
   const inicio = performance.now();
 
@@ -35265,8 +35249,8 @@ async function iniciarDownloadDiretoSeguro({
     pedido_id: recursoId,
     navegador: ambiente.navegador,
     sistema_operacional: ambiente.sistema,
-    rota: "ticket_post_form",
-    fallback: ambiente.navegadorInterno ? "orientacao_navegador_externo" : "nenhum"
+    rota: "ticket_post_blob",
+    fallback: "download_na_pagina"
   });
 
   try{
@@ -35287,11 +35271,11 @@ async function iniciarDownloadDiretoSeguro({
       pedido_id: recursoId,
       navegador: ambiente.navegador,
       sistema_operacional: ambiente.sistema,
-      rota: "ticket_post_form",
+      rota: "ticket_post_blob",
       status_http: r.status,
       duracao_ms: duracao,
       erro_tecnico: r.ok ? "" : String(out?.codigo || out?.error || "ticket_erro").slice(0, 80),
-      fallback: ambiente.navegadorInterno ? "orientacao_navegador_externo" : "nenhum"
+      fallback: "download_na_pagina"
     });
 
     const authMsg = ia4TratarAuthInvalida(r, out);
@@ -35309,45 +35293,69 @@ async function iniciarDownloadDiretoSeguro({
       throw new Error("origem_download_invalida");
     }
 
-    if(ambiente.safariIos){
-      alert("Na pr\u00f3xima tela, toque novamente em Baixar para salvar a arte no iPhone.");
+    const arquivoResposta = await fetch(downloadUrl.href, {
+      method: "POST",
+      cache: "no-store",
+      body: new URLSearchParams({ ticket: out.ticket })
+    });
+    if(!arquivoResposta.ok){
+      const erroArquivo = await ia4LerJsonSeguro(arquivoResposta);
+      ia4Track("download_arquivo_resposta", {
+        pedido_id: recursoId,
+        navegador: ambiente.navegador,
+        sistema_operacional: ambiente.sistema,
+        rota: "download_blob",
+        status_http: arquivoResposta.status,
+        erro_tecnico: String(erroArquivo?.error || "arquivo_indisponivel").slice(0, 80)
+      });
+      alert(erroArquivo?.error || "Não foi possível baixar o arquivo. Tente novamente.");
+      return false;
     }
 
-    const form = document.createElement("form");
-    form.method = "POST";
-    form.action = downloadUrl.href;
-    form.target = "_self";
-    form.acceptCharset = "UTF-8";
-    form.style.display = "none";
+    const tipoResposta = String(arquivoResposta.headers.get("Content-Type") || "").toLowerCase();
+    if(tipoResposta.includes("text/html")) throw new Error("resposta_download_invalida");
+    const arquivo = await arquivoResposta.blob();
+    if(!arquivo.size) throw new Error("arquivo_download_vazio");
 
-    const ticketInput = document.createElement("input");
-    ticketInput.type = "hidden";
-    ticketInput.name = "ticket";
-    ticketInput.value = out.ticket;
-    form.appendChild(ticketInput);
-    document.body.appendChild(form);
+    const nomeSeguro = recursoId.replace(/[^a-zA-Z0-9_-]/g, "_");
+    const extensao = formato === "video" ? "mp4" : formato === "zip" ? "zip" : "png";
+    const nomeArquivo = `${nomeSeguro}_${formato === "video" ? "video_8s" : formato === "zip" ? "pedido" : "imagem"}.${extensao}`;
+    const arquivoUrl = URL.createObjectURL(arquivo);
+    const link = document.createElement("a");
+    link.href = arquivoUrl;
+    link.download = nomeArquivo;
+    link.target = "_blank";
+    link.rel = "noopener";
+    link.style.display = "none";
+    document.body.appendChild(link);
+    try{
+      link.click();
+    }catch(error){
+      link.remove();
+      URL.revokeObjectURL(arquivoUrl);
+      throw error;
+    }
+    setTimeout(() => link.remove(), 1000);
+    setTimeout(() => URL.revokeObjectURL(arquivoUrl), 120000);
 
     ia4Track("download_enviado_navegador", {
       pedido_id: recursoId,
       navegador: ambiente.navegador,
       sistema_operacional: ambiente.sistema,
-      rota: "download_direto_post",
-      status_http: r.status,
-      fallback: ambiente.navegadorInterno ? "orientacao_navegador_externo" : "nenhum"
+      rota: "download_blob",
+      status_http: arquivoResposta.status,
+      fallback: "download_na_pagina"
     });
-
-    HTMLFormElement.prototype.submit.call(form);
-    setTimeout(() => form.remove(), 0);
     return true;
   }catch(e){
     ia4Track("download_erro_tecnico", {
       pedido_id: recursoId,
       navegador: ambiente.navegador,
       sistema_operacional: ambiente.sistema,
-      rota: "ticket_post_form",
+      rota: "ticket_post_blob",
       status_http: 0,
       erro_tecnico: String(e?.message || e?.name || "erro_desconhecido").slice(0, 80),
-      fallback: ambiente.navegadorInterno ? "abrir_navegador_padrao" : "nenhum"
+      fallback: "download_na_pagina"
     });
     alert("N\u00e3o foi poss\u00edvel iniciar o download. Tente novamente em instantes.");
     return false;
@@ -42685,8 +42693,7 @@ async function baixarCartaAppImagem(id){
       id,
       ticketEndpoint: `/cartas-app/${encodeURIComponent(id)}/download-ticket`,
       formato: "imagem",
-      recurso: "carta",
-      navegadorInternoOrientado: ambiente.navegadorInterno
+      recurso: "carta"
     });
   }catch(e){
     alert("Imagem indisponível no momento.");
