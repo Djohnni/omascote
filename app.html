@@ -15838,7 +15838,7 @@ body.integratedChatOpen{overflow:hidden}
       <button class="integratedChatClose" id="integratedChatClose" type="button" aria-label="Reduzir atendimento">Reduzir</button>
     </section>
 
-    <section class="artReviewSection" id="artReviewSection" aria-labelledby="artReviewTitle">
+    <section class="artReviewSection" id="artReviewSection" aria-labelledby="artReviewTitle" hidden>
       <h2 id="artReviewTitle">O que acharam das artes entregues</h2>
       <p>Comentários de clientes que baixaram suas imagens ou vídeos.</p>
       <div class="artReviewList" id="artReviewList" aria-live="polite">Carregando comentários...</div>
@@ -18257,6 +18257,7 @@ let artReviewPage = 0;
 let artReviewLoading = false;
 let artReviewOrder = null;
 let artReviewAuthToken = token;
+let artReviewApiAvailable = false;
 
 function artReviewCard(item){
   const card = document.createElement("article");
@@ -18300,13 +18301,16 @@ async function carregarAvaliacoesArtes(reiniciar = false){
     const r = await fetch(`${API_BASE}/avaliacoes-artes?pagina=${artReviewPage}&limite=${ART_REVIEW_PAGE_SIZE}`, { headers, cache:"no-store" });
     const out = await ia4LerJsonSeguro(r);
     if(!r.ok || !out?.ok) throw new Error("Falha ao carregar comentários");
+    artReviewApiAvailable = true;
+    artReviewSection.hidden = false;
     if(artReviewPage === 0) artReviewList.replaceChildren();
     for(const item of out.avaliacoes || []) artReviewList.append(artReviewCard(item));
     artReviewPage++;
     if(!artReviewList.childElementCount) artReviewList.textContent = "Ainda não há comentários. Os primeiros aparecerão aqui.";
     if(artReviewMore) artReviewMore.hidden = artReviewPage * ART_REVIEW_PAGE_SIZE >= Number(out.total || 0);
   }catch{
-    if(!artReviewList.childElementCount) artReviewList.textContent = "Não foi possível carregar os comentários agora.";
+    artReviewApiAvailable = false;
+    artReviewSection.hidden = true;
   }finally{
     artReviewLoading = false;
     if(artReviewMore) artReviewMore.disabled = false;
@@ -18336,7 +18340,7 @@ function fecharAvaliacaoArte(){
 }
 
 function convidarAvaliacaoArte(pedidoId, tipo){
-  if(!token || !artReviewModal || artReviewModal.classList.contains("open")) return;
+  if(!token || !artReviewApiAvailable || !artReviewModal || artReviewModal.classList.contains("open")) return;
   const chave = `omascote_avaliacao_enviada_${pedidoId}_${tipo}`;
   if(localStorage.getItem(chave) === "1") return;
   artReviewOrder = { pedidoId, tipo, chave };
