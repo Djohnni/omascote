@@ -36,7 +36,9 @@ assert.match(atendimentoBundle, /className:`size-4 animate-spin`/, "o indicador 
 assert.match(atendimentoBundle, /"aria-label":`Envio indisponível`/, "uma falha não pode deixar o indicador girando para sempre");
 assert.doesNotMatch(atendimentoBundle, /disabled:c\|\|!n\|\|!o\.trim\(\)/, "o botão de enviar não pode aparecer desativado por causa da inicialização");
 assert.match(atendimentoBundle, /className:`shrink-0 inline-flex[^`]+lab-send-loading`,style:\{width:43,height:43\}/, "o indicador precisa ter os mesmos 43 por 43 pixels do botão de enviar");
-assert.match(atendimentoHtml, /index-DJBBuUzD\.js\?v=20260928-jogador-video/, "o navegador precisa buscar o bundle atualizado");
+assert.match(atendimentoHtml, /index-CONtoyYt\.js\?v=20260928-mascot-prices/, "o navegador precisa buscar o bundle atualizado");
+assert.match(atendimentoBundle, /id:`mascote_uniforme`,name:`Mascote do Time`,shortName:`Mascote`,priceLabel:`R\$ 9,90`,price:9\.9/, "o chat deve mostrar imagem do Mascote a R$ 9,90");
+assert.match(atendimentoBundle, /e===`mascote_uniforme`\?18\.5:14\.9/, "o chat deve mostrar imagem com vídeo do Mascote a R$ 18,50");
 assert.match(html, /class="homeChatStage" id="integratedChatModal"/, "o chat precisa aparecer entre os menus da página inicial");
 assert.match(html, /id="productsMenuToggle"[^>]+aria-expanded="false"/, "os produtos precisam começar recolhidos");
 assert.match(html, /id="productsMenuPanel" hidden/, "a área antiga de produtos precisa iniciar fechada");

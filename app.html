@@ -15795,7 +15795,7 @@ body.integratedChatOpen{overflow:hidden}
         class="integratedChatFrame"
         id="integratedChatFrame"
         title="Atendimento O Mascote"
-        src="/atendimento/index.html?integrado=1&v=20260928-jogador-video"
+        src="/atendimento/index.html?integrado=1&v=20260928-mascot-prices"
         allow="clipboard-write"
       ></iframe>
       <button class="integratedChatClose" id="integratedChatClose" type="button" aria-label="Reduzir atendimento">Reduzir</button>
@@ -15936,7 +15936,7 @@ body.integratedChatOpen{overflow:hidden}
 
           <div class="optionsRow productGroup productGroupBrinde">
             <button type="button" class="optionBtn" data-product="mascote_uniforme">
-              <div class="optLabel">Faça o mascote<br>do seu time<br><span style="color:#1fbf63;font-weight:900;">R$18,00</span></div>
+              <div class="optLabel">Faça o mascote<br>do seu time<br><span style="color:#1fbf63;font-weight:900;">R$9,90</span></div>
               <img src="produtos/mascote_uniforme.jpg" class="imgProduto" fetchpriority="high" loading="eager" alt="Mascote com uniforme">
             </button>
           </div>
@@ -16057,7 +16057,7 @@ body.integratedChatOpen{overflow:hidden}
               <button class="legalLinkBtn" id="btnExcluirContaFooter" type="button">Excluir Conta</button>
               <button class="legalLinkBtn" id="btnDenunciarIaFooter" type="button">Denunciar Conteúdo Gerado por IA</button>
               <button class="legalLinkBtn" id="btnAbrirSuporteFooter" type="button">Suporte</button>
-              <a class="legalLinkBtn" id="btnTesteNovoAtendimentoFooter" href="/atendimento/index.html?integrado=1&v=20260928-jogador-video">Novo atendimento</a>
+              <a class="legalLinkBtn" id="btnTesteNovoAtendimentoFooter" href="/atendimento/index.html?integrado=1&v=20260928-mascot-prices">Novo atendimento</a>
             </div>
             <div class="brandFootnote">Meu Clube FC é uma plataforma da O Mascote</div>
           </div>
@@ -17356,7 +17356,7 @@ function omascoteChatLocalPreview(){
 }
 
 function omascoteChatUrl(){
-  return new URL("/atendimento/index.html?integrado=1&v=20260928-jogador-video", window.location.origin).href;
+  return new URL("/atendimento/index.html?integrado=1&v=20260928-mascot-prices", window.location.origin).href;
 }
 
 function abrirAtendimentoIntegrado(){
@@ -19612,7 +19612,7 @@ const PRODUCT_CONFIG_DETAILS = {
   mascote_uniforme: {
     id: "mascote_uniforme",
     name: "Faça o mascote do seu time",
-    price: 18,
+    price: 9.9,
     visualCategory: "time",
     image: "produtos/mascote_uniforme.jpg",
     fields: {
@@ -29400,8 +29400,8 @@ if(mascotePromo){
 
     if(label){
       label.innerHTML = brindeMascoteDisponivel
-      ? `Mascote<br>do seu Time<br><span style="color:#1fbf63;font-weight:900;">R$18,00</span>`
-      : `Mascote<br>do seu Time<br><span style="color:#1fbf63;font-weight:900;">R$18,00</span>`;
+      ? `Mascote<br>do seu Time<br><span style="color:#1fbf63;font-weight:900;">R$9,90</span>`
+      : `Mascote<br>do seu Time<br><span style="color:#1fbf63;font-weight:900;">R$9,90</span>`;
   }
 }
 
