@@ -15329,14 +15329,13 @@ body.integratedChatOpen{overflow:hidden}
 .artReviewModal .modalClose{color:#173d2a;border-color:#dbe8df}
 .artReviewForm{display:grid;gap:11px;padding:16px}
 .artReviewForm p{margin:0;font-size:14px;line-height:1.45;color:#355845}
-.artReviewForm label{display:grid;gap:5px;font-size:13px;font-weight:800}
+.artReviewForm label{display:grid;gap:5px;font-size:13px;font-weight:800;color:#173d2a}
 .artReviewForm input[type="text"],.artReviewForm textarea{width:100%;padding:10px 11px;border:1px solid #c9d8ce;border-radius:9px;background:#fff;color:#173d2a;font:inherit}
 .artReviewForm textarea{min-height:105px;resize:vertical}
-.artReviewForm .artReviewConsent{display:flex;align-items:flex-start;gap:8px;font-weight:600;line-height:1.35}
-.artReviewForm .artReviewConsent input{margin-top:3px;accent-color:#128748}
 .artReviewForm small{color:#6b8172}
 .artReviewActions{display:flex;justify-content:flex-end;gap:9px;flex-wrap:wrap}
 .artReviewActions button{padding:10px 14px;border-radius:9px;border:1px solid #c9d8ce;font-weight:800;cursor:pointer}
+.artReviewActions button[type="button"]{background:#f1f8f3;color:#173d2a}
 .artReviewActions button[type="submit"]{background:#128748;border-color:#128748;color:#fff}
 .artReviewStatus{min-height:18px;font-size:13px;color:#b42318}
 .productsMenuAccordion{
@@ -15852,14 +15851,13 @@ body.integratedChatOpen{overflow:hidden}
           <button class="modalClose btnGhost" id="artReviewClose" type="button" aria-label="Fechar avaliação">×</button>
         </div>
         <form class="artReviewForm" id="artReviewForm">
-          <p id="artReviewPrompt">Diga o que achou da sua imagem ou vídeo. Seu comentário aparecerá abaixo da conversa e ajudará outras pessoas a saber se receberam o que pediram.</p>
+          <p id="artReviewPrompt">Diga o que você achou da imagem ou do vídeo. Seu comentário vai aparecer aqui abaixo e vai ajudar os próximos usuários a saber que este é um site confiável.</p>
           <label>Nome para aparecer no site (opcional)
             <input id="artReviewName" type="text" maxlength="40" placeholder="Cliente do O Mascote" autocomplete="off">
           </label>
           <label>Seu comentário
             <textarea id="artReviewComment" minlength="8" maxlength="400" required placeholder="Como ficou sua arte?"></textarea>
           </label>
-          <label class="artReviewConsent"><input id="artReviewConsent" type="checkbox" required> Concordo em publicar meu comentário e o nome de exibição no site.</label>
           <small>Não inclua telefone nem dados pessoais no comentário.</small>
           <div class="artReviewStatus" id="artReviewStatus" role="status" aria-live="polite"></div>
           <div class="artReviewActions">
@@ -18366,7 +18364,7 @@ artReviewForm?.addEventListener("submit", async event => {
         tipo:artReviewOrder.tipo,
         nome:document.getElementById("artReviewName")?.value || "",
         comentario:document.getElementById("artReviewComment")?.value || "",
-        publicar:document.getElementById("artReviewConsent")?.checked === true
+        publicar:true
       })
     });
     const out = await ia4LerJsonSeguro(r);
