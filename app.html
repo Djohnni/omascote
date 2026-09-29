@@ -35309,7 +35309,7 @@ function registrarLinkDownloadHttps({ url, id, formato, expiresIn }){
 function mostrarAlternativaDownloadHttps(id, formato, falhou = false){
   const registro = linksDownloadHttps.get(`${id}:${formato}`);
   if(!registro || registro.expiresAt <= Date.now()) return;
-  mostrarAvisoPedido(falhou ? "Não foi possível iniciar o download" : "Download solicitado",
+  mostrarAvisoPedido(falhou ? "Não foi possível iniciar o download" : "Download iniciado",
     "Se o seu download não iniciou, clique em ", 120000);
   const mensagem = document.getElementById("ia4ToastPedido")?.querySelector("span");
   if(!mensagem) return;
