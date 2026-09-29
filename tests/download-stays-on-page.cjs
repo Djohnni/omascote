@@ -140,7 +140,8 @@ test('link HTTPS preserva conversa e alternativa exige clique real', () => {
   assert.equal(elements[0].target, '_blank');
   assert.equal(elements[0].rel, 'noopener noreferrer');
   assert.equal(elements[0].href, url);
-  assert.equal(elements[0].textContent, 'Abrir externamente');
+  assert.equal(elements[0].textContent, 'Abrir download externo');
+  assert.equal(messages.at(-1)[1], 'Se o seu download não iniciou, clique em ');
   assert.notEqual(elements[0].clicked, true);
   now += 300001;
   let prevented = false;

@@ -8730,20 +8730,24 @@ body.saldoMenuAberto .ia4WhatsappBtn{
   background:rgba(15,23,42,.35);
 }
 
-.ia4DownloadOk{
-  margin-top:20px;
-  min-width:120px;
+.ia4ToastPedidoBox.downloadComFechar{position:relative;padding-top:62px}
+.ia4DownloadFechar{
+  position:absolute;
+  top:10px;
+  right:10px;
+  min-width:44px;
   min-height:44px;
-  padding:10px 24px;
+  padding:4px;
   border:0;
   border-radius:10px;
-  background:#138b43;
-  color:#fff;
+  background:#edf3ef;
+  color:#173d2a;
   font:inherit;
+  font-size:26px;
   font-weight:800;
   cursor:pointer;
 }
-.ia4DownloadOk:focus-visible{outline:3px solid #173d2a;outline-offset:3px}
+.ia4DownloadFechar:focus-visible{outline:3px solid #173d2a;outline-offset:3px}
 
 .ia4ToastPedido.show{
   display:flex;
@@ -30719,7 +30723,8 @@ function mostrarAvisoPedido(
   const aviso = document.getElementById("ia4ToastPedido");
   if(!aviso) return;
 
-  document.getElementById("downloadAvisoOk")?.remove();
+  document.getElementById("downloadAvisoFechar")?.remove();
+  aviso.querySelector(".ia4ToastPedidoBox")?.classList.remove("downloadComFechar");
   const tituloEl = aviso.querySelector("strong");
   const mensagemEl = aviso.querySelector("span");
   if(tituloEl) tituloEl.textContent = titulo;
@@ -35305,7 +35310,7 @@ function mostrarAlternativaDownloadHttps(id, formato, falhou = false){
   const registro = linksDownloadHttps.get(`${id}:${formato}`);
   if(!registro || registro.expiresAt <= Date.now()) return;
   mostrarAvisoPedido(falhou ? "Não foi possível iniciar o download" : "Download solicitado",
-    falhou ? "Você pode tentar novamente ou escolher: " : "Confira os downloads do navegador. Se não começou, escolha: ", 120000);
+    "Se o seu download não iniciou, clique em ", 120000);
   const mensagem = document.getElementById("ia4ToastPedido")?.querySelector("span");
   if(!mensagem) return;
   // Alternativa com toque real, sem popup automático nem troca da página atual.
@@ -35314,7 +35319,7 @@ function mostrarAlternativaDownloadHttps(id, formato, falhou = false){
   link.target = "_blank";
   link.rel = "noopener noreferrer";
   link.referrerPolicy = "no-referrer";
-  link.textContent = "Abrir externamente";
+  link.textContent = "Abrir download externo";
   link.style.cssText = "color:inherit;text-decoration:underline;font-weight:700";
   link.addEventListener("click", event => {
     event.stopPropagation();
@@ -35328,16 +35333,18 @@ function mostrarAlternativaDownloadHttps(id, formato, falhou = false){
   mensagem.appendChild(link);
 }
 
-function adicionarOkAvaliacaoDownload(pedidoId, tipo){
+function adicionarFecharAvaliacaoDownload(pedidoId, tipo){
   const caixa = document.getElementById("ia4ToastPedido")?.querySelector(".ia4ToastPedidoBox");
   if(!caixa) return;
-  document.getElementById("downloadAvisoOk")?.remove();
+  document.getElementById("downloadAvisoFechar")?.remove();
+  caixa.classList.add("downloadComFechar");
   clearTimeout(timerAvisoPedido);
   const botao = document.createElement("button");
-  botao.id = "downloadAvisoOk";
+  botao.id = "downloadAvisoFechar";
   botao.type = "button";
-  botao.className = "ia4DownloadOk";
-  botao.textContent = "OK";
+  botao.className = "ia4DownloadFechar";
+  botao.textContent = "×";
+  botao.setAttribute("aria-label", "Fechar aviso e avaliar a arte");
   botao.addEventListener("click", event => {
     event.stopPropagation();
     botao.disabled = true;
@@ -35596,7 +35603,7 @@ async function baixarVideoPedido(id){
   if(iniciou){
     mostrarAvisoPedido("🎬 Download do vídeo enviado", "Confira a pasta Downloads. Confirme o salvamento se o navegador pedir.", 12000);
     mostrarAlternativaDownloadHttps(pedidoId, "video");
-    adicionarOkAvaliacaoDownload(pedidoId, "vídeo");
+    adicionarFecharAvaliacaoDownload(pedidoId, "vídeo");
   }
   return iniciou;
 }
@@ -35688,7 +35695,7 @@ async function baixarPedido(id, { aprovadoAgora = false } = {}){
   );
   mostrarAvisoPedido("🖼️ Download da imagem enviado", "Confira a pasta Downloads. Confirme o salvamento se o navegador pedir.", 12000);
   mostrarAlternativaDownloadHttps(pedidoId, "resultado");
-  adicionarOkAvaliacaoDownload(pedidoId, "imagem");
+  adicionarFecharAvaliacaoDownload(pedidoId, "imagem");
   return true;
 }
 
