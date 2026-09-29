@@ -5934,16 +5934,17 @@
 }
 
 .saldoMenu{
-  position:absolute;
-  top:calc(100% + 12px);
-  right:0;
-  left:auto;
-  transform:none;
+  position:fixed;
+  top:10px;
+  right:auto;
+  left:50%;
+  transform:translateX(-50%);
   display:none;
   grid-template-columns:1fr;
   gap:14px;
   width:min(392px, calc(100vw - 28px));
-  max-height:min(82vh, 720px);
+  max-height:min(calc(100vh - 20px), 720px);
+  max-height:min(calc(100dvh - 20px), 720px);
   overflow:auto;
   padding:18px;
   border-radius:28px;
