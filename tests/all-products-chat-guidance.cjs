@@ -66,6 +66,7 @@ test('todos os produtos indicam Criar esta arte antes de pedir dados', async () 
         await page.getByRole('button', { name:'Enviar mensagem' }).click();
         await page.getByText(guidance, { exact:true }).waitFor();
         assert.equal(await page.locator('.product-card').count(), 1, productId);
+        assert.equal(await page.getByText('Referência do estilo O Mascote', { exact:true }).count(), 0, productId);
         assert.equal(await page.getByText('Qual esporte e quais dados você quer usar?', { exact:true }).count(), 0, productId);
         await page.locator('.product-card').getByRole('button', { name:'Criar esta arte' }).click();
         await page.locator('.lab-form').waitFor();
