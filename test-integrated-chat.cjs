@@ -36,8 +36,8 @@ assert.match(atendimentoBundle, /className:`size-4 animate-spin`/, "o indicador 
 assert.match(atendimentoBundle, /"aria-label":`Envio indisponível`/, "uma falha não pode deixar o indicador girando para sempre");
 assert.doesNotMatch(atendimentoBundle, /disabled:c\|\|!n\|\|!o\.trim\(\)/, "o botão de enviar não pode aparecer desativado por causa da inicialização");
 assert.match(atendimentoBundle, /className:`shrink-0 inline-flex[^`]+lab-send-loading`,style:\{width:43,height:43\}/, "o indicador precisa ter os mesmos 43 por 43 pixels do botão de enviar");
-assert.match(atendimentoHtml, /index-CnqeHax0\.js\?v=20260929-mascote-botao/, "o navegador precisa buscar o bundle atualizado");
-assert.match(atendimentoBundle, /É só clicar no botão verde “Criar esta arte” abaixo\./, "o chat deve indicar o botão verde antes de perguntar o animal do mascote");
+assert.match(atendimentoHtml, /index-mnX_lue2\.js\?v=20260929-todas-artes/, "o navegador precisa buscar o bundle atualizado");
+assert.match(atendimentoBundle, /É só clicar no botão verde “Criar esta arte” abaixo\./, "o chat deve indicar o botão verde para todas as artes");
 assert.match(html, /class="homeChatStage" id="integratedChatModal"/, "o chat precisa aparecer entre os menus da página inicial");
 assert.match(html, /id="productsMenuToggle"[^>]+aria-expanded="false"/, "os produtos precisam começar recolhidos");
 assert.match(html, /id="productsMenuPanel" hidden/, "a área antiga de produtos precisa iniciar fechada");
