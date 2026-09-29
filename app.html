@@ -26004,8 +26004,8 @@ function renderCleanProductForms(){
           <div class="cleanResultBox" data-clean-result-box>
             <div class="cleanResultStatus" data-clean-result-status>Estamos montando sua imagem...</div>
             <img alt="Resultado pronto" data-clean-result-preview oncontextmenu="return false;" draggable="false">
-            <a href="#" class="cleanResultDownload" data-clean-result-download>Baixar imagem</a>
-            <a href="#" class="cleanResultDownload cleanVideoDownload" data-clean-video-download>Baixar vídeo de 8s</a>
+            <a href="#" class="cleanResultDownload" data-clean-result-download>🖼️ Baixar imagem</a>
+            <a href="#" class="cleanResultDownload cleanVideoDownload" data-clean-video-download>🎬 Baixar vídeo</a>
           </div>
         </form>
       </section>
@@ -30602,6 +30602,21 @@ async function comprarCreditos(pacote, metodo = "checkout", triggerBtn = null){
 }
 
 let timerAvisoPedido = null;
+const feedbackDownloadPedidos = new Map();
+
+function guardarFeedbackDownloadPedido(id, mensagem){
+  if(!mensagem) return;
+  feedbackDownloadPedidos.set(String(id), { mensagem, auth: token, ate: Date.now() + 300000 });
+}
+
+function restaurarFeedbackDownloadPedidos(){
+  document.querySelectorAll("[data-pedido-download-status]").forEach(el => {
+    const feedback = feedbackDownloadPedidos.get(el.dataset.pedidoId);
+    if(!feedback || feedback.auth !== token || feedback.ate < Date.now()) return;
+    el.textContent = feedback.mensagem;
+    if(el.classList.contains("pedidoDownloadFeedback")) el.classList.add("show");
+  });
+}
 
 function mostrarAvisoPedido(
   titulo = "\u2705 Pedido recebido!",
@@ -34498,15 +34513,13 @@ function atualizarMenuPedidosTopo(pedidos){
 ${videoPago && !pagamentoPendente ? `<div class="pedidoEntregaVideoInfo">Sua entrega inclui imagem + vídeo.</div>` : ``}
 ${pagamentoPendente ? `
 ` : aprovado ? `
-<button type="button" class="menuPedidoBtn" data-pedido-download data-pedido-id="${p.id}" onclick="baixarPedido('${p.id}')">Baixar imagem</button>
-${videoPronto ? `<button type="button" class="menuPedidoBtn menuPedidoBtnVideo" data-pedido-video-download data-pedido-id="${p.id}" onclick="baixarVideoPedido('${p.id}')">Baixar vídeo de 8s</button>` : htmlEstadoVideoPedido(p)}
+<button type="button" class="menuPedidoBtn" data-pedido-download data-pedido-id="${p.id}" onclick="baixarPedido('${p.id}')">🖼️ Baixar imagem</button>
+${videoPronto ? `<button type="button" class="menuPedidoBtn menuPedidoBtnVideo" data-pedido-video-download data-pedido-id="${p.id}" onclick="baixarVideoPedido('${p.id}')">🎬 Baixar vídeo</button>` : htmlEstadoVideoPedido(p)}
 <div class="pedidoDownloadFeedback" data-pedido-download-status data-pedido-id="${p.id}" aria-live="polite"></div>
-<button type="button" class="menuPedidoBtn" onclick="compartilharImagemPedido('${p.id}')">Compartilhar imagem</button>
 ` : `
-<button type="button" class="menuPedidoBtn" data-pedido-download data-pedido-id="${p.id}" onclick="aprovarPedido('${p.id}')">✅ Está boa, baixar imagem</button>
-${videoPronto ? `<button type="button" class="menuPedidoBtn menuPedidoBtnVideo" data-pedido-video-download data-pedido-id="${p.id}" onclick="aprovarEBaixarVideoPedido('${p.id}')">✅ Está boa, baixar vídeo de 8s</button>` : htmlEstadoVideoPedido(p)}
+<button type="button" class="menuPedidoBtn" data-pedido-download data-pedido-id="${p.id}" onclick="aprovarPedido('${p.id}')">🖼️ Baixar imagem</button>
+${videoPronto ? `<button type="button" class="menuPedidoBtn menuPedidoBtnVideo" data-pedido-video-download data-pedido-id="${p.id}" onclick="aprovarEBaixarVideoPedido('${p.id}')">🎬 Baixar vídeo</button>` : htmlEstadoVideoPedido(p)}
 <div class="pedidoDownloadFeedback" data-pedido-download-status data-pedido-id="${p.id}" aria-live="polite"></div>
-<button type="button" class="menuPedidoBtn" onclick="aprovarECompartilharPedido('${p.id}')">Compartilhar imagem</button>
 ${criacaoEconomica ? `
 <div class="ajustePedidoBox">Este pedido n\u00e3o inclui pedido de ajuste. Falhas t\u00e9cnicas continuam cobertas pelo suporte.</div>
 ` : usouAjuste ? `
@@ -34521,6 +34534,7 @@ ${criacaoEconomica ? `
     </div>
   `;
   }).join("");
+  restaurarFeedbackDownloadPedidos();
 }
 
 let historicoTimer = null;
@@ -34722,22 +34736,16 @@ ${videoPago && !pagamentoPendente ? `<div class="pedidoEntregaVideoInfo">Sua ent
 ${pagamentoPendente ? `
 ` : aprovado ? `
         <button data-pedido-download data-pedido-id="${p.id}" onclick="baixarPedido('${p.id}')" style="margin-top:8px;padding:8px 12px;border-radius:10px;border:none;background:#2ecc71;color:#fff;font-weight:900;cursor:pointer;width:100%;">
-          Baixar imagem
+          🖼️ Baixar imagem
         </button>
-        ${videoPronto ? `<button class="menuPedidoBtn menuPedidoBtnVideo" data-pedido-video-download data-pedido-id="${p.id}" onclick="baixarVideoPedido('${p.id}')">Baixar vídeo de 8s</button>` : htmlEstadoVideoPedido(p)}
+        ${videoPronto ? `<button class="menuPedidoBtn menuPedidoBtnVideo" data-pedido-video-download data-pedido-id="${p.id}" onclick="baixarVideoPedido('${p.id}')">🎬 Baixar vídeo</button>` : htmlEstadoVideoPedido(p)}
         <div class="pedidoDownloadFeedback" data-pedido-download-status data-pedido-id="${p.id}" aria-live="polite"></div>
-        <button onclick="compartilharImagemPedido('${p.id}')" style="margin-top:8px;padding:8px 12px;border-radius:10px;border:none;background:#0f172a;color:#fff;font-weight:900;cursor:pointer;width:100%;">
-          Compartilhar imagem
-        </button>
 ` : `
         <button data-pedido-download data-pedido-id="${p.id}" onclick="aprovarPedido('${p.id}')" style="margin-top:8px;padding:8px 12px;border-radius:10px;border:none;background:#16a34a;color:#fff;font-weight:900;cursor:pointer;width:100%;">
-          ✅ Está boa, baixar imagem
+          🖼️ Baixar imagem
         </button>
-        ${videoPronto ? `<button class="menuPedidoBtn menuPedidoBtnVideo" data-pedido-video-download data-pedido-id="${p.id}" onclick="aprovarEBaixarVideoPedido('${p.id}')">✅ Está boa, baixar vídeo de 8s</button>` : htmlEstadoVideoPedido(p)}
+        ${videoPronto ? `<button class="menuPedidoBtn menuPedidoBtnVideo" data-pedido-video-download data-pedido-id="${p.id}" onclick="aprovarEBaixarVideoPedido('${p.id}')">🎬 Baixar vídeo</button>` : htmlEstadoVideoPedido(p)}
         <div class="pedidoDownloadFeedback" data-pedido-download-status data-pedido-id="${p.id}" aria-live="polite"></div>
-        <button onclick="aprovarECompartilharPedido('${p.id}')" style="margin-top:8px;padding:8px 12px;border-radius:10px;border:none;background:#0f172a;color:#fff;font-weight:900;cursor:pointer;width:100%;">
-          Compartilhar imagem
-        </button>
 
         ${criacaoEconomica ? `
           <div class="ajustePedidoBox">Este pedido n\u00e3o inclui pedido de ajuste. Falhas t\u00e9cnicas continuam cobertas pelo suporte.</div>
@@ -34754,6 +34762,7 @@ ${pagamentoPendente ? `
       </div>
     `;
     }).join("");
+    restaurarFeedbackDownloadPedidos();
 
   }catch(e){
     if(!historicoCarregadoUmaVez){
@@ -34900,6 +34909,7 @@ function registrarStatusDownloadPedido(statusEl, id){
   if(!statusEl) return;
   statusEl.dataset.pedidoDownloadStatus = "";
   statusEl.dataset.pedidoId = String(id || "");
+  restaurarFeedbackDownloadPedidos();
 }
 
 function configurarAcaoDownloadPedido(el, id, aprovado){
@@ -34912,7 +34922,7 @@ function configurarAcaoDownloadPedido(el, id, aprovado){
   el.disabled = false;
   el.removeAttribute("aria-busy");
   el.removeAttribute("aria-disabled");
-  el.textContent = aprovado ? "Baixar imagem" : "\u2705 Est\u00e1 boa, baixar imagem";
+  el.textContent = "🖼️ Baixar imagem";
   el.onclick = async (ev) => {
     ev?.preventDefault?.();
     if(aprovado){
@@ -34934,9 +34944,7 @@ function configurarAcaoDownloadVideoPedido(el, id, aprovado){
   el.disabled = false;
   el.removeAttribute("aria-busy");
   el.removeAttribute("aria-disabled");
-  el.textContent = aprovado
-    ? "Baixar vídeo de 8s"
-    : "\u2705 Est\u00e1 boa, baixar vídeo de 8s";
+  el.textContent = "🎬 Baixar vídeo";
   el.onclick = async (ev) => {
     ev?.preventDefault?.();
     if(aprovado){
@@ -34950,13 +34958,14 @@ function configurarAcaoDownloadVideoPedido(el, id, aprovado){
 
 function atualizarEstadoVisualDownloadPedido(id, estado, mensagem = ""){
   const pedidoId = String(id || "");
+  guardarFeedbackDownloadPedido(pedidoId, mensagem);
   const seletorId = seletorPedidoSeguro(pedidoId);
   const processando = estado === "aprovando" || estado === "preparando";
   const textos = {
     aprovando: "Aprovando\u2026",
     preparando: "Preparando download\u2026",
-    liberado: "Baixar imagem",
-    aguardando_aprovacao: "\u2705 Est\u00e1 boa, baixar imagem"
+    liberado: "🖼️ Baixar imagem",
+    aguardando_aprovacao: "🖼️ Baixar imagem"
   };
 
   document
@@ -34992,13 +35001,14 @@ function atualizarEstadoVisualDownloadPedido(id, estado, mensagem = ""){
 
 function atualizarEstadoVisualDownloadVideoPedido(id, estado, mensagem = ""){
   const pedidoId = String(id || "");
+  guardarFeedbackDownloadPedido(pedidoId, mensagem);
   const seletorId = seletorPedidoSeguro(pedidoId);
   const processando = estado === "aprovando" || estado === "preparando";
   const textos = {
     aprovando: "Aprovando\u2026",
     preparando: "Preparando vídeo\u2026",
-    liberado: "Baixar vídeo de 8s",
-    aguardando_aprovacao: "\u2705 Est\u00e1 boa, baixar vídeo de 8s"
+    liberado: "🎬 Baixar vídeo",
+    aguardando_aprovacao: "🎬 Baixar vídeo"
   };
 
   document
@@ -35395,10 +35405,13 @@ async function baixarVideoPedido(id){
     pedidoId,
     "liberado",
     iniciou
-      ? "Vídeo liberado. Verifique a pasta Downloads do celular."
+      ? "✅ Vídeo enviado para download. Confira a pasta Downloads e confirme o salvamento se o navegador pedir."
       : "Não foi possível iniciar o vídeo. Toque em Baixar vídeo para tentar novamente."
   );
-  if(iniciou) window.setTimeout(()=>convidarAvaliacaoArte(pedidoId, "vídeo"), 1200);
+  if(iniciou){
+    mostrarAvisoPedido("🎬 Download do vídeo enviado", "Confira a pasta Downloads. Confirme o salvamento se o navegador pedir.", 12000);
+    window.setTimeout(()=>convidarAvaliacaoArte(pedidoId, "vídeo"), 1200);
+  }
   return iniciou;
 }
 
@@ -35484,9 +35497,10 @@ async function baixarPedido(id, { aprovadoAgora = false } = {}){
     pedidoId,
     "liberado",
     downloadRepetido
-      ? "Outro download foi liberado. Confirme no Chrome se ele solicitar."
-      : "Download liberado. Verifique a pasta Downloads do celular."
+      ? "✅ Imagem enviada novamente para download. Confirme no navegador se ele solicitar."
+      : "✅ Imagem enviada para download. Confira a pasta Downloads e confirme o salvamento se o navegador pedir."
   );
+  mostrarAvisoPedido("🖼️ Download da imagem enviado", "Confira a pasta Downloads. Confirme o salvamento se o navegador pedir.", 12000);
   window.setTimeout(()=>convidarAvaliacaoArte(pedidoId, "imagem"), 1200);
   return true;
 }
