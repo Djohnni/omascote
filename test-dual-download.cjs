@@ -57,7 +57,9 @@ for (const [area, source] of [["menu", menuBlock], ["histórico", historyBlock]]
   assert.match(source, /data-pedido-download/, `${area}: ação da imagem precisa existir`);
   assert.match(source, /data-pedido-video-download/, `${area}: ação do vídeo precisa existir`);
   assert.match(source, /Baixar imagem/, `${area}: download da imagem precisa estar identificado`);
-  assert.match(source, /Baixar vídeo de 8s/, `${area}: download do vídeo precisa estar identificado`);
+  assert.match(source, /🎬 Baixar vídeo/, `${area}: download do vídeo precisa estar identificado`);
+  assert.match(source, /🖼️ Baixar imagem/, `${area}: imagem precisa ter ícone`);
+  assert.doesNotMatch(source, /Compartilhar imagem|Está boa, baixar/, `${area}: ações simplificadas`);
   assert.match(source, /aprovarEBaixarVideoPedido/, `${area}: vídeo deve poder aprovar e baixar em um clique`);
   assert.match(source, /baixarVideoPedido/, `${area}: vídeo aprovado deve continuar disponível`);
   assert.match(source, /pagamentoPendente \?/, `${area}: pagamento pendente deve bloquear os downloads`);
@@ -65,7 +67,7 @@ for (const [area, source] of [["menu", menuBlock], ["histórico", historyBlock]]
 
 assert.match(html, /Sua entrega inclui imagem \+ vídeo\./);
 assert.match(html, /Imagem pronta · vídeo em produção\./);
-assert.match(html, /O vídeo não foi concluído\. Fale com o suporte/);
+assert.match(html, /O vídeo não foi concluído\. Fale conosco pelo WhatsApp/);
 assert.doesNotMatch(html, /Aprove a arte primeiro\. Depois o botão de vídeo ficará disponível/);
 assert.doesNotMatch(html, /teste de vídeo não foi concluído/);
 
@@ -98,4 +100,20 @@ assert.match(videoDownload, /pedido_video:\$\{pedidoId\}:video/, "a trava de cli
 assert.match(videoDownload, /formato: "video"/);
 assert.match(videoDownload, /recurso: "pedido_video"/);
 
-console.log("Entrega conjunta de imagem e vídeo validada.");
+const feedbackEl = { dataset: { pedidoId: 'pedido-teste' }, textContent: '', classList: { contains: () => true, add: () => {} } };
+const feedbackContext = vm.createContext({ token: 'sessao-teste', document: { querySelectorAll: () => [feedbackEl] } });
+vm.runInContext('const feedbackDownloadPedidos = new Map();\n' + [
+  'guardarFeedbackDownloadPedido', 'restaurarFeedbackDownloadPedidos'
+].map(functionSource).join('\n'), feedbackContext);
+vm.runInContext('guardarFeedbackDownloadPedido("pedido-teste", "Download enviado"); restaurarFeedbackDownloadPedidos();', feedbackContext);
+assert.equal(feedbackEl.textContent, 'Download enviado');
+feedbackEl.textContent = '';
+vm.runInContext('restaurarFeedbackDownloadPedidos()', feedbackContext);
+assert.equal(feedbackEl.textContent, 'Download enviado', 'atualizar o histórico não pode apagar o aviso');
+feedbackEl.textContent = '';
+vm.runInContext('token = "outra-sessao"; restaurarFeedbackDownloadPedidos()', feedbackContext);
+assert.equal(feedbackEl.textContent, '', 'aviso não pode atravessar contas');
+vm.runInContext('token = "sessao-teste"; feedbackDownloadPedidos.get("pedido-teste").ate = 0; restaurarFeedbackDownloadPedidos()', feedbackContext);
+assert.equal(feedbackEl.textContent, '', 'aviso antigo deve expirar');
+
+console.log("Ações simplificadas, feedback e entrega de imagem e vídeo validados.");
