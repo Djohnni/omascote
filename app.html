@@ -6697,6 +6697,10 @@ body{
   display:block;
 }
 
+.pedidoImagemAcoes{display:grid;gap:4px;margin-top:4px;width:100%;}
+.pedidoImagemAcoes button{margin-top:0 !important;width:100%;}
+.pedidoImagemAcoes .pedidoDownloadFeedback{margin-top:0;}
+
 [data-pedido-download][aria-busy="true"],
 [data-pedido-video-download][aria-busy="true"]{
   opacity:.72;
@@ -30603,6 +30607,80 @@ async function comprarCreditos(pacote, metodo = "checkout", triggerBtn = null){
 
 let timerAvisoPedido = null;
 const feedbackDownloadPedidos = new Map();
+const imagensFinaisPedidos = new Map();
+let imagensFinaisSessao = null;
+const observadorImagemFinal = typeof IntersectionObserver === "function"
+  ? new IntersectionObserver(entries => {
+      entries.forEach(entry => {
+        if(!entry.isIntersecting) return;
+        observadorImagemFinal.unobserve(entry.target);
+        void exibirImagemFinalPedido(entry.target);
+      });
+    }, { rootMargin: "100px" })
+  : null;
+
+async function exibirImagemFinalPedido(img){
+  const id = img.dataset.pedidoImagemFinal;
+  const auth = token;
+  if(!id || !auth) return;
+  sincronizarImagensFinaisSessao();
+  let tarefa = imagensFinaisPedidos.get(id);
+  if(!tarefa){
+    tarefa = (async () => {
+      const resposta = await fetch(`${API_BASE}/pedidos/${encodeURIComponent(id)}/download-resultado?visualizacao=1`, {
+        headers: { Authorization: "Bearer " + auth }, cache: "no-store"
+      });
+      if(!resposta.ok || !String(resposta.headers.get("content-type") || "").startsWith("image/")) return null;
+      const blob = await resposta.blob();
+      if(token !== auth || !blob.size) return null;
+      return URL.createObjectURL(blob);
+    })().catch(() => null);
+    imagensFinaisPedidos.set(id, tarefa);
+  }
+  const url = await tarefa;
+  if(!url){
+    if(imagensFinaisPedidos.get(id) === tarefa) imagensFinaisPedidos.delete(id);
+    return;
+  }
+  if(token === auth && img.isConnected && img.dataset.pedidoImagemFinal === id){
+    img.src = url;
+    img.alt = "Arte final";
+  }
+}
+
+function sincronizarImagensFinaisSessao(){
+  if(imagensFinaisSessao !== token){
+    for(const tarefa of imagensFinaisPedidos.values()) tarefa.then(url => { if(url) URL.revokeObjectURL(url); });
+    imagensFinaisPedidos.clear();
+    imagensFinaisSessao = token;
+  }
+}
+
+function organizarEntregasPedidos(pedidos){
+  sincronizarImagensFinaisSessao();
+  observadorImagemFinal?.disconnect();
+  const porId = new Map((pedidos || []).map(p => [String(p.id), p]));
+  document.querySelectorAll(".menuPedidoItem[data-pedido-id], [data-historico-pedido-id]").forEach(card => {
+    const pedido = porId.get(card.dataset.pedidoId);
+    const img = card.querySelector("img");
+    if(!pedido || !img) return;
+    card.querySelectorAll(".previewAviso").forEach(aviso => aviso.remove());
+    let acoes = card.querySelector(".pedidoImagemAcoes");
+    if(!acoes){
+      acoes = document.createElement("div");
+      acoes.className = "pedidoImagemAcoes";
+      img.insertAdjacentElement("afterend", acoes);
+    }
+    card.querySelectorAll("[data-pedido-download], [data-pedido-video-download], [data-pedido-download-status]").forEach(el => acoes.appendChild(el));
+    img.style.display = "block";
+    img.alt = "Arte do pedido";
+    if(pedido.status === "pronto" && pedido.aprovado_cliente === true && pedido.pagamento_pendente !== true){
+      img.dataset.pedidoImagemFinal = String(pedido.id);
+      if(observadorImagemFinal) observadorImagemFinal.observe(img);
+      else void exibirImagemFinalPedido(img);
+    }
+  });
+}
 
 function guardarFeedbackDownloadPedido(id, mensagem){
   if(!mensagem) return;
@@ -34534,6 +34612,7 @@ ${criacaoEconomica ? `
     </div>
   `;
   }).join("");
+  organizarEntregasPedidos(pedidos);
   restaurarFeedbackDownloadPedidos();
 }
 
@@ -34762,6 +34841,7 @@ ${pagamentoPendente ? `
       </div>
     `;
     }).join("");
+    organizarEntregasPedidos(pedidos);
     restaurarFeedbackDownloadPedidos();
 
   }catch(e){
@@ -34915,6 +34995,11 @@ function registrarStatusDownloadPedido(statusEl, id){
 function configurarAcaoDownloadPedido(el, id, aprovado){
   if(!el) return;
   const pedidoId = String(id || "");
+  const imagemResultado = el.closest("[data-clean-result-box], #resultadoBox")?.querySelector("img");
+  if(imagemResultado){
+    imagemResultado.dataset.pedidoImagemFinal = pedidoId;
+    if(aprovado) void exibirImagemFinalPedido(imagemResultado);
+  }
   el.removeAttribute("href");
   el.removeAttribute("target");
   el.dataset.pedidoDownload = "";
@@ -35331,6 +35416,15 @@ async function iniciarDownloadDiretoSeguro({
     const extensao = formato === "video" ? "mp4" : formato === "zip" ? "zip" : "png";
     const nomeArquivo = `${nomeSeguro}_${formato === "video" ? "video_8s" : formato === "zip" ? "pedido" : "imagem"}.${extensao}`;
     const arquivoUrl = URL.createObjectURL(arquivo);
+    if(formato === "resultado"){
+      sincronizarImagensFinaisSessao();
+      if(!imagensFinaisPedidos.has(recursoId)){
+        imagensFinaisPedidos.set(recursoId, Promise.resolve(URL.createObjectURL(arquivo)));
+      }
+      document.querySelectorAll("img[data-pedido-imagem-final]").forEach(img => {
+        if(img.dataset.pedidoImagemFinal === recursoId) void exibirImagemFinalPedido(img);
+      });
+    }
     const link = document.createElement("a");
     link.href = arquivoUrl;
     link.download = nomeArquivo;

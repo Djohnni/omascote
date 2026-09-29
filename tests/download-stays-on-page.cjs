@@ -26,6 +26,9 @@ function createHarness({ fileStatus = 200, formato = 'resultado' } = {}) {
     URLSearchParams,
     token: 'token-de-teste',
     downloadsDiretosEmAndamento: new Set(),
+    imagensFinaisPedidos: new Map(),
+    sincronizarImagensFinaisSessao: () => {},
+    exibirImagemFinalPedido: () => {},
     performance: { now: () => 1 },
     ambienteDownloadAtual: () => ({ navegador: 'whatsapp', sistema: 'android', navegadorInterno: true }),
     mostrarAvisoPedido: () => {},
@@ -35,6 +38,7 @@ function createHarness({ fileStatus = 200, formato = 'resultado' } = {}) {
     alert: message => alerts.push(message),
     setTimeout: () => 1,
     document: {
+      querySelectorAll: () => [],
       body: { appendChild: link => links.push(link) },
       createElement: tag => {
         assert.equal(tag, 'a', 'download não navega por formulário');
