@@ -35275,17 +35275,8 @@ async function aprovarECompartilharPedido(id){
 const downloadsDiretosEmAndamento = new Set();
 const linksDownloadHttps = new Map();
 
-function solicitarDownloadHttps({ url, id, formato, expiresIn }){
-  // Link HTTPS nativo: nunca substituir a conversa. Content-Disposition na API
-  // solicita download; _blank preserva a página caso o app abra uma visualização.
-  const link = document.createElement("a");
-  link.href = url;
-  link.target = "_blank";
-  link.rel = "noopener noreferrer";
-  link.referrerPolicy = "no-referrer";
-  link.hidden = true;
-  document.body.appendChild(link);
-  try { link.click(); } finally { setTimeout(() => link.remove(), 1000); }
+function registrarLinkDownloadHttps({ url, id, formato, expiresIn }){
+  // Guardar a alternativa protegida, sem abrir aba nem navegar automaticamente.
   const chave = `${id}:${formato}`;
   const registro = { url, expiresAt: Date.now() + expiresIn * 1000 };
   linksDownloadHttps.set(chave, registro);
@@ -35294,10 +35285,11 @@ function solicitarDownloadHttps({ url, id, formato, expiresIn }){
   }, expiresIn * 1000);
 }
 
-function mostrarAlternativaDownloadHttps(id, formato){
+function mostrarAlternativaDownloadHttps(id, formato, falhou = false){
   const registro = linksDownloadHttps.get(`${id}:${formato}`);
   if(!registro || registro.expiresAt <= Date.now()) return;
-  mostrarAvisoPedido("Download solicitado", "Confira os downloads do navegador. Se não começou, ", 120000);
+  mostrarAvisoPedido(falhou ? "Não foi possível iniciar o download" : "Download solicitado",
+    falhou ? "Você pode tentar novamente ou escolher: " : "Confira os downloads do navegador. Se não começou, escolha: ", 120000);
   const mensagem = document.getElementById("ia4ToastPedido")?.querySelector("span");
   if(!mensagem) return;
   // Alternativa com toque real, sem popup automático nem troca da página atual.
@@ -35306,7 +35298,7 @@ function mostrarAlternativaDownloadHttps(id, formato){
   link.target = "_blank";
   link.rel = "noopener noreferrer";
   link.referrerPolicy = "no-referrer";
-  link.textContent = "toque aqui para salvar o arquivo";
+  link.textContent = "Abrir externamente";
   link.style.cssText = "color:inherit;text-decoration:underline;font-weight:700";
   link.addEventListener("click", event => {
     event.stopPropagation();
@@ -35386,6 +35378,7 @@ async function iniciarDownloadDiretoSeguro({
   }
 
   downloadsDiretosEmAndamento.add(chave);
+  linksDownloadHttps.delete(`${recursoId}:${formato}`);
   const inicio = performance.now();
 
   ia4Track("download_inicio", {
@@ -35443,16 +35436,14 @@ async function iniciarDownloadDiretoSeguro({
         !Number.isFinite(out.expires_in) || out.expires_in <= 0 || out.expires_in > 300){
         throw new Error("link_download_invalido");
       }
-      solicitarDownloadHttps({ url:downloadUrl.href, id:recursoId, formato, expiresIn:out.expires_in });
-      ia4Track("download_solicitado_navegador", {
-        pedido_id:recursoId, formato, navegador:ambiente.navegador,
-        sistema_operacional:ambiente.sistema, rota:"https_nativo",
-        duracao_ms:Math.round(performance.now() - inicio)
-      });
-      return true;
+      registrarLinkDownloadHttps({ url:downloadUrl.href, id:recursoId, formato, expiresIn:out.expires_in });
     }
 
-    const arquivoResposta = await fetch(downloadUrl.href, {
+    // O download normal fica na página; o endereço HTTPS só abre externamente
+    // quando o cliente toca explicitamente na alternativa oferecida no aviso.
+    const arquivoResposta = await fetch(downloadUrl.href, out.transporte === "https" ? {
+      method: "GET", cache: "no-store", credentials: "omit", referrerPolicy: "no-referrer"
+    } : {
       method: "POST",
       cache: "no-store",
       body: new URLSearchParams({ ticket: out.ticket })
@@ -35467,7 +35458,8 @@ async function iniciarDownloadDiretoSeguro({
         status_http: arquivoResposta.status,
         erro_tecnico: String(erroArquivo?.error || "arquivo_indisponivel").slice(0, 80)
       });
-      alert(erroArquivo?.error || "Não foi possível baixar o arquivo. Tente novamente.");
+      if(out.transporte === "https") mostrarAlternativaDownloadHttps(recursoId, formato, true);
+      else alert(erroArquivo?.error || "Não foi possível baixar o arquivo. Tente novamente.");
       return false;
     }
 
@@ -35492,7 +35484,6 @@ async function iniciarDownloadDiretoSeguro({
     const link = document.createElement("a");
     link.href = arquivoUrl;
     link.download = nomeArquivo;
-    link.target = "_blank";
     link.rel = "noopener";
     link.style.display = "none";
     document.body.appendChild(link);
@@ -35525,7 +35516,8 @@ async function iniciarDownloadDiretoSeguro({
       erro_tecnico: String(e?.message || e?.name || "erro_desconhecido").slice(0, 80),
       fallback: "download_na_pagina"
     });
-    alert("N\u00e3o foi poss\u00edvel iniciar o download. Tente novamente em instantes.");
+    if(linksDownloadHttps.has(`${recursoId}:${formato}`)) mostrarAlternativaDownloadHttps(recursoId, formato, true);
+    else alert("N\u00e3o foi poss\u00edvel iniciar o download. Tente novamente em instantes.");
     return false;
   }finally{
     setTimeout(() => downloadsDiretosEmAndamento.delete(chave), 2500);

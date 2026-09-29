@@ -11,6 +11,9 @@ const start = html.indexOf('const downloadsDiretosEmAndamento = new Set();');
 const end = html.indexOf('function ambienteDownloadAtual()', start);
 if (start < 0 || end < start) throw new Error('Native helpers not found');
 const script = html.slice(start, end);
+const downloadStart = html.indexOf('async function iniciarDownloadDiretoSeguro(');
+const downloadEnd = html.indexOf('async function baixarVideoPedido(', downloadStart);
+const downloadScript = html.slice(downloadStart, downloadEnd);
 const files = {
   imagem: { bytes: fs.readFileSync(path.join(orderDirectory, 'resultado_final.png')), type: 'image/png', name: 'omascote-teste-https-imagem.png' },
   video: { bytes: fs.readFileSync(path.join(orderDirectory, 'resultado_video.mp4')), type: 'video/mp4', name: 'omascote-teste-https-video.mp4' }
@@ -24,11 +27,29 @@ const server = http.createServer((req, res) => {
       <button onclick="testar('imagem')">Baixar imagem de teste</button><button onclick="testar('video')">Baixar vídeo de teste</button>
       <div id="ia4ToastPedido"><strong>Pronto</strong><br><span>Escolha um arquivo.</span></div><pre id="status"></pre>
       <script>function ia4Track(){} function mostrarAvisoPedido(t,m){document.querySelector('strong').textContent=t;document.querySelector('#ia4ToastPedido span').textContent=m;}
+      const API_BASE='https://download-teste.invalid',token='teste-local',imagensFinaisPedidos=new Map();
+      function sincronizarImagensFinaisSessao(){} function exibirImagemFinalPedido(){}
+      function ambienteDownloadAtual(){return {navegador:'teste',sistema:'desktop'};}
+      function ia4TratarAuthInvalida(){return '';} async function ia4LerJsonSeguro(r){try{return await r.json();}catch{return {};}}
+      const localFetch=window.fetch.bind(window);
+      window.fetch=async function(url,options){
+        if(url===API_BASE+'/ticket'){
+          const formato=JSON.parse(options.body).formato;
+          await new Promise(resolve=>setTimeout(resolve,2000));
+          return new Response(JSON.stringify({ok:true,transporte:'https',expires_in:300,download_path:'/pedidos/teste-discreto/download-arquivo/'+formato+'?chave='+'a'.repeat(43)}),{headers:{'Content-Type':'application/json'}});
+        }
+        if(url.startsWith(API_BASE+'/pedidos/'))return localFetch('/arquivo/'+(url.includes('/video?')?'video':'imagem'));
+        return localFetch(url,options);
+      };
       ${script}
-      function testar(tipo){document.getElementById('status').textContent='Preparando por 2 segundos…';setTimeout(()=>{
-        solicitarDownloadHttps({url:location.origin+'/arquivo/'+tipo,id:'teste',formato:tipo,expiresIn:300});
-        mostrarAlternativaDownloadHttps('teste',tipo);document.getElementById('status').textContent='Solicitado: '+tipo+' — página preservada';
-      },2000);}</script></html>`);
+      ${downloadScript}
+      async function testar(tipo){
+        document.getElementById('status').textContent='Preparando por 2 segundos…';
+        const formato=tipo==='video'?'video':'resultado';
+        const ok=await iniciarDownloadDiretoSeguro({id:'teste-discreto',ticketEndpoint:'/ticket',formato});
+        if(ok)mostrarAlternativaDownloadHttps('teste-discreto',formato);
+        document.getElementById('status').textContent=ok?'Solicitado: '+tipo+' — página preservada':'Falha';
+      }</script></html>`);
   }
   const file = files[req.url?.split('/arquivo/')[1]];
   if (!file) { res.statusCode = 404; return res.end(); }
