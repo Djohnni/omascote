@@ -8730,6 +8730,21 @@ body.saldoMenuAberto .ia4WhatsappBtn{
   background:rgba(15,23,42,.35);
 }
 
+.ia4DownloadOk{
+  margin-top:20px;
+  min-width:120px;
+  min-height:44px;
+  padding:10px 24px;
+  border:0;
+  border-radius:10px;
+  background:#138b43;
+  color:#fff;
+  font:inherit;
+  font-weight:800;
+  cursor:pointer;
+}
+.ia4DownloadOk:focus-visible{outline:3px solid #173d2a;outline-offset:3px}
+
 .ia4ToastPedido.show{
   display:flex;
 }
@@ -30704,6 +30719,7 @@ function mostrarAvisoPedido(
   const aviso = document.getElementById("ia4ToastPedido");
   if(!aviso) return;
 
+  document.getElementById("downloadAvisoOk")?.remove();
   const tituloEl = aviso.querySelector("strong");
   const mensagemEl = aviso.querySelector("span");
   if(tituloEl) tituloEl.textContent = titulo;
@@ -35312,6 +35328,25 @@ function mostrarAlternativaDownloadHttps(id, formato, falhou = false){
   mensagem.appendChild(link);
 }
 
+function adicionarOkAvaliacaoDownload(pedidoId, tipo){
+  const caixa = document.getElementById("ia4ToastPedido")?.querySelector(".ia4ToastPedidoBox");
+  if(!caixa) return;
+  document.getElementById("downloadAvisoOk")?.remove();
+  clearTimeout(timerAvisoPedido);
+  const botao = document.createElement("button");
+  botao.id = "downloadAvisoOk";
+  botao.type = "button";
+  botao.className = "ia4DownloadOk";
+  botao.textContent = "OK";
+  botao.addEventListener("click", event => {
+    event.stopPropagation();
+    botao.disabled = true;
+    fecharAvisoPedido();
+    convidarAvaliacaoArte(pedidoId, tipo);
+  });
+  caixa.appendChild(botao);
+}
+
 function ambienteDownloadAtual(){
   const ua = String(navigator.userAgent || "");
   const ambiente = ia4DetectarAmbienteNavegacao(ua);
@@ -35560,8 +35595,8 @@ async function baixarVideoPedido(id){
   );
   if(iniciou){
     mostrarAvisoPedido("🎬 Download do vídeo enviado", "Confira a pasta Downloads. Confirme o salvamento se o navegador pedir.", 12000);
-    window.setTimeout(()=>convidarAvaliacaoArte(pedidoId, "vídeo"), 1200);
     mostrarAlternativaDownloadHttps(pedidoId, "video");
+    adicionarOkAvaliacaoDownload(pedidoId, "vídeo");
   }
   return iniciou;
 }
@@ -35653,7 +35688,7 @@ async function baixarPedido(id, { aprovadoAgora = false } = {}){
   );
   mostrarAvisoPedido("🖼️ Download da imagem enviado", "Confira a pasta Downloads. Confirme o salvamento se o navegador pedir.", 12000);
   mostrarAlternativaDownloadHttps(pedidoId, "resultado");
-  window.setTimeout(()=>convidarAvaliacaoArte(pedidoId, "imagem"), 1200);
+  adicionarOkAvaliacaoDownload(pedidoId, "imagem");
   return true;
 }
 
