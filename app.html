@@ -35273,6 +35273,52 @@ async function aprovarECompartilharPedido(id){
 }
 
 const downloadsDiretosEmAndamento = new Set();
+const linksDownloadHttps = new Map();
+
+function solicitarDownloadHttps({ url, id, formato, expiresIn }){
+  // Link HTTPS nativo: nunca substituir a conversa. Content-Disposition na API
+  // solicita download; _blank preserva a página caso o app abra uma visualização.
+  const link = document.createElement("a");
+  link.href = url;
+  link.target = "_blank";
+  link.rel = "noopener noreferrer";
+  link.referrerPolicy = "no-referrer";
+  link.hidden = true;
+  document.body.appendChild(link);
+  try { link.click(); } finally { setTimeout(() => link.remove(), 1000); }
+  const chave = `${id}:${formato}`;
+  const registro = { url, expiresAt: Date.now() + expiresIn * 1000 };
+  linksDownloadHttps.set(chave, registro);
+  setTimeout(() => {
+    if(linksDownloadHttps.get(chave) === registro) linksDownloadHttps.delete(chave);
+  }, expiresIn * 1000);
+}
+
+function mostrarAlternativaDownloadHttps(id, formato){
+  const registro = linksDownloadHttps.get(`${id}:${formato}`);
+  if(!registro || registro.expiresAt <= Date.now()) return;
+  mostrarAvisoPedido("Download solicitado", "Confira os downloads do navegador. Se não começou, ", 120000);
+  const mensagem = document.getElementById("ia4ToastPedido")?.querySelector("span");
+  if(!mensagem) return;
+  // Alternativa com toque real, sem popup automático nem troca da página atual.
+  const link = document.createElement("a");
+  link.href = registro.url;
+  link.target = "_blank";
+  link.rel = "noopener noreferrer";
+  link.referrerPolicy = "no-referrer";
+  link.textContent = "toque aqui para salvar o arquivo";
+  link.style.cssText = "color:inherit;text-decoration:underline;font-weight:700";
+  link.addEventListener("click", event => {
+    event.stopPropagation();
+    if(registro.expiresAt <= Date.now()){
+      event.preventDefault();
+      mostrarAvisoPedido("Link expirado", "Toque novamente em Baixar imagem ou Baixar vídeo para gerar outro link, sem nova cobrança.", 10000);
+      return;
+    }
+    ia4Track("download_alternativa_https", { pedido_id:String(id), formato });
+  });
+  mensagem.appendChild(link);
+}
 
 function ambienteDownloadAtual(){
   const ua = String(navigator.userAgent || "");
@@ -35322,6 +35368,8 @@ async function iniciarDownloadDiretoSeguro({
   const recursoId = String(id || "");
   const chave = `${recurso}:${recursoId}:${formato}`;
   const ambiente = ambienteDownloadAtual();
+  const usarHttps = recurso.startsWith("pedido") && formato !== "zip";
+  const rotaSolicitada = usarHttps ? "ticket_https" : "ticket_post_blob";
 
   if(!token){
     alert("Entre na sua conta para baixar.");
@@ -35344,7 +35392,7 @@ async function iniciarDownloadDiretoSeguro({
     pedido_id: recursoId,
     navegador: ambiente.navegador,
     sistema_operacional: ambiente.sistema,
-    rota: "ticket_post_blob",
+    rota: rotaSolicitada,
     fallback: "download_na_pagina"
   });
 
@@ -35357,7 +35405,7 @@ async function iniciarDownloadDiretoSeguro({
         "Content-Type": "application/json",
         "Cache-Control": "no-cache"
       },
-      body: JSON.stringify({ formato })
+      body: JSON.stringify({ formato, ...(usarHttps ? { transporte:"https" } : {}) })
     });
     const out = await ia4LerJsonSeguro(r);
     const duracao = Math.round(performance.now() - inicio);
@@ -35366,7 +35414,7 @@ async function iniciarDownloadDiretoSeguro({
       pedido_id: recursoId,
       navegador: ambiente.navegador,
       sistema_operacional: ambiente.sistema,
-      rota: "ticket_post_blob",
+      rota: rotaSolicitada,
       status_http: r.status,
       duracao_ms: duracao,
       erro_tecnico: r.ok ? "" : String(out?.codigo || out?.error || "ticket_erro").slice(0, 80),
@@ -35379,13 +35427,29 @@ async function iniciarDownloadDiretoSeguro({
       return false;
     }
 
-    if(!out.ticket || !out.download_path){
+    if(!out.download_path || (!out.ticket && out.transporte !== "https")){
       throw new Error("resposta_download_incompleta");
     }
 
     const downloadUrl = new URL(out.download_path, API_BASE);
     if(downloadUrl.origin !== new URL(API_BASE).origin){
       throw new Error("origem_download_invalida");
+    }
+
+    if(out.transporte === "https"){
+      const caminhoEsperado = `/pedidos/${encodeURIComponent(recursoId)}/download-arquivo/${formato}`;
+      if(downloadUrl.protocol !== "https:" || downloadUrl.pathname !== caminhoEsperado ||
+        !/^[A-Za-z0-9_-]{43}$/.test(downloadUrl.searchParams.get("chave") || "") ||
+        !Number.isFinite(out.expires_in) || out.expires_in <= 0 || out.expires_in > 300){
+        throw new Error("link_download_invalido");
+      }
+      solicitarDownloadHttps({ url:downloadUrl.href, id:recursoId, formato, expiresIn:out.expires_in });
+      ia4Track("download_solicitado_navegador", {
+        pedido_id:recursoId, formato, navegador:ambiente.navegador,
+        sistema_operacional:ambiente.sistema, rota:"https_nativo",
+        duracao_ms:Math.round(performance.now() - inicio)
+      });
+      return true;
     }
 
     const arquivoResposta = await fetch(downloadUrl.href, {
@@ -35456,7 +35520,7 @@ async function iniciarDownloadDiretoSeguro({
       pedido_id: recursoId,
       navegador: ambiente.navegador,
       sistema_operacional: ambiente.sistema,
-      rota: "ticket_post_blob",
+      rota: rotaSolicitada,
       status_http: 0,
       erro_tecnico: String(e?.message || e?.name || "erro_desconhecido").slice(0, 80),
       fallback: "download_na_pagina"
@@ -35489,7 +35553,7 @@ async function baixarVideoPedido(id){
   });
 
   if(iniciou){
-    ia4Track("baixou_video", {
+    ia4Track("download_video_solicitado", {
       pedido_id: pedidoId,
       modelo: "veo"
     });
@@ -35505,6 +35569,7 @@ async function baixarVideoPedido(id){
   if(iniciou){
     mostrarAvisoPedido("🎬 Download do vídeo enviado", "Confira a pasta Downloads. Confirme o salvamento se o navegador pedir.", 12000);
     window.setTimeout(()=>convidarAvaliacaoArte(pedidoId, "vídeo"), 1200);
+    mostrarAlternativaDownloadHttps(pedidoId, "video");
   }
   return iniciou;
 }
@@ -35556,7 +35621,7 @@ async function baixarPedido(id, { aprovadoAgora = false } = {}){
     return false;
   }
 
-  ia4Track("baixou_imagem", {
+  ia4Track("download_imagem_solicitado", {
     pedido_id: pedidoId,
     produto: selectedProductInput?.value || "",
     categoria: categoriaSelecionada || "",
@@ -35595,6 +35660,7 @@ async function baixarPedido(id, { aprovadoAgora = false } = {}){
       : "✅ Imagem enviada para download. Confira a pasta Downloads e confirme o salvamento se o navegador pedir."
   );
   mostrarAvisoPedido("🖼️ Download da imagem enviado", "Confira a pasta Downloads. Confirme o salvamento se o navegador pedir.", 12000);
+  mostrarAlternativaDownloadHttps(pedidoId, "resultado");
   window.setTimeout(()=>convidarAvaliacaoArte(pedidoId, "imagem"), 1200);
   return true;
 }
