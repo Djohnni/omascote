@@ -1,0 +1,346 @@
+/* Visual integrado: mantém os controles e o fluxo interno do atendimento. */
+html:has(.lab-frame.is-integrated),
+body:has(.lab-frame.is-integrated),
+body:has(.lab-frame.is-integrated) > #root {
+  height: 100%;
+}
+
+body:has(.lab-frame.is-integrated) {
+  background: #fff;
+  color: #103b32;
+}
+
+.app-shell:has(.lab-frame.is-integrated) {
+  background: #fff;
+  padding: 0;
+  min-height: 100%;
+  height: 100%;
+}
+
+.lab-frame.is-integrated {
+  width: 100%;
+  height: 100% !important;
+  min-height: 0 !important;
+  margin: 0;
+  border: 0;
+  border-radius: 0;
+  background: #fff;
+  box-shadow: none;
+}
+
+.lab-frame.is-integrated .chat-panel {
+  background: #fff;
+  min-width: 0;
+}
+
+.lab-frame.is-integrated .lab-conversation-bar {
+  background: #fff;
+  color: #60736c;
+  border-bottom: 1px solid #edf1ee;
+  padding: 8px 18px;
+  font-size: 13px;
+}
+
+.lab-frame.is-integrated .lab-conversation-bar button {
+  color: #35594e;
+  min-height: 40px;
+}
+
+.lab-frame.is-integrated .lab-scroll {
+  padding: 22px 24px 28px;
+  background: #fff;
+}
+
+.lab-frame.is-integrated .lab-message {
+  max-width: 100%;
+  margin-bottom: 20px;
+}
+
+.lab-frame.is-integrated .lab-message > small {
+  color: #71817b;
+  margin-left: 0;
+}
+
+.lab-frame.is-integrated .lab-bubble {
+  background: transparent;
+  color: #20463b;
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+  padding: 4px 0;
+  font-size: 16px;
+  line-height: 1.6;
+}
+
+.lab-frame.is-integrated .lab-message.is-user {
+  max-width: 85%;
+}
+
+.lab-frame.is-integrated .is-user .lab-bubble {
+  background: #edf7f1;
+  border-radius: 12px;
+  padding: 10px 14px;
+}
+
+.lab-frame.is-integrated .lab-products-trigger,
+.lab-frame.is-integrated .lab-nav button {
+  background: #fff;
+  border-color: #c9dad1;
+  color: #17633f;
+  box-shadow: none;
+  min-height: 44px;
+}
+
+.lab-frame.is-integrated .product-card {
+  border: 0;
+  border-radius: 0;
+  background: #fff;
+  box-shadow: none;
+  grid-template-columns: 120px minmax(0, 1fr);
+  width: min(620px, 100%);
+  gap: 18px;
+  padding: 8px 0 12px;
+}
+
+.lab-frame.is-integrated .product-card__media {
+  background: transparent;
+  min-height: 174px;
+  border-radius: 8px;
+}
+
+.lab-frame.is-integrated .product-card__copy {
+  padding: 4px 0;
+}
+
+.lab-frame.is-integrated .product-card h2 {
+  color: #103b32;
+  font-size: 22px;
+  line-height: 1.2;
+}
+
+.lab-frame.is-integrated .product-card__prices {
+  color: #3e6454;
+  font-size: 14px;
+  line-height: 1.45;
+}
+
+.lab-frame.is-integrated .product-card__copy button {
+  min-height: 44px;
+  border-radius: 8px;
+  box-shadow: none;
+}
+
+.lab-frame.is-integrated .lab-form,
+.lab-frame.is-integrated .lab-view {
+  border: 0;
+  border-radius: 0;
+  background: #fff;
+  box-shadow: none;
+  margin: 24px 0 16px;
+  padding: 0;
+}
+
+.lab-frame.is-integrated .lab-form-heading {
+  margin-bottom: 16px;
+}
+
+.lab-frame.is-integrated .lab-form-heading strong,
+.lab-frame.is-integrated .lab-view h2 {
+  color: #103b32;
+  font-size: 25px;
+  line-height: 1.2;
+}
+
+.lab-frame.is-integrated .lab-form .print-option {
+  background: #f4f8f5;
+  border: 0;
+  border-radius: 8px;
+  box-shadow: none;
+  padding: 12px;
+}
+
+.lab-frame.is-integrated .question-list {
+  padding: 0;
+}
+
+.lab-frame.is-integrated .question-list [data-slot="accordion-item"] {
+  border-bottom-color: #edf1ee;
+}
+
+.lab-frame.is-integrated .question-trigger {
+  padding: 12px 0;
+  min-height: 62px;
+}
+
+.lab-frame.is-integrated .question-number {
+  background: #f3f7f4;
+  color: #496257;
+  border: 0;
+  border-radius: 50%;
+}
+
+.lab-frame.is-integrated .is-complete .question-number {
+  background: #168b46;
+  color: #fff;
+}
+
+.lab-frame.is-integrated .question-copy strong {
+  color: #20463b;
+  font-size: 16px;
+  line-height: 1.4;
+}
+
+.lab-frame.is-integrated .question-copy small {
+  color: #687b71;
+  font-size: 13px;
+}
+
+.lab-frame.is-integrated .question-content {
+  padding-right: 0;
+  padding-bottom: 18px;
+}
+
+.lab-frame.is-integrated .answer-editor {
+  background: transparent;
+  border: 0;
+  border-radius: 0;
+  padding: 0;
+}
+
+.lab-frame.is-integrated .answer-editor > p,
+.lab-frame.is-integrated .lab-form .question-content > p {
+  color: #61796c;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.lab-frame.is-integrated input:not([type="checkbox"]):not([type="radio"]),
+.lab-frame.is-integrated textarea,
+.lab-frame.is-integrated select {
+  font-size: 16px;
+  color: #143d2e;
+}
+
+.lab-frame.is-integrated .answer-editor input,
+.lab-frame.is-integrated .answer-editor textarea,
+.lab-frame.is-integrated .lab-match-fields input {
+  min-height: 46px;
+  background: #fff;
+}
+
+.lab-frame.is-integrated .lab-options label,
+.lab-frame.is-integrated .choice-grid > label,
+.lab-frame.is-integrated .text-answer > button {
+  min-height: 44px;
+  background: #fff;
+  box-shadow: none;
+  font-size: 14px;
+  border-radius: 8px;
+}
+
+.lab-frame.is-integrated .lab-options label:has([data-checked]),
+.lab-frame.is-integrated .choice-grid > label:has([data-checked]) {
+  background: #edf7f1;
+  border-color: #23824e;
+  color: #14532d;
+}
+
+.lab-frame.is-integrated .lab-submit-button,
+.lab-frame.is-integrated .lab-orders-action,
+.lab-frame.is-integrated .lab-create-action {
+  box-shadow: none;
+}
+
+.lab-frame.is-integrated .composer-area {
+  background: #fff;
+  border-top: 1px solid #e4ece7;
+  padding: 12px 18px;
+}
+
+.lab-frame.is-integrated .composer {
+  background: #f7faf8;
+  border: 1px solid #d2dfd7;
+  border-radius: 10px;
+  box-shadow: none;
+}
+
+.lab-frame.is-integrated .composer:focus-within {
+  border-color: #23824e;
+  box-shadow: 0 0 0 2px #23824e1a;
+}
+
+.lab-frame.is-integrated .composer textarea {
+  background: transparent;
+  color: #143d2e;
+}
+
+.lab-frame.is-integrated .composer button {
+  min-width: 44px;
+  min-height: 44px;
+}
+
+body:has(.lab-frame.is-integrated) .lab-products-sheet[data-side="right"],
+body:has(.lab-frame.is-integrated) .lab-history-sheet[data-side="right"] {
+  background: #fff;
+}
+
+body:has(.lab-frame.is-integrated) .lab-products-header {
+  border-bottom: 1px solid #edf1ee;
+}
+
+body:has(.lab-frame.is-integrated) .lab-products-header [data-slot="sheet-title"],
+body:has(.lab-frame.is-integrated) .lab-products-list strong {
+  color: #103b32;
+}
+
+body:has(.lab-frame.is-integrated) .lab-products-list button {
+  background: #fff;
+  border-radius: 0;
+  border-bottom-color: #edf1ee;
+  min-height: 76px;
+}
+
+body:has(.lab-frame.is-integrated) .lab-products-list button:hover,
+body:has(.lab-frame.is-integrated) .lab-products-list button:focus-visible {
+  background: #f0f7f3;
+}
+
+@media (max-width: 620px) {
+  .lab-frame.is-integrated .lab-conversation-bar {
+    padding: 6px 12px;
+  }
+
+  .lab-frame.is-integrated .lab-scroll {
+    padding: 18px 12px 24px;
+  }
+
+  .lab-frame.is-integrated .product-card {
+    grid-template-columns: 98px minmax(0, 1fr);
+    gap: 14px;
+  }
+
+  .lab-frame.is-integrated .product-card__media {
+    min-height: 164px;
+  }
+
+  .lab-frame.is-integrated .product-card h2 {
+    font-size: 20px;
+  }
+
+  .lab-frame.is-integrated .product-card__prices {
+    font-size: 13px;
+  }
+
+  .lab-frame.is-integrated .lab-form-heading strong,
+  .lab-frame.is-integrated .lab-view h2 {
+    font-size: 23px;
+  }
+
+  .lab-frame.is-integrated .question-content {
+    padding-left: 0;
+  }
+
+  .lab-frame.is-integrated .composer-area {
+    padding: 10px 12px;
+  }
+}
