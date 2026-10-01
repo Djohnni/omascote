@@ -69,26 +69,30 @@ async function run() {
       await page.waitForFunction(()=>document.querySelectorAll('#escudo3dExamples video')[1].currentTime>0);
       assert.equal(await page.locator('#escudo3dExamples video').first().evaluate(v=>v.paused),true);
       await page.getByRole('button',{name:'Escolher por R$ 14,90',exact:true}).click();
-      await chat.getByText('Imagem + vídeo de 8 segundos — R$ 14,90',{exact:true}).waitFor();
+      await chat.getByRole('radio',{name:'Futebol',exact:true}).waitFor();
+      assert.equal(await chat.locator('.escudo3d-selection, .escudo3d-delivery').count(),0,'no extra selection strip after choosing');
+      assert.equal(await chat.getByRole('button',{name:'Ver modelos',exact:true}).count(),0);
+      await page.waitForTimeout(650);
       assert.equal(state.draft.values.delivery_mode,'image_video');
       assert.equal(state.draft.values.video_model,'fast');
       const draftId = state.draft.id;
       await chat.getByRole('radio',{name:'Futebol',exact:true}).click();
       await page.waitForTimeout(650);
-      for (const [label,choice,summary] of [
-        ['Escolher por R$ 19,90','omni','Imagem + vídeo de 10 segundos — R$ 19,90'],
-        ['Prefiro somente imagem — R$ 4,00','','Somente imagem — R$ 4,00']
+      for (const [label,choice] of [
+        ['Escolher por R$ 19,90','omni'],
+        ['Prefiro somente imagem — R$ 4,00','']
       ]) {
-        await chat.getByRole('button',{name:'Ver modelos',exact:true}).click();
+        await chat.getByRole('button',{name:'Criar esta arte',exact:true}).last().click();
         await page.getByRole('button',{name:label,exact:true}).click();
-        await chat.getByText(summary,{exact:true}).waitFor();
+        assert.equal(await chat.locator('.escudo3d-selection, .escudo3d-delivery').count(),0);
         await page.waitForTimeout(650);
         assert.equal(state.draft.values.video_model,choice);
         assert.equal(state.draft.values.delivery_mode,choice?'image_video':'image');
         assert.equal(state.draft.id,draftId,'changing model preserves draft');
         assert.equal(state.draft.values.sport,'Futebol');
       }
-      await chat.getByRole('button',{name:'Ver modelos',exact:true}).click();
+      await page.screenshot({path:path.join(screenshots,`after-choice-${viewport.width}.png`)});
+      await chat.getByRole('button',{name:'Criar esta arte',exact:true}).last().click();
       await page.getByRole('button',{name:'Fechar exemplos e voltar ao chat'}).click();
       assert.equal(await page.locator('#escudo3dExamples').isVisible(),false);
       assert.equal(actions.includes('complete'),false);
