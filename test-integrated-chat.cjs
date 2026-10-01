@@ -36,7 +36,10 @@ assert.match(atendimentoBundle, /className:`size-4 animate-spin`/, "o indicador 
 assert.match(atendimentoBundle, /"aria-label":`Envio indisponível`/, "uma falha não pode deixar o indicador girando para sempre");
 assert.doesNotMatch(atendimentoBundle, /disabled:c\|\|!n\|\|!o\.trim\(\)/, "o botão de enviar não pode aparecer desativado por causa da inicialização");
 assert.match(atendimentoBundle, /className:`shrink-0 inline-flex[^`]+lab-send-loading`,style:\{width:43,height:43\}/, "o indicador precisa ter os mesmos 43 por 43 pixels do botão de enviar");
-assert.match(atendimentoHtml, /index-Cf9xVoRV\.js\?v=20260929-mascote-primeiro/, "o navegador precisa buscar o bundle atualizado");
+assert.match(atendimentoHtml, /index-BYWG3Byi\.js\?v=20261001-escudo3d-chat/, "o navegador precisa buscar o bundle atualizado");
+assert.match(atendimentoBundle, /Imagem \+ vídeo de 8 segundos/, "o Escudo 3D precisa oferecer o vídeo de 8 segundos no chat");
+assert.match(atendimentoBundle, /Imagem \+ vídeo de 10 segundos/, "o Escudo 3D precisa oferecer o vídeo de 10 segundos no chat");
+assert.match(atendimentoBundle, /R\$ 19,90/, "o Escudo 3D precisa mostrar o preço do vídeo de 10 segundos no chat");
 const sidebarSort = atendimentoBundle.match(/\.sort\((\([^)]*\)=>Number\([^)]*===`mascote_uniforme`\)-Number\([^)]*===`mascote_uniforme`\))\)/)?.[1];
 assert.ok(sidebarSort, "a lista lateral precisa priorizar o mascote");
 const sidebarIds = ['proximo_jogo', 'resultado', 'jogador_escudo', 'mascote_uniforme', 'proximo_jogo_jogador'];
@@ -281,6 +284,12 @@ assert.equal(JSON.parse(crest3dForm.get("fields_json")).sport, "Natação");
 assert.equal(JSON.parse(crest3dForm.get("fields_json")).delivery_mode, "image_video");
 assert.equal(JSON.parse(crest3dForm.get("fields_json")).video_model, "fast");
 assert.equal(JSON.parse(crest3dForm.get("assets_json")).team_crest.files[0], "logo.png");
+const crest3dOmni = bridge.omascoteChatBuildCleanOrders(
+  draft("escudo3d", { delivery_mode:"image_video", video_model:"omni" }),
+  [file("team_crest")]
+)[0];
+const crest3dOmniForm = buildOfficialCrestFormData(new TestFile([new Uint8Array([1])], "logo.png", {type:"image/png"}), "", crest3dOmni.values);
+assert.equal(JSON.parse(crest3dOmniForm.get("fields_json")).video_model, "omni", "o vídeo de 10 segundos não pode virar Fast no envio");
 
 const athleteNext = bridge.omascoteChatBuildCleanOrders(
   draft("proximo_jogo_jogador", { matchup:"Meu Time x Rival", match_datetime:"domingo 16h", competition:"Copa", delivery_mode:"image_video", video_model:"fast" }),
