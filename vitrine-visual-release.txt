@@ -1,0 +1,26 @@
+Vitrine visual O Mascote — 01/10/2026
+
+Restauração anterior: 4af6d68e7c48cc6bfe2a05e48944c3ac01fba57a
+Tag e branch no GitHub:
+restore-antes-vitrine-chat-20261001
+restore/antes-vitrine-chat-20261001
+
+Alteração: apresentação da página inicial, escolha visual do Escudo 3D,
+e aparência do atendimento integrado. A nova navegação chama je() do chat
+existente e mantém a confirmação de troca e os rascunhos.
+Campos, papéis das fotos, serialização de pedidos, cadastro, saldo/Pix,
+downloads, motor de geração e prompts permanecem nos caminhos existentes.
+Nenhuma API, chave, fila, worker ou banco de clientes foi alterado.
+
+As fotos da vitrine são cópias WebP otimizadas das imagens escolhidas pelo
+usuário. Os arquivos originais nos Pedidos permanecem intactos.
+Os exemplos de vídeo mantêm preload=none e só carregam após tocar Assistir.
+
+Validação local sem cobrança: test-integrated-chat.cjs,
+test-escudo3d-examples.cjs, test-vitrine-chat.cjs, test-dual-download.cjs,
+test-saldo-menu.cjs; navegação em celular 390px e computador 1440px.
+O bloco original de integração de pedidos/pagamento foi comparado e está
+inalterado. Não foi feito pedido pago durante os testes.
+
+Para reverter: reverta o commit visual em main e publique via pages.yml.
+Preserve mudanças posteriores e os dados atuais na API.

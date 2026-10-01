@@ -1,0 +1,97 @@
+/* Presentation only. Existing account, chat, payment and order elements stay mounted. */
+body[data-page="home"][data-vitrine="true"] { background:#fff !important; color:#10342d; font-family:Arial,Helvetica,sans-serif; }
+body[data-vitrine="true"] .vitrineHome button,body[data-vitrine="true"] .vitrineHeader button,body[data-vitrine="true"] .vitrineChatNav button,body[data-vitrine="true"] #escudo3dExamples button { box-shadow:none !important; text-shadow:none !important; }
+body[data-vitrine="true"] #escudo3dExamples { box-shadow:none !important; outline:none; }
+body[data-vitrine="true"] > main > .wrap { width:min(100%,1080px); max-width:1080px; padding:0 28px 36px !important; margin:auto; }
+body[data-vitrine="true"] .vitrineHeader { display:flex; align-items:center; justify-content:space-between; gap:18px; padding:24px 0; }
+.vitrineHeader button,.vitrineChatNav button,.vitrineAll,.vitrineHelp { border:0; background:none; color:#10342d; cursor:pointer; font:inherit; }
+.vitrineBrand { position:relative; padding:0; font-size:30px !important; font-weight:850 !important; letter-spacing:-1.4px; }
+.vitrineCrown { color:#088342; width:24px; height:18px; position:absolute; left:16px; top:-17px; }
+.vitrineHeader nav { display:flex; gap:20px; align-items:center; }
+.vitrineHeader nav button { min-height:44px; font-size:15px; }
+.vitrineAccount { width:44px; padding:8px; }
+.vitrineAccount svg { display:block; width:25px; height:25px; }
+.vitrineHome { max-width:980px; margin:0 auto; }
+.vitrineHome[hidden],.vitrineChatNav[hidden] { display:none !important; }
+.vitrineHome h1 { color:#10342d; margin:18px 0 28px; font-size:clamp(30px,4vw,48px); letter-spacing:-1.7px; line-height:1.15; font-weight:850; text-align:left; text-shadow:none; }
+.vitrineHero { position:relative; display:grid; grid-template-columns:1fr 1fr; align-items:center; min-height:540px; gap:20px; overflow:hidden; }
+.vitrineHero__copy { align-self:center; padding:0 0 80px 0; }
+.vitrineHero h2 { color:#10342d; font-size:clamp(32px,5vw,58px); line-height:1.02; letter-spacing:-1.8px; margin:0 0 20px; text-align:left; text-shadow:none; }
+.vitrineHero p { color:#395a50; max-width:280px; font-size:19px; line-height:1.5; margin:0; }
+.vitrineHero__image { display:block; height:570px; width:100%; object-fit:contain; object-position:right center; border-radius:8px; }
+.vitrinePrimary { background:#008747; color:#fff; border:0; border-radius:8px; min-height:54px; padding:14px 24px; font:inherit; font-weight:800; font-size:18px; cursor:pointer; }
+.vitrineHero>.vitrinePrimary { position:absolute; left:0; bottom:70px; min-width:220px; display:flex; justify-content:space-between; gap:24px; }
+.vitrinePrimary:hover { background:#006a38; }
+.vitrinePrimary span { font-size:24px; line-height:1; }
+.vitrineMore { padding:28px 0 12px; }
+.vitrineMore h2 { color:#10342d; font-size:22px; margin:0 0 18px; line-height:1.3; text-align:left; }
+.vitrineProducts { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:20px; }
+.vitrineProducts button { min-width:0; padding:0; border:0; background:none; color:#10342d; cursor:pointer; font:inherit; text-align:left; }
+.vitrineProducts img { width:100%; height:220px; display:block; object-fit:cover; object-position:center 42%; border-radius:6px; }
+.vitrineProducts span { display:block; font-weight:750; font-size:17px; padding:12px 0; }
+.vitrineAll { display:block; margin:16px auto 0; min-height:44px; font-size:16px; font-weight:700; }
+.vitrineHelp { display:block; padding:12px 0; font-size:14px; }
+.vitrineStatus { color:#9b3029; font-size:14px; line-height:1.5; }
+.vitrineStatus:empty { display:none; }
+.vitrineChatNav { padding:4px 0 20px; }
+.vitrineChatNav button { min-height:44px; padding:0; font-size:16px; }
+body[data-vitrine="true"] #accountAccordion { border:0 !important; border-radius:0 !important; background:transparent !important; box-shadow:none !important; width:100%; margin:0 auto 12px; }
+body[data-vitrine="true"] #accountAccordion:not(.is-open)>#accountMenuToggle { display:none; }
+body[data-vitrine="true"] #accountAccordion.is-open>#accountMenuToggle { color:#10342d; background:#f4f8f5 !important; box-shadow:none !important; border:0 !important; border-radius:8px; }
+body[data-vitrine="true"] #accountMenuPanel { background:#fff !important; border:0 !important; box-shadow:none !important; }
+body[data-vitrine="true"] #tempoEstimadoBox { display:none !important; }
+body[data-vitrine="true"] #productsMenuAccordion { display:none !important; }
+body[data-vitrine="true"] #integratedChatModal { border:0; box-shadow:none; border-radius:0; background:#fff; width:100%; max-width:none; height:calc(100dvh - 150px); min-height:560px; margin:0 auto 28px; scroll-margin-top:18px; }
+body[data-vitrine="true"]:not(.vitrineChatActive) #integratedChatModal:not(.is-expanded) { display:none; }
+body[data-vitrine="true"]:has(#escudo3dExamples:not([hidden])) #integratedChatModal { display:none; }
+body[data-vitrine="true"] #integratedChatModal.is-expanded { height:100dvh; min-height:0; }
+body[data-vitrine="true"] .integratedChatFrame { background:#fff; }
+body[data-vitrine="true"] .artReviewSection { width:100%; border:0; border-top:1px solid #e3ebe6; background:#fff; box-shadow:none; border-radius:0; margin:36px auto 0; padding:28px 0; }
+body[data-vitrine="true"] .artReviewCard { border:0; background:#f8faf8; box-shadow:none; border-radius:6px; }
+body[data-vitrine="true"] .escudoExamples { max-width:980px; background:#fff; border:0; border-radius:0; box-shadow:none; margin:0 auto 28px; padding:0; scroll-margin-top:16px; }
+body[data-vitrine="true"] .escudoExamples h2 { font-size:36px; line-height:1.1; letter-spacing:-1px; color:#10342d; }
+body[data-vitrine="true"] .escudoExamples__heading p { font-size:18px; margin:8px 0 24px; }
+body[data-vitrine="true"] .escudoExamples__close { border:0; background:#f5f8f5; }
+body[data-vitrine="true"] .escudoExamples__grid { gap:24px; }
+body[data-vitrine="true"] .escudoExamples__card { padding:0; border:0; background:none; border-radius:0; display:flex; flex-direction:column; text-align:center; }
+body[data-vitrine="true"] .escudoExamples__media { order:-2; width:100%; max-width:360px; border-radius:6px; }
+body[data-vitrine="true"] .escudoExamples__card h3 { font-size:17px; margin:14px 0 5px; }
+body[data-vitrine="true"] .escudoExamples__price { font-size:26px; color:#10342d; margin:0; }
+body[data-vitrine="true"] .escudoExamples__choose { margin:14px auto 0; max-width:360px; font-size:15px; }
+body[data-vitrine="true"] .escudoExamples__image { border-top:1px solid #e0e9e3; border-radius:0; background:transparent; width:100%; text-align:left; padding:20px 0; margin:24px 0 0; font-size:17px; text-decoration:none; font-weight:700; }
+body[data-vitrine="true"] .escudoExamples__included { font-size:14px; color:#657c70; margin:0; }
+body[data-vitrine="true"] .escudoExamples__play { align-items:center; background:#0001; padding:0; }
+body[data-vitrine="true"] .escudoExamples__play span { background:#ffffffeb; color:#123d28; }
+body[data-vitrine="true"] .championshipFeatureCard { width:calc(100% - 40px); max-width:980px; margin:24px auto; padding:20px 0; box-shadow:none; border:0; border-top:1px solid #e3ebe6; border-radius:0; background:#fff; color:#10342d; text-decoration:none; }
+body[data-vitrine="true"] .championshipFeatureCopy strong,body[data-vitrine="true"] .championshipFeatureCopy small,body[data-vitrine="true"] .championshipFeatureCopy>span { color:#365e4e; text-shadow:none; }
+body[data-vitrine="true"] .championshipFeatureIcon { background:#f2f7f4; box-shadow:none; border:0; }
+body[data-vitrine="true"] .vitrineHeader button:focus-visible,body[data-vitrine="true"] .vitrineHome button:focus-visible,.vitrineChatNav button:focus-visible { outline:3px solid #2473d8; outline-offset:4px; }
+@media(max-width:600px) {
+  body[data-vitrine="true"] > main > .wrap { padding:0 20px 26px !important; }
+  body[data-vitrine="true"] .vitrineHeader { padding:23px 0 14px; gap:8px; }
+  .vitrineBrand { font-size:25px !important; }
+  .vitrineHeader nav { gap:8px; }
+  .vitrineHeader nav button { font-size:13px; }
+  .vitrineHome h1 { font-size:30px; margin:17px 0 20px; letter-spacing:-1px; }
+  .vitrineHero { grid-template-columns:36% 64%; min-height:405px; gap:0; overflow:visible; }
+  .vitrineHero__image { height:405px; border-radius:5px; object-fit:cover; }
+  .vitrineHero__copy { padding:0 12px 72px 0; }
+  .vitrineHero h2 { font-size:29px; letter-spacing:-1px; margin:0 0 16px; }
+  .vitrineHero p { font-size:14px; line-height:1.5; }
+  .vitrineHero>.vitrinePrimary { bottom:10px; min-width:195px; min-height:48px; padding:12px 18px; font-size:16px; }
+  .vitrineMore { padding-top:26px; }
+  .vitrineMore h2 { font-size:18px; margin-bottom:13px; }
+  .vitrineProducts { gap:10px; }
+  .vitrineProducts img { height:145px; }
+  .vitrineProducts span { text-align:center; font-size:12px; line-height:1.35; padding-top:9px; }
+  body[data-vitrine="true"] #integratedChatModal { min-height:600px; height:calc(100dvh - 120px); }
+  body[data-vitrine="true"] .escudoExamples__grid { grid-template-columns:repeat(2,minmax(0,1fr)); gap:12px; }
+  body[data-vitrine="true"] .escudoExamples h2 { font-size:30px; }
+  body[data-vitrine="true"] .escudoExamples__heading p { font-size:16px; }
+  body[data-vitrine="true"] .escudoExamples__card h3 { font-size:13px; }
+  body[data-vitrine="true"] .escudoExamples__price { font-size:22px; }
+  body[data-vitrine="true"] .escudoExamples__choose { font-size:13px; padding:8px 4px; min-height:48px; }
+  body[data-vitrine="true"] .escudoExamples__play span { font-size:13px; padding:10px 12px; }
+  body[data-vitrine="true"] .escudoExamples__image { font-size:15px; }
+}
+@media(prefers-reduced-motion:reduce) { .vitrineHome *, .vitrineChatNav * { scroll-behavior:auto; } }

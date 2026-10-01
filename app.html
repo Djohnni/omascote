@@ -70,6 +70,8 @@
   <link rel="stylesheet" href="./radar-amistosos/radar-live.css">
   <link rel="stylesheet" href="/escudo3d-examples.css?v=20261001">
   <script defer src="/escudo3d-examples.js?v=20261001"></script>
+  <link rel="stylesheet" href="/vitrine-chat.css?v=20261001">
+  <script defer src="/vitrine-chat.js?v=20261001"></script>
   <!-- favicon atualizado -->
 
   <style>
@@ -15393,7 +15395,7 @@ body.integratedChatOpen{overflow:hidden}
 </style>
 </head>
 
-<body data-page="home">
+<body data-page="home" data-vitrine="true">
   <script>
     (() => {
       try{
@@ -15713,6 +15715,36 @@ body.integratedChatOpen{overflow:hidden}
   </section>
 
   <div class="wrap">
+    <header class="vitrineHeader" aria-label="O Mascote">
+      <button type="button" class="vitrineBrand" data-vitrine-home aria-label="O Mascote — início">O Mascote<svg class="vitrineCrown" viewBox="0 0 30 22" fill="currentColor" aria-hidden="true"><path d="M3 7l5 4 7-8 7 8 5-4-3 12H6Z"/><circle cx="3" cy="5" r="2"/><circle cx="15" cy="2" r="2"/><circle cx="27" cy="5" r="2"/></svg></button>
+      <nav aria-label="Sua conta">
+        <button type="button" data-vitrine-orders>Meus pedidos</button>
+        <button type="button" class="vitrineAccount" data-vitrine-account aria-label="Abrir minha conta"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><circle cx="12" cy="7" r="4"/><path d="M4 22v-3a8 8 0 0 1 16 0v3Z"/></svg></button>
+      </nav>
+    </header>
+    <section class="vitrineHome" id="vitrineHome" aria-labelledby="vitrineTitle">
+      <h1 id="vitrineTitle">O que vamos criar hoje?</h1>
+      <div class="vitrineHero">
+        <div class="vitrineHero__copy">
+          <h2>Mascote<br>do Time</h2>
+          <p>Seu time com personalidade única, em arte profissional.</p>
+        </div>
+        <img class="vitrineHero__image" src="/media/vitrine/mascote-lobos-da-serra.webp" width="720" height="1280" fetchpriority="high" alt="Mascote lobo do Lobos da Serra com o uniforme e o escudo do time">
+        <button type="button" class="vitrinePrimary" data-vitrine-product="mascote_uniforme">Criar mascote <span aria-hidden="true">→</span></button>
+      </div>
+      <div class="vitrineMore">
+        <h2>Mais artes para o seu time</h2>
+        <div class="vitrineProducts">
+          <button type="button" data-vitrine-product="escudo3d"><img src="/media/vitrine/escudo-aurora.webp" width="420" height="747" loading="lazy" decoding="async" alt="Escudo 3D Aurora da Guanabara FC"><span>Escudo 3D</span></button>
+          <button type="button" data-vitrine-product="proximo_jogo"><img src="/produtos/proximo_jogo.jpg" width="180" height="320" loading="lazy" decoding="async" alt="Exemplo de arte de próximo jogo"><span>Próximo Jogo</span></button>
+          <button type="button" data-vitrine-product="resultado"><img src="/produtos/resultado.jpg" width="180" height="320" loading="lazy" decoding="async" alt="Exemplo de arte de resultado do jogo"><span>Resultado do Jogo</span></button>
+        </div>
+        <button type="button" class="vitrineAll" data-vitrine-options>Ver todas as artes <span aria-hidden="true">→</span></button>
+      </div>
+      <button type="button" class="vitrineHelp" data-vitrine-chat>Precisa de ajuda? Converse aqui <span aria-hidden="true">→</span></button>
+      <p class="vitrineStatus" id="vitrineStatus" role="status" aria-live="polite"></p>
+    </section>
+    <div class="vitrineChatNav" id="vitrineChatNav" hidden><button type="button" data-vitrine-home>← Voltar ao início</button></div>
     <section class="accountAccordion" id="accountAccordion" aria-label="Minha conta">
       <button class="accountMenuToggle" id="accountMenuToggle" type="button" aria-expanded="false" aria-controls="accountMenuPanel">
         <span class="accountMenuToggleIcon" aria-hidden="true">👤</span>
@@ -15857,7 +15889,7 @@ body.integratedChatOpen{overflow:hidden}
         class="integratedChatFrame"
         id="integratedChatFrame"
         title="Atendimento O Mascote"
-        src="/atendimento/index.html?integrado=1&v=20261001-escudo3d-no-summary"
+        src="/atendimento/index.html?integrado=1&v=20261001-vitrine-chat"
         allow="clipboard-write"
       ></iframe>
       <button class="integratedChatClose" id="integratedChatClose" type="button" aria-label="Reduzir atendimento">Reduzir</button>
@@ -15865,33 +15897,34 @@ body.integratedChatOpen{overflow:hidden}
 
     <section class="escudoExamples" id="escudo3dExamples" aria-labelledby="escudoExamplesTitle" tabindex="-1" hidden>
       <div class="escudoExamples__heading">
-        <div><h2 id="escudoExamplesTitle">Escolha seu Escudo 3D</h2>
-          <p>Toque em Assistir para ver os exemplos. Depois, escolha o seu.</p></div>
+        <div><h2 id="escudoExamplesTitle">Escudo 3D</h2>
+          <p>Assista e escolha.</p></div>
         <button type="button" class="escudoExamples__close" data-close-examples aria-label="Fechar exemplos e voltar ao chat">×</button>
       </div>
       <div class="escudoExamples__grid">
         <article class="escudoExamples__card">
-          <h3>Imagem + vídeo de 8 segundos</h3>
+          <h3>8 segundos</h3>
           <strong class="escudoExamples__price">R$ 14,90</strong>
           <div class="escudoExamples__media">
             <video preload="none" playsinline width="720" height="1280" aria-label="Exemplo de Escudo 3D de 8 segundos" data-poster="/media/escudo3d/capa-8s-20261001.webp" data-src="/media/escudo3d/exemplo-8s-20261001.mp4"></video>
             <button class="escudoExamples__play" type="button" data-play-example aria-label="Assistir ao exemplo de 8 segundos"><span>▶ Assistir</span></button>
           </div>
           <p class="escudoExamples__error" role="status"></p>
-          <button type="button" class="escudoExamples__choose" data-delivery-choice="fast">Escolher por R$ 14,90</button>
+          <button type="button" class="escudoExamples__choose" data-delivery-choice="fast" aria-label="Escolher por R$ 14,90">Escolher</button>
         </article>
         <article class="escudoExamples__card">
-          <h3>Imagem + vídeo de 10 segundos</h3>
+          <h3>10 segundos</h3>
           <strong class="escudoExamples__price">R$ 19,90</strong>
           <div class="escudoExamples__media">
             <video preload="none" playsinline width="720" height="1280" aria-label="Exemplo de Escudo 3D de 10 segundos" data-poster="/media/escudo3d/capa-10s-20261001.webp" data-src="/media/escudo3d/exemplo-10s-20261001.mp4"></video>
             <button class="escudoExamples__play" type="button" data-play-example aria-label="Assistir ao exemplo de 10 segundos"><span>▶ Assistir</span></button>
           </div>
           <p class="escudoExamples__error" role="status"></p>
-          <button type="button" class="escudoExamples__choose" data-delivery-choice="omni">Escolher por R$ 19,90</button>
+          <button type="button" class="escudoExamples__choose" data-delivery-choice="omni" aria-label="Escolher por R$ 19,90">Escolher</button>
         </article>
       </div>
-      <button class="escudoExamples__image" type="button" data-delivery-choice="image">Prefiro somente imagem — R$ 4,00</button>
+      <button class="escudoExamples__image" type="button" data-delivery-choice="image" aria-label="Prefiro somente imagem — R$ 4,00">Somente imagem · R$ 4,00</button>
+      <p class="escudoExamples__included">Imagem incluída nos vídeos.</p>
     </section>
 
     <section class="artReviewSection" id="artReviewSection" aria-labelledby="artReviewTitle" hidden>
@@ -17480,7 +17513,7 @@ function omascoteChatLocalPreview(){
 }
 
 function omascoteChatUrl(){
-  return new URL("/atendimento/index.html?integrado=1&v=20261001-escudo3d-no-summary", window.location.origin).href;
+  return new URL("/atendimento/index.html?integrado=1&v=20261001-vitrine-chat", window.location.origin).href;
 }
 
 function abrirAtendimentoIntegrado(){
