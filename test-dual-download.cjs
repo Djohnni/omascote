@@ -3,6 +3,8 @@ const fs = require("node:fs");
 const vm = require("node:vm");
 
 const html = fs.readFileSync(__dirname + "/app.html", "utf8");
+assert.ok(html.includes('Number(out.video_duration_seconds) === 10 ? "video_10s" : "video_8s"'),
+  "Omni de 10s deve usar nome de download correto, preservando os vídeos antigos de 8s");
 
 for (const match of html.matchAll(/<script\b([^>]*)>([\s\S]*?)<\/script>/gi)) {
   if (!/\bsrc=|application\/ld\+json/.test(match[1])) new vm.Script(match[2]);
