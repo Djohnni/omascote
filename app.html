@@ -68,6 +68,8 @@
   <link rel="shortcut icon" href="/favicon.ico?v=2" type="image/x-icon">
   <link rel="icon" href="/favicon.ico?v=2" sizes="32x32">
   <link rel="stylesheet" href="./radar-amistosos/radar-live.css">
+  <link rel="stylesheet" href="/escudo3d-examples.css?v=20261001">
+  <script defer src="/escudo3d-examples.js?v=20261001"></script>
   <!-- favicon atualizado -->
 
   <style>
@@ -15855,10 +15857,41 @@ body.integratedChatOpen{overflow:hidden}
         class="integratedChatFrame"
         id="integratedChatFrame"
         title="Atendimento O Mascote"
-        src="/atendimento/index.html?integrado=1&v=20261001-escudo3d-chat"
+        src="/atendimento/index.html?integrado=1&v=20261001-escudo3d-examples"
         allow="clipboard-write"
       ></iframe>
       <button class="integratedChatClose" id="integratedChatClose" type="button" aria-label="Reduzir atendimento">Reduzir</button>
+    </section>
+
+    <section class="escudoExamples" id="escudo3dExamples" aria-labelledby="escudoExamplesTitle" tabindex="-1" hidden>
+      <div class="escudoExamples__heading">
+        <div><h2 id="escudoExamplesTitle">Escolha seu Escudo 3D</h2>
+          <p>Toque em Assistir para ver os exemplos. Depois, escolha o seu.</p></div>
+        <button type="button" class="escudoExamples__close" data-close-examples aria-label="Fechar exemplos e voltar ao chat">×</button>
+      </div>
+      <div class="escudoExamples__grid">
+        <article class="escudoExamples__card">
+          <h3>Imagem + vídeo de 8 segundos</h3>
+          <strong class="escudoExamples__price">R$ 14,90</strong>
+          <div class="escudoExamples__media">
+            <video preload="none" playsinline width="720" height="1280" aria-label="Exemplo de Escudo 3D de 8 segundos" data-poster="/media/escudo3d/capa-8s-20261001.webp" data-src="/media/escudo3d/exemplo-8s-20261001.mp4"></video>
+            <button class="escudoExamples__play" type="button" data-play-example aria-label="Assistir ao exemplo de 8 segundos"><span>▶ Assistir</span></button>
+          </div>
+          <p class="escudoExamples__error" role="status"></p>
+          <button type="button" class="escudoExamples__choose" data-delivery-choice="fast">Escolher por R$ 14,90</button>
+        </article>
+        <article class="escudoExamples__card">
+          <h3>Imagem + vídeo de 10 segundos</h3>
+          <strong class="escudoExamples__price">R$ 19,90</strong>
+          <div class="escudoExamples__media">
+            <video preload="none" playsinline width="720" height="1280" aria-label="Exemplo de Escudo 3D de 10 segundos" data-poster="/media/escudo3d/capa-10s-20261001.webp" data-src="/media/escudo3d/exemplo-10s-20261001.mp4"></video>
+            <button class="escudoExamples__play" type="button" data-play-example aria-label="Assistir ao exemplo de 10 segundos"><span>▶ Assistir</span></button>
+          </div>
+          <p class="escudoExamples__error" role="status"></p>
+          <button type="button" class="escudoExamples__choose" data-delivery-choice="omni">Escolher por R$ 19,90</button>
+        </article>
+      </div>
+      <button class="escudoExamples__image" type="button" data-delivery-choice="image">Prefiro somente imagem — R$ 4,00</button>
     </section>
 
     <section class="artReviewSection" id="artReviewSection" aria-labelledby="artReviewTitle" hidden>
@@ -16148,7 +16181,7 @@ body.integratedChatOpen{overflow:hidden}
               <button class="legalLinkBtn" id="btnExcluirContaFooter" type="button">Excluir Conta</button>
               <button class="legalLinkBtn" id="btnDenunciarIaFooter" type="button">Denunciar Conteúdo Gerado por IA</button>
               <button class="legalLinkBtn" id="btnAbrirSuporteFooter" type="button">Suporte</button>
-              <a class="legalLinkBtn" id="btnTesteNovoAtendimentoFooter" href="/atendimento/index.html?integrado=1&v=20261001-escudo3d-chat">Novo atendimento</a>
+              <a class="legalLinkBtn" id="btnTesteNovoAtendimentoFooter" href="/atendimento/index.html?integrado=1&v=20261001-escudo3d-examples">Novo atendimento</a>
             </div>
             <div class="brandFootnote">Meu Clube FC é uma plataforma da O Mascote</div>
           </div>
@@ -17447,7 +17480,7 @@ function omascoteChatLocalPreview(){
 }
 
 function omascoteChatUrl(){
-  return new URL("/atendimento/index.html?integrado=1&v=20261001-escudo3d-chat", window.location.origin).href;
+  return new URL("/atendimento/index.html?integrado=1&v=20261001-escudo3d-examples", window.location.origin).href;
 }
 
 function abrirAtendimentoIntegrado(){
