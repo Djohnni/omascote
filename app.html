@@ -21605,6 +21605,14 @@ function getEscudo3dReviewItems(block){
     });
   }
 
+  const choice = getEscudo3dDeliveryChoice(block);
+  const deliveryLabel = choice === "omni"
+    ? "Imagem + vídeo de 10 segundos — R$19,90"
+    : choice === "fast"
+      ? "Imagem + vídeo de 8 segundos — R$14,90"
+      : `Somente imagem — ${ia4Escudo3dBrindeGratisNoApp() ? "Grátis no app" : "R$4,00"}`;
+  items.push({ label:"Entrega", value:deliveryLabel });
+
   const coupon = block?.querySelector?.("[data-escudo3d-coupon]")?.value?.trim() || "";
   if(coupon) items.push({ label:"Cupom", value:coupon });
 
@@ -21657,9 +21665,43 @@ function getPricePreviewCouponValue(block, productKey){
   return block?.querySelector('[data-field="coupon_code"]')?.value?.trim() || "";
 }
 
+function getEscudo3dDeliveryChoice(block){
+  const choice = block?.querySelector?.('[data-escudo3d-delivery-option]:checked')?.value;
+  return choice === "fast" || choice === "omni" ? choice : "image";
+}
+
+function getEscudo3dDeliveryFields(block){
+  const choice = getEscudo3dDeliveryChoice(block);
+  return {
+    delivery_mode: choice === "image" ? "image" : "image_video",
+    video_model: choice === "image" ? "" : choice
+  };
+}
+
+function getEscudo3dDisplayPrice(block){
+  const choice = getEscudo3dDeliveryChoice(block);
+  if(choice === "omni") return 19.90;
+  if(choice === "fast") return 14.90;
+  return ia4Escudo3dBrindeGratisNoApp() ? 0 : 4;
+}
+
+function updateEscudo3dDeliveryUi(block){
+  if(!block) return;
+  const price = block.querySelector(".cleanProductPrice");
+  if(price){
+    price.textContent = getEscudo3dDeliveryChoice(block) === "image" && ia4Escudo3dBrindeGratisNoApp()
+      ? "Grátis no app"
+      : `R$${getEscudo3dDisplayPrice(block).toFixed(2).replace(".", ",")}`;
+  }
+  const imagePrice = block.querySelector("[data-escudo3d-image-price]");
+  if(imagePrice) imagePrice.textContent = ia4Escudo3dBrindeGratisNoApp() ? "Grátis no app" : "R$4,00";
+  schedulePricePreviewUpdate(block.querySelector("[data-price-preview]"), 0);
+}
+
 function renderLocalPricePreview(target, productKey, errorMessage = ""){
   if(!target || !productKey) return;
-  const basePrice = getProductBasePrice(productKey);
+  const block = target.closest("[data-clean-product-block]") || document;
+  const basePrice = productKey === "escudo3d" ? getEscudo3dDisplayPrice(block) : getProductBasePrice(productKey);
   target.innerHTML = pricePreviewHtml({
     valor_original: basePrice,
     valor_desconto: 0,
@@ -21702,6 +21744,7 @@ async function updatePricePreview(target){
       body: JSON.stringify({
         product_id: productKey,
         cupom_codigo: cupom,
+        ...(productKey === "escudo3d" ? getEscudo3dDeliveryFields(block) : {}),
         ...getIa4AccessContext()
       }),
       signal: controller.signal
@@ -21733,9 +21776,7 @@ function atualizarBrindeEscudo3dAppVisual(){
 
   document.body.classList.toggle("clienteComBrindeEscudo3dApp", disponivelNoApp);
 
-  document.querySelectorAll('[data-clean-product-block="escudo3d"] .cleanProductPrice').forEach(el => {
-    el.textContent = disponivelNoApp ? "Grátis no app" : "R$4,00";
-  });
+  document.querySelectorAll('[data-clean-product-block="escudo3d"]').forEach(updateEscudo3dDeliveryUi);
 
   const escudoPromo = document.querySelector('[data-product="escudo3d"] .optLabel');
   if(escudoPromo && disponivelNoApp){
@@ -26069,6 +26110,23 @@ function renderCleanProductForms(){
             </div>
           </div>
         </div>
+        <fieldset class="copaChampionshipDelivery escudo3dDelivery">
+          <legend>Como você quer receber?</legend>
+          <div class="copaChampionshipDeliveryChoices">
+            <label class="copaChampionshipDeliveryChoice">
+              <span><input type="radio" name="escudo3d_delivery" value="image" data-escudo3d-delivery-option checked> Somente imagem</span>
+              <strong data-escudo3d-image-price>${ia4Escudo3dBrindeGratisNoApp() ? "Grátis no app" : "R$4,00"}</strong>
+            </label>
+            <label class="copaChampionshipDeliveryChoice">
+              <span><input type="radio" name="escudo3d_delivery" value="fast" data-escudo3d-delivery-option> Imagem + vídeo de 8 segundos</span>
+              <strong>R$14,90</strong>
+            </label>
+            <label class="copaChampionshipDeliveryChoice">
+              <span><input type="radio" name="escudo3d_delivery" value="omni" data-escudo3d-delivery-option> Imagem + vídeo de 10 segundos</span>
+              <strong>R$19,90</strong>
+            </label>
+          </div>
+        </fieldset>
         <button class="btnGreen cleanSubmitBtn" type="button" data-submit-escudo3d>${htmlEscape(escudo3dSubmitLabel)}</button>
         <div class="cleanCouponExtra" data-clean-coupon-extra data-clean-field-card="coupon_code">
           <label class="cleanFieldLabel">Cupom de desconto</label>
@@ -27045,16 +27103,18 @@ function clearCleanOrderRequestState(form){
   if(form) delete form.__cleanOrderRequestState;
 }
 
-async function buildEscudo3dOrderFingerprint(file, cupomCodigo = ""){
+async function buildEscudo3dOrderFingerprint(file, cupomCodigo = "", delivery = {}){
   return JSON.stringify(await normalizeOrderFingerprintValueAsync({
     product_id: "escudo3d",
     cupom_codigo: String(cupomCodigo || "").trim(),
+    delivery_mode: delivery.delivery_mode || "image",
+    video_model: delivery.video_model || "",
     file
   }));
 }
 
-async function getOrCreateEscudo3dOrderRequestState(file, cupomCodigo = ""){
-  const fingerprint = await buildEscudo3dOrderFingerprint(file, cupomCodigo);
+async function getOrCreateEscudo3dOrderRequestState(file, cupomCodigo = "", delivery = {}){
+  const fingerprint = await buildEscudo3dOrderFingerprint(file, cupomCodigo, delivery);
 
   if(escudo3dOrderRequestState?.fingerprint === fingerprint && escudo3dOrderRequestState.clientRequestId){
     return escudo3dOrderRequestState;
@@ -27370,7 +27430,7 @@ function buildEscudo3dLegacyFormData(file, cupomCodigo = "", values = {}){
     sport_context:String(values.sport_context || "").trim(),
     visual_style:String(values.visual_style || "3D").toLowerCase(),
     delivery_mode:values.delivery_mode === "image_video" ? "image_video" : "image",
-    video_model:values.delivery_mode === "image_video" && ["lite", "fast"].includes(String(values.video_model || "").toLowerCase())
+    video_model:values.delivery_mode === "image_video" && ["lite", "fast", "omni"].includes(String(values.video_model || "").toLowerCase())
       ? String(values.video_model).toLowerCase()
       : (values.delivery_mode === "image_video" ? "fast" : "")
   }));
@@ -29062,6 +29122,12 @@ function bindCleanProductForms(root){
         if(bloquearCriacaoArteForaDoApp("escudo3d:arquivo")) return;
         escudo3dFile?.click();
       }
+    });
+  });
+
+  root.querySelectorAll('[data-clean-product-block="escudo3d"] [data-escudo3d-delivery-option]').forEach(option => {
+    option.addEventListener("change", () => {
+      updateEscudo3dDeliveryUi(option.closest("[data-clean-product-block]"));
     });
   });
 
@@ -32175,12 +32241,7 @@ document.querySelectorAll(".optionBtn").forEach(btn=>{
     if(bloquearCriacaoArteForaDoApp(`produto:${productKey}`)) return;
 
     if(btn.dataset.product === "escudo3d"){
-      if(!token){
-        abrirCadastroEscudo3dModal();
-        return;
-      }
-
-      abrirEscudo3dModal();
+      selectCleanProductForPicker("escudo3d", { scroll:true, track:true });
       return;
     }
 
@@ -32407,10 +32468,11 @@ async function enviarPedidoEscudo3dComArquivo(file, progressTarget = null){
     document.getElementById("escudo3dCupom")?.value ||
     ""
   ).trim();
-  const fd = buildEscudo3dLegacyFormData(file, escudo3dCupomValor);
+  const delivery = getEscudo3dDeliveryFields(progressTarget);
+  const fd = buildEscudo3dLegacyFormData(file, escudo3dCupomValor, delivery);
   let requestState;
   try{
-    requestState = await getOrCreateEscudo3dOrderRequestState(file, escudo3dCupomValor);
+    requestState = await getOrCreateEscudo3dOrderRequestState(file, escudo3dCupomValor, delivery);
   }catch(error){
     clearEscudo3dOrderRequestState();
     const fingerprintMessage = orderFingerprintErrorMessage(error);
