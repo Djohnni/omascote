@@ -35513,7 +35513,8 @@ async function iniciarDownloadDiretoSeguro({
 
     const nomeSeguro = recursoId.replace(/[^a-zA-Z0-9_-]/g, "_");
     const extensao = formato === "video" ? "mp4" : formato === "zip" ? "zip" : "png";
-    const nomeArquivo = `${nomeSeguro}_${formato === "video" ? "video_8s" : formato === "zip" ? "pedido" : "imagem"}.${extensao}`;
+    const nomeVideo = Number(out.video_duration_seconds) === 10 ? "video_10s" : "video_8s";
+    const nomeArquivo = `${nomeSeguro}_${formato === "video" ? nomeVideo : formato === "zip" ? "pedido" : "imagem"}.${extensao}`;
     const arquivoUrl = URL.createObjectURL(arquivo);
     if(formato === "resultado"){
       sincronizarImagensFinaisSessao();
