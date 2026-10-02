@@ -10,6 +10,7 @@ const { assertPurchaseSafety } = require('./test-guided-purchase-safety.cjs');
 
 const root = __dirname;
 const datesOnly = process.argv.includes('--dates-only');
+const giftOnly = process.argv.includes('--gift-only');
 const savedOnly = process.argv.includes('--saved-appearance-only');
 const fullRun = !savedOnly && !process.argv.includes('--conditionals-only');
 const appearanceKeys = ['scenario_id','visual_style','style_id'];
@@ -59,7 +60,7 @@ async function run() {
   console.log('Screenshots:',screenshots);
 
   async function setup(viewport,settings = {}) {
-    let state = structuredClone(initialState), failedOrders = settings.failedOrders || 0;
+    let state = structuredClone(initialState), failedOrders = settings.failedOrders || 0, giftUsed = settings.giftUsed === true;
     if(settings.savedAppearance) state.draft={
       id:`local-saved-appearance-${settings.id}`,flow:settings.id,stage:'collect',files:[],
       values:{sport:'',...(['proximo_jogo','resultado'].includes(settings.id) ? {photo_mode:'Sem foto'} : {}),...settings.savedAppearance}
@@ -68,8 +69,8 @@ async function run() {
     const errors = [], requests = [], uploads = [], actions = [], balances = [];
     const balance = settings.balance ?? 100;
     const context = await browser.newContext({viewport,reducedMotion:'reduce',...(viewport.width < 600 ? {isMobile:true,hasTouch:true} : {})});
-    await context.addInitScript(({balance}) => {
-      localStorage.setItem('omascote_token','local-guided-products-only');
+    await context.addInitScript(({balance,logged}) => {
+      if(logged) localStorage.setItem('omascote_token','local-guided-products-only');
       localStorage.setItem('omascote_nome_time','Time local');
       localStorage.setItem('omascote_saldo',String(balance));
       window.addEventListener('message',event => {
@@ -77,7 +78,7 @@ async function run() {
         (window.__localProductMessages ||= []).push({draft:event.data.draft,requestId:event.data.requestId,
           files:event.data.files.map(file => ({id:file.id,field:file.field,name:file.name,size:file.size}))});
       });
-    },{balance});
+    },{balance,logged:settings.logged !== false});
     const page = await context.newPage();
     page.on('pageerror',error => errors.push(error.message));
     await context.route('**/*',async route => {
@@ -112,19 +113,23 @@ async function run() {
         return route.fulfill({json:{ok:true,fields:[{key:'match_datetime',value:'2026-10-05T18:00'}],text:'Data local normalizada.'}});
       }
       if (url.origin === 'https://api.omascote.com.br') {
+        if(url.pathname === '/auth/register') return route.fulfill({json:{ok:true,token:'local-gift-login',nome_time:'Time local',saldo:balance}});
         if (request.method() === 'POST' && orderEndpoints.has(url.pathname)) {
           if (settings.holdOrders) await new Promise(resolve => {releaseOrder = resolve;});
           if (failedOrders-- > 0) return route.fulfill({status:503,json:{ok:false,error:'Falha local simulada; tente novamente.'}});
           const body = request.postDataBuffer().toString();
           const video = body.includes('image_video'),omni = body.includes('omni');
-          const price = video ? omni ? 19.9 : 14.9 : settings.price || 8;
+          const gift = body.includes('name="brinde_escudo_login"\r\n\r\n1');
+          if(gift && (giftUsed || settings.giftUsedAtSubmit)) return route.fulfill({status:409,json:{ok:false,error:'Esta conta já recebeu o escudo de brinde. Nenhum valor foi cobrado.'}});
+          const price = gift ? 0 : video ? omni ? 19.9 : 14.9 : settings.price || 8;
+          if(gift) giftUsed=true;
           balances.push({balance,price});
           return route.fulfill({json:{ok:true,pedido_id:'local-products-order',pagamento_pendente:balance < price,
-            requer_pix_antes_criacao:balance < price,valor:price}});
+            requer_pix_antes_criacao:balance < price,valor:price,valor_final:price,brinde_escudo_login:gift}});
         }
         if (request.method() === 'POST' && url.pathname === '/pedidos/local-products-order/gerar-pix')
           return route.fulfill({json:{ok:true,pedido_id:'local-products-order',pix_copia_cola:'PIX-LOCAL-NAO-PAGAR',qr_code:'PIX-LOCAL-NAO-PAGAR',qr_code_base64:pixel.toString('base64'),valor:14.9}});
-        return route.fulfill({json:{ok:true,saldo:balance,saldo_extra:balance,saldo_mensal:0,nome_time:'Time local',pedidos:[],avaliacoes:[],plano:'',usados_no_ciclo:0}});
+        return route.fulfill({json:{ok:true,saldo:balance,saldo_extra:balance,saldo_mensal:0,nome_time:'Time local',pedidos:[],avaliacoes:[],plano:'',usados_no_ciclo:0,brinde_escudo_login_disponivel:settings.giftMode && !giftUsed,brinde_escudo_login_usado:giftUsed}});
       }
       // Strict allowlist: only static files from this local test server reach the network.
       if (url.origin !== origin) return route.abort();
@@ -503,6 +508,78 @@ async function run() {
 
   try {
     assert.equal(products.length,9);
+    if(giftOnly) {
+      for(const width of [320,390,1440]) {
+        const test=await setup({width,height:844},{giftMode:true,balance:0});
+        try {
+          const gift=test.page.locator('#vitrineEscudoGift');
+          await gift.waitFor({state:'visible'});
+          const giftBox=await gift.boundingBox();
+          const primaryBox=await test.page.locator('[data-vitrine-product="mascote_uniforme"]').first().boundingBox();
+          assert.ok(giftBox.y+giftBox.height <= primaryBox.y,'gift stays above original mascot button');
+          const copyBox=await test.page.locator('.vitrineHero__copy p').boundingBox();
+          assert.ok(copyBox.y+copyBox.height <= giftBox.y,'gift does not cover home description');
+          assert.ok(await test.page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),'home fits screen');
+          if(width===390) await test.page.screenshot({path:path.join(screenshots,'escudo-brinde-home.png')});
+          if(width===320) await test.page.screenshot({path:path.join(screenshots,'escudo-brinde-home-320.png')});
+          await gift.click();
+          await guide(test).waitFor({state:'visible'});
+          await saved(test,draft=>draft?.values?.brinde_escudo_login==='1','gift marker is saved');
+          assert.equal(test.state().draft.values.delivery_mode,'image');
+          assert.equal(await test.chat.locator('.escudo-examples').isVisible(),false,'gift skips video gallery');
+          await fillToFinal(test,{skipOptional:true});
+          assert.ok((await guide(test).innerText()).includes('R$ 0,00'),'review shows free price');
+          if(width===390) await guide(test).screenshot({path:path.join(screenshots,'escudo-brinde-revisao.png')});
+          await send(test).click();
+          await test.chat.locator('.lab-post-order-actions').waitFor({state:'visible',timeout:15000});
+          assert.equal(test.orderCount(),1);
+          assert.equal(test.pixCount(),0);
+          assert.equal(test.balances[0].price,0);
+          assert.equal((await test.messages())[0].draft.values.brinde_escudo_login,'1');
+          assert.deepEqual(test.errors,[]);
+          console.log(`OK gift ${width}px: image only, price zero, one request, no Pix`);
+        } finally {await test.context.close();}
+      }
+      const guest=await setup({width:390,height:844},{giftMode:true,logged:false,balance:0});
+      try {
+        await guest.page.locator('#vitrineEscudoGift').click();
+        await guide(guest).waitFor({state:'visible'});
+        await fillToFinal(guest,{skipOptional:true});
+        await send(guest).click();
+        await guest.page.locator('#authVisitanteModal').waitFor({state:'visible'});
+        assert.equal(guest.orderCount(),0,'login is required before gift order');
+        assert.equal(guest.requests.some(r=>r.path.includes('auto-register')),false);
+        await guest.page.locator('#authWhatsapp').fill('teste_brinde_local');
+        await guest.page.locator('#authSenha').fill('teste-local-123');
+        await guest.page.locator('#authCriarContaBtn').click();
+        await guest.chat.locator('.lab-post-order-actions').waitFor({state:'visible',timeout:15000});
+        assert.equal(guest.orderCount(),1);
+        assert.equal(guest.pixCount(),0);
+        assert.equal(guest.balances[0].price,0);
+        assert.deepEqual(guest.errors,[]);
+        console.log('OK anonymous gift: registration resumes saved form without charge');
+      } finally {await guest.context.close();}
+      const used=await setup({width:390,height:844},{giftUsed:true});
+      try {
+        await used.page.waitForTimeout(500);
+        assert.equal(await used.page.locator('#vitrineEscudoGift').isVisible(),false);
+        console.log('OK redeemed account: promotion hidden');
+      } finally {await used.context.close();}
+      const stale=await setup({width:390,height:844},{giftMode:true,giftUsedAtSubmit:true});
+      try {
+        await stale.page.locator('#vitrineEscudoGift').click();
+        await guide(stale).waitFor({state:'visible'});
+        await fillToFinal(stale,{skipOptional:true});
+        await send(stale).click();
+        await stale.chat.getByRole('alert').filter({hasText:'Nenhum valor foi cobrado'}).waitFor({state:'visible'});
+        assert.equal(stale.orderCount(),1);
+        assert.equal(stale.pixCount(),0);
+        assert.equal(stale.balances.length,0);
+        assert.equal(stale.state().draft.values.brinde_escudo_login,'1');
+        console.log('OK stale gift offer: visible rejection, no charge, draft retained');
+      } finally {await stale.context.close();}
+      return;
+    }
     if (datesOnly) {
       const product=products.find(item => item.id==='proximo_jogo');
       for (const [date,width] of [['viernes a las 20:00',390],['A DEFINIR',390],['2026-10-05T18:00',1440]]) {

@@ -81,7 +81,7 @@ async function run() {
       async function reopenExamples() {
         // Product mode no longer displays a duplicate "Criar esta arte" chat card.
         await page.locator('[data-vitrine-home]').first().click();
-        await page.locator('[data-vitrine-product="escudo3d"]').click();
+        await page.locator('[data-vitrine-product="escudo3d"]:not([data-vitrine-gift])').click();
         await page.locator('#escudo3dExamples').waitFor({state:'visible'});
       }
       for (const [label,choice] of [

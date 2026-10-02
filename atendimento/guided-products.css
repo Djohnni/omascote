@@ -57,3 +57,5 @@ body[data-guided-product] .lab-frame.is-integrated .guided-field .upload-button 
   .guided-product .guided-delivery-option span { font-size:15px; }
   .guided-product .guided-progress { gap:5px; }
 }
+/* The gift uses the same product form and original submission. */
+.guided-gift-note { margin:12px 0; padding:12px; border-radius:6px; background:#fff3c8; color:#573800; font-size:14px; line-height:1.5; }

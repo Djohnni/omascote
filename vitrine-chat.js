@@ -50,13 +50,14 @@
     }
     pending.sent = true;
     showChat('product');
-    frame.contentWindow.postMessage({ type:pending.type, productId:pending.productId, requestId:pending.id }, location.origin);
+    frame.contentWindow.postMessage({ type:pending.type, productId:pending.productId, gift:pending.gift, requestId:pending.id }, location.origin);
   }
   function request(button, type, productId) {
     if (pending) return;
     button.disabled = true;
     status.textContent = ready ? '' : 'Preparando atendimento…';
-    pending = { button, type, productId, id:'vitrine-'+(++sequence), sent:false };
+    pending = { button, type, productId, gift:button.hasAttribute('data-vitrine-gift'), id:'vitrine-'+(++sequence), sent:false };
+    if(pending.gift) window.ia4Track?.('escudo_brinde_aberto', {produto:'escudo3d'});
     pending.timeout = setTimeout(() => {
       showHome();
       status.textContent = 'O atendimento ainda não carregou. Tente novamente em instantes.';
