@@ -6,6 +6,7 @@ const path = require('node:path');
 const http = require('node:http');
 const os = require('node:os');
 const { chromium } = require('playwright');
+const { assertPurchaseSafety } = require('./test-guided-purchase-safety.cjs');
 
 const root = __dirname;
 const bundle = fs.readFileSync(path.join(root, 'atendimento/assets/index-BYWG3Byi.js'), 'utf8');
@@ -100,6 +101,8 @@ async function run() {
     });
     await page.goto(origin + '/app.html', {waitUntil:'domcontentloaded'});
     await page.locator('#vitrineHome').waitFor({state:'visible'});
+    assert.equal(await page.getByRole('heading',{name:'Entregamos os vídeos em menos de 5 minutos',exact:true}).isVisible(),true,'home delivery heading is shown');
+    assert.equal(await page.getByRole('heading',{name:'Mais artes para o seu time',exact:true}).count(),0,'previous gallery heading was replaced');
     const chat = page.frameLocator('#integratedChatFrame');
     await page.locator('[data-vitrine-product="mascote_uniforme"]').click();
     await chat.locator('.guided-mascot[data-step="1"]').waitFor({state:'visible',timeout:15000});
@@ -120,6 +123,7 @@ async function run() {
   async function step(test, number) {
     await test.chat.locator(`.guided-mascot[data-step="${number}"]`).waitFor({state:'visible'});
     assert.equal(await test.chat.locator('.guided-mascot:visible').count(),1,'only one guided step is visible');
+    assert.equal(await test.chat.locator('details.guided-purchase-safety').count(),number === 3 ? 1 : 0,'purchase disclosure appears only at the final step');
     const progress = test.chat.locator('.guided-mascot .guided-progress');
     assert.equal(await progress.count(),1,'guided step has one progress indicator');
     assert.equal(await progress.getAttribute('role'),'progressbar','progress keeps accessible semantics');
@@ -215,7 +219,7 @@ async function run() {
   }
 
   try {
-    for (const viewport of [{width:390,height:844},{width:1440,height:1000}]) {
+    for (const viewport of [{width:320,height:844},{width:390,height:844},{width:1440,height:1000}]) {
       const test = await setup(viewport,{holdUploads:true});
       try {
         await step(test,1);
@@ -279,6 +283,10 @@ async function run() {
         await test.page.screenshot({path:path.join(screenshots,`step-2-${viewport.width}.png`),fullPage:true});
         await next(test).click();
         await step(test,3);
+        await assertPurchaseSafety(test,{
+          form:test.chat.locator('.guided-mascot'),assertLayout:() => step(test,3),
+          screenshots,name:`mascote-${viewport.width}`,capture:true,draft:() => test.getState().draft
+        });
         assert.match(await test.chat.locator('.guided-mascot').innerText(),/R\$\s*18,00/);
         assert.match(await test.chat.locator('.guided-mascot').innerText(),/R\$\s*28,00/);
         assert.equal(await test.chat.getByRole('radio',{name:/Somente imagem/}).isChecked(),true,'default is image, not an implicit paid upgrade');

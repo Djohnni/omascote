@@ -37,6 +37,21 @@
   const isProduct = () => document.body.dataset.productView === 'product';
   const notify = data => window.parent.postMessage(data, location.origin);
 
+  function PurchaseSafety({React}) {
+    const h = React.createElement;
+    return h('details',{className:'guided-purchase-safety'},
+      h('summary',null,'Clique aqui caso queira saber se é seguro comprar'),
+      h('div',{className:'guided-purchase-safety-content'},
+        h('ol',null,
+          h('li',null,'Aqui ao lado, você encontra o botão do WhatsApp. Por lá, enviamos uma demonstração antes de finalizar o pedido. Porém, o tempo de espera é maior e o valor é de R$ 38, devido ao trabalho adicional.'),
+          h('li',null,'Nosso Instagram, @ia4tube, tem muitas publicações e comentários positivos de times de futebol que receberam suas artes.'),
+          h('li',null,'Caso aconteça algum erro na imagem ou no vídeo, é só nos chamar pelo WhatsApp aqui ao lado. Corrigimos sem custo adicional.'),
+          h('li',null,'O QR Code do Pix está vinculado a um CNPJ com mais de 10 anos.'),
+          h('li',null,'Entregamos mais de 5 mil mascotes no último ano.')),
+        h('p',null,'O vídeo demora cerca de 4 minutos para ficar pronto. Enquanto isso, não se esqueça de conferir os outros produtos.'),
+        h('p',null,'Obrigado,',h('br'),'Direção IA4TUBE.')));
+  }
+
   function hideDelivery(delivery) {
     return !!(deliveryRequest && delivery && !delivery.batch && delivery.drafts.length === 1 &&
       delivery.drafts[0].id === deliveryRequest.id && isProduct());
@@ -309,10 +324,10 @@
         h('fieldset',{className:'guided-fields',disabled:props.busy},
           current ? current.fields.map(field) : deliveryOptions(),
           problem ? h('p',{className:'guided-error',role:'alert'},problem) : null,
-          button,!current ? review() : null),
+          button,!current ? h(PurchaseSafety,{React}) : null,!current ? review() : null),
       h('button',{type:'button',className:'guided-help',disabled:props.busy,
         onClick:()=>notify({type:'omascote-chat:guided-help'})},'Ajuda'));
   }
 
-  window.OmascoteGuidedProducts = {Form,hideDelivery};
+  window.OmascoteGuidedProducts = {Form,hideDelivery,PurchaseSafety};
 })();

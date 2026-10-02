@@ -6,6 +6,7 @@ const path = require('node:path');
 const http = require('node:http');
 const os = require('node:os');
 const { chromium } = require('playwright');
+const { assertPurchaseSafety } = require('./test-guided-purchase-safety.cjs');
 
 const root = __dirname;
 const bundle = fs.readFileSync(path.join(root,'atendimento/assets/index-BYWG3Byi.js'),'utf8');
@@ -111,6 +112,8 @@ async function run() {
     });
     await page.goto(origin + '/app.html',{waitUntil:'domcontentloaded'});
     await page.locator('#vitrineHome').waitFor({state:'visible'});
+    assert.equal(await page.getByRole('heading',{name:'Entregamos os vídeos em menos de 5 minutos',exact:true}).isVisible(),true,'home delivery heading is shown');
+    assert.equal(await page.getByRole('heading',{name:'Mais artes para o seu time',exact:true}).count(),0,'previous gallery heading was replaced');
     return {context,page,chat:page.frameLocator('#integratedChatFrame'),errors,requests,uploads,actions,balances,
       state:() => state,
       messages:() => page.evaluate(() => window.__localProductMessages || []),
@@ -129,10 +132,27 @@ async function run() {
     assert.ok(predicate(test.state().draft),description);
   }
   async function open(test,product,seed = 'image') {
+    const previousHeight = await test.page.locator('#integratedChatFrame').evaluate(frame => ({
+      parentMode:document.body.className,style:frame.style.height,height:frame.clientHeight,
+      content:frame.contentDocument?.querySelector('.lab-frame.is-integrated')?.getBoundingClientRect().height
+    }));
     await test.page.locator('[data-vitrine-options]').click();
     const catalog = test.chat.getByRole('navigation',{name:'Todas as opções do chat'});
     await catalog.waitFor({state:'visible'});
-    await catalog.locator('section[aria-label="Criar uma arte"] button').filter({has:test.chat.getByText(product.name,{exact:true})}).click();
+    const productButton = catalog.locator('section[aria-label="Criar uma arte"] button').filter({has:test.chat.getByText(product.name,{exact:true})});
+    await productButton.scrollIntoViewIfNeeded();
+    const box = await productButton.boundingBox();
+    // A tall integrated iframe can put the drawer's last item below the outer mobile viewport.
+    // Scroll the actual parent page before a normal click, as a customer would do.
+    if (box && (box.y < 0 || box.y + box.height > test.page.viewportSize().height)) {
+      console.log('Catalog outer-scroll diagnostics:',JSON.stringify({flow:product.id,width:test.page.viewportSize().width,
+        previousHeight,button:box,frame:await test.page.locator('#integratedChatFrame').evaluate(frame => ({
+          height:frame.clientHeight,content:frame.contentDocument?.querySelector('.lab-frame.is-integrated')?.getBoundingClientRect().height,
+          catalog:frame.contentDocument?.querySelector('.lab-products-list')?.getBoundingClientRect().height
+        }))}));
+      await test.page.evaluate(center => window.scrollBy({top:center - innerHeight / 2,behavior:'instant'}),box.y + box.height / 2);
+    }
+    await productButton.click();
     if (product.id === 'escudo3d') {
       await test.page.locator('#escudo3dExamples').waitFor({state:'visible'});
       await test.page.locator(`#escudo3dExamples [data-delivery-choice="${seed}"]`).click();
@@ -167,6 +187,7 @@ async function run() {
         segments:[...progress.children].map(child => {const r=child.getBoundingClientRect();return {width:r.width,left:r.left,right:r.right,height:r.height,color:getComputedStyle(child).backgroundColor,barLeft:box.left,barRight:box.right};})};
     });
     const {number,total,segments,keys,isFinal}=view;
+    assert.equal(await guide(test).locator('details.guided-purchase-safety').count(),isFinal ? 1 : 0,'purchase disclosure appears only on the final payment step');
     assert.ok(total >= 3 && total <= 25,'bounded progress is based on actual questions, including up to ten athletes');
     assert.equal(view.role,'progressbar');
     assert.equal(view.min,'0');
@@ -332,6 +353,11 @@ async function run() {
       assert.equal(await test.chat.getByRole('radio',{name:/Somente imagem/}).isChecked(),true);
     }
     assert.equal(test.orderCount(),0,'all navigation/final/edit actions before Enviar are non-submitting');
+    await assertPurchaseSafety(test,{
+      form:guide(test),assertLayout:() => assertStep(test),screenshots,
+      name:`${product.id}-${test.page.viewportSize().width}-${seed}`,
+      capture:['escudo3d','proximo_jogo'].includes(product.id),draft:() => test.state().draft
+    });
   }
   async function submitAndAssert(test,product,mode='image',seed='image',retry=false) {
     if (mode==='image_video' && product.id!=='escudo3d') await test.chat.getByRole('radio',{name:/Imagem \+ vídeo/}).click();
@@ -381,7 +407,7 @@ async function run() {
 
   try {
     assert.equal(products.length,9);
-    for (const viewport of [{width:390,height:844},{width:1440,height:1000}]) {
+    for (const viewport of [{width:320,height:844},{width:390,height:844},{width:1440,height:1000}]) {
       for (const product of products) {
         const test=await setup(viewport,{price:product.price});
         try {
