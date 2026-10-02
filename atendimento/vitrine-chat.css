@@ -305,6 +305,63 @@ body:has(.lab-frame.is-integrated) .lab-products-list button:focus-visible {
   background: #f0f7f3;
 }
 
+/* Product view uses the same controls, without a conversation around them. */
+html:has(body[data-product-view="product"] .lab-frame.is-integrated),
+body[data-product-view="product"]:has(.lab-frame.is-integrated),
+body[data-product-view="product"]:has(.lab-frame.is-integrated) > #root,
+body[data-product-view="product"] .app-shell:has(.lab-frame.is-integrated),
+body[data-product-view="product"] .lab-frame.is-integrated {
+  height: auto !important;
+  min-height: 0 !important;
+}
+
+body[data-product-view="product"] .lab-frame.is-integrated .chat-panel {
+  display: block;
+}
+
+body[data-product-view="product"] .lab-frame.is-integrated .lab-conversation-bar,
+body[data-product-view="product"] .lab-frame.is-integrated .lab-products-floating,
+body[data-product-view="product"] .lab-frame.is-integrated .lab-scroll > .lab-message,
+body[data-product-view="product"] .lab-frame.is-integrated .lab-scroll > .lab-reminder,
+body[data-product-view="product"] .lab-frame.is-integrated .composer {
+  display: none !important;
+}
+
+body[data-product-view="product"] .lab-frame.is-integrated .composer-area {
+  border: 0;
+  padding: 0;
+}
+
+body[data-product-view="product"] .lab-frame.is-integrated .lab-scroll {
+  overflow: visible;
+  padding: 8px 0 24px;
+}
+
+body[data-product-view="product"] .lab-frame.is-integrated .lab-form {
+  margin: 0;
+}
+
+body[data-product-view="product"] .lab-frame.is-integrated .lab-scroll > .lab-message.is-product-outcome {
+  display: block !important;
+}
+
+body[data-product-view="product"] .lab-frame.is-integrated .lab-message.is-product-outcome > small {
+  display: none;
+}
+
+body[data-product-view="product"] .lab-frame.is-integrated .lab-submit-button {
+  width: 100% !important;
+  height: 54px !important;
+  border-radius: 8px !important;
+  gap: 12px;
+}
+
+body[data-product-view="product"] .lab-frame.is-integrated .lab-submit-button::before {
+  content: "Enviar pedido";
+  font-size: 17px;
+  font-weight: 750;
+}
+
 @media (max-width: 620px) {
   .lab-frame.is-integrated .lab-conversation-bar {
     padding: 6px 12px;

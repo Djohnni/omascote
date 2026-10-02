@@ -45,6 +45,7 @@ body[data-vitrine="true"] #integratedChatModal { border:0; box-shadow:none; bord
 body[data-vitrine="true"]:not(.vitrineChatActive) #integratedChatModal:not(.is-expanded) { display:none; }
 body[data-vitrine="true"]:has(#escudo3dExamples:not([hidden])) #integratedChatModal { display:none; }
 body[data-vitrine="true"] #integratedChatModal.is-expanded { height:100dvh; min-height:0; }
+body[data-vitrine="true"].vitrineProductActive #integratedChatModal:not(.is-expanded) { min-height:0; }
 body[data-vitrine="true"] .integratedChatFrame { background:#fff; }
 body[data-vitrine="true"] .artReviewSection { width:100%; border:0; border-top:1px solid #e3ebe6; background:#fff; box-shadow:none; border-radius:0; margin:36px auto 0; padding:28px 0; }
 body[data-vitrine="true"] .artReviewCard { border:0; background:#f8faf8; box-shadow:none; border-radius:6px; }

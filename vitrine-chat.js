@@ -8,9 +8,16 @@
   const chat = document.getElementById('integratedChatModal');
   const status = document.getElementById('vitrineStatus');
   if (!home || !nav || !frame || !chat) return;
-  let ready = false, busy = false, pending = null, sequence = 0;
+  let ready = false, busy = false, pending = null, sequence = 0, viewMode = 'chat';
   const motion = () => matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth';
-  function showChat() {
+  function setMode(mode) {
+    viewMode = mode;
+    document.body.classList.toggle('vitrineProductActive', mode === 'product');
+    if (mode !== 'product') chat.style.height = '';
+    frame.contentWindow?.postMessage({ type:'omascote-chat:visual-mode', mode }, location.origin);
+  }
+  function showChat(mode = 'chat') {
+    setMode(mode);
     home.hidden = true;
     nav.hidden = false;
     document.body.classList.add('vitrineChatActive');
@@ -40,7 +47,7 @@
       return;
     }
     pending.sent = true;
-    showChat();
+    showChat('product');
     frame.contentWindow.postMessage({ type:pending.type, productId:pending.productId, requestId:pending.id }, location.origin);
   }
   function request(button, type, productId) {
@@ -61,7 +68,16 @@
     if (event.data?.type === 'omascote-chat:visual-ready') {
       ready = event.data.ready === true;
       busy = event.data.busy === true;
+      frame.contentWindow.postMessage({ type:'omascote-chat:visual-mode', mode:viewMode }, location.origin);
       dispatch();
+    }
+    if (event.data?.type === 'omascote-chat:presentation') {
+      const {mode, height} = event.data;
+      if (!['product', 'chat'].includes(mode)) return;
+      viewMode = mode;
+      document.body.classList.toggle('vitrineProductActive', mode === 'product');
+      if (mode === 'product' && Number.isFinite(height) && height >= 320 && height <= 20000) chat.style.height = height + 'px';
+      else if (mode === 'chat') chat.style.height = '';
     }
     if (event.data?.type === 'omascote-chat:visual-result' && pending && event.data.requestId === pending.id) {
       if (event.data.ok !== true) {
@@ -78,9 +94,12 @@
   document.querySelectorAll('[data-vitrine-product]').forEach(button => button.addEventListener('click', () => request(button, 'omascote-chat:select-product', button.dataset.vitrineProduct)));
   document.querySelectorAll('[data-vitrine-options]').forEach(button => button.addEventListener('click', () => request(button, 'omascote-chat:open-catalog')));
   document.querySelectorAll('[data-vitrine-home]').forEach(button => button.addEventListener('click', showHome));
-  document.querySelectorAll('[data-vitrine-chat]').forEach(button => button.addEventListener('click', showChat));
+  document.querySelectorAll('[data-vitrine-chat]').forEach(button => button.addEventListener('click', () => showChat('chat')));
   document.querySelectorAll('[data-vitrine-account]').forEach(button => button.addEventListener('click', () => window.abrirMinhaContaPeloAtendimento?.()));
   document.querySelectorAll('[data-vitrine-orders]').forEach(button => button.addEventListener('click', () => window.abrirPedidosPeloAtendimento?.()));
-  frame.addEventListener('load', () => frame.contentWindow?.postMessage({ type:'omascote-chat:visual-state' }, location.origin));
+  frame.addEventListener('load', () => {
+    frame.contentWindow?.postMessage({ type:'omascote-chat:visual-mode', mode:viewMode }, location.origin);
+    frame.contentWindow?.postMessage({ type:'omascote-chat:visual-state' }, location.origin);
+  });
   if (new URLSearchParams(location.search).get('chat_preview') === '1') showChat();
 })();
