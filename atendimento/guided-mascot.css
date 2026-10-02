@@ -43,6 +43,15 @@ body[data-guided-mascot] .lab-frame.is-integrated .guided-field[data-field=team_
 .guided-primary { display:block; width:100%; min-height:56px; background:#008747; color:#fff; border:0; border-radius:8px; margin:26px 0 0; padding:14px 20px; font:inherit; font-size:18px; font-weight:750; cursor:pointer; }
 .guided-primary:hover { background:#006a38; }
 .guided-delivery + .guided-primary { margin:0 0 24px; }
+.guided-delivery + .guided-primary:has(+ .guided-purchase-safety) { margin-bottom:0; }
+.guided-purchase-safety { margin:12px 0 20px; color:#24533d; font-size:14px; line-height:1.6; }
+.guided-purchase-safety > summary { min-height:44px; padding:10px 0; cursor:pointer; color:#24533d; font-weight:600; }
+.guided-purchase-safety > summary:focus-visible { outline:3px solid #2473d8; outline-offset:3px; }
+.guided-purchase-safety-content { padding:8px 0 0; overflow-wrap:anywhere; }
+.guided-purchase-safety-content ol { margin:0 0 16px; padding-left:22px; list-style:decimal outside; }
+.guided-purchase-safety-content li { margin:0 0 12px; }
+.guided-purchase-safety-content p { margin:0 0 16px; }
+.guided-purchase-safety-content p:last-child { margin-bottom:0; }
 .guided-primary:disabled { opacity:.6; cursor:wait; }
 .guided-help { margin-top:16px; color:#60796b; font-size:14px; }
 .guided-error { color:#a92d28; font-size:15px; line-height:1.5; margin:12px 0; }

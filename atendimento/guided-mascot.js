@@ -181,6 +181,7 @@
             props.canVideo ? option('image_video', 'Imagem + vídeo', props.videoPrice) : null),
           h('button', {type:'button', className:'guided-primary', disabled:props.busy,
             'aria-label':'Enviar pedido', onClick:send}, 'Enviar pedido →'),
+          h(window.OmascoteGuidedProducts.PurchaseSafety, {React}),
           error ? h('p', {className:'guided-error', role:'alert'}, error) : null,
           h('div', {className:'guided-review'},
             h('span', null, [draft.values.mascot_animal, draft.values.sport === 'Outro esporte'
