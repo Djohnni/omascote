@@ -302,6 +302,11 @@ async function run() {
         await test.chat.getByText('Personalizar (opcional)',{exact:true}).click();
         await step(test,3);
         await test.page.screenshot({path:path.join(screenshots,`step-3-${viewport.width}.png`),fullPage:true});
+        assert.equal(await test.chat.locator('.guided-mascot').evaluate(form => {
+          const delivery=form.querySelector('.guided-delivery'),send=form.querySelector('.guided-primary'),review=form.querySelector('.guided-review');
+          return !!(delivery.compareDocumentPosition(send)&Node.DOCUMENT_POSITION_FOLLOWING) &&
+            !!(send.compareDocumentPosition(review)&Node.DOCUMENT_POSITION_FOLLOWING);
+        }),true,'final delivery prices precede Enviar, then review');
         await test.page.locator('[data-vitrine-home]').first().click();
         await test.page.locator('[data-vitrine-product="mascote_uniforme"]').click();
         await test.chat.locator('.guided-mascot').waitFor({state:'visible'});
@@ -330,14 +335,15 @@ async function run() {
           },product.name);
           if (await test.chat.getByRole('alertdialog').isVisible()) await test.chat.getByRole('button',{name:'Trocar de atendimento',exact:true}).click();
           await test.chat.locator('.lab-form-heading strong').filter({hasText:product.name}).waitFor({state:'visible'});
-          assert.equal(await test.chat.locator('.guided-mascot').count(),0,`${product.id} keeps original product presentation`);
-          await test.chat.getByRole('radio',{name:'Futebol',exact:true}).click();
-          await test.chat.getByRole('button',{name:'Enviar pedido',exact:true}).click();
-          await test.chat.locator('.form-error[role="alert"]').waitFor({state:'visible'});
+          assert.equal(await test.chat.locator('.guided-mascot').count(),0,`${product.id} is separate from mascot presentation`);
+          await test.chat.locator('.guided-product[data-stage-key="sport"]').waitFor({state:'visible'});
+          await test.chat.getByRole('button',{name:'Continuar',exact:true}).click();
+          await test.chat.locator('.guided-error[role="alert"]').waitFor({state:'visible'});
+          assert.equal(await test.chat.locator('.guided-product').getAttribute('data-stage-key'),'sport',`${product.id} retains original required-sport validation`);
           assert.equal(test.orderCount(),0,`${product.id} validation never bypassed`);
         }
         assert.deepEqual(test.errors,[],'guided and original products have no runtime errors');
-        console.log(`OK ${viewport.width}px: empty/defaults, conditional sport, step validation, exact uploads, back/edit/home persistence, optional settings, prices, Help and nine unchanged products`);
+        console.log(`OK ${viewport.width}px: empty/defaults, conditional sport, step validation, exact uploads, back/edit/home persistence, optional settings, prices, Help and nine guided products with original validation`);
       } finally { await test.context.close(); }
     }
 

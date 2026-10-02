@@ -1,0 +1,24 @@
+Etapas visuais de todos os produtos - 02/10/2026
+
+Repositorio: Djohnni/omascote
+Base: 7bfda58ab747a2ec4d965503b12ccb2feeb4ba13
+Restauracao: restore-antes-etapas-produtos-20261002 (GitHub e ZIP local).
+Destino: main -> .github/workflows/pages.yml -> omascote.com.br.
+
+Mascote: opcoes de entrega -> Enviar pedido -> revisao.
+Os outros nove produtos pagos usam etapas curtas e barras verdes no topo.
+Somente apresentacao no atendimento integrado em modo produto.
+Chat livre, dirigente, servicos e arte personalizada conservam a apresentacao anterior.
+
+Os campos continuam sendo renderizados pelo componente original.
+Valores, defaults, arquivos, validacao, normalizacao de datas livres,
+envio, saldo, Pix, idempotencia e bridge de pedidos permanecem originais.
+Escudo 3D chama o envio original direto, conservando o modelo selecionado
+nos exemplos de 8 ou 10 segundos; nao passa pela confirmacao que escolheria Fast.
+Erros nao causam reenvio automatico. O cliente pode tentar novamente manualmente.
+
+O bundle original atendimento/assets/index-BYWG3Byi.js nao foi alterado.
+app.html mudou somente a versao de cache do iframe do atendimento.
+Nao houve mudancas em API, worker, prompts, chaves, precos ou dados de clientes.
+Os testes automatizados interceptam APIs, uploads, pagamentos e pedidos.
+Nao foi feito pedido pago nem geracao real durante esta alteracao.

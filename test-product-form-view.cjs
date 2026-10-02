@@ -76,6 +76,12 @@ async function run() {
       await page.locator('#vitrineHome').waitFor({state:'visible'});
       const chat = page.frameLocator('#integratedChatFrame');
 
+      async function savedDraft(predicate,description) {
+        const deadline=Date.now()+7000;
+        while (!predicate(state.draft) && Date.now()<deadline) await page.waitForTimeout(50);
+        assert.ok(predicate(state.draft),description);
+      }
+
       async function assertCleanProduct(product) {
         await chat.locator('.lab-form').waitFor({state:'visible'});
         const guided = product.id === 'mascote_uniforme';
@@ -143,14 +149,18 @@ async function run() {
           await assertCleanProduct(product);
         }
         await chat.getByRole('radio', {name:'Futebol',exact:true}).click();
-        await page.waitForTimeout(520);
+        await savedDraft(draft => draft?.flow===product.id && draft.values.sport==='Futebol','original product and sport saved');
         assert.equal(state.draft?.flow, product.id, 'all products use their original draft');
         assert.equal(state.draft.values.sport, 'Futebol', 'sport stays on the original draft');
         await assertCleanProduct(product);
-        await chat.getByRole('button', {name:product.id === 'mascote_uniforme' ? 'Continuar' : 'Enviar pedido',exact:true}).click();
-        const validation = chat.locator(product.id === 'mascote_uniforme' ? '.guided-error[role="alert"]' : '.form-error[role="alert"]');
+        await chat.getByRole('button', {name:'Continuar',exact:true}).click();
+        if (product.id !== 'mascote_uniforme') {
+          await chat.locator('.guided-product:not([data-stage-key="sport"])').waitFor({state:'visible'});
+          await chat.getByRole('button', {name:'Continuar',exact:true}).click();
+        }
+        const validation = chat.locator('.guided-error[role="alert"]');
         await validation.waitFor({state:'visible'});
-        assert.match(await validation.innerText(), /Falta preencher|Envie uma foto|Informe |Qual animal/, 'required-field errors remain visible');
+        assert.match(await validation.innerText(), /Falta preencher|Envie |Informe |Qual |Quais /, 'original required-field errors remain visible');
         if (['mascote_uniforme','proximo_jogo','escudo3d'].includes(product.id)) {
           await page.screenshot({path:path.join(screenshots,`${product.id}-${viewport.width}.png`),fullPage:true});
         }
@@ -163,7 +173,7 @@ async function run() {
           assert.ok(releaseUpload, 'local upload is waiting under test control');
           releaseUpload();
           await chat.getByText('escudo-local.png',{exact:true}).waitFor({state:'visible'});
-          await page.waitForTimeout(520);
+          await savedDraft(draft => draft?.files.some(file => file.field==='team_crest'),'original upload saved');
           assert.equal(state.draft.files[0].field, 'team_crest', 'file keeps its original field mapping');
           await page.locator('[data-vitrine-home]').first().click();
           await page.locator('[data-vitrine-product="mascote_uniforme"]').click();
