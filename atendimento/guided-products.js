@@ -155,7 +155,7 @@
       if (current) lastRank.current = current.rank;
       sessions.set(draft.id,{stageKey:effectiveKey,delivery,rank:lastRank.current});
       document.body.dataset.guidedProduct = String(step);
-      notify({type:'omascote-chat:guided-stage',active:true,step,total});
+      notify({type:'omascote-chat:guided-stage',active:true,step,total,productId:draft.flow,stageKey:effectiveKey});
       return () => {
         delete document.body.dataset.guidedProduct;
         notify({type:'omascote-chat:guided-stage',active:false});
@@ -218,6 +218,7 @@
       if (props.busy || !current) return;
       const issues = blockingIssues().filter(issue => current.fields.some(field => field.key === issueKey(issue)));
       if (issues.length) {
+        notify({type:'omascote-chat:analytics-blocked',productId:draft.flow,action:'continuar'});
         setError(issues.join('; '));
         focusField(issueKey(issues[0]));
         return;
@@ -228,6 +229,7 @@
       if (props.busy || submitLock.current) return;
       const issues = blockingIssues();
       if (issues.length) {
+        notify({type:'omascote-chat:analytics-blocked',productId:draft.flow,action:'enviar'});
         const invalid = groups.find(group => group.fields.some(field => issues.some(issue => issueKey(issue) === field.key)));
         if (invalid) setStageKey(invalid.id);
         setError(issues.join('; '));
