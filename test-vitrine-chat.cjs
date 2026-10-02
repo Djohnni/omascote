@@ -63,6 +63,20 @@ async function run() {
       await page.goto(origin + '/app.html', {waitUntil:'domcontentloaded'});
       await page.locator('#vitrineHome').waitFor({state:'visible'});
       await page.locator('.vitrineHero__image').evaluate(image => image.decode());
+      await page.locator('.vitrineHero__backdrop').evaluate(image => image.decode());
+      await page.locator('.vitrineProducts img').evaluateAll(images => Promise.all(images.map(image => image.decode())));
+      const thumbnails = await page.locator('.vitrineProducts img').evaluateAll(images => images.map(image => {
+        const box = image.getBoundingClientRect();
+        return {width:box.width, height:box.height, top:box.top, bottom:box.bottom, fit:getComputedStyle(image).objectFit};
+      }));
+      assert.equal(thumbnails.length, 3, 'home keeps three product thumbnails');
+      for (const thumbnail of thumbnails) {
+        assert.equal(thumbnail.fit, 'cover', 'all product thumbnails fill their vertical frame');
+        assert.ok(Math.abs(thumbnail.width / thumbnail.height - 9/16) < .001, 'all thumbnails are 9:16');
+        for (const edge of ['width','height','top','bottom']) assert.ok(Math.abs(thumbnail[edge] - thumbnails[0][edge]) <= 1, `product thumbnails have identical ${edge}`);
+      }
+      const titleTops = await page.locator('.vitrineProducts span').evaluateAll(titles => titles.map(title => title.getBoundingClientRect().top));
+      assert.ok(titleTops.every(top => Math.abs(top-titleTops[0]) <= 1), 'product titles start on the same line');
       await page.screenshot({path:path.join(screenshots,`home-${viewport.width}.png`), fullPage:true});
       assert.equal(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth), true, 'home has no horizontal overflow');
       const flat = await page.locator('#vitrineHome').evaluate(node => {
