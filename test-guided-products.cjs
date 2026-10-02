@@ -517,8 +517,11 @@ async function run() {
           const giftBox=await gift.boundingBox();
           const primaryBox=await test.page.locator('[data-vitrine-product="mascote_uniforme"]').first().boundingBox();
           assert.ok(giftBox.y+giftBox.height <= primaryBox.y,'gift stays above original mascot button');
+          const copyBox=await test.page.locator('.vitrineHero__copy p').boundingBox();
+          assert.ok(copyBox.y+copyBox.height <= giftBox.y,'gift does not cover home description');
           assert.ok(await test.page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),'home fits screen');
           if(width===390) await test.page.screenshot({path:path.join(screenshots,'escudo-brinde-home.png')});
+          if(width===320) await test.page.screenshot({path:path.join(screenshots,'escudo-brinde-home-320.png')});
           await gift.click();
           await guide(test).waitFor({state:'visible'});
           await saved(test,draft=>draft?.values?.brinde_escudo_login==='1','gift marker is saved');
