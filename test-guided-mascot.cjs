@@ -126,6 +126,28 @@ async function run() {
   const field = (test, key) => test.chat.locator(`.guided-field[data-field="${key}"]`);
   const next = test => test.chat.getByRole('button',{name:'Continuar',exact:true});
   const final = test => test.chat.getByRole('button',{name:'Enviar pedido',exact:true});
+  async function uploadEmphasis(test, pending) {
+    await test.page.mouse.move(0,0);
+    await test.page.waitForFunction(pending => {
+      const form=document.getElementById('integratedChatFrame')?.contentDocument?.querySelector('.guided-mascot');
+      const upload=form?.querySelector('[data-field="team_crest"] .upload-button'),next=form?.querySelector('.guided-primary');
+      if (!upload || !next) return false;
+      const style=element => element.ownerDocument.defaultView.getComputedStyle(element);
+      return style(upload).backgroundColor === (pending ? 'rgb(0, 135, 71)' : 'rgb(250, 252, 251)') &&
+        style(next).backgroundColor === (pending ? 'rgb(250, 252, 251)' : 'rgb(0, 135, 71)') &&
+        next.getBoundingClientRect().height === (pending ? 140 : 56);
+    },pending);
+    const styles = await test.chat.locator('.guided-mascot').evaluate(form => {
+      const upload=form.querySelector('[data-field="team_crest"] .upload-button'),next=form.querySelector('.guided-primary');
+      return [upload,next].map(element => {
+        const css=getComputedStyle(element);
+        return {background:css.backgroundColor,color:css.color,border:css.borderTopStyle,height:element.getBoundingClientRect().height};
+      });
+    });
+    const button={background:'rgb(0, 135, 71)',color:'rgb(255, 255, 255)',border:'none',height:56};
+    const area={background:'rgb(250, 252, 251)',color:'rgb(25, 87, 55)',border:'dashed',height:140};
+    assert.deepEqual(styles,pending ? [button,area] : [area,button],'visual priority follows the required crest, including after removal');
+  }
   async function step(test, number) {
     await test.chat.locator(`.guided-mascot[data-step="${number}"]`).waitFor({state:'visible'});
     assert.equal(await test.chat.locator('.guided-mascot:visible').count(),1,'only one guided step is visible');
@@ -294,13 +316,18 @@ async function run() {
         await step(test,2);
         assert.equal(await field(test,'team_crest').locator('input[type="file"]').getAttribute('aria-label'),'Envie o escudo ou brasão do time');
         assert.equal(await field(test,'uniform_image').count(),0,'optional shirt is not shown in the required crest stage');
+        await uploadEmphasis(test,true);
+        await test.page.screenshot({path:path.join(screenshots,`escudo-antes-${viewport.width}.png`),fullPage:true});
         await next(test).click();
         await step(test,2);
         assert.ok(await test.chat.locator('[role="alert"]:visible').count(),'crest requirement is visible before continuing');
         assert.equal(test.orderCount(),0);
         await upload(test,'team_crest',true,true);
+        await uploadEmphasis(test,false);
+        await test.page.screenshot({path:path.join(screenshots,`escudo-depois-${viewport.width}.png`),fullPage:true});
         await next(test).click();
         await step(test,3);
+        assert.equal(await test.chat.locator('.guided-upload-pending,.guided-continue-pending').count(),0,'optional uploads retain their presentation');
         await upload(test,'uniform_image',true);
         assert.equal(await field(test,'scenario_id').count(),0,'scenario is not mounted in the optional tab');
         await field(test,'coupon_code').locator('input').fill('LOCAL-TEST');
@@ -310,6 +337,11 @@ async function run() {
         await test.chat.getByRole('button',{name:/Voltar$/}).click();
         await step(test,2);
         assert.equal(await field(test,'team_crest').getByText('team_crest-local.png',{exact:true}).isVisible(),true,'back preserves uploaded shield');
+        await field(test,'team_crest').getByRole('button',{name:'Remover',exact:true}).click();
+        await saved(test,draft => !draft.files.some(file => file.field === 'team_crest'),'removing the crest restores the empty original draft field');
+        await uploadEmphasis(test,true);
+        await upload(test,'team_crest',true);
+        await uploadEmphasis(test,false);
         await test.chat.getByRole('button',{name:/Voltar$/}).click();
         await step(test,1);
         await next(test).click();
