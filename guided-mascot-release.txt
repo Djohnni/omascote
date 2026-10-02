@@ -1,0 +1,29 @@
+Formulário guiado Mascote do Time — 02/10/2026
+
+Base anterior: 548967e4d6494a2160fcf54c724c20d151e10743
+Tag GitHub: restore-antes-formulario-guiado-20261002.
+Ponto de restauração local adicional:
+C:/Users/USER/Desktop/resultado/Restauracao_O_Mascote_20261001/site-antes-formulario-guiado-548967e.zip
+
+Aplicação das três telas minimalistas aprovadas: Seu mascote, Seu escudo,
+Finalizar. Restrito a mascote_uniforme no modo integrado de produto.
+Animal, esporte, modalidade/contexto condicionais, escudo e camiseta usam
+o renderField original do atendimento. Cenário/estilo/cupom continuam
+disponíveis em Personalizar (opcional), preservando defaults existentes.
+Voltar/Editar preservam o draft e seus arquivos.
+
+Entrega selecionada é apenas estado visual. Enviar pedido continua chamando
+ze() -> validação original _c() -> D -> Be() -> Ve() -> bridge existente.
+A escolha é consumida uma única vez, inclusive em React StrictMode.
+Erro de envio é exibido e exige retry manual, sem repetição automática.
+
+Funções anteriores ao return de Bu() comparadas byte a byte: idênticas.
+Bridge completo de pedidos/pagamentos no app.html: idêntico à base.
+Demais produtos e o chat retornam o render original.
+Nenhuma alteração na API, worker, prompts, chaves, preços ou dados de clientes.
+
+Testes locais com APIs simuladas e rede externa bloqueada:
+test-guided-mascot.cjs, test-product-form-view.cjs, test-integrated-chat.cjs,
+test-vitrine-chat.cjs, test-escudo3d-examples.cjs, test-dual-download.cjs,
+test-saldo-menu.cjs. Celular 390px e desktop 1440px.
+Nenhum pedido pago, cobrança Pix ou geração real realizado no teste.

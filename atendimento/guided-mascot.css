@@ -1,0 +1,52 @@
+/* Scoped to the approved mascot presentation. No effect on chat or other products. */
+body[data-guided-mascot] .lab-frame.is-integrated .guided-mascot { width:min(100%, 580px); margin:0 auto; color:#103b32; }
+.guided-top { display:flex; align-items:center; justify-content:space-between; margin:0 0 24px; }
+.guided-back, .guided-text-button, .guided-help { border:0; background:none; color:#24533d; font:inherit; cursor:pointer; min-height:44px; padding:8px 0; }
+.guided-back { font-size:16px; }
+.guided-count { color:#72857b; font-size:14px; }
+body[data-guided-mascot] .lab-frame.is-integrated .guided-title { display:block; color:#103b32; font-size:34px; font-weight:800; line-height:1.15; outline:none; }
+body[data-guided-mascot] .lab-frame.is-integrated .lab-form-heading { margin:0 0 28px; }
+.guided-fields { border:0; margin:0; padding:0; min-width:0; }
+.guided-field { margin:0 0 24px; min-width:0; }
+.guided-label { font-size:16px; font-weight:700; margin:0 0 10px; }
+.guided-hint { font-size:14px; line-height:1.5; color:#60746a; }
+body[data-guided-mascot] .lab-frame.is-integrated .guided-field input:not([type=radio]):not([type=checkbox]):not([type=file]),
+body[data-guided-mascot] .lab-frame.is-integrated .guided-field textarea { width:100%; background:#fff; border:1px solid #c9d6ce; border-radius:8px; min-height:50px; color:#103b32; font-size:16px; }
+body[data-guided-mascot] .lab-frame.is-integrated .guided-field .lab-options { display:flex; flex-wrap:wrap; gap:10px; }
+body[data-guided-mascot] .lab-frame.is-integrated .guided-field .lab-options label { min-height:46px; padding:10px 14px; gap:8px; border:1px solid #c9d6ce; background:#fff; color:#24533d; }
+body[data-guided-mascot] .lab-frame.is-integrated .guided-field .lab-options label:has([data-checked]) { border-color:#168b46; background:#edf7f1; }
+body[data-guided-mascot] .lab-frame.is-integrated .guided-field[data-field=team_crest] .upload-button { display:flex; justify-content:center; align-items:center; width:100%; min-height:140px; border:1px dashed #93b2a0; border-radius:8px; background:#fafcfb; color:#195737; font-size:0; }
+.guided-field[data-field=team_crest] .guided-label, .guided-field[data-field=team_crest] .upload-button svg { display:none; }
+.guided-field[data-field=team_crest] .upload-button::after { content:'+ Adicionar escudo'; font-size:16px; }
+body[data-guided-mascot] .lab-frame.is-integrated .guided-field[data-field=team_crest] .lab-thumbnails { margin-top:12px; }
+.guided-optional-shirt { margin-bottom:32px; }
+.guided-optional-shirt summary, .guided-extras summary { min-height:48px; padding:12px 0; color:#24533d; cursor:pointer; font-size:16px; }
+.guided-optional-shirt .guided-field { padding-top:12px; }
+.guided-optional-shirt .guided-label { display:none; }
+.guided-delivery { border:0; margin:0 0 24px; padding:0; display:grid; gap:12px; }
+.guided-delivery-option { display:flex; align-items:center; gap:10px; padding:18px 14px; border:1px solid #cedbd3; border-radius:8px; cursor:pointer; min-height:70px; }
+.guided-delivery-option:has(input:checked) { border:2px solid #168b46; padding:17px 13px; background:#edf7f1; }
+.guided-delivery-option input { width:18px; height:18px; margin:0; accent-color:#168b46; flex-shrink:0; }
+.guided-delivery-option span { flex:1; font-size:16px; font-weight:650; }
+.guided-delivery-option strong { font-size:20px; font-weight:800; white-space:nowrap; }
+.guided-review { display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:12px; margin:0 0 12px; font-size:16px; }
+.guided-review > span { min-width:0; overflow-wrap:anywhere; flex:1; }
+.guided-review-shield { display:flex; align-items:center; gap:10px; width:100%; }
+.guided-review-shield img { object-fit:contain; border-radius:4px; }
+.guided-review-shield .guided-text-button { margin-left:auto; }
+.guided-text-button { font-size:14px; text-decoration:underline; text-underline-offset:3px; }
+.guided-extras { border-top:1px solid #e3ebe6; margin:12px 0 24px; }
+.guided-extras .guided-field { margin-top:18px; }
+.guided-primary { display:block; width:100%; min-height:56px; background:#008747; color:#fff; border:0; border-radius:8px; margin:26px 0 0; padding:14px 20px; font:inherit; font-size:18px; font-weight:750; cursor:pointer; }
+.guided-primary:hover { background:#006a38; }
+.guided-primary:disabled { opacity:.6; cursor:wait; }
+.guided-help { margin-top:16px; color:#60796b; font-size:14px; }
+.guided-error { color:#a92d28; font-size:15px; line-height:1.5; margin:12px 0; }
+.guided-mascot button:focus-visible, .guided-mascot summary:focus-visible { outline:3px solid #2473d8; outline-offset:3px; }
+.guided-mascot .upload-button:focus-visible { outline:3px solid #2473d8; outline-offset:3px; }
+@media (max-width:600px) {
+  .guided-top { margin-bottom:20px; }
+  body[data-guided-mascot] .lab-frame.is-integrated .guided-title { font-size:30px; }
+  .guided-delivery-option strong { font-size:19px; }
+  .guided-delivery-option span { font-size:15px; }
+}

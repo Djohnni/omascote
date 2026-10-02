@@ -78,7 +78,8 @@ async function run() {
 
       async function assertCleanProduct(product) {
         await chat.locator('.lab-form').waitFor({state:'visible'});
-        assert.equal(await chat.locator('.lab-form-heading strong').innerText(), product.name);
+        const guided = product.id === 'mascote_uniforme';
+        assert.equal(await chat.locator('.lab-form-heading strong').innerText(), guided ? 'Seu mascote' : product.name);
         assert.equal(await chat.locator('.composer').isVisible(), false, 'product must not display a chat composer');
         assert.equal(await chat.locator('.lab-conversation-bar').isVisible(), false, 'product must not display conversation controls');
         assert.equal(await chat.locator('.lab-scroll > .lab-message:visible').count(), 0, 'old messages and product cards must not compete with the form');
@@ -114,11 +115,11 @@ async function run() {
             const document = window.document.getElementById('integratedChatFrame')?.contentDocument;
             const dialog = document?.querySelector('[role="alertdialog"]');
             return (dialog && dialog.getBoundingClientRect().width > 0) || document?.querySelector('.lab-form-heading strong')?.textContent.trim() === name;
-          }, product.name, {timeout:10000});
+          }, product.id === 'mascote_uniforme' ? 'Seu mascote' : product.name, {timeout:10000});
           if (await switchDialog.isVisible()) {
             await chat.getByRole('button', {name:'Trocar de atendimento',exact:true}).click();
           }
-          await page.waitForFunction(name => window.document.getElementById('integratedChatFrame')?.contentDocument?.querySelector('.lab-form-heading strong')?.textContent.trim() === name, product.name, {timeout:10000});
+          await page.waitForFunction(name => window.document.getElementById('integratedChatFrame')?.contentDocument?.querySelector('.lab-form-heading strong')?.textContent.trim() === name, product.id === 'mascote_uniforme' ? 'Seu mascote' : product.name, {timeout:10000});
           await chat.getByRole('radio', {name:'Futebol',exact:true}).waitFor({state:'visible',timeout:10000});
         } catch (error) {
           console.log('Product diagnostics:', JSON.stringify({product:product.id, viewport, draft:state.draft, parentText:(await page.locator('body').innerText()).slice(-3500), childText:(await chat.locator('body').innerText()).slice(-6500), errors}));
@@ -146,16 +147,17 @@ async function run() {
         assert.equal(state.draft?.flow, product.id, 'all products use their original draft');
         assert.equal(state.draft.values.sport, 'Futebol', 'sport stays on the original draft');
         await assertCleanProduct(product);
-        await chat.getByRole('button', {name:'Enviar pedido',exact:true}).click();
-        const validation = chat.locator('.form-error[role="alert"]');
+        await chat.getByRole('button', {name:product.id === 'mascote_uniforme' ? 'Continuar' : 'Enviar pedido',exact:true}).click();
+        const validation = chat.locator(product.id === 'mascote_uniforme' ? '.guided-error[role="alert"]' : '.form-error[role="alert"]');
         await validation.waitFor({state:'visible'});
-        assert.match(await validation.innerText(), /Falta preencher|Envie uma foto|Informe /, 'required-field errors remain visible');
+        assert.match(await validation.innerText(), /Falta preencher|Envie uma foto|Informe |Qual animal/, 'required-field errors remain visible');
         if (['mascote_uniforme','proximo_jogo','escudo3d'].includes(product.id)) {
           await page.screenshot({path:path.join(screenshots,`${product.id}-${viewport.width}.png`),fullPage:true});
         }
         if (product.id === 'mascote_uniforme') {
           const id = state.draft.id;
-          await chat.locator('.question-trigger').filter({hasText:/escudo/i}).first().click();
+          await chat.getByLabel('Qual animal você quer transformar em mascote?',{exact:true}).fill('Lobo');
+          await chat.getByRole('button',{name:'Continuar',exact:true}).click();
           await chat.locator('.lab-form input[type="file"]').first().setInputFiles({name:'escudo-local.png',mimeType:'image/png',buffer:pixel});
           await chat.locator('.lab-busy').waitFor({state:'visible'});
           assert.ok(releaseUpload, 'local upload is waiting under test control');
@@ -165,6 +167,8 @@ async function run() {
           assert.equal(state.draft.files[0].field, 'team_crest', 'file keeps its original field mapping');
           await page.locator('[data-vitrine-home]').first().click();
           await page.locator('[data-vitrine-product="mascote_uniforme"]').click();
+          await chat.locator('.guided-mascot[data-step="2"]').waitFor({state:'visible'});
+          await chat.getByRole('button',{name:'← Voltar',exact:true}).click();
           await assertCleanProduct(product);
           assert.equal(state.draft.id, id, 'home navigation preserves the draft');
           assert.equal(state.draft.values.sport, 'Futebol', 'home navigation preserves answers');
