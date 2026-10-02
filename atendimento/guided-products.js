@@ -133,7 +133,9 @@
     const container = React.useRef(null), submitLock = React.useRef(false);
     const lastRank = React.useRef(saved?.rank || 0);
     const active = !!(props.integrated && productMode && flows.has(draft.flow));
-    const groups = groupFields(draft.flow, visibleFields(props.fields), draft);
+    const presentationFields = visibleFields(props.fields)
+      .filter(field => draft.flow !== 'escudo3d' || field.key !== 'coupon_code');
+    const groups = groupFields(draft.flow, presentationFields, draft);
     let groupIndex = groups.findIndex(group => group.id === stageKey);
     if (stageKey !== 'final' && groupIndex < 0) {
       groupIndex = groups.findIndex(group => group.rank >= lastRank.current);
@@ -356,7 +358,7 @@
       h('div',{className:'lab-form-heading'},h('strong',{className:'guided-title',role:'heading','aria-level':2,tabIndex:-1},
         current?.id === 'optional' ? 'Os itens abaixo são opcionais' : current ? props.product.name : 'Finalizar'),
         h('span',{className:'sr-only','aria-live':'polite'},props.saveStatus)),
-      draft.flow === 'escudo3d' && draft.values.brinde_escudo_login === '1' ? h('p',{className:'guided-gift-note'},'Seu escudo de brinde · 1 imagem grátis por login. Sem pagamento.') : null,
+      draft.flow === 'escudo3d' && draft.values.brinde_escudo_login === '1' ? h('p',{className:'guided-gift-note'},'Seu escudo de brinde. Sem pagamento.') : null,
       draft.stage !== 'collect' ? h('div',{className:'lab-submit-status',role:'status'},'Enviando pedido…') :
         h('fieldset',{className:'guided-fields',disabled:props.busy},
           current ? current.fields.map(field) : deliveryOptions(),

@@ -26,7 +26,7 @@ const optionalFields = {
   resultado:['photo_mode','headline','away_crest','scorers','section_title','coupon_code'],
   jogador_escudo:['coupon_code'],contratacao:['reference_layout'],
   escalacao:['match_datetime','competition','venue','team_crest','opponent_crest','team_photo','coupon_code'],
-  patrocinador:['headline','coupon_code'],escudo3d:['coupon_code'],
+  patrocinador:['headline','coupon_code'],escudo3d:[],
   proximo_jogo_jogador:['venue','coupon_code'],
   resultado_jogo_jogador:['competition','headline','coupon_code']
 };
@@ -514,6 +514,7 @@ async function run() {
         try {
           const gift=test.page.locator('#vitrineEscudoGift');
           await gift.waitFor({state:'visible'});
+          assert.doesNotMatch(await gift.innerText(),/por login|1 imagem/i);
           const giftBox=await gift.boundingBox();
           const primaryBox=await test.page.locator('[data-vitrine-product="mascote_uniforme"]').first().boundingBox();
           assert.ok(giftBox.y+giftBox.height <= primaryBox.y,'gift stays above original mascot button');
@@ -527,7 +528,11 @@ async function run() {
           await saved(test,draft=>draft?.values?.brinde_escudo_login==='1','gift marker is saved');
           assert.equal(test.state().draft.values.delivery_mode,'image');
           assert.equal(await test.chat.locator('.escudo-examples').isVisible(),false,'gift skips video gallery');
-          await fillToFinal(test,{skipOptional:true});
+          const visited = await fillToFinal(test,{skipOptional:true});
+          assert.deepEqual(visited.map(step=>step.key),['sport','team_crest'],'crest goes directly from upload to final');
+          assert.equal((await assertStep(test)).total,3);
+          assert.doesNotMatch(await guide(test).innerText(),/por login|Cupom/i);
+          assert.equal(await field(test,'coupon_code').count(),0);
           assert.ok((await guide(test).innerText()).includes('R$ 0,00'),'review shows free price');
           if(width===390) await guide(test).screenshot({path:path.join(screenshots,'escudo-brinde-revisao.png')});
           await send(test).click();
@@ -578,6 +583,18 @@ async function run() {
         assert.equal(stale.state().draft.values.brinde_escudo_login,'1');
         console.log('OK stale gift offer: visible rejection, no charge, draft retained');
       } finally {await stale.context.close();}
+      const paidProduct=products.find(product=>product.id==='escudo3d');
+      const paid=await setup({width:390,height:844},{giftUsed:true,price:paidProduct.price});
+      try {
+        await open(paid,paidProduct,'fast');
+        const visited=await fillToFinal(paid);
+        assert.deepEqual(visited.map(step=>step.key),['sport','team_crest']);
+        await assertFinal(paid,paidProduct,'fast');
+        assert.equal(await field(paid,'coupon_code').count(),0);
+        await submitAndAssert(paid,paidProduct,'image_video','fast');
+        assert.equal(paid.balances[0].price,14.9);
+        console.log('OK paid crest video: no coupon step, original paid video payload and price');
+      } finally {await paid.context.close();}
       return;
     }
     if (datesOnly) {
@@ -646,7 +663,8 @@ async function run() {
           const visited=await fillToFinal(test);
           await assertFinal(test,product);
           assert.equal(test.state().draft.id,originalId,'all steps retain original draft');
-          assert.equal(test.state().draft.values.coupon_code,product.id==='contratacao' ? undefined : 'LOCAL-TEST','original coupon presence remains unchanged');
+          if(product.id==='escudo3d') assert.ok(!test.state().draft.values.coupon_code,'crest has no coupon input');
+          else assert.equal(test.state().draft.values.coupon_code,product.id==='contratacao' ? undefined : 'LOCAL-TEST','other products retain their coupon input');
           const snapshot=structuredClone(test.state().draft);
           // Back, per-answer Edit and Home must preserve answers and uploaded blobs/IDs.
           const previous=await retreat(test);
