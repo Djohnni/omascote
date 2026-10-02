@@ -13,6 +13,7 @@
   function setMode(mode) {
     viewMode = mode;
     document.body.classList.toggle('vitrineProductActive', mode === 'product');
+    if (mode !== 'product') document.body.classList.remove('vitrineGuidedActive');
     if (mode !== 'product') chat.style.height = '';
     frame.contentWindow?.postMessage({ type:'omascote-chat:visual-mode', mode }, location.origin);
   }
@@ -31,6 +32,7 @@
     home.hidden = false;
     nav.hidden = true;
     document.body.classList.remove('vitrineChatActive');
+    document.body.classList.remove('vitrineGuidedActive');
     home.scrollIntoView({ behavior:motion(), block:'start' });
   }
   function clearPending() {
@@ -65,6 +67,14 @@
   }
   window.addEventListener('message', event => {
     if (event.source !== frame.contentWindow || event.origin !== location.origin) return;
+    if (event.data?.type === 'omascote-chat:guided-stage') {
+      document.body.classList.toggle('vitrineGuidedActive', viewMode === 'product' && event.data.active === true);
+    }
+    if (viewMode === 'product' && event.data?.type === 'omascote-chat:guided-home') showHome();
+    if (viewMode === 'product' && event.data?.type === 'omascote-chat:guided-help') showChat('chat');
+    if (viewMode === 'product' && event.data?.type === 'omascote-chat:guided-scroll') {
+      chat.scrollIntoView({behavior:motion(), block:'start'});
+    }
     if (event.data?.type === 'omascote-chat:visual-ready') {
       ready = event.data.ready === true;
       busy = event.data.busy === true;
@@ -72,10 +82,11 @@
       dispatch();
     }
     if (event.data?.type === 'omascote-chat:presentation') {
-      const {mode, height} = event.data;
+      const {mode, height, guided} = event.data;
       if (!['product', 'chat'].includes(mode)) return;
       viewMode = mode;
       document.body.classList.toggle('vitrineProductActive', mode === 'product');
+      document.body.classList.toggle('vitrineGuidedActive', mode === 'product' && guided === true);
       if (mode === 'product' && Number.isFinite(height) && height >= 320 && height <= 20000) chat.style.height = height + 'px';
       else if (mode === 'chat') chat.style.height = '';
     }

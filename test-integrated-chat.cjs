@@ -36,7 +36,7 @@ assert.match(atendimentoBundle, /className:`size-4 animate-spin`/, "o indicador 
 assert.match(atendimentoBundle, /"aria-label":`Envio indisponível`/, "uma falha não pode deixar o indicador girando para sempre");
 assert.doesNotMatch(atendimentoBundle, /disabled:c\|\|!n\|\|!o\.trim\(\)/, "o botão de enviar não pode aparecer desativado por causa da inicialização");
 assert.match(atendimentoBundle, /className:`shrink-0 inline-flex[^`]+lab-send-loading`,style:\{width:43,height:43\}/, "o indicador precisa ter os mesmos 43 por 43 pixels do botão de enviar");
-assert.match(atendimentoHtml, /index-BYWG3Byi\.js\?v=20261001-vitrine-chat/, "o navegador precisa buscar o bundle atualizado");
+assert.match(atendimentoHtml, /index-BYWG3Byi\.js\?v=20261002-guiado/, "o navegador precisa buscar o bundle atualizado");
 assert.match(atendimentoBundle, /Imagem \+ vídeo de 8 segundos/, "o Escudo 3D precisa oferecer o vídeo de 8 segundos no chat");
 assert.match(atendimentoBundle, /Imagem \+ vídeo de 10 segundos/, "o Escudo 3D precisa oferecer o vídeo de 10 segundos no chat");
 assert.match(atendimentoBundle, /R\$ 19,90/, "o Escudo 3D precisa mostrar o preço do vídeo de 10 segundos no chat");

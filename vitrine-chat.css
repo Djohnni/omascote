@@ -35,6 +35,7 @@ body[data-vitrine="true"] .vitrineHeader { display:flex; align-items:center; jus
 .vitrineStatus { color:#9b3029; font-size:14px; line-height:1.5; }
 .vitrineStatus:empty { display:none; }
 .vitrineChatNav { padding:4px 0 20px; }
+body.vitrineGuidedActive .vitrineChatNav { display:none; }
 .vitrineChatNav button { min-height:44px; padding:0; font-size:16px; }
 body[data-vitrine="true"] #accountAccordion { border:0 !important; border-radius:0 !important; background:transparent !important; box-shadow:none !important; width:100%; margin:0 auto 12px; }
 body[data-vitrine="true"] #accountAccordion:not(.is-open)>#accountMenuToggle { display:none; }

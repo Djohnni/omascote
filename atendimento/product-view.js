@@ -2,7 +2,7 @@
 (() => {
   'use strict';
   if (window.parent === window) return;
-  let mode = 'chat', scheduled = false, observed = null, lastHeight = 0;
+  let mode = 'chat', scheduled = false, observed = null, lastHeight = 0, lastGuided = null;
   const observer = new ResizeObserver(schedule);
 
   function schedule() {
@@ -15,7 +15,9 @@
     if (!['product', 'chat'].includes(next)) return;
     mode = next;
     document.body.dataset.productView = mode;
+    window.dispatchEvent(new Event('omascote:product-mode'));
     lastHeight = 0;
+    lastGuided = null;
     schedule();
   }
 
@@ -33,13 +35,15 @@
     const latest = scroll?.querySelector('.lab-form') ? null : outcomes.at(-1);
     outcomes.forEach(message => message.classList.toggle('is-product-outcome', message === latest));
     if (mode === 'chat') {
-      window.parent.postMessage({type:'omascote-chat:presentation', mode}, location.origin);
+      window.parent.postMessage({type:'omascote-chat:presentation', mode, guided:false}, location.origin);
       return;
     }
     const height = Math.max(320, Math.ceil(frame.getBoundingClientRect().height) + 4);
-    if (height !== lastHeight) {
+    const guided = !!document.body.dataset.guidedMascot;
+    if (height !== lastHeight || guided !== lastGuided) {
       lastHeight = height;
-      window.parent.postMessage({type:'omascote-chat:presentation', mode, height}, location.origin);
+      lastGuided = guided;
+      window.parent.postMessage({type:'omascote-chat:presentation', mode, height, guided}, location.origin);
     }
   }
 
