@@ -22,9 +22,22 @@
   function Form(props) {
     const React = props.react, h = React.createElement;
     const draft = props.draft;
+    const fields = props.fields;
+    // Match the original chat's optional presentation; the scenario keeps its
+    // required metadata and valid default while its renderer also contains style.
+    const isOptional = field => !field.required || field.key === 'scenario_id';
+    const optional = fields.filter(isOptional);
+    const groupOptionals = optional.length >= 2;
+    const total = groupOptionals ? 4 : 3;
+    const first = fields.filter(field => firstKeys.has(field.key) && (!groupOptionals || !isOptional(field)));
+    first.sort((a, b) => (a.key === 'mascot_animal' ? -1 : b.key === 'mascot_animal' ? 1 : 0));
+    const uploads = fields.filter(field => uploadKeys.has(field.key));
+    const extras = fields.filter(field => !firstKeys.has(field.key) && !uploadKeys.has(field.key));
+    const second = groupOptionals
+      ? fields.filter(field => !firstKeys.has(field.key) && !isOptional(field)) : uploads;
     const [productMode, setProductMode] = React.useState(isProduct);
     const saved = sessions.get(draft.id);
-    const [step, setStep] = React.useState(saved?.step || 1);
+    const [step, setStep] = React.useState(Math.min(saved?.step || 1, total));
     const [delivery, setDelivery] = React.useState(saved?.delivery || 'image');
     const [error, setError] = React.useState('');
     const [extrasOpen, setExtrasOpen] = React.useState(false);
@@ -44,13 +57,13 @@
       if (active) {
         sessions.set(draft.id, {step, delivery});
         document.body.dataset.guidedMascot = String(step);
-        notify({type:'omascote-chat:guided-stage', active:true, step});
+        notify({type:'omascote-chat:guided-stage', active:true, step, total});
       }
       return () => {
         delete document.body.dataset.guidedMascot;
         notify({type:'omascote-chat:guided-stage', active:false});
       };
-    }, [active, draft.id, step, delivery]);
+    }, [active, draft.id, step, delivery, total]);
     React.useEffect(() => {
       if (!active || !hideDelivery(props.pendingDelivery)) return;
       const request = deliveryRequest;
@@ -71,12 +84,6 @@
 
     if (!active) return draft.flow !== 'mascote_uniforme' && window.OmascoteGuidedProducts
       ? h(window.OmascoteGuidedProducts.Form, {...props, key:draft.id}) : props.original;
-    const fields = props.fields;
-    const first = fields.filter(field => firstKeys.has(field.key));
-    first.sort((a, b) => (a.key === 'mascot_animal' ? -1 : b.key === 'mascot_animal' ? 1 : 0));
-    const uploads = fields.filter(field => uploadKeys.has(field.key));
-    const extras = fields.filter(field => !firstKeys.has(field.key) && !uploadKeys.has(field.key));
-
     function focusField(key) {
       requestAnimationFrame(() => {
         const field = container.current?.querySelector(`[data-field="${key}"]`);
@@ -96,7 +103,7 @@
         (group.some(field => field.key === 'other_sport') && issue === 'Informe o nome da modalidade.'));
     }
     function next() {
-      const group = step === 1 ? first : uploads;
+      const group = step === 1 ? first : step === 2 ? second : optional;
       const issues = issuesFor(group);
       if (issues.length) {
         setError(issues.join('; '));
@@ -110,9 +117,9 @@
       if (props.busy || submitLock.current) return;
       const issues = props.validate(draft);
       if (issues.length) {
-        const invalidFirst = issuesFor(first), invalidUploads = issuesFor(uploads);
-        setStep(invalidFirst.length ? 1 : invalidUploads.length ? 2 : 3);
-        if (!invalidFirst.length && !invalidUploads.length) setExtrasOpen(true);
+        const invalidFirst = issuesFor(first), invalidSecond = issuesFor(second);
+        setStep(invalidFirst.length ? 1 : invalidSecond.length ? 2 : groupOptionals ? total - 1 : total);
+        if (!groupOptionals && !invalidFirst.length && !invalidSecond.length) setExtrasOpen(true);
         setError(issues.join('; '));
         return;
       }
@@ -157,25 +164,30 @@
     }
     const shield = draft.files.find(file => file.field === 'team_crest');
     const shirt = draft.files.some(file => file.field === 'uniform_image');
-    return h('section', {className:'lab-form guided-mascot', 'data-step':step, 'aria-label':'Informações para Mascote do Time', ref:container},
+    return h('section', {className:'lab-form guided-mascot', 'data-step':step,
+      'data-stage-key':step === total ? 'final' : groupOptionals && step === total - 1 ? 'optional' : step === 1 ? 'mascot' : 'crest',
+      'aria-label':'Informações para Mascote do Time', ref:container},
       h('div', {className:'guided-progress', role:'progressbar', 'aria-label':'Etapas do pedido',
-        'aria-valuemin':0, 'aria-valuemax':3, 'aria-valuenow':step, 'aria-valuetext':`Etapa ${step} de 3`},
-        [1,2,3].map(index => h('span', {key:index, className:index <= step ? 'is-active' : '', 'aria-hidden':true}))),
+        style:{gridTemplateColumns:`repeat(${total},minmax(0,1fr))`},
+        'aria-valuemin':0, 'aria-valuemax':total, 'aria-valuenow':step, 'aria-valuetext':`Etapa ${step} de ${total}`},
+        Array.from({length:total}, (_,index) => h('span', {key:index, className:index < step ? 'is-active' : '', 'aria-hidden':true}))),
       h('div', {className:'guided-top'},
         h('button', {type:'button', className:'guided-back', disabled:props.busy, onClick:()=>step > 1
           ? navigate(step - 1) : notify({type:'omascote-chat:guided-home'})}, '← Voltar'),
-        h('span', {className:'guided-count', 'aria-label':`Etapa ${step} de 3`}, `${step}/3`)),
-      h('div', {className:'lab-form-heading'}, h('strong', {className:'guided-title', role:'heading', 'aria-level':2, tabIndex:-1}, ['Seu mascote','Seu escudo','Finalizar'][step-1]),
+        h('span', {className:'guided-count', 'aria-label':`Etapa ${step} de ${total}`}, `${step}/${total}`)),
+      h('div', {className:'lab-form-heading'}, h('strong', {className:'guided-title', role:'heading', 'aria-level':2, tabIndex:-1},
+        (groupOptionals ? ['Seu mascote','Seu escudo','Os itens abaixo são opcionais','Finalizar'] : ['Seu mascote','Seu escudo','Finalizar'])[step-1]),
         h('span', {className:'sr-only', 'aria-live':'polite'}, props.saveStatus)),
       draft.stage !== 'collect' ? h('div', {className:'lab-submit-status', role:'status'}, 'Enviando pedido…') :
       h('fieldset', {className:'guided-fields', disabled:props.busy},
         step === 1 ? first.map(field) : null,
-        step === 2 ? h(React.Fragment, null,
+        step === 2 && groupOptionals ? second.map(field) : step === 2 ? h(React.Fragment, null,
           field(uploads.find(field => field.key === 'team_crest')),
           h('details', {className:'guided-optional-shirt', open:shirtOpen || shirt,
             onToggle:event=>setShirtOpen(event.currentTarget.open)},
             h('summary', null, '+ Camiseta (opcional)'), field(uploads.find(field => field.key === 'uniform_image')))) : null,
-        step === 3 ? h(React.Fragment, null,
+        groupOptionals && step === total - 1 ? optional.map(field) : null,
+        step === total ? h(React.Fragment, null,
           h('fieldset', {className:'guided-delivery', 'aria-label':'Como você quer receber?'},
             option('image', 'Somente imagem', props.product.priceLabel),
             props.canVideo ? option('image_video', 'Imagem + vídeo', props.videoPrice) : null),
@@ -191,10 +203,10 @@
               h('img', {src:shield.url, alt:'Escudo enviado', width:36, height:36}),
               h('span', null, '✓ Escudo'),
               h('button', {type:'button', className:'guided-text-button', 'aria-label':'Editar escudo', onClick:()=>navigate(2)}, 'Editar')) : null),
-          extras.length ? h('details', {className:'guided-extras', open:extrasOpen,
+          !groupOptionals && extras.length ? h('details', {className:'guided-extras', open:extrasOpen,
             onToggle:event=>setExtrasOpen(event.currentTarget.open)}, h('summary', null, 'Personalizar (opcional)'), extras.map(field)) : null) : null,
-        step !== 3 && error ? h('p', {className:'guided-error', role:'alert'}, error) : null,
-        step !== 3 ? h('button', {type:'button', className:'guided-primary', disabled:props.busy,
+        step !== total && error ? h('p', {className:'guided-error', role:'alert'}, error) : null,
+        step !== total ? h('button', {type:'button', className:'guided-primary', disabled:props.busy,
           'aria-label':'Continuar', onClick:next}, 'Continuar →') : null),
       h('button', {type:'button', className:'guided-help', disabled:props.busy,
         onClick:()=>notify({type:'omascote-chat:guided-help'})}, 'Ajuda'));

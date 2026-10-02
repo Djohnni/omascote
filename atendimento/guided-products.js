@@ -85,7 +85,27 @@
             presentationPart:'contract-athlete',athleteIndex}]}));
       }
     });
-    return groups;
+    // Match the original chat's optional presentation, without changing required flags or defaults.
+    const optionalKeys = new Set(fields.filter(field => !field.required || field.key === 'scenario_id')
+      .map(field => field.key));
+    const athleteOptions = groups.flatMap(group => group.fields)
+      .filter(field => field.presentationPart === 'contract-athlete');
+    const independentOptionals = [...optionalKeys].filter(key => flow !== 'contratacao' || key !== 'jersey_reference').length
+      + athleteOptions.length;
+    if (independentOptionals < 2) return groups;
+    const optionalFields = [], requiredGroups = [];
+    for (const group of groups) {
+      const requiredFields = [];
+      for (const field of group.fields) {
+        const photoDependency = optionalKeys.has('photo_mode') && ['mascot-description','mascot-shirt'].includes(field.presentationPart);
+        const contractDependency = field.presentationPart === 'contract-athlete' ||
+          (flow === 'contratacao' && field.key === 'jersey_reference');
+        if (optionalKeys.has(field.key) || photoDependency || contractDependency) optionalFields.push(field);
+        else requiredFields.push(field);
+      }
+      if (requiredFields.length) requiredGroups.push({...group,fields:requiredFields});
+    }
+    return [...requiredGroups,{id:'optional',rank:100000,fields:optionalFields}];
   }
 
   function Form(props) {
@@ -319,7 +339,8 @@
         onClick:()=>step > 1 ? navigate(groups[step - 2].id) : notify({type:'omascote-chat:guided-home'})},'← Voltar'),
         h('span',{className:'guided-count','aria-label':`Etapa ${step} de ${total}`},`${step}/${total}`)),
       h('div',{className:'lab-form-heading'},h('strong',{className:'guided-title',role:'heading','aria-level':2,tabIndex:-1},
-        current ? props.product.name : 'Finalizar'),h('span',{className:'sr-only','aria-live':'polite'},props.saveStatus)),
+        current?.id === 'optional' ? 'Os itens abaixo são opcionais' : current ? props.product.name : 'Finalizar'),
+        h('span',{className:'sr-only','aria-live':'polite'},props.saveStatus)),
       draft.stage !== 'collect' ? h('div',{className:'lab-submit-status',role:'status'},'Enviando pedido…') :
         h('fieldset',{className:'guided-fields',disabled:props.busy},
           current ? current.fields.map(field) : deliveryOptions(),
