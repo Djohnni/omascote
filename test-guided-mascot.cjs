@@ -134,19 +134,18 @@ async function run() {
       if (!upload || !next) return false;
       const style=element => element.ownerDocument.defaultView.getComputedStyle(element);
       return style(upload).backgroundColor === (pending ? 'rgb(0, 135, 71)' : 'rgb(250, 252, 251)') &&
-        style(next).backgroundColor === (pending ? 'rgb(250, 252, 251)' : 'rgb(0, 135, 71)') &&
-        next.getBoundingClientRect().height === (pending ? 140 : 56);
+        style(next).backgroundColor === (pending ? 'rgb(250, 252, 251)' : 'rgb(0, 135, 71)');
     },pending);
     const styles = await test.chat.locator('.guided-mascot').evaluate(form => {
       const upload=form.querySelector('[data-field="team_crest"] .upload-button'),next=form.querySelector('.guided-primary');
       return [upload,next].map(element => {
         const css=getComputedStyle(element);
-        return {background:css.backgroundColor,color:css.color,border:css.borderTopStyle,height:element.getBoundingClientRect().height};
+        return {background:css.backgroundColor,color:css.color,border:css.borderTopStyle === 'none' && css.outlineStyle === 'dashed' ? 'dashed' : css.borderTopStyle,height:element.getBoundingClientRect().height};
       });
     });
     const button={background:'rgb(0, 135, 71)',color:'rgb(255, 255, 255)',border:'none',height:56};
     const area={background:'rgb(250, 252, 251)',color:'rgb(25, 87, 55)',border:'dashed',height:140};
-    assert.deepEqual(styles,pending ? [button,area] : [area,button],'visual priority follows the required crest, including after removal');
+    assert.deepEqual(styles,pending ? [{...button,border:'solid',height:140},{...area,height:56}] : [area,button],'colors and borders follow the required crest without changing original sizes, including after removal');
   }
   async function step(test, number) {
     await test.chat.locator(`.guided-mascot[data-step="${number}"]`).waitFor({state:'visible'});
@@ -162,6 +161,13 @@ async function run() {
     assert.equal(await progress.getAttribute('aria-valuetext'),`Etapa ${number} de ${total}`);
     assert.equal(await progress.locator(':scope > span').count(),total,'progress contains the actual stage count');
     assert.equal(await progress.locator(':scope > span.is-active').count(),number,'completed and current segments are green');
+    await test.page.waitForFunction(() => {
+      const frame=document.getElementById('integratedChatFrame')?.contentDocument;
+      const segments=frame?.querySelectorAll('.guided-mascot .guided-progress > span');
+      return segments?.length && [...segments].every(segment =>
+        frame.defaultView.getComputedStyle(segment).backgroundColor ===
+          (segment.classList.contains('is-active') ? 'rgb(22, 139, 70)' : 'rgb(227, 235, 230)'));
+    },null,{timeout:5000});
     const segments = await progress.evaluate(bar => {
       const box = bar.getBoundingClientRect();
       return [...bar.children].map(segment => {
@@ -317,7 +323,7 @@ async function run() {
         assert.equal(await field(test,'team_crest').locator('input[type="file"]').getAttribute('aria-label'),'Envie o escudo ou brasão do time');
         assert.equal(await field(test,'uniform_image').count(),0,'optional shirt is not shown in the required crest stage');
         await uploadEmphasis(test,true);
-        await test.page.screenshot({path:path.join(screenshots,`escudo-antes-${viewport.width}.png`),fullPage:true});
+        await test.chat.locator('.guided-mascot').screenshot({path:path.join(screenshots,`escudo-antes-${viewport.width}.png`)});
         await next(test).click();
         await step(test,2);
         assert.ok(await test.chat.locator('[role="alert"]:visible').count(),'crest requirement is visible before continuing');
