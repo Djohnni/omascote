@@ -57,7 +57,8 @@
       if (active) {
         sessions.set(draft.id, {step, delivery});
         document.body.dataset.guidedMascot = String(step);
-        notify({type:'omascote-chat:guided-stage', active:true, step, total});
+        notify({type:'omascote-chat:guided-stage', active:true, step, total, productId:draft.flow,
+          stageKey:step === total ? 'final' : groupOptionals && step === total - 1 ? 'optional' : step === 1 ? 'mascot' : 'crest'});
       }
       return () => {
         delete document.body.dataset.guidedMascot;
@@ -107,6 +108,7 @@
       const group = step === 1 ? first : step === 2 ? second : optional;
       const issues = issuesFor(group);
       if (issues.length) {
+        notify({type:'omascote-chat:analytics-blocked',productId:draft.flow,action:'continuar'});
         setError(issues.join('; '));
         focusField(group.find(field => field.required && (field.type === 'images'
           ? !draft.files.some(file => file.field === field.key) : !draft.values[field.key]?.trim()))?.key || group[0]?.key);
@@ -118,6 +120,7 @@
       if (props.busy || submitLock.current) return;
       const issues = props.validate(draft);
       if (issues.length) {
+        notify({type:'omascote-chat:analytics-blocked',productId:draft.flow,action:'enviar'});
         const invalidFirst = issuesFor(first), invalidSecond = issuesFor(second);
         setStep(invalidFirst.length ? 1 : invalidSecond.length ? 2 : groupOptionals ? total - 1 : total);
         if (!groupOptionals && !invalidFirst.length && !invalidSecond.length) setExtrasOpen(true);

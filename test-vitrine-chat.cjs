@@ -45,6 +45,7 @@ async function run() {
       const actions = [], errors = [], paidRequests = [], media = [];
       const context = await browser.newContext({viewport, reducedMotion:'reduce'});
       await context.addInitScript(() => {
+        window.OmascoteAnalyticsReady = true; // Inspect queued Google events; remote tags stay blocked.
         localStorage.setItem('omascote_token', 'local-only-test-token');
         localStorage.setItem('omascote_nome_time', 'Time de teste local');
         localStorage.setItem('omascote_saldo', '36');
@@ -207,6 +208,11 @@ async function run() {
       const mascotId = state.draft.id;
       await chat.getByRole('radio', {name:'Futebol',exact:true}).click();
       await savedDraft(draft => draft?.values.sport === 'Futebol','sport is persisted before leaving the product');
+      await chat.getByRole('button',{name:'Continuar',exact:true}).click();
+      await page.waitForFunction(() => window.dataLayer.some(item => item[0] === 'event' && item[1] === 'aba_bloqueio'));
+      await chat.locator('[data-field="mascot_animal"] input').fill('Nome privado de teste');
+      await chat.getByRole('button',{name:'Continuar',exact:true}).click();
+      await page.waitForFunction(() => window.dataLayer.some(item => item[0] === 'event' && item[1] === 'aba_visitada' && item[2].aba_id === 'mascote_uniforme/crest'));
       await page.locator('[data-vitrine-home]').first().click();
       await page.locator('#vitrineHome').waitFor({state:'visible'});
       await page.locator('[data-vitrine-product="mascote_uniforme"]').click();
@@ -274,6 +280,13 @@ async function run() {
       await page.screenshot({path:path.join(screenshots,`orders-${viewport.width}.png`)});
       assert.equal(paidRequests.length, 0, 'navigation makes no paid-generation request');
       assert.equal(actions.includes('complete'), false, 'test never submits a generated order');
+      const measured = await page.evaluate(() => window.dataLayer.filter(item => item[0] === 'event' && item[1].startsWith('aba_')).map(item => ({event:item[1],params:item[2]})));
+      const visits = measured.filter(item => item.event === 'aba_visitada').map(item => item.params.aba_id);
+      for (const id of ['inicio','mascote_uniforme/mascot','mascote_uniforme/crest','catalogo','conta','saldo','pedidos']) {
+        assert.ok(visits.includes(id),`analytics records the actual visible tab ${id}`);
+      }
+      assert.ok(measured.some(item => item.event === 'aba_bloqueio'),'validation obstacles are measurable');
+      assert.equal(JSON.stringify(measured).includes('Nome privado de teste'),false,'answers never enter tab measurement');
       assert.deepEqual(errors, [], 'no page runtime errors');
       console.log(`OK ${viewport.width}px: flat home, chat drafts, preserved answers, all products, switch confirmation, account/orders/balance`);
       await context.close();

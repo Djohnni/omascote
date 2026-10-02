@@ -2,7 +2,7 @@
 (() => {
   'use strict';
   if (window.parent === window) return;
-  let mode = 'chat', scheduled = false, observed = null, lastHeight = 0, lastGuided = null;
+  let mode = 'chat', scheduled = false, observed = null, lastHeight = 0, lastGuided = null, lastScreen = '';
   const observer = new ResizeObserver(schedule);
 
   function schedule() {
@@ -35,11 +35,22 @@
     const latest = scroll?.querySelector('.lab-form') ? null : outcomes.at(-1);
     outcomes.forEach(message => message.classList.toggle('is-product-outcome', message === latest));
     if (mode === 'chat') {
+      if (lastScreen !== 'ajuda') {
+        lastScreen = 'ajuda';
+        window.parent.postMessage({type:'omascote-chat:analytics-screen',screen:'ajuda'},location.origin);
+      }
       window.parent.postMessage({type:'omascote-chat:presentation', mode, guided:false}, location.origin);
       return;
     }
     const height = Math.max(320, Math.ceil(frame.getBoundingClientRect().height) + 4);
     const guided = !!(document.body.dataset.guidedMascot || document.body.dataset.guidedProduct);
+    const catalog = document.querySelector('nav[aria-label="Todas as opções do chat"]');
+    const screen = catalog && catalog.getClientRects().length ? 'catalogo' :
+      latest ? 'resultado' : scroll?.querySelector('.lab-form') ? 'formulario' : '';
+    if (screen !== lastScreen) {
+      lastScreen = screen;
+      if (screen) window.parent.postMessage({type:'omascote-chat:analytics-screen',screen},location.origin);
+    }
     if (height !== lastHeight || guided !== lastGuided) {
       lastHeight = height;
       lastGuided = guided;
