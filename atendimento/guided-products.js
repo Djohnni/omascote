@@ -3,6 +3,9 @@
   'use strict';
   const sessions = new Map();
   let deliveryRequest = null;
+  // Hide appearance questions only; the original draft/defaults/validator still own these values.
+  const appearanceKeys = new Set(['scenario_id','visual_style','style_id']);
+  const visibleFields = fields => fields.filter(field => !appearanceKeys.has(field.key));
   const flows = new Set(['proximo_jogo','resultado','jogador_escudo','contratacao','escalacao',
     'patrocinador','escudo3d','proximo_jogo_jogador','resultado_jogo_jogador']);
   const plans = {
@@ -55,6 +58,16 @@
   function hideDelivery(delivery) {
     return !!(deliveryRequest && delivery && !delivery.batch && delivery.drafts.length === 1 &&
       delivery.drafts[0].id === deliveryRequest.id && isProduct());
+  }
+
+  function hideAppearance(React,node) {
+    if (!React.isValidElement(node)) return node;
+    const children = React.Children.toArray(node.props.children);
+    const appearanceFieldset = node.type === 'fieldset' && children.some(child =>
+      React.isValidElement(child) && child.type === 'legend' && child.props.children === 'Estilo da arte');
+    const appearanceQuestion = appearanceKeys.has(node.props.value) && node.key === node.props.value;
+    if (appearanceQuestion || appearanceFieldset) return null;
+    return React.cloneElement(node,{},React.Children.map(node.props.children,child => hideAppearance(React,child)));
   }
 
   function groupFields(flow, fields, draft) {
@@ -120,7 +133,7 @@
     const container = React.useRef(null), submitLock = React.useRef(false);
     const lastRank = React.useRef(saved?.rank || 0);
     const active = !!(props.integrated && productMode && flows.has(draft.flow));
-    const groups = groupFields(draft.flow, props.fields, draft);
+    const groups = groupFields(draft.flow, visibleFields(props.fields), draft);
     let groupIndex = groups.findIndex(group => group.id === stageKey);
     if (stageKey !== 'final' && groupIndex < 0) {
       groupIndex = groups.findIndex(group => group.rank >= lastRank.current);
@@ -166,7 +179,7 @@
     },[draft.id]);
     React.useEffect(() => setSportsOpen(false),[draft.values.sport]);
 
-    if (!active) return props.original;
+    if (!active) return hideAppearance(React,props.original);
 
     function focusField(key) {
       requestAnimationFrame(() => {
@@ -306,8 +319,8 @@
     }
     function review() {
       const extra = ['mascot_description','match_photo','uniform_image','visual_style'];
-      const all = [...props.fields,...extra.filter(key => !props.fields.some(field => field.key === key))
-        .map(key => ({key,type:['match_photo','uniform_image'].includes(key) ? 'images' : 'text'}))];
+      const all = visibleFields([...props.fields,...extra.filter(key => !props.fields.some(field => field.key === key))
+        .map(key => ({key,type:['match_photo','uniform_image'].includes(key) ? 'images' : 'text'}))]);
       const rows = all.map(item => {
         const files = draft.files.filter(file => file.field === item.key), value = draft.values[item.key];
         if (!files.length && !value?.trim()) return null;
@@ -350,5 +363,5 @@
         onClick:()=>notify({type:'omascote-chat:guided-help'})},'Ajuda'));
   }
 
-  window.OmascoteGuidedProducts = {Form,hideDelivery,PurchaseSafety};
+  window.OmascoteGuidedProducts = {Form,hideDelivery,PurchaseSafety,visibleFields,hideAppearance};
 })();

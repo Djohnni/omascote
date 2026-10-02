@@ -10,6 +10,7 @@ const { assertPurchaseSafety } = require('./test-guided-purchase-safety.cjs');
 
 const root = __dirname;
 const fullRun = !process.argv.includes('--bridge-only');
+const appearanceKeys = ['scenario_id','visual_style','style_id'];
 const bundle = fs.readFileSync(path.join(root, 'atendimento/assets/index-BYWG3Byi.js'), 'utf8');
 const initialState = new Function(`return (${bundle.match(/sc=(\(\)=>\(\{version:1,.*?\}\)),cc=/s)[1]})()`)();
 const products = new Function(`return (${bundle.match(/Cs=(\[\{id:.*?\]),ws=/s)[1]})`)().filter(product => product.id !== 'personalizada');
@@ -34,6 +35,10 @@ async function run() {
 
   async function setup(viewport, settings = {}) {
     let state = structuredClone(initialState);
+    if (settings.savedAppearance) state.draft = {
+      id:'local-saved-mascot-appearance',flow:'mascote_uniforme',stage:'collect',files:[],
+      values:{sport:'',...settings.savedAppearance}
+    };
     const actions = [], requests = [], errors = [], uploads = [], orderMessages = [];
     let releaseUpload = null, releaseOrder = null;
     let failedOrders = settings.failedOrders || 0;
@@ -126,7 +131,7 @@ async function run() {
     assert.equal(await test.chat.locator('.guided-mascot:visible').count(),1,'only one guided step is visible');
     const progress = test.chat.locator('.guided-mascot .guided-progress');
     const total=Number(await progress.getAttribute('aria-valuemax'));
-    assert.equal(total,4,'mascot groups its three original optional parts into a penultimate fourth-stage flow');
+    assert.equal(total,4,'mascot retains a penultimate optional stage for the two remaining visible parts');
     assert.equal(await test.chat.locator('details.guided-purchase-safety').count(),number === total ? 1 : 0,'purchase disclosure appears only at the final step');
     assert.equal(await progress.count(),1,'guided step has one progress indicator');
     assert.equal(await progress.getAttribute('role'),'progressbar','progress keeps accessible semantics');
@@ -157,12 +162,16 @@ async function run() {
     if (number===total-1) {
       assert.equal(await test.chat.locator('.guided-mascot').getAttribute('data-stage-key'),'optional');
       assert.equal(await test.chat.locator('.guided-title').innerText(),'Os itens abaixo são opcionais');
-      assert.deepEqual([...keys].sort(),['uniform_image','scenario_id','coupon_code'].sort(),'shirt, original scene/style and coupon are grouped together');
+      assert.deepEqual([...keys].sort(),['uniform_image','coupon_code'].sort(),'only shirt and coupon remain grouped in the optional stage');
       const bounds=await test.chat.locator('.guided-fields > .guided-field').evaluateAll(nodes => nodes.map(node => {
         const box=node.getBoundingClientRect();return {top:box.top,bottom:box.bottom};
       }));
       for (let index=1;index<bounds.length;index++) assert.ok(bounds[index].top>=bounds[index-1].bottom-1,'optional parts form one vertical column');
-    } else assert.deepEqual(keys.filter(key => ['uniform_image','scenario_id','coupon_code'].includes(key)),[],'optional parts are absent from required and final stages');
+    } else assert.deepEqual(keys.filter(key => ['uniform_image','coupon_code'].includes(key)),[],'optional parts are absent from required and final stages');
+    for (const key of appearanceKeys) {
+      assert.equal(await test.chat.locator(`[data-field="${key}"],[data-review-field="${key}"]`).count(),0,`${key} has no visible question or review row`);
+    }
+    assert.doesNotMatch(await test.chat.locator('.guided-mascot').innerText(),/Cenário|Estilo da arte|Esportivo leve|3D forte|Realista com luz de cinema|Cores fortes e luzes/,'appearance labels and saved/default choice names are not shown in any step');
     assert.equal(await test.chat.locator('.composer').isVisible(),false,'product does not show the composer');
     assert.equal(await test.chat.locator('.lab-scroll > .lab-message:visible').count(),0,'chat writing is not shown behind the guided form');
     assert.equal(await test.chat.locator('html').evaluate(node => node.scrollWidth <= innerWidth),true,'step has no horizontal overflow');
@@ -293,10 +302,10 @@ async function run() {
         await next(test).click();
         await step(test,3);
         await upload(test,'uniform_image',true);
-        await field(test,'scenario_id').waitFor({state:'visible'});
+        assert.equal(await field(test,'scenario_id').count(),0,'scenario is not mounted in the optional tab');
         await field(test,'coupon_code').locator('input').fill('LOCAL-TEST');
         await saved(test,draft => draft?.values.coupon_code === 'LOCAL-TEST','optional coupon uses original draft');
-        assert.equal(await test.chat.getByRole('radio',{name:'Esportivo leve',exact:true}).count(),1,'original scene renderer exposes style exactly once');
+        assert.equal(await test.chat.getByRole('radio',{name:'Esportivo leve',exact:true}).count(),0,'style choice is hidden while the original draft default remains');
         assert.deepEqual(test.uploads,['team_crest','uniform_image'],'uploads keep exact old field names and no new mascot-photo upload');
         await test.chat.getByRole('button',{name:/Voltar$/}).click();
         await step(test,2);
@@ -358,6 +367,9 @@ async function run() {
         assert.equal(await test.chat.locator('.guided-mascot:visible').count(),0,'Help restores the original renderer, not the wizard');
         assert.equal(await test.chat.locator('.lab-conversation-bar').isVisible(),true);
         assert.equal(test.getState().draft.id,id,'Help does not discard responses');
+        assert.doesNotMatch(await test.chat.locator('.lab-form').innerText(),/Qual cenário|Estilo da arte|Como você quer o visual da arte\?/,'original Help fallback also hides appearance questions');
+        assert.equal(test.getState().draft.values.scenario_id,'Cenário atual');
+        assert.equal(test.getState().draft.values.visual_style,'Esportivo leve');
 
         for (const product of products.filter(product => product.id !== 'mascote_uniforme')) {
           await test.page.locator('[data-vitrine-home]').first().click();
@@ -388,12 +400,16 @@ async function run() {
     }
 
     // The original bridge is exercised using a completely intercepted API.
-    for (const mode of ['image','image_video','pix','retry']) {
-      const test = await setup({width:390,height:844},{balance:mode === 'pix' ? 0 : 100,failedOrders:mode === 'retry' ? 1 : 0,holdOrders:mode === 'image_video'});
+    for (const mode of ['image','image_video','pix','retry','saved-appearance']) {
+      const savedAppearance=mode==='saved-appearance'
+        ? {scenario_id:'Noite',visual_style:'Realista com luz de cinema',style_id:'saved-local-style'} : null;
+      const test = await setup({width:390,height:844},{balance:mode === 'pix' ? 0 : 100,failedOrders:mode === 'retry' ? 1 : 0,holdOrders:mode === 'image_video',savedAppearance});
       try {
         await fillValid(test);
         if (mode !== 'image') await chooseVideo(test);
         const originalId = test.getState().draft.id;
+        const originalAppearance=Object.fromEntries(appearanceKeys.map(key => [key,test.getState().draft.values[key]]));
+        if(savedAppearance) assert.deepEqual(originalAppearance,savedAppearance,'a resumed draft keeps its previously saved appearance choices');
         if (mode === 'image_video') {
           await final(test).evaluate(button => {button.click();button.click();});
           await test.chat.locator('.lab-busy').waitFor({state:'visible'});
@@ -421,6 +437,13 @@ async function run() {
         assert.equal(messages.at(-1).draft.values.sport,'Futebol');
         assert.equal(messages.at(-1).draft.values.delivery_mode,mode === 'image' ? 'image' : 'image_video');
         assert.equal(messages.at(-1).draft.values.video_model,mode === 'image' ? '' : 'fast','old video-model mapping preserved');
+        for(const [key,value] of Object.entries(originalAppearance))
+          assert.equal(messages.at(-1).draft.values[key],value,`hidden ${key} still reaches the original submission bridge`);
+        const body=test.requests.filter(request=>request.path==='/pedidos').at(-1).body;
+        const transmittedFields=JSON.parse(body.match(/name="fields_json"\r\n\r\n([^\r]*)/)?.[1] || '{}');
+        const mappedScenario=await test.page.evaluate(value=>omascoteChatScenarioId('mascote_uniforme',value),originalAppearance.scenario_id);
+        assert.equal(transmittedFields.scenario_id,mappedScenario,'original scenario mapping is still applied by the parent');
+        assert.equal(transmittedFields.visual_style,originalAppearance.visual_style.toLowerCase(),'hidden style still reaches the backend with its original lowercase mapping');
         assert.equal(messages.at(-1).files[0].field,'team_crest','bridge receives original image field');
         assert.equal(await test.chat.getByRole('dialog',{name:'Como você quer receber?'}).count(),0,'chosen delivery does not open a repeated delivery dialog');
         assert.equal(test.pixCount(),mode === 'pix' ? 1 : 0,'original backend balance result alone determines Pix');

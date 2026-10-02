@@ -9,22 +9,24 @@ const { chromium } = require('playwright');
 const { assertPurchaseSafety } = require('./test-guided-purchase-safety.cjs');
 
 const root = __dirname;
-const fullRun = !process.argv.includes('--conditionals-only');
+const savedOnly = process.argv.includes('--saved-appearance-only');
+const fullRun = !savedOnly && !process.argv.includes('--conditionals-only');
+const appearanceKeys = ['scenario_id','visual_style','style_id'];
 const bundle = fs.readFileSync(path.join(root,'atendimento/assets/index-BYWG3Byi.js'),'utf8');
 const initialState = new Function(`return (${bundle.match(/sc=(\(\)=>\(\{version:1,.*?\}\)),cc=/s)[1]})()`)();
 const products = new Function(`return (${bundle.match(/Cs=(\[\{id:.*?\]),ws=/s)[1]})`)()
   .filter(product => !['personalizada','mascote_uniforme'].includes(product.id));
 const imageOnly = new Set(['contratacao','proximo_jogo_jogador','resultado_jogo_jogador']);
-// Match the original chat's optional presentation, including the preselected scenario.
-// These expectations are independent of the guided grouping implementation.
+// Only customer-visible optional parts participate in the grouping threshold.
+// Appearance metadata/defaults still exist internally but must not create steps or review rows.
 const optionalFields = {
-  proximo_jogo:['photo_mode','scenario_id','venue','section_title','coupon_code'],
-  resultado:['photo_mode','scenario_id','headline','away_crest','scorers','section_title','coupon_code'],
+  proximo_jogo:['photo_mode','venue','section_title','coupon_code'],
+  resultado:['photo_mode','headline','away_crest','scorers','section_title','coupon_code'],
   jogador_escudo:['coupon_code'],contratacao:['reference_layout'],
-  escalacao:['scenario_id','match_datetime','competition','venue','team_crest','opponent_crest','team_photo','coupon_code'],
-  patrocinador:['headline','visual_style','coupon_code'],escudo3d:['visual_style','coupon_code'],
-  proximo_jogo_jogador:['venue','visual_style','coupon_code'],
-  resultado_jogo_jogador:['competition','headline','visual_style','coupon_code']
+  escalacao:['match_datetime','competition','venue','team_crest','opponent_crest','team_photo','coupon_code'],
+  patrocinador:['headline','coupon_code'],escudo3d:['coupon_code'],
+  proximo_jogo_jogador:['venue','coupon_code'],
+  resultado_jogo_jogador:['competition','headline','coupon_code']
 };
 const orderEndpoints = new Set(['/pedidos','/resultado_do_jogo']);
 const pixel = Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+/l9sAAAAASUVORK5CYII=','base64');
@@ -57,6 +59,10 @@ async function run() {
 
   async function setup(viewport,settings = {}) {
     let state = structuredClone(initialState), failedOrders = settings.failedOrders || 0;
+    if(settings.savedAppearance) state.draft={
+      id:`local-saved-appearance-${settings.id}`,flow:settings.id,stage:'collect',files:[],
+      values:{sport:'',...(['proximo_jogo','resultado'].includes(settings.id) ? {photo_mode:'Sem foto'} : {}),...settings.savedAppearance}
+    };
     let releaseOrder = null, fileIndex = 0;
     const errors = [], requests = [], uploads = [], actions = [], balances = [];
     const balance = settings.balance ?? 100;
@@ -217,6 +223,9 @@ async function run() {
     }
     assert.ok(isFinal ? keys.length===0 : keys.length>=1 && (isOptional || keys.length<=2),'only the optional stage can contain more than two questions');
     assert.equal(view.optionalHeading,isOptional,'optional stage has the exact requested heading');
+    for(const key of appearanceKeys)
+      assert.equal(await test.chat.locator(`[data-field="${key}"],[data-review-field="${key}"]`).count(),0,`${key} has no question or review row`);
+    assert.doesNotMatch(await guide(test).innerText(),/Cenário|Estilo da arte|Esportivo leve|3D forte|Realista com luz de cinema|Cores fortes e luzes/,'appearance labels and choice values are not visible in any step or review');
     const expectedOptional=optionalFields[test.state().draft.flow] || [];
     const contractRows=test.state().draft.flow==='contratacao'
       ? (test.state().draft.values.players || '').split('\n').filter(line => line.trim()).map((line,index) => `__contract_${index}`) : [];
@@ -235,7 +244,7 @@ async function run() {
         for (let i=1;i<bounds.length;i++) assert.ok(bounds[i].top>=bounds[i-1].bottom-1,'optional parts are presented in a single vertical column');
       } else assert.deepEqual(keys.filter(key => [...expectedOptional,...contractRows].includes(key)),[],'optional parts do not appear among earlier required questions');
     }
-    if (!isOptional && keys.some(key => ['photo_mode','scenario_id','matchup','score'].includes(key))) assert.equal(keys.length,1,'complex required renderer owns its own step');
+    if (!isOptional && keys.some(key => ['photo_mode','matchup','score'].includes(key))) assert.equal(keys.length,1,'complex required renderer owns its own step');
     assert.equal(await test.chat.locator('.composer').isVisible(),false);
     assert.equal(await test.chat.locator('.lab-conversation-bar').isVisible(),false);
     assert.equal(await test.chat.locator('.lab-scroll > .lab-message:visible').count(),0,'old chat does not compete with questions');
@@ -471,6 +480,13 @@ async function run() {
     for (const [name,value] of [['delivery_mode',mode],['video_model',payload.draft.values.video_model]]) {
       assert.equal(transmittedFields[name],value,`${name} is retained by original parent FormData builder`);
     }
+    for(const key of appearanceKeys)
+      assert.equal(payload.draft.values[key],original.values[key],`hidden ${key} still reaches the original submission bridge`);
+    assert.equal(transmittedFields.visual_style,String(original.values.visual_style || '3D').toLowerCase(),'hidden visual style retains the original backend normalization');
+    if(['proximo_jogo','resultado','escalacao'].includes(product.id)) {
+      const mappedScenario=await test.page.evaluate(({flow,value})=>omascoteChatScenarioId(flow,value),{flow:product.id,value:original.values.scenario_id});
+      assert.equal(transmittedFields.scenario_id,mappedScenario,'hidden scenario retains the original backend scenario mapping');
+    }
     assert.deepEqual(payload.files.map(file => ({id:file.id,field:file.field,name:file.name,size:file.size})),
       original.files.map(file => ({id:file.id,field:file.field,name:file.name,size:file.size})),'bridge keeps original file metadata/order');
     for (const key of ['matchup','score','match_datetime','players','competition','title'])
@@ -568,18 +584,22 @@ async function run() {
     }
 
     // Additional delivery/error/balance variants exercise original submit handlers, never real APIs.
-    for (const scenario of fullRun ? [
+    for (const scenario of fullRun || savedOnly ? [
       {id:'proximo_jogo',mode:'image_video'}, {id:'resultado',mode:'image_video',failedOrders:1},
       {id:'jogador_escudo',mode:'image_video'}, {id:'escalacao',mode:'image_video',balance:0},
       {id:'patrocinador',mode:'image_video'}, {id:'escudo3d',mode:'image_video',seed:'fast',holdOrders:true},
-      {id:'escudo3d',mode:'image_video',seed:'omni'}, {id:'proximo_jogo',mode:'image',date:'amanhã às 18h'}
-    ] : []) {
+      {id:'escudo3d',mode:'image_video',seed:'omni'}, {id:'proximo_jogo',mode:'image',date:'amanhã às 18h'},
+      ...['proximo_jogo','jogador_escudo','escudo3d'].map(id=>({id,mode:'image',
+        savedAppearance:{scenario_id:'Noite',visual_style:'Realista com luz de cinema',style_id:'saved-local-style'}}))
+    ].filter(scenario=>!savedOnly || scenario.savedAppearance) : []) {
       const product=products.find(item => item.id===scenario.id);
       const test=await setup({width:390,height:844},scenario);
       test.releaseControlledOrder=!!scenario.holdOrders;
       try {
         await open(test,product,scenario.seed);
         await fillToFinal(test,scenario);
+        if(scenario.savedAppearance) for(const [key,value] of Object.entries(scenario.savedAppearance))
+          assert.equal(test.state().draft.values[key],value,`previously saved hidden ${key} is not reset by navigation`);
         await assertFinal(test,product,scenario.seed);
         await submitAndAssert(test,product,scenario.mode,scenario.seed,!!scenario.failedOrders);
         assert.equal(test.pixCount(),scenario.balance===0 ? 1 : 0,'original backend balance determines Pix');
@@ -614,11 +634,33 @@ async function run() {
       await custom.chat.locator('.composer').waitFor({state:'visible'});
       assert.equal(await custom.chat.locator('.guided-product:visible').count(),0,'Help restores original chat');
       assert.equal(await custom.chat.locator('.lab-conversation-bar').isVisible(),true);
+      assert.doesNotMatch(await custom.chat.locator('.lab-form').innerText(),/Qual cenário|Estilo da arte|Como você quer o visual da arte\?/,'Help fallback also hides appearance controls');
+      assert.equal(custom.state().draft.values.scenario_id,'Cenário atual');
+      assert.equal(custom.state().draft.values.visual_style,'Esportivo leve');
       assert.equal(custom.orderCount(),0);
       await custom.page.screenshot({path:path.join(screenshots,'custom-sport-help.png'),fullPage:true});
       assert.deepEqual(custom.errors,[]);
       console.log('OK custom sport: required conditional step, dynamic progress, Back persistence and original Help');
     } finally {await custom.context.close();}
+
+    // Exercise the raw fieldset style renderer too, not only styles nested under a scenario.
+    for(const id of ['jogador_escudo','escudo3d','patrocinador']) {
+      const product=products.find(item=>item.id===id),test=await setup({width:390,height:844},{price:product.price});
+      try {
+        await open(test,product);
+        await fillToFinal(test);
+        const before=structuredClone(test.state().draft);
+        await test.chat.getByRole('button',{name:'Ajuda',exact:true}).click();
+        await test.chat.locator('.composer').waitFor({state:'visible'});
+        assert.equal(await test.chat.locator('.guided-product:visible').count(),0,'Help preserves the original chat fallback');
+        assert.doesNotMatch(await test.chat.locator('.lab-form').innerText(),/Qual cenário|Estilo da arte|Como você quer o visual da arte\?/,'raw original style fieldset is hidden in Help fallback');
+        assert.equal(await test.chat.getByRole('radio',{name:'Esportivo leve',exact:true}).count(),0,'original style radio is not exposed by Help');
+        assert.deepEqual(test.state().draft,before,'hiding raw fallback controls does not rewrite draft metadata or values');
+        assert.equal(test.orderCount(),0,'Help never submits an order');
+        assert.deepEqual(test.errors,[]);
+        console.log(`OK hidden appearance fallback ${id}: original renderer and unchanged draft/defaults`);
+      } finally {await test.context.close();}
+    }
 
     // Original nested photo/mascot/shirt controls and conditional jersey remain intact.
     for (const scenario of [{id:'proximo_jogo',photo:'Não tenho mascote',keyboard:true},{id:'resultado',photo:'Mascote',keyboard:true},{id:'contratacao',jersey:true}]) {

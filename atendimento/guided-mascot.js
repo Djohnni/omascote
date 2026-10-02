@@ -22,7 +22,7 @@
   function Form(props) {
     const React = props.react, h = React.createElement;
     const draft = props.draft;
-    const fields = props.fields;
+    const fields = window.OmascoteGuidedProducts.visibleFields(props.fields);
     // Match the original chat's optional presentation; the scenario keeps its
     // required metadata and valid default while its renderer also contains style.
     const isOptional = field => !field.required || field.key === 'scenario_id';
@@ -83,7 +83,8 @@
     React.useEffect(() => setSportsOpen(false), [draft.values.sport]);
 
     if (!active) return draft.flow !== 'mascote_uniforme' && window.OmascoteGuidedProducts
-      ? h(window.OmascoteGuidedProducts.Form, {...props, key:draft.id}) : props.original;
+      ? h(window.OmascoteGuidedProducts.Form, {...props, key:draft.id})
+      : window.OmascoteGuidedProducts.hideAppearance(React,props.original);
     function focusField(key) {
       requestAnimationFrame(() => {
         const field = container.current?.querySelector(`[data-field="${key}"]`);

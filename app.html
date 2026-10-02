@@ -15392,6 +15392,16 @@ body.integratedChatOpen{overflow:hidden}
     margin-bottom:10px;
   }
 }
+/* Appearance controls stay in the original forms/defaults, but are not offered to customers. */
+[data-clean-field-card="scenario_id"],
+body.copaColombiaOrderMode.copaColombiaShowScenario [data-product-form="proximo_jogo"] [data-clean-field-card="scenario_id"],
+body.copaColombiaOrderMode.copaColombiaResultMode.copaColombiaShowScenario [data-product-form="resultado"] [data-clean-field-card="scenario_id"],
+[data-clean-field-card="visual_style"],
+[data-clean-field-card="style_id"],
+.resultadoVisualStyleChoice,
+.fotoJogosScenarioField,
+.contratacaoStyleGrid,
+.contratacaoIntro:has(+ .contratacaoStyleGrid){display:none !important}
 </style>
 </head>
 
@@ -15889,7 +15899,7 @@ body.integratedChatOpen{overflow:hidden}
         class="integratedChatFrame"
         id="integratedChatFrame"
         title="Atendimento O Mascote"
-        src="/atendimento/index.html?integrado=1&v=20261002-opcionais"
+        src="/atendimento/index.html?integrado=1&v=20261002-sem-cenario-estilo"
         allow="clipboard-write"
       ></iframe>
       <button class="integratedChatClose" id="integratedChatClose" type="button" aria-label="Reduzir atendimento">Reduzir</button>
@@ -17513,7 +17523,7 @@ function omascoteChatLocalPreview(){
 }
 
 function omascoteChatUrl(){
-  return new URL("/atendimento/index.html?integrado=1&v=20261002-opcionais", window.location.origin).href;
+  return new URL("/atendimento/index.html?integrado=1&v=20261002-sem-cenario-estilo", window.location.origin).href;
 }
 
 function abrirAtendimentoIntegrado(){
