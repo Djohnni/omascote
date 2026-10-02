@@ -13,10 +13,9 @@ body[data-vitrine="true"] .vitrineHeader { display:flex; align-items:center; jus
 .vitrineAccount svg { display:block; width:25px; height:25px; }
 .vitrineHome { max-width:980px; margin:0 auto; }
 .vitrineHome[hidden],.vitrineChatNav[hidden] { display:none !important; }
-.vitrineHome h1 { color:#10342d; margin:18px 0 28px; font-size:clamp(30px,4vw,48px); letter-spacing:-1.7px; line-height:1.15; font-weight:850; text-align:left; text-shadow:none; }
 .vitrineHero { position:relative; display:flex; align-items:center; min-height:620px; overflow:hidden; isolation:isolate; }
 .vitrineHero__copy { position:relative; z-index:2; width:43%; padding:0 0 100px 0; }
-.vitrineHero h2 { color:#10342d; font-size:clamp(32px,5vw,58px); line-height:1.02; letter-spacing:-1.8px; margin:0 0 20px; text-align:left; text-shadow:none; }
+.vitrineHero h1 { color:#10342d; font-size:clamp(32px,5vw,58px); line-height:1.02; letter-spacing:-1.8px; margin:0 0 20px; text-align:left; text-shadow:none; }
 .vitrineHero p { color:#395a50; max-width:280px; font-size:19px; line-height:1.5; margin:0; }
 .vitrineHero__backdrop { position:absolute; z-index:0; inset:0; display:block; width:100%; height:100%; object-fit:cover; object-position:right center; mask-image:linear-gradient(to right,transparent 0%,transparent 24%,#000 72%); -webkit-mask-image:linear-gradient(to right,transparent 0%,transparent 24%,#000 72%); pointer-events:none; }
 .vitrineHero__image { position:absolute; z-index:1; right:-10px; bottom:0; display:block; height:100%; width:68%; object-fit:contain; object-position:right bottom; border-radius:0; }
@@ -69,17 +68,25 @@ body[data-vitrine="true"] .championshipFeatureCard { width:calc(100% - 40px); ma
 body[data-vitrine="true"] .championshipFeatureCopy strong,body[data-vitrine="true"] .championshipFeatureCopy small,body[data-vitrine="true"] .championshipFeatureCopy>span { color:#365e4e; text-shadow:none; }
 body[data-vitrine="true"] .championshipFeatureIcon { background:#f2f7f4; box-shadow:none; border:0; }
 body[data-vitrine="true"] .vitrineHeader button:focus-visible,body[data-vitrine="true"] .vitrineHome button:focus-visible,.vitrineChatNav button:focus-visible { outline:3px solid #2473d8; outline-offset:4px; }
+/* Home only: move the existing hero upward without changing its image size. */
+body[data-vitrine="true"]:has(#vitrineHome:not([hidden])) > main > .wrap { position:relative; }
+body[data-vitrine="true"]:has(#vitrineHome:not([hidden])) .vitrineHeader { position:absolute; z-index:4; top:36px; left:max(28px,calc((100% - 980px)/2)); width:43%; flex-direction:column; align-items:flex-start; justify-content:flex-start; gap:12px; padding:0; }
+body[data-vitrine="true"]:has(#vitrineHome:not([hidden])) .vitrineHeader nav { gap:4px; width:max-content; }
+body[data-vitrine="true"]:has(#vitrineHome:not([hidden])) .vitrineHeader nav button { flex-shrink:0; white-space:nowrap; }
+body[data-vitrine="true"]:has(#vitrineHome:not([hidden])) .vitrineAccount { background:#fff; border-radius:50%; }
+body[data-vitrine="true"]:has(#vitrineHome:not([hidden])) .vitrineHome { padding-top:12px; }
+body[data-vitrine="true"]:has(#vitrineHome:not([hidden])) .vitrineHero__copy { align-self:flex-start; padding:180px 0 0; }
+body[data-vitrine="true"]:has(#vitrineHome:not([hidden])) .vitrineHero__image { object-position:right top; }
 @media(max-width:600px) {
   body[data-vitrine="true"] > main > .wrap { padding:0 20px 26px !important; }
   body[data-vitrine="true"] .vitrineHeader { padding:23px 0 14px; gap:8px; }
   .vitrineBrand { font-size:25px !important; }
   .vitrineHeader nav { gap:8px; }
   .vitrineHeader nav button { font-size:13px; }
-  .vitrineHome h1 { font-size:30px; margin:17px 0 20px; letter-spacing:-1px; }
   .vitrineHero { min-height:450px; }
   .vitrineHero__image { width:76%; right:-8px; height:100%; border-radius:0; object-fit:contain; }
   .vitrineHero__copy { width:41%; padding:0 10px 80px 0; }
-  .vitrineHero h2 { font-size:29px; letter-spacing:-1px; margin:0 0 16px; }
+  .vitrineHero h1 { font-size:29px; letter-spacing:-1px; margin:0 0 16px; }
   .vitrineHero p { max-width:120px; font-size:14px; line-height:1.5; }
   .vitrineHero>.vitrinePrimary { bottom:10px; min-width:195px; min-height:48px; padding:12px 18px; font-size:16px; }
   .vitrineMore { padding-top:26px; }
@@ -87,6 +94,8 @@ body[data-vitrine="true"] .vitrineHeader button:focus-visible,body[data-vitrine=
   .vitrineProducts { gap:10px; }
   .vitrineProducts img { height:auto; aspect-ratio:9/16; }
   .vitrineProducts span { justify-content:center; text-align:center; font-size:12px; min-height:calc(2.7em + 8px); padding:0 0 8px; }
+  body[data-vitrine="true"]:has(#vitrineHome:not([hidden])) .vitrineHeader { top:32px; left:20px; gap:8px; }
+  body[data-vitrine="true"]:has(#vitrineHome:not([hidden])) .vitrineHero__copy { padding:145px 10px 0 0; }
   body[data-vitrine="true"] #integratedChatModal { min-height:600px; height:calc(100dvh - 120px); }
   body[data-vitrine="true"] .escudoExamples__grid { grid-template-columns:repeat(2,minmax(0,1fr)); gap:12px; }
   body[data-vitrine="true"] .escudoExamples h2 { font-size:30px; }
