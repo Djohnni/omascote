@@ -77,6 +77,11 @@ async function run() {
       }
       const titleTops = await page.locator('.vitrineProducts span').evaluateAll(titles => titles.map(title => title.getBoundingClientRect().top));
       assert.ok(titleTops.every(top => Math.abs(top-titleTops[0]) <= 1), 'product titles start on the same line');
+      const titlesAbove = await page.locator('.vitrineProducts button').evaluateAll(buttons => buttons.every(button => {
+        const title = button.querySelector('span'), image = button.querySelector('img');
+        return title === button.firstElementChild && title.getBoundingClientRect().bottom <= image.getBoundingClientRect().top + 1;
+      }));
+      assert.equal(titlesAbove, true, 'product names are above their images in visual and reading order');
       await page.screenshot({path:path.join(screenshots,`home-${viewport.width}.png`), fullPage:true});
       assert.equal(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth), true, 'home has no horizontal overflow');
       const flat = await page.locator('#vitrineHome').evaluate(node => {
