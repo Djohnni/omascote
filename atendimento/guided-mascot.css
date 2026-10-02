@@ -26,7 +26,7 @@ body[data-guided-mascot] .lab-frame.is-integrated .guided-field[data-field=team_
 .guided-optional-shirt summary, .guided-extras summary { min-height:48px; padding:12px 0; color:#24533d; cursor:pointer; font-size:16px; }
 .guided-optional-shirt .guided-field { padding-top:12px; }
 .guided-optional-shirt .guided-label { display:none; }
-.guided-delivery { border:0; margin:0 0 24px; padding:0; display:grid; gap:12px; }
+.guided-delivery { border:0; margin:0 0 12px; padding:0; display:grid; gap:12px; }
 .guided-delivery-option { display:flex; align-items:center; gap:10px; padding:18px 14px; border:1px solid #cedbd3; border-radius:8px; cursor:pointer; min-height:70px; }
 .guided-delivery-option:has(input:checked) { border:2px solid #168b46; padding:17px 13px; background:#edf7f1; }
 .guided-delivery-option input { width:18px; height:18px; margin:0; accent-color:#168b46; flex-shrink:0; }
@@ -42,6 +42,7 @@ body[data-guided-mascot] .lab-frame.is-integrated .guided-field[data-field=team_
 .guided-extras .guided-field { margin-top:18px; }
 .guided-primary { display:block; width:100%; min-height:56px; background:#008747; color:#fff; border:0; border-radius:8px; margin:26px 0 0; padding:14px 20px; font:inherit; font-size:18px; font-weight:750; cursor:pointer; }
 .guided-primary:hover { background:#006a38; }
+.guided-delivery + .guided-primary { margin:0 0 24px; }
 .guided-primary:disabled { opacity:.6; cursor:wait; }
 .guided-help { margin-top:16px; color:#60796b; font-size:14px; }
 .guided-error { color:#a92d28; font-size:15px; line-height:1.5; margin:12px 0; }

@@ -15,7 +15,8 @@
 
   function hideDelivery(delivery) {
     return !!(deliveryRequest && delivery && !delivery.batch &&
-      delivery.drafts.length === 1 && delivery.drafts[0].id === deliveryRequest.id && isProduct());
+      delivery.drafts.length === 1 && delivery.drafts[0].id === deliveryRequest.id && isProduct()) ||
+      !!window.OmascoteGuidedProducts?.hideDelivery(delivery);
   }
 
   function Form(props) {
@@ -68,7 +69,8 @@
     }, [draft.id]);
     React.useEffect(() => setSportsOpen(false), [draft.values.sport]);
 
-    if (!active) return props.original;
+    if (!active) return draft.flow !== 'mascote_uniforme' && window.OmascoteGuidedProducts
+      ? h(window.OmascoteGuidedProducts.Form, {...props, key:draft.id}) : props.original;
     const fields = props.fields;
     const first = fields.filter(field => firstKeys.has(field.key));
     first.sort((a, b) => (a.key === 'mascot_animal' ? -1 : b.key === 'mascot_animal' ? 1 : 0));
@@ -177,6 +179,9 @@
           h('fieldset', {className:'guided-delivery', 'aria-label':'Como você quer receber?'},
             option('image', 'Somente imagem', props.product.priceLabel),
             props.canVideo ? option('image_video', 'Imagem + vídeo', props.videoPrice) : null),
+          h('button', {type:'button', className:'guided-primary', disabled:props.busy,
+            'aria-label':'Enviar pedido', onClick:send}, 'Enviar pedido →'),
+          error ? h('p', {className:'guided-error', role:'alert'}, error) : null,
           h('div', {className:'guided-review'},
             h('span', null, [draft.values.mascot_animal, draft.values.sport === 'Outro esporte'
               ? draft.values.other_sport : draft.values.sport].filter(Boolean).join(' · ')),
@@ -187,9 +192,9 @@
               h('button', {type:'button', className:'guided-text-button', 'aria-label':'Editar escudo', onClick:()=>navigate(2)}, 'Editar')) : null),
           extras.length ? h('details', {className:'guided-extras', open:extrasOpen,
             onToggle:event=>setExtrasOpen(event.currentTarget.open)}, h('summary', null, 'Personalizar (opcional)'), extras.map(field)) : null) : null,
-        error ? h('p', {className:'guided-error', role:'alert'}, error) : null,
-        h('button', {type:'button', className:'guided-primary', disabled:props.busy,
-          'aria-label':step === 3 ? 'Enviar pedido' : 'Continuar', onClick:step === 3 ? send : next}, step === 3 ? 'Enviar pedido →' : 'Continuar →')),
+        step !== 3 && error ? h('p', {className:'guided-error', role:'alert'}, error) : null,
+        step !== 3 ? h('button', {type:'button', className:'guided-primary', disabled:props.busy,
+          'aria-label':'Continuar', onClick:next}, 'Continuar →') : null),
       h('button', {type:'button', className:'guided-help', disabled:props.busy,
         onClick:()=>notify({type:'omascote-chat:guided-help'})}, 'Ajuda'));
   }

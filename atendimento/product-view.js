@@ -39,7 +39,7 @@
       return;
     }
     const height = Math.max(320, Math.ceil(frame.getBoundingClientRect().height) + 4);
-    const guided = !!document.body.dataset.guidedMascot;
+    const guided = !!(document.body.dataset.guidedMascot || document.body.dataset.guidedProduct);
     if (height !== lastHeight || guided !== lastGuided) {
       lastHeight = height;
       lastGuided = guided;
