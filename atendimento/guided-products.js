@@ -317,7 +317,7 @@
       const video = draft.values.delivery_mode === 'image_video', omni = video && draft.values.video_model === 'omni';
       return h('div',{className:'guided-delivery guided-selected-delivery','aria-label':'Entrega escolhida'},
         h('div',{className:'guided-delivery-option'},h('span',null,video ? `Imagem + vídeo de ${omni ? 10 : 8} segundos` : 'Somente imagem'),
-          h('strong',null,video ? omni ? 'R$ 19,90' : props.videoPrice : props.product.priceLabel)));
+          h('strong',null,video ? omni ? 'R$ 19,90' : props.videoPrice : draft.values.brinde_escudo_login === '1' ? 'Grátis — R$ 0,00' : props.product.priceLabel)));
     }
     function review() {
       const extra = ['mascot_description','match_photo','uniform_image','visual_style'];
@@ -356,6 +356,7 @@
       h('div',{className:'lab-form-heading'},h('strong',{className:'guided-title',role:'heading','aria-level':2,tabIndex:-1},
         current?.id === 'optional' ? 'Os itens abaixo são opcionais' : current ? props.product.name : 'Finalizar'),
         h('span',{className:'sr-only','aria-live':'polite'},props.saveStatus)),
+      draft.flow === 'escudo3d' && draft.values.brinde_escudo_login === '1' ? h('p',{className:'guided-gift-note'},'Seu escudo de brinde · 1 imagem grátis por login. Sem pagamento.') : null,
       draft.stage !== 'collect' ? h('div',{className:'lab-submit-status',role:'status'},'Enviando pedido…') :
         h('fieldset',{className:'guided-fields',disabled:props.busy},
           current ? current.fields.map(field) : deliveryOptions(),

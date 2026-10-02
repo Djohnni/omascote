@@ -72,8 +72,8 @@
   <link rel="stylesheet" href="./radar-amistosos/radar-live.css">
   <link rel="stylesheet" href="/escudo3d-examples.css?v=20261001">
   <script defer src="/escudo3d-examples.js?v=20261001"></script>
-  <link rel="stylesheet" href="/vitrine-chat.css?v=20261002-topo">
-  <script defer src="/vitrine-chat.js?v=20261002-guiado"></script>
+  <link rel="stylesheet" href="/vitrine-chat.css?v=20261002-escudo-brinde">
+  <script defer src="/vitrine-chat.js?v=20261002-escudo-brinde"></script>
   <script defer src="/analytics-tabs.js?v=20261002-abas"></script>
   <!-- favicon atualizado -->
 
@@ -15743,6 +15743,10 @@ body.copaColombiaOrderMode.copaColombiaResultMode.copaColombiaShowScenario [data
         </div>
         <picture style="display:contents"><source type="image/avif" srcset="/media/vitrine/estadio-fundo-vitrine-20261002.avif"><img class="vitrineHero__backdrop" src="/media/vitrine/estadio-fundo-vitrine-20261001.webp" width="1200" height="800" alt="" aria-hidden="true"></picture>
         <picture style="display:contents"><source type="image/avif" srcset="/media/vitrine/mascote-lobos-recorte-20261002.avif"><img class="vitrineHero__image" src="/media/vitrine/mascote-lobos-recorte-20261001.webp" width="720" height="1279" fetchpriority="high" alt="Mascote lobo do Lobos da Serra com o uniforme e o escudo do time"></picture>
+        <button type="button" class="vitrineGift" id="vitrineEscudoGift" data-vitrine-product="escudo3d" data-vitrine-gift>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M12 3 4 6v6c0 4 4 7 8 9 4-2 8-5 8-9V6Z"/><path d="m8 12 3 3 5-6"/></svg>
+          <span><strong>Quero meu escudo de brinde</strong><small>GRÁTIS · 1 imagem por login</small></span><span aria-hidden="true">→</span>
+        </button>
         <button type="button" class="vitrinePrimary" data-vitrine-product="mascote_uniforme">Criar mascote <span aria-hidden="true">→</span></button>
       </div>
       <div class="vitrineMore">
@@ -15902,7 +15906,7 @@ body.copaColombiaOrderMode.copaColombiaResultMode.copaColombiaShowScenario [data
         class="integratedChatFrame"
         id="integratedChatFrame"
         title="Atendimento O Mascote"
-        src="/atendimento/index.html?integrado=1&v=20261002-data-livre"
+        src="/atendimento/index.html?integrado=1&v=20261002-escudo-brinde"
         allow="clipboard-write"
       ></iframe>
       <button class="integratedChatClose" id="integratedChatClose" type="button" aria-label="Reduzir atendimento">Reduzir</button>
@@ -17526,7 +17530,7 @@ function omascoteChatLocalPreview(){
 }
 
 function omascoteChatUrl(){
-  return new URL("/atendimento/index.html?integrado=1&v=20261002-data-livre", window.location.origin).href;
+  return new URL("/atendimento/index.html?integrado=1&v=20261002-escudo-brinde", window.location.origin).href;
 }
 
 function abrirAtendimentoIntegrado(){
@@ -17886,6 +17890,8 @@ function omascoteChatAwaitRegistration(prepared, authContext){
 
 async function omascoteChatSubmitPreparedOrders(prepared, authContext){
   if(!prepared.length) throw new Error("Nenhum pedido foi preparado.");
+  const giftOrder = prepared.some(item => item.productKey === "escudo3d" && item.values?.brinde_escudo_login === "1");
+  if(giftOrder && (!token || ia4ContaAutoPendente())) return omascoteChatAwaitRegistration(prepared, authContext);
   if(!token){
     const contaPreparada = await criarContaAutomaticaAntesPedido({
       nome_time:"Meu time",
@@ -17918,6 +17924,7 @@ async function omascoteChatSubmitPreparedOrders(prepared, authContext){
       salvarPedidoAtivoLocal(out.pedido_id, item.productKey);
     }
     ia4Track("pedido_chat_integrado", { produto:item.productKey, pedido_id:out.pedido_id || "" });
+    if(out.brinde_escudo_login === true) ia4Track("escudo_brinde_resgatado", {produto:"escudo3d"});
     if(out.pagamento_pendente === true) break;
   }
   let finalResults = results;
@@ -17961,6 +17968,8 @@ async function omascoteChatSubmitPreparedOrders(prepared, authContext){
       ? `${ids.length} pedido(s) criado(s). Conclua o Pix aberto para enviar a arte à produção.${cicloLimitouLote ? " Cada nova arte terá seu próprio Pix." : ""}`
       : pending
         ? `${ids.length} pedido(s) criado(s) com pagamento pendente.`
+      : finalResults.some(item => item.brinde_escudo_login === true)
+        ? "Seu escudo de brinde está em produção. Acompanhe em Meus pedidos."
       : `${ids.length} pedido(s) enviado(s) ao motor. Acompanhe em Meus pedidos.`,
     orders:finalResults.map(item => ({ id:item.pedido_id || "", paymentPending:item.pagamento_pendente === true }))
   };
@@ -19417,6 +19426,7 @@ const mainCreateBtn = document.getElementById("mainCreateBtn");
 const selectorStage = document.querySelector(".selectorStage");
 let categoriaSelecionada = "";
 let brindeEscudo3dAppDisponivel = false;
+let brindeEscudoLoginUsado = false;
 let internalVeoTestEnabled = false;
 
 const escudo3dModal = document.getElementById("escudo3dModal");
@@ -21689,7 +21699,7 @@ function getEscudo3dReviewItems(block){
     ? "Imagem + vídeo de 10 segundos — R$19,90"
     : choice === "fast"
       ? "Imagem + vídeo de 8 segundos — R$14,90"
-      : `Somente imagem — ${ia4Escudo3dBrindeGratisNoApp() ? "Grátis no app" : "R$4,00"}`;
+      : `Somente imagem — ${ia4Escudo3dBrindeGratisNoApp() ? "Escudo de brinde" : "R$4,00"}`;
   items.push({ label:"Entrega", value:deliveryLabel });
 
   const coupon = block?.querySelector?.("[data-escudo3d-coupon]")?.value?.trim() || "";
@@ -21710,7 +21720,7 @@ function showEscudo3dReview(block){
 
 function formatCleanProductPrice(product){
   if(product?.id === "escudo3d" && ia4Escudo3dBrindeGratisNoApp()){
-    return "Grátis no app";
+    return "Escudo de brinde";
   }
   const price = Number(product?.price || 0);
   return price ? `R$${price.toFixed(2).replace(".", ",")}` : "";
@@ -21769,11 +21779,11 @@ function updateEscudo3dDeliveryUi(block){
   const price = block.querySelector(".cleanProductPrice");
   if(price){
     price.textContent = getEscudo3dDeliveryChoice(block) === "image" && ia4Escudo3dBrindeGratisNoApp()
-      ? "Grátis no app"
+      ? "Escudo de brinde"
       : `R$${getEscudo3dDisplayPrice(block).toFixed(2).replace(".", ",")}`;
   }
   const imagePrice = block.querySelector("[data-escudo3d-image-price]");
-  if(imagePrice) imagePrice.textContent = ia4Escudo3dBrindeGratisNoApp() ? "Grátis no app" : "R$4,00";
+  if(imagePrice) imagePrice.textContent = ia4Escudo3dBrindeGratisNoApp() ? "Escudo de brinde" : "R$4,00";
   schedulePricePreviewUpdate(block.querySelector("[data-price-preview]"), 0);
 }
 
@@ -21851,7 +21861,9 @@ function refreshAllPricePreviews(){
 }
 
 function atualizarBrindeEscudo3dAppVisual(){
-  const disponivelNoApp = brindeEscudo3dAppDisponivel && typeof ia4EstaEmModoApp === "function" && ia4EstaEmModoApp();
+  const disponivelNoApp = brindeEscudo3dAppDisponivel;
+  const giftButton = document.getElementById("vitrineEscudoGift");
+  if(giftButton) giftButton.hidden = Boolean(token) && brindeEscudoLoginUsado;
 
   document.body.classList.toggle("clienteComBrindeEscudo3dApp", disponivelNoApp);
 
@@ -21859,7 +21871,7 @@ function atualizarBrindeEscudo3dAppVisual(){
 
   const escudoPromo = document.querySelector('[data-product="escudo3d"] .optLabel');
   if(escudoPromo && disponivelNoApp){
-    escudoPromo.innerHTML = `Escudo 3D<br><span style="color:#1fbf63;font-weight:900;">Grátis no app</span>`;
+    escudoPromo.innerHTML = `Escudo 3D<br><span style="color:#1fbf63;font-weight:900;">Escudo de brinde</span>`;
   }
 
   if(!brindeEscudo3dAppBox) return;
@@ -26194,7 +26206,7 @@ function renderCleanProductForms(){
           <div class="copaChampionshipDeliveryChoices">
             <label class="copaChampionshipDeliveryChoice">
               <span><input type="radio" name="escudo3d_delivery" value="image" data-escudo3d-delivery-option checked> Somente imagem</span>
-              <strong data-escudo3d-image-price>${ia4Escudo3dBrindeGratisNoApp() ? "Grátis no app" : "R$4,00"}</strong>
+              <strong data-escudo3d-image-price>${ia4Escudo3dBrindeGratisNoApp() ? "Escudo de brinde" : "R$4,00"}</strong>
             </label>
             <label class="copaChampionshipDeliveryChoice">
               <span><input type="radio" name="escudo3d_delivery" value="fast" data-escudo3d-delivery-option> Imagem + vídeo de 8 segundos</span>
@@ -26993,9 +27005,7 @@ function ia4AppModeHeaders(){
 
 function ia4Escudo3dBrindeGratisNoApp(){
   return (
-    brindeEscudo3dAppDisponivel === true &&
-    typeof ia4EstaEmModoApp === "function" &&
-    ia4EstaEmModoApp()
+    brindeEscudo3dAppDisponivel === true
   );
 }
 
@@ -27504,6 +27514,7 @@ function buildEscudo3dLegacyFormData(file, cupomCodigo = "", values = {}){
   const sportContext = omascoteChatSportContext(values);
   fd.append("schema_version", String(CLEAN_PRODUCT_SCHEMA_VERSION));
   fd.append("product_id", "escudo3d");
+  if(values.brinde_escudo_login === "1") fd.append("brinde_escudo_login", "1");
   fd.append("fields_json", JSON.stringify({
     sport:sportContext.sport,
     sport_context:String(values.sport_context || "").trim(),
@@ -29760,7 +29771,10 @@ async function refreshMe(){
     localStorage.setItem("omascote_usados", data.usados_no_ciclo ?? "");
     applyLocal();
     void carregarResumoPlanoSemanal();
-    brindeEscudo3dAppDisponivel = data.brinde_escudo3d_app_disponivel === true;
+    brindeEscudo3dAppDisponivel = data.brinde_escudo_login_disponivel === true || data.brinde_escudo3d_app_disponivel === true;
+    brindeEscudoLoginUsado = data.brinde_escudo_login_usado === true || data.brinde_escudo3d_app_usado === true;
+    if(data.conta_auto_pendente === true) localStorage.setItem("ia4tube_conta_auto_pendente", "1");
+    else if(data.conta_auto_pendente === false) localStorage.removeItem("ia4tube_conta_auto_pendente");
     atualizarInternalVeoUi(data.internal_features?.next_match_veo === true);
     atualizarBrindeEscudo3dAppVisual();
     if(statusEl) statusEl.textContent = data.ativo ? "Status: ativo" : "Status: inativo";
@@ -29789,8 +29803,8 @@ const escudoPromo = document.querySelector('[data-product="escudo3d"]');
 if(escudoPromo){
   const label = escudoPromo.querySelector(".optLabel");
   if(label){
-    label.innerHTML = brindeEscudo3dAppDisponivel && typeof ia4EstaEmModoApp === "function" && ia4EstaEmModoApp()
-      ? `Escudo 3D<br><span style="color:#1fbf63;font-weight:900;">Grátis no app</span>`
+    label.innerHTML = brindeEscudo3dAppDisponivel
+      ? `Escudo 3D<br><span style="color:#1fbf63;font-weight:900;">Escudo de brinde</span>`
       : jaComprou
       ? `Escudo 3D<br><span style="color:#1fbf63;font-weight:900;">R$18</span>`
       : `Primeira arte<br>Escudo 3D<br><span style="font-size:11px;color:#777;text-decoration:line-through;">R$18</span> <span style="color:#1fbf63;font-weight:900;">R$4</span>`;
