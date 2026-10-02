@@ -161,6 +161,13 @@ async function run() {
     assert.equal(await progress.getAttribute('aria-valuetext'),`Etapa ${number} de ${total}`);
     assert.equal(await progress.locator(':scope > span').count(),total,'progress contains the actual stage count');
     assert.equal(await progress.locator(':scope > span.is-active').count(),number,'completed and current segments are green');
+    await test.page.waitForFunction(() => {
+      const frame=document.getElementById('integratedChatFrame')?.contentDocument;
+      const segments=frame?.querySelectorAll('.guided-mascot .guided-progress > span');
+      return segments?.length && [...segments].every(segment =>
+        frame.defaultView.getComputedStyle(segment).backgroundColor ===
+          (segment.classList.contains('is-active') ? 'rgb(22, 139, 70)' : 'rgb(227, 235, 230)'));
+    },null,{timeout:5000});
     const segments = await progress.evaluate(bar => {
       const box = bar.getBoundingClientRect();
       return [...bar.children].map(segment => {
