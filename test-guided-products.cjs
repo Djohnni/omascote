@@ -9,6 +9,7 @@ const { chromium } = require('playwright');
 const { assertPurchaseSafety } = require('./test-guided-purchase-safety.cjs');
 
 const root = __dirname;
+const datesOnly = process.argv.includes('--dates-only');
 const savedOnly = process.argv.includes('--saved-appearance-only');
 const fullRun = !savedOnly && !process.argv.includes('--conditionals-only');
 const appearanceKeys = ['scenario_id','visual_style','style_id'];
@@ -107,6 +108,7 @@ async function run() {
       }
       if (url.pathname.startsWith('/__guided-products/')) return route.fulfill({contentType:'image/png',body:pixel});
       if (url.pathname.includes('/atendimento-api/assistant')) {
+        if (settings.assistantUnavailable) return route.fulfill({status:503,json:{ok:false,error:'Normalização indisponível no teste.'}});
         return route.fulfill({json:{ok:true,fields:[{key:'match_datetime',value:'2026-10-05T18:00'}],text:'Data local normalizada.'}});
       }
       if (url.origin === 'https://api.omascote.com.br') {
@@ -501,6 +503,41 @@ async function run() {
 
   try {
     assert.equal(products.length,9);
+    if (datesOnly) {
+      const product=products.find(item => item.id==='proximo_jogo');
+      for (const [date,width] of [['viernes a las 20:00',390],['A DEFINIR',390],['2026-10-05T18:00',1440]]) {
+        const test=await setup({width,height:844},{price:product.price,assistantUnavailable:true});
+        try {
+          await open(test,product);
+          await fillToFinal(test,{date,skipOptional:true});
+          await assertFinal(test,product);
+          if (date==='viernes a las 20:00') await guide(test).screenshot({path:path.join(screenshots,'proximo-jogo-data-livre.png')});
+          await submitAndAssert(test,product);
+          assert.equal(test.requests.some(request => request.path.includes('/assistant')),false,'free-form date never invokes external normalization');
+          const request=test.requests.find(request => orderEndpoints.has(request.path));
+          const fields=JSON.parse(request.body.match(/name="fields_json"\r\n\r\n([^\r]*)/)?.[1] || '{}');
+          assert.equal(fields.match_datetime,date,'the exact customer text reaches the order unchanged');
+          console.log(`OK free date ${date}/${width}px: unchanged original bridge, no normalization dependency`);
+        } finally {await test.context.close();}
+      }
+      const test=await setup({width:390,height:844},{price:product.price});
+      try {
+        await open(test,product);
+        while (!(await assertStep(test)).keys.includes('match_datetime')) {
+          await fillCurrent(test);await advance(test);
+        }
+        const before=await assertStep(test);
+        await fillField(test,'competition');
+        assert.equal(await field(test,'match_datetime').locator('input').inputValue(),'','date is genuinely empty');
+        await next(test).click();
+        assert.equal((await assertStep(test)).key,before.key,'empty required date still blocks its own step');
+        assert.ok(await test.chat.getByRole('alert').count(),'empty required date is explained');
+        assert.equal(test.orderCount(),0,'empty date never submits');
+        assert.deepEqual(test.errors,[]);
+        console.log('OK empty date: original required validation preserved');
+      } finally {await test.context.close();}
+      return;
+    }
     for (const viewport of fullRun ? [{width:320,height:844},{width:390,height:844},{width:1440,height:1000}] : []) {
       for (const product of products) {
         const test=await setup(viewport,{price:product.price});

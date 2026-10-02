@@ -211,8 +211,8 @@
       return null;
     }
     function blockingIssues() {
-      // ze() first normalizes natural-language dates. Do not bypass or obstruct that original path.
-      return props.validate(draft).filter(issue => !issue.startsWith('Não consegui entender a data e o horário.'));
+      // Artwork date/time is free text; the original validator still checks required fields.
+      return props.validate(draft);
     }
     function next() {
       if (props.busy || !current) return;
