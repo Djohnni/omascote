@@ -120,7 +120,7 @@ async function run() {
           const body = request.postDataBuffer().toString();
           const video = body.includes('image_video'),omni = body.includes('omni');
           const gift = body.includes('name="brinde_escudo_login"\r\n\r\n1');
-          if(gift && giftUsed) return route.fulfill({status:409,json:{ok:false,error:'Esta conta já recebeu o escudo de brinde. Nenhum valor foi cobrado.'}});
+          if(gift && (giftUsed || settings.giftUsedAtSubmit)) return route.fulfill({status:409,json:{ok:false,error:'Esta conta já recebeu o escudo de brinde. Nenhum valor foi cobrado.'}});
           const price = gift ? 0 : video ? omni ? 19.9 : 14.9 : settings.price || 8;
           if(gift) giftUsed=true;
           balances.push({balance,price});
@@ -565,6 +565,19 @@ async function run() {
         assert.equal(await used.page.locator('#vitrineEscudoGift').isVisible(),false);
         console.log('OK redeemed account: promotion hidden');
       } finally {await used.context.close();}
+      const stale=await setup({width:390,height:844},{giftMode:true,giftUsedAtSubmit:true});
+      try {
+        await stale.page.locator('#vitrineEscudoGift').click();
+        await guide(stale).waitFor({state:'visible'});
+        await fillToFinal(stale,{skipOptional:true});
+        await send(stale).click();
+        await stale.chat.getByRole('alert').filter({hasText:'Nenhum valor foi cobrado'}).waitFor({state:'visible'});
+        assert.equal(stale.orderCount(),1);
+        assert.equal(stale.pixCount(),0);
+        assert.equal(stale.balances.length,0);
+        assert.equal(stale.state().draft.values.brinde_escudo_login,'1');
+        console.log('OK stale gift offer: visible rejection, no charge, draft retained');
+      } finally {await stale.context.close();}
       return;
     }
     if (datesOnly) {
