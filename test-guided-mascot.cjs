@@ -120,6 +120,33 @@ async function run() {
   async function step(test, number) {
     await test.chat.locator(`.guided-mascot[data-step="${number}"]`).waitFor({state:'visible'});
     assert.equal(await test.chat.locator('.guided-mascot:visible').count(),1,'only one guided step is visible');
+    const progress = test.chat.locator('.guided-mascot .guided-progress');
+    assert.equal(await progress.count(),1,'guided step has one progress indicator');
+    assert.equal(await progress.getAttribute('role'),'progressbar','progress keeps accessible semantics');
+    assert.equal(await progress.getAttribute('aria-valuemin'),'0');
+    assert.equal(await progress.getAttribute('aria-valuemax'),'3');
+    assert.equal(await progress.getAttribute('aria-valuenow'),String(number),'progress follows current step including Back');
+    assert.equal(await progress.getAttribute('aria-valuetext'),`Etapa ${number} de 3`);
+    assert.equal(await progress.locator(':scope > span').count(),3,'progress always contains three segments');
+    assert.equal(await progress.locator(':scope > span.is-active').count(),number,'completed and current segments are green');
+    const segments = await progress.evaluate(bar => {
+      const box = bar.getBoundingClientRect();
+      return [...bar.children].map(segment => {
+        const item = segment.getBoundingClientRect();
+        return {width:item.width,height:item.height,top:item.top,left:item.left,right:item.right,
+          barLeft:box.left,barRight:box.right,barWidth:box.width,color:getComputedStyle(segment).backgroundColor};
+      });
+    });
+    for (let index = 0; index < segments.length; index++) {
+      const segment = segments[index];
+      assert.ok(segment.width > 0,'progress segment is visibly rendered');
+      assert.ok(Math.abs(segment.width - segments[0].width) <= 1,'all three segments have equal width on mobile and desktop');
+      assert.ok(Math.abs(segment.top - segments[0].top) <= 1,'segments remain on one line');
+      assert.ok(segment.left >= segment.barLeft - 1 && segment.right <= segment.barRight + 1,'segments stay within the progress bar without overflow');
+      assert.equal(segment.height,5,'progress remains a slim visual indicator');
+      assert.equal(segment.color,index < number ? 'rgb(22, 139, 70)' : 'rgb(227, 235, 230)','active and inactive colors match the approved visual');
+      if (index > 0) assert.ok(segment.left > segments[index - 1].right,'segments keep visible spacing');
+    }
     assert.equal(await test.chat.locator('.composer').isVisible(),false,'product does not show the composer');
     assert.equal(await test.chat.locator('.lab-scroll > .lab-message:visible').count(),0,'chat writing is not shown behind the guided form');
     assert.equal(await test.chat.locator('html').evaluate(node => node.scrollWidth <= innerWidth),true,'step has no horizontal overflow');

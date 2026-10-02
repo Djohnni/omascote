@@ -156,6 +156,9 @@
     const shield = draft.files.find(file => file.field === 'team_crest');
     const shirt = draft.files.some(file => file.field === 'uniform_image');
     return h('section', {className:'lab-form guided-mascot', 'data-step':step, 'aria-label':'Informações para Mascote do Time', ref:container},
+      h('div', {className:'guided-progress', role:'progressbar', 'aria-label':'Etapas do pedido',
+        'aria-valuemin':0, 'aria-valuemax':3, 'aria-valuenow':step, 'aria-valuetext':`Etapa ${step} de 3`},
+        [1,2,3].map(index => h('span', {key:index, className:index <= step ? 'is-active' : '', 'aria-hidden':true}))),
       h('div', {className:'guided-top'},
         h('button', {type:'button', className:'guided-back', disabled:props.busy, onClick:()=>step > 1
           ? navigate(step - 1) : notify({type:'omascote-chat:guided-home'})}, '← Voltar'),

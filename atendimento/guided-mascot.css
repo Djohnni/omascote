@@ -1,5 +1,8 @@
 /* Scoped to the approved mascot presentation. No effect on chat or other products. */
 body[data-guided-mascot] .lab-frame.is-integrated .guided-mascot { width:min(100%, 580px); margin:0 auto; color:#103b32; }
+.guided-progress { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:8px; margin:0 0 16px; }
+.guided-progress span { display:block; height:5px; border-radius:999px; background:#e3ebe6; }
+.guided-progress span.is-active { background:#168b46; }
 .guided-top { display:flex; align-items:center; justify-content:space-between; margin:0 0 24px; }
 .guided-back, .guided-text-button, .guided-help { border:0; background:none; color:#24533d; font:inherit; cursor:pointer; min-height:44px; padding:8px 0; }
 .guided-back { font-size:16px; }
