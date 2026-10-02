@@ -9,11 +9,23 @@ const { chromium } = require('playwright');
 const { assertPurchaseSafety } = require('./test-guided-purchase-safety.cjs');
 
 const root = __dirname;
+const fullRun = !process.argv.includes('--conditionals-only');
 const bundle = fs.readFileSync(path.join(root,'atendimento/assets/index-BYWG3Byi.js'),'utf8');
 const initialState = new Function(`return (${bundle.match(/sc=(\(\)=>\(\{version:1,.*?\}\)),cc=/s)[1]})()`)();
 const products = new Function(`return (${bundle.match(/Cs=(\[\{id:.*?\]),ws=/s)[1]})`)()
   .filter(product => !['personalizada','mascote_uniforme'].includes(product.id));
 const imageOnly = new Set(['contratacao','proximo_jogo_jogador','resultado_jogo_jogador']);
+// Match the original chat's optional presentation, including the preselected scenario.
+// These expectations are independent of the guided grouping implementation.
+const optionalFields = {
+  proximo_jogo:['photo_mode','scenario_id','venue','section_title','coupon_code'],
+  resultado:['photo_mode','scenario_id','headline','away_crest','scorers','section_title','coupon_code'],
+  jogador_escudo:['coupon_code'],contratacao:['reference_layout'],
+  escalacao:['scenario_id','match_datetime','competition','venue','team_crest','opponent_crest','team_photo','coupon_code'],
+  patrocinador:['headline','visual_style','coupon_code'],escudo3d:['visual_style','coupon_code'],
+  proximo_jogo_jogador:['venue','visual_style','coupon_code'],
+  resultado_jogo_jogador:['competition','headline','visual_style','coupon_code']
+};
 const orderEndpoints = new Set(['/pedidos','/resultado_do_jogo']);
 const pixel = Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+/l9sAAAAASUVORK5CYII=','base64');
 const mime = {'.html':'text/html','.js':'text/javascript','.css':'text/css','.webp':'image/webp','.jpg':'image/jpeg','.png':'image/png','.mp4':'video/mp4'};
@@ -180,6 +192,7 @@ async function run() {
     const view=await guide(test).evaluate(form => {
       const progress=form.querySelector('.guided-progress'),box=progress.getBoundingClientRect();
       return {number:Number(form.dataset.step),key:form.dataset.stageKey,isFinal:form.dataset.final==='true',
+        optionalHeading:form.querySelector('.guided-title')?.textContent.trim()==='Os itens abaixo são opcionais',
         keys:[...form.querySelectorAll('.guided-fields > .guided-field')].map(node => node.dataset.field),
         role:progress.getAttribute('role'),min:progress.getAttribute('aria-valuemin'),
         total:Number(progress.getAttribute('aria-valuemax')),now:progress.getAttribute('aria-valuenow'),text:progress.getAttribute('aria-valuetext'),
@@ -187,6 +200,7 @@ async function run() {
         segments:[...progress.children].map(child => {const r=child.getBoundingClientRect();return {width:r.width,left:r.left,right:r.right,height:r.height,color:getComputedStyle(child).backgroundColor,barLeft:box.left,barRight:box.right};})};
     });
     const {number,total,segments,keys,isFinal}=view;
+    const isOptional=view.key==='optional';
     assert.equal(await guide(test).locator('details.guided-purchase-safety').count(),isFinal ? 1 : 0,'purchase disclosure appears only on the final payment step');
     assert.ok(total >= 3 && total <= 25,'bounded progress is based on actual questions, including up to ten athletes');
     assert.equal(view.role,'progressbar');
@@ -201,8 +215,27 @@ async function run() {
       assert.equal(segments[i].color,i<number ? 'rgb(22, 139, 70)' : 'rgb(227, 235, 230)');
       assert.ok(segments[i].left >= segments[i].barLeft - 1 && segments[i].right <= segments[i].barRight + 1);
     }
-    assert.ok(isFinal ? keys.length===0 : keys.length>=1 && keys.length<=2,'only one or two questions appear per step');
-    if (keys.some(key => ['photo_mode','scenario_id','matchup','score'].includes(key))) assert.equal(keys.length,1,'complex original renderer owns its own step');
+    assert.ok(isFinal ? keys.length===0 : keys.length>=1 && (isOptional || keys.length<=2),'only the optional stage can contain more than two questions');
+    assert.equal(view.optionalHeading,isOptional,'optional stage has the exact requested heading');
+    const expectedOptional=optionalFields[test.state().draft.flow] || [];
+    const contractRows=test.state().draft.flow==='contratacao'
+      ? (test.state().draft.values.players || '').split('\n').filter(line => line.trim()).map((line,index) => `__contract_${index}`) : [];
+    if (isOptional) {
+      assert.equal(number,total-1,'optional parts occupy the penultimate stage');
+      assert.ok(keys.length>=2,'two or more optional parts are grouped together');
+    }
+    if (expectedOptional.length+contractRows.length>=2) {
+      if (isOptional) {
+        assert.equal(number,total-1,'all optional parts occupy the penultimate stage');
+        for (const key of expectedOptional) assert.ok(keys.includes(key),`penultimate stage keeps original optional ${key}`);
+        for (const key of contractRows) assert.ok(keys.includes(key),'original optional announcement/shirt controls join the penultimate stage');
+        const bounds=await guide(test).locator('.guided-fields > .guided-field').evaluateAll(nodes => nodes.map(node => {
+          const box=node.getBoundingClientRect();return {top:box.top,bottom:box.bottom,left:box.left,right:box.right};
+        }));
+        for (let i=1;i<bounds.length;i++) assert.ok(bounds[i].top>=bounds[i-1].bottom-1,'optional parts are presented in a single vertical column');
+      } else assert.deepEqual(keys.filter(key => [...expectedOptional,...contractRows].includes(key)),[],'optional parts do not appear among earlier required questions');
+    }
+    if (!isOptional && keys.some(key => ['photo_mode','scenario_id','matchup','score'].includes(key))) assert.equal(keys.length,1,'complex required renderer owns its own step');
     assert.equal(await test.chat.locator('.composer').isVisible(),false);
     assert.equal(await test.chat.locator('.lab-conversation-bar').isVisible(),false);
     assert.equal(await test.chat.locator('.lab-scroll > .lab-message:visible').count(),0,'old chat does not compete with questions');
@@ -217,7 +250,7 @@ async function run() {
       return difference >= 0 && difference <= 12;
     },null,{timeout:7000});
     assert.equal(await test.page.locator('.vitrineChatNav').isVisible(),false,'duplicate outer navigation is hidden');
-    return {number,total,keys,isFinal,key:view.key};
+    return {number,total,keys,isFinal,isOptional,key:view.key};
   }
   async function advance(test) {
     const key = await guide(test).getAttribute('data-stage-key');
@@ -259,6 +292,7 @@ async function run() {
       assert.equal(await groups.count(),2,'original announcement and shirt controls are the only two questions');
       assert.equal(await groups.first().getAttribute('aria-label'),'João: anúncio');
       assert.equal(await groups.last().getAttribute('aria-label'),'João: camiseta');
+      assert.match(await field(test,key).innerText(),/\+ R\$ 2/,'original optional jersey price is stated next to its choice');
       await groups.first().getByRole('radio',{name:'Renovado',exact:true}).click();
       await groups.first().getByRole('radio',{name:'Contratado',exact:true}).click();
       await groups.last().getByRole('radio',{name:settings.jersey ? 'Sim' : 'Não',exact:true}).click();
@@ -273,7 +307,13 @@ async function run() {
     if (['team_photo','opponent_crest','reference_layout'].includes(key)) return;
     if (key==='uniform_image') {
       if (settings.photo) {
-        await field(test,key).getByLabel('Enviar camiseta do time para vestir no mascote',{exact:true}).setInputFiles({name:'shirt-local.png',mimeType:'image/png',buffer:pixel});
+        const file={name:'shirt-local.png',mimeType:'image/png',buffer:pixel};
+        if (settings.keyboard) {
+          const trigger=field(test,key).locator('label.lab-mascot-shirt-add');
+          assert.equal(await trigger.getAttribute('tabindex'),'0','conditional shirt upload remains keyboard reachable');
+          const chooser=test.page.waitForEvent('filechooser');
+          await trigger.focus();await trigger.press('Enter');await (await chooser).setFiles(file);
+        } else await field(test,key).getByLabel('Enviar camiseta do time para vestir no mascote',{exact:true}).setInputFiles(file);
         await saved(test,draft => draft.files.some(file => file.field==='uniform_image'),'nested shirt keeps original upload identifier');
       }
       return;
@@ -282,10 +322,17 @@ async function run() {
     if (['scenario_id','visual_style','photo_mode'].includes(key)) {
       if (key==='photo_mode') {
         if (settings.photo==='Não tenho mascote') {
-          await field(test,key).getByRole('button',{name:'Não tenho foto do mascote',exact:true}).click();
+          const choice=field(test,key).getByRole('button',{name:'Não tenho foto do mascote',exact:true});
+          if (settings.keyboard) {await choice.focus();await choice.press('Enter');} else await choice.click();
           await saved(test,draft => draft.values.photo_mode==='Não tenho mascote','original description-mode handler');
         } else if (settings.photo==='Mascote') {
-          await field(test,key).getByLabel('Adicionar foto: Mascote',{exact:true}).setInputFiles({name:'match-photo-local.png',mimeType:'image/png',buffer:pixel});
+          const file={name:'match-photo-local.png',mimeType:'image/png',buffer:pixel};
+          if (settings.keyboard) {
+            const trigger=field(test,key).locator('label.upload-button:has(input[aria-label="Adicionar foto: Mascote"])');
+            assert.equal(await trigger.getAttribute('tabindex'),'0','optional photo action remains keyboard reachable');
+            const chooser=test.page.waitForEvent('filechooser');
+            await trigger.focus();await trigger.press('Enter');await (await chooser).setFiles(file);
+          } else await field(test,key).getByLabel('Adicionar foto: Mascote',{exact:true}).setInputFiles(file);
           await saved(test,draft => draft.files.some(file => file.field==='match_photo') && draft.values.photo_mode==='Mascote','original photo-action handler and field');
         } else {
           assert.equal(values.photo_mode,'Sem foto');
@@ -316,13 +363,44 @@ async function run() {
     await control.fill(text);
     await saved(test,draft => draft?.values[key]===text,`${key} answer saved in original draft`);
   }
+  async function fillCurrent(test,settings={}) {
+    const filled=new Set();
+    // Selecting a photo option can add its original description and shirt controls
+    // without changing the optional stage, so read again after every controlled input.
+    for (let count=0;count<30;count++) {
+      const current=await assertStep(test),key=current.keys.find(key => !filled.has(key));
+      if (!key) return current;
+      filled.add(key);
+      if (settings.skipOptional && (current.isOptional || optionalFields[test.state().draft.flow]?.includes(key)) && key!=='mascot_description') continue;
+      if (key==='mascot_description' && settings.photo==='Não tenho mascote') {
+        await next(test).click();
+        assert.equal((await assertStep(test)).key,current.key,'chosen description mode keeps its original required validation inside the optional stage');
+        assert.equal(test.orderCount(),0);
+        if (settings.keyboard) assert.equal(await field(test,key).locator('input').evaluate(node => node===document.activeElement),true,'dynamic required description receives keyboard focus after validation');
+      }
+      if (key==='jersey_reference' && settings.jersey && !test.state().draft.files.some(file => file.field===key)) {
+        await next(test).click();
+        assert.equal((await assertStep(test)).key,current.key,'optional jersey Sim retains its conditional required original upload');
+        assert.ok(await test.chat.getByRole('alert').count(),'missing chosen jersey is visibly validated');
+        assert.equal(test.orderCount(),0);
+      }
+      await fillField(test,key,settings);
+    }
+    throw new Error('Conditional fields must settle in a bounded number of renders');
+  }
   async function fillToFinal(test,settings={}) {
     const visited=[];
     for (let count=0;count<20;count++) {
       const current=await assertStep(test);
       if (current.isFinal) return visited;
       visited.push(current);
-      for (const key of current.keys) await fillField(test,key,settings);
+      if (current.isOptional && test.page.viewportSize().width===390 && !test.capturedOptionalClean) {
+        await test.page.screenshot({path:path.join(screenshots,`${test.state().draft.flow}-optional-clean-390.png`),fullPage:true});
+        test.capturedOptionalClean=true;
+      }
+      await fillCurrent(test,settings);
+      if (current.isOptional && test.page.viewportSize().width===390)
+        await test.page.screenshot({path:path.join(screenshots,`${test.state().draft.flow}-optional-390.png`),fullPage:true});
       await advance(test);
     }
     throw new Error('Guided presentation must reach final in bounded steps');
@@ -407,7 +485,7 @@ async function run() {
 
   try {
     assert.equal(products.length,9);
-    for (const viewport of [{width:320,height:844},{width:390,height:844},{width:1440,height:1000}]) {
+    for (const viewport of fullRun ? [{width:320,height:844},{width:390,height:844},{width:1440,height:1000}] : []) {
       for (const product of products) {
         const test=await setup(viewport,{price:product.price});
         try {
@@ -468,13 +546,34 @@ async function run() {
       }
     }
 
+    // Every product also accepts an unchanged blank optional section. Original scenario/style
+    // defaults remain as seeded; skipping does not presume photos, shirts, coupon or paid video.
+    for (const product of fullRun ? products : []) {
+      const test=await setup({width:390,height:844},{price:product.price});
+      try {
+        await open(test,product);
+        const optionalValues=Object.fromEntries(optionalFields[product.id].map(key => [key,test.state().draft.values[key]]));
+        await fillToFinal(test,{skipOptional:true});
+        await assertFinal(test,product);
+        for (const [key,value] of Object.entries(optionalValues))
+          assert.equal(test.state().draft.values[key],value,`skipping optional ${key} preserves its original empty/default value`);
+        assert.equal(test.state().draft.files.some(file => optionalFields[product.id].includes(file.field)),false,'skipping never fabricates optional uploads');
+        for (const [key,value] of Object.entries(optionalValues))
+          if (!value && !test.state().draft.files.some(file => file.field===key))
+            assert.equal(await test.chat.locator(`[data-review-field="${key}"]`).count(),0,'blank optional values do not invent review answers');
+        await submitAndAssert(test,product);
+        assert.equal(test.pixCount(),0);
+        console.log(`OK blank optional ${product.id}: original defaults, no presumed uploads/video, original image bridge`);
+      } finally {await test.context.close();}
+    }
+
     // Additional delivery/error/balance variants exercise original submit handlers, never real APIs.
-    for (const scenario of [
+    for (const scenario of fullRun ? [
       {id:'proximo_jogo',mode:'image_video'}, {id:'resultado',mode:'image_video',failedOrders:1},
       {id:'jogador_escudo',mode:'image_video'}, {id:'escalacao',mode:'image_video',balance:0},
       {id:'patrocinador',mode:'image_video'}, {id:'escudo3d',mode:'image_video',seed:'fast',holdOrders:true},
       {id:'escudo3d',mode:'image_video',seed:'omni'}, {id:'proximo_jogo',mode:'image',date:'amanhã às 18h'}
-    ]) {
+    ] : []) {
       const product=products.find(item => item.id===scenario.id);
       const test=await setup({width:390,height:844},scenario);
       test.releaseControlledOrder=!!scenario.holdOrders;
@@ -498,7 +597,6 @@ async function run() {
       await field(custom,'sport').getByRole('radio',{name:'Outro esporte',exact:true}).click();
       await advance(custom);
       assert.deepEqual((await assertStep(custom)).keys,['other_sport','sport_context']);
-      const customTotal=(await assertStep(custom)).total;
       await next(custom).click();
       assert.deepEqual((await assertStep(custom)).keys,['other_sport','sport_context']);
       assert.equal(custom.orderCount(),0);
@@ -508,8 +606,10 @@ async function run() {
       await retreat(custom);
       await field(custom,'sport').getByRole('radio',{name:'Futebol',exact:true}).click();
       await advance(custom);
-      assert.equal((await assertStep(custom)).total,customTotal-1,'conditional step is removed without shifting/dropping answers');
-      await fillToFinal(custom);
+      assert.equal((await assertStep(custom)).key,'matchup','returning to Futebol removes the conditional sport stage');
+      const footballStages=await fillToFinal(custom);
+      assert.equal(footballStages.some(stage => stage.keys.some(key => ['other_sport','sport_context'].includes(key))),false,
+        'obsolete conditional fields are absent while dynamic progress follows the remaining required and optional groups');
       await custom.chat.getByRole('button',{name:'Ajuda',exact:true}).click();
       await custom.chat.locator('.composer').waitFor({state:'visible'});
       assert.equal(await custom.chat.locator('.guided-product:visible').count(),0,'Help restores original chat');
@@ -521,26 +621,23 @@ async function run() {
     } finally {await custom.context.close();}
 
     // Original nested photo/mascot/shirt controls and conditional jersey remain intact.
-    for (const scenario of [{id:'proximo_jogo',photo:'Não tenho mascote'},{id:'resultado',photo:'Mascote'},{id:'contratacao',jersey:true}]) {
-      const product=products.find(item => item.id===scenario.id),test=await setup({width:320,height:844});
+    for (const scenario of [{id:'proximo_jogo',photo:'Não tenho mascote',keyboard:true},{id:'resultado',photo:'Mascote',keyboard:true},{id:'contratacao',jersey:true}]) {
+      const width=scenario.keyboard ? 390 : 320;
+      const product=products.find(item => item.id===scenario.id),test=await setup({width,height:844});
       try {
         await open(test,product);
         for (let count=0;count<20;count++) {
           const current=await assertStep(test);if (current.isFinal) break;
-          for (const key of current.keys) {
-            if (key==='mascot_description') {
-              await next(test).click();
-              assert.equal((await assertStep(test)).key,current.key,'nested mandatory animal description blocks only its own step');
-              assert.equal(test.orderCount(),0);
-            }
-            await fillField(test,key,scenario);
-          }
+          await fillCurrent(test,scenario);
+          if (current.isOptional) await test.page.screenshot({path:path.join(screenshots,`${scenario.id}-conditional-optional-${width}.png`),fullPage:true});
           if (current.keys.some(key => key.startsWith('__contract_')) || current.key==='mascot-details')
             await test.page.screenshot({path:path.join(screenshots,`${scenario.id}-${current.key}-320.png`),fullPage:true});
           await advance(test);
         }
         await assertFinal(test,product);
         if (scenario.jersey) assert.equal(test.state().draft.files.some(file => file.field==='jersey_reference'),true,'jersey Sim keeps required original shirt upload');
+        if (scenario.photo) assert.equal(test.state().draft.files.some(file => file.field==='uniform_image'),true,'mascot shirt uses the original uniform_image field');
+        if (scenario.photo==='Mascote') assert.equal(test.state().draft.files.some(file => file.field==='match_photo'),true,'selected mascot photo uses the original match_photo field');
         await test.page.screenshot({path:path.join(screenshots,`${scenario.id}-conditional.png`),fullPage:true});
         await submitAndAssert(test,product);
         console.log(`OK conditional ${scenario.id}/${scenario.photo || 'jersey'}: original nested inputs/required uploads and bridge`);

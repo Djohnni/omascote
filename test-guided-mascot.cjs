@@ -9,6 +9,7 @@ const { chromium } = require('playwright');
 const { assertPurchaseSafety } = require('./test-guided-purchase-safety.cjs');
 
 const root = __dirname;
+const fullRun = !process.argv.includes('--bridge-only');
 const bundle = fs.readFileSync(path.join(root, 'atendimento/assets/index-BYWG3Byi.js'), 'utf8');
 const initialState = new Function(`return (${bundle.match(/sc=(\(\)=>\(\{version:1,.*?\}\)),cc=/s)[1]})()`)();
 const products = new Function(`return (${bundle.match(/Cs=(\[\{id:.*?\]),ws=/s)[1]})`)().filter(product => product.id !== 'personalizada');
@@ -123,15 +124,16 @@ async function run() {
   async function step(test, number) {
     await test.chat.locator(`.guided-mascot[data-step="${number}"]`).waitFor({state:'visible'});
     assert.equal(await test.chat.locator('.guided-mascot:visible').count(),1,'only one guided step is visible');
-    assert.equal(await test.chat.locator('details.guided-purchase-safety').count(),number === 3 ? 1 : 0,'purchase disclosure appears only at the final step');
     const progress = test.chat.locator('.guided-mascot .guided-progress');
+    const total=Number(await progress.getAttribute('aria-valuemax'));
+    assert.equal(total,4,'mascot groups its three original optional parts into a penultimate fourth-stage flow');
+    assert.equal(await test.chat.locator('details.guided-purchase-safety').count(),number === total ? 1 : 0,'purchase disclosure appears only at the final step');
     assert.equal(await progress.count(),1,'guided step has one progress indicator');
     assert.equal(await progress.getAttribute('role'),'progressbar','progress keeps accessible semantics');
     assert.equal(await progress.getAttribute('aria-valuemin'),'0');
-    assert.equal(await progress.getAttribute('aria-valuemax'),'3');
     assert.equal(await progress.getAttribute('aria-valuenow'),String(number),'progress follows current step including Back');
-    assert.equal(await progress.getAttribute('aria-valuetext'),`Etapa ${number} de 3`);
-    assert.equal(await progress.locator(':scope > span').count(),3,'progress always contains three segments');
+    assert.equal(await progress.getAttribute('aria-valuetext'),`Etapa ${number} de ${total}`);
+    assert.equal(await progress.locator(':scope > span').count(),total,'progress contains the actual stage count');
     assert.equal(await progress.locator(':scope > span.is-active').count(),number,'completed and current segments are green');
     const segments = await progress.evaluate(bar => {
       const box = bar.getBoundingClientRect();
@@ -144,13 +146,23 @@ async function run() {
     for (let index = 0; index < segments.length; index++) {
       const segment = segments[index];
       assert.ok(segment.width > 0,'progress segment is visibly rendered');
-      assert.ok(Math.abs(segment.width - segments[0].width) <= 1,'all three segments have equal width on mobile and desktop');
+      assert.ok(Math.abs(segment.width - segments[0].width) <= 1,'all segments have equal width on mobile and desktop');
       assert.ok(Math.abs(segment.top - segments[0].top) <= 1,'segments remain on one line');
       assert.ok(segment.left >= segment.barLeft - 1 && segment.right <= segment.barRight + 1,'segments stay within the progress bar without overflow');
       assert.equal(segment.height,5,'progress remains a slim visual indicator');
       assert.equal(segment.color,index < number ? 'rgb(22, 139, 70)' : 'rgb(227, 235, 230)','active and inactive colors match the approved visual');
       if (index > 0) assert.ok(segment.left > segments[index - 1].right,'segments keep visible spacing');
     }
+    const keys=await test.chat.locator('.guided-fields > .guided-field').evaluateAll(nodes => nodes.map(node => node.dataset.field));
+    if (number===total-1) {
+      assert.equal(await test.chat.locator('.guided-mascot').getAttribute('data-stage-key'),'optional');
+      assert.equal(await test.chat.locator('.guided-title').innerText(),'Os itens abaixo são opcionais');
+      assert.deepEqual([...keys].sort(),['uniform_image','scenario_id','coupon_code'].sort(),'shirt, original scene/style and coupon are grouped together');
+      const bounds=await test.chat.locator('.guided-fields > .guided-field').evaluateAll(nodes => nodes.map(node => {
+        const box=node.getBoundingClientRect();return {top:box.top,bottom:box.bottom};
+      }));
+      for (let index=1;index<bounds.length;index++) assert.ok(bounds[index].top>=bounds[index-1].bottom-1,'optional parts form one vertical column');
+    } else assert.deepEqual(keys.filter(key => ['uniform_image','scenario_id','coupon_code'].includes(key)),[],'optional parts are absent from required and final stages');
     assert.equal(await test.chat.locator('.composer').isVisible(),false,'product does not show the composer');
     assert.equal(await test.chat.locator('.lab-scroll > .lab-message:visible').count(),0,'chat writing is not shown behind the guided form');
     assert.equal(await test.chat.locator('html').evaluate(node => node.scrollWidth <= innerWidth),true,'step has no horizontal overflow');
@@ -216,10 +228,17 @@ async function run() {
     await upload(test,'team_crest');
     await next(test).click();
     await step(test,3);
+    await test.page.screenshot({path:path.join(screenshots,'optional-stage-clean-390.png'),fullPage:true});
+    const original=structuredClone(test.getState().draft);
+    await next(test).click();
+    await step(test,4);
+    assert.deepEqual(test.getState().draft.values,original.values,'skipping optional stage preserves empty values and original defaults');
+    assert.equal(test.getState().draft.files.some(file => file.field==='uniform_image'),false,'skipping does not assume or create a shirt');
+    assert.equal(await test.chat.getByRole('radio',{name:/Somente imagem/}).isChecked(),true,'blank optional stage cannot select paid video');
   }
 
   try {
-    for (const viewport of [{width:320,height:844},{width:390,height:844},{width:1440,height:1000}]) {
+    for (const viewport of fullRun ? [{width:320,height:844},{width:390,height:844},{width:1440,height:1000}] : []) {
       const test = await setup(viewport,{holdUploads:true});
       try {
         await step(test,1);
@@ -265,37 +284,45 @@ async function run() {
         await next(test).click();
         await step(test,2);
         assert.equal(await field(test,'team_crest').locator('input[type="file"]').getAttribute('aria-label'),'Envie o escudo ou brasão do time');
-        assert.match(await test.chat.locator('.guided-optional-shirt summary').innerText(),/opcional/i,'shirt remains visibly optional');
+        assert.equal(await field(test,'uniform_image').count(),0,'optional shirt is not shown in the required crest stage');
         await next(test).click();
         await step(test,2);
         assert.ok(await test.chat.locator('[role="alert"]:visible').count(),'crest requirement is visible before continuing');
         assert.equal(test.orderCount(),0);
         await upload(test,'team_crest',true,true);
-        await test.chat.locator('.guided-optional-shirt summary').click();
+        await next(test).click();
+        await step(test,3);
         await upload(test,'uniform_image',true);
+        await field(test,'scenario_id').waitFor({state:'visible'});
+        await field(test,'coupon_code').locator('input').fill('LOCAL-TEST');
+        await saved(test,draft => draft?.values.coupon_code === 'LOCAL-TEST','optional coupon uses original draft');
+        assert.equal(await test.chat.getByRole('radio',{name:'Esportivo leve',exact:true}).count(),1,'original scene renderer exposes style exactly once');
         assert.deepEqual(test.uploads,['team_crest','uniform_image'],'uploads keep exact old field names and no new mascot-photo upload');
+        await test.chat.getByRole('button',{name:/Voltar$/}).click();
+        await step(test,2);
+        assert.equal(await field(test,'team_crest').getByText('team_crest-local.png',{exact:true}).isVisible(),true,'back preserves uploaded shield');
         await test.chat.getByRole('button',{name:/Voltar$/}).click();
         await step(test,1);
         await next(test).click();
         await step(test,2);
         assert.equal(await field(test,'team_crest').getByText('team_crest-local.png',{exact:true}).isVisible(),true,'back preserves uploaded shield');
-        assert.equal(await field(test,'uniform_image').getByText('uniform_image-local.png',{exact:true}).isVisible(),true,'back preserves optional shirt');
         await test.page.screenshot({path:path.join(screenshots,`step-2-${viewport.width}.png`),fullPage:true});
         await next(test).click();
         await step(test,3);
+        assert.equal(await field(test,'uniform_image').getByText('uniform_image-local.png',{exact:true}).isVisible(),true,'back preserves optional shirt');
+        assert.equal(await field(test,'coupon_code').locator('input').inputValue(),'LOCAL-TEST','back preserves the optional coupon');
+        await test.page.screenshot({path:path.join(screenshots,`optional-stage-${viewport.width}.png`),fullPage:true});
+        await next(test).click();
+        await step(test,4);
         await assertPurchaseSafety(test,{
-          form:test.chat.locator('.guided-mascot'),assertLayout:() => step(test,3),
+          form:test.chat.locator('.guided-mascot'),assertLayout:() => step(test,4),
           screenshots,name:`mascote-${viewport.width}`,capture:true,draft:() => test.getState().draft
         });
         assert.match(await test.chat.locator('.guided-mascot').innerText(),/R\$\s*18,00/);
         assert.match(await test.chat.locator('.guided-mascot').innerText(),/R\$\s*28,00/);
         assert.equal(await test.chat.getByRole('radio',{name:/Somente imagem/}).isChecked(),true,'default is image, not an implicit paid upgrade');
         await chooseVideo(test);
-        const extra = test.chat.getByText('Personalizar (opcional)',{exact:true});
-        await extra.click();
-        await field(test,'scenario_id').waitFor({state:'visible'});
-        await field(test,'coupon_code').locator('input').fill('LOCAL-TEST');
-        assert.equal(await test.chat.getByRole('radio',{name:'Esportivo leve',exact:true}).count(),1,'original scenario renderer exposes style exactly once');
+        const snapshot=structuredClone(test.getState().draft);
         await test.chat.getByRole('button',{name:'Editar',exact:true}).first().click();
         await step(test,1);
         assert.equal(await field(test,'mascot_animal').locator('input').inputValue(),'Lobo');
@@ -303,13 +330,16 @@ async function run() {
         await step(test,2);
         await next(test).click();
         await step(test,3);
+        await next(test).click();
+        await step(test,4);
         assert.equal(await test.chat.getByRole('radio',{name:/Imagem \+ v[ií]deo/}).isChecked(),true,'editing retains local delivery choice');
         await saved(test,draft => draft?.values.coupon_code === 'LOCAL-TEST','optional coupon uses original draft');
-        assert.equal(test.getState().draft.id,id,'three steps never replace the original draft');
+        assert.deepEqual(test.getState().draft.values,snapshot.values,'editing retains required and optional values');
+        assert.deepEqual(test.getState().draft.files,snapshot.files,'editing retains both uploaded original files');
+        assert.equal(test.getState().draft.id,id,'guided steps never replace the original draft');
         assert.equal(test.orderCount(),0,'all step buttons and editing are non-submitting');
-        await test.chat.getByText('Personalizar (opcional)',{exact:true}).click();
-        await step(test,3);
-        await test.page.screenshot({path:path.join(screenshots,`step-3-${viewport.width}.png`),fullPage:true});
+        await step(test,4);
+        await test.page.screenshot({path:path.join(screenshots,`step-final-${viewport.width}.png`),fullPage:true});
         assert.equal(await test.chat.locator('.guided-mascot').evaluate(form => {
           const delivery=form.querySelector('.guided-delivery'),send=form.querySelector('.guided-primary'),review=form.querySelector('.guided-review');
           return !!(delivery.compareDocumentPosition(send)&Node.DOCUMENT_POSITION_FOLLOWING) &&
@@ -318,8 +348,10 @@ async function run() {
         await test.page.locator('[data-vitrine-home]').first().click();
         await test.page.locator('[data-vitrine-product="mascote_uniforme"]').click();
         await test.chat.locator('.guided-mascot').waitFor({state:'visible'});
+        await step(test,4);
         assert.equal(test.getState().draft.id,id,'home preserves original draft');
         assert.equal(test.getState().draft.files.length,2,'home preserves shield and shirt');
+        assert.deepEqual(test.getState().draft.values,snapshot.values,'home retains required and optional values');
 
         await test.chat.getByRole('button',{name:'Ajuda',exact:true}).click();
         await test.chat.locator('.composer').waitFor({state:'visible'});
@@ -372,7 +404,7 @@ async function run() {
         if (mode === 'retry') {
           await test.chat.locator('.form-error[role="alert"]').waitFor({state:'visible'});
           assert.match(await test.chat.locator('.form-error[role="alert"]').innerText(),/Falha local simulada/);
-          await step(test,3);
+          await step(test,4);
           await test.page.waitForTimeout(1200);
           assert.equal(test.orderCount(),1,'backend failure never auto retries');
           assert.equal(test.getState().draft.id,originalId,'backend failure retains original draft');
