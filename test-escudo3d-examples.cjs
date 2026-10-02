@@ -78,11 +78,17 @@ async function run() {
       const draftId = state.draft.id;
       await chat.getByRole('radio',{name:'Futebol',exact:true}).click();
       await page.waitForTimeout(650);
+      async function reopenExamples() {
+        // Product mode no longer displays a duplicate "Criar esta arte" chat card.
+        await page.locator('[data-vitrine-home]').first().click();
+        await page.locator('[data-vitrine-product="escudo3d"]').click();
+        await page.locator('#escudo3dExamples').waitFor({state:'visible'});
+      }
       for (const [label,choice] of [
         ['Escolher por R$ 19,90','omni'],
         ['Prefiro somente imagem — R$ 4,00','']
       ]) {
-        await chat.getByRole('button',{name:'Criar esta arte',exact:true}).last().click();
+        await reopenExamples();
         await page.getByRole('button',{name:label,exact:true}).click();
         assert.equal(await chat.locator('.escudo3d-selection, .escudo3d-delivery').count(),0);
         await page.waitForTimeout(650);
@@ -92,7 +98,7 @@ async function run() {
         assert.equal(state.draft.values.sport,'Futebol');
       }
       await page.screenshot({path:path.join(screenshots,`after-choice-${viewport.width}.png`)});
-      await chat.getByRole('button',{name:'Criar esta arte',exact:true}).last().click();
+      await reopenExamples();
       await page.getByRole('button',{name:'Fechar exemplos e voltar ao chat'}).click();
       assert.equal(await page.locator('#escudo3dExamples').isVisible(),false);
       assert.equal(actions.includes('complete'),false);
