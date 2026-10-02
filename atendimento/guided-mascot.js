@@ -46,6 +46,10 @@
     const container = React.useRef(null);
     const submitLock = React.useRef(false);
     const active = props.integrated && productMode && draft.flow === 'mascote_uniforme';
+    const needsUpload = field => field.type === 'images' && !isOptional(field) &&
+      !draft.files.some(file => file.field === field.key);
+    const currentFields = step === 1 ? first : step === 2 ? second : step < total ? optional : [];
+    const uploadPending = currentFields.some(needsUpload);
 
     React.useEffect(() => {
       const update = () => setProductMode(isProduct());
@@ -139,7 +143,7 @@
       if (field.key === 'sport' && !sportsOpen) {
         visibleField = {...field, options:field.options.filter(option => ['Futebol','Futsal','Vôlei',draft.values.sport].includes(option))};
       }
-      return h('div', {className:'guided-field', 'data-field':field.key, key:field.key, tabIndex:-1},
+      return h('div', {className:`guided-field${needsUpload(field) ? ' guided-upload-pending' : ''}`, 'data-field':field.key, key:field.key, tabIndex:-1},
         h('div', {className:'guided-label', id:`guided-label-${field.key}`}, labels[field.key] || field.label),
         field.hint && ['sport_context'].includes(field.key) ? h('p', {className:'guided-hint'}, field.hint) : null,
         h('div', {role:'group', 'aria-labelledby':`guided-label-${field.key}`}, accessibleUpload(props.renderField(visibleField))),
@@ -210,7 +214,7 @@
           !groupOptionals && extras.length ? h('details', {className:'guided-extras', open:extrasOpen,
             onToggle:event=>setExtrasOpen(event.currentTarget.open)}, h('summary', null, 'Personalizar (opcional)'), extras.map(field)) : null) : null,
         step !== total && error ? h('p', {className:'guided-error', role:'alert'}, error) : null,
-        step !== total ? h('button', {type:'button', className:'guided-primary', disabled:props.busy,
+        step !== total ? h('button', {type:'button', className:`guided-primary${uploadPending ? ' guided-continue-pending' : ''}`, disabled:props.busy,
           'aria-label':'Continuar', onClick:next}, 'Continuar →') : null),
       h('button', {type:'button', className:'guided-help', disabled:props.busy,
         onClick:()=>notify({type:'omascote-chat:guided-help'})}, 'Ajuda'));
