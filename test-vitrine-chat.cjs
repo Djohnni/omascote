@@ -4,9 +4,21 @@ const fs = require('node:fs');
 const path = require('node:path');
 const http = require('node:http');
 const os = require('node:os');
+const { execFileSync } = require('node:child_process');
 const { chromium } = require('playwright');
 
 const root = __dirname;
+const captureBaseline = process.argv.includes('--capture-baseline');
+const compactOnly = process.argv.includes('--compact-only');
+const baselineCommit = 'c6c9b94b86f28791e2db2507d39d640d403ddc20';
+const baselineFiles = captureBaseline ? new Map(['app.html','vitrine-chat.css'].map(file => [file,execFileSync('git',['show',`${baselineCommit}:${file}`],{cwd:root,maxBuffer:8*1024*1024})])) : null;
+// Measured with the baseline HTML/CSS above, not inferred from the new layout.
+const baselineMetrics = {
+  320:{image:{x:95.203125,y:215,width:212.796875,height:450},hero:{width:280,height:450}},
+  390:{image:{x:112,y:187,width:266,height:450},hero:{width:350,height:450}},
+  430:{image:{x:121.609375,y:152.5,width:296.390625,height:450},hero:{width:390,height:450}},
+  1440:{image:{x:553.609375,y:193.1875,width:666.390625,height:620},hero:{width:980,height:620}}
+};
 const bundle = fs.readFileSync(path.join(root, 'atendimento/assets/index-BYWG3Byi.js'), 'utf8');
 const initialState = new Function(`return (${bundle.match(/sc=(\(\)=>\(\{version:1,.*?\}\)),cc=/s)[1]})()`)();
 const mime = {'.html':'text/html', '.js':'text/javascript', '.css':'text/css', '.webp':'image/webp', '.jpg':'image/jpeg', '.png':'image/png', '.mp4':'video/mp4'};
@@ -15,7 +27,7 @@ const server = http.createServer((req, res) => {
   if (!file.startsWith(root + path.sep)) return res.writeHead(403).end();
   if (fs.existsSync(file) && fs.statSync(file).isDirectory()) file = path.join(file, 'index.html');
   if (!fs.existsSync(file)) return res.writeHead(404).end();
-  const data = fs.readFileSync(file);
+  const data = baselineFiles?.get(path.relative(root,file)) || fs.readFileSync(file);
   res.writeHead(200, {'Content-Type':mime[path.extname(file)] || 'application/octet-stream', 'Content-Length':data.length});
   res.end(data);
 });
@@ -27,7 +39,8 @@ async function run() {
   const screenshots = fs.mkdtempSync(path.join(os.tmpdir(), 'omascote-vitrine-'));
   console.log('Screenshots:', screenshots);
   try {
-    for (const viewport of [{width:390,height:844}, {width:1440,height:1000}]) {
+    const viewports = captureBaseline || compactOnly ? [{width:320,height:844},{width:390,height:844},{width:430,height:932},{width:1440,height:1000}] : [{width:390,height:844},{width:1440,height:1000}];
+    for (const viewport of viewports) {
       let state = structuredClone(initialState);
       const actions = [], errors = [], paidRequests = [], media = [];
       const context = await browser.newContext({viewport, reducedMotion:'reduce'});
@@ -65,6 +78,80 @@ async function run() {
       await page.locator('.vitrineHero__image').evaluate(image => image.decode());
       await page.locator('.vitrineHero__backdrop').evaluate(image => image.decode());
       await page.locator('.vitrineProducts img').evaluateAll(images => Promise.all(images.map(image => image.decode())));
+      const heroMetrics = await page.locator('.vitrineHero__image').evaluate(image => {
+        const rect = node => {
+          const box = node.getBoundingClientRect();
+          return {x:box.x,y:box.y,width:box.width,height:box.height,bottom:box.bottom};
+        };
+        return {image:rect(image),hero:rect(image.closest('.vitrineHero')),header:rect(document.querySelector('.vitrineHeader')),
+          naturalWidth:image.naturalWidth,naturalHeight:image.naturalHeight,src:image.getAttribute('src'),objectFit:getComputedStyle(image).objectFit,objectPosition:getComputedStyle(image).objectPosition};
+      });
+      console.log(`${captureBaseline ? 'BASELINE' : 'CURRENT'} ${viewport.width}px hero:`,JSON.stringify(heroMetrics));
+      if (captureBaseline) {
+        await page.screenshot({path:path.join(screenshots,`baseline-home-${viewport.width}.png`),fullPage:true});
+        assert.deepEqual(errors,[],'baseline has no runtime errors');
+        assert.equal(paidRequests.length,0,'baseline captures create no orders');
+        await context.close();
+        continue;
+      }
+      const expectedHero = baselineMetrics[viewport.width];
+      for (const key of ['width','height']) {
+        assert.equal(heroMetrics.image[key],expectedHero.image[key],`mascot image ${key} is exactly unchanged at ${viewport.width}px`);
+        assert.equal(heroMetrics.hero[key],expectedHero.hero[key],`hero ${key} is exactly unchanged at ${viewport.width}px`);
+      }
+      assert.equal(heroMetrics.image.x,expectedHero.image.x,'mascot keeps the same horizontal placement');
+      assert.ok(heroMetrics.image.y < expectedHero.image.y,'mascot moves upward without resizing');
+      assert.equal(heroMetrics.naturalWidth,720,'the same original wolf asset is used');
+      assert.equal(heroMetrics.naturalHeight,1279);
+      assert.equal(heroMetrics.src,'/media/vitrine/mascote-lobos-recorte-20261001.webp');
+      assert.equal(heroMetrics.objectFit,'contain','mascot is neither enlarged/cropped nor stretched');
+      assert.equal(heroMetrics.objectPosition,'100% 0%','same-sized mascot is aligned upward within its original box');
+      const scale = Math.min(heroMetrics.image.width/heroMetrics.naturalWidth,heroMetrics.image.height/heroMetrics.naturalHeight);
+      const oldScale = Math.min(expectedHero.image.width/720,expectedHero.image.height/1279);
+      assert.equal(scale,oldScale,'actual contained mascot pixels keep the exact same visual scale');
+      assert.equal(await page.locator('#vitrineTitle').count(),0,'the redundant initial question is removed');
+      assert.equal(await page.getByText('O que vamos criar hoje?',{exact:true}).count(),0);
+      const navigation = await page.locator('.vitrineHeader').evaluate(header => {
+        const bounds = selector => {
+          const box = header.querySelector(selector).getBoundingClientRect();
+          return {left:box.left,right:box.right,top:box.top,bottom:box.bottom,width:box.width,height:box.height};
+        };
+        const orderText = document.createRange();
+        orderText.selectNodeContents(header.querySelector('[data-vitrine-orders]'));
+        return {brand:bounds('.vitrineBrand'),orders:bounds('[data-vitrine-orders]'),account:bounds('[data-vitrine-account]'),icon:bounds('[data-vitrine-account] svg'),ordersTextLines:[...orderText.getClientRects()].filter(box => box.width > 0 && box.height > 0).length};
+      });
+      console.log(`CURRENT ${viewport.width}px header targets:`,JSON.stringify(navigation));
+      assert.ok(navigation.orders.top >= navigation.brand.bottom - 1,'orders sit below the brand');
+      assert.ok(navigation.orders.left >= navigation.brand.left - 1 && navigation.orders.left <= navigation.brand.left + 2,'orders remain aligned with the brand');
+      assert.ok(Math.abs(navigation.orders.top - navigation.account.top) <= 1,'account icon stays next to orders on the same row');
+      assert.ok(navigation.account.left >= navigation.orders.right,'orders text and account icon do not overlap');
+      assert.equal(navigation.icon.width,25,'account icon keeps its original visible width');
+      assert.equal(navigation.icon.height,25,'account icon keeps its original visible height');
+      assert.equal(navigation.ordersTextLines,1,'orders text stays on one line even at 320px');
+      assert.ok(heroMetrics.hero.y >= 0 && heroMetrics.hero.y <= 20,'hero starts at the page top with only a small breathing space');
+      const homeButtons = page.locator('.vitrineHeader button, #vitrineHome button');
+      const hitTargets = await homeButtons.evaluateAll(buttons => buttons.filter(button => button.getBoundingClientRect().width > 0).map(button => {
+        const box = button.getBoundingClientRect();
+        return {name:button.getAttribute('aria-label') || button.textContent.trim(),x:box.x,y:box.y,right:box.right,bottom:box.bottom,width:box.width,height:box.height};
+      }));
+      for (let index = 0; index < hitTargets.length; index++) {
+        const target = hitTargets[index];
+        assert.ok(target.width >= 30 && target.height >= 30,`${target.name} retains a usable hit target`);
+        for (const other of hitTargets.slice(index + 1)) {
+          const overlap = Math.min(target.right,other.right) - Math.max(target.x,other.x) > 1 && Math.min(target.bottom,other.bottom) - Math.max(target.y,other.y) > 1;
+          assert.equal(overlap,false,`${target.name} and ${other.name} have disjoint hit targets`);
+        }
+      }
+      for (let index = 0; index < await homeButtons.count(); index++) {
+        const button = homeButtons.nth(index);
+        if (!(await button.isVisible())) continue;
+        await button.scrollIntoViewIfNeeded();
+        assert.equal(await button.evaluate(node => {
+          const box = node.getBoundingClientRect();
+          return node.contains(document.elementFromPoint(box.left+box.width/2,box.top+box.height/2));
+        }),true,'home button center is not blocked by another element');
+      }
+      await page.evaluate(() => scrollTo(0,0));
       const thumbnails = await page.locator('.vitrineProducts img').evaluateAll(images => images.map(image => {
         const box = image.getBoundingClientRect();
         return {width:box.width, height:box.height, top:box.top, bottom:box.bottom, fit:getComputedStyle(image).objectFit};
@@ -92,6 +179,13 @@ async function run() {
       assert.equal(flat.shadow, 'none', 'home has no surrounding shadow');
       assert.equal(await page.locator('#productsMenuAccordion').isVisible(), false, 'old product menu is not competing with chat');
       assert.equal(media.length, 0, 'home loads no sample MP4');
+      if (compactOnly) {
+        assert.deepEqual(errors,[],'compact home has no runtime errors');
+        assert.equal(paidRequests.length,0,'compact home checks create no orders');
+        console.log(`OK compact ${viewport.width}px: same wolf/hero sizes, raised hero, compact header, all hit targets disjoint/reachable, no overflow`);
+        await context.close();
+        continue;
+      }
 
       const chat = page.frameLocator('#integratedChatFrame');
       await page.locator('[data-vitrine-product="mascote_uniforme"]').click();
@@ -103,11 +197,16 @@ async function run() {
         throw error;
       }
       await page.waitForFunction(() => document.body.classList.contains('vitrineChatActive'));
-      await page.waitForTimeout(650);
+      async function savedDraft(predicate,description) {
+        const deadline = Date.now()+5000;
+        while (!predicate(state.draft) && Date.now()<deadline) await page.waitForTimeout(50);
+        assert.ok(predicate(state.draft),description);
+      }
+      await savedDraft(draft => draft?.flow === 'mascote_uniforme','original mascot draft is persisted');
       assert.equal(state.draft?.flow, 'mascote_uniforme', 'mascot uses the existing chat draft');
       const mascotId = state.draft.id;
       await chat.getByRole('radio', {name:'Futebol',exact:true}).click();
-      await page.waitForTimeout(650);
+      await savedDraft(draft => draft?.values.sport === 'Futebol','sport is persisted before leaving the product');
       await page.locator('[data-vitrine-home]').first().click();
       await page.locator('#vitrineHome').waitFor({state:'visible'});
       await page.locator('[data-vitrine-product="mascote_uniforme"]').click();
@@ -136,11 +235,11 @@ async function run() {
         await page.locator('[data-vitrine-home]').first().click();
         await page.locator(`[data-vitrine-product="${product}"]`).click();
         await chat.getByRole('button', {name:'Trocar de atendimento',exact:true}).click();
-        await page.waitForTimeout(650);
+        await savedDraft(draft => draft?.flow === product,'accepted product switch is persisted');
         assert.equal(state.draft.flow, product, 'accepted switch uses the original product draft');
         assert.notEqual(state.draft.id, previousId);
         await chat.getByRole('radio',{name:'Futebol',exact:true}).click();
-        await page.waitForTimeout(650);
+        await savedDraft(draft => draft?.flow === product && draft.values.sport === 'Futebol','new product sport is persisted');
         await page.screenshot({path:path.join(screenshots,`${product}-chat-${viewport.width}.png`), fullPage:true});
         assert.equal(await chat.locator('html').evaluate(node => node.scrollWidth <= innerWidth), true, 'chat form has no horizontal overflow');
         await page.locator('[data-vitrine-home]').first().click();
