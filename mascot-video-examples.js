@@ -35,9 +35,46 @@
   anchor.before(section);
   let onSelect = null;
   const videos = [...section.querySelectorAll('video')];
+  const cachedVideos = new Map(), requestedVideos = new Set(), failedPrefetches = new Set();
+  let activeVideo = null, prefetchJob = null, prefetchEnabled = false;
   const motion = () => matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth';
   const pauseAll = () => videos.forEach(video => video.pause());
+  const canPrefetch = () => prefetchEnabled && !section.hidden && !document.hidden && activeVideo;
+  function stopPrefetch() {
+    // Keep the job until its promise settles: even a slow abort cannot start a second fetch.
+    prefetchJob?.controller.abort();
+  }
+  async function prefetchNext() {
+    if (prefetchJob || !canPrefetch()) return;
+    const video = videos.find(item => item !== activeVideo && !requestedVideos.has(item) &&
+      !cachedVideos.has(item) && !failedPrefetches.has(item));
+    if (!video) return;
+    const job = {video, controller:new AbortController()};
+    prefetchJob = job;
+    try {
+      const response = await fetch(video.dataset.src, {signal:job.controller.signal, cache:'force-cache'});
+      if (!response.ok) throw new Error('Video unavailable');
+      const blob = await response.blob();
+      if (job.controller.signal.aborted || prefetchJob !== job || requestedVideos.has(video)) return;
+      if (!blob.size) throw new Error('Empty video');
+      // Do not change a media element's source while the customer is interacting with it.
+      cachedVideos.set(video, URL.createObjectURL(blob));
+    } catch {
+      if (!job.controller.signal.aborted) failedPrefetches.add(video);
+    } finally {
+      if (prefetchJob === job) prefetchJob = null;
+      if (canPrefetch()) void prefetchNext();
+    }
+  }
+  function selectVideo(video) {
+    if (activeVideo !== video) {prefetchEnabled = false;stopPrefetch();}
+    activeVideo = video;
+    requestedVideos.add(video);
+    videos.forEach(other => {if (other !== video) other.pause();});
+  }
   function close() {
+    prefetchEnabled = false;
+    stopPrefetch();
     pauseAll();
     section.hidden = true;
     onSelect = null;
@@ -49,11 +86,13 @@
     open(callback) {
       if (typeof callback !== 'function') return false;
       onSelect = callback;
+      prefetchEnabled = false;
+      stopPrefetch();
       pauseAll();
       section.hidden = false;
       chat.classList.remove('is-expanded');
       document.body.classList.remove('integratedChatOpen');
-      // Match the crest gallery: load the lightweight poster on open, and video only on play.
+      // Opening loads only posters. Background video transfers start after actual playback.
       videos.forEach(video => { if (!video.poster && video.dataset.poster) video.poster = video.dataset.poster; });
       requestAnimationFrame(() => requestAnimationFrame(() => {
         if (section.hidden) return;
@@ -73,17 +112,48 @@
   }));
   section.querySelectorAll('[data-mascot-play]').forEach(button => {
     const card = button.closest('article'), video = card.querySelector('video'), status = card.querySelector('[role="status"]');
-    const showError = () => {button.hidden = false;status.textContent = 'Não foi possível carregar o exemplo. Tente novamente.';};
+    let failedPlayback = false, playAttempt = 0;
+    const allowRetry = () => {failedPlayback = true;button.hidden = false;};
+    const showError = error => {
+      if (error?.name === 'AbortError' || activeVideo !== video || section.hidden || document.hidden) return;
+      allowRetry();status.textContent = 'Não foi possível carregar o exemplo. Tente novamente.';
+    };
     button.addEventListener('click',() => {
-      pauseAll();status.textContent = '';
-      if (!video.getAttribute('src')) video.src = video.dataset.src;
-      if (video.error) video.load();
+      selectVideo(video);status.textContent = '';
+      if (failedPlayback || video.error) {
+        const cached = cachedVideos.get(video);
+        cachedVideos.delete(video);
+        video.src = video.dataset.src;
+        if (cached) URL.revokeObjectURL(cached);
+        video.load();
+        failedPlayback = false;
+      } else if (!video.getAttribute('src')) video.src = cachedVideos.get(video) || video.dataset.src;
       video.controls = true;button.hidden = true;
-      video.play().catch(showError);
+      const attempt = ++playAttempt;
+      // Keep play in the click gesture; awaiting a pending download would break mobile playback.
+      video.play().catch(error => {if (attempt === playAttempt) showError(error);});
     });
-    video.addEventListener('error',showError);
-    video.addEventListener('play',() => videos.forEach(other => {if (other !== video) other.pause();}));
+    video.addEventListener('error',() => {if (requestedVideos.has(video)) {allowRetry();showError();}});
+    video.addEventListener('play',() => {if (!video.paused && !section.hidden && !document.hidden) selectVideo(video);});
+    video.addEventListener('playing',() => {
+      if (activeVideo !== video || section.hidden || document.hidden) {video.pause();return;}
+      if (video.paused || video.ended) return;
+      button.hidden = true;status.textContent = '';
+      prefetchEnabled = true;
+      void prefetchNext();
+    });
   });
-  document.addEventListener('visibilitychange',() => {if (document.hidden) pauseAll();});
+  document.addEventListener('visibilitychange',() => {
+    if (document.hidden) {prefetchEnabled = false;stopPrefetch();pauseAll();}
+    else if (canPrefetch()) void prefetchNext();
+  });
+  window.addEventListener('pagehide',event => {
+    prefetchEnabled = false;
+    stopPrefetch();pauseAll();
+    if (!event.persisted) {
+      cachedVideos.forEach(url => URL.revokeObjectURL(url));
+      cachedVideos.clear();
+    }
+  });
   frame.addEventListener('load',() => {if (!section.hidden) close();});
 })();
