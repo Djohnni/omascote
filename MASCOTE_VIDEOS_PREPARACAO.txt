@@ -12,19 +12,25 @@ Escolhas antes do formulário:
 - A opção existente de somente imagem permanece disponível.
 
 Exemplos: editar videoSrc e posterSrc em mascot-video-options.js.
-Os vídeos estão vazios de propósito. Chuva usa a imagem enviada pelo proprietário
-como prévia; a tela mostra "Vídeo em breve", sem baixar vídeos inexistentes.
+Chuva usa o vídeo Mascote_criando_animação_com_raio_20261007124456.mp4, enviado
+pelo proprietário em Downloads. A cópia pública foi reduzida de 13,91 MB para
+1,62 MB, preservando 720x1280, 10 segundos e áudio. A capa WebP tem 73,5 KB.
+A capa carrega ao abrir a galeria e o vídeo somente ao tocar em Assistir,
+com preload=none e faststart, conforme o exemplo de Escudo.
 Podem ser usados arquivos em /media/mascote/ ou URLs de mídia autorizadas.
-Não há duração definida, pois ela ainda não foi informada.
+Novos vídeos de mascote usam Omni, 720p, 9:16, 10 segundos e áudio.
 
 As escolhas e a mensagem ficam no rascunho em mascot_video_option e mascot_video_text.
 Chuva está liberada por R$ 28,00: fields.mascot_video_option="chuva" é preservado
 pela API existente e seleciona prompt_mascote_chuva.txt no worker IA4tube.
 O arquivo de imagem reproduz o TXT enviado pelo proprietário; apenas {mascot_animal}
 é substituído pelo animal do cliente. Os cenários automáticos não reescrevem essa base.
-O vídeo usa prompt_video_mascote.txt com somente esta frase acrescentada ao final:
+O vídeo usa prompt_video_mascote_omni.txt, com a mesma animação do prompt anterior
+e duração ajustada de 8 para 10 segundos. Chuva acrescenta somente esta frase:
 está chovendo muito e com muitos raios
-Nenhuma geração paga é executada pelos testes.
+Nenhuma geração paga é executada pelos testes. Contratos antigos de Fast continuam
+com seu modelo e prompt originais. O mascote usa só a imagem inicial; o Escudo
+mantém seu comportamento de quadro inicial e final iguais.
 Sol e Escrita personalizada continuam bloqueadas no formulário e na ponte do pedido.
 
 Para ativação das outras opções: alinhar a cobrança, validar os formatos de geração e a mensagem

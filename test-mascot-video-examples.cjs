@@ -9,7 +9,7 @@ const root = __dirname;
 const bundle = fs.readFileSync(path.join(root,'atendimento/assets/index-BYWG3Byi.js'),'utf8');
 const initial = new Function(`return (${bundle.match(/sc=(\(\)=>\(\{version:1,.*?\}\)),cc=/s)[1]})()` )();
 const pixel = Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+/l9sAAAAASUVORK5CYII=', 'base64');
-const mime = {'.html':'text/html','.js':'text/javascript','.css':'text/css','.png':'image/png','.jpg':'image/jpeg','.webp':'image/webp','.avif':'image/avif'};
+const mime = {'.html':'text/html','.js':'text/javascript','.css':'text/css','.png':'image/png','.jpg':'image/jpeg','.webp':'image/webp','.avif':'image/avif','.mp4':'video/mp4'};
 const server = http.createServer((req,res) => {
   let file = path.resolve(root,'.'+decodeURIComponent(new URL(req.url,'http://localhost').pathname));
   if (!file.startsWith(root+path.sep)) return res.writeHead(403).end();
@@ -28,9 +28,10 @@ async function run() {
       let state=structuredClone(initial);
       const context=await browser.newContext({viewport:{width,height:1000},reducedMotion:'reduce'});
       const page=await context.newPage();
-      const errors=[],paid=[],media=[],apiPayloads=[];
+      const errors=[],paid=[],media=[],posters=[],apiPayloads=[];
       page.on('pageerror',e=>errors.push(e.message));
       page.on('request',req=>{if (/\.mp4(?:\?|$)/.test(req.url())) media.push(req.url());});
+      page.on('request',req=>{if (/\/media\/mascote\/.*\.(?:webp|png)(?:\?|$)/.test(req.url())) posters.push(req.url());});
       await context.addInitScript(()=>{
         localStorage.setItem('omascote_token','local-test-only');
         localStorage.setItem('omascote_nome_time','Teste');
@@ -70,6 +71,8 @@ async function run() {
         return route.continue();
       });
       await page.goto(origin+'/app.html');
+      assert.deepEqual(media,[],'opening the site does not download videos');
+      assert.deepEqual(posters,[],'opening the site does not download mascot posters');
       const chat=page.frameLocator('#integratedChatFrame');
       await page.locator('[data-vitrine-product="mascote_uniforme"]').click();
       const gallery=page.locator('#mascotVideoExamples');
@@ -79,11 +82,23 @@ async function run() {
       assert.deepEqual(await gallery.locator('h3').allTextContents(),['Sol','Chuva','Escrita personalizada']);
       assert.deepEqual(await gallery.locator('.mascotExamples__price').allTextContents(),['R$ 25,00','R$ 28,00','R$ 28,00']);
       assert.equal(await gallery.locator('.mascotExamples__placeholder').count(),2);
-      assert.equal(await gallery.locator('.mascotExamples__poster').count(),1);
-      assert.equal(await gallery.locator('video').count(),0,'no broken media elements before examples are uploaded');
+      assert.equal(await gallery.locator('video').count(),1,'only Chuva has a video example');
+      const video=gallery.locator('video');
+      assert.equal(await video.getAttribute('preload'),'none');
+      assert.equal(await video.getAttribute('src'),null,'opening the gallery does not set the video source');
+      assert.deepEqual(media,[],'opening the gallery downloads no video');
+      assert.match(await video.getAttribute('poster'),/capa-chuva-10s-20261007\.webp$/);
+      assert.ok(posters.every(url=>url.endsWith('.webp')),'the original large PNG is never downloaded');
       assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth),false);
       await gallery.screenshot({path:path.join(screenshots,`choices-${width}.png`)});
+      await gallery.getByRole('button',{name:'Assistir ao exemplo de Chuva',exact:true}).click();
+      await page.waitForFunction(()=>document.querySelector('#mascotVideoExamples video').currentTime>0);
+      assert.equal(new Set(media).size,1,'only the selected local example downloads');
+      assert.ok(media.every(url=>url===origin+'/media/mascote/exemplo-chuva-10s-20261007.mp4'));
+      assert.equal(await video.evaluate(v=>v.videoWidth),720);
+      assert.equal(await video.evaluate(v=>v.videoHeight),1280);
       await gallery.locator('[data-mascot-choice="sol"]').click();
+      assert.equal(await video.evaluate(v=>v.paused),true,'choosing an option stops playback');
       await chat.locator('.guided-mascot[data-step="1"]').waitFor({state:'visible'});
       await chat.locator('[data-field="mascot_animal"] input').fill('Lobo');
       await chat.getByRole('radio',{name:'Futebol',exact:true}).click();
@@ -106,7 +121,7 @@ async function run() {
       },{}));
       assert.equal(rainOrder.fields.mascot_video_option,'chuva');
       assert.equal(rainOrder.fields.delivery_mode,'image_video');
-      assert.equal(rainOrder.fields.video_model,'fast');
+      assert.equal(rainOrder.fields.video_model,'omni');
       assert.equal(rainOrder.fields.mascot_animal,'Lobo');
       await chat.getByRole('button',{name:'Trocar opção',exact:true}).click();
       await gallery.locator('[data-mascot-choice="escrita_personalizada"]').click();
@@ -151,7 +166,7 @@ async function run() {
       await gallery.waitFor({state:'visible'});
       await gallery.press('Escape');
       assert.deepEqual(paid,[]);
-      assert.deepEqual(media,[]);
+      assert.equal(new Set(media).size,1,'switching choices never downloads another example');
       assert.deepEqual(errors,[]);
       const result=await page.evaluate(async bytes=>omascoteChatSubmitOrders({
         id:'rain-test-draft',flow:'mascote_uniforme',
@@ -162,11 +177,11 @@ async function run() {
       const sent=JSON.parse(apiPayloads[0].fields_json);
       assert.equal(sent.mascot_video_option,'chuva');
       assert.equal(sent.delivery_mode,'image_video');
-      assert.equal(sent.video_model,'fast');
+      assert.equal(sent.video_model,'omni');
       fs.writeFileSync(path.join(screenshots,'rain-api-body.json'),JSON.stringify(apiPayloads[0],null,2));
       await context.close();
     }
-    console.log('PASS: mobile and desktop selection, saved choices, custom text, image fallback, no paid requests.');
+    console.log('PASS: mobile and desktop selection, deferred poster/video loading, 720p playback, saved choices, Omni request, custom text, image fallback, no paid requests.');
     console.log('Screenshots: '+screenshots);
   } finally {await browser.close();server.close();}
 }

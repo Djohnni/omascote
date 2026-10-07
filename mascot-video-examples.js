@@ -24,13 +24,13 @@
       <article class="mascotExamples__card" data-mascot-option="${escape(option.id)}">
         <h3>${escape(option.name)}</h3><strong class="mascotExamples__price">${price(option.price)}</strong>
         <div class="mascotExamples__media mascotExamples__media--${escape(option.id)}">
-          ${option.videoSrc ? `<video preload="none" playsinline data-src="${escape(option.videoSrc)}"${option.posterSrc ? ` poster="${escape(option.posterSrc)}"` : ''} aria-label="Exemplo de ${escape(option.name)}"></video><button class="mascotExamples__play" type="button" data-mascot-play>▶ Assistir</button>` : option.posterSrc ? `<img class="mascotExamples__poster" src="${escape(option.posterSrc)}" alt="Exemplo de mascote na chuva" loading="lazy" width="941" height="1672"><span class="mascotExamples__video-soon">Vídeo em breve</span>` : `<div class="mascotExamples__placeholder"><span aria-hidden="true">${icons[option.id] || '▶'}</span><span>Exemplo em breve</span></div>`}
+          ${option.videoSrc ? `<video preload="none" playsinline width="720" height="1280" data-src="${escape(option.videoSrc)}"${option.posterSrc ? ` data-poster="${escape(option.posterSrc)}"` : ''} aria-label="Exemplo de ${escape(option.name)}"></video><button class="mascotExamples__play" type="button" data-mascot-play aria-label="Assistir ao exemplo de ${escape(option.name)}">▶ Assistir</button>` : option.posterSrc ? `<img class="mascotExamples__poster" src="${escape(option.posterSrc)}" alt="Exemplo de mascote na chuva" loading="lazy" width="941" height="1672"><span class="mascotExamples__video-soon">Vídeo em breve</span>` : `<div class="mascotExamples__placeholder"><span aria-hidden="true">${icons[option.id] || '▶'}</span><span>Exemplo em breve</span></div>`}
         </div>
         <p class="mascotExamples__status" role="status"></p>
         <button class="mascotExamples__choose" type="button" data-mascot-choice="${escape(option.id)}">Escolher ${escape(option.name)}</button>
       </article>`).join('')}
     </div>
-    <p class="mascotExamples__pending">Chuva já está disponível para pedidos. Os vídeos de exemplo serão adicionados em breve; as outras opções estão em preparação.</p>
+    <p class="mascotExamples__pending">Chuva já está disponível para pedidos. Sol e Escrita personalizada estão em preparação.</p>
     <button class="mascotExamples__image" type="button" data-mascot-choice="image">Prefiro somente imagem · R$ 18,00</button>`;
   anchor.before(section);
   let onSelect = null;
@@ -53,6 +53,8 @@
       section.hidden = false;
       chat.classList.remove('is-expanded');
       document.body.classList.remove('integratedChatOpen');
+      // Match the crest gallery: load the lightweight poster on open, and video only on play.
+      videos.forEach(video => { if (!video.poster && video.dataset.poster) video.poster = video.dataset.poster; });
       requestAnimationFrame(() => requestAnimationFrame(() => {
         if (section.hidden) return;
         section.focus({preventScroll:true});
