@@ -22,18 +22,21 @@ function node() {
     get src(){return attrs.get('src')||'';},set src(value){attrs.set('src',value);}
   };
 }
-function fixture() {
+function fixture(av1Support) {
   const scope = {window:{}};
   vm.runInNewContext(fs.readFileSync(path.join(root,'mascot-video-options.js'),'utf8'),scope);
   const options = scope.window.OmascoteMascotVideoOptions;
   const section = node(),close = node(),frame = node(),chat = node();
   const videos = options.map(option=>Object.assign(node(),{
-    dataset:{src:option.videoSrc,poster:option.posterSrc},paused:true,ended:false,error:null,playCount:0,loadCount:0,
-    play(){this.playCount++;this.paused=false;this.ended=false;this.emit('play');return this.nextPlay || Promise.resolve();},
+    dataset:{src:option.videoSrc,av1Src:option.videoAv1Src,poster:option.posterSrc},paused:true,ended:false,error:null,playCount:0,loadCount:0,
+    play(){this.playCount++;this.paused=false;this.ended=false;this.emit('play');return this.playResults?.shift() || this.nextPlay || Promise.resolve();},
     pause(){this.paused=true;this.emit('pause');},
     load(){this.loadCount++;this.error=null;},
     begin(){this.paused=false;this.ended=false;this.emit('playing');}
   }));
+  if (av1Support !== undefined) videos.forEach(video=>{video.canPlayType=codec=>{
+    assert.equal(codec,'video/mp4; codecs="av01.0.05M.08, mp4a.40.2"');return av1Support;
+  };});
   const statuses = videos.map(()=>node()),buttons = videos.map(()=>node());
   const choices = [...options.map(option=>option.id),'image'].map(id=>Object.assign(node(),{dataset:{mascotChoice:id}}));
   buttons.forEach((button,index)=>{button.closest=()=>({querySelector:selector=>selector==='video'?videos[index]:statuses[index]});});
@@ -172,4 +175,96 @@ test('BFCache preserva URLs sem retomar downloads; saída definitiva libera o ca
   f.buttons[1].click();assert.equal(f.videos[1].src,'blob:cached-1');
   f.window.emit('pagehide',{persisted:false});await flush();
   assert.deepEqual(f.revoked,['blob:cached-1','blob:cached-2']);
+});
+
+test('Suporte ausente, vazio ou maybe conserva H264 sem carregar arquivos antes de Assistir', () => {
+  for (const support of [undefined,'','maybe']) {
+    const f=fixture(support);f.open();
+    assert.equal(f.requests.length,0);assert.ok(f.videos.every(video=>!video.src));
+    f.buttons[0].click();assert.equal(f.videos[0].src,f.options[0].videoSrc);
+    assert.equal(f.requests.length,0);
+  }
+});
+
+test('AV1 confirmado toca a versão menor e pré-carrega/reutiliza os outros dois Blobs AV1', async () => {
+  const f=fixture('probably');f.open();assert.equal(f.requests.length,0);
+  f.buttons[0].click();assert.equal(f.videos[0].src,f.options[0].videoAv1Src);
+  assert.equal(f.requests.length,0);f.videos[0].begin();
+  assert.equal(f.requests[0].url,f.options[1].videoAv1Src);
+  f.requests[0].finish();await flush();assert.equal(f.requests[1].url,f.options[2].videoAv1Src);
+  f.requests[1].finish();await flush();
+  f.buttons[1].click();assert.equal(f.videos[1].src,'blob:cached-1');f.videos[1].begin();
+  f.buttons[2].click();assert.equal(f.videos[2].src,'blob:cached-2');f.videos[2].begin();
+  assert.equal(f.requests.length,2);
+});
+
+test('Falha AV1 tenta H264 uma vez; erro H264 restaura Assistir e nunca retorna ao AV1', async () => {
+  const f=fixture('probably');f.open();f.buttons[0].click();
+  f.videos[0].error={code:3};f.videos[0].emit('error');
+  assert.equal(f.videos[0].src,f.options[0].videoSrc);
+  assert.equal(f.videos[0].playCount,2);assert.equal(f.videos[0].loadCount,1);
+  f.videos[0].emit('error');assert.equal(f.videos[0].playCount,2,'stale native error without media.error is ignored');
+  f.videos[0].error={code:3};f.videos[0].emit('error');
+  assert.equal(f.videos[0].playCount,2);assert.equal(f.buttons[0].hidden,false);
+  f.buttons[0].click();assert.equal(f.videos[0].src,f.options[0].videoSrc);
+  assert.equal(f.videos[0].playCount,3);assert.equal(f.requests.length,0);
+});
+
+test('Erro AV1 tardio em vídeo pausado ou terminado prepara H264 sem reiniciar sozinho', () => {
+  for (const ended of [false,true]) {
+    const f=fixture('probably');f.open();f.buttons[0].click();
+    f.videos[0].pause();f.videos[0].ended=ended;
+    f.videos[0].error={code:3};f.videos[0].emit('error');
+    assert.equal(f.videos[0].playCount,1);
+    assert.equal(f.buttons[0].hidden,false);
+    f.buttons[0].click();assert.equal(f.videos[0].src,f.options[0].videoSrc);
+    assert.equal(f.videos[0].playCount,2);
+  }
+});
+
+test('Rejeição AV1 com paused=true conserva intenção e tenta H264 uma única vez', async () => {
+  const f=fixture('probably');f.open();
+  const initial=deferred();f.videos[0].playResults=[initial.promise,Promise.resolve()];
+  f.buttons[0].click();f.videos[0].paused=true;
+  initial.reject(Object.assign(new Error('codec unavailable'),{name:'NotSupportedError'}));await flush();
+  assert.equal(f.videos[0].src,f.options[0].videoSrc);
+  assert.equal(f.videos[0].playCount,2);assert.equal(f.videos[0].loadCount,1);
+  assert.equal(f.statuses[0].textContent,'');
+});
+
+test('Pausa causada por MediaError permite fallback; pause antigo após novo play não cancela intenção', () => {
+  const f=fixture('probably');f.open();f.buttons[0].click();
+  f.videos[0].emit('pause'); // An old queued event while the current element is already playing.
+  f.videos[0].error={code:3};f.videos[0].paused=true;f.videos[0].emit('pause');f.videos[0].emit('error');
+  assert.equal(f.videos[0].src,f.options[0].videoSrc);
+  assert.equal(f.videos[0].playCount,2);
+});
+
+test('Blob AV1 inválido é descartado; bloqueio de autoplay do fallback permite retry H264 manual', async () => {
+  const f=fixture('probably');f.open();f.buttons[0].click();f.videos[0].begin();
+  f.requests[0].finish();await flush();f.requests[1].finish();await flush();
+  const fallback=deferred();f.videos[1].playResults=[Promise.resolve(),fallback.promise];
+  f.buttons[1].click();assert.equal(f.videos[1].src,'blob:cached-1');
+  f.videos[1].error={code:3};f.videos[1].emit('error');
+  assert.ok(f.revoked.includes('blob:cached-1'));assert.equal(f.videos[1].src,f.options[1].videoSrc);
+  fallback.reject(Object.assign(new Error('needs user gesture'),{name:'NotAllowedError'}));await flush();
+  assert.equal(f.buttons[1].hidden,false);assert.match(f.statuses[1].textContent,/Tente novamente/);
+  assert.equal(f.videos[1].playCount,2);
+  f.buttons[1].click();assert.equal(f.videos[1].src,f.options[1].videoSrc);
+  assert.equal(f.videos[1].playCount,3);
+});
+
+test('Falha AV1 secundária prepara H264 manual; resposta AV1 atrasada não contamina o fallback', async () => {
+  const f=fixture('probably');f.open();f.buttons[0].click();f.videos[0].begin();
+  f.requests[0].fail();await flush();
+  assert.equal(f.requests[1].url,f.options[2].videoAv1Src);
+  assert.ok(f.statuses.every(status=>!status.textContent));
+  f.buttons[1].click();assert.equal(f.videos[1].src,f.options[1].videoSrc);
+  await flush();
+  const race=fixture('probably');race.open();race.buttons[0].click();race.videos[0].begin();
+  const late=race.requests[0];late.ignoreAbort=true;race.buttons[1].click();
+  race.videos[1].error={code:3};race.videos[1].emit('error');
+  late.finish();await flush();
+  assert.equal(race.created.length,0);assert.equal(race.videos[1].src,race.options[1].videoSrc);
+  assert.equal(race.requests.length,1,'new fallback must play before any next prefetch');
 });

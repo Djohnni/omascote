@@ -24,7 +24,7 @@
       <article class="mascotExamples__card" data-mascot-option="${escape(option.id)}">
         <h3>${escape(option.name)}</h3><strong class="mascotExamples__price">${price(option.price)}</strong>
         <div class="mascotExamples__media mascotExamples__media--${escape(option.id)}">
-          ${option.videoSrc ? `<video preload="none" playsinline width="720" height="1280" data-src="${escape(option.videoSrc)}"${option.posterSrc ? ` data-poster="${escape(option.posterSrc)}"` : ''} aria-label="Exemplo de ${escape(option.name)}"></video><button class="mascotExamples__play" type="button" data-mascot-play aria-label="Assistir ao exemplo de ${escape(option.name)}">▶ Assistir</button>` : option.posterSrc ? `<img class="mascotExamples__poster" src="${escape(option.posterSrc)}" alt="Exemplo de mascote na chuva" loading="lazy" width="941" height="1672"><span class="mascotExamples__video-soon">Vídeo em breve</span>` : `<div class="mascotExamples__placeholder"><span aria-hidden="true">${icons[option.id] || '▶'}</span><span>Exemplo em breve</span></div>`}
+          ${option.videoSrc ? `<video preload="none" playsinline width="720" height="1280" data-src="${escape(option.videoSrc)}"${option.videoAv1Src ? ` data-av1-src="${escape(option.videoAv1Src)}"` : ''}${option.posterSrc ? ` data-poster="${escape(option.posterSrc)}"` : ''} aria-label="Exemplo de ${escape(option.name)}"></video><button class="mascotExamples__play" type="button" data-mascot-play aria-label="Assistir ao exemplo de ${escape(option.name)}">▶ Assistir</button>` : option.posterSrc ? `<img class="mascotExamples__poster" src="${escape(option.posterSrc)}" alt="Exemplo de mascote na chuva" loading="lazy" width="941" height="1672"><span class="mascotExamples__video-soon">Vídeo em breve</span>` : `<div class="mascotExamples__placeholder"><span aria-hidden="true">${icons[option.id] || '▶'}</span><span>Exemplo em breve</span></div>`}
         </div>
         <p class="mascotExamples__status" role="status"></p>
         <button class="mascotExamples__choose" type="button" data-mascot-choice="${escape(option.id)}">Escolher ${escape(option.name)}</button>
@@ -35,32 +35,51 @@
   anchor.before(section);
   let onSelect = null;
   const videos = [...section.querySelectorAll('video')];
-  const cachedVideos = new Map(), requestedVideos = new Set(), failedPrefetches = new Set();
+  videos.forEach(video => {
+    if (video.dataset.av1Src && video.canPlayType?.('video/mp4; codecs="av01.0.05M.08, mp4a.40.2"') === 'probably') {
+      video.dataset.fallbackSrc = video.dataset.src;
+      video.dataset.src = video.dataset.av1Src;
+    }
+  });
+  const cachedVideos = new Map(), requestedVideos = new Set(), failedPrefetches = new Set(), playbackIntent = new Map();
   let activeVideo = null, prefetchJob = null, prefetchEnabled = false;
   const motion = () => matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth';
-  const pauseAll = () => videos.forEach(video => video.pause());
+  const pauseAll = () => videos.forEach(video => {playbackIntent.set(video,false);video.pause();});
   const canPrefetch = () => prefetchEnabled && !section.hidden && !document.hidden && activeVideo;
   function stopPrefetch() {
     // Keep the job until its promise settles: even a slow abort cannot start a second fetch.
     prefetchJob?.controller.abort();
+  }
+  function fallbackVideo(video) {
+    if (!video.dataset.fallbackSrc) return false;
+    video.dataset.src = video.dataset.fallbackSrc;
+    delete video.dataset.fallbackSrc;
+    if (prefetchJob?.video === video) stopPrefetch();
+    const cached = cachedVideos.get(video);
+    cachedVideos.delete(video);
+    if (cached) URL.revokeObjectURL(cached);
+    return true;
   }
   async function prefetchNext() {
     if (prefetchJob || !canPrefetch()) return;
     const video = videos.find(item => item !== activeVideo && !requestedVideos.has(item) &&
       !cachedVideos.has(item) && !failedPrefetches.has(item));
     if (!video) return;
-    const job = {video, controller:new AbortController()};
+    const job = {video, src:video.dataset.src, controller:new AbortController()};
     prefetchJob = job;
     try {
-      const response = await fetch(video.dataset.src, {signal:job.controller.signal, cache:'force-cache'});
+      const response = await fetch(job.src, {signal:job.controller.signal, cache:'force-cache'});
       if (!response.ok) throw new Error('Video unavailable');
       const blob = await response.blob();
-      if (job.controller.signal.aborted || prefetchJob !== job || requestedVideos.has(video)) return;
+      if (job.controller.signal.aborted || prefetchJob !== job || requestedVideos.has(video) || video.dataset.src !== job.src) return;
       if (!blob.size) throw new Error('Empty video');
       // Do not change a media element's source while the customer is interacting with it.
       cachedVideos.set(video, URL.createObjectURL(blob));
     } catch {
-      if (!job.controller.signal.aborted) failedPrefetches.add(video);
+      if (!job.controller.signal.aborted) {
+        fallbackVideo(video);
+        failedPrefetches.add(video);
+      }
     } finally {
       if (prefetchJob === job) prefetchJob = null;
       if (canPrefetch()) void prefetchNext();
@@ -70,7 +89,7 @@
     if (activeVideo !== video) {prefetchEnabled = false;stopPrefetch();}
     activeVideo = video;
     requestedVideos.add(video);
-    videos.forEach(other => {if (other !== video) other.pause();});
+    videos.forEach(other => {if (other !== video) {playbackIntent.set(other,false);other.pause();}});
   }
   function close() {
     prefetchEnabled = false;
@@ -115,11 +134,20 @@
     let failedPlayback = false, playAttempt = 0;
     const allowRetry = () => {failedPlayback = true;button.hidden = false;};
     const showError = error => {
-      if (error?.name === 'AbortError' || activeVideo !== video || section.hidden || document.hidden) return;
+      if (error?.name === 'AbortError') return;
+      if (fallbackVideo(video)) {
+        ++playAttempt;allowRetry();
+        if (activeVideo === video && !section.hidden && !document.hidden && playbackIntent.get(video) && !video.ended) {
+          prefetchEnabled = false;stopPrefetch();
+          startPlayback();
+          return;
+        }
+      }
+      if (activeVideo !== video || section.hidden || document.hidden) return;
       allowRetry();status.textContent = 'Não foi possível carregar o exemplo. Tente novamente.';
     };
-    button.addEventListener('click',() => {
-      selectVideo(video);status.textContent = '';
+    const startPlayback = () => {
+      status.textContent = '';
       if (failedPlayback || video.error) {
         const cached = cachedVideos.get(video);
         cachedVideos.delete(video);
@@ -131,10 +159,18 @@
       video.controls = true;button.hidden = true;
       const attempt = ++playAttempt;
       // Keep play in the click gesture; awaiting a pending download would break mobile playback.
-      video.play().catch(error => {if (attempt === playAttempt) showError(error);});
+      try {
+        Promise.resolve(video.play()).catch(error => {if (attempt === playAttempt) showError(error);});
+      } catch (error) {if (attempt === playAttempt) showError(error);}
+    };
+    button.addEventListener('click',() => {playbackIntent.set(video,true);selectVideo(video);startPlayback();});
+    video.addEventListener('error',() => {if (video.error && requestedVideos.has(video)) {allowRetry();showError();}});
+    video.addEventListener('play',() => {
+      if (!video.paused && !section.hidden && !document.hidden) {playbackIntent.set(video,true);selectVideo(video);}
     });
-    video.addEventListener('error',() => {if (requestedVideos.has(video)) {allowRetry();showError();}});
-    video.addEventListener('play',() => {if (!video.paused && !section.hidden && !document.hidden) selectVideo(video);});
+    // Decoder failure may pause the element itself; only an ordinary pause cancels user intent.
+    video.addEventListener('pause',() => {if (video.paused && !video.error) playbackIntent.set(video,false);});
+    video.addEventListener('ended',() => playbackIntent.set(video,false));
     video.addEventListener('playing',() => {
       if (activeVideo !== video || section.hidden || document.hidden) {video.pause();return;}
       if (video.paused || video.ended) return;
