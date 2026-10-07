@@ -2,8 +2,8 @@ Preparação das três opções de vídeo de mascote
 
 Base: Djohnni/omascote, origin/main, commit 532ff9c3a3ab6d1605d51e7786ecec470d4c88cb.
 Branch de trabalho: codex/mascot-video-choices-20261007.
-Destino do site quando aprovado para publicação: GitHub Pages / omascote.com.br.
-Esta preparação não publica o site e não altera a API ou o worker.
+Destino de publicação autorizado: main, GitHub Pages / omascote.com.br.
+As opções foram publicadas; Chuva possui geração integrada ao worker ativo.
 
 Escolhas antes do formulário:
 - Sol: R$ 25,00.
@@ -12,16 +12,22 @@ Escolhas antes do formulário:
 - A opção existente de somente imagem permanece disponível.
 
 Exemplos: editar videoSrc e posterSrc em mascot-video-options.js.
-Os valores estão vazios de propósito. A tela mostra "Exemplo em breve", sem tentar baixar vídeos inexistentes.
+Os vídeos estão vazios de propósito. Chuva usa a imagem enviada pelo proprietário
+como prévia; a tela mostra "Vídeo em breve", sem baixar vídeos inexistentes.
 Podem ser usados arquivos em /media/mascote/ ou URLs de mídia autorizadas.
 Não há duração definida, pois ela ainda não foi informada.
 
 As escolhas e a mensagem ficam no rascunho em mascot_video_option e mascot_video_text.
-Os pedidos dessas três opções ficam indisponíveis para envio até integrar os preços,
-formatos e texto personalizado à API e ao worker. Apenas adicionar os exemplos não ativa a venda.
-O bloqueio também existe na ponte do pedido para impedir cobrança do formato errado.
+Chuva está liberada por R$ 28,00: fields.mascot_video_option="chuva" é preservado
+pela API existente e seleciona prompt_mascote_chuva.txt no worker IA4tube.
+O arquivo de imagem reproduz o TXT enviado pelo proprietário; apenas {mascot_animal}
+é substituído pelo animal do cliente. Os cenários automáticos não reescrevem essa base.
+O vídeo usa prompt_video_mascote.txt com somente esta frase acrescentada ao final:
+está chovendo muito e com muitos raios
+Nenhuma geração paga é executada pelos testes.
+Sol e Escrita personalizada continuam bloqueadas no formulário e na ponte do pedido.
 
-Para ativação: alinhar a cobrança, validar os três formatos de geração e a mensagem
+Para ativação das outras opções: alinhar a cobrança, validar os formatos de geração e a mensagem
 personalizada no backend, transportar os campos do rascunho para o pedido e só então
 remover os bloqueios de preparação no formulário e em omascoteChatBaseCleanOrder.
 

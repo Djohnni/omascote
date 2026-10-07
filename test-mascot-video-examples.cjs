@@ -28,7 +28,7 @@ async function run() {
       let state=structuredClone(initial);
       const context=await browser.newContext({viewport:{width,height:1000},reducedMotion:'reduce'});
       const page=await context.newPage();
-      const errors=[],paid=[],media=[];
+      const errors=[],paid=[],media=[],apiPayloads=[];
       page.on('pageerror',e=>errors.push(e.message));
       page.on('request',req=>{if (/\.mp4(?:\?|$)/.test(req.url())) media.push(req.url());});
       await context.addInitScript(()=>{
@@ -56,7 +56,14 @@ async function run() {
         }
         if (url.pathname.startsWith('/__test/')) return route.fulfill({contentType:'image/png',body:pixel});
         if (url.origin==='https://api.omascote.com.br') {
-          if (request.method()==='POST' && /\/pedidos(?:\/|$)/.test(url.pathname)) paid.push(url.pathname);
+          if (request.method()==='POST' && /\/pedidos(?:\/|$)/.test(url.pathname)) {
+            paid.push(url.pathname);
+            const body=request.postDataBuffer().toString();
+            const fields={};
+            for(const match of body.matchAll(/name="([^"]+)"\r\n\r\n([\s\S]*?)\r\n--/g)) fields[match[1]]=match[2];
+            apiPayloads.push(fields);
+            return route.fulfill({json:{ok:true,pedido_id:'local-rain-test'}});
+          }
           return route.fulfill({json:{ok:true,nome_time:'Teste',saldo:100,pedidos:[],avaliacoes:[]}});
         }
         if (url.origin!==origin) return route.abort();
@@ -71,7 +78,8 @@ async function run() {
       assert.equal(await gallery.locator('article').count(),3);
       assert.deepEqual(await gallery.locator('h3').allTextContents(),['Sol','Chuva','Escrita personalizada']);
       assert.deepEqual(await gallery.locator('.mascotExamples__price').allTextContents(),['R$ 25,00','R$ 28,00','R$ 28,00']);
-      assert.equal(await gallery.locator('.mascotExamples__placeholder').count(),3);
+      assert.equal(await gallery.locator('.mascotExamples__placeholder').count(),2);
+      assert.equal(await gallery.locator('.mascotExamples__poster').count(),1);
       assert.equal(await gallery.locator('video').count(),0,'no broken media elements before examples are uploaded');
       assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth),false);
       await gallery.screenshot({path:path.join(screenshots,`choices-${width}.png`)});
@@ -92,10 +100,19 @@ async function run() {
       await gallery.locator('[data-mascot-choice="chuva"]').click();
       await final.getByText(/Imagem \+ vídeo · Chuva/).waitFor();
       assert.match(await final.textContent(),/Chuva.*28,00/);
+      assert.equal(await chat.getByRole('button',{name:'Enviar pedido',exact:true}).isEnabled(),true);
+      const rainOrder=await page.evaluate(()=>omascoteChatBaseCleanOrder('mascote_uniforme',{
+        mascot_animal:'Lobo',sport:'Futebol',delivery_mode:'image_video',mascot_video_option:'chuva'
+      },{}));
+      assert.equal(rainOrder.fields.mascot_video_option,'chuva');
+      assert.equal(rainOrder.fields.delivery_mode,'image_video');
+      assert.equal(rainOrder.fields.video_model,'fast');
+      assert.equal(rainOrder.fields.mascot_animal,'Lobo');
       await chat.getByRole('button',{name:'Trocar opção',exact:true}).click();
       await gallery.locator('[data-mascot-choice="escrita_personalizada"]').click();
       const text=chat.getByRole('textbox',{name:'Texto para o vídeo',exact:true});
       await text.fill('Vamos, Lobos!');
+      assert.equal(await chat.getByRole('button',{name:'Vídeo em preparação',exact:true}).isDisabled(),true);
       await page.waitForFunction(()=>document.getElementById('integratedChatFrame').contentDocument.querySelector('.mascot-video-text')?.value==='Vamos, Lobos!');
       await page.screenshot({path:path.join(screenshots,`personalized-${width}.png`),fullPage:true});
       const blocked=await page.evaluate(()=>{
@@ -136,6 +153,17 @@ async function run() {
       assert.deepEqual(paid,[]);
       assert.deepEqual(media,[]);
       assert.deepEqual(errors,[]);
+      const result=await page.evaluate(async bytes=>omascoteChatSubmitOrders({
+        id:'rain-test-draft',flow:'mascote_uniforme',
+        values:{mascot_animal:'Lobo',sport:'Futebol',delivery_mode:'image_video',mascot_video_option:'chuva'}
+      },[{field:'team_crest',name:'escudo.png',type:'image/png',bytes:Uint8Array.from(bytes).buffer}]),[...pixel]);
+      assert.equal(result.ok,true);
+      assert.equal(apiPayloads.length,1,'one mocked order is sent');
+      const sent=JSON.parse(apiPayloads[0].fields_json);
+      assert.equal(sent.mascot_video_option,'chuva');
+      assert.equal(sent.delivery_mode,'image_video');
+      assert.equal(sent.video_model,'fast');
+      fs.writeFileSync(path.join(screenshots,'rain-api-body.json'),JSON.stringify(apiPayloads[0],null,2));
       await context.close();
     }
     console.log('PASS: mobile and desktop selection, saved choices, custom text, image fallback, no paid requests.');

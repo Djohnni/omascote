@@ -45,7 +45,8 @@
     const [delivery, setDelivery] = React.useState(draft.values.mascot_video_option
       ? draft.values.delivery_mode || 'image' : saved?.delivery || 'image');
     const selectedVideo = gallery()?.options.find(option => option.id === draft.values.mascot_video_option);
-    const preparedVideo = delivery === 'image_video' && !!selectedVideo;
+    const videoSelected = delivery === 'image_video' && !!selectedVideo;
+    const preparedVideo = videoSelected && selectedVideo.orderEnabled !== true;
     const [error, setError] = React.useState('');
     const [extrasOpen, setExtrasOpen] = React.useState(false);
     const [shirtOpen, setShirtOpen] = React.useState(false);
@@ -220,12 +221,12 @@
         step === total ? h(React.Fragment, null,
           h('fieldset', {className:'guided-delivery', 'aria-label':'Como você quer receber?'},
             gallery() ? h(React.Fragment, null,
-              h('p', null, preparedVideo ? `Imagem + vídeo · ${selectedVideo.name}` : 'Somente imagem',
-                ' · ', preparedVideo ? new Intl.NumberFormat('pt-BR',{style:'currency',currency:'BRL'}).format(selectedVideo.price) : props.product.priceLabel),
+              h('p', null, videoSelected ? `Imagem + vídeo · ${selectedVideo.name}` : 'Somente imagem',
+                ' · ', videoSelected ? new Intl.NumberFormat('pt-BR',{style:'currency',currency:'BRL'}).format(selectedVideo.price) : props.product.priceLabel),
               h('button', {type:'button', className:'guided-text-button', disabled:props.busy, onClick:changeVideo}, 'Trocar opção'))
               : h(React.Fragment, null, option('image', 'Somente imagem', props.product.priceLabel),
                 props.canVideo ? option('image_video', 'Imagem + vídeo', props.videoPrice) : null)),
-          preparedVideo && selectedVideo.id === 'escrita_personalizada' ? h('label', {className:'guided-label'},
+          videoSelected && selectedVideo.id === 'escrita_personalizada' ? h('label', {className:'guided-label'},
             'Texto para o vídeo', h('textarea', {className:'mascot-video-text', maxLength:160,
               value:draft.values.mascot_video_text || '', placeholder:'Escreva a mensagem que aparecerá no vídeo',
               onChange:event => props.changeField('mascot_video_text', event.target.value)})) : null,
