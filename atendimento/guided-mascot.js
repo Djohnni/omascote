@@ -12,6 +12,10 @@
   };
   const notify = data => window.parent.postMessage(data, location.origin);
   const isProduct = () => document.body.dataset.productView === 'product';
+  const gallery = () => {
+    try {return window.parent !== window && window.parent.location.origin === location.origin ? window.parent.OmascoteMascotExamples : null;}
+    catch {return null;}
+  };
 
   function hideDelivery(delivery) {
     return !!(deliveryRequest && delivery && !delivery.batch &&
@@ -38,7 +42,10 @@
     const [productMode, setProductMode] = React.useState(isProduct);
     const saved = sessions.get(draft.id);
     const [step, setStep] = React.useState(Math.min(saved?.step || 1, total));
-    const [delivery, setDelivery] = React.useState(saved?.delivery || 'image');
+    const [delivery, setDelivery] = React.useState(draft.values.mascot_video_option
+      ? draft.values.delivery_mode || 'image' : saved?.delivery || 'image');
+    const selectedVideo = gallery()?.options.find(option => option.id === draft.values.mascot_video_option);
+    const preparedVideo = delivery === 'image_video' && !!selectedVideo;
     const [error, setError] = React.useState('');
     const [extrasOpen, setExtrasOpen] = React.useState(false);
     const [shirtOpen, setShirtOpen] = React.useState(false);
@@ -86,6 +93,11 @@
       if (deliveryRequest?.id === draft.id) deliveryRequest = null;
     }, [draft.id]);
     React.useEffect(() => setSportsOpen(false), [draft.values.sport]);
+    React.useEffect(() => {
+      if (draft.values.mascot_video_option || draft.values.delivery_mode === 'image') {
+        setDelivery(draft.values.delivery_mode || 'image');
+      }
+    }, [draft.values.mascot_video_option, draft.values.delivery_mode]);
 
     if (!active) return draft.flow !== 'mascote_uniforme' && window.OmascoteGuidedProducts
       ? h(window.OmascoteGuidedProducts.Form, {...props, key:draft.id})
@@ -122,6 +134,7 @@
     }
     function send() {
       if (props.busy || submitLock.current) return;
+      if (preparedVideo) {setError('Esta opção de vídeo está em preparação.');return;}
       const issues = props.validate(draft);
       if (issues.length) {
         notify({type:'omascote-chat:analytics-blocked',productId:draft.flow,action:'enviar'});
@@ -170,6 +183,15 @@
           onChange:()=>setDelivery(value), disabled:props.busy}),
         h('span', null, text), h('strong', null, price));
     }
+    function changeVideo() {
+      if (props.busy) return;
+      gallery()?.open(choice => {
+        props.changeField('mascot_video_option', choice === 'image' ? '' : choice);
+        props.changeField('delivery_mode', choice === 'image' ? 'image' : 'image_video');
+        setDelivery(choice === 'image' ? 'image' : 'image_video');
+        return true;
+      });
+    }
     const shield = draft.files.find(file => file.field === 'team_crest');
     const shirt = draft.files.some(file => file.field === 'uniform_image');
     return h('section', {className:'lab-form guided-mascot', 'data-step':step,
@@ -197,10 +219,20 @@
         groupOptionals && step === total - 1 ? optional.map(field) : null,
         step === total ? h(React.Fragment, null,
           h('fieldset', {className:'guided-delivery', 'aria-label':'Como você quer receber?'},
-            option('image', 'Somente imagem', props.product.priceLabel),
-            props.canVideo ? option('image_video', 'Imagem + vídeo', props.videoPrice) : null),
-          h('button', {type:'button', className:'guided-primary', disabled:props.busy,
-            'aria-label':'Enviar pedido', onClick:send}, 'Enviar pedido →'),
+            gallery() ? h(React.Fragment, null,
+              h('p', null, preparedVideo ? `Imagem + vídeo · ${selectedVideo.name}` : 'Somente imagem',
+                ' · ', preparedVideo ? new Intl.NumberFormat('pt-BR',{style:'currency',currency:'BRL'}).format(selectedVideo.price) : props.product.priceLabel),
+              h('button', {type:'button', className:'guided-text-button', disabled:props.busy, onClick:changeVideo}, 'Trocar opção'))
+              : h(React.Fragment, null, option('image', 'Somente imagem', props.product.priceLabel),
+                props.canVideo ? option('image_video', 'Imagem + vídeo', props.videoPrice) : null)),
+          preparedVideo && selectedVideo.id === 'escrita_personalizada' ? h('label', {className:'guided-label'},
+            'Texto para o vídeo', h('textarea', {className:'mascot-video-text', maxLength:160,
+              value:draft.values.mascot_video_text || '', placeholder:'Escreva a mensagem que aparecerá no vídeo',
+              onChange:event => props.changeField('mascot_video_text', event.target.value)})) : null,
+          preparedVideo ? h('p', {className:'mascot-video-pending',role:'status'},
+            'Esta opção está em preparação. O envio de pedidos de vídeo será liberado quando estiver disponível.') : null,
+          h('button', {type:'button', className:'guided-primary', disabled:props.busy || preparedVideo,
+            'aria-label':preparedVideo ? 'Vídeo em preparação' : 'Enviar pedido', onClick:send}, preparedVideo ? 'Vídeo em preparação' : 'Enviar pedido →'),
           h(window.OmascoteGuidedProducts.PurchaseSafety, {React}),
           error ? h('p', {className:'guided-error', role:'alert'}, error) : null,
           h('div', {className:'guided-review'},

@@ -72,8 +72,11 @@
   <link rel="stylesheet" href="./radar-amistosos/radar-live.css">
   <link rel="stylesheet" href="/escudo3d-examples.css?v=20261001">
   <script defer src="/escudo3d-examples.js?v=20261001"></script>
+  <link rel="stylesheet" href="/mascot-video-examples.css?v=20261007">
+  <script defer src="/mascot-video-options.js?v=20261007"></script>
+  <script defer src="/mascot-video-examples.js?v=20261007"></script>
   <link rel="stylesheet" href="/vitrine-chat.css?v=20261002-brinde-direto">
-  <script defer src="/vitrine-chat.js?v=20261002-brinde-direto"></script>
+  <script defer src="/vitrine-chat.js?v=20261007-mascot-videos"></script>
   <script defer src="/analytics-tabs.js?v=20261002-abas"></script>
   <!-- favicon atualizado -->
 
@@ -15906,7 +15909,7 @@ body.copaColombiaOrderMode.copaColombiaResultMode.copaColombiaShowScenario [data
         class="integratedChatFrame"
         id="integratedChatFrame"
         title="Atendimento O Mascote"
-        src="/atendimento/index.html?integrado=1&v=20261002-brinde-direto"
+        src="/atendimento/index.html?integrado=1&v=20261007-mascot-videos"
         allow="clipboard-write"
       ></iframe>
       <button class="integratedChatClose" id="integratedChatClose" type="button" aria-label="Reduzir atendimento">Reduzir</button>
@@ -17530,7 +17533,7 @@ function omascoteChatLocalPreview(){
 }
 
 function omascoteChatUrl(){
-  return new URL("/atendimento/index.html?integrado=1&v=20261002-brinde-direto", window.location.origin).href;
+  return new URL("/atendimento/index.html?integrado=1&v=20261007-mascot-videos", window.location.origin).href;
 }
 
 function abrirAtendimentoIntegrado(){
@@ -17683,6 +17686,10 @@ const OMASCOTE_CHAT_IMAGE_ONLY_PRODUCTS = new Set([
 ]);
 
 function omascoteChatBaseCleanOrder(productKey, values, files){
+  // Prepared mascot variants must not reach billing until their fulfillment is connected.
+  if(productKey === "mascote_uniforme" && values.delivery_mode === "image_video" && values.mascot_video_option){
+    throw new Error("Esta opção de vídeo do mascote está em preparação. Por enquanto, você pode pedir somente a imagem.");
+  }
   const sportContext = omascoteChatSportContext(values);
   const mascotByDescription = ["proximo_jogo", "resultado"].includes(productKey) && values.photo_mode === "Não tenho mascote";
   const mascotDescription = mascotByDescription ? String(values.mascot_description || "").trim().slice(0, 160) : "";

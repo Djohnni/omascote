@@ -26,6 +26,7 @@
     window.abrirAtendimentoIntegrado?.();
   }
   function showHome() {
+    window.OmascoteMascotExamples?.close();
     const close = document.querySelector('#escudo3dExamples:not([hidden]) [data-close-examples]');
     close?.click();
     window.fecharAtendimentoIntegrado?.();

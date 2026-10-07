@@ -1,0 +1,32 @@
+Preparação das três opções de vídeo de mascote
+
+Base: Djohnni/omascote, origin/main, commit 532ff9c3a3ab6d1605d51e7786ecec470d4c88cb.
+Branch de trabalho: codex/mascot-video-choices-20261007.
+Destino do site quando aprovado para publicação: GitHub Pages / omascote.com.br.
+Esta preparação não publica o site e não altera a API ou o worker.
+
+Escolhas antes do formulário:
+- Sol: R$ 25,00.
+- Chuva: R$ 28,00.
+- Escrita personalizada: R$ 28,00. Campo para a mensagem no último passo.
+- A opção existente de somente imagem permanece disponível.
+
+Exemplos: editar videoSrc e posterSrc em mascot-video-options.js.
+Os valores estão vazios de propósito. A tela mostra "Exemplo em breve", sem tentar baixar vídeos inexistentes.
+Podem ser usados arquivos em /media/mascote/ ou URLs de mídia autorizadas.
+Não há duração definida, pois ela ainda não foi informada.
+
+As escolhas e a mensagem ficam no rascunho em mascot_video_option e mascot_video_text.
+Os pedidos dessas três opções ficam indisponíveis para envio até integrar os preços,
+formatos e texto personalizado à API e ao worker. Apenas adicionar os exemplos não ativa a venda.
+O bloqueio também existe na ponte do pedido para impedir cobrança do formato errado.
+
+Para ativação: alinhar a cobrança, validar os três formatos de geração e a mensagem
+personalizada no backend, transportar os campos do rascunho para o pedido e só então
+remover os bloqueios de preparação no formulário e em omascoteChatBaseCleanOrder.
+
+O atendimento está distribuído como bundle compilado. Foram feitas alterações
+pontuais nele: acesso ao seletor, entrada antes do formulário, exposição do atualizador
+de campos e preços no menu/cartão. Preservar essas alterações numa próxima recompilação.
+
+Verificação local: test-mascot-video-examples.cjs e test-escudo3d-examples.cjs.
