@@ -76,7 +76,7 @@
   <script defer src="/mascot-video-options.js?v=20261007-mascot-three-options"></script>
   <script defer src="/mascot-video-examples.js?v=20261007-mascot-three-options"></script>
   <link rel="stylesheet" href="/vitrine-chat.css?v=20261002-brinde-direto">
-  <script defer src="/vitrine-chat.js?v=20261007-mascot-three-options"></script>
+  <script defer src="/vitrine-chat.js?v=20261007-mobile-entry"></script>
   <script defer src="/analytics-tabs.js?v=20261002-abas"></script>
   <!-- favicon atualizado -->
 
@@ -15304,6 +15304,20 @@ body.omascoteAppMode .appTestNotice{
   border:0;
   background:#f5faf7;
 }
+.integratedChatLoading:not([hidden]){
+  position:absolute;
+  inset:0;
+  z-index:2;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap:16px;
+  padding:24px;
+  text-align:center;
+  color:#10342d;
+  background:#fff;
+}
 .integratedChatClose{
   position:absolute;
   top:max(10px,env(safe-area-inset-top,0px));
@@ -15744,7 +15758,7 @@ body.copaColombiaOrderMode.copaColombiaResultMode.copaColombiaShowScenario [data
           <h1 id="vitrineMascotTitle">Mascote<br>do Time</h1>
           <p>Seu time com personalidade única, em arte profissional.</p>
         </div>
-        <picture style="display:contents"><source type="image/avif" srcset="/media/vitrine/estadio-fundo-vitrine-20261002.avif"><img class="vitrineHero__backdrop" src="/media/vitrine/estadio-fundo-vitrine-20261001.webp" width="1200" height="800" alt="" aria-hidden="true"></picture>
+        <picture style="display:contents"><source type="image/avif" srcset="/media/vitrine/estadio-fundo-vitrine-20261002.avif"><img class="vitrineHero__backdrop" src="/media/vitrine/estadio-fundo-vitrine-20261001.webp" width="1200" height="800" fetchpriority="high" alt="" aria-hidden="true"></picture>
         <picture style="display:contents"><source type="image/avif" srcset="/media/vitrine/mascote-lobos-recorte-20261002.avif"><img class="vitrineHero__image" src="/media/vitrine/mascote-lobos-recorte-20261001.webp" width="720" height="1279" fetchpriority="high" alt="Mascote lobo do Lobos da Serra com o uniforme e o escudo do time"></picture>
         <button type="button" class="vitrineGift" id="vitrineEscudoGift" data-vitrine-product="escudo3d" data-vitrine-gift>
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M12 3 4 6v6c0 4 4 7 8 9 4-2 8-5 8-9V6Z"/><path d="m8 12 3 3 5-6"/></svg>
@@ -15909,9 +15923,13 @@ body.copaColombiaOrderMode.copaColombiaResultMode.copaColombiaShowScenario [data
         class="integratedChatFrame"
         id="integratedChatFrame"
         title="Atendimento O Mascote"
-        src="/atendimento/index.html?integrado=1&v=20261007-mascot-three-options"
+        data-src="/atendimento/index.html?integrado=1&v=20261007-mascot-three-options"
         allow="clipboard-write"
       ></iframe>
+      <div class="integratedChatLoading" id="integratedChatLoading" hidden>
+        <p id="integratedChatLoadingStatus" role="status">Preparando atendimento…</p>
+        <button id="integratedChatRetry" type="button" class="vitrinePrimary" hidden>Tentar novamente</button>
+      </div>
       <button class="integratedChatClose" id="integratedChatClose" type="button" aria-label="Reduzir atendimento">Reduzir</button>
     </section>
 
@@ -16114,7 +16132,7 @@ body.copaColombiaOrderMode.copaColombiaResultMode.copaColombiaShowScenario [data
           <div class="optionsRow productGroup productGroupBrinde">
             <button type="button" class="optionBtn" data-product="mascote_uniforme">
               <div class="optLabel">Faça o mascote<br>do seu time<br><span style="color:#1fbf63;font-weight:900;">R$18,00</span></div>
-              <img src="produtos/mascote_uniforme.jpg" class="imgProduto" fetchpriority="high" loading="eager" alt="Mascote com uniforme">
+              <img src="produtos/mascote_uniforme.jpg" class="imgProduto" loading="lazy" decoding="async" alt="Mascote com uniforme">
             </button>
           </div>
 
@@ -16132,7 +16150,7 @@ body.copaColombiaOrderMode.copaColombiaResultMode.copaColombiaShowScenario [data
 
             <button type="button" class="optionBtn" data-product="jogador_escudo">
               <div class="optLabel">Poste como jogador<br>profissional<br><span style="color:#1fbf63;font-weight:900;">R$6,00</span></div>
-              <img src="produtos/jogador-escudo-amostra-1.webp" class="imgProduto" fetchpriority="high" loading="eager" decoding="async" alt="Jogador mais escudo">
+              <img src="produtos/jogador-escudo-amostra-1.webp" class="imgProduto" loading="lazy" decoding="async" alt="Jogador mais escudo">
             </button>
           </div>
         </div>
@@ -16211,7 +16229,7 @@ body.copaColombiaOrderMode.copaColombiaResultMode.copaColombiaShowScenario [data
               <div class="ia4TrustDivider"></div>
 
               <div class="ia4TrustItem">
-                <img src="google-g.png" class="ia4GoogleIcon" alt="Google">
+                <img src="google-g.png" class="ia4GoogleIcon" loading="lazy" decoding="async" alt="Google">
                 <div>
                   <strong>Empresa verificada</strong>
                   <small>No Google</small>
@@ -16242,7 +16260,7 @@ body.copaColombiaOrderMode.copaColombiaResultMode.copaColombiaShowScenario [data
           <div class="productBuildLayout legacyOrderFormArea">
             <div class="productPreviewPanel" aria-hidden="true">
               <div class="productPreviewMedia">
-                <img id="selectedProductPreviewImg" src="produtos/resultado.jpg" alt="">
+                <img id="selectedProductPreviewImg" src="produtos/resultado.jpg" loading="lazy" decoding="async" alt="">
               </div>
             </div>
 
@@ -17533,12 +17551,41 @@ function omascoteChatLocalPreview(){
 }
 
 function omascoteChatUrl(){
-  return new URL("/atendimento/index.html?integrado=1&v=20261007-mascot-three-options", window.location.origin).href;
+  return new URL(integratedChatFrame?.dataset.src || "/atendimento/index.html?integrado=1&v=20261007-mascot-three-options", window.location.origin).href;
 }
+
+let omascoteChatReady = false;
+let omascoteChatLoadingTimer;
+function carregarAtendimentoIntegrado({ retry = false } = {}){
+  if(!integratedChatFrame) return false;
+  if(omascoteChatReady || (integratedChatFrame.getAttribute("src") && !retry)) return true;
+  const loading = document.getElementById("integratedChatLoading");
+  const status = document.getElementById("integratedChatLoadingStatus");
+  const retryButton = document.getElementById("integratedChatRetry");
+  if(loading) loading.hidden = false;
+  if(status) status.textContent = "Preparando atendimento…";
+  if(retryButton) retryButton.hidden = true;
+  clearTimeout(omascoteChatLoadingTimer);
+  integratedChatFrame.src = omascoteChatUrl();
+  omascoteChatLoadingTimer = setTimeout(() => {
+    if(status) status.textContent = "O atendimento ainda não carregou. Confira sua conexão e tente novamente.";
+    if(retryButton) retryButton.hidden = false;
+  }, 15000);
+  return true;
+}
+document.getElementById("integratedChatRetry")?.addEventListener("click", () => carregarAtendimentoIntegrado({ retry:true }));
+window.addEventListener("message", event => {
+  if(event.source !== integratedChatFrame?.contentWindow || event.origin !== window.location.origin) return;
+  if(event.data?.type !== "omascote-chat:visual-ready" || event.data.ready !== true) return;
+  omascoteChatReady = true;
+  clearTimeout(omascoteChatLoadingTimer);
+  const loading = document.getElementById("integratedChatLoading");
+  if(loading) loading.hidden = true;
+});
 
 function abrirAtendimentoIntegrado(){
   if(!integratedChatModal || !integratedChatFrame) return;
-  if(!integratedChatFrame.src) integratedChatFrame.src = omascoteChatUrl();
+  carregarAtendimentoIntegrado();
   integratedChatModal.scrollIntoView({ behavior:"smooth", block:"start" });
 }
 

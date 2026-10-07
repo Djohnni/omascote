@@ -8,7 +8,7 @@
   const chat = document.getElementById('integratedChatModal');
   const status = document.getElementById('vitrineStatus');
   if (!home || !nav || !frame || !chat) return;
-  let ready = false, busy = false, pending = null, sequence = 0, viewMode = 'chat';
+  let ready = false, busy = false, pending = null, sequence = 0, viewMode = 'chat', retryLoad = false;
   const motion = () => matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth';
   function setMode(mode) {
     viewMode = mode;
@@ -60,10 +60,25 @@
     pending = { button, type, productId, gift:button.hasAttribute('data-vitrine-gift'), id:'vitrine-'+(++sequence), sent:false };
     if(pending.gift) window.ia4Track?.('escudo_brinde_aberto', {produto:'escudo3d'});
     pending.timeout = setTimeout(() => {
+      retryLoad = !ready;
       showHome();
       status.textContent = 'O atendimento ainda não carregou. Tente novamente em instantes.';
       clearPending();
     }, 15000);
+    // Product selection waits for visual-ready, so start the deferred frame before waiting.
+    try {
+      if (window.carregarAtendimentoIntegrado?.({retry:!ready && retryLoad}) === false) {
+        status.textContent = 'Não foi possível carregar o atendimento. Tente novamente.';
+        clearPending();
+        return;
+      }
+      retryLoad = false;
+    } catch {
+      retryLoad = !ready;
+      status.textContent = 'Não foi possível carregar o atendimento. Tente novamente.';
+      clearPending();
+      return;
+    }
     dispatch();
     if (!ready) frame.contentWindow?.postMessage({ type:'omascote-chat:visual-state' }, location.origin);
   }
@@ -79,6 +94,7 @@
     }
     if (event.data?.type === 'omascote-chat:visual-ready') {
       ready = event.data.ready === true;
+      if (ready) retryLoad = false;
       busy = event.data.busy === true;
       frame.contentWindow.postMessage({ type:'omascote-chat:visual-mode', mode:viewMode }, location.origin);
       dispatch();
