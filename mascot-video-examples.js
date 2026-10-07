@@ -33,7 +33,7 @@
     <p class="mascotExamples__pending">Toque em Assistir para ver cada exemplo e escolha o seu favorito.</p>
     <button class="mascotExamples__image" type="button" data-mascot-choice="image">Prefiro somente imagem · R$ 18,00</button>`;
   anchor.before(section);
-  let onSelect = null;
+  let onSelect = null, onCancel = null, preserveOnFrameLoad = false;
   const videos = [...section.querySelectorAll('video')];
   videos.forEach(video => {
     if (video.dataset.av1Src && video.canPlayType?.('video/mp4; codecs="av01.0.05M.08, mp4a.40.2"') === 'probably') {
@@ -91,20 +91,33 @@
     requestedVideos.add(video);
     videos.forEach(other => {if (other !== video) {playbackIntent.set(other,false);other.pause();}});
   }
-  function close() {
+  function close({returnToForm = false} = {}) {
+    if (section.hidden) return;
+    const returnToFrame = returnToForm || !onCancel;
     prefetchEnabled = false;
     stopPrefetch();
     pauseAll();
     section.hidden = true;
     onSelect = null;
-    frame.focus({preventScroll:true});
-    chat.scrollIntoView({behavior:motion(),block:'start'});
+    onCancel = null;
+    preserveOnFrameLoad = false;
+    if (returnToFrame) {
+      frame.focus({preventScroll:true});
+      chat.scrollIntoView({behavior:motion(),block:'start'});
+    }
+  }
+  function cancel() {
+    const callback = onCancel;
+    close();
+    callback?.();
   }
   window.OmascoteMascotExamples = Object.freeze({
     options,
-    open(callback) {
+    open(callback, settings = {}) {
       if (typeof callback !== 'function') return false;
       onSelect = callback;
+      onCancel = typeof settings.onCancel === 'function' ? settings.onCancel : null;
+      preserveOnFrameLoad = settings.preserveOnFrameLoad === true;
       prefetchEnabled = false;
       stopPrefetch();
       pauseAll();
@@ -122,12 +135,12 @@
     },
     close
   });
-  section.querySelector('[data-mascot-close]').addEventListener('click',close);
-  section.addEventListener('keydown',event => {if (event.key === 'Escape') {event.preventDefault();close();}});
+  section.querySelector('[data-mascot-close]').addEventListener('click',cancel);
+  section.addEventListener('keydown',event => {if (event.key === 'Escape') {event.preventDefault();cancel();}});
   section.querySelectorAll('[data-mascot-choice]').forEach(button => button.addEventListener('click',() => {
     const choice = button.dataset.mascotChoice;
     if (!onSelect || (choice !== 'image' && !options.some(option => option.id === choice))) return;
-    if (onSelect(choice) !== false) close();
+    if (onSelect(choice) !== false) close({returnToForm:true});
   }));
   section.querySelectorAll('[data-mascot-play]').forEach(button => {
     const card = button.closest('article'), video = card.querySelector('video'), status = card.querySelector('[role="status"]');
@@ -191,5 +204,5 @@
       cachedVideos.clear();
     }
   });
-  frame.addEventListener('load',() => {if (!section.hidden) close();});
+  frame.addEventListener('load',() => {if (!section.hidden && !preserveOnFrameLoad) close();});
 })();

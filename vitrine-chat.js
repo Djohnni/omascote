@@ -8,7 +8,7 @@
   const chat = document.getElementById('integratedChatModal');
   const status = document.getElementById('vitrineStatus');
   if (!home || !nav || !frame || !chat) return;
-  let ready = false, busy = false, pending = null, sequence = 0, viewMode = 'chat', retryLoad = false;
+  let ready = false, busy = false, pending = null, sequence = 0, viewMode = 'chat', retryLoad = false, mascotPreview = false;
   const motion = () => matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth';
   function setMode(mode) {
     viewMode = mode;
@@ -26,6 +26,8 @@
     window.abrirAtendimentoIntegrado?.();
   }
   function showHome() {
+    mascotPreview = false;
+    clearPending();
     window.OmascoteMascotExamples?.close();
     const close = document.querySelector('#escudo3dExamples:not([hidden]) [data-close-examples]');
     close?.click();
@@ -45,19 +47,20 @@
   function dispatch() {
     if (!pending || !ready || pending.sent) return;
     if (busy) {
+      showHome();
       status.textContent = 'Aguarde o envio atual para escolher outra arte.';
-      clearPending();
       return;
     }
     pending.sent = true;
     showChat('product');
-    frame.contentWindow.postMessage({ type:pending.type, productId:pending.productId, gift:pending.gift, requestId:pending.id }, location.origin);
+    frame.contentWindow.postMessage({ type:pending.type, productId:pending.productId, gift:pending.gift, requestId:pending.id,
+      ...(pending.mascotVideoOption !== undefined ? {mascotVideoOption:pending.mascotVideoOption} : {}) }, location.origin);
   }
-  function request(button, type, productId) {
+  function request(button, type, productId, mascotVideoOption) {
     if (pending) return;
     button.disabled = true;
     status.textContent = ready ? '' : 'Preparando atendimento…';
-    pending = { button, type, productId, gift:button.hasAttribute('data-vitrine-gift'), id:'vitrine-'+(++sequence), sent:false };
+    pending = { button, type, productId, mascotVideoOption, gift:button.hasAttribute('data-vitrine-gift'), id:'vitrine-'+(++sequence), sent:false };
     if(pending.gift) window.ia4Track?.('escudo_brinde_aberto', {produto:'escudo3d'});
     pending.timeout = setTimeout(() => {
       retryLoad = !ready;
@@ -68,22 +71,51 @@
     // Product selection waits for visual-ready, so start the deferred frame before waiting.
     try {
       if (window.carregarAtendimentoIntegrado?.({retry:!ready && retryLoad}) === false) {
+        showHome();
         status.textContent = 'Não foi possível carregar o atendimento. Tente novamente.';
-        clearPending();
         return;
       }
       retryLoad = false;
     } catch {
       retryLoad = !ready;
+      showHome();
       status.textContent = 'Não foi possível carregar o atendimento. Tente novamente.';
-      clearPending();
       return;
     }
+    if (!ready && mascotVideoOption !== undefined) showChat('product');
     dispatch();
     if (!ready) frame.contentWindow?.postMessage({ type:'omascote-chat:visual-state' }, location.origin);
   }
+  function openMascot(button) {
+    if (pending) return;
+    if (busy) {
+      status.textContent = 'Aguarde o envio atual para escolher outra arte.';
+      return;
+    }
+    const opened = window.OmascoteMascotExamples?.open(choice => {
+      mascotPreview = false;
+      request(button, 'omascote-chat:select-product', 'mascote_uniforme', choice);
+    }, {onCancel:showHome, preserveOnFrameLoad:true});
+    if (!opened) {
+      request(button, 'omascote-chat:select-product', 'mascote_uniforme');
+      return;
+    }
+    mascotPreview = true;
+    setMode('product');
+    home.hidden = true;
+    nav.hidden = false;
+    document.body.classList.add('vitrineChatActive');
+    document.body.classList.remove('vitrineGuidedActive');
+    status.textContent = '';
+    // The gallery is already visible. Prepare the form without waiting for the server.
+    try {
+      retryLoad = window.carregarAtendimentoIntegrado?.({retry:!ready && retryLoad}) === false;
+    } catch { retryLoad = !ready; }
+  }
   window.addEventListener('message', event => {
     if (event.source !== frame.contentWindow || event.origin !== location.origin) return;
+    if (mascotPreview && ['omascote-chat:guided-stage', 'omascote-chat:guided-home',
+      'omascote-chat:guided-help', 'omascote-chat:guided-scroll', 'omascote-chat:presentation'].includes(event.data?.type)) return;
     if (event.data?.type === 'omascote-chat:guided-stage') {
       document.body.classList.toggle('vitrineGuidedActive', viewMode === 'product' && event.data.active === true);
     }
@@ -120,7 +152,10 @@
       document.body.classList.add('vitrineChatActive');
     }
   });
-  document.querySelectorAll('[data-vitrine-product]').forEach(button => button.addEventListener('click', () => request(button, 'omascote-chat:select-product', button.dataset.vitrineProduct)));
+  document.querySelectorAll('[data-vitrine-product]').forEach(button => button.addEventListener('click', () => {
+    if (button.dataset.vitrineProduct === 'mascote_uniforme') openMascot(button);
+    else request(button, 'omascote-chat:select-product', button.dataset.vitrineProduct);
+  }));
   document.querySelectorAll('[data-vitrine-options]').forEach(button => button.addEventListener('click', () => request(button, 'omascote-chat:open-catalog')));
   document.querySelectorAll('[data-vitrine-home]').forEach(button => button.addEventListener('click', showHome));
   document.querySelectorAll('[data-vitrine-chat]').forEach(button => button.addEventListener('click', () => showChat('chat')));

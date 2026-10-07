@@ -268,3 +268,13 @@ test('Falha AV1 secundária prepara H264 manual; resposta AV1 atrasada não cont
   assert.equal(race.created.length,0);assert.equal(race.videos[1].src,race.options[1].videoSrc);
   assert.equal(race.requests.length,1,'new fallback must play before any next prefetch');
 });
+
+test('Galeria inicial sobrevive ao load; cancelar volta sem callback de escolha', () => {
+  const f=fixture();let cancelled=0,selected=0;
+  f.window.OmascoteMascotExamples.open(()=>{selected++;},{onCancel:()=>cancelled++,preserveOnFrameLoad:true});
+  f.frame.emit('load');assert.equal(f.section.hidden,false);
+  f.close.click();assert.equal(f.section.hidden,true);assert.equal(cancelled,1);assert.equal(selected,0);
+  f.window.OmascoteMascotExamples.open(()=>{selected++;},{onCancel:()=>cancelled++,preserveOnFrameLoad:true});
+  f.choices[1].click();assert.equal(f.section.hidden,true);assert.equal(selected,1);assert.equal(cancelled,1);
+  f.open();f.frame.emit('load');assert.equal(f.section.hidden,true,'callbacks from old iframe are discarded');
+});

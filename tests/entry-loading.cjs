@@ -21,7 +21,7 @@ function element(dataset = {}) {
   };
 }
 
-function setup(search = '') {
+function setup(search = '', withGallery = false) {
   const ids = Object.fromEntries(['vitrineHome','vitrineChatNav','integratedChatFrame','integratedChatModal','vitrineStatus']
     .map(id=>[id,element()]));
   const selectors = {
@@ -47,6 +47,13 @@ function setup(search = '') {
     abrirPedidosPeloAtendimento() { orders++; },
     ia4Track:(event,data)=>tracks.push({event,data:JSON.parse(JSON.stringify(data))})
   };
+  const gallery = {visible:false,opens:0,callback:null,settings:null,
+    open(callback,settings) {this.visible=true;this.opens++;this.callback=callback;this.settings=settings;return true;},
+    close() {this.visible=false;},
+    choose(choice) {const result=this.callback(choice);if(result!==false)this.close();},
+    cancel() {this.close();this.settings.onCancel();}
+  };
+  if (withGallery) window.OmascoteMascotExamples = gallery;
   const context = {
     window, document:{body,getElementById:id=>ids[id],querySelector:()=>null,querySelectorAll:selector=>selectors[selector]||[]},
     location:{origin:'https://local.test',search}, URLSearchParams,
@@ -56,7 +63,7 @@ function setup(search = '') {
   };
   vm.runInNewContext(source,context);
   return {
-    ids,selectors,messages,loads,tracks,timers,window,body,
+    ids,selectors,messages,loads,tracks,timers,window,body,gallery,
     get opens() { return opens; }, get closes() { return closes; },
     get accounts() { return accounts; }, get orders() { return orders; },
     set loaderResult(value) { loaderResult = value; }, set loaderError(value) { loaderError = value; },
@@ -200,4 +207,73 @@ test('Envio em andamento e falha de seleção restauram os controles para nova t
   assert.equal(app.ids.vitrineHome.hidden,false);
   assert.equal(app.ids.vitrineStatus.textContent,'Erro simulado');
   assert.equal(app.timers.size,0);
+});
+
+test('Galeria de mascote abre antes do ready e prepara atendimento sem selecionar produto', () => {
+  const app=setup('',true),button=app.selectors['[data-vitrine-product]'][0];
+  button.click();
+  assert.equal(app.gallery.visible,true);
+  assert.equal(app.gallery.settings.preserveOnFrameLoad,true);
+  assert.equal(app.ids.vitrineHome.hidden,true);
+  assert.equal(app.ids.vitrineChatNav.hidden,false);
+  assert.deepEqual(app.loads,[{retry:false}]);
+  assert.equal(app.selections().length,0);
+  assert.equal(app.timers.size,0);
+  assert.equal(button.disabled,false);
+  app.ids.integratedChatFrame.emit('load');
+  app.message({type:'omascote-chat:guided-stage',active:true});
+  app.message({type:'omascote-chat:presentation',mode:'chat'});
+  assert.equal(app.body.classList.contains('vitrineGuidedActive'),false);
+  app.message({type:'omascote-chat:visual-ready',ready:true,busy:false});
+  assert.equal(app.gallery.visible,true);
+  assert.equal(app.selections().length,0);
+});
+
+test('Escolha antecipada espera ready e envia a opção exatamente uma vez', () => {
+  for(const choice of ['sol','chuva','ascensao_epica','image']) {
+    const app=setup('',true),button=app.selectors['[data-vitrine-product]'][0];
+    button.click();app.gallery.choose(choice);
+    assert.equal(app.gallery.visible,false);
+    assert.equal(app.selections().length,0);
+    assert.equal(app.opens,1,'loader is visible while the chosen form is prepared');
+    assert.equal(button.disabled,true);
+    app.message({type:'omascote-chat:visual-ready',ready:true,busy:false});
+    app.message({type:'omascote-chat:visual-ready',ready:true,busy:false});
+    const sent=app.selections();assert.equal(sent.length,1);
+    assert.equal(sent[0].data.mascotVideoOption,choice);
+    app.message({type:'omascote-chat:visual-result',requestId:sent[0].data.requestId,ok:true});
+    assert.equal(button.disabled,false);assert.equal(app.timers.size,0);
+    assert.equal(app.gallery.opens,1,'no second gallery');
+  }
+});
+
+test('Cancelar preview ou voltar durante espera impede seleção tardia e libera nova escolha', () => {
+  for(const afterChoice of [false,true]) {
+    const app=setup('',true),button=app.selectors['[data-vitrine-product]'][0];button.click();
+    if(afterChoice){app.gallery.choose('chuva');app.selectors['[data-vitrine-home]'][0].click();}
+    else app.gallery.cancel();
+    assert.equal(app.ids.vitrineHome.hidden,false);assert.equal(app.gallery.visible,false);
+    assert.equal(app.timers.size,0);assert.equal(button.disabled,false);
+    app.message({type:'omascote-chat:visual-ready',ready:true,busy:false});
+    assert.equal(app.selections().length,0);
+    button.click();app.gallery.choose('image');
+    assert.equal(app.selections().length,1);assert.equal(app.selections()[0].data.mascotVideoOption,'image');
+  }
+});
+
+test('Falha, timeout e envio em andamento durante preview retornam à home com aviso visível', () => {
+  for(const failure of ['busy','loader','throw','timeout']) {
+    const app=setup('',true),button=app.selectors['[data-vitrine-product]'][0];button.click();
+    if(failure==='busy')app.message({type:'omascote-chat:visual-ready',ready:true,busy:true});
+    if(failure==='loader')app.loaderResult=false;
+    if(failure==='throw')app.loaderError=true;
+    app.gallery.choose('sol');
+    if(failure==='timeout')app.expire();
+    assert.equal(app.ids.vitrineHome.hidden,false,failure);
+    assert.equal(app.gallery.visible,false,failure);
+    assert.ok(app.ids.vitrineStatus.textContent,failure);
+    assert.equal(button.disabled,false);assert.equal(app.timers.size,0);
+    app.message({type:'omascote-chat:visual-ready',ready:true,busy:false});
+    assert.equal(app.selections().length,0);
+  }
 });
