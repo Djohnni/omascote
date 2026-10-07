@@ -1,17 +1,23 @@
-Preparação das três opções de vídeo de mascote
+Três opções de vídeo de mascote
 
-Base: Djohnni/omascote, origin/main, commit 532ff9c3a3ab6d1605d51e7786ecec470d4c88cb.
+Base desta atualização: Djohnni/omascote, origin/main, commit 5948dce9ca7ae73145ce2cf9a9279c1087b52f6d.
 Branch de trabalho: codex/mascot-video-choices-20261007.
 Destino de publicação autorizado: main, GitHub Pages / omascote.com.br.
-As opções foram publicadas; Chuva possui geração integrada ao worker ativo.
+As três opções estão habilitadas no formulário e na ponte para o pedido.
 
 Escolhas antes do formulário:
 - Sol: R$ 25,00.
 - Chuva: R$ 28,00.
-- Escrita personalizada: R$ 28,00. Campo para a mensagem no último passo.
+- Ascensão Épica: R$ 28,00, identificador ascensao_epica. Não solicita mensagem escrita.
 - A opção existente de somente imagem permanece disponível.
 
-Exemplos: editar videoSrc e posterSrc em mascot-video-options.js.
+Exemplos: videoSrc e posterSrc em mascot-video-options.js.
+Sol: /media/mascote/exemplo-sol-10s-20261007.mp4 e capa-sol-10s-20261007.webp.
+Ascensão Épica: /media/mascote/exemplo-ascensao-epica-10s-20261007.mp4
+e capa-ascensao-epica-10s-20261007.webp.
+Sol usa o arquivo 1.mp4 do proprietário: 7,97 MB reduzidos para 1,69 MB.
+Ascensão Épica usa 2.mp4: 9,88 MB reduzidos para 1,57 MB.
+Ambos mantêm 720x1280, 10 segundos e áudio; as capas têm 54,5 KB e 61,4 KB.
 Chuva usa o vídeo Mascote_criando_animação_com_raio_20261007124456.mp4, enviado
 pelo proprietário em Downloads. A cópia pública foi reduzida de 13,91 MB para
 1,62 MB, preservando 720x1280, 10 segundos e áudio. A capa WebP tem 73,5 KB.
@@ -20,7 +26,10 @@ com preload=none e faststart, conforme o exemplo de Escudo.
 Podem ser usados arquivos em /media/mascote/ ou URLs de mídia autorizadas.
 Novos vídeos de mascote usam Omni, 720p, 9:16, 10 segundos e áudio.
 
-As escolhas e a mensagem ficam no rascunho em mascot_video_option e mascot_video_text.
+As escolhas ficam no rascunho em mascot_video_option e são copiadas para fields_json
+no pedido: sol, chuva ou ascensao_epica. O campo de mensagem foi removido.
+O formulário guiado mostra os preços da configuração de opções; a API calcula
+a cobrança pelo identificador enviado. Esse fluxo não consulta /cupons/preco.
 Chuva está liberada por R$ 28,00: fields.mascot_video_option="chuva" é preservado
 pela API existente e seleciona prompt_mascote_chuva.txt no worker IA4tube.
 O arquivo de imagem reproduz o TXT enviado pelo proprietário; apenas {mascot_animal}
@@ -28,17 +37,21 @@ O arquivo de imagem reproduz o TXT enviado pelo proprietário; apenas {mascot_an
 O vídeo usa prompt_video_mascote_omni.txt, com a mesma animação do prompt anterior
 e duração ajustada de 8 para 10 segundos. Chuva acrescenta somente esta frase:
 está chovendo muito e com muitos raios
+Sol e Ascensão Épica usam a mesma imagem base de prompt_mascote_uniforme.txt.
+Sol usa prompt_video_mascote_omni.txt. Ascensão usa exclusivamente o texto
+enviado pelo proprietário em prompt_video_mascote_ascensao_epica.txt: subida
+do escudo, raios e aura nas cores do logo, com aproximação de 5 a 10 segundos.
 Nenhuma geração paga é executada pelos testes. Contratos antigos de Fast continuam
 com seu modelo e prompt originais. O mascote usa só a imagem inicial; o Escudo
 mantém seu comportamento de quadro inicial e final iguais.
-Sol e Escrita personalizada continuam bloqueadas no formulário e na ponte do pedido.
-
-Para ativação das outras opções: alinhar a cobrança, validar os formatos de geração e a mensagem
-personalizada no backend, transportar os campos do rascunho para o pedido e só então
-remover os bloqueios de preparação no formulário e em omascoteChatBaseCleanOrder.
+O backend deve cobrar Sol por R$ 25,00, Chuva e Ascensão Épica por R$ 28,00.
+A ponte rejeita identificadores desconhecidos, inclusive a opção antiga substituída.
+As três opções ficam em uma coluna no celular e três colunas no desktop.
 
 O atendimento está distribuído como bundle compilado. Foram feitas alterações
 pontuais nele: acesso ao seletor, entrada antes do formulário, exposição do atualizador
 de campos e preços no menu/cartão. Preservar essas alterações numa próxima recompilação.
 
-Verificação local: test-mascot-video-examples.cjs e test-escudo3d-examples.cjs.
+Verificação lógica sem navegador/rede: tests/mascot-video-options-bridge.cjs.
+Regressão de navegador atualizada: test-mascot-video-examples.cjs; executar apenas
+quando a política da sessão permitir. A inspeção visual atual usa CUA.

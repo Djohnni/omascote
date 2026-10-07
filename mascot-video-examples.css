@@ -11,7 +11,7 @@
 .mascotExamples__media { position:relative; width:100%; max-width:240px; margin:auto; aspect-ratio:9/16; overflow:hidden; border-radius:12px; background:#e5efeb; }
 .mascotExamples__media--sol { background:linear-gradient(155deg,#fff3cc,#f9ce6e); }
 .mascotExamples__media--chuva { background:linear-gradient(155deg,#e7f3ff,#a8c7e2); }
-.mascotExamples__media--escrita_personalizada { background:linear-gradient(155deg,#f1ecff,#cfc0ed); }
+.mascotExamples__media--ascensao_epica { background:linear-gradient(155deg,#f1ecff,#cfc0ed); }
 .mascotExamples__placeholder { position:absolute; inset:0; display:flex; flex-direction:column; gap:20px; align-items:center; justify-content:center; color:#234231; font-size:15px; }
 .mascotExamples__placeholder > span:first-child { font-size:56px; }
 .mascotExamples video { display:block; width:100%; height:100%; object-fit:contain; background:#101812; }
@@ -23,7 +23,6 @@
 .mascotExamples__pending { text-align:center; margin:20px 0 0 !important; }
 .mascotExamples__status { font-size:14px; margin:8px 0 0 !important; color:#a32626 !important; }
 .mascotExamples button:focus-visible { outline:3px solid #205eff; outline-offset:3px; }
-.guided-mascot .mascot-video-text { width:100%; box-sizing:border-box; min-height:90px; padding:12px; border:1px solid #b8c9c0; border-radius:10px; font:inherit; resize:vertical; }
 .guided-mascot .mascot-video-pending { margin:12px 0; line-height:1.5; color:#42614e; }
 .guided-mascot .guided-primary:disabled { opacity:.65; cursor:not-allowed; }
 @media (max-width:600px) {

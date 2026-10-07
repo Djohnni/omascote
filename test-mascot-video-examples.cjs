@@ -79,11 +79,15 @@ async function run() {
       await gallery.waitFor({state:'visible'});
       assert.equal(state.draft,null,'the selection precedes draft collection');
       assert.equal(await gallery.locator('article').count(),3);
-      assert.deepEqual(await gallery.locator('h3').allTextContents(),['Sol','Chuva','Escrita personalizada']);
+      assert.deepEqual(await gallery.locator('h3').allTextContents(),['Sol','Chuva','Ascensão Épica']);
       assert.deepEqual(await gallery.locator('.mascotExamples__price').allTextContents(),['R$ 25,00','R$ 28,00','R$ 28,00']);
-      assert.equal(await gallery.locator('.mascotExamples__placeholder').count(),2);
-      assert.equal(await gallery.locator('video').count(),1,'only Chuva has a video example');
-      const video=gallery.locator('video');
+      assert.equal(await gallery.locator('.mascotExamples__placeholder').count(),0);
+      assert.equal(await gallery.locator('video').count(),3,'all choices have a video example');
+      const video=gallery.locator('[data-mascot-option="chuva"] video');
+      for (const example of await gallery.locator('video').all()) {
+        assert.equal(await example.getAttribute('preload'),'none');
+        assert.equal(await example.getAttribute('src'),null);
+      }
       assert.equal(await video.getAttribute('preload'),'none');
       assert.equal(await video.getAttribute('src'),null,'opening the gallery does not set the video source');
       assert.deepEqual(media,[],'opening the gallery downloads no video');
@@ -92,7 +96,7 @@ async function run() {
       assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth),false);
       await gallery.screenshot({path:path.join(screenshots,`choices-${width}.png`)});
       await gallery.getByRole('button',{name:'Assistir ao exemplo de Chuva',exact:true}).click();
-      await page.waitForFunction(()=>document.querySelector('#mascotVideoExamples video').currentTime>0);
+      await page.waitForFunction(()=>document.querySelector('#mascotVideoExamples [data-mascot-option="chuva"] video').currentTime>0);
       assert.equal(new Set(media).size,1,'only the selected local example downloads');
       assert.ok(media.every(url=>url===origin+'/media/mascote/exemplo-chuva-10s-20261007.mp4'));
       assert.equal(await video.evaluate(v=>v.videoWidth),720);
@@ -109,7 +113,7 @@ async function run() {
       await chat.getByRole('button',{name:'Continuar',exact:true}).click();
       const final=chat.locator('.guided-mascot[data-stage-key="final"]');
       await final.waitFor({state:'visible'});
-      assert.equal(await chat.getByRole('button',{name:'Vídeo em preparação',exact:true}).isDisabled(),true);
+      assert.equal(await chat.getByRole('button',{name:'Enviar pedido',exact:true}).isEnabled(),true);
       assert.match(await final.textContent(),/Sol.*25,00/);
       await chat.getByRole('button',{name:'Trocar opção',exact:true}).click();
       await gallery.locator('[data-mascot-choice="chuva"]').click();
@@ -124,17 +128,18 @@ async function run() {
       assert.equal(rainOrder.fields.video_model,'omni');
       assert.equal(rainOrder.fields.mascot_animal,'Lobo');
       await chat.getByRole('button',{name:'Trocar opção',exact:true}).click();
-      await gallery.locator('[data-mascot-choice="escrita_personalizada"]').click();
+      await gallery.locator('[data-mascot-choice="ascensao_epica"]').click();
+      await final.getByText(/Imagem \+ vídeo · Ascensão Épica/).waitFor();
+      assert.match(await final.textContent(),/Ascensão Épica.*28,00/);
       const text=chat.getByRole('textbox',{name:'Texto para o vídeo',exact:true});
-      await text.fill('Vamos, Lobos!');
-      assert.equal(await chat.getByRole('button',{name:'Vídeo em preparação',exact:true}).isDisabled(),true);
-      await page.waitForFunction(()=>document.getElementById('integratedChatFrame').contentDocument.querySelector('.mascot-video-text')?.value==='Vamos, Lobos!');
-      await page.screenshot({path:path.join(screenshots,`personalized-${width}.png`),fullPage:true});
+      assert.equal(await text.count(),0,'the epic option has no custom writing field');
+      assert.equal(await chat.getByRole('button',{name:'Enviar pedido',exact:true}).isEnabled(),true);
+      await page.screenshot({path:path.join(screenshots,`ascensao-${width}.png`),fullPage:true});
       const blocked=await page.evaluate(()=>{
-        try {omascoteChatBaseCleanOrder('mascote_uniforme',{delivery_mode:'image_video',mascot_video_option:'sol'},{});return false;}
-        catch(e){return /em preparação/.test(e.message);}
+        try {omascoteChatBaseCleanOrder('mascote_uniforme',{delivery_mode:'image_video',mascot_video_option:'escrita_personalizada'},{});return false;}
+        catch(e){return /opções de vídeo disponíveis/.test(e.message);}
       });
-      assert.equal(blocked,true,'the parent bridge rejects prepared variants before order creation');
+      assert.equal(blocked,true,'the parent bridge rejects an obsolete choice before order creation');
       await chat.getByRole('button',{name:'Trocar opção',exact:true}).click();
       await gallery.locator('[data-mascot-choice="image"]').click();
       await chat.getByRole('button',{name:'Enviar pedido',exact:true}).waitFor();
@@ -168,20 +173,23 @@ async function run() {
       assert.deepEqual(paid,[]);
       assert.equal(new Set(media).size,1,'switching choices never downloads another example');
       assert.deepEqual(errors,[]);
-      const result=await page.evaluate(async bytes=>omascoteChatSubmitOrders({
-        id:'rain-test-draft',flow:'mascote_uniforme',
-        values:{mascot_animal:'Lobo',sport:'Futebol',delivery_mode:'image_video',mascot_video_option:'chuva'}
-      },[{field:'team_crest',name:'escudo.png',type:'image/png',bytes:Uint8Array.from(bytes).buffer}]),[...pixel]);
-      assert.equal(result.ok,true);
-      assert.equal(apiPayloads.length,1,'one mocked order is sent');
-      const sent=JSON.parse(apiPayloads[0].fields_json);
-      assert.equal(sent.mascot_video_option,'chuva');
-      assert.equal(sent.delivery_mode,'image_video');
-      assert.equal(sent.video_model,'omni');
-      fs.writeFileSync(path.join(screenshots,'rain-api-body.json'),JSON.stringify(apiPayloads[0],null,2));
+      for (const option of ['sol','chuva','ascensao_epica']) {
+        const result=await page.evaluate(async ({bytes,option})=>omascoteChatSubmitOrders({
+          id:`${option}-test-draft`,flow:'mascote_uniforme',
+          values:{mascot_animal:'Lobo',sport:'Futebol',delivery_mode:'image_video',mascot_video_option:option}
+        },[{field:'team_crest',name:'escudo.png',type:'image/png',bytes:Uint8Array.from(bytes).buffer}]),{bytes:[...pixel],option});
+        assert.equal(result.ok,true);
+        const sent=JSON.parse(apiPayloads.at(-1).fields_json);
+        assert.equal(sent.mascot_video_option,option);
+        assert.equal(sent.delivery_mode,'image_video');
+        assert.equal(sent.video_model,'omni');
+        assert.equal(sent.mascot_video_text,undefined);
+      }
+      assert.equal(apiPayloads.length,3,'one mocked order per choice is sent');
+      fs.writeFileSync(path.join(screenshots,'options-api-bodies.json'),JSON.stringify(apiPayloads,null,2));
       await context.close();
     }
-    console.log('PASS: mobile and desktop selection, deferred poster/video loading, 720p playback, saved choices, Omni request, custom text, image fallback, no paid requests.');
+    console.log('PASS: mobile and desktop selection, deferred poster/video loading, 720p playback, saved choices, all three Omni requests, no custom writing field, image fallback, no paid requests.');
     console.log('Screenshots: '+screenshots);
   } finally {await browser.close();server.close();}
 }

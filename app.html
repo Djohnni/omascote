@@ -72,11 +72,11 @@
   <link rel="stylesheet" href="./radar-amistosos/radar-live.css">
   <link rel="stylesheet" href="/escudo3d-examples.css?v=20261001">
   <script defer src="/escudo3d-examples.js?v=20261001"></script>
-  <link rel="stylesheet" href="/mascot-video-examples.css?v=20261007-mascot-omni">
-  <script defer src="/mascot-video-options.js?v=20261007-mascot-omni"></script>
-  <script defer src="/mascot-video-examples.js?v=20261007-mascot-omni"></script>
+  <link rel="stylesheet" href="/mascot-video-examples.css?v=20261007-mascot-three-options">
+  <script defer src="/mascot-video-options.js?v=20261007-mascot-three-options"></script>
+  <script defer src="/mascot-video-examples.js?v=20261007-mascot-three-options"></script>
   <link rel="stylesheet" href="/vitrine-chat.css?v=20261002-brinde-direto">
-  <script defer src="/vitrine-chat.js?v=20261007-mascot-omni-mascot-videos"></script>
+  <script defer src="/vitrine-chat.js?v=20261007-mascot-three-options"></script>
   <script defer src="/analytics-tabs.js?v=20261002-abas"></script>
   <!-- favicon atualizado -->
 
@@ -15909,7 +15909,7 @@ body.copaColombiaOrderMode.copaColombiaResultMode.copaColombiaShowScenario [data
         class="integratedChatFrame"
         id="integratedChatFrame"
         title="Atendimento O Mascote"
-        src="/atendimento/index.html?integrado=1&v=20261007-mascot-omni-mascot-videos"
+        src="/atendimento/index.html?integrado=1&v=20261007-mascot-three-options"
         allow="clipboard-write"
       ></iframe>
       <button class="integratedChatClose" id="integratedChatClose" type="button" aria-label="Reduzir atendimento">Reduzir</button>
@@ -17533,7 +17533,7 @@ function omascoteChatLocalPreview(){
 }
 
 function omascoteChatUrl(){
-  return new URL("/atendimento/index.html?integrado=1&v=20261007-mascot-omni-mascot-videos", window.location.origin).href;
+  return new URL("/atendimento/index.html?integrado=1&v=20261007-mascot-three-options", window.location.origin).href;
 }
 
 function abrirAtendimentoIntegrado(){
@@ -17687,8 +17687,8 @@ const OMASCOTE_CHAT_IMAGE_ONLY_PRODUCTS = new Set([
 
 function omascoteChatBaseCleanOrder(productKey, values, files){
   // Only variants connected to the worker may reach billing.
-  if(productKey === "mascote_uniforme" && values.delivery_mode === "image_video" && values.mascot_video_option && values.mascot_video_option !== "chuva"){
-    throw new Error("Esta opção de vídeo do mascote está em preparação. Por enquanto, você pode pedir somente a imagem.");
+  if(productKey === "mascote_uniforme" && values.delivery_mode === "image_video" && values.mascot_video_option && !["sol", "chuva", "ascensao_epica"].includes(values.mascot_video_option)){
+    throw new Error("Escolha uma das opções de vídeo disponíveis para o mascote.");
   }
   const sportContext = omascoteChatSportContext(values);
   const mascotByDescription = ["proximo_jogo", "resultado"].includes(productKey) && values.photo_mode === "Não tenho mascote";
@@ -17710,8 +17710,8 @@ function omascoteChatBaseCleanOrder(productKey, values, files){
   if(productKey === "mascote_uniforme" && deliveryMode === "image_video"){
     fields.video_model = "omni";
   }
-  if(productKey === "mascote_uniforme" && deliveryMode === "image_video" && values.mascot_video_option === "chuva"){
-    fields.mascot_video_option = "chuva";
+  if(productKey === "mascote_uniforme" && deliveryMode === "image_video" && values.mascot_video_option){
+    fields.mascot_video_option = values.mascot_video_option;
   }
   const assets = {};
   if(mascotByDescription){

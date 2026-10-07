@@ -226,10 +226,6 @@
               h('button', {type:'button', className:'guided-text-button', disabled:props.busy, onClick:changeVideo}, 'Trocar opção'))
               : h(React.Fragment, null, option('image', 'Somente imagem', props.product.priceLabel),
                 props.canVideo ? option('image_video', 'Imagem + vídeo', props.videoPrice) : null)),
-          videoSelected && selectedVideo.id === 'escrita_personalizada' ? h('label', {className:'guided-label'},
-            'Texto para o vídeo', h('textarea', {className:'mascot-video-text', maxLength:160,
-              value:draft.values.mascot_video_text || '', placeholder:'Escreva a mensagem que aparecerá no vídeo',
-              onChange:event => props.changeField('mascot_video_text', event.target.value)})) : null,
           preparedVideo ? h('p', {className:'mascot-video-pending',role:'status'},
             'Esta opção está em preparação. O envio de pedidos de vídeo será liberado quando estiver disponível.') : null,
           h('button', {type:'button', className:'guided-primary', disabled:props.busy || preparedVideo,

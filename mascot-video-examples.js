@@ -14,7 +14,7 @@
   section.setAttribute('aria-labelledby', 'mascotExamplesTitle');
   const escape = value => String(value).replace(/[&<>"']/g, char => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char]));
   const price = value => new Intl.NumberFormat('pt-BR', {style:'currency',currency:'BRL'}).format(value);
-  const icons = {sol:'☀️', chuva:'🌧️', escrita_personalizada:'✍️'};
+  const icons = {sol:'☀️', chuva:'🌧️', ascensao_epica:'⚡'};
   section.innerHTML = `
     <div class="mascotExamples__heading">
       <div><h2 id="mascotExamplesTitle">Escolha o vídeo do seu mascote</h2><p>Três opções para dar vida ao mascote do seu time.</p></div>
@@ -30,7 +30,7 @@
         <button class="mascotExamples__choose" type="button" data-mascot-choice="${escape(option.id)}">Escolher ${escape(option.name)}</button>
       </article>`).join('')}
     </div>
-    <p class="mascotExamples__pending">Chuva já está disponível para pedidos. Sol e Escrita personalizada estão em preparação.</p>
+    <p class="mascotExamples__pending">Toque em Assistir para ver cada exemplo e escolha o seu favorito.</p>
     <button class="mascotExamples__image" type="button" data-mascot-choice="image">Prefiro somente imagem · R$ 18,00</button>`;
   anchor.before(section);
   let onSelect = null;
