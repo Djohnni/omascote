@@ -11,7 +11,7 @@ const classes = new Set();
 const handlers = {};
 const storage = new Map();
 const button = {
-  href: 'https://wa.me/5547992536917?text=ajuda',
+  href: 'https://wa.me/554791049079?text=ajuda',
   classList: {
     add: (name) => classes.add(name),
     remove: (name) => classes.delete(name),
@@ -98,6 +98,6 @@ assert.match(button.href, /pedido-123/);
 rules.atualizarAlertaEntregaWhatsapp([]);
 assert.equal(classes.has('ia4WhatsappBtnFalha'), false);
 assert.equal(notice.hidden, true);
-assert.equal(button.href, 'https://wa.me/5547992536917?text=ajuda');
+assert.equal(button.href, 'https://wa.me/554791049079?text=ajuda');
 
 console.log('OK: pedidos pagos com falha ou atraso destacam o WhatsApp sem alertar pedidos em produção normal');
