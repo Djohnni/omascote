@@ -15,7 +15,7 @@ window.COPA_COLOMBIA = {
     "PMZ": { arquivo: "/copacolombia/escudos/pmz.jpeg" },
     "Fortaleza FC": { arquivo: "/copacolombia/escudos/fortaleza-fc.jpeg" },
     "Residencial Vila Jardim Tottenham": { arquivo: "/copacolombia/escudos/residencial-vila-jardim-tottenham.jpeg" },
-    "Marinelson FC": { arquivo: "/copacolombia/escudos/marinelson-fc.jpeg" },
+    "Marinelson FC": { arquivo: "/copacolombia/escudos/marinelson-fc-20261009.jpeg" },
     "Unión Real": { arquivo: "/copacolombia/escudos/union-real.jpeg", sourceW: 1408, sourceH: 768, x: 430, y: 45, w: 555, h: 675 },
     "Real Élite": { arquivo: "/copacolombia/escudos/real-elite.jpeg", sourceW: 715, sourceH: 1600, x: 200, y: 475, w: 515, h: 690 },
     "Arepaso FC": { arquivo: "/copacolombia/escudos/arepaso-fc.jpeg", sourceW: 720, sourceH: 1520, x: 0, y: 430, w: 720, h: 800 },
