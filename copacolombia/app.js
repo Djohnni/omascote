@@ -5,6 +5,7 @@
   if(!copa) return;
 
   const COPA_ORDER_MAP_KEY = "copa_colombia_pedidos_por_jogo";
+  const COPA_APP_VERSION = "20261016-video-download";
   const matchGrid = document.getElementById("matchGrid");
   const flyerModal = document.getElementById("flyerModal");
   const flyerModalFrame = document.getElementById("flyerModalFrame");
@@ -84,6 +85,7 @@
 
   const flyerUrl = match => {
     const params = new URLSearchParams({
+      v: COPA_APP_VERSION,
       produto: "proximo_jogo",
       origem: "copacolombia",
       jogo: match.id,
@@ -99,6 +101,7 @@
 
   const resultUrl = match => {
     const params = new URLSearchParams({
+      v: COPA_APP_VERSION,
       produto: "resultado",
       origem: "copacolombia",
       jogo: match.id,
@@ -214,7 +217,7 @@
   };
 
   const orderUrl = (match, order) => {
-    const params = new URLSearchParams({ origem: "copacolombia-download", jogo: match.id });
+    const params = new URLSearchParams({ v: COPA_APP_VERSION, origem: "copacolombia-download", jogo: match.id });
     if(order.generic) params.set("pedidos", "1");
     else params.set("pedido", order.pedido_id);
     return `/app.html?${params.toString()}`;
