@@ -52,15 +52,15 @@ window.COPA_COLOMBIA = {
     E: ["Frash Sport", "João de Barro FC", "Máquina FC", "Parceros FC"]
   },
   jogos: [
-    { id: "j11", grupo: "A", rodada: "2ª rodada", data: "2026-10-11", hora: "09:00", casa: "Astonbirras FC", fora: "Resistência Vila Jardim" },
-    { id: "j12", grupo: "A", rodada: "2ª rodada", data: "2026-10-11", hora: "09:40", casa: "Unión Real", fora: "Residencial Vila Jardim Tottenham" },
-    { id: "j13", grupo: "E", rodada: "2ª rodada", data: "2026-10-11", hora: "10:20", casa: "João de Barro FC", fora: "Máquina FC" },
-    { id: "j14", grupo: "C", rodada: "2ª rodada", data: "2026-10-11", hora: "11:00", casa: "Marinelson FC", fora: "Esporting Colombia" },
-    { id: "j15", grupo: "E", rodada: "2ª rodada", data: "2026-10-11", hora: "11:40", casa: "Frash Sport", fora: "Parceros FC" },
-    { id: "j16", grupo: "B", rodada: "2ª rodada", data: "2026-10-11", hora: "12:20", casa: "Renacer FC", fora: "Diamante Vinotinto" },
-    { id: "j17", grupo: "D", rodada: "2ª rodada", data: "2026-10-11", hora: "13:00", casa: "Alegría FC", fora: "Arepaso FC" },
-    { id: "j18", grupo: "D", rodada: "2ª rodada", data: "2026-10-11", hora: "13:40", casa: "Atlético de Jesus", fora: "Fortaleza FC" },
-    { id: "j19", grupo: "C", rodada: "2ª rodada", data: "2026-10-11", hora: "14:20", casa: "Cytizen Blue FC", fora: "Rey Sport" },
-    { id: "j20", grupo: "B", rodada: "2ª rodada", data: "2026-10-11", hora: "15:00", casa: "Real Élite", fora: "Orion Futbol Club" }
+    { id: "j21", grupo: "D", rodada: "3ª rodada", data: "2026-10-18", hora: "09:00", casa: "Arepaso FC", fora: "Atlético de Jesus" },
+    { id: "j22", grupo: "D", rodada: "3ª rodada", data: "2026-10-18", hora: "09:40", casa: "Fortaleza FC", fora: "Alegría FC" },
+    { id: "j23", grupo: "A", rodada: "3ª rodada", data: "2026-10-18", hora: "10:20", casa: "Resistência Vila Jardim", fora: "Exiliados FC" },
+    { id: "j24", grupo: "C", rodada: "3ª rodada", data: "2026-10-18", hora: "11:00", casa: "Esporting Colombia", fora: "Cytizen Blue FC" },
+    { id: "j25", grupo: "A", rodada: "3ª rodada", data: "2026-10-18", hora: "11:40", casa: "Residencial Vila Jardim Tottenham", fora: "Astonbirras FC" },
+    { id: "j26", grupo: "E", rodada: "3ª rodada", data: "2026-10-18", hora: "12:20", casa: "Parceros FC", fora: "João de Barro FC" },
+    { id: "j27", grupo: "B", rodada: "3ª rodada", data: "2026-10-18", hora: "13:00", casa: "Orion Futbol Club", fora: "Renacer FC" },
+    { id: "j28", grupo: "C", rodada: "3ª rodada", data: "2026-10-18", hora: "13:40", casa: "Rey Sport", fora: "Marinelson FC" },
+    { id: "j29", grupo: "B", rodada: "3ª rodada", data: "2026-10-18", hora: "14:20", casa: "Diamante Vinotinto", fora: "Junix FC" },
+    { id: "j30", grupo: "E", rodada: "3ª rodada", data: "2026-10-18", hora: "15:00", casa: "Máquina FC", fora: "Frash Sport" }
   ]
 };
