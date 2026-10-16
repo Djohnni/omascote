@@ -27968,6 +27968,61 @@ function cancelarProgressoNoProduto(form){
   restaurarImagemOriginalDoProduto(form);
 }
 
+function atualizarResultadoProntoClean(pedidoId, form, data){
+  if(!form || data?.imagem_pronta !== true) return;
+  const boxEl = form.querySelector("[data-clean-result-box]");
+  const statusElLocal = form.querySelector("[data-clean-result-status]");
+  const imgEl = form.querySelector("[data-clean-result-preview]");
+  const downloadEl = form.querySelector("[data-clean-result-download]");
+  const videoDownloadEl = form.querySelector("[data-clean-video-download]");
+  const pagamentoPendente = data.pagamento_pendente === true;
+  const estadoVideo = estadoEntregaVideoPedido(data);
+
+  if(boxEl) boxEl.style.display = "block";
+  if(imgEl){
+    if(imgEl.dataset.previewPedidoId !== String(pedidoId)){
+      imgEl.src = `${API_BASE}/pedidos/${pedidoId}/preview?ts=${Date.now()}`;
+      imgEl.dataset.previewPedidoId = String(pedidoId);
+    }
+    imgEl.classList.add("previewProtegida");
+    imgEl.style.display = "block";
+  }
+  if(statusElLocal){
+    statusElLocal.textContent = pagamentoPendente
+      ? "Imagem pronta. Conclua o pagamento em Meus pedidos para baixar."
+      : estadoVideo === "pronto"
+        ? "Sua imagem e seu vídeo estão prontos"
+        : estadoVideo === "processando"
+          ? "Imagem pronta. Seu vídeo está em produção..."
+          : estadoVideo === "falhou"
+            ? "Imagem pronta. O vídeo não foi concluído; fale com o suporte."
+            : "Confira sua arte antes de baixar";
+  }
+  if(downloadEl){
+    if(pagamentoPendente){
+      downloadEl.style.display = "none";
+      downloadEl.onclick = null;
+    }else{
+      configurarAcaoDownloadPedido(downloadEl, pedidoId, data.aprovado_cliente === true);
+      downloadEl.onclick = async (ev) => {
+        ev.preventDefault();
+        if(data.aprovado_cliente === true) await baixarPedido(pedidoId);
+        else await aprovarPedido(pedidoId);
+        restaurarImagemOriginalDoProduto(form);
+      };
+    }
+  }
+  if(videoDownloadEl){
+    if(!pagamentoPendente && estadoVideo === "pronto"){
+      configurarAcaoDownloadVideoPedido(videoDownloadEl, pedidoId, data.aprovado_cliente === true);
+    }else{
+      videoDownloadEl.style.display = "none";
+      videoDownloadEl.onclick = null;
+    }
+  }
+  registrarStatusDownloadPedido(statusElLocal, pedidoId);
+}
+
 async function acompanharResultadoClean(pedidoId, form){
   if(pedidoId && cleanProductResultWatchers.has(pedidoId)) return;
 
@@ -28022,56 +28077,9 @@ async function acompanharResultadoClean(pedidoId, form){
         if(!watcher.imagemProntaConhecida){
           finalizarProgressoNoProduto(form, pedidoId);
           atualizarPedidoCopaColombiaLocal(pedidoId, "pronto");
-          const previewUrl = `${API_BASE}/pedidos/${pedidoId}/preview?ts=${Date.now()}`;
-          if(imgEl){
-            imgEl.src = previewUrl;
-            imgEl.classList.add("previewProtegida");
-            imgEl.style.display = "block";
-          }
           watcher.imagemProntaConhecida = true;
         }
-
-        if(statusElLocal){
-          statusElLocal.textContent = pagamentoPendente
-            ? "Imagem pronta. Conclua o pagamento em Meus pedidos para baixar."
-            : estadoVideo === "pronto"
-              ? "Sua imagem e seu vídeo estão prontos"
-              : estadoVideo === "processando"
-                ? "Imagem pronta. Seu vídeo está em produção..."
-                : estadoVideo === "falhou"
-                  ? "Imagem pronta. O vídeo não foi concluído; fale com o suporte."
-                  : "Confira sua arte antes de baixar";
-        }
-        if(downloadEl){
-          if(pagamentoPendente){
-            downloadEl.style.display = "none";
-            downloadEl.onclick = null;
-          }else{
-            configurarAcaoDownloadPedido(downloadEl, pedidoId, data.aprovado_cliente === true);
-            downloadEl.onclick = async (ev) => {
-              ev.preventDefault();
-              if(data.aprovado_cliente === true){
-                await baixarPedido(pedidoId);
-              }else{
-                await aprovarPedido(pedidoId);
-              }
-              restaurarImagemOriginalDoProduto(form);
-            };
-          }
-        }
-        if(videoDownloadEl){
-          if(!pagamentoPendente && estadoVideo === "pronto"){
-            configurarAcaoDownloadVideoPedido(
-              videoDownloadEl,
-              pedidoId,
-              data.aprovado_cliente === true
-            );
-          }else{
-            videoDownloadEl.style.display = "none";
-            videoDownloadEl.onclick = null;
-          }
-        }
-        registrarStatusDownloadPedido(statusElLocal, pedidoId);
+        atualizarResultadoProntoClean(pedidoId, form, data);
       }else{
         if(statusElLocal) statusElLocal.textContent = "Estamos montando sua imagem...";
       }
@@ -28147,6 +28155,7 @@ function restaurarPedidosAtivos(pedidos){
       if(imageBox?.dataset.previewPedidoId !== pedido.id){
         finalizarProgressoNoProduto(form, pedido.id);
       }
+      atualizarResultadoProntoClean(pedido.id, form, pedido);
       continue;
     }
 
@@ -38570,6 +38579,27 @@ function copaColombiaResumoEscudo(config, nomeTime){
   return `<span class="copaChampionshipSummaryCrest"><img src="${htmlEscape(url)}" alt="Escudo ${htmlEscape(nomeTime)}"></span>`;
 }
 
+function restaurarEntregaPedidoCopaColombia(form){
+  if(form?.dataset?.comissaoOrigem !== "copacolombia") return false;
+  const productKey = String(form.dataset.productForm || "");
+  const jogoId = String(form.dataset.comissaoJogoId || "");
+  if(!jogoId || !["proximo_jogo", "resultado"].includes(productKey)) return false;
+  try{
+    const mapKey = chaveContaMapaCopaColombia();
+    if(!mapKey) return false;
+    const pedidos = JSON.parse(localStorage.getItem(mapKey) || "{}");
+    const salvo = pedidos?.[`${jogoId}:${productKey}`]
+      || (productKey === "proximo_jogo" ? pedidos?.[jogoId] : null);
+    const pedidoId = String(salvo?.pedido_id || "").trim();
+    if(!/^[A-Za-z0-9_-]+$/.test(pedidoId)) return false;
+    if(salvo.produto && salvo.produto !== productKey) return false;
+    void acompanharResultadoClean(pedidoId, form);
+    return true;
+  }catch{
+    return false;
+  }
+}
+
 function iniciarModoPedidoCopaColombia(form, params, config, escudosAplicados){
   if(!form) return;
   const productKey = String(form.dataset.productForm || "");
@@ -38734,6 +38764,7 @@ function iniciarModoPedidoCopaColombia(form, params, config, escudosAplicados){
     setCleanProductMsg(form, "");
   }
   document.body.classList.remove("copaColombiaBooting");
+  restaurarEntregaPedidoCopaColombia(form);
 }
 
 function preencherProdutoComParametrosUrl(form, params){

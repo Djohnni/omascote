@@ -75,7 +75,8 @@ assert.doesNotMatch(html, /teste de vídeo não foi concluído/);
 
 const watcher = functionSource("acompanharResultadoClean");
 assert.match(watcher, /videoEncerrado/, "a consulta deve continuar enquanto o vídeo pago estiver em produção");
-assert.match(watcher, /configurarAcaoDownloadVideoPedido/, "o resultado imediato precisa liberar o vídeo sem exigir a imagem primeiro");
+assert.match(watcher, /atualizarResultadoProntoClean/, "a consulta deve atualizar a entrega também usada na restauração");
+assert.match(functionSource("atualizarResultadoProntoClean"), /configurarAcaoDownloadVideoPedido/, "a entrega precisa liberar o vídeo sem exigir a imagem primeiro");
 assert.match(watcher, /pagamento_pendente === true/, "o resultado imediato precisa bloquear download com pagamento pendente");
 assert.match(watcher, /limitePollingMs/, "a consulta do vídeo precisa ter prazo máximo");
 assert.match(watcher, /setTimeout\(consultar, 5000\)/, "as consultas precisam ser sequenciais");
