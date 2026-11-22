@@ -24,7 +24,7 @@ async function run() {
   const browser=await chromium.launch({channel:'chrome',headless:true});
   const screenshots=fs.mkdtempSync(path.join(os.tmpdir(),'omascote-mascot-options-'));
   try {
-    for (const width of [390,1440]) {
+    for (const width of [390,768,1440]) {
       let state=structuredClone(initial);
       const context=await browser.newContext({viewport:{width,height:1000},reducedMotion:'reduce'});
       const page=await context.newPage();
@@ -78,11 +78,20 @@ async function run() {
       const gallery=page.locator('#mascotVideoExamples');
       await gallery.waitFor({state:'visible'});
       assert.equal(state.draft,null,'the selection precedes draft collection');
-      assert.equal(await gallery.locator('article').count(),3);
-      assert.deepEqual(await gallery.locator('h3').allTextContents(),['Sol','Chuva','Ascensão Épica']);
-      assert.deepEqual(await gallery.locator('.mascotExamples__price').allTextContents(),['R$ 25,00','R$ 28,00','R$ 28,00']);
+      assert.equal(await gallery.locator('article').count(),4);
+      assert.deepEqual(await gallery.locator('h3').allTextContents(),['Somente imagem','Sol','Chuva','Ascensão Épica']);
+      assert.deepEqual(await gallery.locator('.mascotExamples__price').allTextContents(),['R$ 18,00','R$ 25,00','R$ 28,00','R$ 28,00']);
+      const imageCard=gallery.locator('article').first();
+      assert.equal(await imageCard.getAttribute('data-mascot-option'),'image','the image choice comes before every video');
+      assert.equal(await imageCard.locator('video').count(),0,'the image example is a static image');
+      assert.equal(await imageCard.locator('img').getAttribute('src'),'/media/vitrine/mascote-lobos-da-serra.webp');
+      assert.equal(await gallery.locator('[data-mascot-choice="image"]').count(),1,'image selection is not duplicated in a footer');
+      const columns=await gallery.locator('.mascotExamples__grid').evaluate(grid=>getComputedStyle(grid).gridTemplateColumns.split(' ').length);
+      assert.equal(columns,width<=600?1:width<=1050?2:4,'all four choices fit the responsive grid');
+      await page.evaluate(()=>window.dispatchEvent(new CustomEvent('omascote:tester-bonus',{detail:{active:true,remaining:5}})));
+      assert.deepEqual(await gallery.locator('.mascotExamples__price').allTextContents(),['R$ 18,00','R$ 25,00','R$ 28,00','R$ 28,00'],'the catalog prices stay independent of account bonuses');
       assert.equal(await gallery.locator('.mascotExamples__placeholder').count(),0);
-      assert.equal(await gallery.locator('video').count(),3,'all choices have a video example');
+      assert.equal(await gallery.locator('video').count(),3,'all three video choices keep their examples');
       const video=gallery.locator('[data-mascot-option="chuva"] video');
       for (const example of await gallery.locator('video').all()) {
         assert.equal(await example.getAttribute('preload'),'none');
@@ -189,7 +198,7 @@ async function run() {
       fs.writeFileSync(path.join(screenshots,'options-api-bodies.json'),JSON.stringify(apiPayloads,null,2));
       await context.close();
     }
-    console.log('PASS: mobile and desktop selection, deferred poster/video loading, 720p playback, saved choices, all three Omni requests, no custom writing field, image fallback, no paid requests.');
+    console.log('PASS: image-first selection at mobile/tablet/desktop widths, unchanged catalog prices, three video choices, deferred poster/video loading, 720p playback, saved choices, all three Omni requests, no custom writing field, no paid requests.');
     console.log('Screenshots: '+screenshots);
   } finally {await browser.close();server.close();}
 }

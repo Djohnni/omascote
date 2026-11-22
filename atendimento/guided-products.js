@@ -123,6 +123,10 @@
 
   function Form(props) {
     const React = props.react, h = React.createElement, draft = props.draft;
+    const [bonusSummary,setBonusSummary] = React.useState(() => window.OmascoteTesterImageBonus?.getSummary() || null);
+    React.useEffect(() => window.OmascoteTesterImageBonus?.subscribe(setBonusSummary), []);
+    const imagePrice = window.OmascoteTesterImageBonus?.imagePriceLabel({productId:draft.flow,draft,
+      deliveryMode:'image',regularLabel:props.product.priceLabel,summary:bonusSummary}) || props.product.priceLabel;
     const saved = sessions.get(draft.id);
     const [productMode,setProductMode] = React.useState(isProduct);
     const [stageKey,setStageKey] = React.useState(saved?.stageKey || 'sport');
@@ -314,12 +318,13 @@
     }
     function deliveryOptions() {
       if (draft.flow !== 'escudo3d') return h('fieldset',{className:'guided-delivery','aria-label':'Como você quer receber?'},
-        option('image','Somente imagem',props.product.priceLabel),
+        option('image','Somente imagem',imagePrice),
         props.canVideo ? option('image_video','Imagem + vídeo',props.videoPrice) : null);
       const video = draft.values.delivery_mode === 'image_video', omni = video && draft.values.video_model === 'omni';
       return h('div',{className:'guided-delivery guided-selected-delivery','aria-label':'Entrega escolhida'},
         h('div',{className:'guided-delivery-option'},h('span',null,video ? `Imagem + vídeo de ${omni ? 10 : 8} segundos` : 'Somente imagem'),
-          h('strong',null,video ? omni ? 'R$ 19,90' : props.videoPrice : draft.values.brinde_escudo_login === '1' ? 'Grátis — R$ 0,00' : props.product.priceLabel)));
+          h('strong',null,video ? omni ? 'R$ 19,90' : props.videoPrice : imagePrice !== props.product.priceLabel ? imagePrice :
+            draft.values.brinde_escudo_login === '1' && !bonusSummary?.granted ? 'Grátis - R$ 0,00' : props.product.priceLabel)));
     }
     function review() {
       const extra = ['mascot_description','match_photo','uniform_image','visual_style'];
@@ -358,7 +363,7 @@
       h('div',{className:'lab-form-heading'},h('strong',{className:'guided-title',role:'heading','aria-level':2,tabIndex:-1},
         current?.id === 'optional' ? 'Os itens abaixo são opcionais' : current ? props.product.name : 'Finalizar'),
         h('span',{className:'sr-only','aria-live':'polite'},props.saveStatus)),
-      draft.flow === 'escudo3d' && draft.values.brinde_escudo_login === '1' ? h('p',{className:'guided-gift-note'},'Seu escudo de brinde. Sem pagamento.') : null,
+      draft.flow === 'escudo3d' && draft.values.brinde_escudo_login === '1' && !bonusSummary?.granted ? h('p',{className:'guided-gift-note'},'Seu escudo de brinde. Sem pagamento.') : null,
       draft.stage !== 'collect' ? h('div',{className:'lab-submit-status',role:'status'},'Enviando pedido…') :
         h('fieldset',{className:'guided-fields',disabled:props.busy},
           current ? current.fields.map(field) : deliveryOptions(),

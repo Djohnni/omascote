@@ -26,6 +26,8 @@
   function Form(props) {
     const React = props.react, h = React.createElement;
     const draft = props.draft;
+    const [bonusSummary,setBonusSummary] = React.useState(() => window.OmascoteTesterImageBonus?.getSummary() || null);
+    React.useEffect(() => window.OmascoteTesterImageBonus?.subscribe(setBonusSummary), []);
     const fields = window.OmascoteGuidedProducts.visibleFields(props.fields);
     // Match the original chat's optional presentation; the scenario keeps its
     // required metadata and valid default while its renderer also contains style.
@@ -46,6 +48,8 @@
       ? draft.values.delivery_mode || 'image' : saved?.delivery || 'image');
     const selectedVideo = gallery()?.options.find(option => option.id === draft.values.mascot_video_option);
     const videoSelected = delivery === 'image_video' && !!selectedVideo;
+    const imagePrice = window.OmascoteTesterImageBonus?.imagePriceLabel({productId:draft.flow,draft,
+      deliveryMode:'image',regularLabel:props.product.priceLabel,summary:bonusSummary}) || props.product.priceLabel;
     const preparedVideo = videoSelected && selectedVideo.orderEnabled !== true;
     const [error, setError] = React.useState('');
     const [extrasOpen, setExtrasOpen] = React.useState(false);
@@ -222,9 +226,9 @@
           h('fieldset', {className:'guided-delivery', 'aria-label':'Como você quer receber?'},
             gallery() ? h(React.Fragment, null,
               h('p', null, videoSelected ? `Imagem + vídeo · ${selectedVideo.name}` : 'Somente imagem',
-                ' · ', videoSelected ? new Intl.NumberFormat('pt-BR',{style:'currency',currency:'BRL'}).format(selectedVideo.price) : props.product.priceLabel),
+                ' · ', videoSelected ? new Intl.NumberFormat('pt-BR',{style:'currency',currency:'BRL'}).format(selectedVideo.price) : imagePrice),
               h('button', {type:'button', className:'guided-text-button', disabled:props.busy, onClick:changeVideo}, 'Trocar opção'))
-              : h(React.Fragment, null, option('image', 'Somente imagem', props.product.priceLabel),
+              : h(React.Fragment, null, option('image', 'Somente imagem', imagePrice),
                 props.canVideo ? option('image_video', 'Imagem + vídeo', props.videoPrice) : null)),
           preparedVideo ? h('p', {className:'mascot-video-pending',role:'status'},
             'Esta opção está em preparação. O envio de pedidos de vídeo será liberado quando estiver disponível.') : null,

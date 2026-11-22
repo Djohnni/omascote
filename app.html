@@ -72,9 +72,11 @@
   <link rel="stylesheet" href="./radar-amistosos/radar-live.css">
   <link rel="stylesheet" href="/escudo3d-examples.css?v=20261001">
   <script defer src="/escudo3d-examples.js?v=20261001"></script>
-  <link rel="stylesheet" href="/mascot-video-examples.css?v=20261007-mascot-three-options">
+  <link rel="stylesheet" href="/mascot-video-examples.css?v=20261122-imagem-bonus-1">
   <script defer src="/mascot-video-options.js?v=20261007-correct-preview-mapping"></script>
-  <script defer src="/mascot-video-examples.js?v=20261007-instant-gallery"></script>
+  <script defer src="/mascot-video-examples.js?v=20261122-imagem-bonus-1"></script>
+  <link rel="stylesheet" href="/tester-image-bonus.css?v=20261122-1">
+  <script defer src="/tester-image-bonus.js?v=20261122-1"></script>
   <link rel="stylesheet" href="/vitrine-chat.css?v=20261007-mascot-gallery-gap">
   <script defer src="/vitrine-chat.js?v=20261007-instant-gallery"></script>
   <script defer src="/analytics-tabs.js?v=20261002-abas"></script>
@@ -15760,7 +15762,7 @@ body.copaColombiaOrderMode.copaColombiaResultMode.copaColombiaShowScenario [data
         </div>
         <picture style="display:contents"><source type="image/avif" srcset="/media/vitrine/estadio-fundo-vitrine-20261002.avif"><img class="vitrineHero__backdrop" src="/media/vitrine/estadio-fundo-vitrine-20261001.webp" width="1200" height="800" fetchpriority="high" alt="" aria-hidden="true"></picture>
         <picture style="display:contents"><source type="image/avif" srcset="/media/vitrine/mascote-lobos-recorte-20261002.avif"><img class="vitrineHero__image" src="/media/vitrine/mascote-lobos-recorte-20261001.webp" width="720" height="1279" fetchpriority="high" alt="Mascote lobo do Lobos da Serra com o uniforme e o escudo do time"></picture>
-        <button type="button" class="vitrinePrimary" data-vitrine-product="mascote_uniforme">Ver 3 modelos e criar meu mascote <span aria-hidden="true">→</span></button>
+        <button type="button" class="vitrinePrimary" data-vitrine-product="mascote_uniforme">Ver imagem e 3 vídeos do mascote <span aria-hidden="true">→</span></button>
       </div>
       <div class="vitrineMore">
         <h2>Entregamos os vídeos em menos de 5 minutos</h2>
@@ -16658,7 +16660,7 @@ body.copaColombiaOrderMode.copaColombiaResultMode.copaColombiaShowScenario [data
       <label for="authNomeTime" id="labelNomeTime" style="display:none;">Nome do time</label>
       <input id="authNomeTime" placeholder="Ex: Los Hermanos" style="display:none;">
 
-      <label for="authWhatsapp">Login(Nome ou WhatsApp)</label>
+      <label for="authWhatsapp">Login (Gmail, nome ou WhatsApp)</label>
       <input id="authWhatsapp" inputmode="text" autocomplete="username" placeholder="WhatsApp ou nome do time">
 
       <div id="authEscudo3dArea" style="display:none;margin-top:12px;">
@@ -20585,6 +20587,10 @@ function pricePreviewHtml(data, errorMessage = ""){
     `;
   }
 
+  if(data?.coberto_pelo_bonus_testador === true || data?.bonus_testador === true || data?.bonus_testador?.aplicado === true || data?.tester_bonus_applied === true){
+    return `<div class="pricePreviewBox"><div class="pricePreviewTotal">Imagem incluída no seu bônus</div><div class="pricePreviewSaving">Este pedido usa 1 imagem grátis. Total: ${formatMoneyBR(valorFinal)}</div></div>`;
+  }
+
   if(valorDesconto > 0){
     return `
       <div class="pricePreviewBox">
@@ -20603,6 +20609,7 @@ function pricePreviewHtml(data, errorMessage = ""){
 }
 
 function couponSummaryText(data){
+  if(data?.coberto_pelo_bonus_testador === true || data?.bonus_testador === true || data?.bonus_testador?.aplicado === true || data?.tester_bonus_applied === true) return "Imagem incluída no seu bônus de testador.";
   const desconto = data?.desconto || data?.desconto_info || null;
   const codigoCupom = desconto?.codigo || desconto?.cupom_codigo || data?.cupom_codigo || "";
   const valorOriginal = Number(data?.valor_original ?? desconto?.valor_original ?? 0);
@@ -29791,6 +29798,8 @@ function applyLocal(){
 
 async function refreshMe(){
   if(!token){
+    window.omascoteTesterAccount = null;
+    window.OmascoteTesterBonus?.setAccount(null);
     atualizarInternalVeoUi(false);
     pararPollingSaldoPix();
     weeklyPlanSummary = null;
@@ -29829,6 +29838,8 @@ async function refreshMe(){
       return { ok:false, temporario:true, status:r.status };
     }
 
+    window.omascoteTesterAccount = data;
+    window.OmascoteTesterBonus?.setAccount(data);
     const saldo = ia4SetSaldoValor(data.saldo);
     localStorage.setItem("omascote_nome_time", data.nome_time || "");
     localStorage.setItem("omascote_perfil_id", data.perfil_id || "");
@@ -31341,7 +31352,8 @@ function iniciarProgressoCadastroEscudo3d(){
 
 async function finalizarCadastroVisitante(){
   if(authVisitanteSubmitting) return;
-  const whatsapp = onlyDigits(document.getElementById("authWhatsapp")?.value || "");
+  const loginInformado = String(document.getElementById("authWhatsapp")?.value || "").trim();
+  const whatsapp = !modoCadastro && loginInformado.includes("@") ? loginInformado.toLowerCase() : onlyDigits(loginInformado);
   const nome_time = document.getElementById("authNomeTime")?.value?.trim() || whatsapp;
   const senha = document.getElementById("authSenha")?.value || "";
 

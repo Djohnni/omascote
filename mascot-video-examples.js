@@ -17,10 +17,18 @@
   const icons = {sol:'☀️', chuva:'🌧️', ascensao_epica:'⚡'};
   section.innerHTML = `
     <div class="mascotExamples__heading">
-      <div><h2 id="mascotExamplesTitle">Escolha o vídeo do seu mascote</h2><p>Três opções para dar vida ao mascote do seu time.</p></div>
+      <div><h2 id="mascotExamplesTitle">Escolha como criar seu mascote</h2><p>Uma imagem ou um dos três modelos de vídeo.</p></div>
       <button class="mascotExamples__close" type="button" data-mascot-close aria-label="Voltar ao mascote">×</button>
     </div>
-    <div class="mascotExamples__grid">${options.map(option => `
+    <div class="mascotExamples__grid">
+      <article class="mascotExamples__card mascotExamples__card--image" data-mascot-option="image">
+        <h3>Somente imagem</h3><strong class="mascotExamples__price" data-mascot-image-price>${price(18)}</strong>
+        <div class="mascotExamples__media mascotExamples__media--image">
+          <img class="mascotExamples__poster" src="/media/vitrine/mascote-lobos-da-serra.webp" alt="Exemplo de imagem do mascote lobo com uniforme e escudo do time" loading="lazy" width="720" height="1280">
+        </div>
+        <p class="mascotExamples__image-hint" data-mascot-image-hint>Imagem do mascote com uniforme e escudo.</p>
+        <button class="mascotExamples__choose" type="button" data-mascot-choice="image">Escolher somente imagem</button>
+      </article>${options.map(option => `
       <article class="mascotExamples__card" data-mascot-option="${escape(option.id)}">
         <h3>${escape(option.name)}</h3><strong class="mascotExamples__price">${price(option.price)}</strong>
         <div class="mascotExamples__media mascotExamples__media--${escape(option.id)}">
@@ -30,8 +38,7 @@
         <button class="mascotExamples__choose" type="button" data-mascot-choice="${escape(option.id)}">Escolher ${escape(option.name)}</button>
       </article>`).join('')}
     </div>
-    <p class="mascotExamples__pending">Toque em Assistir para ver cada exemplo e escolha o seu favorito.</p>
-    <button class="mascotExamples__image" type="button" data-mascot-choice="image">Prefiro somente imagem · R$ 18,00</button>`;
+    <p class="mascotExamples__pending">Escolha somente a imagem ou toque em Assistir para conhecer os modelos de vídeo.</p>`;
   anchor.before(section);
   let onSelect = null, onCancel = null, preserveOnFrameLoad = false;
   const videos = [...section.querySelectorAll('video')];
