@@ -10,7 +10,7 @@
   banner.id = 'testerImageBonusBanner';
   banner.hidden = true;
   banner.setAttribute('aria-live', 'polite');
-  banner.innerHTML = '<strong data-tester-remaining></strong><span>Válido para pedidos de somente imagem. Vídeos têm cobrança normal.</span>';
+  banner.innerHTML = '<strong data-tester-remaining></strong>';
   header.after(banner);
   const section = document.createElement('section');
   section.className = 'testerBonusAccount';
@@ -55,9 +55,7 @@
     const granted = isGranted(summary);
     const count = remaining(summary);
     banner.hidden = !granted;
-    banner.querySelector('[data-tester-remaining]').textContent = count > 0
-      ? 'Você tem ' + count + (count === 1 ? ' imagem grátis' : ' imagens grátis')
-      : 'Você utilizou suas 5 imagens grátis';
+    banner.querySelector('[data-tester-remaining]').textContent = count + (count === 1 ? ' arte grátis' : ' artes grátis');
     node('[data-tester-account-summary]').hidden = !granted;
     node('[data-tester-account-title]').textContent = count + ' de 5 imagens grátis disponíveis';
     const admin = account?.tester_bonus_admin === true;

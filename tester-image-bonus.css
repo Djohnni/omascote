@@ -1,6 +1,8 @@
 .testerBonusBanner[hidden],.testerBonusAccount[hidden],.testerBonusAccount [hidden]{display:none!important}
-.testerBonusBanner{margin:8px 0 18px;padding:14px 18px;border:1px solid #b9d9c5;border-radius:14px;background:#eaf7ee;color:#17432a;display:flex;flex-wrap:wrap;align-items:center;gap:6px 16px}
-.testerBonusBanner strong{font-size:1rem}.testerBonusBanner span{font-size:.875rem;line-height:1.5}
+.testerBonusBanner{box-sizing:border-box;width:max-content;max-width:100%;margin:0 0 12px auto;padding:7px 12px;border:1px solid #b9d9c5;border-radius:999px;background:#eaf7ee;color:#17432a;display:flex;align-items:center;white-space:nowrap}
+.testerBonusBanner strong{font-size:.8125rem;font-weight:700;line-height:1.25}
+body[data-vitrine="true"]:has(#vitrineHome:not([hidden])) .testerBonusBanner{position:absolute;z-index:5;top:28px;right:max(28px,calc((100% - 980px)/2));margin:0}
+@media(max-width:600px){body[data-vitrine="true"]:has(#vitrineHome:not([hidden])) .testerBonusBanner{top:24px;right:20px;padding:6px 10px}}
 .testerBonusAccount{padding:16px;border:1px solid #d3e3da;border-radius:14px;background:#f5faf7;color:#123d28;margin:12px 0}
 .testerBonusAccount p{font-size:.875rem;line-height:1.5;margin:8px 0}.testerBonusAccount h3{font-size:1rem;margin:10px 0}
 .testerBonusAccount label{display:block;font-size:.9375rem;margin:12px 0 8px}.testerBonusAccount input:not([type=checkbox]){box-sizing:border-box;display:block;width:100%;font:inherit;padding:11px;border:1px solid #a9bfb1;border-radius:8px;margin-top:5px;background:#fff;color:#123d28}
