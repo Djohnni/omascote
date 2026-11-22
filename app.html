@@ -15749,7 +15749,7 @@ body.copaColombiaOrderMode.copaColombiaResultMode.copaColombiaShowScenario [data
       <button type="button" class="vitrineBrand" data-vitrine-home aria-label="O Mascote — início">O Mascote<svg class="vitrineCrown" viewBox="0 0 30 22" fill="currentColor" aria-hidden="true"><path d="M3 7l5 4 7-8 7 8 5-4-3 12H6Z"/><circle cx="3" cy="5" r="2"/><circle cx="15" cy="2" r="2"/><circle cx="27" cy="5" r="2"/></svg></button>
       <nav aria-label="Sua conta">
         <button type="button" data-vitrine-orders>Meus pedidos</button>
-        <button type="button" class="vitrineAccount" data-vitrine-account aria-label="Abrir minha conta"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><circle cx="12" cy="7" r="4"/><path d="M4 22v-3a8 8 0 0 1 16 0v3Z"/></svg></button>
+        <button type="button" data-vitrine-login aria-label="Entrar ou criar conta" onclick="if(token){abrirMinhaContaPeloAtendimento();}else{fecharAtendimentoIntegrado();abrirLoginVisitanteModal();}">Login</button>
       </nav>
     </header>
     <section class="vitrineHome" id="vitrineHome" aria-labelledby="vitrineMascotTitle">

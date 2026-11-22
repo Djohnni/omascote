@@ -119,15 +119,15 @@ async function run() {
         };
         const orderText = document.createRange();
         orderText.selectNodeContents(header.querySelector('[data-vitrine-orders]'));
-        return {brand:bounds('.vitrineBrand'),orders:bounds('[data-vitrine-orders]'),account:bounds('[data-vitrine-account]'),icon:bounds('[data-vitrine-account] svg'),ordersTextLines:[...orderText.getClientRects()].filter(box => box.width > 0 && box.height > 0).length};
+        return {brand:bounds('.vitrineBrand'),orders:bounds('[data-vitrine-orders]'),account:bounds('[data-vitrine-login]'),loginText:header.querySelector('[data-vitrine-login]').textContent.trim(),iconCount:header.querySelectorAll('[data-vitrine-login] svg').length,ordersTextLines:[...orderText.getClientRects()].filter(box => box.width > 0 && box.height > 0).length};
       });
       console.log(`CURRENT ${viewport.width}px header targets:`,JSON.stringify(navigation));
       assert.ok(navigation.orders.top >= navigation.brand.bottom - 1,'orders sit below the brand');
       assert.ok(navigation.orders.left >= navigation.brand.left - 1 && navigation.orders.left <= navigation.brand.left + 2,'orders remain aligned with the brand');
-      assert.ok(Math.abs(navigation.orders.top - navigation.account.top) <= 1,'account icon stays next to orders on the same row');
-      assert.ok(navigation.account.left >= navigation.orders.right,'orders text and account icon do not overlap');
-      assert.equal(navigation.icon.width,25,'account icon keeps its original visible width');
-      assert.equal(navigation.icon.height,25,'account icon keeps its original visible height');
+      assert.ok(Math.abs(navigation.orders.top - navigation.account.top) <= 1,'Login stays next to orders on the same row');
+      assert.ok(navigation.account.left >= navigation.orders.right,'orders text and Login do not overlap');
+      assert.equal(navigation.loginText,'Login','account access is labeled Login');
+      assert.equal(navigation.iconCount,0,'Login uses text without the account icon');
       assert.equal(navigation.ordersTextLines,1,'orders text stays on one line even at 320px');
       assert.ok(heroMetrics.hero.y >= 0 && heroMetrics.hero.y <= 20,'hero starts at the page top with only a small breathing space');
       const homeButtons = page.locator('.vitrineHeader button, #vitrineHome button');
@@ -265,7 +265,7 @@ async function run() {
       await page.getByRole('button',{name:'Fechar exemplos e voltar ao chat',exact:true}).click();
       await page.locator('[data-vitrine-home]').first().click();
 
-      await page.locator('[data-vitrine-account]').click();
+      await page.locator('[data-vitrine-login]').click();
       await page.locator('#accountMenuPanel').waitFor({state:'visible'});
       await page.locator('#btnAbrirSaldo').click();
       await page.locator('#saldoMenu.open').waitFor({state:'visible'});
