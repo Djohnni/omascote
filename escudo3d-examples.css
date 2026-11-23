@@ -8,11 +8,12 @@
 .escudoExamples h2 { margin: 0 0 8px; font-size: 24px; color: #123d28; }
 .escudoExamples p { margin: 0 0 18px; color: #42614e; line-height: 1.5; }
 .escudoExamples__close { border: 1px solid #c8dacf; border-radius: 50%; background: #fff; color: #123d28; min-width: 44px; height: 44px; font-size: 26px; cursor: pointer; }
-.escudoExamples__grid { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 20px; }
+.escudoExamples__grid { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 20px; }
 .escudoExamples__card { min-width: 0; padding: 14px; border: 1px solid #d3e3da; border-radius: 18px; background: #fff; }
 .escudoExamples__card h3 { margin: 0 0 4px; color: #123d28; font-size: 18px; }
 .escudoExamples__price { display: block; margin-bottom: 12px; font-size: 26px; font-weight: 800; color: #107b3d; }
-.escudoExamples__media { position: relative; max-width: 290px; margin: auto; aspect-ratio: 9/16; overflow: hidden; border-radius: 12px; background: #101812; }
+.escudoExamples__media { position: relative; width: 100%; max-width: 290px; margin: auto; aspect-ratio: 9/16; overflow: hidden; border-radius: 12px; background: #101812; }
+.escudoExamples__poster { display: block; width: 100%; height: 100%; object-fit: contain; }
 .escudoExamples video { display: block; width: 100%; height: 100%; object-fit: contain; }
 .escudoExamples__play { position: absolute; inset: 0; width: 100%; border: 0; background: linear-gradient(transparent 45%,#0009); color: #fff; display: flex; align-items: end; justify-content: center; padding: 24px 10px; cursor: pointer; }
 .escudoExamples__play span { background: #fff; color: #123d28; padding: 12px 18px; border-radius: 28px; font-weight: 750; font-size: 16px; }
@@ -22,7 +23,10 @@
 .escudoExamples__image { display: block; margin: 20px auto 0; padding: 10px; border: 0; background: transparent; color: #215d39; text-decoration: underline; font-size: 15px; cursor: pointer; }
 .escudoExamples__error { font-size: 14px; margin: 8px 0 0 !important; color: #a32626 !important; }
 .escudoExamples button:focus-visible { outline: 3px solid #205eff; outline-offset: 3px; }
-@media (max-width: 540px) {
+@media (max-width: 900px) {
+  .escudoExamples__grid { grid-template-columns: repeat(2,minmax(0,1fr)); }
+}
+@media (max-width: 600px) {
   .escudoExamples { padding: 16px 12px; margin: 16px 8px; }
   .escudoExamples__grid { grid-template-columns: 1fr; gap: 20px; }
   .escudoExamples h2 { font-size: 22px; }
