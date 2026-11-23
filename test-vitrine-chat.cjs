@@ -155,16 +155,19 @@ async function run() {
       await page.evaluate(() => scrollTo(0,0));
       const thumbnails = await page.locator('.vitrineProducts img').evaluateAll(images => images.map(image => {
         const box = image.getBoundingClientRect();
-        return {width:box.width, height:box.height, top:box.top, bottom:box.bottom, fit:getComputedStyle(image).objectFit};
+        return {width:box.width, height:box.height, top:box.top, bottom:box.bottom,
+          rowTop:image.closest('button').getBoundingClientRect().top,fit:getComputedStyle(image).objectFit};
       }));
-      assert.equal(thumbnails.length, 3, 'home keeps three product thumbnails');
+      assert.equal(thumbnails.length, 9, 'home shows nine products alongside the featured mascot');
       for (const thumbnail of thumbnails) {
         assert.equal(thumbnail.fit, 'cover', 'all product thumbnails fill their vertical frame');
         assert.ok(Math.abs(thumbnail.width / thumbnail.height - 9/16) < .001, 'all thumbnails are 9:16');
-        for (const edge of ['width','height','top','bottom']) assert.ok(Math.abs(thumbnail[edge] - thumbnails[0][edge]) <= 1, `product thumbnails have identical ${edge}`);
+        for (const edge of ['width','height']) assert.ok(Math.abs(thumbnail[edge] - thumbnails[0][edge]) <= 1, `product thumbnails have identical ${edge}`);
+        const row = thumbnails.filter(other => Math.abs(other.rowTop - thumbnail.rowTop) <= 1);
+        for (const other of row) for (const edge of ['top','bottom']) assert.ok(Math.abs(thumbnail[edge] - other[edge]) <= 1, `product thumbnails align by ${edge} within each row`);
       }
-      const titleTops = await page.locator('.vitrineProducts span').evaluateAll(titles => titles.map(title => title.getBoundingClientRect().top));
-      assert.ok(titleTops.every(top => Math.abs(top-titleTops[0]) <= 1), 'product titles start on the same line');
+      const homeProducts = await page.locator('#vitrineHome [data-vitrine-product]').evaluateAll(buttons => buttons.map(button => button.dataset.vitrineProduct));
+      assert.deepEqual([...homeProducts].sort(),['mascote_uniforme','escudo3d','proximo_jogo','resultado','jogador_escudo','contratacao','escalacao','patrocinador','proximo_jogo_jogador','resultado_jogo_jogador'].sort(),'all ten catalog products are available directly from the home page');
       const titlesAbove = await page.locator('.vitrineProducts button').evaluateAll(buttons => buttons.every(button => {
         const title = button.querySelector('span'), image = button.querySelector('img');
         return title === button.firstElementChild && title.getBoundingClientRect().bottom <= image.getBoundingClientRect().top + 1;
