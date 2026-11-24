@@ -15781,6 +15781,12 @@ body.copaColombiaOrderMode.copaColombiaResultMode.copaColombiaShowScenario [data
       </div>
       <button type="button" class="vitrineHelp" data-vitrine-chat>Precisa de ajuda? Converse aqui <span aria-hidden="true">→</span></button>
       <p class="vitrineStatus" id="vitrineStatus" role="status" aria-live="polite"></p>
+      <section class="artReviewSection" id="artReviewSection" aria-labelledby="artReviewTitle" hidden>
+        <h2 id="artReviewTitle">O que acharam das artes entregues</h2>
+        <p>Comentários de clientes que baixaram suas imagens ou vídeos.</p>
+        <div class="artReviewList" id="artReviewList" aria-live="polite">Carregando comentários...</div>
+        <button class="artReviewMore" id="artReviewMore" type="button" hidden>Ver mais comentários</button>
+      </section>
     </section>
     <div class="vitrineChatNav" id="vitrineChatNav" hidden><button type="button" data-vitrine-home>← Voltar ao início</button></div>
     <section class="accountAccordion" id="accountAccordion" aria-label="Minha conta">
@@ -15927,7 +15933,7 @@ body.copaColombiaOrderMode.copaColombiaResultMode.copaColombiaShowScenario [data
         class="integratedChatFrame"
         id="integratedChatFrame"
         title="Atendimento O Mascote"
-        data-src="/atendimento/index.html?integrado=1&v=20261007-instant-gallery"
+        data-src="/atendimento/index.html?integrado=1&v=20261124-rotulo-escudo"
         allow="clipboard-write"
       ></iframe>
       <div class="integratedChatLoading" id="integratedChatLoading" hidden>
@@ -15975,13 +15981,6 @@ body.copaColombiaOrderMode.copaColombiaResultMode.copaColombiaShowScenario [data
         </article>
       </div>
       <p class="escudoExamples__included">Imagem incluída nos vídeos.</p>
-    </section>
-
-    <section class="artReviewSection" id="artReviewSection" aria-labelledby="artReviewTitle" hidden>
-      <h2 id="artReviewTitle">O que acharam das artes entregues</h2>
-      <p>Comentários de clientes que baixaram suas imagens ou vídeos.</p>
-      <div class="artReviewList" id="artReviewList" aria-live="polite">Carregando comentários...</div>
-      <button class="artReviewMore" id="artReviewMore" type="button" hidden>Ver mais comentários</button>
     </section>
 
     <div class="modalMask artReviewModal" id="artReviewModal" aria-hidden="true">
@@ -16264,7 +16263,7 @@ body.copaColombiaOrderMode.copaColombiaResultMode.copaColombiaShowScenario [data
               <button class="legalLinkBtn" id="btnExcluirContaFooter" type="button">Excluir Conta</button>
               <button class="legalLinkBtn" id="btnDenunciarIaFooter" type="button">Denunciar Conteúdo Gerado por IA</button>
               <button class="legalLinkBtn" id="btnAbrirSuporteFooter" type="button">Suporte</button>
-              <a class="legalLinkBtn" id="btnTesteNovoAtendimentoFooter" href="/atendimento/index.html?integrado=1&v=20261001-escudo3d-no-summary">Novo atendimento</a>
+              <a class="legalLinkBtn" id="btnTesteNovoAtendimentoFooter" href="/atendimento/index.html?integrado=1&v=20261124-rotulo-escudo">Novo atendimento</a>
             </div>
             <div class="brandFootnote">Meu Clube FC é uma plataforma da O Mascote</div>
           </div>
@@ -17563,7 +17562,7 @@ function omascoteChatLocalPreview(){
 }
 
 function omascoteChatUrl(){
-  return new URL(integratedChatFrame?.dataset.src || "/atendimento/index.html?integrado=1&v=20261007-instant-gallery", window.location.origin).href;
+  return new URL(integratedChatFrame?.dataset.src || "/atendimento/index.html?integrado=1&v=20261124-rotulo-escudo", window.location.origin).href;
 }
 
 let omascoteChatReady = false;

@@ -20,7 +20,7 @@ body[data-guided-mascot] .lab-frame.is-integrated .guided-field .lab-options lab
 body[data-guided-mascot] .lab-frame.is-integrated .guided-field .lab-options label:has([data-checked]) { border-color:#168b46; background:#edf7f1; }
 body[data-guided-mascot] .lab-frame.is-integrated .guided-field[data-field=team_crest] .upload-button { display:flex; justify-content:center; align-items:center; width:100%; min-height:140px; border:1px dashed #93b2a0; border-radius:8px; background:#fafcfb; color:#195737; font-size:0; }
 .guided-field[data-field=team_crest] .guided-label, .guided-field[data-field=team_crest] .upload-button svg { display:none; }
-.guided-field[data-field=team_crest] .upload-button::after { content:'+ Adicionar escudo'; font-size:16px; }
+.guided-field[data-field=team_crest] .upload-button:not([aria-label])::after { content:'+ Adicionar escudo'; font-size:16px; }
 body[data-guided-mascot] .lab-frame.is-integrated .guided-field[data-field=team_crest] .lab-thumbnails { margin-top:12px; }
 .guided-optional-shirt { margin-bottom:32px; }
 .guided-optional-shirt summary, .guided-extras summary { min-height:48px; padding:12px 0; color:#24533d; cursor:pointer; font-size:16px; }

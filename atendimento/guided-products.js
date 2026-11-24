@@ -253,9 +253,11 @@
       return (node.type === 'input' && node.props.type === 'file') ||
         React.Children.toArray(node.props.children).some(containsFile);
     }
-    function accessibleUpload(node) {
+    function accessibleUpload(node, uploadLabel) {
       if (!React.isValidElement(node)) return node;
-      const keyboard = node.type === 'label' && containsFile(node) ? {
+      const fileLabel = node.type === 'label' && containsFile(node);
+      const keyboard = fileLabel ? {
+        ...(uploadLabel ? {'aria-label':uploadLabel} : {}),
         tabIndex:props.busy ? -1 : 0,
         onKeyDown:event => {
           if (!props.busy && ['Enter',' '].includes(event.key)) {
@@ -264,7 +266,11 @@
           }
         }
       } : {};
-      return React.cloneElement(node,keyboard,React.Children.map(node.props.children,accessibleUpload));
+      const children = React.Children.map(node.props.children, child => {
+        if (fileLabel && uploadLabel && typeof child === 'string') return uploadLabel;
+        return accessibleUpload(child, uploadLabel);
+      });
+      return React.cloneElement(node,keyboard,children);
     }
     function originalPart(field) {
       if (['mascot-description','mascot-shirt'].includes(field.presentationPart)) {
@@ -301,12 +307,13 @@
       if (field.key === 'sport' && !sportsOpen) {
         visible = {...field,options:field.options.filter(option => ['Futebol','Futsal','Vôlei',draft.values.sport].includes(option))};
       }
+      const uploadLabel = draft.flow === 'jogador_escudo' && field.key === 'team_crest' ? 'Adicionar escudo' : undefined;
       const needsHint = ['players','player_photos','sport_context'].includes(field.key);
       const hideLabel = ['contract-athlete','mascot-shirt'].includes(field.presentationPart);
       return h('div',{className:'guided-field','data-field':field.key,key:field.key,tabIndex:-1},
         h('div',{className:hideLabel ? 'sr-only' : 'guided-label',id:`guided-product-label-${field.key}`},shortLabel(field)),
         needsHint && field.hint ? h('p',{className:'guided-hint'},field.hint) : null,
-        h('div',{role:'group','aria-labelledby':`guided-product-label-${field.key}`},accessibleUpload(originalPart(visible))),
+        h('div',{role:'group','aria-labelledby':`guided-product-label-${field.key}`},accessibleUpload(originalPart(visible), uploadLabel)),
         field.key === 'sport' && !sportsOpen ? h('button',{type:'button',className:'guided-text-button',
           onClick:()=>setSportsOpen(true)},'Outro esporte') : null);
     }
