@@ -15934,7 +15934,7 @@ body.copaColombiaOrderMode.copaColombiaResultMode.copaColombiaShowScenario [data
         class="integratedChatFrame"
         id="integratedChatFrame"
         title="Atendimento O Mascote"
-        data-src="/atendimento/index.html?integrado=1&v=atletas-campos-1"
+        data-src="/atendimento/index.html?integrado=1&v=futebol-omni360-2"
         allow="clipboard-write"
       ></iframe>
       <div class="integratedChatLoading" id="integratedChatLoading" hidden>
@@ -16264,7 +16264,7 @@ body.copaColombiaOrderMode.copaColombiaResultMode.copaColombiaShowScenario [data
               <button class="legalLinkBtn" id="btnExcluirContaFooter" type="button">Excluir Conta</button>
               <button class="legalLinkBtn" id="btnDenunciarIaFooter" type="button">Denunciar Conteúdo Gerado por IA</button>
               <button class="legalLinkBtn" id="btnAbrirSuporteFooter" type="button">Suporte</button>
-              <a class="legalLinkBtn" id="btnTesteNovoAtendimentoFooter" href="/atendimento/index.html?integrado=1&v=atletas-campos-1">Novo atendimento</a>
+              <a class="legalLinkBtn" id="btnTesteNovoAtendimentoFooter" href="/atendimento/index.html?integrado=1&v=futebol-omni360-2">Novo atendimento</a>
             </div>
             <div class="brandFootnote">Meu Clube FC é uma plataforma da O Mascote</div>
           </div>
@@ -17553,7 +17553,7 @@ function omascoteChatLocalPreview(){
 }
 
 function omascoteChatUrl(){
-  return new URL(integratedChatFrame?.dataset.src || "/atendimento/index.html?integrado=1&v=atletas-campos-1", window.location.origin).href;
+  return new URL(integratedChatFrame?.dataset.src || "/atendimento/index.html?integrado=1&v=futebol-omni360-2", window.location.origin).href;
 }
 
 let omascoteChatReady = false;
@@ -17743,7 +17743,8 @@ function omascoteChatBaseCleanOrder(productKey, values, files){
   const mascotByDescription = ["proximo_jogo", "resultado"].includes(productKey) && values.photo_mode === "Não tenho mascote";
   const mascotDescription = mascotByDescription ? String(values.mascot_description || "").trim().slice(0, 160) : "";
   if(mascotByDescription && !mascotDescription) throw new Error("Descreva qual animal ou personagem você quer como mascote.");
-  const deliveryMode = !OMASCOTE_CHAT_IMAGE_ONLY_PRODUCTS.has(productKey) && values.delivery_mode === "image_video"
+  const soccerVideo = values.futebol_gallery === "video";
+  const deliveryMode = (soccerVideo || !OMASCOTE_CHAT_IMAGE_ONLY_PRODUCTS.has(productKey)) && values.delivery_mode === "image_video"
     ? "image_video"
     : "image";
   const fields = {
@@ -17756,6 +17757,7 @@ function omascoteChatBaseCleanOrder(productKey, values, files){
       ? String(values.video_model).toLowerCase()
       : (deliveryMode === "image_video" ? "fast" : "")
   };
+  if(soccerVideo) fields.video_model = "omni";
   if(productKey === "mascote_uniforme" && deliveryMode === "image_video"){
     fields.video_model = "omni";
   }
@@ -17849,11 +17851,30 @@ function jogadorEscudoPlayerFields(name, position = "", number = ""){
   };
 }
 
-function omascoteChatBuildCleanOrders(draft, records){
+function omascoteChatBuildCleanOrders(draft, records, previewFiles){
+  const orders = omascoteChatRawCleanOrders(draft,records,previewFiles);
+  if(draft.values?.futebol_gallery !== "video") return orders;
+  const gallery = integratedChatFrame.contentWindow?.OmascoteFutebol;
+  if(!gallery || !["0","1"].includes(String(draft.values.futebol_rank))) throw new Error("Reabra a galeria para conferir a cena.");
+  for(const item of orders){
+    const option = gallery.selection(item.order,Number(draft.values.futebol_rank),draft.values.futebol_scene);
+    Object.assign(item.order.fields,{futebol_scene:option.id,futebol_price_cents:option.cents});
+    item.futebolOption = option;
+  }
+  return orders;
+}
+
+window.omascotePreviewFutebol = function(draft) {
+  const grouped = {};
+  for(const entry of draft.files || []) (grouped[entry.field] ||= []).push(entry);
+  return omascoteChatBuildCleanOrders(draft,[],grouped).map(item => item.futebolOption);
+};
+
+function omascoteChatRawCleanOrders(draft, records, previewFiles){
   const productKey = String(draft?.flow || "");
   if(!Object.hasOwn(PRODUCTS, productKey) || productKey === "personalizada") throw new Error("Este tipo de pedido ainda precisa de atendimento antes de entrar no motor.");
   const values = draft?.values && typeof draft.values === "object" ? Object.fromEntries(Object.entries(draft.values).map(([key, value]) => [key, String(value || "").slice(0, 12000)])) : {};
-  const files = omascoteChatFilesByField(records);
+  const files = previewFiles || omascoteChatFilesByField(records);
   if(productKey === "escudo3d"){
     const crest = files.team_crest?.[0];
     if(!crest) throw new Error("Envie o escudo que será transformado em 3D.");
@@ -17874,7 +17895,7 @@ function omascoteChatBuildCleanOrders(draft, records){
     });
   }
   if(productKey === "contratacao"){
-    const players = omascoteChatLines(values.players).map(line => {const [name = "", position = "", announcement = "Contratado", jersey = "Não"] = line.split("|").map(item => item.trim());return { name, position, announcement, jersey };}).filter(item => item.name);
+    const players = omascoteChatLines(values.players).map(line => {const [name = "", position = "", announcement = values.announcement === "Renovado" ? "Renovado" : "Contratado", jersey = values.jersey_requested === "Sim" ? "Sim" : "Não"] = line.split("|").map(item => item.trim());return { name, position, announcement, jersey };}).filter(item => item.name);
     const photos = files.player_photos || [];
     if(!players.length || photos.length !== players.length) throw new Error("Envie uma foto para cada jogador, na mesma ordem dos nomes.");
     return players.map((player, index) => {
@@ -17977,7 +17998,7 @@ async function omascoteChatSubmitPreparedOrders(prepared, authContext){
       ? buildEscudo3dLegacyFormData(item.file, item.coupon, item.values)
       : buildLegacyFormDataFromClean(item.productKey, item.order, { allowSavedEscudoFallback:false });
     const freeCount = integratedChatFrame.contentWindow?.OmascoteTesterImageBonus?.reviewedFreeCount?.(item.chatDraftId) || 0;
-    if (item.chatOrderIndex < freeCount) fd.set("image_bonus_required", "1");
+    if (!item.futebolOption && item.chatOrderIndex < freeCount) fd.set("image_bonus_required", "1");
     appendOrderClientRequest(fd, requestId);
     const endpoint = item.special === "escudo3d" ? "/pedidos" : schema?.endpoint;
     if(!endpoint) throw new Error("Este produto ainda não está pronto para o motor.");
