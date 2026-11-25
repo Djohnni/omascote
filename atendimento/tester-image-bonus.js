@@ -10,14 +10,14 @@
   const normalized = value => String(value || '').trim().toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[\s+_-]+/g,'');
 
   function normalizeSummary(value) {
-    if (!object(value) || value.granted !== true || Number(value.limit) !== 5) return null;
+    if (!object(value) || value.granted !== true || ![2,5].includes(Number(value.limit))) return null;
     const remaining = Number(value.remaining);
-    if (!Number.isInteger(remaining) || remaining < 0 || remaining > 5) return null;
-    return Object.freeze({granted:true,active:value.active === true,limit:5,remaining});
+    if (!Number.isInteger(remaining) || remaining < 0 || remaining > Number(value.limit)) return null;
+    return Object.freeze({granted:true,active:value.active === true,limit:Number(value.limit),remaining});
   }
   function update(value) {
     const next = normalizeSummary(value);
-    if (next?.remaining === summary?.remaining && next?.active === summary?.active && Boolean(next) === Boolean(summary)) return;
+    if (next?.limit === summary?.limit && next?.remaining === summary?.remaining && next?.active === summary?.active && Boolean(next) === Boolean(summary)) return;
     summary = next;
     subscribers.forEach(callback => callback(summary));
   }
@@ -66,13 +66,30 @@
     if (hasPaidAddon(product,fields) || imageCount(product,fields) > 10) return false;
     return true;
   }
-  function imagePriceLabel({productId,draft,deliveryMode = 'image',regularLabel,summary:provided = summary} = {}) {
-    if (!eligibleImage(productId,draft,{deliveryMode,summary:provided})) return regularLabel;
+  function imagePriceLabel({productId,draft,unitPrice,deliveryMode = 'image',regularLabel,summary:provided = summary} = {}) {
     const count = imageCount(productId,fieldsOf(draft));
-    const remaining = Number(provided.remaining);
-    return count > remaining
-      ? `Bônus para ${remaining} de ${count} imagens; demais com cobrança normal`
-      : count > 1 ? 'Imagens incluídas no bônus' : 'Incluída no bônus';
+    const covered = eligibleImage(productId,draft,{deliveryMode,summary:provided})
+      ? Math.min(count,provided.remaining) : 0;
+    if (count > 1 && provided?.granted && productId === 'jogador_escudo' && Number.isFinite(unitPrice)) {
+      const paid = count - covered;
+      const total = new Intl.NumberFormat('pt-BR',{style:'currency',currency:'BRL'}).format(paid * unitPrice);
+      if (!paid) return count + ' imagens incluídas no bônus';
+      return covered + ' grátis + ' + paid + (paid === 1 ? ' paga' : ' pagas') + ' · Total ' + total;
+    }
+    if (!covered) return regularLabel;
+    if (count > covered && Number.isFinite(unitPrice)) {
+      const total = new Intl.NumberFormat('pt-BR',{style:'currency',currency:'BRL'}).format((count - covered) * unitPrice);
+      return covered + ' grátis · Total ' + total;
+    }
+    if (covered < count) return `Bônus para ${covered} de ${count} imagens; demais com cobrança normal`;
+    return count > 1 ? 'Imagens incluídas no bônus' : 'Incluída no bônus';
+  }
+
+  const reviewed = new Map();
+  function recordReviewed(draft,deliveryMode) {
+    const count = eligibleImage(draft.flow,draft,{deliveryMode})
+      ? Math.min(imageCount(draft.flow,fieldsOf(draft)),summary.remaining) : 0;
+    reviewed.set(draft.id,count);
   }
   window.addEventListener('message', event => {
     if (window.parent === window || event.source !== window.parent || event.origin !== location.origin ||
@@ -84,5 +101,5 @@
       update(window.parent.omascoteTesterAccount?.tester_image_bonus);
     }
   } catch { /* A standalone or cross-origin frame starts without a benefit. */ }
-  window.OmascoteTesterImageBonus = Object.freeze({getSummary:()=>summary,subscribe,useSummary,eligibleImage,imagePriceLabel});
+  window.OmascoteTesterImageBonus = Object.freeze({getSummary:()=>summary,subscribe,useSummary,eligibleImage,imagePriceLabel,recordReviewed,reviewedFreeCount:id=>reviewed.get(id) || 0});
 })();

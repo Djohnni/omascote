@@ -43,8 +43,8 @@
   let credentialsText = '';
   const node = selector => section.querySelector(selector);
   const token = () => localStorage.getItem('omascote_token') || '';
-  const isGranted = summary => Boolean(summary && (summary.granted || summary.grantId) && Number(summary.limit) === 5);
-  const remaining = summary => Math.max(0, Math.min(5, Number(summary?.remaining) || 0));
+  const isGranted = summary => Boolean(summary && (summary.granted || summary.grantId) && [2,5].includes(Number(summary.limit)));
+  const remaining = summary => Math.max(0, Math.min(Number(summary?.limit) || 0, Number(summary?.remaining) || 0));
   function clearCredentials() {
     credentialsText = '';
     node('[data-tester-credentials-text]').textContent = '';
@@ -57,7 +57,12 @@
     banner.hidden = !granted;
     banner.querySelector('[data-tester-remaining]').textContent = count + (count === 1 ? ' arte grátis' : ' artes grátis');
     node('[data-tester-account-summary]').hidden = !granted;
-    node('[data-tester-account-title]').textContent = count + ' de 5 imagens grátis disponíveis';
+    node('[data-tester-account-title]').textContent = count + ' de ' + summary?.limit + ' imagens grátis disponíveis';
+    document.querySelectorAll('[data-image-allowance-price]').forEach(price => {
+      price.textContent = count > 0 ? 'Incluída no bônus' : price.dataset.imageAllowancePrice;
+    });
+    const crestChoice = document.querySelector('#escudo3dExamples [data-delivery-choice="image"]');
+    crestChoice?.setAttribute('aria-label','Escolher somente imagem — ' + (count > 0 ? 'incluída no bônus' : 'R$ 4,00'));
     const admin = account?.tester_bonus_admin === true;
     const temporary = account?.senha_temporaria === true;
     node('[data-tester-admin]').hidden = !admin;
@@ -125,7 +130,7 @@
     try {
       const data = await request('/admin/tester-bonus/' + encodeURIComponent(login));
       const summary = data.bonus;
-      message.textContent = isGranted(summary) ? 'Esta conta tem ' + remaining(summary) + ' de 5 imagens disponíveis.' : 'Esta conta ainda não recebeu o benefício.';
+      message.textContent = isGranted(summary) ? 'Esta conta tem ' + remaining(summary) + ' de ' + summary.limit + ' imagens disponíveis.' : 'Esta conta ainda não recebeu o benefício.';
     } catch (error) { message.textContent = error.message; }
     finally { lockForm(form, false); }
   });

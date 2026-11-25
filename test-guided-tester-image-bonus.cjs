@@ -91,6 +91,18 @@ test('a mixed-size athlete batch does not claim that every image is covered',()=
   const draft={values:{players:'João | Goleiro | Contratado | Não\nJosé | Atacante | Contratado | Não'}};
   assert.equal(f.helper.imagePriceLabel({productId:'contratacao',draft,regularLabel:'R$ 7,80'}),'Bônus para 1 de 2 imagens; demais com cobrança normal');
 });
+test('three players with the Gmail allowance show the paid total before submission',()=>{
+  const f=fixture(grant(2,{limit:2}));
+  const draft={id:'three',flow:'jogador_escudo',values:{players:'A\nB\nC'}};
+  assert.match(f.helper.imagePriceLabel({productId:draft.flow,draft,unitPrice:6}),/2 grátis \+ 1 paga.*R\$\s*6,00/);
+  f.helper.recordReviewed(draft,'image');
+  assert.equal(f.helper.reviewedFreeCount('three'),2);
+  f.message(grant(0,{limit:2}));
+  assert.equal(f.helper.reviewedFreeCount('three'),2);
+  f.helper.recordReviewed(draft,'image_video');
+  assert.equal(f.helper.reviewedFreeCount('three'),0);
+});
+
 test('guided mascot final summary shows the benefit only for its static image',()=>{
   const f=fixture();
   assert.match(renderedText(f,'mascote_uniforme',{delivery_mode:'image'}),/Incluída no bônus/);

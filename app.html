@@ -74,11 +74,11 @@
   <script defer src="/escudo3d-examples.js?v=20261001"></script>
   <link rel="stylesheet" href="/mascot-video-examples.css?v=20261122-imagem-bonus-1">
   <script defer src="/mascot-video-options.js?v=20261007-correct-preview-mapping"></script>
-  <script defer src="/mascot-video-examples.js?v=20261122-imagem-bonus-1"></script>
+  <script defer src="/mascot-video-examples.js?v=gmail-2-imagens-1"></script>
   <link rel="stylesheet" href="/tester-image-bonus.css?v=20261122-selo-direita-2">
-  <script defer src="/tester-image-bonus.js?v=20261122-selo-direita-2"></script>
+  <script defer src="/tester-image-bonus.js?v=gmail-2-imagens-1"></script>
   <link rel="stylesheet" href="/vitrine-chat.css?v=20261122-catalogo-completo">
-  <script defer src="/vitrine-chat.js?v=20261007-instant-gallery"></script>
+  <script defer src="/vitrine-chat.js?v=gmail-2-imagens-1"></script>
   <script defer src="/analytics-tabs.js?v=20261002-abas"></script>
   <!-- favicon atualizado -->
 
@@ -15824,7 +15824,7 @@ body.copaColombiaOrderMode.copaColombiaResultMode.copaColombiaShowScenario [data
           <button id="btnSair" type="button">Sair</button>
           <button id="btnCadastroTopo" type="button">Cadastro</button>
           <button id="btnPerfilTime" type="button" hidden>Perfil do Time</button>
-          <button id="btnInstalarApp" class="instalarAppBtn" type="button" hidden>🎁 Resgatar cupom da 1ª arte grátis</button>
+          <button id="btnInstalarApp" class="instalarAppBtn" type="button" hidden>Ganhar 2 artes com Gmail</button>
         </div>
 
         <div class="topbar">
@@ -15933,7 +15933,7 @@ body.copaColombiaOrderMode.copaColombiaResultMode.copaColombiaShowScenario [data
         class="integratedChatFrame"
         id="integratedChatFrame"
         title="Atendimento O Mascote"
-        data-src="/atendimento/index.html?integrado=1&v=20261124-rotulo-escudo"
+        data-src="/atendimento/index.html?integrado=1&v=gmail-2-imagens-1"
         allow="clipboard-write"
       ></iframe>
       <div class="integratedChatLoading" id="integratedChatLoading" hidden>
@@ -15952,7 +15952,7 @@ body.copaColombiaOrderMode.copaColombiaResultMode.copaColombiaShowScenario [data
       <div class="escudoExamples__grid">
         <article class="escudoExamples__card">
           <h3>Somente imagem</h3>
-          <strong class="escudoExamples__price">R$ 4,00</strong>
+          <strong class="escudoExamples__price" data-image-allowance-price="R$ 4,00">R$ 4,00</strong>
           <div class="escudoExamples__media">
             <img class="escudoExamples__poster" src="/media/vitrine/escudo-aurora.webp" alt="Exemplo de imagem do escudo Aurora da Guanabara em 3D em um estádio" loading="lazy" width="420" height="747">
           </div>
@@ -16263,7 +16263,7 @@ body.copaColombiaOrderMode.copaColombiaResultMode.copaColombiaShowScenario [data
               <button class="legalLinkBtn" id="btnExcluirContaFooter" type="button">Excluir Conta</button>
               <button class="legalLinkBtn" id="btnDenunciarIaFooter" type="button">Denunciar Conteúdo Gerado por IA</button>
               <button class="legalLinkBtn" id="btnAbrirSuporteFooter" type="button">Suporte</button>
-              <a class="legalLinkBtn" id="btnTesteNovoAtendimentoFooter" href="/atendimento/index.html?integrado=1&v=20261124-rotulo-escudo">Novo atendimento</a>
+              <a class="legalLinkBtn" id="btnTesteNovoAtendimentoFooter" href="/atendimento/index.html?integrado=1&v=gmail-2-imagens-1">Novo atendimento</a>
             </div>
             <div class="brandFootnote">Meu Clube FC é uma plataforma da O Mascote</div>
           </div>
@@ -16651,7 +16651,7 @@ body.copaColombiaOrderMode.copaColombiaResultMode.copaColombiaShowScenario [data
       </div>
 
       <div class="googleLoginBox" id="googleLoginBox">
-        <div id="googleLoginModal"></div>
+        <div><p style="margin:0 0 8px;text-align:center">Entre com seu Gmail pelo Google e ganhe 2 artes de imagem por conta.</p><div id="googleLoginModal"></div></div>
       </div>
 
       <div id="googleLoginSeparator" style="display:flex;align-items:center;gap:10px;margin:16px 0 8px;">
@@ -17552,7 +17552,7 @@ function omascoteChatLocalPreview(){
 }
 
 function omascoteChatUrl(){
-  return new URL(integratedChatFrame?.dataset.src || "/atendimento/index.html?integrado=1&v=20261124-rotulo-escudo", window.location.origin).href;
+  return new URL(integratedChatFrame?.dataset.src || "/atendimento/index.html?integrado=1&v=gmail-2-imagens-1", window.location.origin).href;
 }
 
 let omascoteChatReady = false;
@@ -17951,8 +17951,6 @@ function omascoteChatAwaitRegistration(prepared, authContext){
 
 async function omascoteChatSubmitPreparedOrders(prepared, authContext){
   if(!prepared.length) throw new Error("Nenhum pedido foi preparado.");
-  const giftOrder = prepared.some(item => item.productKey === "escudo3d" && item.values?.brinde_escudo_login === "1");
-  if(giftOrder && (!token || ia4ContaAutoPendente())) return omascoteChatAwaitRegistration(prepared, authContext);
   if(!token){
     const contaPreparada = await criarContaAutomaticaAntesPedido({
       nome_time:"Meu time",
@@ -17970,6 +17968,8 @@ async function omascoteChatSubmitPreparedOrders(prepared, authContext){
     const fd = item.special === "escudo3d"
       ? buildEscudo3dLegacyFormData(item.file, item.coupon, item.values)
       : buildLegacyFormDataFromClean(item.productKey, item.order, { allowSavedEscudoFallback:false });
+    const freeCount = integratedChatFrame.contentWindow?.OmascoteTesterImageBonus?.reviewedFreeCount?.(item.chatDraftId) || 0;
+    if (item.chatOrderIndex < freeCount) fd.set("image_bonus_required", "1");
     appendOrderClientRequest(fd, requestId);
     const endpoint = item.special === "escudo3d" ? "/pedidos" : schema?.endpoint;
     if(!endpoint) throw new Error("Este produto ainda não está pronto para o motor.");
@@ -17977,7 +17977,10 @@ async function omascoteChatSubmitPreparedOrders(prepared, authContext){
     const out = await ia4LerJsonSeguro(response);
     const authMsg = ia4TratarAuthInvalida(response, out);
     if(authMsg) throw new Error(authMsg);
-    if(!response.ok || !out?.ok) throw new Error(out?.error || "Não foi possível criar o pedido no motor.");
+    if(!response.ok || !out?.ok) {
+      if(out?.code === "IMAGE_BONUS_UNAVAILABLE") await refreshMe();
+      throw new Error(out?.error || "Não foi possível criar o pedido no motor.");
+    }
     results.push(out);
     if(out.pedido_id && out.requer_pix_antes_criacao === true){
       registrarPedidoAguardandoPixLocal(out.pedido_id, item.productKey);
@@ -19486,8 +19489,7 @@ const builderArea = document.getElementById("builderArea");
 const mainCreateBtn = document.getElementById("mainCreateBtn");
 const selectorStage = document.querySelector(".selectorStage");
 let categoriaSelecionada = "";
-let brindeEscudo3dAppDisponivel = false;
-let brindeEscudoLoginUsado = false;
+
 let internalVeoTestEnabled = false;
 
 const escudo3dModal = document.getElementById("escudo3dModal");
@@ -20612,7 +20614,7 @@ function pricePreviewHtml(data, errorMessage = ""){
 }
 
 function couponSummaryText(data){
-  if(data?.coberto_pelo_bonus_testador === true || data?.bonus_testador === true || data?.bonus_testador?.aplicado === true || data?.tester_bonus_applied === true) return "Imagem incluída no seu bônus de testador.";
+  if(data?.coberto_pelo_bonus_testador === true || data?.bonus_testador === true || data?.bonus_testador?.aplicado === true || data?.tester_bonus_applied === true) return "Imagem incluída no seu bônus.";
   const desconto = data?.desconto || data?.desconto_info || null;
   const codigoCupom = desconto?.codigo || desconto?.cupom_codigo || data?.cupom_codigo || "";
   const valorOriginal = Number(data?.valor_original ?? desconto?.valor_original ?? 0);
@@ -21765,7 +21767,7 @@ function getEscudo3dReviewItems(block){
     ? "Imagem + vídeo de 10 segundos — R$19,90"
     : choice === "fast"
       ? "Imagem + vídeo de 8 segundos — R$14,90"
-      : `Somente imagem — ${ia4Escudo3dBrindeGratisNoApp() ? "Escudo de brinde" : "R$4,00"}`;
+      : `Somente imagem — ${imagemCobertaPeloBonus() ? "Incluída no bônus" : "R$4,00"}`;
   items.push({ label:"Entrega", value:deliveryLabel });
 
   const coupon = block?.querySelector?.("[data-escudo3d-coupon]")?.value?.trim() || "";
@@ -21785,8 +21787,8 @@ function showEscudo3dReview(block){
 }
 
 function formatCleanProductPrice(product){
-  if(product?.id === "escudo3d" && ia4Escudo3dBrindeGratisNoApp()){
-    return "Escudo de brinde";
+  if(product?.id === "escudo3d" && imagemCobertaPeloBonus()){
+    return "Incluída no bônus";
   }
   const price = Number(product?.price || 0);
   return price ? `R$${price.toFixed(2).replace(".", ",")}` : "";
@@ -21837,19 +21839,19 @@ function getEscudo3dDisplayPrice(block){
   const choice = getEscudo3dDeliveryChoice(block);
   if(choice === "omni") return 19.90;
   if(choice === "fast") return 14.90;
-  return ia4Escudo3dBrindeGratisNoApp() ? 0 : 4;
+  return imagemCobertaPeloBonus() ? 0 : 4;
 }
 
 function updateEscudo3dDeliveryUi(block){
   if(!block) return;
   const price = block.querySelector(".cleanProductPrice");
   if(price){
-    price.textContent = getEscudo3dDeliveryChoice(block) === "image" && ia4Escudo3dBrindeGratisNoApp()
-      ? "Escudo de brinde"
+    price.textContent = getEscudo3dDeliveryChoice(block) === "image" && imagemCobertaPeloBonus()
+      ? "Incluída no bônus"
       : `R$${getEscudo3dDisplayPrice(block).toFixed(2).replace(".", ",")}`;
   }
   const imagePrice = block.querySelector("[data-escudo3d-image-price]");
-  if(imagePrice) imagePrice.textContent = ia4Escudo3dBrindeGratisNoApp() ? "Escudo de brinde" : "R$4,00";
+  if(imagePrice) imagePrice.textContent = imagemCobertaPeloBonus() ? "Incluída no bônus" : "R$4,00";
   schedulePricePreviewUpdate(block.querySelector("[data-price-preview]"), 0);
 }
 
@@ -21927,19 +21929,7 @@ function refreshAllPricePreviews(){
 }
 
 function atualizarBrindeEscudo3dAppVisual(){
-  const disponivelNoApp = brindeEscudo3dAppDisponivel;
-  const giftButton = document.getElementById("vitrineEscudoGift");
-  if(giftButton) giftButton.hidden = Boolean(token) && brindeEscudoLoginUsado;
-
-  document.body.classList.toggle("clienteComBrindeEscudo3dApp", disponivelNoApp);
-
   document.querySelectorAll('[data-clean-product-block="escudo3d"]').forEach(updateEscudo3dDeliveryUi);
-
-  const escudoPromo = document.querySelector('[data-product="escudo3d"] .optLabel');
-  if(escudoPromo && disponivelNoApp){
-    escudoPromo.innerHTML = `Escudo 3D<br><span style="color:#1fbf63;font-weight:900;">Escudo de brinde</span>`;
-  }
-
   if(!brindeEscudo3dAppBox) return;
 
   brindeEscudo3dAppBox.onclick = null;
@@ -26272,7 +26262,7 @@ function renderCleanProductForms(){
           <div class="copaChampionshipDeliveryChoices">
             <label class="copaChampionshipDeliveryChoice">
               <span><input type="radio" name="escudo3d_delivery" value="image" data-escudo3d-delivery-option checked> Somente imagem</span>
-              <strong data-escudo3d-image-price>${ia4Escudo3dBrindeGratisNoApp() ? "Escudo de brinde" : "R$4,00"}</strong>
+              <strong data-escudo3d-image-price>${imagemCobertaPeloBonus() ? "Incluída no bônus" : "R$4,00"}</strong>
             </label>
             <label class="copaChampionshipDeliveryChoice">
               <span><input type="radio" name="escudo3d_delivery" value="fast" data-escudo3d-delivery-option> Imagem + vídeo de 8 segundos</span>
@@ -27069,17 +27059,16 @@ function ia4AppModeHeaders(){
     : {};
 }
 
-function ia4Escudo3dBrindeGratisNoApp(){
-  return (
-    brindeEscudo3dAppDisponivel === true
-  );
+function imagemCobertaPeloBonus(){
+  const bonus = window.omascoteTesterAccount?.tester_image_bonus;
+  return Boolean(token && bonus?.active && bonus.remaining > 0);
 }
 
 function ia4PedidoGratisPermitidoNoApp(productKey = "", dados = {}){
   if(!(typeof ia4EstaEmModoApp === "function" && ia4EstaEmModoApp())) return false;
 
   const key = String(productKey || dados.productKey || dados.product_id || dados.produto || "");
-  if(key === "escudo3d" && ia4Escudo3dBrindeGratisNoApp()) return true;
+  if(key === "escudo3d" && imagemCobertaPeloBonus()) return true;
 
   const valorFinalRaw = dados.valor_final ?? dados.valorFinal ?? dados.total ?? null;
   if(valorFinalRaw !== null && valorFinalRaw !== ""){
@@ -27105,6 +27094,7 @@ function criarClientRequestId(prefix = "pedido"){
 }
 
 function appendOrderClientRequest(fd, requestId){
+  if(fd?.get("flyer_tipo") === "escudo3d") fd.set("image_price_version", "gmail2");
   if(fd && requestId) fd.append("client_request_id", requestId);
 }
 
@@ -27580,7 +27570,6 @@ function buildEscudo3dLegacyFormData(file, cupomCodigo = "", values = {}){
   const sportContext = omascoteChatSportContext(values);
   fd.append("schema_version", String(CLEAN_PRODUCT_SCHEMA_VERSION));
   fd.append("product_id", "escudo3d");
-  if(values.brinde_escudo_login === "1") fd.append("brinde_escudo_login", "1");
   fd.append("fields_json", JSON.stringify({
     sport:sportContext.sport,
     sport_context:String(values.sport_context || "").trim(),
@@ -29802,6 +29791,7 @@ function applyLocal(){
 async function refreshMe(){
   if(!token){
     window.omascoteTesterAccount = null;
+    ia4MostrarBotaoInstalarApp();
     window.OmascoteTesterBonus?.setAccount(null);
     atualizarInternalVeoUi(false);
     pararPollingSaldoPix();
@@ -29842,6 +29832,7 @@ async function refreshMe(){
     }
 
     window.omascoteTesterAccount = data;
+    ia4EsconderBotaoInstalarApp();
     window.OmascoteTesterBonus?.setAccount(data);
     const saldo = ia4SetSaldoValor(data.saldo);
     localStorage.setItem("omascote_nome_time", data.nome_time || "");
@@ -29850,8 +29841,6 @@ async function refreshMe(){
     localStorage.setItem("omascote_usados", data.usados_no_ciclo ?? "");
     applyLocal();
     void carregarResumoPlanoSemanal();
-    brindeEscudo3dAppDisponivel = data.brinde_escudo_login_disponivel === true || data.brinde_escudo3d_app_disponivel === true;
-    brindeEscudoLoginUsado = data.brinde_escudo_login_usado === true || data.brinde_escudo3d_app_usado === true;
     if(data.conta_auto_pendente === true) localStorage.setItem("ia4tube_conta_auto_pendente", "1");
     else if(data.conta_auto_pendente === false) localStorage.removeItem("ia4tube_conta_auto_pendente");
     atualizarInternalVeoUi(data.internal_features?.next_match_veo === true);
@@ -29860,7 +29849,6 @@ async function refreshMe(){
 
     ia4SetSaldoTexto(ia4FormatarSaldoTela(saldo));
 
-const jaComprou = Number(data.usados_no_ciclo || 0) > 0;
 const brindeMascoteDisponivel = data.brinde_mascote_disponivel === true || Number(data.usados_no_ciclo || 0) === 0;
       
 document.body.classList.toggle("clienteComBrindeMascote", brindeMascoteDisponivel);
@@ -29882,11 +29870,9 @@ const escudoPromo = document.querySelector('[data-product="escudo3d"]');
 if(escudoPromo){
   const label = escudoPromo.querySelector(".optLabel");
   if(label){
-    label.innerHTML = brindeEscudo3dAppDisponivel
-      ? `Escudo 3D<br><span style="color:#1fbf63;font-weight:900;">Escudo de brinde</span>`
-      : jaComprou
-      ? `Escudo 3D<br><span style="color:#1fbf63;font-weight:900;">R$18</span>`
-      : `Primeira arte<br>Escudo 3D<br><span style="font-size:11px;color:#777;text-decoration:line-through;">R$18</span> <span style="color:#1fbf63;font-weight:900;">R$4</span>`;
+    label.innerHTML = imagemCobertaPeloBonus()
+      ? 'Escudo 3D<br><span>Incluída no bônus</span>'
+      : 'Escudo 3D<br><span>R$ 4,00</span>';
   }
 }
 if(typeof ia4AtualizarModoAppUi === "function") ia4AtualizarModoAppUi();
@@ -42935,7 +42921,6 @@ if("serviceWorker" in navigator){
 }
 
 let deferredInstallPrompt = null;
-const IA4_WHATSAPP_INSTALAR_APP_URL = "https://wa.me/554791049079?text=Ol%C3%A1%21%20Quero%20resgatar%20minha%20primeira%20arte%20gr%C3%A1tis.%20%F0%9F%8E%81";
 const btnInstalarApp = document.getElementById("btnInstalarApp");
 const instalarAppCentralBox = document.getElementById("instalarAppCentralBox");
 const instalarAppModal = document.getElementById("instalarAppModal");
@@ -42980,6 +42965,7 @@ function ia4AtualizarModoAppUi(){
 
 function ia4MostrarBotaoInstalarApp(){
   if(!btnInstalarApp || ia4EstaEmModoApp()) return;
+  if(token) return ia4EsconderBotaoInstalarApp();
   if(cartasAppBox){
     cartasAppBox.hidden = true;
     cartasAppBox.innerHTML = "";
@@ -43246,13 +43232,7 @@ window.addEventListener("beforeinstallprompt", (event) => {
 });
 
 btnInstalarApp?.addEventListener("click", () => {
-  ia4Track("clicou_instalar_app", {
-    origem: "botao_whatsapp",
-    modo: "whatsapp",
-    standalone: ia4EstaEmModoApp() ? "sim" : "nao"
-  });
-
-  window.location.href = IA4_WHATSAPP_INSTALAR_APP_URL;
+  abrirCadastroVisitanteModal();
 });
 
 window.addEventListener("appinstalled", () => {

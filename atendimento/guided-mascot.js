@@ -149,6 +149,7 @@
         setError(issues.join('; '));
         return;
       }
+      window.OmascoteTesterImageBonus?.recordReviewed(draft,props.canVideo ? delivery : 'image');
       submitLock.current = true;
       setError('');
       deliveryRequest = {id:draft.id, mode:props.canVideo ? delivery : 'image'};

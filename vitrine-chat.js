@@ -53,15 +53,14 @@
     }
     pending.sent = true;
     showChat('product');
-    frame.contentWindow.postMessage({ type:pending.type, productId:pending.productId, gift:pending.gift, requestId:pending.id,
+    frame.contentWindow.postMessage({ type:pending.type, productId:pending.productId, requestId:pending.id,
       ...(pending.mascotVideoOption !== undefined ? {mascotVideoOption:pending.mascotVideoOption} : {}) }, location.origin);
   }
   function request(button, type, productId, mascotVideoOption) {
     if (pending) return;
     button.disabled = true;
     status.textContent = ready ? '' : 'Preparando atendimento…';
-    pending = { button, type, productId, mascotVideoOption, gift:button.hasAttribute('data-vitrine-gift'), id:'vitrine-'+(++sequence), sent:false };
-    if(pending.gift) window.ia4Track?.('escudo_brinde_aberto', {produto:'escudo3d'});
+    pending = { button, type, productId, mascotVideoOption, id:'vitrine-'+(++sequence), sent:false };
     pending.timeout = setTimeout(() => {
       retryLoad = !ready;
       showHome();

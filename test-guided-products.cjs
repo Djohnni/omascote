@@ -65,6 +65,7 @@ async function run() {
       id:`local-saved-appearance-${settings.id}`,flow:settings.id,stage:'collect',files:[],
       values:{sport:'',...(['proximo_jogo','resultado'].includes(settings.id) ? {photo_mode:'Sem foto'} : {}),...settings.savedAppearance}
     };
+    let freeRemaining = settings.gmailImages ?? 0;
     let releaseOrder = null, fileIndex = 0;
     const errors = [], requests = [], uploads = [], actions = [], balances = [];
     const balance = settings.balance ?? 100;
@@ -119,17 +120,20 @@ async function run() {
           if (failedOrders-- > 0) return route.fulfill({status:503,json:{ok:false,error:'Falha local simulada; tente novamente.'}});
           const body = request.postDataBuffer().toString();
           const video = body.includes('image_video'),omni = body.includes('omni');
-          const gift = body.includes('name="brinde_escudo_login"\r\n\r\n1');
-          if(gift && (giftUsed || settings.giftUsedAtSubmit)) return route.fulfill({status:409,json:{ok:false,error:'Esta conta já recebeu o escudo de brinde. Nenhum valor foi cobrado.'}});
-          const price = gift ? 0 : video ? omni ? 19.9 : 14.9 : settings.price || 8;
-          if(gift) giftUsed=true;
+          const covered = body.includes('name="image_bonus_required"\r\n\r\n1');
+          if (covered && (settings.staleBonus || !freeRemaining)) {
+            freeRemaining=0;
+            return route.fulfill({status:409,json:{ok:false,code:'IMAGE_BONUS_UNAVAILABLE',error:'Confira o saldo. Nenhum valor foi cobrado.'}});
+          }
+          const price = covered ? 0 : video ? omni ? 19.9 : 14.9 : settings.price || 8;
+          if (covered) freeRemaining--;
           balances.push({balance,price});
           return route.fulfill({json:{ok:true,pedido_id:'local-products-order',pagamento_pendente:balance < price,
-            requer_pix_antes_criacao:balance < price,valor:price,valor_final:price,brinde_escudo_login:gift}});
+            requer_pix_antes_criacao:balance < price,valor:price,valor_final:price,brinde_escudo_login:false}});
         }
         if (request.method() === 'POST' && url.pathname === '/pedidos/local-products-order/gerar-pix')
           return route.fulfill({json:{ok:true,pedido_id:'local-products-order',pix_copia_cola:'PIX-LOCAL-NAO-PAGAR',qr_code:'PIX-LOCAL-NAO-PAGAR',qr_code_base64:pixel.toString('base64'),valor:14.9}});
-        return route.fulfill({json:{ok:true,saldo:balance,saldo_extra:balance,saldo_mensal:0,nome_time:'Time local',pedidos:[],avaliacoes:[],plano:'',usados_no_ciclo:0,brinde_escudo_login_disponivel:settings.giftMode && !giftUsed,brinde_escudo_login_usado:giftUsed}});
+        return route.fulfill({json:{ok:true,saldo:balance,saldo_extra:balance,saldo_mensal:0,nome_time:'Time local',pedidos:[],avaliacoes:[],plano:'',usados_no_ciclo:0,brinde_escudo_login_disponivel:false,brinde_escudo_login_usado:giftUsed,tester_image_bonus:settings.gmailImages ? {granted:true,active:true,limit:2,remaining:freeRemaining} : null}});
       }
       // Strict allowlist: only static files from this local test server reach the network.
       if (url.origin !== origin) return route.abort();
@@ -317,7 +321,7 @@ async function run() {
     }
     if (['team_crest','home_crest','away_crest','player_photos','athlete_photos','sponsor_logos','jersey_reference'].includes(key)) {
       const needed = key!=='away_crest' || ['proximo_jogo','proximo_jogo_jogador','resultado_jogo_jogador'].includes(flow);
-      if (needed && !test.state().draft.files.some(file => file.field===key)) await upload(test,key,1,key==='team_crest');
+      if (needed && !test.state().draft.files.some(file => file.field===key)) await upload(test,key,key==='player_photos' && settings.threePlayers ? 3 : 1,key==='team_crest');
       return;
     }
     if (['team_photo','opponent_crest','reference_layout'].includes(key)) return;
@@ -371,7 +375,7 @@ async function run() {
       return;
     }
     const text = {match_datetime:settings.date || '2026-10-05T18:00',competition:'Copa Local',venue:'Arena Local',title:'NOSSOS PATROCINADORES',
-      players:flow==='contratacao' ? `João | Atacante | Contratado | ${settings.jersey ? 'Sim' : 'Não'}` : flow==='escalacao' ? 'João | Goleiro\nPedro | Atacante' : 'João | Atacante',
+      players:settings.threePlayers ? 'João | Atacante\nJosé | Goleiro\nLuís | Zagueiro' : flow==='contratacao' ? `João | Atacante | Contratado | ${settings.jersey ? 'Sim' : 'Não'}` : flow==='escalacao' ? 'João | Goleiro\nPedro | Atacante' : 'João | Atacante',
       headline:'VAMOS JUNTOS',section_title:'JOGO LOCAL',scorers:'João | 2',coupon_code:'LOCAL-TEST',other_sport:'Handebol',sport_context:'Quadra de handebol, traves e bola de handebol.',mascot_description:'Lobo azul'}[key];
     if (text===undefined) throw new Error(`Unmapped original field ${flow}/${key}`);
     const control = field(test,key).locator('textarea,input:not([type="radio"]):not([type="file"]):not([type="checkbox"])').first();
@@ -509,80 +513,41 @@ async function run() {
   try {
     assert.equal(products.length,9);
     if(giftOnly) {
-      for(const width of [320,390,1440]) {
-        const test=await setup({width,height:844},{giftMode:true,balance:0});
+      for (const staleBonus of [false,true]) {
+        const test=await setup({width:390,height:844},{gmailImages:2,staleBonus,balance:0});
         try {
-          const gift=test.page.locator('#vitrineEscudoGift');
-          await gift.waitFor({state:'visible'});
-          assert.doesNotMatch(await gift.innerText(),/por login|1 imagem/i);
-          const giftBox=await gift.boundingBox();
-          const primaryBox=await test.page.locator('[data-vitrine-product="mascote_uniforme"]').first().boundingBox();
-          assert.ok(giftBox.y+giftBox.height <= primaryBox.y,'gift stays above original mascot button');
-          const copyBox=await test.page.locator('.vitrineHero__copy p').boundingBox();
-          assert.ok(copyBox.y+copyBox.height <= giftBox.y,'gift does not cover home description');
-          assert.ok(await test.page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),'home fits screen');
-          if(width===390) await test.page.screenshot({path:path.join(screenshots,'escudo-brinde-home.png')});
-          if(width===320) await test.page.screenshot({path:path.join(screenshots,'escudo-brinde-home-320.png')});
-          await gift.click();
-          await guide(test).waitFor({state:'visible'});
-          await saved(test,draft=>draft?.values?.brinde_escudo_login==='1','gift marker is saved');
-          assert.equal(test.state().draft.values.delivery_mode,'image');
-          assert.equal(await test.chat.locator('.escudo-examples').isVisible(),false,'gift skips video gallery');
-          const visited = await fillToFinal(test,{skipOptional:true});
-          assert.deepEqual(visited.map(step=>step.key),['sport','team_crest'],'crest goes directly from upload to final');
-          assert.equal((await assertStep(test)).total,3);
-          assert.doesNotMatch(await guide(test).innerText(),/por login|Cupom/i);
-          assert.equal(await field(test,'coupon_code').count(),0);
-          assert.ok((await guide(test).innerText()).includes('R$ 0,00'),'review shows free price');
-          if(width===390) await guide(test).screenshot({path:path.join(screenshots,'escudo-brinde-revisao.png')});
+          await test.page.getByText('2 artes grátis',{exact:true}).waitFor({state:'visible'});
+          assert.equal(await test.page.locator('#vitrineEscudoGift').count(),0);
+          const product=products.find(item=>item.id==='escudo3d');
+          await open(test,product);
+          await fillToFinal(test,{skipOptional:true});
+          await guide(test).getByText('Incluída no bônus',{exact:true}).waitFor();
           await send(test).click();
-          await test.chat.locator('.lab-post-order-actions').waitFor({state:'visible',timeout:15000});
+          if (staleBonus) {
+            await test.chat.getByRole('alert').filter({hasText:'Nenhum valor foi cobrado'}).waitFor();
+            assert.equal(test.balances.length,0);
+          } else {
+            await test.page.getByText('1 arte grátis',{exact:true}).waitFor();
+            assert.equal(test.balances[0].price,0);
+          }
           assert.equal(test.orderCount(),1);
           assert.equal(test.pixCount(),0);
-          assert.equal(test.balances[0].price,0);
-          assert.equal((await test.messages())[0].draft.values.brinde_escudo_login,'1');
           assert.deepEqual(test.errors,[]);
-          console.log(`OK gift ${width}px: image only, price zero, one request, no Pix`);
-        } finally {await test.context.close();}
+        } finally { await test.context.close(); }
       }
-      const guest=await setup({width:390,height:844},{giftMode:true,logged:false,balance:0});
+      const batch=await setup({width:390,height:844},{gmailImages:2,balance:50,price:6});
       try {
-        await guest.page.locator('#vitrineEscudoGift').click();
-        await guide(guest).waitFor({state:'visible'});
-        await fillToFinal(guest,{skipOptional:true});
-        await send(guest).click();
-        await guest.page.locator('#authVisitanteModal').waitFor({state:'visible'});
-        assert.equal(guest.orderCount(),0,'login is required before gift order');
-        assert.equal(guest.requests.some(r=>r.path.includes('auto-register')),false);
-        await guest.page.locator('#authWhatsapp').fill('teste_brinde_local');
-        await guest.page.locator('#authSenha').fill('teste-local-123');
-        await guest.page.locator('#authCriarContaBtn').click();
-        await guest.chat.locator('.lab-post-order-actions').waitFor({state:'visible',timeout:15000});
-        assert.equal(guest.orderCount(),1);
-        assert.equal(guest.pixCount(),0);
-        assert.equal(guest.balances[0].price,0);
-        assert.deepEqual(guest.errors,[]);
-        console.log('OK anonymous gift: registration resumes saved form without charge');
-      } finally {await guest.context.close();}
-      const used=await setup({width:390,height:844},{giftUsed:true});
-      try {
-        await used.page.waitForTimeout(500);
-        assert.equal(await used.page.locator('#vitrineEscudoGift').isVisible(),false);
-        console.log('OK redeemed account: promotion hidden');
-      } finally {await used.context.close();}
-      const stale=await setup({width:390,height:844},{giftMode:true,giftUsedAtSubmit:true});
-      try {
-        await stale.page.locator('#vitrineEscudoGift').click();
-        await guide(stale).waitFor({state:'visible'});
-        await fillToFinal(stale,{skipOptional:true});
-        await send(stale).click();
-        await stale.chat.getByRole('alert').filter({hasText:'Nenhum valor foi cobrado'}).waitFor({state:'visible'});
-        assert.equal(stale.orderCount(),1);
-        assert.equal(stale.pixCount(),0);
-        assert.equal(stale.balances.length,0);
-        assert.equal(stale.state().draft.values.brinde_escudo_login,'1');
-        console.log('OK stale gift offer: visible rejection, no charge, draft retained');
-      } finally {await stale.context.close();}
+        await batch.page.locator('[data-vitrine-product=jogador_escudo]').click();
+        await guide(batch).waitFor();
+        await fillToFinal(batch,{threePlayers:true,skipOptional:true});
+        await guide(batch).getByText(/2 grátis \+ 1 paga.*6,00/).waitFor();
+        assert.equal(batch.orderCount(),0);
+        await send(batch).click();
+        await batch.page.getByText('0 artes grátis',{exact:true}).waitFor();
+        assert.deepEqual(batch.balances.map(entry=>entry.price),[0,0,6]);
+        assert.deepEqual(batch.errors,[]);
+        console.log('OK 3 jogadores: 2 imagens grátis e total de R$ 6,00 antes do envio.');
+      } finally {await batch.context.close();}
       const paidProduct=products.find(product=>product.id==='escudo3d');
       const paid=await setup({width:390,height:844},{giftUsed:true,price:paidProduct.price});
       try {
