@@ -269,6 +269,14 @@
       }
       navigate(groups[groupIndex + 1]?.id || 'final');
     }
+    function soccerSummary() {
+      if (draft.values.futebol_gallery !== 'video') return null;
+      try {
+        const choices = window.parent.omascotePreviewFutebol(draft);
+        if (!choices.length) throw new Error('Confira os atletas do pedido.');
+        return {choices,total:choices.reduce((sum,option)=>sum+option.cents,0)};
+      } catch (error) { return {error:error.message}; }
+    }
     function send() {
       if (props.busy || submitLock.current) return;
       const issues = blockingIssues();
@@ -280,12 +288,14 @@
         focusField(issueKey(issues[0]));
         return;
       }
+      const soccer = soccerSummary();
+      if (soccer?.error) { setError(soccer.error); return; }
       window.OmascoteTesterImageBonus?.recordReviewed(draft,
-        draft.flow === 'escudo3d' ? draft.values.delivery_mode || 'image' : props.canVideo ? delivery : 'image');
+        draft.values.futebol_gallery || draft.flow === 'escudo3d' ? draft.values.delivery_mode || 'image' : props.canVideo ? delivery : 'image');
       submitLock.current = true;
       setError('');
       // Escudo 3D already has a model/delivery seed from its original gallery and ze() sends it directly.
-      if (draft.flow !== 'escudo3d') deliveryRequest = {id:draft.id,mode:props.canVideo ? delivery : 'image'};
+      if (!draft.values.futebol_gallery && draft.flow !== 'escudo3d') deliveryRequest = {id:draft.id,mode:props.canVideo ? delivery : 'image'};
       void props.submit();
     }
     function containsFile(node) {
@@ -366,6 +376,14 @@
         h('span',null,text),h('strong',null,price));
     }
     function deliveryOptions() {
+      if (draft.values.futebol_gallery) {
+        const summary = soccerSummary();
+        if (summary?.error) return h('p',{role:'status'},summary.error);
+        if (!summary) return h('p',null,'Somente imagem · ',imagePrice);
+        return h('div',{className:'guided-delivery'},...summary.choices.map((item,i)=>
+          h('p',{key:i},item.title,' · 10 s · 360p · ',window.OmascoteFutebol.money(item.cents))),
+          summary.choices.length>1 ? h('strong',null,'Total ',window.OmascoteFutebol.money(summary.total)) : null);
+      }
       if (draft.flow !== 'escudo3d') return h('fieldset',{className:'guided-delivery','aria-label':'Como você quer receber?'},
         option('image','Somente imagem',imagePrice),
         props.canVideo ? option('image_video','Imagem + vídeo',props.videoPrice) : null);
