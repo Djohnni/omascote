@@ -15766,7 +15766,7 @@ body.copaColombiaOrderMode.copaColombiaResultMode.copaColombiaShowScenario [data
         <button type="button" class="vitrinePrimary" data-vitrine-product="mascote_uniforme">Ver imagem e 3 vídeos do mascote <span aria-hidden="true">→</span></button>
       </div>
       <div class="vitrineMore">
-        <h2>Entregamos os vídeos em menos de 5 minutos</h2>
+        <h2>Imagens em cerca de 50 segundos e vídeos em cerca de 3 minutos</h2>
         <div class="vitrineProducts">
           <button type="button" data-vitrine-product="escudo3d"><span>Escudo 3D</span><picture style="display:contents"><source type="image/avif" srcset="/media/vitrine/escudo-aurora-20261002.avif"><img src="/media/vitrine/escudo-aurora.webp" width="420" height="747" loading="lazy" decoding="async" alt="Escudo 3D Aurora da Guanabara FC"></picture></button>
           <button type="button" data-vitrine-product="proximo_jogo"><span>Próximo Jogo</span><picture style="display:contents"><source type="image/avif" srcset="/produtos/proximo_jogo-20261002.avif"><img src="/produtos/proximo_jogo.jpg" width="180" height="320" loading="lazy" decoding="async" alt="Exemplo de arte de próximo jogo"></picture></button>
@@ -27930,6 +27930,12 @@ function calcularPercentualProgressoPedido(startedAt, percentualInicial = 1, mod
   return Math.min(limite, 80 + Math.floor(((elapsed - timeTo80) / (tempoFinal - timeTo80)) * (limite - 80)));
 }
 
+function avisoTempoProducao(modoEntrega){
+  return modoEntrega === "image_video"
+    ? "Seu vídeo costuma ficar pronto em cerca de 3 minutos."
+    : "Sua imagem costuma ficar pronta em cerca de 50 segundos.";
+}
+
 function iniciarProgressoNoProduto(form, pedidoId, startedAt, modoEntrega = "image"){
   cancelarProgressoNoProduto(form);
 
@@ -27941,7 +27947,8 @@ function iniciarProgressoNoProduto(form, pedidoId, startedAt, modoEntrega = "ima
   const inicio = inicioProgressoPedido(pedidoId, startedAt);
   const state = { pedidoId, modoEntrega };
   const atualizar = () => renderCleanProgressOverlay(imageBox,
-    calcularPercentualProgressoPedido(inicio, 1, state.modoEntrega), "Criando sua arte...");
+    calcularPercentualProgressoPedido(inicio, 1, state.modoEntrega),
+    avisoTempoProducao(state.modoEntrega));
   atualizar();
   state.timer = setInterval(atualizar, 1000);
   cleanProductProgressTimers.set(form, state);
@@ -34832,7 +34839,7 @@ function atualizarMenuPedidosTopo(pedidos){
       ` : `
         <div class="menuPedidoThumb" style="display:flex;align-items:center;justify-content:center;padding:18px;text-align:center;color:#ffffff;font-size:16px;font-weight:950;line-height:1.35;background:#0f172a;">
           🚀 Meu Clube FC está criando sua arte profissional.<br><br>
-          Imagens normalmente demoram 1 minuto e 30 segundos; vídeos, 4 minutos.
+          ${avisoTempoProducao(modoProgressoPedido(p))}
         </div>
       `}
 
@@ -35061,7 +35068,7 @@ async function carregarHistorico(){
         ` : `
           <div style="margin-top:10px;text-align:center;">
             <div class="previewProtegida" style="aspect-ratio:9/16;display:flex;align-items:center;justify-content:center;padding:24px;background:#0f172a;color:#ffffff;font-size:16px;font-weight:950;line-height:1.5;">
-              🚀 Meu Clube FC transforma suas informações em uma arte profissional em poucos minutos.<br><br>
+              ${avisoTempoProducao(modoProgressoPedido(p))}<br><br>
               📲 Sua arte já vai com descrição pronta para copiar e postar no Instagram.
             </div>
           </div>

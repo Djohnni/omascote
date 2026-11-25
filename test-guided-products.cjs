@@ -141,7 +141,7 @@ async function run() {
     });
     await page.goto(origin + '/app.html',{waitUntil:'domcontentloaded'});
     await page.locator('#vitrineHome').waitFor({state:'visible'});
-    assert.equal(await page.getByRole('heading',{name:'Entregamos os vídeos em menos de 5 minutos',exact:true}).isVisible(),true,'home delivery heading is shown');
+    assert.equal(await page.getByRole('heading',{name:'Imagens em cerca de 50 segundos e vídeos em cerca de 3 minutos',exact:true}).isVisible(),true,'home delivery heading is shown');
     assert.equal(await page.getByRole('heading',{name:'Mais artes para o seu time',exact:true}).count(),0,'previous gallery heading was replaced');
     return {context,page,chat:page.frameLocator('#integratedChatFrame'),errors,requests,uploads,actions,balances,
       state:() => state,
