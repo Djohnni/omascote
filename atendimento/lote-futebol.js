@@ -27,6 +27,12 @@
     const status=String(data.video_generation?.status||data.status||'').toLowerCase();
     return /falh|fail|error|review|quality/.test(status)?'quality_pending':'processing';
   }
+  function lookupResult(result){
+    if(result.encontrado===true&&result.pedido?.pedido_id)return {id:result.pedido.pedido_id,state:classify(result.pedido)};
+    if(result.status===200&&result.encontrado===false&&result.resposta?.ok===true&&result.resposta?.encontrado===false)return null;
+    if(result.status===404&&result.encontrado===false&&result.resposta?.encontrado===false)return null;
+    throw new Error(result.error||'Consulta de tentativa indisponível; envio interrompido.');
+  }
   class Queue {
     constructor(rows,io,saved={}){
       this.io=io;this.paused=true;this.rows=validateRows(rows).map(row=>{
@@ -75,7 +81,7 @@
     snapshot(){return Object.fromEntries(this.rows.map(row=>[row.id,{orderId:row.orderId,state:row.state,requestId:row.requestId,
       fingerprint:row.fingerprint,baseCents:row.baseCents,finalCents:row.finalCents,lastError:row.lastError||''} ]));}
   }
-  const api={Queue,validateRows,classify,canonical,hash,CAMPAIGN};
+  const api={Queue,validateRows,classify,lookupResult,canonical,hash,CAMPAIGN};
   if(typeof module==='object'&&module.exports){module.exports=api;return;}
   global.OmascoteFootballBatch=api;
   const $=id=>document.getElementById(id),frame=$('site-bridge');
@@ -124,7 +130,7 @@
     queue=new Queue(rows,{
       changed:render,
       inspect:row=>bridge.info(row.orderId),
-      async lookup(row){const result=await bridge.lookup(row.requestId);if(result.encontrado&&result.pedido?.pedido_id)return {id:result.pedido.pedido_id,state:classify(result.pedido)};if(result.status===404)return null;throw new Error(result.error||'Consulta de tentativa indisponível; envio interrompido.');},
+      async lookup(row){return lookupResult(await bridge.lookup(row.requestId));},
       async submit(row){
         if(!validated)throw new Error('Confira novamente os arquivos e preços.');
         const items=await prepared(row);const fingerprint=await payloadFingerprint(items);
