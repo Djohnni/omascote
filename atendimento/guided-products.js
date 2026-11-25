@@ -381,7 +381,7 @@
         if (summary?.error) return h('p',{role:'status'},summary.error);
         if (!summary) return h('p',null,'Somente imagem · ',imagePrice);
         return h('div',{className:'guided-delivery'},...summary.choices.map((item,i)=>
-          h('p',{key:i},item.title,' · 10 s · 360p · ',window.OmascoteFutebol.money(item.cents))),
+          h('p',{key:i},item.title,' · 10 s · 720p · ',window.OmascoteFutebol.money(item.cents))),
           summary.choices.length>1 ? h('strong',null,'Total ',window.OmascoteFutebol.money(summary.total)) : null);
       }
       if (draft.flow !== 'escudo3d') return h('fieldset',{className:'guided-delivery','aria-label':'Como você quer receber?'},

@@ -108,7 +108,7 @@
           const video = element('video'); video.controls=true; video.playsInline=true; video.preload='metadata';
           video.src=base+option.id+'.mp4'; video.setAttribute('aria-label',option.title); card.append(video);
         }
-        card.append(element('h3',option.title),element('p','Imagem + vídeo · 10 s · 360p'),
+        card.append(element('h3',option.title),element('p','Imagem + vídeo · 10 s · 720p'),
           element('strong','A partir de '+money(option.cents)),choice('Escolher vídeo',() =>
             finish({...seed,futebol_gallery:'video',futebol_rank:String(rank),futebol_scene:option.id,delivery_mode:'image_video',video_model:'omni'})));
         cards.append(card);
