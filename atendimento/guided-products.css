@@ -1,4 +1,16 @@
 /* Scoped to guided product presentation. The original renderer still owns every control. */
+.player-crest-rows, .player-crest-rows > fieldset, .player-crest-rows label {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 12px;
+  min-width: 0;
+}
+.player-crest-rows > fieldset { border: 0; margin: 0; padding: 0; }
+.player-crest-rows label { gap: 4px; font-weight: 600; }
+.player-crest-rows input { box-sizing: border-box; width: 100%; min-height: 44px; padding: 8px 12px; border: 1px solid #c9d6ce; border-radius: 8px; background: white; color: #103b32; font: inherit; font-weight: 400; }
+.player-crest-rows legend { margin-bottom: 8px; font-weight: 700; }
+.player-crest-actions { display: flex; flex-wrap: wrap; gap: 12px; }
+.player-crest-actions button { min-height: 44px; color: #24533d; background: transparent; border: 0; text-decoration: underline; cursor: pointer; font: inherit; }
 body[data-guided-product] .lab-frame.is-integrated .guided-product { width:min(100%,580px); margin:0 auto; color:#103b32; }
 .guided-product .guided-progress { display:grid; gap:8px; margin:0 0 16px; }
 .guided-product .guided-progress span { display:block; height:5px; border-radius:999px; background:#e3ebe6; }

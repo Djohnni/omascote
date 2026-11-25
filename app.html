@@ -15111,6 +15111,7 @@ body.homeLandingClean[data-page="home"] > main > .wrap > .panel{
   font-size:12px;
   font-weight:900;
 }
+.jogadorEscudoBuilder .contratacaoPlayerGrid { grid-template-columns: minmax(0, 1fr); }
 
 .contratacaoPlayerGrid input,
 .contratacaoPlayerGrid select,
@@ -15933,7 +15934,7 @@ body.copaColombiaOrderMode.copaColombiaResultMode.copaColombiaShowScenario [data
         class="integratedChatFrame"
         id="integratedChatFrame"
         title="Atendimento O Mascote"
-        data-src="/atendimento/index.html?integrado=1&v=gmail-2-imagens-1"
+        data-src="/atendimento/index.html?integrado=1&v=atletas-campos-1"
         allow="clipboard-write"
       ></iframe>
       <div class="integratedChatLoading" id="integratedChatLoading" hidden>
@@ -16263,7 +16264,7 @@ body.copaColombiaOrderMode.copaColombiaResultMode.copaColombiaShowScenario [data
               <button class="legalLinkBtn" id="btnExcluirContaFooter" type="button">Excluir Conta</button>
               <button class="legalLinkBtn" id="btnDenunciarIaFooter" type="button">Denunciar Conteúdo Gerado por IA</button>
               <button class="legalLinkBtn" id="btnAbrirSuporteFooter" type="button">Suporte</button>
-              <a class="legalLinkBtn" id="btnTesteNovoAtendimentoFooter" href="/atendimento/index.html?integrado=1&v=gmail-2-imagens-1">Novo atendimento</a>
+              <a class="legalLinkBtn" id="btnTesteNovoAtendimentoFooter" href="/atendimento/index.html?integrado=1&v=atletas-campos-1">Novo atendimento</a>
             </div>
             <div class="brandFootnote">Meu Clube FC é uma plataforma da O Mascote</div>
           </div>
@@ -17552,7 +17553,7 @@ function omascoteChatLocalPreview(){
 }
 
 function omascoteChatUrl(){
-  return new URL(integratedChatFrame?.dataset.src || "/atendimento/index.html?integrado=1&v=gmail-2-imagens-1", window.location.origin).href;
+  return new URL(integratedChatFrame?.dataset.src || "/atendimento/index.html?integrado=1&v=atletas-campos-1", window.location.origin).href;
 }
 
 let omascoteChatReady = false;
@@ -17841,6 +17842,13 @@ function omascoteChatBaseCleanOrder(productKey, values, files){
   return { schema_version:productKey === "contratacao" ? 3 : CLEAN_PRODUCT_SCHEMA_VERSION, product_id:productKey, fields, assets };
 }
 
+function jogadorEscudoPlayerFields(name, position = "", number = ""){
+  return {
+    player_name:name, player_position:position, player_number:number,
+    players:[{nome:name, posicao:position, numero:number}]
+  };
+}
+
 function omascoteChatBuildCleanOrders(draft, records){
   const productKey = String(draft?.flow || "");
   if(!Object.hasOwn(PRODUCTS, productKey) || productKey === "personalizada") throw new Error("Este tipo de pedido ainda precisa de atendimento antes de entrar no motor.");
@@ -17852,13 +17860,13 @@ function omascoteChatBuildCleanOrders(draft, records){
     return [{ productKey, special:"escudo3d", file:crest, coupon:String(values.coupon_code || "").trim(), values }];
   }
   if(productKey === "jogador_escudo"){
-    const players = omascoteChatLines(values.players).map(line => line.split("|").map(item => item.trim())).filter(row => row[0]);
+    const players = omascoteChatLines(values.players).map(line => line.split("|").map(item => item.trim()));
+    if(players.some(([name]) => !name)) throw new Error("Informe o nome de cada atleta.");
     const photos = files.player_photos || [];
     if(!players.length || photos.length !== players.length) throw new Error("Envie uma foto para cada jogador, na mesma ordem dos nomes.");
     return players.map((player, index) => {
       const order = omascoteChatBaseCleanOrder(productKey, values, files);
-      order.fields.player_name = player[0];
-      order.fields.players = [{ nome:player[0], posicao:"" }];
+      Object.assign(order.fields, jogadorEscudoPlayerFields(...player));
       order.fields.scenario_id = omascoteChatScenarioId(productKey, "");
       order.assets.team_crest = omascoteChatAsset(files, "team_crest", "escudo1");
       order.assets.player_photo = { legacyName:"mascote", files:[photos[index]] };
@@ -21010,6 +21018,12 @@ function renderJogadorEscudoPlayerRow(index = 0){
         <label>Nome
           <input data-jogador-escudo-name maxlength="80" placeholder="Ex: Carlos">
         </label>
+        <label>Posição (opcional)
+          <input type="text" data-jogador-escudo-position>
+        </label>
+        <label>Número (opcional)
+          <input type="text" inputmode="numeric" data-jogador-escudo-number>
+        </label>
         <label class="contratacaoPhotoLabel">Foto do jogador
           <input type="file" accept="image/*" data-jogador-escudo-photo>
           <span data-jogador-escudo-file>Nenhuma foto selecionada</span>
@@ -21042,6 +21056,8 @@ function getJogadorEscudoBuilderData(form){
   const players = Array.from(form?.querySelectorAll?.("[data-jogador-escudo-player]") || []).map((row, index) => ({
     index,
     name:row.querySelector("[data-jogador-escudo-name]")?.value?.trim() || "",
+    position:row.querySelector("[data-jogador-escudo-position]")?.value?.trim() || "",
+    number:row.querySelector("[data-jogador-escudo-number]")?.value?.trim() || "",
     photo:row.querySelector("[data-jogador-escudo-photo]")?.files?.[0] || null
   }));
   return { players };
@@ -26893,8 +26909,8 @@ function serializeCleanProductForm(productKey, form){
     if(field.type === "jogador_escudo_builder"){
       const data = getJogadorEscudoBuilderData(form);
       const player = data.players[0] || {};
-      fields.player_name = player.name || "";
-      fields.players = data.players.map(item => ({ nome:item.name, posicao:"" }));
+      Object.assign(fields, jogadorEscudoPlayerFields(player.name || "", player.position, player.number));
+      fields.players = data.players.map(item => ({nome:item.name, posicao:item.position, numero:item.number}));
       assets.player_photo = { legacyName:"mascote", files:player.photo ? [player.photo] : [] };
       return;
     }
@@ -27529,7 +27545,8 @@ function buildLegacyFormDataFromClean(productKey, cleanOrder, options = {}){
     fd.append("jogadores_texto", `${jogadores[0].nome} - ${jogadores[0].posicao}`.trim());
   }else if(productKey === "jogador_escudo" || productKey === "mascote_uniforme"){
     const nome = cleanOrder.fields.player_name || cleanOrder.fields.mascot_animal || product?.title || "";
-    const jogadores = nome ? [{ nome, posicao: "" }] : [];
+    const jogadores = productKey === "jogador_escudo" && cleanOrder.fields.players?.length
+      ? cleanOrder.fields.players : (nome ? [{ nome, posicao: "" }] : []);
     fd.append("jogadores_json", JSON.stringify(jogadores));
     fd.append("jogadores_texto", nome);
   }else if(productKey === "escalacao"){
@@ -28543,8 +28560,7 @@ function jogadorEscudoCleanOrderForPlayer(form, player){
   const cleanOrder = serializeCleanProductForm("jogador_escudo", form);
   cleanOrder.fields = {
     ...cleanOrder.fields,
-    player_name:player.name,
-    players:[{ nome:player.name, posicao:"" }]
+    ...jogadorEscudoPlayerFields(player.name, player.position, player.number)
   };
   cleanOrder.assets = {
     ...cleanOrder.assets,
@@ -28559,7 +28575,7 @@ async function getOrCreateJogadorEscudoBatchState(form, data){
   const fingerprint = JSON.stringify(await normalizeOrderFingerprintValueAsync({
     scenario_id:scenarioId,
     crest,
-    players:data.players.map(player => ({ name:player.name, photo:player.photo }))
+    players:data.players.map(player => ({ name:player.name, position:player.position, number:player.number, photo:player.photo }))
   }));
   if(form.__jogadorEscudoBatchState?.fingerprint === fingerprint){
     return form.__jogadorEscudoBatchState;

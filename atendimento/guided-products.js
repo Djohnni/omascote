@@ -40,6 +40,44 @@
   const isProduct = () => document.body.dataset.productView === 'product';
   const notify = data => window.parent.postMessage(data, location.origin);
 
+  // The chat saves one line per athlete, including drafts created with the old textarea.
+  function playerRows(value) {
+    const lines = (value || '').split(/\r?\n/).filter(line => line.trim());
+    return (lines.length ? lines : ['']).map(line => {
+      const [name = '', position = '', number = ''] = line.split('|');
+      return [name, position, number];
+    });
+  }
+
+  function PlayerFields({react:React, value, change, disabled}) {
+    const h = React.createElement, rows = playerRows(value);
+    const container = React.useRef(null);
+    const labels = ['Nome', 'Posição (opcional)', 'Número (opcional)'];
+    function save(next) {
+      change(next.map(row => row.join('|')).join('\n'));
+    }
+    function edit(index, column, text) {
+      const next = rows.map(row => row.slice());
+      next[index][column] = text.replace(/[|\r\n]/g, ' ');
+      save(next);
+    }
+    function add() {
+      if (rows.length >= 10) return;
+      save([...rows, ['', '', '']]);
+      requestAnimationFrame(() => container.current?.querySelectorAll('fieldset')[rows.length]?.querySelector('input')?.focus());
+    }
+    return h('div', {className:'player-crest-rows', ref:container},
+      rows.map((row, index) => h('fieldset', {key:index, disabled},
+        h('legend', {className:rows.length === 1 ? 'sr-only' : undefined}, 'Atleta ' + (index + 1)),
+        labels.map((label, column) => h('label', {key:column}, label,
+          h('input', {type:'text', value:row[column], required:column === 0,
+            inputMode:column === 2 ? 'numeric' : undefined,
+            onChange:event => edit(index, column, event.target.value)}))))),
+      h('div', {className:'player-crest-actions'},
+        rows.length < 10 && h('button', {type:'button', disabled, onClick:add}, 'Adicionar outro atleta'),
+        rows.length > 1 && h('button', {type:'button', disabled, onClick:() => save(rows.slice(0, -1))}, 'Remover último atleta')));
+  }
+
   function PurchaseSafety({React}) {
     const h = React.createElement;
     return h('details',{className:'guided-purchase-safety'},
@@ -209,7 +247,7 @@
       if (issue.startsWith('Informe os dois participantes')) return 'matchup';
       if (issue.startsWith('Confira os dois times e os dois valores')) return 'score';
       if (issue.startsWith('Envie uma foto para cada atleta')) return 'player_photos';
-      if (issue.startsWith('O limite é 10 atletas') || issue.startsWith('Informe nome e posição/categoria') ||
+      if (issue === 'Informe o nome de cada atleta.' || issue.startsWith('O limite é 10 atletas') || issue.startsWith('Informe nome e posição/categoria') ||
           issue.startsWith('Informe pelo menos dois atletas')) return 'players';
       if (issue.includes('Qual animal ou personagem')) return 'mascot_description';
       if (issue.includes('foto que vai aparecer')) return 'photo_mode';
@@ -311,10 +349,12 @@
       }
       const uploadLabel = draft.flow === 'jogador_escudo' && field.key === 'team_crest' ? 'Adicionar escudo' : undefined;
       const needsHint = ['players','player_photos','sport_context'].includes(field.key);
+      const hint = draft.flow === 'jogador_escudo' && field.key === 'player_photos' && playerRows(draft.values.players).length > 1
+        ? 'Envie as fotos na mesma ordem dos atletas.' : field.hint;
       const hideLabel = ['contract-athlete','mascot-shirt'].includes(field.presentationPart);
       return h('div',{className:'guided-field','data-field':field.key,key:field.key,tabIndex:-1},
         h('div',{className:hideLabel ? 'sr-only' : 'guided-label',id:`guided-product-label-${field.key}`},shortLabel(field)),
-        needsHint && field.hint ? h('p',{className:'guided-hint'},field.hint) : null,
+        needsHint && hint ? h('p',{className:'guided-hint'},hint) : null,
         h('div',{role:'group','aria-labelledby':`guided-product-label-${field.key}`},accessibleUpload(originalPart(visible), uploadLabel)),
         field.key === 'sport' && !sportsOpen ? h('button',{type:'button',className:'guided-text-button',
           onClick:()=>setSportsOpen(true)},'Outro esporte') : null);
@@ -348,7 +388,9 @@
         return h('div',{className:'guided-review-row',key:item.key,'data-review-field':item.key},
           h('div',{className:'guided-review-answer'},h('small',null,shortLabel(item) || item.key),
             files.length ? h('div',{className:'guided-review-files'},files.map(file => h('span',{key:file.id},
-              h('img',{src:file.url,alt:file.name,width:36,height:36,loading:'lazy'}),h('span',null,file.name)))) : h('span',null,value)),
+              h('img',{src:file.url,alt:file.name,width:36,height:36,loading:'lazy'}),h('span',null,file.name)))) :
+              draft.flow === 'jogador_escudo' && item.key === 'players' ? playerRows(value).map(([name,position,number],index) =>
+                h('div',{key:index},[name.trim(),position.trim(),number.trim() && 'Nº ' + number.trim()].filter(Boolean).join(' · '))) : h('span',null,value)),
           h('button',{type:'button',className:'guided-text-button','aria-label':`Editar ${shortLabel(item)}`,
             onClick:()=>navigate(group.id)},'Editar'));
       }).filter(Boolean);
@@ -380,5 +422,5 @@
         onClick:()=>notify({type:'omascote-chat:guided-help'})},'Ajuda'));
   }
 
-  window.OmascoteGuidedProducts = {Form,hideDelivery,PurchaseSafety,visibleFields,hideAppearance};
+  window.OmascoteGuidedProducts = {Form,PlayerFields,hideDelivery,PurchaseSafety,visibleFields,hideAppearance};
 })();
