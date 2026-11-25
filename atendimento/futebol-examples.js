@@ -4,23 +4,43 @@
     'jogador_escudo','escalacao','contratacao','patrocinador']);
   const money = cents => (cents / 100).toLocaleString('pt-BR',{style:'currency',currency:'BRL'});
   const sorted = row => [...row.options].sort((a,b) => a.cents-b.cents);
+  const listeners = new Set();
+  const notify = () => listeners.forEach(listener => listener());
   let catalog, pilot, dialog, request, lastToken;
+  let available = false;
 
   async function load() {
     const token = localStorage.getItem('omascote_token') || '';
     if (!request || token !== lastToken) {
       lastToken = token;
+      available = false;
+      notify();
       const base = window.parent.OMASCOTE_API_BASE_RESOLVED || 'https://api.omascote.com.br';
       request = fetch(base + '/catalogo/futebol-videos', {headers:token ? {Authorization:'Bearer '+token} : {},
         cache:'no-store', signal:AbortSignal.timeout(6500)}).then(async response => {
         if (!response.ok) throw new Error('Galeria indisponível.');
         const data = await response.json();
+        if (token !== lastToken) return false;
         catalog = window.createFutebolCatalog(data.catalog);
         pilot = data.pilot;
-        return data.available;
-      }).catch(() => {request = null; return false;});
+        available = data.available === true;
+        notify();
+        return available;
+      }).catch(() => {
+        if (token === lastToken) {request = null; available = false; notify();}
+        return false;
+      });
     }
     return request;
+  }
+  function minimum(product) {
+    if (!available || !catalog || !products.has(product)) return null;
+    const prices = catalog.catalog.filter(row => row.product === product).flatMap(row => row.options.map(option => option.cents));
+    return prices.length ? Math.min(...prices) : null;
+  }
+  function subscribe(listener) {
+    listeners.add(listener);
+    return () => listeners.delete(listener);
   }
   function element(tag, text) {
     const node = document.createElement(tag);
@@ -98,7 +118,10 @@
     box.append(choice('Outro esporte',() => finish({})));
     box.showModal();
   }
-  window.OmascoteFutebol = {supports:id => products.has(id),open,selection,money,load};
+  window.OmascoteFutebol = {supports:id => products.has(id),open,selection,money,load,minimum,subscribe};
+  window.addEventListener('storage', event => {
+    if (event.key === 'omascote_token' || event.key === null) void load();
+  });
   // Restore a saved review after a reload.
   if (window.parent !== window) void load();
 })();
