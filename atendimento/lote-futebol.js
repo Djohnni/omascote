@@ -1,6 +1,14 @@
 (function(global) {
   'use strict';
   const CAMPAIGN='futebol-omni360-20261125';
+  function modeFromSearch(search=''){
+    const params=new URLSearchParams(search);
+    if(!params.has('single'))return {single:false,campaign:CAMPAIGN,total:38,maxActive:4,maxSubmit:2};
+    const run=params.get('run')||'',scene=params.get('scene')||'P1-A';
+    if(params.get('single')!=='1'||!/^direct-[a-z0-9][a-z0-9-]{2,70}$/.test(run)||scene!=='P1-A')throw new Error('Teste inválido. Use uma identificação direct- estável e somente a cena P1-A.');
+    return {single:true,run,scene,campaign:'futebol-direct-test1:'+run+':'+scene,total:1,maxActive:1,maxSubmit:1};
+  }
+  const storageFor=(account,mode)=>'omascote_futebol_lote_v1:'+account+':'+mode.campaign;
   const DONE=new Set(['qa_approved','ready']);
   const money=cents=>(cents/100).toLocaleString('pt-BR',{style:'currency',currency:'BRL'});
   const canonical=value=>JSON.stringify(value,(_key,item)=>item&&typeof item==='object'&&!Array.isArray(item)
@@ -9,18 +17,27 @@
     const bytes=await global.crypto.subtle.digest('SHA-256',typeof text==='string'?new TextEncoder().encode(text):text);
     return Array.from(new Uint8Array(bytes),value=>value.toString(16).padStart(2,'0')).join('');
   }
-  function validateRows(rows) {
-    if(!Array.isArray(rows)||rows.length!==38)throw new Error('A campanha deve conter as 38 cenas.');
+  function validateRows(rows,mode=modeFromSearch()) {
+    if(!Array.isArray(rows)||rows.length!==mode.total)throw new Error(mode.single?'O teste deve conter somente uma cena.':'A campanha deve conter as 38 cenas.');
     const ids=new Set();
     for(const row of rows){
       if(!/^(P[1-5]|R[1-5]|A[12]|J1|E[12]|C[12]|S[12])-[AB]$/.test(row.id)||ids.has(row.id))throw new Error('Cena ausente ou repetida.');
       ids.add(row.id);
+      if(mode.single&&(row.id!==mode.scene||row.use_demo_coupon!==false||row.existing_order_id||row.status))throw new Error('O teste deve ser novo, sem cupom e conter somente '+mode.scene+'.');
       if(!row.values||!row.arquivos||row.values.futebol_scene!==row.id||row.values.delivery_mode!=='image_video')throw new Error('Campos inválidos em '+row.id);
       if(!Number.isInteger(row.cents)||row.cents<1890||row.cents>2790)throw new Error('Preço inválido em '+row.id);
       for(const names of Object.values(row.arquivos))if(!Array.isArray(names)||names.some(name=>typeof name!=='string'||/[\\/]/.test(name)))throw new Error('Referência inválida em '+row.id);
     }
     return rows;
   }
+  function selectRows(rows,mode){
+    validateRows(rows);
+    if(!mode.single)return rows;
+    const source=rows.find(row=>row.id===mode.scene);
+    const {id,titulo,variante,cents,flow,values,arquivos}=source;
+    return validateRows([{id,titulo,variante,cents,flow,values:JSON.parse(JSON.stringify(values)),arquivos:JSON.parse(JSON.stringify(arquivos)),use_demo_coupon:false}],mode);
+  }
+  async function requestIdFor(account,mode,dataset,scene){return 'futebol_lote_'+(await hash(account+'|'+mode.campaign+'|'+dataset+'|'+scene)).slice(0,48);}
   function classify(data){
     if(data.video_pronto===true&&data.video_generation?.status==='ready'&&data.video_generation?.ready===true)return 'ready';
     if(data.pagamento_pendente===true)return 'payment';
@@ -34,8 +51,8 @@
     throw new Error(result.error||'Consulta de tentativa indisponível; envio interrompido.');
   }
   class Queue {
-    constructor(rows,io,saved={}){
-      this.io=io;this.paused=true;this.rows=validateRows(rows).map(row=>{
+    constructor(rows,io,saved={},mode=modeFromSearch()){
+      this.io=io;this.mode=mode;this.paused=true;this.rows=validateRows(rows,mode).map(row=>{
         const prior=saved[row.id]||{};
         if(row.existing_order_id&&prior.orderId&&row.existing_order_id!==prior.orderId)throw new Error('Dois pedidos registrados para '+row.id);
         const orderId=row.existing_order_id||prior.orderId||'';
@@ -60,7 +77,7 @@
         this.io.changed(this);
       }
       if(this.paused)return;
-      const picked=this.pending().slice(0,Math.min(2,Math.max(0,4-this.active())));
+      const picked=this.pending().slice(0,Math.min(this.mode.maxSubmit,Math.max(0,this.mode.maxActive-this.active())));
       for(const row of picked)row.state='submitting';
       this.io.changed(this);
       await Promise.all(picked.map(async row=>{
@@ -81,10 +98,21 @@
     snapshot(){return Object.fromEntries(this.rows.map(row=>[row.id,{orderId:row.orderId,state:row.state,requestId:row.requestId,
       fingerprint:row.fingerprint,baseCents:row.baseCents,finalCents:row.finalCents,lastError:row.lastError||''} ]));}
   }
-  const api={Queue,validateRows,classify,lookupResult,canonical,hash,CAMPAIGN};
+  const api={Queue,validateRows,selectRows,modeFromSearch,storageFor,requestIdFor,classify,lookupResult,canonical,hash,CAMPAIGN};
   if(typeof module==='object'&&module.exports){module.exports=api;return;}
   global.OmascoteFootballBatch=api;
   const $=id=>document.getElementById(id),frame=$('site-bridge');
+  let mode;
+  try{mode=modeFromSearch(global.location.search);}catch(error){$('error').textContent=error.message;return;}
+  if(mode.single){
+    document.title='Teste único de vídeo · O Mascote';
+    $('page-title').textContent='Teste único · '+mode.scene;
+    $('intro').textContent='Somente 1 pedido novo, sem cupom. Este teste tem andamento separado da galeria de 38 cenas. Identificação: '+mode.run+'.';
+    $('start').textContent='Confirmar e enviar 1 teste';
+    $('validate').textContent='Preparar 1 teste e conferir preço';
+    $('summary').textContent='Carregando somente a cena '+mode.scene+'…';
+    $('coupon').disabled=true;$('coupon-label').style.display='none';
+  }
   let bridge,account,queue,storageKey,dataset,files=new Map(),recordCache=new Map(),validated=false,running=false,timer;
   const say=text=>{$('status').textContent=text;};
   const fail=error=>{$('error').textContent=error?.message||String(error);};
@@ -103,12 +131,12 @@
       tr.append(td);$('rows').append(tr);
     }
     const sent=queue.rows.filter(row=>row.orderId).length,ready=queue.rows.filter(row=>DONE.has(row.state)).length;
-    $('summary').textContent=sent+'/38 pedidos criados · '+ready+' concluídos · '+queue.active()+'/4 ativos · '+queue.pending().length+' a enfileirar';
-    $('progress').value=ready;
+    $('summary').textContent=sent+'/'+mode.total+' pedidos criados · '+ready+' concluídos · '+queue.active()+'/'+mode.maxActive+' ativos · '+queue.pending().length+' a enfileirar';
+    $('progress').max=mode.total;$('progress').value=ready;
     const pending=queue.rows.filter(row=>!row.orderId);
-    $('totals').textContent='Restantes: preço das cenas '+money(pending.reduce((sum,row)=>sum+(row.baseCents??row.cents),0))+' · cobrança administrativa conferida '+(validated?money(pending.reduce((sum,row)=>sum+(row.finalCents||0),0)):'após conferir o cupom')+'.';
+    $('totals').textContent='Restantes: preço das cenas '+money(pending.reduce((sum,row)=>sum+(row.baseCents??row.cents),0))+' · cobrança administrativa conferida '+(validated?money(pending.reduce((sum,row)=>sum+(row.finalCents||0),0)):mode.single?'após conferir o preço':'após conferir o cupom')+'.';
     $('start').disabled=!validated||running||!queue.pending().length;$('pause').disabled=!running;$('refresh').disabled=!account;
-    if(storageKey)localStorage.setItem(storageKey,JSON.stringify({campaign:CAMPAIGN,dataset,rows:queue.snapshot()}));
+    if(storageKey)localStorage.setItem(storageKey,JSON.stringify({campaign:mode.campaign,dataset,rows:queue.snapshot()}));
   }
   async function records(row){
     const all=[];
@@ -119,12 +147,13 @@
     }
     return all;
   }
-  function couponFor(row){return row.use_demo_coupon===true?$('coupon').value.trim():'';}
+  function couponFor(row){return !mode.single&&row.use_demo_coupon===true?$('coupon').value.trim():'';}
   async function prepared(row){return bridge.prepare(row,await records(row),row.requestId,couponFor(row));}
   async function installRows(rows,resume){
-    validateRows(rows);
+    validateRows(rows,mode);
     const nextDataset=await hash(canonical(rows.map(row=>({id:row.id,flow:row.flow,values:row.values,arquivos:row.arquivos,use_demo_coupon:row.use_demo_coupon===true}))));
     const old=resume||JSON.parse(localStorage.getItem(storageKey)||'null');
+    if(old&&old.campaign!==mode.campaign)throw new Error('Andamento de outra campanha ou teste.');
     if(old&&old.dataset!==nextDataset)throw new Error('Os dados desta campanha mudaram. Preserve o andamento anterior antes de substituir a lista.');
     dataset=nextDataset;
     queue=new Queue(rows,{
@@ -137,8 +166,8 @@
         if(fingerprint!==row.fingerprint)throw new Error('Dados, arquivos ou cupom mudaram depois da revisão.');
         const result=await bridge.submit(items);return result.orders?.[0];
       }
-    },old?.rows||{});
-    for(const row of queue.rows)row.requestId='futebol_lote_'+(await hash(account.id+'|'+CAMPAIGN+'|'+dataset+'|'+row.id)).slice(0,48);
+    },old?.rows||{},mode);
+    for(const row of queue.rows)row.requestId=await requestIdFor(account.id,mode,dataset,row.id);
     validated=false;render();
   }
   async function payloadFingerprint(items){
@@ -150,9 +179,9 @@
   async function connect(){
     $('error').textContent='';const deadline=Date.now()+30000;
     while(!frame.contentWindow?.OmascoteAdminBatch){if(Date.now()>deadline)throw new Error('Não foi possível abrir os formulários do site. Atualize esta página.');await new Promise(resolve=>setTimeout(resolve,150));}
-    bridge=frame.contentWindow.OmascoteAdminBatch;account=await bridge.session(true);storageKey='omascote_futebol_lote_v1:'+account.id+':'+CAMPAIGN;
+    bridge=frame.contentWindow.OmascoteAdminBatch;account=await bridge.session(true);storageKey=storageFor(account.id,mode);
     $('auth').textContent='Conta administradora confirmada. Os pedidos serão feitos nesta conta.';$('controls').disabled=false;
-    if(!queue){const response=await fetch('/atendimento/futebol-batch-campaign.json?v=batch-1',{cache:'no-store'});if(!response.ok)throw new Error('Não foi possível carregar a campanha.');await installRows(await response.json());}
+    if(!queue){const response=await fetch('/atendimento/futebol-batch-campaign.json?v=batch-1',{cache:'no-store'});if(!response.ok)throw new Error('Não foi possível carregar a campanha.');await installRows(selectRows(await response.json(),mode));}
     render();
   }
   async function validate(){
@@ -164,25 +193,26 @@
     for(const [index,row] of queue.rows.entries()){
       if(row.orderId)continue;
       if(row.use_demo_coupon===true&&!couponFor(row))throw new Error('Informe o cupom administrativo para as demonstrações.');
-      say('Conferindo '+row.id+' ('+(index+1)+'/38)…');
+      say('Conferindo '+row.id+' ('+(index+1)+'/'+mode.total+')…');
       const items=await prepared(row),option=items[0].futebolOption;
       if(option.id!==row.id||option.cents!==row.cents)throw new Error('A cena ou preço do catálogo mudou em '+row.id+'.');
       const quote=await bridge.quote(items,couponFor(row));
       const original=Math.round(Number(quote.valor_original)*100),final=Math.round(Number(quote.valor_final)*100);
       if(original!==option.cents||!Number.isFinite(final)||final<0)throw new Error('A API não confirmou o preço de '+row.id+'.');
+      if(mode.single&&final!==original)throw new Error('O teste deve usar o preço normal, sem cupom. Nenhum pedido foi enviado.');
       if(row.use_demo_coupon===true&&final!==0)throw new Error('O cupom não zerou a demonstração '+row.id+'. Nenhum pedido foi enviado.');
       const fingerprint=await payloadFingerprint(items);
       if(row.fingerprint&&row.fingerprint!==fingerprint)throw new Error('A tentativa '+row.id+' já foi preparada com outros arquivos/campos/cupom.');
       Object.assign(row,{baseCents:original,finalCents:final,fingerprint});render();
     }
-    validated=true;say('38 cenas conferidas. Confirme abaixo para enfileirar somente os pedidos restantes.');render();
+    validated=true;say(mode.single?'1 teste preparado, sem cupom. Confirme abaixo para enviar somente este pedido.': '38 cenas conferidas. Confirme abaixo para enfileirar somente os pedidos restantes.');render();
   }
   async function run(){
     if(running||!validated)return;
     const start=async lock=>{
       if(!lock)throw new Error('Outra aba está enviando esta campanha.');
       running=true;queue.paused=false;$('controls').disabled=true;$('error').textContent='';render();
-      try{while(!queue.paused){await queue.step();render();if(!queue.paused){say(queue.active()>=4?'Aguardando uma das 4 vagas ativas…':'Acompanhando produção e retomando vagas…');await new Promise(resolve=>{timer=setTimeout(resolve,8000);});}}say('Novos envios pausados. Pedidos existentes foram preservados.');}
+      try{while(!queue.paused){await queue.step();render();if(!queue.paused){say(mode.single?'Acompanhando este único teste; nenhum outro pedido será enviado.':queue.active()>=4?'Aguardando uma das 4 vagas ativas…':'Acompanhando produção e retomando vagas…');await new Promise(resolve=>{timer=setTimeout(resolve,8000);});}}say('Novos envios pausados. Pedidos existentes foram preservados.');}
       finally{running=false;$('controls').disabled=false;render();}
     };
     if(!navigator.locks)throw new Error('Abra esta página em um navegador com suporte a bloqueio de abas (Chrome ou Edge).');
@@ -195,8 +225,8 @@
   $('refresh').onclick=()=>queue?.poll().then(render).catch(fail);
   $('coupon').oninput=()=>{validated=false;render();};
   $('reference-files').onchange=event=>{files=new Map();recordCache.clear();validated=false;for(const file of event.target.files){if(files.has(file.name)){fail(new Error('Nome repetido nas referências: '+file.name));return;}files.set(file.name,file);}$('references').textContent=files.size+' referências selecionadas. Serão usados somente os arquivos indicados em cada pedido.';render();};
-  $('queue-file').onchange=event=>{const file=event.target.files[0];if(file)file.text().then(JSON.parse).then(installRows).catch(fail);};
-  $('resume-file').onchange=event=>{const file=event.target.files[0];if(file)file.text().then(JSON.parse).then(data=>{if(data.campaign!==CAMPAIGN)throw new Error('Andamento de outra campanha.');return installRows(queue.rows,data);}).catch(fail);};
-  $('export').onclick=()=>{if(!queue)return;const packet={campaign:CAMPAIGN,dataset,rows:queue.snapshot()};const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([JSON.stringify(packet,null,2)],{type:'application/json'}));a.download='andamento-galeria-futebol.json';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000);};
+  $('queue-file').onchange=event=>{const file=event.target.files[0];if(file)file.text().then(JSON.parse).then(rows=>installRows(selectRows(rows,mode))).catch(fail);};
+  $('resume-file').onchange=event=>{const file=event.target.files[0];if(file)file.text().then(JSON.parse).then(data=>{if(data.campaign!==mode.campaign)throw new Error('Andamento de outra campanha ou teste.');return installRows(queue.rows,data);}).catch(fail);};
+  $('export').onclick=()=>{if(!queue)return;const packet={campaign:mode.campaign,dataset,rows:queue.snapshot()};const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([JSON.stringify(packet,null,2)],{type:'application/json'}));a.download=mode.single?'andamento-teste-'+mode.run+'.json':'andamento-galeria-futebol.json';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000);};
   connect().catch(fail);
 })(typeof globalThis==='object'?globalThis:this);
