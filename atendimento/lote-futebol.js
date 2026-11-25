@@ -3,10 +3,15 @@
   const CAMPAIGN='futebol-omni360-20261125';
   function modeFromSearch(search=''){
     const params=new URLSearchParams(search);
-    if(!params.has('single'))return {single:false,campaign:CAMPAIGN,total:38,maxActive:4,maxSubmit:2};
+    if(params.has('parallel')){
+      const run=params.get('run')||'';
+      if(params.get('parallel')!=='4'||params.has('single')||params.has('scene')||!/^direct-[a-z0-9][a-z0-9-]{2,70}$/.test(run))throw new Error('Teste inválido. Use parallel=4 e uma identificação direct- estável, sem escolher outras cenas.');
+      return {single:false,parallel:true,isolated:true,run,scenes:['P1-A','P1-B','P2-A','P2-B'],campaign:'futebol-direct-test4:'+run,total:4,maxActive:4,maxSubmit:2};
+    }
+    if(!params.has('single'))return {single:false,isolated:false,campaign:CAMPAIGN,total:38,maxActive:4,maxSubmit:2};
     const run=params.get('run')||'',scene=params.get('scene')||'P1-A';
     if(params.get('single')!=='1'||!/^direct-[a-z0-9][a-z0-9-]{2,70}$/.test(run)||scene!=='P1-A')throw new Error('Teste inválido. Use uma identificação direct- estável e somente a cena P1-A.');
-    return {single:true,run,scene,campaign:'futebol-direct-test1:'+run+':'+scene,total:1,maxActive:1,maxSubmit:1};
+    return {single:true,isolated:true,run,scene,scenes:[scene],campaign:'futebol-direct-test1:'+run+':'+scene,total:1,maxActive:1,maxSubmit:1};
   }
   const storageFor=(account,mode)=>'omascote_futebol_lote_v1:'+account+':'+mode.campaign;
   const DONE=new Set(['qa_approved','ready']);
@@ -18,12 +23,12 @@
     return Array.from(new Uint8Array(bytes),value=>value.toString(16).padStart(2,'0')).join('');
   }
   function validateRows(rows,mode=modeFromSearch()) {
-    if(!Array.isArray(rows)||rows.length!==mode.total)throw new Error(mode.single?'O teste deve conter somente uma cena.':'A campanha deve conter as 38 cenas.');
+    if(!Array.isArray(rows)||rows.length!==mode.total)throw new Error(mode.single?'O teste deve conter somente uma cena.':mode.parallel?'O teste deve conter somente as quatro cenas definidas.':'A campanha deve conter as 38 cenas.');
     const ids=new Set();
     for(const row of rows){
       if(!/^(P[1-5]|R[1-5]|A[12]|J1|E[12]|C[12]|S[12])-[AB]$/.test(row.id)||ids.has(row.id))throw new Error('Cena ausente ou repetida.');
       ids.add(row.id);
-      if(mode.single&&(row.id!==mode.scene||row.use_demo_coupon!==false||row.existing_order_id||row.status))throw new Error('O teste deve ser novo, sem cupom e conter somente '+mode.scene+'.');
+      if(mode.isolated&&(!mode.scenes.includes(row.id)||row.use_demo_coupon!==false||row.existing_order_id||row.status))throw new Error('O teste deve ser novo, sem cupom e conter somente '+mode.scenes.join(', ')+'.');
       if(!row.values||!row.arquivos||row.values.futebol_scene!==row.id||row.values.delivery_mode!=='image_video')throw new Error('Campos inválidos em '+row.id);
       if(!Number.isInteger(row.cents)||row.cents<1890||row.cents>2790)throw new Error('Preço inválido em '+row.id);
       for(const names of Object.values(row.arquivos))if(!Array.isArray(names)||names.some(name=>typeof name!=='string'||/[\\/]/.test(name)))throw new Error('Referência inválida em '+row.id);
@@ -32,10 +37,11 @@
   }
   function selectRows(rows,mode){
     validateRows(rows);
-    if(!mode.single)return rows;
-    const source=rows.find(row=>row.id===mode.scene);
-    const {id,titulo,variante,cents,flow,values,arquivos}=source;
-    return validateRows([{id,titulo,variante,cents,flow,values:JSON.parse(JSON.stringify(values)),arquivos:JSON.parse(JSON.stringify(arquivos)),use_demo_coupon:false}],mode);
+    if(!mode.isolated)return rows;
+    return validateRows(mode.scenes.map(scene=>{
+      const {id,titulo,variante,cents,flow,values,arquivos}=rows.find(row=>row.id===scene);
+      return {id,titulo,variante,cents,flow,values:JSON.parse(JSON.stringify(values)),arquivos:JSON.parse(JSON.stringify(arquivos)),use_demo_coupon:false};
+    }),mode);
   }
   async function requestIdFor(account,mode,dataset,scene){return 'futebol_lote_'+(await hash(account+'|'+mode.campaign+'|'+dataset+'|'+scene)).slice(0,48);}
   function classify(data){
@@ -104,13 +110,13 @@
   const $=id=>document.getElementById(id),frame=$('site-bridge');
   let mode;
   try{mode=modeFromSearch(global.location.search);}catch(error){$('error').textContent=error.message;return;}
-  if(mode.single){
-    document.title='Teste único de vídeo · O Mascote';
-    $('page-title').textContent='Teste único · '+mode.scene;
-    $('intro').textContent='Somente 1 pedido novo, sem cupom. Este teste tem andamento separado da galeria de 38 cenas. Identificação: '+mode.run+'.';
-    $('start').textContent='Confirmar e enviar 1 teste';
-    $('validate').textContent='Preparar 1 teste e conferir preço';
-    $('summary').textContent='Carregando somente a cena '+mode.scene+'…';
+  if(mode.isolated){
+    document.title=mode.single?'Teste único de vídeo · O Mascote':'Teste com 4 vídeos · O Mascote';
+    $('page-title').textContent=mode.single?'Teste único · '+mode.scene:'Teste paralelo · 4 vídeos';
+    $('intro').textContent=mode.single?'Somente 1 pedido novo, sem cupom. Este teste tem andamento separado da galeria de 38 cenas. Identificação: '+mode.run+'.':'Somente 4 pedidos novos, sem cupom: P1-A, P1-B, P2-A e P2-B. Até 4 ativos, enviados de 2 em 2. Este andamento fica separado da galeria e do teste único. Identificação: '+mode.run+'.';
+    $('start').textContent=mode.single?'Confirmar e enviar 1 teste':'Confirmar e enviar 4 testes';
+    $('validate').textContent=mode.single?'Preparar 1 teste e conferir preço':'Preparar 4 testes e conferir preços';
+    $('summary').textContent=mode.single?'Carregando somente a cena '+mode.scene+'…':'Carregando somente as 4 cenas do teste…';
     $('coupon').disabled=true;$('coupon-label').style.display='none';
   }
   let bridge,account,queue,storageKey,dataset,files=new Map(),recordCache=new Map(),validated=false,running=false,timer;
@@ -134,7 +140,7 @@
     $('summary').textContent=sent+'/'+mode.total+' pedidos criados · '+ready+' concluídos · '+queue.active()+'/'+mode.maxActive+' ativos · '+queue.pending().length+' a enfileirar';
     $('progress').max=mode.total;$('progress').value=ready;
     const pending=queue.rows.filter(row=>!row.orderId);
-    $('totals').textContent='Restantes: preço das cenas '+money(pending.reduce((sum,row)=>sum+(row.baseCents??row.cents),0))+' · cobrança administrativa conferida '+(validated?money(pending.reduce((sum,row)=>sum+(row.finalCents||0),0)):mode.single?'após conferir o preço':'após conferir o cupom')+'.';
+    $('totals').textContent='Restantes: preço das cenas '+money(pending.reduce((sum,row)=>sum+(row.baseCents??row.cents),0))+' · cobrança administrativa conferida '+(validated?money(pending.reduce((sum,row)=>sum+(row.finalCents||0),0)):mode.isolated?'após conferir o preço':'após conferir o cupom')+'.';
     $('start').disabled=!validated||running||!queue.pending().length;$('pause').disabled=!running;$('refresh').disabled=!account;
     if(storageKey)localStorage.setItem(storageKey,JSON.stringify({campaign:mode.campaign,dataset,rows:queue.snapshot()}));
   }
@@ -147,7 +153,7 @@
     }
     return all;
   }
-  function couponFor(row){return !mode.single&&row.use_demo_coupon===true?$('coupon').value.trim():'';}
+  function couponFor(row){return !mode.isolated&&row.use_demo_coupon===true?$('coupon').value.trim():'';}
   async function prepared(row){return bridge.prepare(row,await records(row),row.requestId,couponFor(row));}
   async function installRows(rows,resume){
     validateRows(rows,mode);
@@ -199,20 +205,20 @@
       const quote=await bridge.quote(items,couponFor(row));
       const original=Math.round(Number(quote.valor_original)*100),final=Math.round(Number(quote.valor_final)*100);
       if(original!==option.cents||!Number.isFinite(final)||final<0)throw new Error('A API não confirmou o preço de '+row.id+'.');
-      if(mode.single&&final!==original)throw new Error('O teste deve usar o preço normal, sem cupom. Nenhum pedido foi enviado.');
+      if(mode.isolated&&final!==original)throw new Error('O teste deve usar o preço normal, sem cupom. Nenhum pedido foi enviado.');
       if(row.use_demo_coupon===true&&final!==0)throw new Error('O cupom não zerou a demonstração '+row.id+'. Nenhum pedido foi enviado.');
       const fingerprint=await payloadFingerprint(items);
       if(row.fingerprint&&row.fingerprint!==fingerprint)throw new Error('A tentativa '+row.id+' já foi preparada com outros arquivos/campos/cupom.');
       Object.assign(row,{baseCents:original,finalCents:final,fingerprint});render();
     }
-    validated=true;say(mode.single?'1 teste preparado, sem cupom. Confirme abaixo para enviar somente este pedido.': '38 cenas conferidas. Confirme abaixo para enfileirar somente os pedidos restantes.');render();
+    validated=true;say(mode.single?'1 teste preparado, sem cupom. Confirme abaixo para enviar somente este pedido.':mode.parallel?'4 testes preparados, sem cupom. Confirme abaixo para enviar somente estes quatro pedidos.':'38 cenas conferidas. Confirme abaixo para enfileirar somente os pedidos restantes.');render();
   }
   async function run(){
     if(running||!validated)return;
     const start=async lock=>{
       if(!lock)throw new Error('Outra aba está enviando esta campanha.');
       running=true;queue.paused=false;$('controls').disabled=true;$('error').textContent='';render();
-      try{while(!queue.paused){await queue.step();render();if(!queue.paused){say(mode.single?'Acompanhando este único teste; nenhum outro pedido será enviado.':queue.active()>=4?'Aguardando uma das 4 vagas ativas…':'Acompanhando produção e retomando vagas…');await new Promise(resolve=>{timer=setTimeout(resolve,8000);});}}say('Novos envios pausados. Pedidos existentes foram preservados.');}
+      try{while(!queue.paused){await queue.step();render();if(!queue.paused){say(mode.single?'Acompanhando este único teste; nenhum outro pedido será enviado.':mode.parallel?'Acompanhando somente estes 4 testes; nenhum outro pedido será enviado.':queue.active()>=4?'Aguardando uma das 4 vagas ativas…':'Acompanhando produção e retomando vagas…');await new Promise(resolve=>{timer=setTimeout(resolve,8000);});}}say('Novos envios pausados. Pedidos existentes foram preservados.');}
       finally{running=false;$('controls').disabled=false;render();}
     };
     if(!navigator.locks)throw new Error('Abra esta página em um navegador com suporte a bloqueio de abas (Chrome ou Edge).');
@@ -227,6 +233,6 @@
   $('reference-files').onchange=event=>{files=new Map();recordCache.clear();validated=false;for(const file of event.target.files){if(files.has(file.name)){fail(new Error('Nome repetido nas referências: '+file.name));return;}files.set(file.name,file);}$('references').textContent=files.size+' referências selecionadas. Serão usados somente os arquivos indicados em cada pedido.';render();};
   $('queue-file').onchange=event=>{const file=event.target.files[0];if(file)file.text().then(JSON.parse).then(rows=>installRows(selectRows(rows,mode))).catch(fail);};
   $('resume-file').onchange=event=>{const file=event.target.files[0];if(file)file.text().then(JSON.parse).then(data=>{if(data.campaign!==mode.campaign)throw new Error('Andamento de outra campanha ou teste.');return installRows(queue.rows,data);}).catch(fail);};
-  $('export').onclick=()=>{if(!queue)return;const packet={campaign:mode.campaign,dataset,rows:queue.snapshot()};const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([JSON.stringify(packet,null,2)],{type:'application/json'}));a.download=mode.single?'andamento-teste-'+mode.run+'.json':'andamento-galeria-futebol.json';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000);};
+  $('export').onclick=()=>{if(!queue)return;const packet={campaign:mode.campaign,dataset,rows:queue.snapshot()};const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([JSON.stringify(packet,null,2)],{type:'application/json'}));a.download=mode.isolated?'andamento-teste-'+mode.run+'.json':'andamento-galeria-futebol.json';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000);};
   connect().catch(fail);
 })(typeof globalThis==='object'?globalThis:this);
