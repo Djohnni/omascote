@@ -17989,7 +17989,7 @@ async function omascoteChatSubmitPreparedOrders(prepared, authContext){
       if(out?.code === "IMAGE_BONUS_UNAVAILABLE") await refreshMe();
       throw new Error(out?.error || "Não foi possível criar o pedido no motor.");
     }
-    results.push(out);
+    results.push({ ...out, delivery_mode: modoProgressoPedido(item.order?.fields || item.values) });
     if(out.pedido_id && out.requer_pix_antes_criacao === true){
       registrarPedidoAguardandoPixLocal(out.pedido_id, item.productKey);
     }else if(out.pedido_id){
@@ -18019,7 +18019,7 @@ async function omascoteChatSubmitPreparedOrders(prepared, authContext){
   }
   const enviadosParaProducao = finalResults.filter(item => item.requer_pix_antes_criacao !== true);
   if(enviadosParaProducao.length){
-    atualizarTopoProducao(enviadosParaProducao.map(item => ({ id:item.pedido_id || "novo", status:"processando" })));
+    atualizarTopoProducao(enviadosParaProducao.map(item => ({ id:item.pedido_id || "novo", status:"processando", delivery_mode:item.delivery_mode })));
   }
   mostrarAvisoPedido(
     exigemPixAntes.length ? "💳 Pagamento necessário" : "✅ Pedido recebido!",
@@ -27245,6 +27245,7 @@ async function getOrCreateCleanOrderRequestState(form, productKey, cleanOrder){
   const next = {
     fingerprint,
     clientRequestId: criarClientRequestId(`pedido_${productKey}`),
+    modoEntrega: modoProgressoPedido(cleanOrder),
     confirmed: false,
     pedidoId: ""
   };
@@ -27894,11 +27895,29 @@ function renderCleanProgressOverlay(imageBox, percent, text){
   return overlay;
 }
 
-function calcularPercentualProgressoPedido(startedAt, percentualInicial = 1){
+function modoProgressoPedido(pedido){
+  if(pedido?.video_generation?.requested === true || pedido?.video_pronto === true) return "image_video";
+  const campos = pedido?.fields || pedido || {};
+  return campos.delivery_mode === "image_video" || (!campos.delivery_mode && campos.video_model)
+    ? "image_video" : "image";
+}
+
+function inicioProgressoPedido(id, inicioLocal){
+  const key = "ia4tube_pedido_inicio_" + id;
+  const salvo = Number(localStorage.getItem(key));
+  if(salvo > 0) return salvo;
+  const inicio = Number(inicioLocal) || Number(localStorage.getItem("ia4tube_topo_inicio_" + id)) || Date.now();
+  localStorage.setItem(key, String(inicio));
+  return inicio;
+}
+
+function calcularPercentualProgressoPedido(startedAt, percentualInicial = 1, modoEntrega = "image"){
   const elapsed = Math.max(0, Date.now() - Number(startedAt || Date.now()));
-  const timeTo50 = 45000;
-  const timeTo80 = 120000;
-  const timeTo93 = 180000;
+  const imagem = modoEntrega === "image";
+  const timeTo50 = imagem ? 14000 : 45000;
+  const timeTo80 = imagem ? 28000 : 120000;
+  const tempoFinal = imagem ? 45000 : 180000;
+  const limite = imagem ? 95 : 93;
 
   if(elapsed <= timeTo50){
     return Math.min(50, percentualInicial + Math.floor((elapsed / timeTo50) * (50 - percentualInicial)));
@@ -27908,14 +27927,10 @@ function calcularPercentualProgressoPedido(startedAt, percentualInicial = 1){
     return Math.min(80, 50 + Math.floor(((elapsed - timeTo50) / (timeTo80 - timeTo50)) * 30));
   }
 
-  return Math.min(93, 80 + Math.floor(((elapsed - timeTo80) / (timeTo93 - timeTo80)) * 13));
+  return Math.min(limite, 80 + Math.floor(((elapsed - timeTo80) / (tempoFinal - timeTo80)) * (limite - 80)));
 }
 
-function calcularPercentualProgressoProduto(startedAt){
-  return calcularPercentualProgressoPedido(startedAt);
-}
-
-function iniciarProgressoNoProduto(form, pedidoId, startedAt){
+function iniciarProgressoNoProduto(form, pedidoId, startedAt, modoEntrega = "image"){
   cancelarProgressoNoProduto(form);
 
   const imageBox = getCleanProductImageFromForm(form);
@@ -27923,14 +27938,13 @@ function iniciarProgressoNoProduto(form, pedidoId, startedAt){
 
   guardarImagemOriginalDoProduto(form);
 
-  const progressStartedAt = Number(startedAt || Date.now());
-  renderCleanProgressOverlay(imageBox, calcularPercentualProgressoProduto(progressStartedAt), "Criando sua arte...");
-
-  const timer = setInterval(() => {
-    renderCleanProgressOverlay(imageBox, calcularPercentualProgressoProduto(progressStartedAt), "Criando sua arte...");
-  }, 1000);
-
-  cleanProductProgressTimers.set(form, { timer, pedidoId });
+  const inicio = inicioProgressoPedido(pedidoId, startedAt);
+  const state = { pedidoId, modoEntrega };
+  const atualizar = () => renderCleanProgressOverlay(imageBox,
+    calcularPercentualProgressoPedido(inicio, 1, state.modoEntrega), "Criando sua arte...");
+  atualizar();
+  state.timer = setInterval(atualizar, 1000);
+  cleanProductProgressTimers.set(form, state);
 }
 
 function finalizarProgressoNoProduto(form, pedidoId){
@@ -28177,7 +28191,9 @@ function restaurarPedidosAtivos(pedidos){
 
     const state = cleanProductProgressTimers.get(form);
     if(state?.pedidoId !== pedido.id){
-      iniciarProgressoNoProduto(form, pedido.id, ativo.criado_em);
+      iniciarProgressoNoProduto(form, pedido.id, ativo.criado_em, modoProgressoPedido(pedido));
+    }else{
+      state.modoEntrega = modoProgressoPedido(pedido);
     }
 
     acompanharResultadoClean(pedido.id, form);
@@ -28220,8 +28236,9 @@ function finalizarCleanOrderCriado(form, productKey, product, out, options = {})
     pedido_id: out.pedido_id || ""
   });
 
-  atualizarTopoProducao([{ id: out.pedido_id || "novo", status: "processando" }]);
-  iniciarProgressoNoProduto(form, out.pedido_id || "novo");
+  const modoEntrega = form.__cleanOrderRequestState?.modoEntrega || modoProgressoPedido(out);
+  atualizarTopoProducao([{ id: out.pedido_id || "novo", status: "processando", delivery_mode:modoEntrega }]);
+  iniciarProgressoNoProduto(form, out.pedido_id || "novo", undefined, modoEntrega);
   mostrarAvisoPedido();
 
   if(out.pedido_id){
@@ -31321,9 +31338,7 @@ let authProgressTimer = null;
 const PRIMEIRO_ESCUDO_INICIO_KEY = "ia4tube_primeiro_escudo_inicio";
 
 function calcularProgressoPorInicio(inicio){
-  const segundos = Math.floor((Date.now() - Number(inicio || Date.now())) / 1000);
-  let progresso = 8 + Math.floor((segundos / 90) * 82);
-  return Math.min(92, progresso);
+  return calcularPercentualProgressoPedido(inicio, 8, "image");
 }
 
 function iniciarProgressoCadastroEscudo3d(){
@@ -32505,7 +32520,7 @@ function finalizarEscudo3dPedidoCriado(out, progressTarget = null, options = {})
     salvarPedidoAtivoLocal(out.pedido_id, "escudo3d");
   }
   if(progressTarget){
-    iniciarProgressoNoProduto(progressTarget, out.pedido_id || "novo");
+    iniciarProgressoNoProduto(progressTarget, out.pedido_id || "novo", undefined, getEscudo3dDeliveryFields(progressTarget).delivery_mode);
     if(out.pedido_id) acompanharResultadoClean(out.pedido_id, progressTarget);
   }
 
@@ -32739,7 +32754,7 @@ async function enviarPedidoEscudo3dComArquivo(file, progressTarget = null){
         salvarPedidoAtivoLocal(out.pedido_id, "escudo3d");
       }
       if(progressTarget){
-        iniciarProgressoNoProduto(progressTarget, out.pedido_id || "novo");
+        iniciarProgressoNoProduto(progressTarget, out.pedido_id || "novo", undefined, getEscudo3dDeliveryFields(progressTarget).delivery_mode);
         if(out.pedido_id) acompanharResultadoClean(out.pedido_id, progressTarget);
       }
 
@@ -34050,15 +34065,11 @@ function atualizarTopoProducao(pedidos){
 
   if(pedidoProduzindo){
     const id = pedidoProduzindo.id || "novo";
-    const key = "ia4tube_topo_inicio_" + id;
-
-    let inicio = localStorage.getItem(key);
-    if(!inicio){
-      inicio = String(Date.now());
-      localStorage.setItem(key, inicio);
-    }
-
-    const pct = calcularPercentualProgressoPedido(inicio, 4);
+    const inicio = inicioProgressoPedido(id);
+    const modo = modoProgressoPedido(pedidoProduzindo);
+    fill.dataset.inicio = String(inicio);
+    fill.dataset.modoEntrega = modo;
+    const pct = calcularPercentualProgressoPedido(inicio, 4, modo);
 
     texto.textContent = "Aguarde";
     fill.style.width = pct + "%";
@@ -34066,6 +34077,7 @@ function atualizarTopoProducao(pedidos){
     return;
   }
 
+  delete fill.dataset.inicio;
   if(temPronto){
     texto.textContent = "";
     fill.style.width = "100%";
@@ -34106,18 +34118,6 @@ function textoStatusPedido(status){
   return "Em produção";
 }
 
-function progressoFakePedido(id){
-  const inicioKey = "ia4tube_pedido_inicio_" + id;
-  let inicio = localStorage.getItem(inicioKey);
-
-  if(!inicio){
-    inicio = String(Date.now());
-    localStorage.setItem(inicioKey, inicio);
-  }
-
-  return calcularPercentualProgressoPedido(inicio, 8);
-}
-
 function barraProducaoPedido(p){
   if(p.pagamento_pendente === true || String(p.status || "").toLowerCase() === "aguardando_pagamento"){
     return "";
@@ -34128,7 +34128,9 @@ function barraProducaoPedido(p){
     return "";
   }
 
-  const pct = progressoFakePedido(p.id);
+  const inicio = inicioProgressoPedido(p.id);
+  const modo = modoProgressoPedido(p);
+  const pct = calcularPercentualProgressoPedido(inicio, 8, modo);
 
   let texto = "";
 
@@ -34165,7 +34167,7 @@ else{
 
   return `
     <div style="margin-top:6px;width:100%;height:8px;background:#e5e7eb;border-radius:999px;overflow:hidden;">
-      <div class="pedidoProgressBar" data-pedido-id="${p.id}" style="height:100%;width:${pct}%;background:#16a34a;border-radius:999px;transition:width .4s ease;"></div>
+      <div class="pedidoProgressBar" data-pedido-id="${p.id}" data-inicio="${inicio}" data-modo-entrega="${modo}" style="height:100%;width:${pct}%;background:#16a34a;border-radius:999px;transition:width .4s ease;"></div>
     </div>
     <div class="pedidoProgressText" data-pedido-id="${p.id}" style="margin-top:3px;font-size:11px;font-weight:900;color:#64748b;">
       ${texto}
@@ -34174,14 +34176,16 @@ else{
 }
 
 function atualizarBarrasPedidosNaTela(){
+  const topo = document.querySelector(".ia4TopProducaoFill[data-inicio]");
+  if(topo) topo.style.width = calcularPercentualProgressoPedido(topo.dataset.inicio, 4, topo.dataset.modoEntrega) + "%";
+
   document.querySelectorAll(".pedidoProgressBar[data-pedido-id]").forEach(bar=>{
-    const id = bar.dataset.pedidoId;
-    const pct = progressoFakePedido(id);
+    const pct = calcularPercentualProgressoPedido(bar.dataset.inicio, 8, bar.dataset.modoEntrega);
 
     bar.style.width = pct + "%";
 
-    const text = document.querySelector(`.pedidoProgressText[data-pedido-id="${id}"]`);
-    if(text){
+    const text = bar.parentElement?.nextElementSibling;
+    if(text?.classList.contains("pedidoProgressText")){
       text.textContent = pct >= 90
         ? "Estamos finalizando..."
         : `Produzindo arte... ${pct}%`;
