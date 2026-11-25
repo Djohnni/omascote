@@ -17829,8 +17829,8 @@ function omascoteChatBaseCleanOrder(productKey, values, files){
       scenario_id:omascoteChatScenarioId(productKey, values.scenario_id),
       players:omascoteChatLines(values.players).map(line => {const [nome, posicao = ""] = line.split("|").map(item => item.trim());return { nome, posicao };}).filter(item => item.nome)
     });
-    assets.team_crest = omascoteChatAsset(files, "team_crest", "escudo1");
-    assets.opponent_crest = omascoteChatAsset(files, "opponent_crest", "escudo2");
+    assets.team_crest = omascoteChatAsset(files, "team_crest", "escudo1", files.team_crest?.length ? "team_crest" : "home_crest");
+    assets.opponent_crest = omascoteChatAsset(files, "opponent_crest", "escudo2", files.opponent_crest?.length ? "opponent_crest" : "away_crest");
     assets.team_photo = omascoteChatAsset(files, "team_photo", "mascote");
   }else if(productKey === "patrocinador"){
     Object.assign(fields, { title:String(values.title || "").trim(), headline:String(values.headline || "").trim() });
