@@ -15934,7 +15934,7 @@ body.copaColombiaOrderMode.copaColombiaResultMode.copaColombiaShowScenario [data
         class="integratedChatFrame"
         id="integratedChatFrame"
         title="Atendimento O Mascote"
-        data-src="/atendimento/index.html?integrado=1&v=futebol-omni360-1"
+        data-src="/atendimento/index.html?integrado=1&v=futebol-omni360-2"
         allow="clipboard-write"
       ></iframe>
       <div class="integratedChatLoading" id="integratedChatLoading" hidden>
@@ -16264,7 +16264,7 @@ body.copaColombiaOrderMode.copaColombiaResultMode.copaColombiaShowScenario [data
               <button class="legalLinkBtn" id="btnExcluirContaFooter" type="button">Excluir Conta</button>
               <button class="legalLinkBtn" id="btnDenunciarIaFooter" type="button">Denunciar Conteúdo Gerado por IA</button>
               <button class="legalLinkBtn" id="btnAbrirSuporteFooter" type="button">Suporte</button>
-              <a class="legalLinkBtn" id="btnTesteNovoAtendimentoFooter" href="/atendimento/index.html?integrado=1&v=futebol-omni360-1">Novo atendimento</a>
+              <a class="legalLinkBtn" id="btnTesteNovoAtendimentoFooter" href="/atendimento/index.html?integrado=1&v=futebol-omni360-2">Novo atendimento</a>
             </div>
             <div class="brandFootnote">Meu Clube FC é uma plataforma da O Mascote</div>
           </div>
@@ -17553,7 +17553,7 @@ function omascoteChatLocalPreview(){
 }
 
 function omascoteChatUrl(){
-  return new URL(integratedChatFrame?.dataset.src || "/atendimento/index.html?integrado=1&v=futebol-omni360-1", window.location.origin).href;
+  return new URL(integratedChatFrame?.dataset.src || "/atendimento/index.html?integrado=1&v=futebol-omni360-2", window.location.origin).href;
 }
 
 let omascoteChatReady = false;
@@ -17857,7 +17857,7 @@ function omascoteChatBuildCleanOrders(draft, records, previewFiles){
   const gallery = integratedChatFrame.contentWindow?.OmascoteFutebol;
   if(!gallery || !["0","1"].includes(String(draft.values.futebol_rank))) throw new Error("Reabra a galeria para conferir a cena.");
   for(const item of orders){
-    const option = gallery.selection(item.order,Number(draft.values.futebol_rank));
+    const option = gallery.selection(item.order,Number(draft.values.futebol_rank),draft.values.futebol_scene);
     Object.assign(item.order.fields,{futebol_scene:option.id,futebol_price_cents:option.cents});
     item.futebolOption = option;
   }
@@ -17895,7 +17895,7 @@ function omascoteChatRawCleanOrders(draft, records, previewFiles){
     });
   }
   if(productKey === "contratacao"){
-    const players = omascoteChatLines(values.players).map(line => {const [name = "", position = "", announcement = "Contratado", jersey = "Não"] = line.split("|").map(item => item.trim());return { name, position, announcement, jersey };}).filter(item => item.name);
+    const players = omascoteChatLines(values.players).map(line => {const [name = "", position = "", announcement = values.announcement === "Renovado" ? "Renovado" : "Contratado", jersey = values.jersey_requested === "Sim" ? "Sim" : "Não"] = line.split("|").map(item => item.trim());return { name, position, announcement, jersey };}).filter(item => item.name);
     const photos = files.player_photos || [];
     if(!players.length || photos.length !== players.length) throw new Error("Envie uma foto para cada jogador, na mesma ordem dos nomes.");
     return players.map((player, index) => {

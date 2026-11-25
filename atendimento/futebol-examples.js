@@ -33,7 +33,7 @@
     b.onclick = act;
     return b;
   }
-  function selection(order, rank) {
+  function selection(order, rank, sceneId) {
     if (!catalog) throw new Error('Reabra o produto para conferir os modelos disponíveis.');
     const uploads = {};
     for (const asset of Object.values(order.assets)) {
@@ -43,7 +43,8 @@
     const {kind} = catalog.details(product, order.fields, uploads);
     const row = catalog.catalog.find(item => item.product === product && item.kind === kind);
     if (!row) throw new Error('Confira os arquivos e o tipo da arte.');
-    const option = sorted(row)[rank];
+    const option = sceneId ? row.options.find(item => item.id === sceneId) : sorted(row)[rank];
+    if (sceneId && !option) throw new Error('Os dados ou fotos não correspondem à cena escolhida. Reabra a galeria para escolher a versão correta.');
     if (!option) throw new Error('Confira o modelo de vídeo.');
     const fields = {...order.fields, futebol_scene:option.id};
     return {...option, cents:catalog.quote(product,fields,uploads)};
@@ -71,8 +72,9 @@
       const row = rows.find(r => r.code === select.value) || rows[0];
       const picks = sorted(row); cards.replaceChildren();
       const photo = {mask:'Mascote',desc:'Não tenho mascote',person:'Jogador',team:'Time',bare:'Sem foto'};
-      const seed = {sport:'Futebol', ...(photo[row.kind] && ['proximo_jogo','resultado'].includes(product)
-        ? {photo_mode:photo[row.kind]} : {})};
+      const seed = {sport:'Futebol', futebol_version:row.code,
+        ...(photo[row.kind] && ['proximo_jogo','resultado'].includes(product) ? {photo_mode:photo[row.kind]} : {}),
+        ...(product === 'contratacao' ? {announcement:row.kind === 'renew' ? 'Renovado' : 'Contratado'} : {})};
       const imagePrice = window.OmascoteTesterImageBonus?.imagePriceLabel({productId:product,
         deliveryMode:'image',unitPrice:info.price,regularLabel:info.priceLabel}) || info.priceLabel;
       const base = '/atendimento/exemplos-futebol/';
@@ -88,7 +90,7 @@
         }
         card.append(element('h3',option.title),element('p','Imagem + vídeo · 10 s · 360p'),
           element('strong','A partir de '+money(option.cents)),choice('Escolher vídeo',() =>
-            finish({...seed,futebol_gallery:'video',futebol_rank:String(rank),delivery_mode:'image_video',video_model:'omni'})));
+            finish({...seed,futebol_gallery:'video',futebol_rank:String(rank),futebol_scene:option.id,delivery_mode:'image_video',video_model:'omni'})));
         cards.append(card);
       });
     };
