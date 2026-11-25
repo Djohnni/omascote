@@ -1,0 +1,1301 @@
+[
+  {
+    "id": "P1-B",
+    "titulo": "O desafio à torcida",
+    "variante": "Próximo Jogo · mascote enviado",
+    "cents": 2190,
+    "flow": "proximo_jogo",
+    "values": {
+      "sport": "Futebol",
+      "visual_style": "Realista",
+      "futebol_gallery": "video",
+      "delivery_mode": "image_video",
+      "video_model": "omni",
+      "matchup": "Morro Alto x Vila do Cedro",
+      "match_datetime": "13/12/2026 às 16h",
+      "venue": "Campo do Morro Alto",
+      "competition": "Copa do Vale",
+      "photo_mode": "Mascote",
+      "futebol_rank": "0",
+      "futebol_scene": "P1-B",
+      "futebol_version": "P1"
+    },
+    "arquivos": {
+      "home_crest": [
+        "morro-alto-escudo.png"
+      ],
+      "away_crest": [
+        "vila-do-cedro-escudo.png"
+      ],
+      "match_photo": [
+        "morro-alto-referencia.png"
+      ],
+      "uniform_image": [
+        "morro-alto-uniforme.png"
+      ]
+    },
+    "existing_order_id": "20261125_152040_193_78f02505",
+    "status": "submitted",
+    "demoCoupon": true,
+    "use_demo_coupon": true
+  },
+  {
+    "id": "P1-A",
+    "titulo": "Duplo impacto no chão",
+    "variante": "Próximo Jogo · mascote enviado",
+    "cents": 2390,
+    "flow": "proximo_jogo",
+    "values": {
+      "sport": "Futebol",
+      "visual_style": "Realista",
+      "futebol_gallery": "video",
+      "delivery_mode": "image_video",
+      "video_model": "omni",
+      "matchup": "Morro Alto x Vila do Cedro",
+      "match_datetime": "13/12/2026 às 16h",
+      "venue": "Campo do Morro Alto",
+      "competition": "Copa do Vale",
+      "photo_mode": "Mascote",
+      "futebol_rank": "1",
+      "futebol_scene": "P1-A",
+      "futebol_version": "P1"
+    },
+    "arquivos": {
+      "home_crest": [
+        "morro-alto-escudo.png"
+      ],
+      "away_crest": [
+        "vila-do-cedro-escudo.png"
+      ],
+      "match_photo": [
+        "morro-alto-referencia.png"
+      ],
+      "uniform_image": [
+        "morro-alto-uniforme.png"
+      ]
+    },
+    "existing_order_id": "20261125_145304_303_a612c6c6",
+    "status": "qa_approved",
+    "use_demo_coupon": false
+  },
+  {
+    "id": "P2-A",
+    "titulo": "Luz de túnel no uniforme",
+    "variante": "Próximo Jogo · foto do jogador",
+    "cents": 1990,
+    "flow": "proximo_jogo",
+    "values": {
+      "sport": "Futebol",
+      "visual_style": "Realista",
+      "futebol_gallery": "video",
+      "delivery_mode": "image_video",
+      "video_model": "omni",
+      "matchup": "Morro Alto x Vila do Cedro",
+      "match_datetime": "13/12/2026 às 16h",
+      "venue": "Campo do Morro Alto",
+      "competition": "Copa do Vale",
+      "photo_mode": "Jogador",
+      "futebol_rank": "0",
+      "futebol_scene": "P2-A",
+      "futebol_version": "P2"
+    },
+    "arquivos": {
+      "home_crest": [
+        "morro-alto-escudo.png"
+      ],
+      "away_crest": [
+        "vila-do-cedro-escudo.png"
+      ],
+      "match_photo": [
+        "morro-alto-capitao.png"
+      ]
+    },
+    "existing_order_id": "20261125_145410_469_fe2394d2",
+    "status": "qa_approved",
+    "use_demo_coupon": false
+  },
+  {
+    "id": "P2-B",
+    "titulo": "Os dois lados do confronto",
+    "variante": "Próximo Jogo · foto do jogador",
+    "cents": 2090,
+    "flow": "proximo_jogo",
+    "values": {
+      "sport": "Futebol",
+      "visual_style": "Realista",
+      "futebol_gallery": "video",
+      "delivery_mode": "image_video",
+      "video_model": "omni",
+      "matchup": "Morro Alto x Vila do Cedro",
+      "match_datetime": "13/12/2026 às 16h",
+      "venue": "Campo do Morro Alto",
+      "competition": "Copa do Vale",
+      "photo_mode": "Jogador",
+      "futebol_rank": "1",
+      "futebol_scene": "P2-B",
+      "futebol_version": "P2"
+    },
+    "arquivos": {
+      "home_crest": [
+        "morro-alto-escudo.png"
+      ],
+      "away_crest": [
+        "vila-do-cedro-escudo.png"
+      ],
+      "match_photo": [
+        "morro-alto-capitao.png"
+      ]
+    },
+    "existing_order_id": null,
+    "status": "not_submitted",
+    "use_demo_coupon": true
+  },
+  {
+    "id": "P3-B",
+    "titulo": "Vento nas cores do confronto",
+    "variante": "Próximo Jogo · foto do time",
+    "cents": 2090,
+    "flow": "proximo_jogo",
+    "values": {
+      "sport": "Futebol",
+      "visual_style": "Realista",
+      "futebol_gallery": "video",
+      "delivery_mode": "image_video",
+      "video_model": "omni",
+      "matchup": "Morro Alto x Vila do Cedro",
+      "match_datetime": "13/12/2026 às 16h",
+      "venue": "Campo do Morro Alto",
+      "competition": "Copa do Vale",
+      "photo_mode": "Time",
+      "futebol_rank": "0",
+      "futebol_scene": "P3-B",
+      "futebol_version": "P3"
+    },
+    "arquivos": {
+      "home_crest": [
+        "morro-alto-escudo.png"
+      ],
+      "away_crest": [
+        "vila-do-cedro-escudo.png"
+      ],
+      "match_photo": [
+        "morro-alto-elenco.png"
+      ]
+    },
+    "existing_order_id": null,
+    "status": "not_submitted",
+    "use_demo_coupon": true
+  },
+  {
+    "id": "P3-A",
+    "titulo": "Acendimento da arquibancada",
+    "variante": "Próximo Jogo · foto do time",
+    "cents": 2190,
+    "flow": "proximo_jogo",
+    "values": {
+      "sport": "Futebol",
+      "visual_style": "Realista",
+      "futebol_gallery": "video",
+      "delivery_mode": "image_video",
+      "video_model": "omni",
+      "matchup": "Morro Alto x Vila do Cedro",
+      "match_datetime": "13/12/2026 às 16h",
+      "venue": "Campo do Morro Alto",
+      "competition": "Copa do Vale",
+      "photo_mode": "Time",
+      "futebol_rank": "1",
+      "futebol_scene": "P3-A",
+      "futebol_version": "P3"
+    },
+    "arquivos": {
+      "home_crest": [
+        "morro-alto-escudo.png"
+      ],
+      "away_crest": [
+        "vila-do-cedro-escudo.png"
+      ],
+      "match_photo": [
+        "morro-alto-elenco.png"
+      ]
+    },
+    "existing_order_id": null,
+    "status": "not_submitted",
+    "use_demo_coupon": true
+  },
+  {
+    "id": "P4-B",
+    "titulo": "Encontro no X",
+    "variante": "Próximo Jogo · somente escudos",
+    "cents": 1890,
+    "flow": "proximo_jogo",
+    "values": {
+      "sport": "Futebol",
+      "visual_style": "Realista",
+      "futebol_gallery": "video",
+      "delivery_mode": "image_video",
+      "video_model": "omni",
+      "matchup": "Morro Alto x Vila do Cedro",
+      "match_datetime": "13/12/2026 às 16h",
+      "venue": "Campo do Morro Alto",
+      "competition": "Copa do Vale",
+      "photo_mode": "Sem foto",
+      "futebol_rank": "0",
+      "futebol_scene": "P4-B",
+      "futebol_version": "P4"
+    },
+    "arquivos": {
+      "home_crest": [
+        "morro-alto-escudo.png"
+      ],
+      "away_crest": [
+        "vila-do-cedro-escudo.png"
+      ]
+    },
+    "existing_order_id": null,
+    "status": "not_submitted",
+    "use_demo_coupon": true
+  },
+  {
+    "id": "P4-A",
+    "titulo": "Escudos plantados no campo",
+    "variante": "Próximo Jogo · somente escudos",
+    "cents": 2090,
+    "flow": "proximo_jogo",
+    "values": {
+      "sport": "Futebol",
+      "visual_style": "Realista",
+      "futebol_gallery": "video",
+      "delivery_mode": "image_video",
+      "video_model": "omni",
+      "matchup": "Morro Alto x Vila do Cedro",
+      "match_datetime": "13/12/2026 às 16h",
+      "venue": "Campo do Morro Alto",
+      "competition": "Copa do Vale",
+      "photo_mode": "Sem foto",
+      "futebol_rank": "1",
+      "futebol_scene": "P4-A",
+      "futebol_version": "P4"
+    },
+    "arquivos": {
+      "home_crest": [
+        "morro-alto-escudo.png"
+      ],
+      "away_crest": [
+        "vila-do-cedro-escudo.png"
+      ]
+    },
+    "existing_order_id": null,
+    "status": "not_submitted",
+    "use_demo_coupon": true
+  },
+  {
+    "id": "P5-B",
+    "titulo": "O duelo anunciado",
+    "variante": "Próximo Jogo · mascote por descrição",
+    "cents": 2290,
+    "flow": "proximo_jogo",
+    "values": {
+      "sport": "Futebol",
+      "visual_style": "Realista",
+      "futebol_gallery": "video",
+      "delivery_mode": "image_video",
+      "video_model": "omni",
+      "matchup": "Morro Alto x Vila do Cedro",
+      "match_datetime": "13/12/2026 às 16h",
+      "venue": "Campo do Morro Alto",
+      "competition": "Copa do Vale",
+      "photo_mode": "Não tenho mascote",
+      "mascot_description": "Urubu-de-cabeça-preta do Morro Alto, plumagem escura e camisa vermelha número 10.",
+      "futebol_rank": "0",
+      "futebol_scene": "P5-B",
+      "futebol_version": "P5"
+    },
+    "arquivos": {
+      "home_crest": [
+        "morro-alto-escudo.png"
+      ],
+      "away_crest": [
+        "vila-do-cedro-escudo.png"
+      ],
+      "uniform_image": [
+        "morro-alto-uniforme.png"
+      ]
+    },
+    "existing_order_id": null,
+    "status": "not_submitted",
+    "use_demo_coupon": true
+  },
+  {
+    "id": "P5-A",
+    "titulo": "A cravada alternada",
+    "variante": "Próximo Jogo · mascote por descrição",
+    "cents": 2490,
+    "flow": "proximo_jogo",
+    "values": {
+      "sport": "Futebol",
+      "visual_style": "Realista",
+      "futebol_gallery": "video",
+      "delivery_mode": "image_video",
+      "video_model": "omni",
+      "matchup": "Morro Alto x Vila do Cedro",
+      "match_datetime": "13/12/2026 às 16h",
+      "venue": "Campo do Morro Alto",
+      "competition": "Copa do Vale",
+      "photo_mode": "Não tenho mascote",
+      "mascot_description": "Urubu-de-cabeça-preta do Morro Alto, plumagem escura e camisa vermelha número 10.",
+      "futebol_rank": "1",
+      "futebol_scene": "P5-A",
+      "futebol_version": "P5"
+    },
+    "arquivos": {
+      "home_crest": [
+        "morro-alto-escudo.png"
+      ],
+      "away_crest": [
+        "vila-do-cedro-escudo.png"
+      ],
+      "uniform_image": [
+        "morro-alto-uniforme.png"
+      ]
+    },
+    "existing_order_id": null,
+    "status": "not_submitted",
+    "use_demo_coupon": true
+  },
+  {
+    "id": "R1-B",
+    "titulo": "Escudos em apresentação",
+    "variante": "Resultado do Jogo · mascote enviado",
+    "cents": 2290,
+    "flow": "resultado",
+    "values": {
+      "sport": "Futebol",
+      "visual_style": "Realista",
+      "futebol_gallery": "video",
+      "delivery_mode": "image_video",
+      "video_model": "omni",
+      "score": "Morro Alto 2 x 1 Vila do Cedro",
+      "competition": "Copa do Vale",
+      "headline": "FIM DE JOGO",
+      "scorers": "Caio Martins | 1\nLuan Costa | 1",
+      "photo_mode": "Mascote",
+      "futebol_rank": "0",
+      "futebol_scene": "R1-B",
+      "futebol_version": "R1"
+    },
+    "arquivos": {
+      "home_crest": [
+        "morro-alto-escudo.png"
+      ],
+      "away_crest": [
+        "vila-do-cedro-escudo.png"
+      ],
+      "match_photo": [
+        "morro-alto-referencia.png"
+      ],
+      "uniform_image": [
+        "morro-alto-uniforme.png"
+      ]
+    },
+    "existing_order_id": null,
+    "status": "not_submitted",
+    "use_demo_coupon": true
+  },
+  {
+    "id": "R1-A",
+    "titulo": "Batida de fim de jogo",
+    "variante": "Resultado do Jogo · mascote enviado",
+    "cents": 2490,
+    "flow": "resultado",
+    "values": {
+      "sport": "Futebol",
+      "visual_style": "Realista",
+      "futebol_gallery": "video",
+      "delivery_mode": "image_video",
+      "video_model": "omni",
+      "score": "Morro Alto 2 x 1 Vila do Cedro",
+      "competition": "Copa do Vale",
+      "headline": "FIM DE JOGO",
+      "scorers": "Caio Martins | 1\nLuan Costa | 1",
+      "photo_mode": "Mascote",
+      "futebol_rank": "1",
+      "futebol_scene": "R1-A",
+      "futebol_version": "R1"
+    },
+    "arquivos": {
+      "home_crest": [
+        "morro-alto-escudo.png"
+      ],
+      "away_crest": [
+        "vila-do-cedro-escudo.png"
+      ],
+      "match_photo": [
+        "morro-alto-referencia.png"
+      ],
+      "uniform_image": [
+        "morro-alto-uniforme.png"
+      ]
+    },
+    "existing_order_id": null,
+    "status": "not_submitted",
+    "use_demo_coupon": true
+  },
+  {
+    "id": "R2-A",
+    "titulo": "Eco do apito final",
+    "variante": "Resultado do Jogo · foto do jogador",
+    "cents": 2090,
+    "flow": "resultado",
+    "values": {
+      "sport": "Futebol",
+      "visual_style": "Realista",
+      "futebol_gallery": "video",
+      "delivery_mode": "image_video",
+      "video_model": "omni",
+      "score": "Morro Alto 2 x 1 Vila do Cedro",
+      "competition": "Copa do Vale",
+      "headline": "FIM DE JOGO",
+      "scorers": "Caio Martins | 1\nLuan Costa | 1",
+      "photo_mode": "Jogador",
+      "futebol_rank": "0",
+      "futebol_scene": "R2-A",
+      "futebol_version": "R2"
+    },
+    "arquivos": {
+      "home_crest": [
+        "morro-alto-escudo.png"
+      ],
+      "away_crest": [
+        "vila-do-cedro-escudo.png"
+      ],
+      "match_photo": [
+        "morro-alto-capitao.png"
+      ]
+    },
+    "existing_order_id": null,
+    "status": "not_submitted",
+    "use_demo_coupon": true
+  },
+  {
+    "id": "R2-B",
+    "titulo": "Vento depois do jogo",
+    "variante": "Resultado do Jogo · foto do jogador",
+    "cents": 2190,
+    "flow": "resultado",
+    "values": {
+      "sport": "Futebol",
+      "visual_style": "Realista",
+      "futebol_gallery": "video",
+      "delivery_mode": "image_video",
+      "video_model": "omni",
+      "score": "Morro Alto 2 x 1 Vila do Cedro",
+      "competition": "Copa do Vale",
+      "headline": "FIM DE JOGO",
+      "scorers": "Caio Martins | 1\nLuan Costa | 1",
+      "photo_mode": "Jogador",
+      "futebol_rank": "1",
+      "futebol_scene": "R2-B",
+      "futebol_version": "R2"
+    },
+    "arquivos": {
+      "home_crest": [
+        "morro-alto-escudo.png"
+      ],
+      "away_crest": [
+        "vila-do-cedro-escudo.png"
+      ],
+      "match_photo": [
+        "morro-alto-capitao.png"
+      ]
+    },
+    "existing_order_id": null,
+    "status": "not_submitted",
+    "use_demo_coupon": true
+  },
+  {
+    "id": "R3-B",
+    "titulo": "Destaque sob o resultado",
+    "variante": "Resultado do Jogo · foto do time",
+    "cents": 2190,
+    "flow": "resultado",
+    "values": {
+      "sport": "Futebol",
+      "visual_style": "Realista",
+      "futebol_gallery": "video",
+      "delivery_mode": "image_video",
+      "video_model": "omni",
+      "score": "Morro Alto 2 x 1 Vila do Cedro",
+      "competition": "Copa do Vale",
+      "headline": "FIM DE JOGO",
+      "scorers": "Caio Martins | 1\nLuan Costa | 1",
+      "photo_mode": "Time",
+      "futebol_rank": "0",
+      "futebol_scene": "R3-B",
+      "futebol_version": "R3"
+    },
+    "arquivos": {
+      "home_crest": [
+        "morro-alto-escudo.png"
+      ],
+      "away_crest": [
+        "vila-do-cedro-escudo.png"
+      ],
+      "match_photo": [
+        "morro-alto-elenco.png"
+      ]
+    },
+    "existing_order_id": null,
+    "status": "not_submitted",
+    "use_demo_coupon": true
+  },
+  {
+    "id": "R3-A",
+    "titulo": "Luzes da torcida ao fundo",
+    "variante": "Resultado do Jogo · foto do time",
+    "cents": 2290,
+    "flow": "resultado",
+    "values": {
+      "sport": "Futebol",
+      "visual_style": "Realista",
+      "futebol_gallery": "video",
+      "delivery_mode": "image_video",
+      "video_model": "omni",
+      "score": "Morro Alto 2 x 1 Vila do Cedro",
+      "competition": "Copa do Vale",
+      "headline": "FIM DE JOGO",
+      "scorers": "Caio Martins | 1\nLuan Costa | 1",
+      "photo_mode": "Time",
+      "futebol_rank": "1",
+      "futebol_scene": "R3-A",
+      "futebol_version": "R3"
+    },
+    "arquivos": {
+      "home_crest": [
+        "morro-alto-escudo.png"
+      ],
+      "away_crest": [
+        "vila-do-cedro-escudo.png"
+      ],
+      "match_photo": [
+        "morro-alto-elenco.png"
+      ]
+    },
+    "existing_order_id": null,
+    "status": "not_submitted",
+    "use_demo_coupon": true
+  },
+  {
+    "id": "R4-A",
+    "titulo": "O apito sela o placar",
+    "variante": "Resultado do Jogo · somente escudos",
+    "cents": 1990,
+    "flow": "resultado",
+    "values": {
+      "sport": "Futebol",
+      "visual_style": "Realista",
+      "futebol_gallery": "video",
+      "delivery_mode": "image_video",
+      "video_model": "omni",
+      "score": "Morro Alto 2 x 1 Vila do Cedro",
+      "competition": "Copa do Vale",
+      "headline": "FIM DE JOGO",
+      "scorers": "Caio Martins | 1\nLuan Costa | 1",
+      "photo_mode": "Sem foto",
+      "futebol_rank": "0",
+      "futebol_scene": "R4-A",
+      "futebol_version": "R4"
+    },
+    "arquivos": {
+      "home_crest": [
+        "morro-alto-escudo.png"
+      ],
+      "away_crest": [
+        "vila-do-cedro-escudo.png"
+      ]
+    },
+    "existing_order_id": null,
+    "status": "not_submitted",
+    "use_demo_coupon": true
+  },
+  {
+    "id": "R4-B",
+    "titulo": "Grama marcada pelos escudos",
+    "variante": "Resultado do Jogo · somente escudos",
+    "cents": 2190,
+    "flow": "resultado",
+    "values": {
+      "sport": "Futebol",
+      "visual_style": "Realista",
+      "futebol_gallery": "video",
+      "delivery_mode": "image_video",
+      "video_model": "omni",
+      "score": "Morro Alto 2 x 1 Vila do Cedro",
+      "competition": "Copa do Vale",
+      "headline": "FIM DE JOGO",
+      "scorers": "Caio Martins | 1\nLuan Costa | 1",
+      "photo_mode": "Sem foto",
+      "futebol_rank": "1",
+      "futebol_scene": "R4-B",
+      "futebol_version": "R4"
+    },
+    "arquivos": {
+      "home_crest": [
+        "morro-alto-escudo.png"
+      ],
+      "away_crest": [
+        "vila-do-cedro-escudo.png"
+      ]
+    },
+    "existing_order_id": null,
+    "status": "not_submitted",
+    "use_demo_coupon": true
+  },
+  {
+    "id": "R5-A",
+    "titulo": "Os escudos em descanso",
+    "variante": "Resultado do Jogo · mascote por descrição",
+    "cents": 2290,
+    "flow": "resultado",
+    "values": {
+      "sport": "Futebol",
+      "visual_style": "Realista",
+      "futebol_gallery": "video",
+      "delivery_mode": "image_video",
+      "video_model": "omni",
+      "score": "Morro Alto 2 x 1 Vila do Cedro",
+      "competition": "Copa do Vale",
+      "headline": "FIM DE JOGO",
+      "scorers": "Caio Martins | 1\nLuan Costa | 1",
+      "photo_mode": "Não tenho mascote",
+      "mascot_description": "Urubu-de-cabeça-preta do Morro Alto, plumagem escura e camisa vermelha número 10.",
+      "futebol_rank": "0",
+      "futebol_scene": "R5-A",
+      "futebol_version": "R5"
+    },
+    "arquivos": {
+      "home_crest": [
+        "morro-alto-escudo.png"
+      ],
+      "away_crest": [
+        "vila-do-cedro-escudo.png"
+      ],
+      "uniform_image": [
+        "morro-alto-uniforme.png"
+      ]
+    },
+    "existing_order_id": null,
+    "status": "not_submitted",
+    "use_demo_coupon": true
+  },
+  {
+    "id": "R5-B",
+    "titulo": "Abertura do placar",
+    "variante": "Resultado do Jogo · mascote por descrição",
+    "cents": 2390,
+    "flow": "resultado",
+    "values": {
+      "sport": "Futebol",
+      "visual_style": "Realista",
+      "futebol_gallery": "video",
+      "delivery_mode": "image_video",
+      "video_model": "omni",
+      "score": "Morro Alto 2 x 1 Vila do Cedro",
+      "competition": "Copa do Vale",
+      "headline": "FIM DE JOGO",
+      "scorers": "Caio Martins | 1\nLuan Costa | 1",
+      "photo_mode": "Não tenho mascote",
+      "mascot_description": "Urubu-de-cabeça-preta do Morro Alto, plumagem escura e camisa vermelha número 10.",
+      "futebol_rank": "1",
+      "futebol_scene": "R5-B",
+      "futebol_version": "R5"
+    },
+    "arquivos": {
+      "home_crest": [
+        "morro-alto-escudo.png"
+      ],
+      "away_crest": [
+        "vila-do-cedro-escudo.png"
+      ],
+      "uniform_image": [
+        "morro-alto-uniforme.png"
+      ]
+    },
+    "existing_order_id": null,
+    "status": "not_submitted",
+    "use_demo_coupon": true
+  },
+  {
+    "id": "A1-A",
+    "titulo": "Retrato sob o refletor",
+    "variante": "Próximo Jogo · produto Atleta",
+    "cents": 1990,
+    "flow": "proximo_jogo_jogador",
+    "values": {
+      "sport": "Futebol",
+      "visual_style": "Realista",
+      "futebol_gallery": "video",
+      "delivery_mode": "image_video",
+      "video_model": "omni",
+      "matchup": "Morro Alto x Vila do Cedro",
+      "match_datetime": "13/12/2026 às 16h",
+      "venue": "Campo do Morro Alto",
+      "competition": "Copa do Vale",
+      "futebol_rank": "0",
+      "futebol_scene": "A1-A",
+      "futebol_version": "A1"
+    },
+    "arquivos": {
+      "home_crest": [
+        "morro-alto-escudo.png"
+      ],
+      "away_crest": [
+        "vila-do-cedro-escudo.png"
+      ],
+      "athlete_photos": [
+        "morro-alto-capitao.png"
+      ]
+    },
+    "existing_order_id": null,
+    "status": "not_submitted",
+    "use_demo_coupon": true
+  },
+  {
+    "id": "A1-B",
+    "titulo": "Corrida de luz até o horário",
+    "variante": "Próximo Jogo · produto Atleta",
+    "cents": 2090,
+    "flow": "proximo_jogo_jogador",
+    "values": {
+      "sport": "Futebol",
+      "visual_style": "Realista",
+      "futebol_gallery": "video",
+      "delivery_mode": "image_video",
+      "video_model": "omni",
+      "matchup": "Morro Alto x Vila do Cedro",
+      "match_datetime": "13/12/2026 às 16h",
+      "venue": "Campo do Morro Alto",
+      "competition": "Copa do Vale",
+      "futebol_rank": "1",
+      "futebol_scene": "A1-B",
+      "futebol_version": "A1"
+    },
+    "arquivos": {
+      "home_crest": [
+        "morro-alto-escudo.png"
+      ],
+      "away_crest": [
+        "vila-do-cedro-escudo.png"
+      ],
+      "athlete_photos": [
+        "morro-alto-capitao.png"
+      ]
+    },
+    "existing_order_id": null,
+    "status": "not_submitted",
+    "use_demo_coupon": true
+  },
+  {
+    "id": "A2-A",
+    "titulo": "Assinatura de pós-jogo",
+    "variante": "Resultado · produto Atleta",
+    "cents": 2090,
+    "flow": "resultado_jogo_jogador",
+    "values": {
+      "sport": "Futebol",
+      "visual_style": "Realista",
+      "futebol_gallery": "video",
+      "delivery_mode": "image_video",
+      "video_model": "omni",
+      "score": "Morro Alto 2 x 1 Vila do Cedro",
+      "competition": "Copa do Vale",
+      "headline": "FIM DE JOGO",
+      "futebol_rank": "0",
+      "futebol_scene": "A2-A",
+      "futebol_version": "A2"
+    },
+    "arquivos": {
+      "home_crest": [
+        "morro-alto-escudo.png"
+      ],
+      "away_crest": [
+        "vila-do-cedro-escudo.png"
+      ],
+      "athlete_photos": [
+        "morro-alto-capitao.png"
+      ]
+    },
+    "existing_order_id": null,
+    "status": "not_submitted",
+    "use_demo_coupon": true
+  },
+  {
+    "id": "A2-B",
+    "titulo": "Duas zonas de luz",
+    "variante": "Resultado · produto Atleta",
+    "cents": 2190,
+    "flow": "resultado_jogo_jogador",
+    "values": {
+      "sport": "Futebol",
+      "visual_style": "Realista",
+      "futebol_gallery": "video",
+      "delivery_mode": "image_video",
+      "video_model": "omni",
+      "score": "Morro Alto 2 x 1 Vila do Cedro",
+      "competition": "Copa do Vale",
+      "headline": "FIM DE JOGO",
+      "futebol_rank": "1",
+      "futebol_scene": "A2-B",
+      "futebol_version": "A2"
+    },
+    "arquivos": {
+      "home_crest": [
+        "morro-alto-escudo.png"
+      ],
+      "away_crest": [
+        "vila-do-cedro-escudo.png"
+      ],
+      "athlete_photos": [
+        "morro-alto-capitao.png"
+      ]
+    },
+    "existing_order_id": null,
+    "status": "not_submitted",
+    "use_demo_coupon": true
+  },
+  {
+    "id": "J1-A",
+    "titulo": "Relevo do escudo",
+    "variante": "Jogador + Escudo",
+    "cents": 1890,
+    "flow": "jogador_escudo",
+    "values": {
+      "sport": "Futebol",
+      "visual_style": "Realista",
+      "futebol_gallery": "video",
+      "delivery_mode": "image_video",
+      "video_model": "omni",
+      "players": "Caio Martins | Meia",
+      "futebol_rank": "0",
+      "futebol_scene": "J1-A",
+      "futebol_version": "J1"
+    },
+    "arquivos": {
+      "team_crest": [
+        "morro-alto-escudo.png"
+      ],
+      "player_photos": [
+        "morro-alto-capitao.png"
+      ]
+    },
+    "existing_order_id": null,
+    "status": "not_submitted",
+    "use_demo_coupon": true
+  },
+  {
+    "id": "J1-B",
+    "titulo": "A camisa ganha vento",
+    "variante": "Jogador + Escudo",
+    "cents": 1990,
+    "flow": "jogador_escudo",
+    "values": {
+      "sport": "Futebol",
+      "visual_style": "Realista",
+      "futebol_gallery": "video",
+      "delivery_mode": "image_video",
+      "video_model": "omni",
+      "players": "Caio Martins | Meia",
+      "futebol_rank": "1",
+      "futebol_scene": "J1-B",
+      "futebol_version": "J1"
+    },
+    "arquivos": {
+      "team_crest": [
+        "morro-alto-escudo.png"
+      ],
+      "player_photos": [
+        "morro-alto-capitao.png"
+      ]
+    },
+    "existing_order_id": null,
+    "status": "not_submitted",
+    "use_demo_coupon": true
+  },
+  {
+    "id": "E1-A",
+    "titulo": "A lista ganha a luz do estádio",
+    "variante": "Escalação · com foto do time",
+    "cents": 2390,
+    "flow": "escalacao",
+    "values": {
+      "sport": "Futebol",
+      "visual_style": "Realista",
+      "futebol_gallery": "video",
+      "delivery_mode": "image_video",
+      "video_model": "omni",
+      "matchup": "Morro Alto x Vila do Cedro",
+      "match_datetime": "13/12/2026 às 16h",
+      "venue": "Campo do Morro Alto",
+      "competition": "Copa do Vale",
+      "players": "Rafael Duarte | Goleiro\nDavi Martins | Lateral\nÍcaro Neves | Zagueiro\nVítor Luz | Volante\nCaio Martins | Meia\nNilo Reis | Atacante\nLuan Costa | Atacante",
+      "futebol_rank": "0",
+      "futebol_scene": "E1-A",
+      "futebol_version": "E1"
+    },
+    "arquivos": {
+      "home_crest": [
+        "morro-alto-escudo.png"
+      ],
+      "away_crest": [
+        "vila-do-cedro-escudo.png"
+      ],
+      "team_photo": [
+        "morro-alto-elenco.png"
+      ]
+    },
+    "existing_order_id": null,
+    "status": "not_submitted",
+    "use_demo_coupon": true
+  },
+  {
+    "id": "E1-B",
+    "titulo": "A equipe sob os refletores",
+    "variante": "Escalação · com foto do time",
+    "cents": 2490,
+    "flow": "escalacao",
+    "values": {
+      "sport": "Futebol",
+      "visual_style": "Realista",
+      "futebol_gallery": "video",
+      "delivery_mode": "image_video",
+      "video_model": "omni",
+      "matchup": "Morro Alto x Vila do Cedro",
+      "match_datetime": "13/12/2026 às 16h",
+      "venue": "Campo do Morro Alto",
+      "competition": "Copa do Vale",
+      "players": "Rafael Duarte | Goleiro\nDavi Martins | Lateral\nÍcaro Neves | Zagueiro\nVítor Luz | Volante\nCaio Martins | Meia\nNilo Reis | Atacante\nLuan Costa | Atacante",
+      "futebol_rank": "1",
+      "futebol_scene": "E1-B",
+      "futebol_version": "E1"
+    },
+    "arquivos": {
+      "home_crest": [
+        "morro-alto-escudo.png"
+      ],
+      "away_crest": [
+        "vila-do-cedro-escudo.png"
+      ],
+      "team_photo": [
+        "morro-alto-elenco.png"
+      ]
+    },
+    "existing_order_id": null,
+    "status": "not_submitted",
+    "use_demo_coupon": true
+  },
+  {
+    "id": "E2-A",
+    "titulo": "Leitura de cima a baixo",
+    "variante": "Escalação · sem foto do time",
+    "cents": 2190,
+    "flow": "escalacao",
+    "values": {
+      "sport": "Futebol",
+      "visual_style": "Realista",
+      "futebol_gallery": "video",
+      "delivery_mode": "image_video",
+      "video_model": "omni",
+      "matchup": "Morro Alto x Vila do Cedro",
+      "match_datetime": "13/12/2026 às 16h",
+      "venue": "Campo do Morro Alto",
+      "competition": "Copa do Vale",
+      "players": "Rafael Duarte | Goleiro\nDavi Martins | Lateral\nÍcaro Neves | Zagueiro\nVítor Luz | Volante\nCaio Martins | Meia\nNilo Reis | Atacante\nLuan Costa | Atacante",
+      "futebol_rank": "0",
+      "futebol_scene": "E2-A",
+      "futebol_version": "E2"
+    },
+    "arquivos": {
+      "home_crest": [
+        "morro-alto-escudo.png"
+      ],
+      "away_crest": [
+        "vila-do-cedro-escudo.png"
+      ]
+    },
+    "existing_order_id": null,
+    "status": "not_submitted",
+    "use_demo_coupon": true
+  },
+  {
+    "id": "E2-B",
+    "titulo": "A área técnica acende",
+    "variante": "Escalação · sem foto do time",
+    "cents": 2290,
+    "flow": "escalacao",
+    "values": {
+      "sport": "Futebol",
+      "visual_style": "Realista",
+      "futebol_gallery": "video",
+      "delivery_mode": "image_video",
+      "video_model": "omni",
+      "matchup": "Morro Alto x Vila do Cedro",
+      "match_datetime": "13/12/2026 às 16h",
+      "venue": "Campo do Morro Alto",
+      "competition": "Copa do Vale",
+      "players": "Rafael Duarte | Goleiro\nDavi Martins | Lateral\nÍcaro Neves | Zagueiro\nVítor Luz | Volante\nCaio Martins | Meia\nNilo Reis | Atacante\nLuan Costa | Atacante",
+      "futebol_rank": "1",
+      "futebol_scene": "E2-B",
+      "futebol_version": "E2"
+    },
+    "arquivos": {
+      "home_crest": [
+        "morro-alto-escudo.png"
+      ],
+      "away_crest": [
+        "vila-do-cedro-escudo.png"
+      ]
+    },
+    "existing_order_id": null,
+    "status": "not_submitted",
+    "use_demo_coupon": true
+  },
+  {
+    "id": "C1-A",
+    "titulo": "Apresentação do reforço",
+    "variante": "Contratação · CONTRATADO",
+    "cents": 2090,
+    "flow": "contratacao",
+    "values": {
+      "sport": "Futebol",
+      "visual_style": "Realista",
+      "futebol_gallery": "video",
+      "delivery_mode": "image_video",
+      "video_model": "omni",
+      "players": "Caio Martins | Meia | Contratado | Não",
+      "futebol_rank": "0",
+      "futebol_scene": "C1-A",
+      "futebol_version": "C1"
+    },
+    "arquivos": {
+      "team_crest": [
+        "morro-alto-escudo.png"
+      ],
+      "player_photos": [
+        "morro-alto-capitao.png"
+      ]
+    },
+    "existing_order_id": null,
+    "status": "not_submitted",
+    "use_demo_coupon": true
+  },
+  {
+    "id": "C1-B",
+    "titulo": "Entrada nas cores do clube",
+    "variante": "Contratação · CONTRATADO",
+    "cents": 2190,
+    "flow": "contratacao",
+    "values": {
+      "sport": "Futebol",
+      "visual_style": "Realista",
+      "futebol_gallery": "video",
+      "delivery_mode": "image_video",
+      "video_model": "omni",
+      "players": "Caio Martins | Meia | Contratado | Não",
+      "futebol_rank": "1",
+      "futebol_scene": "C1-B",
+      "futebol_version": "C1"
+    },
+    "arquivos": {
+      "team_crest": [
+        "morro-alto-escudo.png"
+      ],
+      "player_photos": [
+        "morro-alto-capitao.png"
+      ]
+    },
+    "existing_order_id": null,
+    "status": "not_submitted",
+    "use_demo_coupon": true
+  },
+  {
+    "id": "C2-B",
+    "titulo": "A faixa de renovação",
+    "variante": "Renovação · RENOVADO",
+    "cents": 2090,
+    "flow": "contratacao",
+    "values": {
+      "sport": "Futebol",
+      "visual_style": "Realista",
+      "futebol_gallery": "video",
+      "delivery_mode": "image_video",
+      "video_model": "omni",
+      "players": "Caio Martins | Meia | Renovado | Não",
+      "futebol_rank": "0",
+      "futebol_scene": "C2-B",
+      "futebol_version": "C2"
+    },
+    "arquivos": {
+      "team_crest": [
+        "morro-alto-escudo.png"
+      ],
+      "player_photos": [
+        "morro-alto-capitao.png"
+      ]
+    },
+    "existing_order_id": null,
+    "status": "not_submitted",
+    "use_demo_coupon": true
+  },
+  {
+    "id": "C2-A",
+    "titulo": "O vínculo continua",
+    "variante": "Renovação · RENOVADO",
+    "cents": 2190,
+    "flow": "contratacao",
+    "values": {
+      "sport": "Futebol",
+      "visual_style": "Realista",
+      "futebol_gallery": "video",
+      "delivery_mode": "image_video",
+      "video_model": "omni",
+      "players": "Caio Martins | Meia | Renovado | Não",
+      "futebol_rank": "1",
+      "futebol_scene": "C2-A",
+      "futebol_version": "C2"
+    },
+    "arquivos": {
+      "team_crest": [
+        "morro-alto-escudo.png"
+      ],
+      "player_photos": [
+        "morro-alto-capitao.png"
+      ]
+    },
+    "existing_order_id": null,
+    "status": "not_submitted",
+    "use_demo_coupon": true
+  },
+  {
+    "id": "S1-A",
+    "titulo": "A marca no foco",
+    "variante": "Patrocinadores · uma marca",
+    "cents": 1890,
+    "flow": "patrocinador",
+    "values": {
+      "sport": "Futebol",
+      "visual_style": "Realista",
+      "futebol_gallery": "video",
+      "delivery_mode": "image_video",
+      "video_model": "omni",
+      "title": "Quem apoia o Morro Alto",
+      "headline": "Temporada 2027",
+      "futebol_rank": "0",
+      "futebol_scene": "S1-A",
+      "futebol_version": "S1"
+    },
+    "arquivos": {
+      "team_crest": [
+        "morro-alto-escudo.png"
+      ],
+      "sponsor_logos": [
+        "morro-alto-marca-na-camiseta.png"
+      ]
+    },
+    "existing_order_id": null,
+    "status": "not_submitted",
+    "use_demo_coupon": true
+  },
+  {
+    "id": "S1-B",
+    "titulo": "Ponte entre clube e patrocinador",
+    "variante": "Patrocinadores · uma marca",
+    "cents": 1990,
+    "flow": "patrocinador",
+    "values": {
+      "sport": "Futebol",
+      "visual_style": "Realista",
+      "futebol_gallery": "video",
+      "delivery_mode": "image_video",
+      "video_model": "omni",
+      "title": "Quem apoia o Morro Alto",
+      "headline": "Temporada 2027",
+      "futebol_rank": "1",
+      "futebol_scene": "S1-B",
+      "futebol_version": "S1"
+    },
+    "arquivos": {
+      "team_crest": [
+        "morro-alto-escudo.png"
+      ],
+      "sponsor_logos": [
+        "morro-alto-marca-na-camiseta.png"
+      ]
+    },
+    "existing_order_id": null,
+    "status": "not_submitted",
+    "use_demo_coupon": true
+  },
+  {
+    "id": "S2-B",
+    "titulo": "O painel inteiro se ilumina",
+    "variante": "Patrocinadores · várias marcas",
+    "cents": 2390,
+    "flow": "patrocinador",
+    "values": {
+      "sport": "Futebol",
+      "visual_style": "Realista",
+      "futebol_gallery": "video",
+      "delivery_mode": "image_video",
+      "video_model": "omni",
+      "title": "Quem apoia o Morro Alto",
+      "headline": "Temporada 2027",
+      "futebol_rank": "0",
+      "futebol_scene": "S2-B",
+      "futebol_version": "S2"
+    },
+    "arquivos": {
+      "team_crest": [
+        "morro-alto-escudo.png"
+      ],
+      "sponsor_logos": [
+        "morro-alto-marca-na-camiseta.png",
+        "vila-do-cedro-marca-na-camiseta.png",
+        "porto-bravio-marca-na-camiseta.png"
+      ]
+    },
+    "existing_order_id": null,
+    "status": "not_submitted",
+    "use_demo_coupon": true
+  },
+  {
+    "id": "S2-A",
+    "titulo": "Apoio em sequência",
+    "variante": "Patrocinadores · várias marcas",
+    "cents": 2490,
+    "flow": "patrocinador",
+    "values": {
+      "sport": "Futebol",
+      "visual_style": "Realista",
+      "futebol_gallery": "video",
+      "delivery_mode": "image_video",
+      "video_model": "omni",
+      "title": "Quem apoia o Morro Alto",
+      "headline": "Temporada 2027",
+      "futebol_rank": "1",
+      "futebol_scene": "S2-A",
+      "futebol_version": "S2"
+    },
+    "arquivos": {
+      "team_crest": [
+        "morro-alto-escudo.png"
+      ],
+      "sponsor_logos": [
+        "morro-alto-marca-na-camiseta.png",
+        "vila-do-cedro-marca-na-camiseta.png",
+        "porto-bravio-marca-na-camiseta.png"
+      ]
+    },
+    "existing_order_id": null,
+    "status": "not_submitted",
+    "use_demo_coupon": false
+  }
+]

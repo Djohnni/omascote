@@ -17993,7 +17993,8 @@ async function omascoteChatSubmitPreparedOrders(prepared, authContext){
     const item = prepared[index];
     const product = PRODUCTS[item.productKey];
     const schema = getCleanProductSchema(item.productKey);
-    const requestId = omascoteChatClientRequestId(item.chatDraftId, item.chatOrderIndex);
+    const requestId = authContext?.adminBatch === true && /^futebol_lote_[a-f0-9]{48}$/.test(item.clientRequestId || "")
+      ? item.clientRequestId : omascoteChatClientRequestId(item.chatDraftId, item.chatOrderIndex);
     const fd = item.special === "escudo3d"
       ? buildEscudo3dLegacyFormData(item.file, item.coupon, item.values)
       : buildLegacyFormDataFromClean(item.productKey, item.order, { allowSavedEscudoFallback:false });
@@ -43368,5 +43369,6 @@ iniciarPerfilPublicoSeNecessario();
   <script src="./radar-amistosos/radar-api.js"></script>
   <script src="./radar-amistosos/radar-live.js"></script>
   </main>
+  <script defer src="/atendimento/futebol-batch-bridge.js?v=batch-1"></script>
 </body>
 </html>
