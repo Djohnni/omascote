@@ -3,27 +3,27 @@
   'use strict';
   const sessions = new Map();
   let deliveryRequest = null;
-  // Hide appearance questions only; the original draft/defaults/validator still own these values.
-  const appearanceKeys = new Set(['scenario_id','visual_style','style_id']);
-  const visibleFields = fields => fields.filter(field => !appearanceKeys.has(field.key));
+  // Keep saved values and validators; these fields do not belong in the customer form.
+  const appearanceKeys = new Set(['scenario_id','visual_style','style_id','coupon_code']);
+  const visibleFields = (fields,flow) => fields.filter(field => !appearanceKeys.has(field.key) &&
+    !(flow === 'escalacao' && (field.key === 'headline' || (field.key === 'sport_context' && !field.required))));
   const flows = new Set(['proximo_jogo','resultado','jogador_escudo','contratacao','escalacao',
     'patrocinador','escudo3d','proximo_jogo_jogador','resultado_jogo_jogador']);
   const plans = {
     proximo_jogo: [['matchup'],['match_datetime','competition'],['home_crest','away_crest'],
-      ['photo_mode'],['scenario_id'],['venue','section_title'],['coupon_code']],
-    resultado: [['score'],['competition','headline'],['home_crest','away_crest'],['photo_mode'],
-      ['scorers','section_title'],['scenario_id'],['coupon_code']],
-    jogador_escudo: [['team_crest'],['players','player_photos'],['visual_style','coupon_code']],
+      ['photo_mode'],['scenario_id'],['venue','section_title']],
+    resultado: [['score'],['competition','home_crest','away_crest'],['headline','photo_mode'],
+      ['scorers','section_title'],['scenario_id']],
+    jogador_escudo: [['team_crest'],['players','player_photos'],['visual_style']],
     contratacao: [['team_crest'],['players'],['player_photos','jersey_reference'],
-      ['visual_style','reference_layout'],['coupon_code']],
-    escalacao: [['matchup'],['players'],['match_datetime','competition'],['venue','team_photo'],
-      ['team_crest','opponent_crest'],['scenario_id'],['coupon_code']],
-    patrocinador: [['title','team_crest'],['sponsor_logos'],['headline','visual_style'],['coupon_code']],
-    escudo3d: [['team_crest'],['visual_style','coupon_code']],
+      ['visual_style','reference_layout']],
+    escalacao: [['matchup'],['players','match_datetime','competition','venue','team_photo','team_crest','opponent_crest']],
+    patrocinador: [['title','team_crest'],['sponsor_logos'],['headline','visual_style']],
+    escudo3d: [['team_crest'],['visual_style']],
     proximo_jogo_jogador: [['matchup'],['match_datetime','competition'],
-      ['home_crest','away_crest'],['athlete_photos'],['venue','visual_style'],['coupon_code']],
+      ['home_crest','away_crest'],['athlete_photos'],['venue','visual_style']],
     resultado_jogo_jogador: [['score'],['competition','headline'],['home_crest','away_crest'],
-      ['athlete_photos'],['visual_style','coupon_code']]
+      ['athlete_photos'],['visual_style']]
   };
   const labels = {
     sport:'Esporte', other_sport:'Modalidade', sport_context:'Local e equipamentos',
@@ -35,26 +35,30 @@
     headline:'Texto da arte', scorers:'Quem marcou (opcional)', players:'Atletas',
     player_photos:'Fotos dos atletas', athlete_photos:'Fotos do atleta',
     jersey_reference:'Camiseta', reference_layout:'Referência (opcional)',
-    title:'Título', sponsor_logos:'Patrocinadores', coupon_code:'Cupom (opcional)'
+    title:'Título', sponsor_logos:'Patrocinadores'
   };
   const isProduct = () => document.body.dataset.productView === 'product';
   const notify = data => window.parent.postMessage(data, location.origin);
 
   // The chat saves one line per athlete, including drafts created with the old textarea.
-  function playerRows(value) {
+  function playerRows(value,contract=false,defaults={}) {
     const lines = (value || '').split(/\r?\n/).filter(line => line.trim());
     return (lines.length ? lines : ['']).map(line => {
-      const [name = '', position = '', number = ''] = line.split('|');
-      return [name, position, number];
+      const [name = '', position = '', third = '', fourth = '', fifth = ''] = line.split('|');
+      if (!contract) return [name, position, third];
+      const announcement = ['Contratado','Renovado'].includes(third.trim()) ? third.trim() : defaults.announcement === 'Renovado' ? 'Renovado' : 'Contratado';
+      const jersey = ['Sim','Não'].includes(fourth.trim()) ? fourth.trim() : defaults.jersey_requested === 'Sim' ? 'Sim' : 'Não';
+      return [name,position,fifth,announcement,jersey];
     });
   }
 
-  function PlayerFields({react:React, value, change, disabled}) {
-    const h = React.createElement, rows = playerRows(value);
+  function PlayerFields({react:React, value, change, disabled,contract=false,defaults={}}) {
+    const h = React.createElement, rows = playerRows(value,contract,defaults);
     const container = React.useRef(null);
-    const labels = ['Nome', 'Posição (opcional)', 'Número (opcional)'];
+    const columns = contract ? [[0,'Nome'],[2,'Número (opcional)'],[1,'Posição (opcional)']] :
+      [[0,'Nome'],[1,'Posição (opcional)'],[2,'Número (opcional)']];
     function save(next) {
-      change(next.map(row => row.join('|')).join('\n'));
+      change(next.map(row => (contract ? [row[0],row[1],row[3],row[4],row[2]] : row).join('|')).join('\n'));
     }
     function edit(index, column, text) {
       const next = rows.map(row => row.slice());
@@ -63,13 +67,13 @@
     }
     function add() {
       if (rows.length >= 10) return;
-      save([...rows, ['', '', '']]);
+      save([...rows, ...playerRows('',contract,defaults)]);
       requestAnimationFrame(() => container.current?.querySelectorAll('fieldset')[rows.length]?.querySelector('input')?.focus());
     }
     return h('div', {className:'player-crest-rows', ref:container},
       rows.map((row, index) => h('fieldset', {key:index, disabled},
         h('legend', {className:rows.length === 1 ? 'sr-only' : undefined}, 'Atleta ' + (index + 1)),
-        labels.map((label, column) => h('label', {key:column}, label,
+        columns.map(([column,label]) => h('label', {key:column}, label,
           h('input', {type:'text', value:row[column], required:column === 0,
             inputMode:column === 2 ? 'numeric' : undefined,
             onChange:event => edit(index, column, event.target.value)}))))),
@@ -110,7 +114,7 @@
 
   function groupFields(flow, fields, draft) {
     const lookup = new Map(fields.map(field => [field.key, field]));
-    const ordered = [['sport'],['other_sport','sport_context'],...(plans[flow] || [])];
+    const ordered = [...(flow === 'escalacao' ? [['sport','other_sport','sport_context']] : [['sport'],['other_sport','sport_context']]),...(plans[flow] || [])];
     const used = new Set(ordered.flat());
     const remaining = fields.filter(field => !used.has(field.key));
     for (let index = 0; index < remaining.length; index += 2) {
@@ -136,12 +140,14 @@
             presentationPart:'contract-athlete',athleteIndex}]}));
       }
     });
-    // Match the original chat's optional presentation, without changing required flags or defaults.
+    if (flow === 'escalacao') return groups;
+    // Keep optional uploads with the related result details without changing their required flags.
+    const pinned = new Set(flow === 'resultado' ? ['home_crest','away_crest'] : []);
     const optionalKeys = new Set(fields.filter(field => !field.required || field.key === 'scenario_id')
       .map(field => field.key));
     const athleteOptions = groups.flatMap(group => group.fields)
       .filter(field => field.presentationPart === 'contract-athlete');
-    const independentOptionals = [...optionalKeys].filter(key => flow !== 'contratacao' || key !== 'jersey_reference').length
+    const independentOptionals = [...optionalKeys].filter(key => !pinned.has(key) && (flow !== 'contratacao' || key !== 'jersey_reference')).length
       + athleteOptions.length;
     if (independentOptionals < 2) return groups;
     const optionalFields = [], requiredGroups = [];
@@ -151,7 +157,7 @@
         const photoDependency = optionalKeys.has('photo_mode') && ['mascot-description','mascot-shirt'].includes(field.presentationPart);
         const contractDependency = field.presentationPart === 'contract-athlete' ||
           (flow === 'contratacao' && field.key === 'jersey_reference');
-        if (optionalKeys.has(field.key) || photoDependency || contractDependency) optionalFields.push(field);
+        if ((!pinned.has(field.key) && optionalKeys.has(field.key)) || photoDependency || contractDependency) optionalFields.push(field);
         else requiredFields.push(field);
       }
       if (requiredFields.length) requiredGroups.push({...group,fields:requiredFields});
@@ -175,17 +181,17 @@
     const container = React.useRef(null), submitLock = React.useRef(false);
     const lastRank = React.useRef(saved?.rank || 0);
     const active = !!(props.integrated && productMode && flows.has(draft.flow));
-    const presentationFields = visibleFields(props.fields)
-      .filter(field => draft.flow !== 'escudo3d' || field.key !== 'coupon_code');
+    const presentationFields = visibleFields(props.fields,draft.flow);
     const groups = groupFields(draft.flow, presentationFields, draft);
     let groupIndex = groups.findIndex(group => group.id === stageKey);
-    if (stageKey !== 'final' && groupIndex < 0) {
+    if (stageKey === 'final') groupIndex = Math.max(0,groups.length - 1);
+    else if (groupIndex < 0) {
       groupIndex = groups.findIndex(group => group.rank >= lastRank.current);
       if (groupIndex < 0) groupIndex = Math.max(0,groups.length - 1);
     }
-    const current = stageKey === 'final' ? null : groups[groupIndex];
+    const current = groups[groupIndex];
     const effectiveKey = current?.id || 'final';
-    const total = groups.length + 1, step = current ? groupIndex + 1 : total;
+    const total = groups.length, step = groupIndex + 1, isLast = groupIndex === groups.length - 1;
 
     React.useEffect(() => {
       const update = () => setProductMode(isProduct());
@@ -342,7 +348,9 @@
         return React.cloneElement(node,{},children[0],children[3]);
       }
       if (draft.flow === 'contratacao' && field.key === 'players') {
-        return React.cloneElement(node,{},node.props.children[0]);
+        const input = node.props.children[0];
+        return h(PlayerFields,{react:React,value:draft.values.players || '',disabled:props.busy,contract:true,defaults:draft.values,
+          change:value => input.props.onChange({target:{value}})});
       }
       return node;
     }
@@ -357,8 +365,8 @@
       if (field.key === 'sport' && !sportsOpen) {
         visible = {...field,options:field.options.filter(option => ['Futebol','Futsal','Vôlei',draft.values.sport].includes(option))};
       }
-      const uploadLabel = draft.flow === 'jogador_escudo' && field.key === 'team_crest' ? 'Adicionar escudo' : undefined;
-      const needsHint = ['players','player_photos','sport_context'].includes(field.key);
+      const uploadLabel = /crest$/.test(field.key) ? 'Adicionar escudo' : undefined;
+      const needsHint = ['players','player_photos','sport_context'].includes(field.key) && !(draft.flow === 'contratacao' && field.key === 'players');
       const hint = draft.flow === 'jogador_escudo' && field.key === 'player_photos' && playerRows(draft.values.players).length > 1
         ? 'Envie as fotos na mesma ordem dos atletas.' : field.hint;
       const hideLabel = ['contract-athlete','mascot-shirt'].includes(field.presentationPart);
@@ -395,7 +403,7 @@
     function review() {
       const extra = ['mascot_description','match_photo','uniform_image','visual_style'];
       const all = visibleFields([...props.fields,...extra.filter(key => !props.fields.some(field => field.key === key))
-        .map(key => ({key,type:['match_photo','uniform_image'].includes(key) ? 'images' : 'text'}))]);
+        .map(key => ({key,type:['match_photo','uniform_image'].includes(key) ? 'images' : 'text'}))],draft.flow);
       const rows = all.map(item => {
         const files = draft.files.filter(file => file.field === item.key), value = draft.values[item.key];
         if (!files.length && !value?.trim()) return null;
@@ -407,8 +415,9 @@
           h('div',{className:'guided-review-answer'},h('small',null,shortLabel(item) || item.key),
             files.length ? h('div',{className:'guided-review-files'},files.map(file => h('span',{key:file.id},
               h('img',{src:file.url,alt:file.name,width:36,height:36,loading:'lazy'}),h('span',null,file.name)))) :
-              draft.flow === 'jogador_escudo' && item.key === 'players' ? playerRows(value).map(([name,position,number],index) =>
-                h('div',{key:index},[name.trim(),position.trim(),number.trim() && 'Nº ' + number.trim()].filter(Boolean).join(' · '))) : h('span',null,value)),
+              ['jogador_escudo','contratacao'].includes(draft.flow) && item.key === 'players' ? playerRows(value,draft.flow === 'contratacao',draft.values).map(([name,position,number,announcement,jersey],index) =>
+                h('div',{key:index},[name.trim(),position.trim(),number.trim() && 'Nº ' + number.trim(),announcement,
+                  jersey && 'Camiseta: ' + jersey].filter(Boolean).join(' · '))) : h('span',null,value)),
           h('button',{type:'button',className:'guided-text-button','aria-label':`Editar ${shortLabel(item)}`,
             onClick:()=>navigate(group.id)},'Editar'));
       }).filter(Boolean);
@@ -417,10 +426,10 @@
     }
     const problem = error; // Backend/upload failures keep their original form-error outside this presentation.
     const button = h('button',{type:'button',className:'guided-primary',disabled:props.busy,
-      'aria-label':current ? 'Continuar' : 'Enviar pedido',onClick:current ? next : send},
-      current ? 'Continuar →' : 'Enviar pedido →');
+      'aria-label':isLast ? 'Enviar pedido' : 'Continuar',onClick:isLast ? send : next},
+      isLast ? 'Enviar pedido →' : 'Continuar →');
     return h('section',{className:'lab-form guided-product','data-step':step,'data-stage-key':effectiveKey,
-      'data-final':String(!current),'aria-label':`Informações para ${props.product.name}`,ref:container},
+      'data-final':String(isLast),'aria-label':`Informações para ${props.product.name}`,ref:container},
       h('div',{className:'guided-progress',role:'progressbar','aria-label':'Etapas do pedido',
         'aria-valuemin':0,'aria-valuemax':total,'aria-valuenow':step,'aria-valuetext':`Etapa ${step} de ${total}`,
         style:{gridTemplateColumns:`repeat(${total},minmax(0,1fr))`}},
@@ -429,13 +438,13 @@
         onClick:()=>step > 1 ? navigate(groups[step - 2].id) : notify({type:'omascote-chat:guided-home'})},'← Voltar'),
         h('span',{className:'guided-count','aria-label':`Etapa ${step} de ${total}`},`${step}/${total}`)),
       h('div',{className:'lab-form-heading'},h('strong',{className:'guided-title',role:'heading','aria-level':2,tabIndex:-1},
-        current?.id === 'optional' ? 'Os itens abaixo são opcionais' : current ? props.product.name : 'Finalizar'),
+        current?.id === 'optional' ? 'Os itens abaixo são opcionais' : props.product.name),
         h('span',{className:'sr-only','aria-live':'polite'},props.saveStatus)),
       draft.stage !== 'collect' ? h('div',{className:'lab-submit-status',role:'status'},'Enviando pedido…') :
         h('fieldset',{className:'guided-fields',disabled:props.busy},
-          current ? current.fields.map(field) : deliveryOptions(),
+          current?.fields.map(field),isLast ? deliveryOptions() : null,
           problem ? h('p',{className:'guided-error',role:'alert'},problem) : null,
-          button,!current ? h(PurchaseSafety,{React}) : null,!current ? review() : null),
+          button,isLast ? h(PurchaseSafety,{React}) : null,isLast ? review() : null),
       h('button',{type:'button',className:'guided-help',disabled:props.busy,
         onClick:()=>notify({type:'omascote-chat:guided-help'})},'Ajuda'));
   }

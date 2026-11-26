@@ -7,7 +7,7 @@
   const sorted = row => [...row.options].sort((a,b) => a.cents-b.cents);
   const listeners = new Set();
   const notify = () => listeners.forEach(listener => listener());
-  let catalog, pilot, dialog, request, lastToken;
+  let catalog, pilot, closeGallery, request, lastToken, galleryDocument;
   let available = false;
 
   async function load() {
@@ -44,7 +44,7 @@
     return () => listeners.delete(listener);
   }
   function element(tag, text) {
-    const node = document.createElement(tag);
+    const node = (galleryDocument || document).createElement(tag);
     if (text) node.textContent = text;
     return node;
   }
@@ -74,25 +74,59 @@
     if (!await load()) { done({}); return; }
     const rows = catalog.catalog.filter(row => row.product === product);
     if (!rows.length) { done({}); return; }
-    dialog?.close();
-    const box = element('dialog'); dialog = box; box.className = 'futebol-models';
-    document.body.append(box);
-    box.addEventListener('close', () => box.remove(), {once:true});
-    const finish = seed => {box.close(); done(seed);};
-    const heading = element('h2',info.name); box.append(heading);
-    box.append(element('p','O estilo escolhido será adaptado ao esporte e ao local informados no formulário.'));
-    const close = choice('Fechar',() => box.close()); close.className='fechar'; box.append(close);
+    closeGallery?.();
+    galleryDocument = document;
+    try {
+      if (window.parent !== window && window.parent.location.origin === location.origin &&
+          window.parent.document.getElementById('escudo3dExamples')) galleryDocument = window.parent.document;
+    } catch {}
+    const host = galleryDocument, hostWindow = host.defaultView || window;
+    const chat = host.getElementById?.('integratedChatModal');
+    const frame = host.getElementById?.('integratedChatFrame');
+    const anchor = host.getElementById?.('escudo3dExamples');
+    const box = element('section'); box.className = 'escudoExamples futebol-models';
+    box.id = 'futebolVideoExamples'; box.tabIndex = -1;
+    box.setAttribute('aria-labelledby','futebolModelsTitle');
+    const videos = [];
+    const pauseAll = () => videos.forEach(video => video.pause());
+    const motion = () => hostWindow.matchMedia?.('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth';
+    const close = () => {
+      if (closeGallery !== close) return;
+      pauseAll();
+      host.removeEventListener?.('visibilitychange',visibility);
+      frame?.removeEventListener?.('load',close);
+      box.remove(); closeGallery = null;
+      frame?.focus?.({preventScroll:true});
+      chat?.scrollIntoView?.({behavior:motion(),block:'start'});
+    };
+    const visibility = () => {if (host.hidden) pauseAll();};
+    closeGallery = close;
+    host.addEventListener?.('visibilitychange',visibility);
+    frame?.addEventListener?.('load',close);
+    box.addEventListener('keydown',event => {if (event.key === 'Escape') {event.preventDefault();close();}});
+    const finish = seed => {
+      if (closeGallery!==close) return;
+      close(); done(seed);
+    };
+    const heading = element('div'); heading.className = 'escudoExamples__heading';
+    const title = element('div');
+    const h2 = element('h2',info.name); h2.id = 'futebolModelsTitle';
+    title.append(h2,element('p','O estilo escolhido será adaptado ao esporte e ao local informados no formulário.'));
+    const closeButton = choice('×',close); closeButton.className = 'escudoExamples__close';
+    closeButton.setAttribute('aria-label','Voltar aos produtos');
+    heading.append(title,closeButton); box.append(heading);
     const select = element('select');
     if (rows.length > 1) {
-      const label = element('label','Escolha a versão da arte'); label.append(select); box.append(label);
+      const label = element('label','Escolha a versão da arte'); label.className='futebol-models__version';
+      label.append(select); box.append(label);
       for (const row of rows) {
         const opt = element('option',row.title); opt.value=row.code; select.append(opt);
       }
     }
-    const cards = element('div'); cards.className='modelos'; box.append(cards);
+    const cards = element('div'); cards.className='escudoExamples__grid modelos'; box.append(cards);
     const draw = () => {
       const row = rows.find(r => r.code === select.value) || rows[0];
-      const picks = sorted(row); cards.replaceChildren();
+      const picks = sorted(row); pauseAll(); videos.length=0; cards.replaceChildren();
       const photo = {mask:'Mascote',desc:'Não tenho mascote',person:'Jogador',team:'Time',bare:'Sem foto'};
       const seed = {futebol_version:row.code,
         ...(photo[row.kind] && ['proximo_jogo','resultado'].includes(product) ? {photo_mode:photo[row.kind]} : {}),
@@ -100,25 +134,53 @@
       const imagePrice = window.OmascoteTesterImageBonus?.imagePriceLabel({productId:product,
         deliveryMode:'image',unitPrice:info.price,regularLabel:info.priceLabel}) || info.priceLabel;
       const image = element('img'); image.src=pilot ? info.image : mediaUrl(row.code+'.jpg'); image.alt=row.title;
-      const first=element('article'); first.append(image,element('h3','Somente imagem'),
-        element('p',imagePrice),choice('Escolher imagem',() => finish({...seed,futebol_gallery:'image',delivery_mode:'image'})));
+      image.className='escudoExamples__poster'; image.loading='lazy'; image.width=720; image.height=1280;
+      const imageMedia=element('div'); imageMedia.className='escudoExamples__media'; imageMedia.append(image);
+      const first=element('article'); first.className='escudoExamples__card';
+      const imageAmount=element('strong',imagePrice); imageAmount.className='escudoExamples__price';
+      const imageChoice=choice('Escolher imagem',() => finish({...seed,futebol_gallery:'image',delivery_mode:'image'}));
+      imageChoice.className='escudoExamples__choose';
+      first.append(element('h3','Somente imagem'),imageAmount,imageMedia,imageChoice);
       cards.append(first);
       picks.forEach((option,rank) => {
-        const card = element('article');
+        const card = element('article'); card.className='escudoExamples__card';
+        const amount=element('strong','A partir de '+money(option.cents)); amount.className='escudoExamples__price';
+        card.append(element('h3',option.title),amount);
         if (!pilot) {
-          const video = element('video'); video.controls=true; video.playsInline=true; video.preload='metadata';
-          video.poster=mediaUrl(option.id+'.jpg'); video.src=mediaUrl(option.id+'.mp4');
-          video.setAttribute('aria-label',option.title); card.append(video);
+          const media=element('div'); media.className='escudoExamples__media';
+          const video = element('video'); video.playsInline=true; video.preload='none';
+          video.poster=mediaUrl(option.id+'.jpg'); video.width=720; video.height=1280;
+          video.setAttribute('aria-label',option.title); videos.push(video);
+          const status=element('p'); status.className='escudoExamples__error'; status.setAttribute('role','status');
+          const showError=() => {play.hidden=false;status.textContent='Não foi possível carregar o exemplo. Toque em Assistir para tentar novamente.';};
+          const play=choice('▶ Assistir',() => {
+            pauseAll(); status.textContent='';
+            if (!video.getAttribute('src')) video.src=mediaUrl(option.id+'.mp4');
+            if (video.error) video.load();
+            video.controls=true; play.hidden=true;
+            try {Promise.resolve(video.play()).catch(showError);} catch {showError();}
+          });
+          play.className='escudoExamples__play'; play.setAttribute('aria-label','Assistir ao exemplo de '+option.title);
+          video.addEventListener('error',showError);
+          video.addEventListener('play',() => videos.forEach(other => {if (other!==video) other.pause();}));
+          media.append(video,play); card.append(media,status);
         }
-        card.append(element('h3',option.title),element('p','Imagem + vídeo · 10 s · 720p'),
-          element('strong','A partir de '+money(option.cents)),choice('Escolher vídeo',() =>
-            finish({...seed,futebol_gallery:'video',futebol_rank:String(rank),futebol_scene:option.id,delivery_mode:'image_video',video_model:'omni'})));
+        const videoChoice=choice('Escolher vídeo',() =>
+          finish({...seed,futebol_gallery:'video',futebol_rank:String(rank),futebol_scene:option.id,delivery_mode:'image_video',video_model:'omni'}));
+        videoChoice.className='escudoExamples__choose';
+        card.append(element('p','Imagem + vídeo · 10 s · 720p'),videoChoice);
         cards.append(card);
       });
     };
     select.onchange=draw; draw();
-    box.append(choice('Continuar sem escolher modelo',() => finish({})));
-    box.showModal();
+    const skip=choice('Continuar sem escolher modelo',() => finish({})); skip.className='escudoExamples__image'; box.append(skip);
+    if (anchor) anchor.before(box); else host.body.append(box);
+    chat?.classList?.remove('is-expanded'); host.body.classList?.remove('integratedChatOpen');
+    const raf=hostWindow.requestAnimationFrame?.bind(hostWindow) || (callback => callback());
+    raf(() => raf(() => {
+      if (closeGallery!==close) return;
+      box.focus?.({preventScroll:true}); box.scrollIntoView?.({behavior:motion(),block:'start'});
+    }));
   }
   window.OmascoteFutebol = {supports:id => products.has(id),open,selection,money,load,minimum,subscribe};
   window.addEventListener('storage', event => {

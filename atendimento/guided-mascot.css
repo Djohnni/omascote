@@ -27,6 +27,7 @@ body[data-guided-mascot] .lab-frame.is-integrated .guided-field[data-field=team_
 .guided-optional-shirt .guided-field { padding-top:12px; }
 .guided-optional-shirt .guided-label { display:none; }
 .guided-delivery { border:0; margin:0 0 12px; padding:0; display:grid; gap:12px; }
+.guided-mascot[data-final="true"] .guided-delivery { border-top:1px solid #e3ebe6; margin-top:24px; padding-top:20px; }
 .guided-delivery-option { display:flex; align-items:center; gap:10px; padding:18px 14px; border:1px solid #cedbd3; border-radius:8px; cursor:pointer; min-height:70px; }
 .guided-delivery-option:has(input:checked) { border:2px solid #168b46; padding:17px 13px; background:#edf7f1; }
 .guided-delivery-option input { width:18px; height:18px; margin:0; accent-color:#168b46; flex-shrink:0; }

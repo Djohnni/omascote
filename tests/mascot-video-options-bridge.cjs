@@ -95,14 +95,16 @@ function renderFinal(option) {
   let stateIndex = 0;
   const React = {
     createElement:(type,props,...children)=>({type,props:props||{},children:children.flat(Infinity)}),
-    useState:initial=>[stateIndex++ === 1 ? 3 : typeof initial === 'function' ? initial() : initial,()=>{}],
-    useRef:()=>({current:null}), useEffect:()=>{}, Fragment:'Fragment'
+    useState:initial=>[stateIndex++ === 2 ? 3 : typeof initial === 'function' ? initial() : initial,()=>{}],
+    useRef:()=>({current:null}), useEffect:()=>{}, Fragment:'Fragment',isValidElement:()=>false
   };
   return window.OmascoteGuidedMascot.Form({
-    react:React,integrated:true,busy:false,canVideo:true,fields:[],
+    react:React,integrated:true,busy:false,canVideo:true,fields:[
+      {key:'mascot_animal',type:'text',required:true},{key:'sport',type:'select',required:true,options:['Futebol']},
+      {key:'team_crest',type:'images',required:true},{key:'uniform_image',type:'images',required:false}],
     draft:{id:`draft-${option.id}`,flow:'mascote_uniforme',stage:'collect',files:[],
       values:{mascot_animal:'Leão',sport:'Futebol',delivery_mode:'image_video',mascot_video_option:option.id}},
-    product:{priceLabel:'R$ 18,00'},validate:()=>[]
+    product:{priceLabel:'R$ 18,00'},validate:()=>[],renderField:field=>React.createElement('input',{type:'text',placeholder:field.placeholder})
   });
 }
 function descendants(node) {
@@ -114,7 +116,7 @@ function textContent(node) {
   return typeof node === 'object' ? (node.children||[]).map(textContent).join('') : String(node);
 }
 
-test('Finalizar habilita todas as opções e não pede escrita para Ascensão Épica', () => {
+test('Última etapa habilita todas as opções e não pede escrita para Ascensão Épica', () => {
   for (const option of options) {
     const tree = renderFinal(option);
     const nodes = descendants(tree);

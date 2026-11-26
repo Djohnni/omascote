@@ -32,6 +32,7 @@ body[data-guided-product] .lab-frame.is-integrated .guided-field .lab-options la
 body[data-guided-product] .lab-frame.is-integrated .guided-field .lab-options label:has([data-checked]) { border-color:#168b46; background:#edf7f1; }
 body[data-guided-product] .lab-frame.is-integrated .guided-field .upload-button { display:inline-flex; justify-content:center; align-items:center; min-height:54px; max-width:100%; padding:12px 16px; border:1px dashed #93b2a0; border-radius:8px; background:#fafcfb; color:#195737; font-size:16px; white-space:normal; }
 .guided-product .guided-field .lab-upload > .upload-button { width:100%; min-height:96px; }
+.guided-product .guided-field .upload-button[aria-label="Adicionar escudo"]::after { content:none; }
 .guided-product .guided-field .lab-thumbnails { margin-top:12px; }
 .guided-product .guided-field .lab-thumbnails small { overflow-wrap:anywhere; }
 .guided-product .guided-field .lab-actions { min-width:0; }

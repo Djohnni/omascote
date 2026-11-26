@@ -1,14 +1,25 @@
-.futebol-models {box-sizing:border-box;width:min(920px,95vw);max-height:94dvh;padding:1.25rem;border:0;border-radius:18px;color:#182421;background:white;font:inherit}
-.futebol-models::backdrop {background:#081512c7}
-.futebol-models h2 {margin:0 4em .85rem 0}
-.futebol-models select,.futebol-models button {font:inherit;padding:.55rem .8rem;border-radius:.55rem}
-.futebol-models select {display:block;margin-top:.3rem;max-width:100%}
-.futebol-models button {cursor:pointer;background:#154b37;color:white;border:0}
-.futebol-models .fechar {position:absolute;right:1rem;top:1rem}
-.futebol-models .modelos {display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:.75rem;margin:1rem 0}
-.futebol-models article {display:flex;flex-direction:column;gap:.5rem;padding:.65rem;border:1px solid #d4ddd8;border-radius:.75rem}
-.futebol-models article h3,.futebol-models article p {margin:0}
-.futebol-models article button {margin-top:auto}
-.futebol-models img,.futebol-models video {width:100%;aspect-ratio:9/16;object-fit:contain;background:#111}
-@media(max-width:620px){.futebol-models .modelos{grid-template-columns:minmax(0,1fr)}.futebol-models article{display:grid;grid-template-columns:6.5rem 1fr}.futebol-models img,.futebol-models video{grid-column:1;grid-row:1/6}.futebol-models article>*:not(img):not(video){grid-column:2}}
+/* Inline examples share the page and card layout used by Escudo 3D and Mascote. */
+.futebol-models {box-sizing:border-box;max-width:900px;margin:24px auto;padding:24px;border:1px solid #d3e3da;border-radius:22px;background:#f5faf7;color:#123d28;scroll-margin-top:24px;font:inherit;}
+.futebol-models .escudoExamples__heading {display:flex;align-items:start;justify-content:space-between;gap:16px;}
+.futebol-models h2 {margin:0 0 8px;font-size:24px;color:#123d28;}
+.futebol-models p {margin:0 0 18px;color:#42614e;line-height:1.5;}
+.futebol-models .escudoExamples__close {border:1px solid #c8dacf;border-radius:50%;background:#fff;color:#123d28;min-width:44px;height:44px;font-size:26px;cursor:pointer;}
+.futebol-models__version {display:block;margin:0 0 20px;font-weight:650;}
+.futebol-models select {display:block;box-sizing:border-box;width:100%;margin-top:8px;padding:12px;border:1px solid #c8dacf;border-radius:8px;background:#fff;color:#123d28;font:inherit;}
+.futebol-models .modelos {display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:20px;}
+.futebol-models .escudoExamples__card {min-width:0;padding:14px;border:1px solid #d3e3da;border-radius:18px;background:#fff;display:flex;flex-direction:column;}
+.futebol-models .escudoExamples__card h3 {margin:0 0 4px;color:#123d28;font-size:18px;}
+.futebol-models .escudoExamples__price {display:block;margin-bottom:12px;font-size:26px;font-weight:800;color:#107b3d;}
+.futebol-models .escudoExamples__media {position:relative;width:100%;max-width:290px;margin:0 auto;aspect-ratio:9/16;overflow:hidden;border-radius:12px;background:#101812;}
+.futebol-models img,.futebol-models video {display:block;width:100%;height:100%;object-fit:contain;}
+.futebol-models .escudoExamples__play {position:absolute;inset:0;width:100%;border:0;background:linear-gradient(transparent 45%,#0009);color:#fff;display:flex;align-items:end;justify-content:center;padding:24px 10px;cursor:pointer;font:inherit;font-weight:750;}
+.futebol-models .escudoExamples__play[hidden] {display:none;}
+.futebol-models .escudoExamples__choose {display:block;width:100%;min-height:48px;margin-top:auto;padding:14px;border:0;border-radius:10px;background:#118741;color:#fff;font:inherit;font-size:16px;font-weight:750;cursor:pointer;}
+.futebol-models .escudoExamples__choose:hover {background:#09672f;}
+.futebol-models .escudoExamples__card > p {margin:10px 0 14px;}
+.futebol-models .escudoExamples__error {font-size:14px;color:#a32626;}
+.futebol-models .escudoExamples__image {display:block;margin:20px auto 0;padding:10px;border:0;background:transparent;color:#215d39;text-decoration:underline;font:inherit;font-size:15px;cursor:pointer;}
+.futebol-models button:focus-visible,.futebol-models select:focus-visible {outline:3px solid #205eff;outline-offset:3px;}
+@media(max-width:900px){.futebol-models .modelos{grid-template-columns:repeat(2,minmax(0,1fr));}}
+@media(max-width:600px){.futebol-models{padding:16px 12px;margin:16px 8px;}.futebol-models .modelos{grid-template-columns:1fr;gap:20px;}.futebol-models h2{font-size:22px;}.futebol-models .escudoExamples__media{max-width:250px;}}
 

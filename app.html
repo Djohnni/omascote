@@ -73,6 +73,7 @@
   <link rel="stylesheet" href="/escudo3d-examples.css?v=20261122-imagem-2-videos">
   <script defer src="/escudo3d-examples.js?v=20261001"></script>
   <link rel="stylesheet" href="/mascot-video-examples.css?v=20261122-imagem-bonus-1">
+  <link rel="stylesheet" href="/atendimento/futebol-examples.css?v=forms-v5">
   <script defer src="/mascot-video-options.js?v=20261007-correct-preview-mapping"></script>
   <script defer src="/mascot-video-examples.js?v=gmail-2-imagens-1"></script>
   <link rel="stylesheet" href="/tester-image-bonus.css?v=20261122-selo-direita-2">
@@ -15775,8 +15776,6 @@ body.copaColombiaOrderMode.copaColombiaResultMode.copaColombiaShowScenario [data
           <button type="button" data-vitrine-product="contratacao"><span>Contratação ou Renovação</span><img src="/produtos/contratacao-modelo-02.webp" width="941" height="1672" loading="lazy" decoding="async" alt="Exemplo de anúncio de contratação ou renovação de atleta"></button>
           <button type="button" data-vitrine-product="escalacao"><span>Escalação</span><img src="/produtos/escalacao.jpg" width="400" height="600" loading="lazy" decoding="async" alt="Exemplo de arte com a escalação do time"></button>
           <button type="button" data-vitrine-product="patrocinador"><span>Patrocinadores</span><img src="/produtos/patrocinador.jpg" width="400" height="750" loading="lazy" decoding="async" alt="Exemplo de arte dos patrocinadores do time"></button>
-          <button type="button" data-vitrine-product="proximo_jogo_jogador"><span>Próximo Jogo — Atleta</span><img src="/produtos/proximo_jogo_jogador.jpg" width="400" height="601" loading="lazy" decoding="async" alt="Exemplo de arte do próximo jogo com destaque para o atleta"></button>
-          <button type="button" data-vitrine-product="resultado_jogo_jogador"><span>Resultado — Atleta</span><img src="/produtos/resultado_jogador.jpg" width="400" height="600" loading="lazy" decoding="async" alt="Exemplo de arte do resultado do jogo com destaque para o atleta"></button>
         </div>
         <button type="button" class="vitrineAll" data-vitrine-options>Mais opções e serviços <span aria-hidden="true">→</span></button>
       </div>
@@ -15934,7 +15933,7 @@ body.copaColombiaOrderMode.copaColombiaResultMode.copaColombiaShowScenario [data
         class="integratedChatFrame"
         id="integratedChatFrame"
         title="Atendimento O Mascote"
-        data-src="/atendimento/index.html?integrado=1&v=gallery-sports-1"
+        data-src="/atendimento/index.html?integrado=1&v=forms-v5"
         allow="clipboard-write"
       ></iframe>
       <div class="integratedChatLoading" id="integratedChatLoading" hidden>
@@ -16150,15 +16149,7 @@ body.copaColombiaOrderMode.copaColombiaResultMode.copaColombiaShowScenario [data
 
           <div class="optionsRow productGroup productGroupJogador">
 
-            <button type="button" class="optionBtn" data-product="proximo_jogo_jogador">
-              <div class="optLabel">Próximo Jogo<br>Jogador<br><span style="color:#1fbf63;font-weight:900;">R$7,00</span></div>
-              <img src="produtos/proximo_jogo_jogador.jpg" class="imgProduto" loading="lazy" decoding="async" alt="Próximo jogo jogador">
-            </button>
 
-            <button type="button" class="optionBtn" data-product="resultado_jogo_jogador">
-              <div class="optLabel">Resultado<br>Jogador<br><span style="color:#1fbf63;font-weight:900;">R$8,00</span></div>
-              <img src="produtos/resultado_jogador.jpg" class="imgProduto" loading="lazy" decoding="async" alt="Resultado jogador">
-            </button>
 
             <button type="button" class="optionBtn" data-product="jogador_escudo">
               <div class="optLabel">Poste como jogador<br>profissional<br><span style="color:#1fbf63;font-weight:900;">R$6,00</span></div>
@@ -16264,7 +16255,7 @@ body.copaColombiaOrderMode.copaColombiaResultMode.copaColombiaShowScenario [data
               <button class="legalLinkBtn" id="btnExcluirContaFooter" type="button">Excluir Conta</button>
               <button class="legalLinkBtn" id="btnDenunciarIaFooter" type="button">Denunciar Conteúdo Gerado por IA</button>
               <button class="legalLinkBtn" id="btnAbrirSuporteFooter" type="button">Suporte</button>
-              <a class="legalLinkBtn" id="btnTesteNovoAtendimentoFooter" href="/atendimento/index.html?integrado=1&v=gallery-sports-1">Novo atendimento</a>
+              <a class="legalLinkBtn" id="btnTesteNovoAtendimentoFooter" href="/atendimento/index.html?integrado=1&v=forms-v5">Novo atendimento</a>
             </div>
             <div class="brandFootnote">Meu Clube FC é uma plataforma da O Mascote</div>
           </div>
@@ -16526,10 +16517,6 @@ body.copaColombiaOrderMode.copaColombiaResultMode.copaColombiaShowScenario [data
             <div id="escudo3dFileName">Selecionar escudo</div>
           </div>
 
-          <div class="cleanFieldCard" data-clean-field-card="coupon_code" style="margin-top:14px;">
-            <label class="cleanFieldLabel">Cupom de desconto</label>
-            <input id="escudo3dCupom" placeholder="Digite seu cupom">
-          </div>
           <div data-price-preview data-price-product="escudo3d"></div>
 
           <button class="btnGreen" id="escudo3dEnviarBtn" type="button" style="margin-top:14px;width:100%;">
@@ -17553,7 +17540,7 @@ function omascoteChatLocalPreview(){
 }
 
 function omascoteChatUrl(){
-  return new URL(integratedChatFrame?.dataset.src || "/atendimento/index.html?integrado=1&v=gallery-sports-1", window.location.origin).href;
+  return new URL(integratedChatFrame?.dataset.src || "/atendimento/index.html?integrado=1&v=forms-v5", window.location.origin).href;
 }
 
 let omascoteChatReady = false;
@@ -17734,6 +17721,14 @@ const OMASCOTE_CHAT_IMAGE_ONLY_PRODUCTS = new Set([
   "resultado_jogo_jogador"
 ]);
 
+function omascotePublicProductKey(productKey){
+  return ({ proximo_jogo_jogador:"proximo_jogo", resultado_jogo_jogador:"resultado" })[productKey] || productKey;
+}
+
+function omascoteWithoutProductCoupon(values = {}){
+  return Object.fromEntries(Object.entries(values).filter(([key]) => !["coupon_code", "cupom_codigo", "coupon", "cupom"].includes(key)));
+}
+
 function omascoteChatBaseCleanOrder(productKey, values, files){
   // Only variants connected to the worker may reach billing.
   if(productKey === "mascote_uniforme" && values.delivery_mode === "image_video" && values.mascot_video_option && !["sol", "chuva", "ascensao_epica"].includes(values.mascot_video_option)){
@@ -17749,7 +17744,6 @@ function omascoteChatBaseCleanOrder(productKey, values, files){
     : "image";
   const fields = {
     visual_style:String(values.visual_style || "3D").toLowerCase(),
-    coupon_code:String(values.coupon_code || "").trim(),
     sport:sportContext.sport,
     sport_context:String(values.sport_context || "").trim(),
     delivery_mode:deliveryMode,
@@ -17878,7 +17872,7 @@ function omascoteChatRawCleanOrders(draft, records, previewFiles){
   if(productKey === "escudo3d"){
     const crest = files.team_crest?.[0];
     if(!crest) throw new Error("Envie o escudo que será transformado em 3D.");
-    return [{ productKey, special:"escudo3d", file:crest, coupon:String(values.coupon_code || "").trim(), values }];
+    return [{ productKey, special:"escudo3d", file:crest, coupon:"", values:omascoteWithoutProductCoupon(values) }];
   }
   if(productKey === "jogador_escudo"){
     const players = omascoteChatLines(values.players).map(line => line.split("|").map(item => item.trim()));
@@ -17895,7 +17889,7 @@ function omascoteChatRawCleanOrders(draft, records, previewFiles){
     });
   }
   if(productKey === "contratacao"){
-    const players = omascoteChatLines(values.players).map(line => {const [name = "", position = "", announcement = values.announcement === "Renovado" ? "Renovado" : "Contratado", jersey = values.jersey_requested === "Sim" ? "Sim" : "Não"] = line.split("|").map(item => item.trim());return { name, position, announcement, jersey };}).filter(item => item.name);
+    const players = omascoteChatLines(values.players).map(line => {const [name = "", position = "", announcement = values.announcement === "Renovado" ? "Renovado" : "Contratado", jersey = values.jersey_requested === "Sim" ? "Sim" : "Não", number = ""] = line.split("|").map(item => item.trim());return { name, position, announcement, jersey, number };}).filter(item => item.name);
     const photos = files.player_photos || [];
     if(!players.length || photos.length !== players.length) throw new Error("Envie uma foto para cada jogador, na mesma ordem dos nomes.");
     return players.map((player, index) => {
@@ -17911,9 +17905,10 @@ function omascoteChatRawCleanOrders(draft, records, previewFiles){
         headline:player.announcement === "Renovado" ? "RENOVADO" : "CONTRATADO",
         player_name:player.name,
         player_position:player.position,
+        player_number:player.number,
         player_info:player.position,
         jersey_enabled:player.jersey === "Sim",
-        players:[{ nome:player.name, posicao:player.position, tipo_anuncio:player.announcement, camiseta_time:player.jersey === "Sim" }]
+        players:[{ nome:player.name, posicao:player.position, numero:player.number, tipo_anuncio:player.announcement, camiseta_time:player.jersey === "Sim" }]
       };
       order.assets.team_crest = omascoteChatAsset(files, "team_crest", "escudo1");
       order.assets.player_photo = { legacyName:"escudo2", files:[photos[index]] };
@@ -20545,8 +20540,7 @@ const CLEAN_PRODUCT_FORM_SCHEMAS = {
     fields: [
       { key: "scenario_id", type: "scenario", label: "Escolha uma amostra", required: true, visualNormal: true, defaultValue: "jogador_escudo_atual_v1" },
       { key: "team_crest", type: "file", legacyName: "escudo1", labelKey: "esc1", required: true, savedFallback: true },
-      { key: "jogador_escudo_players", type: "jogador_escudo_builder", label: "Jogadores", required: true, visualNormal: true },
-      { key: "coupon_code", type: "text", legacyName: "cupom_codigo", label: "Cupom", placeholder: "Digite seu cupom", required: false, visualNormal: true }
+      { key: "jogador_escudo_players", type: "jogador_escudo_builder", label: "Jogadores", required: true, visualNormal: true }
     ],
     legacyDefaults: { rodada: "Jogador + escudo" }
   },
@@ -20563,24 +20557,9 @@ const CLEAN_PRODUCT_FORM_SCHEMAS = {
   }
 };
 
-const CLEAN_COUPON_FIELD = {
-  key: "coupon_code",
-  type: "text",
-  legacyName: "cupom_codigo",
-  label: "Cupom de desconto",
-  placeholder: "Digite seu cupom",
-  required: false,
-  visualNormal: true
-};
-
-Object.keys(CLEAN_PRODUCT_FORM_SCHEMAS).forEach(productKey => {
-  const product = PRODUCTS[productKey];
-  const schema = CLEAN_PRODUCT_FORM_SCHEMAS[productKey];
-  const hasCoupon = schema.fields.some(field => field.legacyName === "cupom_codigo");
-
-  if(productKey !== "contratacao" && product && Number(product.price || 0) > 0 && !hasCoupon){
-    schema.fields.push({ ...CLEAN_COUPON_FIELD });
-  }
+// New product forms do not offer or inherit coupons. Historical receipts stay intact.
+Object.values(CLEAN_PRODUCT_FORM_SCHEMAS).forEach(schema => {
+  schema.fields = schema.fields.filter(field => !isCleanCouponField(field));
 });
 
 function getCleanProductSchema(productKey){
@@ -20894,6 +20873,9 @@ function renderContratacaoPlayerRow(index = 0){
         <label>Nome
           <input data-contratacao-name maxlength="80" placeholder="Ex: Jhuan">
         </label>
+        <label>Número (opcional)
+          <input type="text" inputmode="numeric" data-contratacao-number maxlength="10">
+        </label>
         <label>Posição
           <input data-contratacao-position maxlength="60" placeholder="Ex: Zagueiro">
         </label>
@@ -20977,6 +20959,7 @@ function getContratacaoBuilderData(form){
     index,
     name:row.querySelector("[data-contratacao-name]")?.value?.trim() || "",
     position:row.querySelector("[data-contratacao-position]")?.value?.trim() || "",
+    number:row.querySelector("[data-contratacao-number]")?.value?.trim() || "",
     announcement:row.querySelector("[data-contratacao-announcement]")?.value || "contratado",
     photo:row.querySelector("[data-contratacao-player-photo]")?.files?.[0] || null,
     jersey:!!row.querySelector("[data-contratacao-jersey]")?.checked
@@ -21226,21 +21209,7 @@ function atualizarInternalVeoUi(enabled){
   });
 }
 
-function renderCleanCouponExtra(product, field){
-  if(!field) return "";
-
-  const label = "Cupom de desconto";
-  const placeholder = getCleanFieldPlaceholder(product, field);
-  const maxLengthAttr = field.maxLength ? ` maxlength="${htmlEscape(field.maxLength)}"` : "";
-
-  return `
-    <div class="cleanCouponExtra" data-clean-coupon-extra data-clean-field-card="${htmlEscape(field.key)}">
-      <label class="cleanFieldLabel">${htmlEscape(label)}</label>
-      <input name="${htmlEscape(field.key)}" data-field="${htmlEscape(field.key)}"${maxLengthAttr} placeholder="${htmlEscape(placeholder)}" aria-label="${htmlEscape(label)}">
-      <div data-price-preview data-price-product="${htmlEscape(product?.id || "")}"></div>
-    </div>
-  `;
-}
+function renderCleanCouponExtra(){ return ""; }
 
 function shouldShowCleanFieldOptionalBadge(product, field){
   return !field?.required && shouldMoveCleanFieldToEnd(product, field);
@@ -21848,17 +21817,7 @@ function getPricePreviewProductKey(target){
   return target?.dataset?.priceProduct || target?.closest("[data-clean-product-block]")?.dataset?.cleanProductBlock || "";
 }
 
-function getPricePreviewCouponValue(block, productKey){
-  if(productKey === "escudo3d"){
-    return (
-      block?.querySelector("[data-escudo3d-coupon]")?.value ||
-      document.getElementById("escudo3dCupom")?.value ||
-      ""
-    ).trim();
-  }
-
-  return block?.querySelector('[data-field="coupon_code"]')?.value?.trim() || "";
-}
+function getPricePreviewCouponValue(){ return ""; }
 
 function getEscudo3dDeliveryChoice(block){
   const choice = block?.querySelector?.('[data-escudo3d-delivery-option]:checked')?.value;
@@ -22024,23 +21983,24 @@ const PRODUCT_CHOOSER_COPY = {
 let cleanProductPickerSelected = "";
 
 function setCleanProductPickerSelected(productKey){
+  productKey = omascotePublicProductKey(productKey);
   if(!productKey) return;
   cleanProductPickerSelected = productKey;
   try{ sessionStorage.setItem("ia4tube_clean_product_selected", productKey); }catch(e){}
 }
 
 function getCleanProductPickerSelected(){
-  if(cleanProductPickerSelected && PRODUCTS[cleanProductPickerSelected]) return cleanProductPickerSelected;
+  if(cleanProductPickerSelected && PRODUCTS[cleanProductPickerSelected]) return omascotePublicProductKey(cleanProductPickerSelected);
   return "proximo_jogo";
 }
 
 function getCleanProductPickerSelectedRaw(){
   try{
     const saved = sessionStorage.getItem("ia4tube_clean_product_selected") || "";
-    if(saved && PRODUCTS[saved]) return saved;
+    if(saved && PRODUCTS[saved]) return omascotePublicProductKey(saved);
   }catch(e){}
 
-  if(cleanProductPickerSelected && PRODUCTS[cleanProductPickerSelected]) return cleanProductPickerSelected;
+  if(cleanProductPickerSelected && PRODUCTS[cleanProductPickerSelected]) return omascotePublicProductKey(cleanProductPickerSelected);
   return "";
 }
 
@@ -26141,6 +26101,7 @@ function atualizarProductChooserModoPerfil(){
 }
 
 function selectCleanProductForPicker(productKey, options = {}){
+  productKey = omascotePublicProductKey(productKey);
   if(!productKey) return;
 
   const target = document.querySelector(`[data-clean-product-block="${CSS.escape(productKey)}"]`);
@@ -26313,11 +26274,6 @@ function renderCleanProductForms(){
           </div>
         </fieldset>
         <button class="btnGreen cleanSubmitBtn" type="button" data-submit-escudo3d>${htmlEscape(escudo3dSubmitLabel)}</button>
-        <div class="cleanCouponExtra" data-clean-coupon-extra data-clean-field-card="coupon_code">
-          <label class="cleanFieldLabel">Cupom de desconto</label>
-          <input data-escudo3d-coupon placeholder="Digite seu cupom">
-          <div data-price-preview data-price-product="escudo3d"></div>
-        </div>
         <div class="cleanProductMsg" data-clean-msg></div>
       </div>
     </section>
@@ -27471,7 +27427,7 @@ function buildLegacyFormDataFromClean(productKey, cleanOrder, options = {}){
 
   fd.append("schema_version", String(cleanOrder.schema_version));
   fd.append("product_id", cleanOrder.product_id);
-  fd.append("fields_json", JSON.stringify(cleanOrder.fields || {}));
+  fd.append("fields_json", JSON.stringify(Object.fromEntries(Object.entries(cleanOrder.fields || {}).filter(([key]) => !["coupon_code", "cupom_codigo", "coupon", "cupom"].includes(key)))));
   fd.append("assets_json", JSON.stringify(Object.fromEntries(Object.entries(cleanOrder.assets || {}).map(([key, asset]) => [
     key,
     {
@@ -27561,6 +27517,7 @@ function buildLegacyFormDataFromClean(productKey, cleanOrder, options = {}){
     const jogadores = [{
       nome:cleanOrder.fields.player_name || "",
       posicao:cleanOrder.fields.player_position || "",
+      numero:cleanOrder.fields.player_number || "",
       tipo_anuncio:cleanOrder.fields.announcement_type || "contratado",
       camiseta_time:!!cleanOrder.fields.jersey_enabled
     }];
@@ -27622,8 +27579,7 @@ function buildEscudo3dLegacyFormData(file, cupomCodigo = "", values = {}){
   fd.append("assets_json", JSON.stringify({
     team_crest:{ legacyName:"escudo1", files:file ? [file.name || "escudo1.png"] : [] }
   }));
-  const cupom = String(cupomCodigo || "").trim();
-  if(cupom) fd.append("cupom_codigo", cupom);
+  // Coupon input is intentionally ignored for new product submissions.
   appendIa4AccessContext(fd);
   return fd;
 }
@@ -28462,11 +28418,13 @@ function contratacaoCleanOrderForPlayer(form, data, player){
     headline:announcement === "renovado" ? "RENOVADO" : "CONTRATADO",
     player_name:player.name,
     player_position:player.position,
+    player_number:player.number || "",
     player_info:player.position,
     jersey_enabled:!!player.jersey,
     players:[{
       nome:player.name,
       posicao:player.position,
+      numero:player.number || "",
       tipo_anuncio:announcement,
       camiseta_time:!!player.jersey
     }]
@@ -28491,6 +28449,7 @@ async function getOrCreateContratacaoBatchState(form, data){
     players:data.players.map(player => ({
       name:player.name,
       position:player.position,
+      ...(player.number ? { number:player.number } : {}),
       announcement:player.announcement,
       jersey:player.jersey,
       photo:player.photo
@@ -32331,6 +32290,7 @@ document.querySelectorAll(".categoryBtn, .categoryMiniBtn").forEach(btn=>{
 });
 
 function selectProduct(productKey){
+  productKey = omascotePublicProductKey(productKey);
   const product = PRODUCTS[productKey];
   if(!product) return;
 
@@ -42965,7 +42925,7 @@ if(token){
 
 if("serviceWorker" in navigator){
   window.addEventListener("load", () => {
-    navigator.serviceWorker.register("/sw.js?v=futebol-gallery-38-1").catch(() => {});
+    navigator.serviceWorker.register("/sw.js?v=forms-v5").catch(() => {});
   });
 }
 
