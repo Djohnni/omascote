@@ -6,7 +6,7 @@ const listeners = {}, docListeners = {}, google = [], internal = [];
 const nodes = new Map();
 function node(id, hidden = true) {
   const classes = new Set();
-  const element = {hidden,style:{display:'none'},classList:{contains:key => classes.has(key)},
+  const element = {hidden,dataset:{},style:{display:'none'},classList:{contains:key => classes.has(key)},
     getClientRects:() => element.hidden ? [] : [{}],classes};
   nodes.set(id,element);
   return element;
@@ -14,7 +14,7 @@ function node(id, hidden = true) {
 const home = node('vitrineHome',false), frame = node('integratedChatFrame',false);
 frame.contentWindow = {};
 for (const id of ['pixQrModal','authVisitanteModal','authCriarContaBtn','weeklyPlansModal','saldoMenu',
-  'menuPedidosTopo','accountMenuPanel','escudo3dExamples']) node(id);
+  'menuPedidosTopo','accountMenuPanel','escudo3dExamples','mascotVideoExamples']) node(id);
 const location = {origin:'https://omascote.com.br',href:'https://omascote.com.br/app.html?utm_id=120250628532270466&utm_source=ig'};
 const document = {body:{dataset:{page:'home',vitrine:'true'}},visibilityState:'visible',
   getElementById:id => nodes.get(id),addEventListener:(name,fn) => {docListeners[name]=fn;}};
@@ -67,6 +67,18 @@ assert.equal(internal.filter(event => event.name === 'aba_visitada').at(-1).para
 message({type:'omascote-chat:analytics-screen',screen:'catalogo'});
 message({type:'omascote-chat:analytics-screen',screen:'formulario'});
 assert.equal(internal.filter(event => event.name === 'aba_visitada').at(-1).params.aba_id,'mascote_uniforme/crest','closing the catalog restores the saved tab');
+const gallery = nodes.get('mascotVideoExamples'); gallery.hidden = false; refresh();
+assert.equal(internal.filter(event => event.name === 'aba_visitada').at(-1).params.aba_id,'exemplos/mascote_uniforme','viewing mascot examples is not counted as the home page');
+message({...mascot,stageKey:'mascot',step:1});
+assert.equal(internal.filter(event => event.name === 'aba_visitada').at(-1).params.aba_id,'exemplos/mascote_uniforme','preparing an iframe form does not replace the visible gallery');
+gallery.hidden = true;
+const football = node('futebolVideoExamples',false); football.dataset.productId='jogador_escudo';
+refresh([{addedNodes:[{id:'futebolVideoExamples'}]}]);
+assert.equal(internal.filter(event => event.name === 'aba_visitada').at(-1).params.aba_id,'exemplos/jogador_escudo','dynamically added football examples are tracked');
+football.dataset.productId='PRIVATE UNKNOWN PRODUCT';refresh();
+assert.equal(internal.filter(event => event.name === 'aba_visitada').at(-1).params.aba_id,'mascote_uniforme/mascot','unknown product metadata is never collected');
+message({...mascot,stageKey:'crest',step:2});
+football.hidden=true;refresh();
 listeners.pagehide(); listeners.pagehide();
 assert.equal(internal.filter(event => event.name === 'aba_ultima').length,1,'departure reports the last tab once');
 assert.equal(internal.at(-1).params.aba_id,'mascote_uniforme/crest');

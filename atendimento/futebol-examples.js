@@ -85,7 +85,7 @@
     const frame = host.getElementById?.('integratedChatFrame');
     const anchor = host.getElementById?.('escudo3dExamples');
     const box = element('section'); box.className = 'escudoExamples futebol-models';
-    box.id = 'futebolVideoExamples'; box.tabIndex = -1;
+    box.id = 'futebolVideoExamples'; box.dataset.productId = product; box.tabIndex = -1;
     box.setAttribute('aria-labelledby','futebolModelsTitle');
     const videos = [];
     const pauseAll = () => videos.forEach(video => video.pause());

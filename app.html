@@ -80,10 +80,12 @@
   <script defer src="/tester-image-bonus.js?v=20261126-admin-pedidos-1"></script>
   <link rel="stylesheet" href="/admin-orders.css?v=20261126-admin-pedidos-1">
   <script defer src="/admin-orders.js?v=20261126-admin-pedidos-1"></script>
+  <link rel="stylesheet" href="/social-browser-help.css?v=20261126-social-login-1">
+  <script defer src="/social-browser-help.js?v=20261126-social-login-1"></script>
   <link rel="stylesheet" href="/vitrine-chat.css?v=20261126-cadastro-bonus-1">
   <link rel="stylesheet" href="/product-gallery.css?v=20261126-gratis-video-1">
   <script defer src="/vitrine-chat.js?v=gmail-2-imagens-1"></script>
-  <script defer src="/analytics-tabs.js?v=20261002-abas"></script>
+  <script defer src="/analytics-tabs.js?v=20261126-galerias-social-1"></script>
   <!-- favicon atualizado -->
 
   <style>
@@ -19328,6 +19330,9 @@ function ia4Evento(eventName, params = {}){
       e:eventName,
       p:{
         ...(params || {}),
+        aplicativo: IA4_AMBIENTE_NAVEGACAO.appSocial || "navegador",
+        sistema_operacional: IA4_AMBIENTE_NAVEGACAO.sistema,
+        navegador_interno: IA4_AMBIENTE_NAVEGACAO.navegadorInterno,
         campo_atual: ia4CampoAtual || "",
         ultima_acao: ia4UltimaAcao || "",
         tempo_inativo_ms: Date.now() - ia4UltimaAtividade

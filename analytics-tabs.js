@@ -93,6 +93,14 @@
     else if (open('menuPedidosTopo')) id = 'pedidos';
     else if (visible(document.getElementById('accountMenuPanel'))) id = 'conta';
     else if (visible(document.getElementById('escudo3dExamples'))) id = 'exemplos';
+    else if (visible(document.getElementById('mascotVideoExamples'))) {
+      visit({id:'exemplos/mascote_uniforme',name:'Exemplos — Mascote do Time',product:'mascote_uniforme'}); return;
+    } else if (visible(document.getElementById('futebolVideoExamples'))) {
+      const product = document.getElementById('futebolVideoExamples').dataset.productId;
+      if (Object.hasOwn(products, product)) {
+        visit({id:'exemplos/' + product,name:'Exemplos — ' + products[product],product}); return;
+      }
+    }
     if (id) visit({id, name:labels[id], product:base.product});
     else if (!home.hidden) { base = {id:'inicio',name:labels.inicio,product:''}; visit(base); }
     else visit(base);
@@ -122,12 +130,19 @@
       track('aba_bloqueio', {...params(base), acao:data.action, motivo:'validacao'});
     }
   });
-  const observer = new MutationObserver(refresh);
+  const observer = new MutationObserver((records = []) => {
+    for (const record of records) for (const node of record.addedNodes || []) {
+      if (node.id === 'futebolVideoExamples') observer.observe(node,{attributes:true,attributeFilter:['class','hidden','style']});
+    }
+    refresh();
+  });
   ['vitrineHome','pixQrModal','authVisitanteModal','authCriarContaBtn','weeklyPlansModal',
-    'saldoMenu','menuPedidosTopo','accountMenuPanel','escudo3dExamples'].forEach(id => {
+    'saldoMenu','menuPedidosTopo','accountMenuPanel','escudo3dExamples','mascotVideoExamples','futebolVideoExamples'].forEach(id => {
     const node = document.getElementById(id);
     if (node) observer.observe(node,{attributes:true,attributeFilter:['class','hidden','style','aria-hidden']});
   });
+  const galleryParent = document.getElementById('escudo3dExamples')?.parentElement;
+  if (galleryParent) observer.observe(galleryParent,{childList:true});
   document.addEventListener('visibilitychange', () => {
     if (document.visibilityState === 'hidden') {
       if (visibleSince !== null) visibleMs += Date.now() - visibleSince;
