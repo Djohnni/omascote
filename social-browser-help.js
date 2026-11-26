@@ -54,7 +54,7 @@
     const home = document.getElementById('vitrineHome'), hero = home?.querySelector('.vitrineHero');
     const notice = document.getElementById('ia4WebviewNotice');
     if (hero && notice) {
-      hero.after(notice); notice.classList.add('socialSignupNotice');
+      hero.before(notice); notice.classList.add('socialSignupNotice');
       notice.querySelector('.ia4WebviewNoticeIcon')?.remove();
       const title = document.getElementById('ia4WebviewNoticeTitle');
       const actions = notice.querySelector('.ia4WebviewNoticeActions');

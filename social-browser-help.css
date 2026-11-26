@@ -9,12 +9,15 @@
 #authVisitanteModal.socialGoogleFirst .googleLoginBox { margin:0; padding:0; }
 #authVisitanteModal.socialGoogleFirst .googleLoginBox > div { max-width:340px; transform:none; }
 #authVisitanteModal.socialGoogleFirst #googleLoginModal { display:flex; justify-content:center; margin:20px 0; }
-#vitrineHome > .ia4WebviewNotice.socialSignupNotice { box-sizing:border-box; display:block; width:100%; margin:18px 0 0; padding:20px; border:1px solid #d2e5d7; border-radius:12px; background:#fff; color:#16482c; box-shadow:none; }
+#vitrineHome > .ia4WebviewNotice.socialSignupNotice { box-sizing:border-box; display:block; width:100%; margin:0 0 18px; padding:20px; border:1px solid #d2e5d7; border-radius:12px; background:#fff; color:#16482c; box-shadow:none; }
+body[data-vitrine="true"]:has(#vitrineHome:not([hidden]) > .socialSignupNotice:not([hidden])) .vitrineHeader { position:static; width:100%; padding:24px 0 18px; }
 #googleLoginWebviewHelp { margin:0; padding:0; color:#16482c; text-align:left; }
 .socialSignupTitle,#ia4WebviewNotice .socialSignupTitle,#googleLoginBox .socialSignupTitle { display:block; margin:0 0 18px !important; font:700 20px/1.35 Arial,Helvetica,sans-serif; color:#16482c; text-align:left !important; }
 .socialSignupActions,#ia4WebviewNotice.socialSignupNotice .ia4WebviewNoticeActions { display:grid; gap:8px; margin:0; }
 #googleLoginWebviewHelp a,#googleLoginWebviewHelp button,#ia4WebviewNotice.socialSignupNotice .ia4WebviewNoticeActions a,#ia4WebviewNotice.socialSignupNotice .ia4WebviewNoticeActions button { box-sizing:border-box; display:flex; align-items:center; justify-content:center; width:100%; min-height:46px; margin:0; padding:12px; border:1px solid #bed4c6; border-radius:8px; background:#fff; color:#16482c; font:700 15px Arial,sans-serif; text-decoration:none; cursor:pointer; box-shadow:none; }
 #googleLoginWebviewHelp .googleLoginWebviewOpen,#ia4WebviewNotice.socialSignupNotice .ia4WebviewNoticeOpen { background:#087d43; border-color:#087d43; color:#fff; }
+#ia4WebviewNotice.socialSignupNotice .ia4WebviewNoticeActions .ia4WebviewNoticeOpen { background:#008747; border-color:#008747; color:#fff; }
+#ia4WebviewNotice.socialSignupNotice .ia4WebviewNoticeActions .ia4WebviewNoticeOpen:hover { background:#006a38; border-color:#006a38; }
 .socialSignupNote,#ia4WebviewNotice.socialSignupNotice .socialSignupNote { margin:14px 0 10px; font:13px/1.5 Arial,sans-serif; color:#496353; }
 .socialSignupSignature,#ia4WebviewNotice.socialSignupNotice .socialSignupSignature { margin:10px 0 0; font:12px/1.5 Arial,sans-serif; color:#496353; }
 .socialSignupStatus { position:absolute; width:1px; height:1px; padding:0; margin:-1px; overflow:hidden; clip-path:inset(50%); white-space:nowrap; }
