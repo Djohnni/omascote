@@ -137,7 +137,7 @@
       image.className='escudoExamples__poster'; image.loading='lazy'; image.width=720; image.height=1280;
       const imageMedia=element('div'); imageMedia.className='escudoExamples__media'; imageMedia.append(image);
       const first=element('article'); first.className='escudoExamples__card';
-      const imageAmount=element('strong',imagePrice); imageAmount.className='escudoExamples__price';
+      const imageAmount=element('strong',imagePrice); imageAmount.className='escudoExamples__price' + (imagePrice === 'GRÁTIS' ? ' imagePrice--free' : '');
       const imageChoice=choice('Escolher imagem',() => finish({...seed,futebol_gallery:'image',delivery_mode:'image'}));
       imageChoice.className='escudoExamples__choose';
       first.append(element('h3','Somente imagem'),imageAmount,imageMedia,imageChoice);
@@ -160,7 +160,7 @@
             video.controls=true; play.hidden=true;
             try {Promise.resolve(video.play()).catch(showError);} catch {showError();}
           });
-          play.className='escudoExamples__play'; play.setAttribute('aria-label','Assistir ao exemplo de '+option.title);
+          play.className='escudoExamples__play videoPreviewPlay'; play.innerHTML='<span class="videoPreviewPlay__icon" aria-hidden="true"></span><span class="videoPreviewPlay__label" aria-hidden="true">VÍDEO</span>'; play.setAttribute('aria-label','Assistir ao exemplo de '+option.title);
           video.addEventListener('error',showError);
           video.addEventListener('play',() => videos.forEach(other => {if (other!==video) other.pause();}));
           media.append(video,play); card.append(media,status);

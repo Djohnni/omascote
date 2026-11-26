@@ -59,10 +59,11 @@
     node('[data-tester-account-summary]').hidden = !granted;
     node('[data-tester-account-title]').textContent = count + ' de ' + summary?.limit + ' imagens grátis disponíveis';
     document.querySelectorAll('[data-image-allowance-price]').forEach(price => {
-      price.textContent = count > 0 ? 'Incluída no bônus' : price.dataset.imageAllowancePrice;
+      price.textContent = count > 0 ? 'GRÁTIS' : price.dataset.imageAllowancePrice;
+      price.classList.toggle('imagePrice--free', count > 0);
     });
     const crestChoice = document.querySelector('#escudo3dExamples [data-delivery-choice="image"]');
-    crestChoice?.setAttribute('aria-label','Escolher somente imagem — ' + (count > 0 ? 'incluída no bônus' : 'R$ 4,00'));
+    crestChoice?.setAttribute('aria-label','Escolher somente imagem — ' + (count > 0 ? 'GRÁTIS' : 'R$ 4,00'));
     const admin = account?.tester_bonus_admin === true;
     const temporary = account?.senha_temporaria === true;
     node('[data-tester-admin]').hidden = !admin;

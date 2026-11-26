@@ -1,0 +1,23 @@
+/* Shared presentation for image allowances and playable gallery previews. */
+.imagePrice--free { color:#d40000 !important; font-weight:800; }
+:is(.escudoExamples,.mascotExamples) .videoPreviewPlay {
+  position:absolute; inset:0; width:100%; border:0; padding:16px;
+  display:flex; flex-direction:column; align-items:center; justify-content:center; gap:10px;
+  background:linear-gradient(transparent 30%,#0003 60%,transparent); color:#fff; cursor:pointer;
+}
+.videoPreviewPlay > .videoPreviewPlay__icon {
+  box-sizing:border-box; display:grid; place-items:center; width:76px; height:54px;
+  padding:0; border-radius:14px; background:#f00; box-shadow:0 4px 18px #0006;
+}
+.videoPreviewPlay__icon::before {
+  content:""; display:block; width:0; height:0; margin-left:5px;
+  border-top:12px solid transparent; border-bottom:12px solid transparent; border-left:20px solid #fff;
+}
+.videoPreviewPlay > .videoPreviewPlay__label {
+  padding:5px 10px; border-radius:6px; background:#000c; color:#fff;
+  font:800 14px/1.25 Arial,Helvetica,sans-serif; letter-spacing:.08em;
+}
+.videoPreviewPlay:hover > .videoPreviewPlay__icon,
+.videoPreviewPlay:focus-visible > .videoPreviewPlay__icon { background:#d40000; }
+.videoPreviewPlay:focus-visible { outline:3px solid #205eff; outline-offset:-4px; }
+:is(.escudoExamples,.mascotExamples) .videoPreviewPlay[hidden] { display:none; }

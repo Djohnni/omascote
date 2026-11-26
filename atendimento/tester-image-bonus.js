@@ -73,7 +73,7 @@
     if (count > 1 && provided?.granted && productId === 'jogador_escudo' && Number.isFinite(unitPrice)) {
       const paid = count - covered;
       const total = new Intl.NumberFormat('pt-BR',{style:'currency',currency:'BRL'}).format(paid * unitPrice);
-      if (!paid) return count + ' imagens incluídas no bônus';
+      if (!paid) return 'GRÁTIS';
       return covered + ' grátis + ' + paid + (paid === 1 ? ' paga' : ' pagas') + ' · Total ' + total;
     }
     if (!covered) return regularLabel;
@@ -82,7 +82,7 @@
       return covered + ' grátis · Total ' + total;
     }
     if (covered < count) return `Bônus para ${covered} de ${count} imagens; demais com cobrança normal`;
-    return count > 1 ? 'Imagens incluídas no bônus' : 'Incluída no bônus';
+    return 'GRÁTIS';
   }
 
   const reviewed = new Map();

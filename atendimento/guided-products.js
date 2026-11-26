@@ -172,6 +172,7 @@
     React.useEffect(() => window.OmascoteTesterImageBonus?.subscribe(setBonusSummary), []);
     const imagePrice = window.OmascoteTesterImageBonus?.imagePriceLabel({productId:draft.flow,draft,
       deliveryMode:'image',unitPrice:props.product.price,regularLabel:props.product.priceLabel,summary:bonusSummary}) || props.product.priceLabel;
+    const imagePriceContent = h('span',{className:imagePrice === 'GRÁTIS' ? 'imagePrice--free' : undefined},imagePrice);
     const saved = sessions.get(draft.id);
     const [productMode,setProductMode] = React.useState(isProduct);
     const [stageKey,setStageKey] = React.useState(saved?.stageKey || 'sport');
@@ -388,18 +389,18 @@
       if (draft.values.futebol_gallery) {
         const summary = soccerSummary();
         if (summary?.error) return h('p',{role:'status'},summary.error);
-        if (!summary) return h('p',null,'Somente imagem · ',imagePrice);
+        if (!summary) return h('p',null,'Somente imagem · ',imagePriceContent);
         return h('div',{className:'guided-delivery'},...summary.choices.map((item,i)=>
           h('p',{key:i},item.title,' · 10 s · 720p · ',window.OmascoteFutebol.money(item.cents))),
           summary.choices.length>1 ? h('strong',null,'Total ',window.OmascoteFutebol.money(summary.total)) : null);
       }
       if (draft.flow !== 'escudo3d') return h('fieldset',{className:'guided-delivery','aria-label':'Como você quer receber?'},
-        option('image','Somente imagem',imagePrice),
+        option('image','Somente imagem',imagePriceContent),
         props.canVideo ? option('image_video','Imagem + vídeo',props.videoPrice) : null);
       const video = draft.values.delivery_mode === 'image_video', omni = video && draft.values.video_model === 'omni';
       return h('div',{className:'guided-delivery guided-selected-delivery','aria-label':'Entrega escolhida'},
         h('div',{className:'guided-delivery-option'},h('span',null,video ? `Imagem + vídeo de ${omni ? 10 : 8} segundos` : 'Somente imagem'),
-          h('strong',null,video ? omni ? 'R$ 19,90' : props.videoPrice : imagePrice)));
+          h('strong',null,video ? omni ? 'R$ 19,90' : props.videoPrice : imagePriceContent)));
     }
     function review() {
       const extra = ['mascot_description','match_photo','uniform_image','visual_style'];

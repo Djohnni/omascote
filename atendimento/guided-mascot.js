@@ -58,6 +58,7 @@
     const videoSelected = delivery === 'image_video' && !!selectedVideo;
     const imagePrice = window.OmascoteTesterImageBonus?.imagePriceLabel({productId:draft.flow,draft,
       deliveryMode:'image',regularLabel:props.product.priceLabel,summary:bonusSummary}) || props.product.priceLabel;
+    const imagePriceContent = h('span',{className:imagePrice === 'GRÁTIS' ? 'imagePrice--free' : undefined},imagePrice);
     const preparedVideo = videoSelected && selectedVideo.orderEnabled !== true;
     const [error, setError] = React.useState('');
     const [sportsOpen, setSportsOpen] = React.useState(false);
@@ -231,9 +232,9 @@
           h('fieldset', {className:'guided-delivery', 'aria-label':'Como você quer receber?'},
             gallery() ? h(React.Fragment, null,
               h('p', null, videoSelected ? `Imagem + vídeo · ${selectedVideo.name}` : 'Somente imagem',
-                ' · ', videoSelected ? new Intl.NumberFormat('pt-BR',{style:'currency',currency:'BRL'}).format(selectedVideo.price) : imagePrice),
+                ' · ', videoSelected ? new Intl.NumberFormat('pt-BR',{style:'currency',currency:'BRL'}).format(selectedVideo.price) : imagePriceContent),
               h('button', {type:'button', className:'guided-text-button', disabled:props.busy, onClick:changeVideo}, 'Trocar opção'))
-              : h(React.Fragment, null, option('image', 'Somente imagem', imagePrice),
+              : h(React.Fragment, null, option('image', 'Somente imagem', imagePriceContent),
                 props.canVideo ? option('image_video', 'Imagem + vídeo', props.videoPrice) : null)),
           preparedVideo ? h('p', {className:'mascot-video-pending',role:'status'},
             'Esta opção está em preparação. O envio de pedidos de vídeo será liberado quando estiver disponível.') : null,

@@ -23,7 +23,7 @@ function fixture(initial=grant()) {
 function ReactFinal(kind) {
   let stateIndex = 0;
   return {Fragment:'fragment',createElement:(type,props,...children)=>({type,props:{...props,children}}),
-    useState(initial) {const index=stateIndex++;return [index===2 ? kind==='mascot'?3:'final' : typeof initial==='function'?initial():initial,()=>{}];},
+    useState(initial) {const index=stateIndex++;return [index===2 ? kind==='mascot'?1:'final' : typeof initial==='function'?initial():initial,()=>{}];},
     useEffect() {},useRef:()=>({current:null}),isValidElement:node=>Boolean(node&&typeof node==='object'&&'type' in node),
     Children:{toArray:children=>(Array.isArray(children)?children:[children]).filter(Boolean),map:(children,callback)=>(Array.isArray(children)?children:[children]).map(callback)},
     cloneElement:(node,props,children)=>({...node,props:{...node.props,...props,children}})};
@@ -31,7 +31,8 @@ function ReactFinal(kind) {
 function renderedText(f, flow, values={}) {
   const kind=flow==='mascote_uniforme'?'mascot':'product';
   const props={react:ReactFinal(kind),integrated:true,draft:{id:'draft-'+flow,flow,values,files:[],stage:'collect'},
-    product:{name:'Produto',priceLabel:flow==='mascote_uniforme'?'R$ 18,00':'R$ 4,00'},fields:[],busy:false,
+    product:{name:'Produto',priceLabel:flow==='mascote_uniforme'?'R$ 18,00':'R$ 4,00'},
+    fields:kind==='mascot'?[]:[{key:'sport',label:'Esporte',type:'select',required:true,options:['Futebol']}],busy:false,
     canVideo:true,videoPrice:'R$ 14,90',validate:()=>[],renderField:()=>null,changeField() {},submit() {}};
   const tree=(kind==='mascot'?f.window.OmascoteGuidedMascot:f.window.OmascoteGuidedProducts).Form(props);
   function text(node) {return node===null||node===undefined||typeof node==='boolean'?'':typeof node==='string'?node:Array.isArray(node)?node.map(text).join(' '):text(node.props?.children);}
@@ -42,7 +43,7 @@ test('trusted parent bootstrap supplies checkout allowance, without changing the
   const f=fixture();
   assert.equal(f.helper.getSummary().remaining,5);
   assert.equal(f.helper.eligibleImage('mascote_uniforme',{values:{delivery_mode:'image'}}),true);
-  assert.equal(f.helper.imagePriceLabel({productId:'mascote_uniforme',draft:{values:{}},regularLabel:'R$ 18,00'}),'Incluída no bônus');
+  assert.equal(f.helper.imagePriceLabel({productId:'mascote_uniforme',draft:{values:{}},regularLabel:'R$ 18,00'}),'GRÁTIS');
 });
 test('messages require both the parent source and the same origin',()=>{
   const f=fixture();
@@ -84,7 +85,7 @@ test('paid shirt additions are excluded but an optional mascot uniform is not an
   assert.equal(f.helper.eligibleImage('mascote_uniforme',{values:{uniform_image:'reference'}}),true);
 });
 test('coupon presence does not stack a discount or hide an available image allowance',()=>{
-  const f=fixture();assert.equal(f.helper.imagePriceLabel({productId:'escudo3d',draft:{values:{coupon_code:'PROMO'}},regularLabel:'R$ 4,00'}),'Incluída no bônus');
+  const f=fixture();assert.equal(f.helper.imagePriceLabel({productId:'escudo3d',draft:{values:{coupon_code:'PROMO'}},regularLabel:'R$ 4,00'}),'GRÁTIS');
 });
 test('a mixed-size athlete batch does not claim that every image is covered',()=>{
   const f=fixture(grant(1));
@@ -105,16 +106,16 @@ test('three players with the Gmail allowance show the paid total before submissi
 
 test('guided mascot final summary shows the benefit only for its static image',()=>{
   const f=fixture();
-  assert.match(renderedText(f,'mascote_uniforme',{delivery_mode:'image'}),/Incluída no bônus/);
+  assert.match(renderedText(f,'mascote_uniforme',{delivery_mode:'image'}),/GRÁTIS/);
   const video=renderedText(f,'mascote_uniforme',{delivery_mode:'image_video',mascot_video_option:'sol'});
-  assert.match(video,/25,00/);assert.doesNotMatch(video,/Incluída no bônus/);
+  assert.match(video,/25,00/);assert.doesNotMatch(video,/GRÁTIS/);
 });
 test('guided product summaries preserve video pricing and stop promising a sixth free shield',()=>{
   const f=fixture();
-  assert.match(renderedText(f,'escudo3d',{delivery_mode:'image'}),/Incluída no bônus/);
+  assert.match(renderedText(f,'escudo3d',{delivery_mode:'image'}),/GRÁTIS/);
   const video=renderedText(f,'escudo3d',{delivery_mode:'image_video',video_model:'omni'});
-  assert.match(video,/19,90/);assert.doesNotMatch(video,/Incluída no bônus/);
+  assert.match(video,/19,90/);assert.doesNotMatch(video,/GRÁTIS/);
   f.message(grant(0));
   const exhausted=renderedText(f,'escudo3d',{delivery_mode:'image',brinde_escudo_login:'1'});
-  assert.match(exhausted,/R\$ 4,00/);assert.doesNotMatch(exhausted,/Grátis|Sem pagamento|Incluída no bônus/);
+  assert.match(exhausted,/R\$ 4,00/);assert.doesNotMatch(exhausted,/Grátis|Sem pagamento|GRÁTIS/);
 });

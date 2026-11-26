@@ -22,7 +22,7 @@
     </div>
     <div class="mascotExamples__grid">
       <article class="mascotExamples__card mascotExamples__card--image" data-mascot-option="image">
-        <h3>Somente imagem</h3><strong class="mascotExamples__price" data-mascot-image-price data-image-allowance-price="R$ 18,00">${window.omascoteTesterAccount?.tester_image_bonus?.remaining > 0 ? "Incluída no bônus" : price(18)}</strong>
+        <h3>Somente imagem</h3><strong class="mascotExamples__price${window.omascoteTesterAccount?.tester_image_bonus?.remaining > 0 ? ' imagePrice--free' : ''}" data-mascot-image-price data-image-allowance-price="R$ 18,00">${window.omascoteTesterAccount?.tester_image_bonus?.remaining > 0 ? "GRÁTIS" : price(18)}</strong>
         <div class="mascotExamples__media mascotExamples__media--image">
           <img class="mascotExamples__poster" src="/media/vitrine/mascote-lobos-da-serra.webp" alt="Exemplo de imagem do mascote lobo com uniforme e escudo do time" loading="lazy" width="720" height="1280">
         </div>
@@ -32,7 +32,7 @@
       <article class="mascotExamples__card" data-mascot-option="${escape(option.id)}">
         <h3>${escape(option.name)}</h3><strong class="mascotExamples__price">${price(option.price)}</strong>
         <div class="mascotExamples__media mascotExamples__media--${escape(option.id)}">
-          ${option.videoSrc ? `<video preload="none" playsinline width="720" height="1280" data-src="${escape(option.videoSrc)}"${option.videoAv1Src ? ` data-av1-src="${escape(option.videoAv1Src)}"` : ''}${option.posterSrc ? ` data-poster="${escape(option.posterSrc)}"` : ''} aria-label="Exemplo de ${escape(option.name)}"></video><button class="mascotExamples__play" type="button" data-mascot-play aria-label="Assistir ao exemplo de ${escape(option.name)}">▶ Assistir</button>` : option.posterSrc ? `<img class="mascotExamples__poster" src="${escape(option.posterSrc)}" alt="Exemplo de mascote na chuva" loading="lazy" width="941" height="1672"><span class="mascotExamples__video-soon">Vídeo em breve</span>` : `<div class="mascotExamples__placeholder"><span aria-hidden="true">${icons[option.id] || '▶'}</span><span>Exemplo em breve</span></div>`}
+          ${option.videoSrc ? `<video preload="none" playsinline width="720" height="1280" data-src="${escape(option.videoSrc)}"${option.videoAv1Src ? ` data-av1-src="${escape(option.videoAv1Src)}"` : ''}${option.posterSrc ? ` data-poster="${escape(option.posterSrc)}"` : ''} aria-label="Exemplo de ${escape(option.name)}"></video><button class="mascotExamples__play videoPreviewPlay" type="button" data-mascot-play aria-label="Assistir ao exemplo de ${escape(option.name)}"><span class="videoPreviewPlay__icon" aria-hidden="true"></span><span class="videoPreviewPlay__label" aria-hidden="true">VÍDEO</span></button>` : option.posterSrc ? `<img class="mascotExamples__poster" src="${escape(option.posterSrc)}" alt="Exemplo de mascote na chuva" loading="lazy" width="941" height="1672"><span class="mascotExamples__video-soon">Vídeo em breve</span>` : `<div class="mascotExamples__placeholder"><span aria-hidden="true">${icons[option.id] || '▶'}</span><span>Exemplo em breve</span></div>`}
         </div>
         <p class="mascotExamples__status" role="status"></p>
         <button class="mascotExamples__choose" type="button" data-mascot-choice="${escape(option.id)}">Escolher ${escape(option.name)}</button>
