@@ -87,27 +87,44 @@ jobs:
             const repo = context.repo.repo;
             const artifactId = Number(process.env.PAGES_ARTIFACT_ID);
             if (!Number.isSafeInteger(artifactId) || artifactId <= 0) throw new Error('Invalid Pages artifact ID.');
-            const {data: deployment} = await github.request('POST /repos/{owner}/{repo}/pages/deployments', {
-              owner, repo, artifact_id: artifactId, pages_build_version: context.sha,
-              oidc_token: await core.getIDToken()
-            });
-            const deploymentId = deployment.id || deployment.status_url?.split('/').pop();
-            if (!deploymentId) throw new Error('Pages did not confirm the deployment ID.');
-            core.setOutput('page_url', deployment.page_url);
             const terminalErrors = new Set(['deployment_failed','deployment_perms_error','deployment_content_failed',
               'deployment_cancelled','deployment_lost']);
-            for (let attempt = 0; attempt < 60; attempt++) {
-              const {data} = await github.request('GET /repos/{owner}/{repo}/pages/deployments/{deploymentId}', {
+            for (let deploymentAttempt = 1; deploymentAttempt <= 3; deploymentAttempt++) {
+              const {data: deployment} = await github.request('POST /repos/{owner}/{repo}/pages/deployments', {
+                owner, repo, artifact_id: artifactId, pages_build_version: context.sha,
+                oidc_token: await core.getIDToken()
+              });
+              const deploymentId = deployment.id || deployment.status_url?.split('/').pop();
+              if (!deploymentId) throw new Error('Pages did not confirm the deployment ID.');
+              core.setOutput('page_url', deployment.page_url);
+              core.info('Pages deployment ' + deploymentId + ': created (attempt ' + deploymentAttempt + '/3).');
+              let retry = false;
+              let previousStatus;
+              for (let attempt = 0; attempt < 60; attempt++) {
+                const {data} = await github.request('GET /repos/{owner}/{repo}/pages/deployments/{deploymentId}', {
+                  owner, repo, deploymentId
+                });
+                if (data.status !== previousStatus) {
+                  core.info('Pages deployment ' + deploymentId + ': ' + String(data.status || 'pending'));
+                  previousStatus = data.status;
+                }
+                if (data.status === 'succeed') {
+                  core.info('GitHub Pages deployment succeeded.');
+                  return;
+                }
+                if (data.status === 'deployment_failed' && deploymentAttempt < 3) {
+                  retry = true;
+                  break;
+                }
+                if (terminalErrors.has(data.status)) throw new Error('Pages: ' + data.status);
+                await new Promise(resolve => setTimeout(resolve, 10000));
+              }
+              if (retry) {
+                await new Promise(resolve => setTimeout(resolve, deploymentAttempt * 20000));
+                continue;
+              }
+              await github.request('POST /repos/{owner}/{repo}/pages/deployments/{deploymentId}/cancel', {
                 owner, repo, deploymentId
               });
-              if (data.status === 'succeed') {
-                core.info('GitHub Pages deployment succeeded.');
-                return;
-              }
-              if (terminalErrors.has(data.status)) throw new Error('Pages: ' + data.status);
-              await new Promise(resolve => setTimeout(resolve, 10000));
+              throw new Error('GitHub Pages deployment exceeded the ten-minute limit.');
             }
-            await github.request('POST /repos/{owner}/{repo}/pages/deployments/{deploymentId}/cancel', {
-              owner, repo, deploymentId
-            });
-            throw new Error('GitHub Pages deployment exceeded the ten-minute limit.');
