@@ -80,6 +80,7 @@
     box.addEventListener('close', () => box.remove(), {once:true});
     const finish = seed => {box.close(); done(seed);};
     const heading = element('h2',info.name); box.append(heading);
+    box.append(element('p','O estilo escolhido será adaptado ao esporte e ao local informados no formulário.'));
     const close = choice('Fechar',() => box.close()); close.className='fechar'; box.append(close);
     const select = element('select');
     if (rows.length > 1) {
@@ -93,7 +94,7 @@
       const row = rows.find(r => r.code === select.value) || rows[0];
       const picks = sorted(row); cards.replaceChildren();
       const photo = {mask:'Mascote',desc:'Não tenho mascote',person:'Jogador',team:'Time',bare:'Sem foto'};
-      const seed = {sport:'Futebol', futebol_version:row.code,
+      const seed = {futebol_version:row.code,
         ...(photo[row.kind] && ['proximo_jogo','resultado'].includes(product) ? {photo_mode:photo[row.kind]} : {}),
         ...(product === 'contratacao' ? {announcement:row.kind === 'renew' ? 'Renovado' : 'Contratado'} : {})};
       const imagePrice = window.OmascoteTesterImageBonus?.imagePriceLabel({productId:product,
@@ -116,7 +117,7 @@
       });
     };
     select.onchange=draw; draw();
-    box.append(choice('Outro esporte',() => finish({})));
+    box.append(choice('Continuar sem escolher modelo',() => finish({})));
     box.showModal();
   }
   window.OmascoteFutebol = {supports:id => products.has(id),open,selection,money,load,minimum,subscribe};
