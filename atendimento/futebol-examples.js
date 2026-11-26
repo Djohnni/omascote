@@ -3,6 +3,7 @@
   const products = new Set(['proximo_jogo','resultado','proximo_jogo_jogador','resultado_jogo_jogador',
     'jogador_escudo','escalacao','contratacao','patrocinador']);
   const money = cents => (cents / 100).toLocaleString('pt-BR',{style:'currency',currency:'BRL'});
+  const mediaUrl = name => '/atendimento/exemplos-futebol/' + name + '?v=futebol-gallery-38-1';
   const sorted = row => [...row.options].sort((a,b) => a.cents-b.cents);
   const listeners = new Set();
   const notify = () => listeners.forEach(listener => listener());
@@ -97,8 +98,7 @@
         ...(product === 'contratacao' ? {announcement:row.kind === 'renew' ? 'Renovado' : 'Contratado'} : {})};
       const imagePrice = window.OmascoteTesterImageBonus?.imagePriceLabel({productId:product,
         deliveryMode:'image',unitPrice:info.price,regularLabel:info.priceLabel}) || info.priceLabel;
-      const base = '/atendimento/exemplos-futebol/';
-      const image = element('img'); image.src=pilot ? info.image : base+row.code+'.jpg'; image.alt=row.title;
+      const image = element('img'); image.src=pilot ? info.image : mediaUrl(row.code+'.jpg'); image.alt=row.title;
       const first=element('article'); first.append(image,element('h3','Somente imagem'),
         element('p',imagePrice),choice('Escolher imagem',() => finish({...seed,futebol_gallery:'image',delivery_mode:'image'})));
       cards.append(first);
@@ -106,7 +106,8 @@
         const card = element('article');
         if (!pilot) {
           const video = element('video'); video.controls=true; video.playsInline=true; video.preload='metadata';
-          video.src=base+option.id+'.mp4'; video.setAttribute('aria-label',option.title); card.append(video);
+          video.poster=mediaUrl(option.id+'.jpg'); video.src=mediaUrl(option.id+'.mp4');
+          video.setAttribute('aria-label',option.title); card.append(video);
         }
         card.append(element('h3',option.title),element('p','Imagem + vídeo · 10 s · 720p'),
           element('strong','A partir de '+money(option.cents)),choice('Escolher vídeo',() =>

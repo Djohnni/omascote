@@ -1,4 +1,4 @@
-const OMASCOTE_SW_VERSION = "omascote-sw-v2-instalar-whatsapp";
+const OMASCOTE_SW_VERSION = "omascote-sw-v3-futebol-gallery-38";
 
 self.addEventListener("install", () => {
   self.skipWaiting();
