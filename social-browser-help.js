@@ -7,7 +7,7 @@
   const googleBox = document.getElementById('googleLoginBox');
   if (!modal || !googleBox) return;
   const headline = 'Entre com o Google para ganhar as 2 artes grátis.';
-  const explanation = 'As artes grátis são liberadas somente ao entrar com o Google pelo navegador. Clique em “Abrir no navegador” para continuar.';
+  const explanation = 'As artes grátis são liberadas somente ao entrar com o Google pelo navegador. Clique em “Entre com o Google” para continuar.';
   const signature = 'Atenciosamente, equipe IA4Tube.';
   const make = (tag, text, className) => {
     const node = document.createElement(tag);
@@ -68,7 +68,7 @@
     const box = make('aside', '', 'socialSignupNotice'); box.id = 'googleLoginWebviewHelp';
     const title = make('strong', headline, 'socialSignupTitle'); title.tabIndex = -1;
     const actions = make('div', '', 'socialSignupActions');
-    const link = make('a', 'Abrir no navegador', 'googleLoginWebviewOpen'); link.rel = 'noopener';
+    const link = make('a', 'Entre com o Google', 'googleLoginWebviewOpen'); link.rel = 'noopener';
     link.href = environment.sistema === 'android' ? ia4IntentChromeParaUrl(external) : external.href;
     if (environment.sistema !== 'android') link.target = '_blank';
     const copy = make('button', 'Copiar link'); copy.type = 'button';

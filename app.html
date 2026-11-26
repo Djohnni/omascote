@@ -81,7 +81,7 @@
   <link rel="stylesheet" href="/admin-orders.css?v=20261126-admin-pedidos-1">
   <script defer src="/admin-orders.js?v=20261126-admin-pedidos-1"></script>
   <link rel="stylesheet" href="/social-browser-help.css?v=20261126-cadastro-direto-3">
-  <script defer src="/social-browser-help.js?v=20261126-cadastro-direto-3"></script>
+  <script defer src="/social-browser-help.js?v=20261126-google-botao-4"></script>
   <link rel="stylesheet" href="/vitrine-chat.css?v=20261126-cadastro-bonus-1">
   <link rel="stylesheet" href="/product-gallery.css?v=20261126-gratis-video-1">
   <script defer src="/vitrine-chat.js?v=gmail-2-imagens-1"></script>
@@ -16056,7 +16056,7 @@ body.copaColombiaOrderMode.copaColombiaResultMode.copaColombiaShowScenario [data
             <p>Assim o login, o Pix e o download da sua arte funcionam com mais segurança.</p>
             <small id="ia4WebviewNoticeHint"></small>
             <div class="ia4WebviewNoticeActions">
-              <a class="ia4WebviewNoticeOpen" id="ia4WebviewOpenBrowser" href="/app.html" rel="noopener">Abrir no navegador</a>
+              <a class="ia4WebviewNoticeOpen" id="ia4WebviewOpenBrowser" href="/app.html" rel="noopener">Entre com o Google</a>
               <button class="ia4WebviewNoticeCopy" id="ia4WebviewCopyLink" type="button" hidden>Copiar link</button>
               <button class="ia4WebviewNoticeContinue" id="ia4WebviewContinue" type="button">Continuar aqui</button>
             </div>
@@ -18376,7 +18376,7 @@ function ia4InicializarAvisoNavegadorInterno(){
   if(IA4_AMBIENTE_NAVEGACAO.sistema === "android"){
     abrir.href = ia4IntentChromeParaUrl(destinoExterno);
     abrir.removeAttribute("target");
-    if(dica) dica.textContent = "Toque em Abrir no navegador. Se o Chrome não abrir, use o menu ⋮ deste aplicativo.";
+    if(dica) dica.textContent = "Toque em Entre com o Google. Se o Chrome não abrir, use o menu ⋮ deste aplicativo.";
     if(copiar) copiar.hidden = true;
   }else{
     abrir.href = destinoExterno.href;
