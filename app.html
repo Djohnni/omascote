@@ -80,8 +80,8 @@
   <script defer src="/tester-image-bonus.js?v=20261126-admin-pedidos-1"></script>
   <link rel="stylesheet" href="/admin-orders.css?v=20261126-admin-pedidos-1">
   <script defer src="/admin-orders.js?v=20261126-admin-pedidos-1"></script>
-  <link rel="stylesheet" href="/social-browser-help.css?v=20261126-social-login-1">
-  <script defer src="/social-browser-help.js?v=20261126-social-login-1"></script>
+  <link rel="stylesheet" href="/social-browser-help.css?v=20261126-cadastro-direto-2">
+  <script defer src="/social-browser-help.js?v=20261126-cadastro-direto-2"></script>
   <link rel="stylesheet" href="/vitrine-chat.css?v=20261126-cadastro-bonus-1">
   <link rel="stylesheet" href="/product-gallery.css?v=20261126-gratis-video-1">
   <script defer src="/vitrine-chat.js?v=gmail-2-imagens-1"></script>
@@ -18139,7 +18139,8 @@ const IA4_ENTRADA_CHAVES_PERMITIDAS = new Set([
   "utm_source_platform",
   "utm_creative_format",
   "utm_marketing_tactic",
-  "produto"
+  "produto",
+  "cadastro"
 ]);
 const IA4_CONTROLES_RE = /[\u0000-\u001f\u007f]/;
 
@@ -18206,6 +18207,7 @@ function ia4ValorEntradaSeguro(chave, valorOriginal){
   const limite = chave === "produto" ? 64 : 300;
   if(!valor || valor.length > limite || IA4_CONTROLES_RE.test(valorBruto)) return "";
   if(chave === "produto" && !/^[a-z0-9_-]+$/i.test(valor)) return "";
+  if(chave === "cadastro" && valor !== "google") return "";
   return valor;
 }
 
@@ -18366,6 +18368,7 @@ function ia4InicializarAvisoNavegadorInterno(){
 
   const nomeApp = ia4NomeAppSocial(IA4_AMBIENTE_NAVEGACAO.appSocial);
   const destinoDireto = ia4DestinoAppSeguro();
+  destinoDireto.searchParams.set("cadastro", "google");
   const destinoExterno = ia4DestinoContinuarSeguro(destinoDireto);
   aviso.hidden = false;
   if(titulo) titulo.textContent = `Abra no navegador antes de enviar suas fotos (${nomeApp})`;
@@ -31158,6 +31161,7 @@ function aplicarTextoAuthVisitante(modo){
 }
 
 function abrirCadastroVisitanteModal(){
+  window.OmascoteSignupUI?.prepare({ primary: !authFinalizacaoAutoAposPix && !omascoteChatAuthPending && !fotoJogosTemRetomadaAuthPendente() });
   inicializarLoginGoogle();
   fluxoEscudo3dCadastro = false;
   escudo3dCadastroFile = null;
@@ -31213,7 +31217,7 @@ function abrirCadastroVisitanteModal(){
 
   authVisitanteModal.classList.add("open");
   authVisitanteModal.setAttribute("aria-hidden", "false");
-  setTimeout(()=>document.getElementById("authWhatsapp")?.focus(), 120);
+  setTimeout(()=>{ if(window.OmascoteSignupUI) window.OmascoteSignupUI.focus(); else document.getElementById("authWhatsapp")?.focus(); }, 120);
 }
 
 function abrirFinalizacaoContaAutoAposPix(){
@@ -31236,6 +31240,7 @@ function abrirFinalizacaoContaAutoAposPix(){
 }
 
 function abrirLoginVisitanteModal(){
+  window.OmascoteSignupUI?.prepare({ primary: !authFinalizacaoAutoAposPix && !omascoteChatAuthPending && !fotoJogosTemRetomadaAuthPendente() });
   inicializarLoginGoogle();
   fluxoEscudo3dCadastro = false;
   escudo3dCadastroFile = null;
@@ -31275,10 +31280,11 @@ function abrirLoginVisitanteModal(){
 
   authVisitanteModal.classList.add("open");
   authVisitanteModal.setAttribute("aria-hidden", "false");
-  setTimeout(()=>document.getElementById("authWhatsapp")?.focus(), 120);
+  setTimeout(()=>{ if(window.OmascoteSignupUI) window.OmascoteSignupUI.focus(); else document.getElementById("authWhatsapp")?.focus(); }, 120);
 }
 
 function abrirCadastroEscudo3dModal(){
+  window.OmascoteSignupUI?.prepare({ primary:false });
   inicializarLoginGoogle();
   fluxoEscudo3dCadastro = true;
   escudo3dCadastroFile = null;
@@ -31306,7 +31312,7 @@ function abrirCadastroEscudo3dModal(){
 
   authVisitanteModal.classList.add("open");
   authVisitanteModal.setAttribute("aria-hidden", "false");
-  setTimeout(()=>document.getElementById("authWhatsapp")?.focus(), 120);
+  setTimeout(()=>{ if(window.OmascoteSignupUI) window.OmascoteSignupUI.focus(); else document.getElementById("authWhatsapp")?.focus(); }, 120);
 }
 
 function fecharCadastroVisitanteModal(){

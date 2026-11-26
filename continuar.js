@@ -15,7 +15,8 @@ const CONTINUAR_CHAVES_PERMITIDAS = new Set([
   "utm_source_platform",
   "utm_creative_format",
   "utm_marketing_tactic",
-  "produto"
+  "produto",
+  "cadastro"
 ]);
 
 const continueStatus = document.getElementById("continueStatus");
@@ -46,6 +47,7 @@ function continuarValorSeguro(chave, valorOriginal){
   const limite = chave === "produto" ? 64 : 300;
   if(!valor || valor.length > limite || CONTINUAR_CONTROLES_RE.test(valorBruto)) return "";
   if(chave === "produto" && !/^[a-z0-9_-]+$/i.test(valor)) return "";
+  if(chave === "cadastro" && valor !== "google") return "";
   return valor;
 }
 

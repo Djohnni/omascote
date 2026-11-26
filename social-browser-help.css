@@ -1,11 +1,28 @@
-#googleLoginBox[hidden],#googleLoginSeparator[hidden] { display:none !important; }
+#googleLoginBox[hidden],#googleLoginSeparator[hidden],.socialSignupNotice [hidden] { display:none !important; }
 #authVisitanteModal .modalCard { max-height:calc(100vh - 32px); max-height:calc(100dvh - 32px); overflow-y:auto; }
 #authVisitanteModal .modalTop { position:sticky; top:0; z-index:2; background:#111827; }
-#vitrineHome > .ia4WebviewNotice { box-sizing:border-box; width:100%; margin:18px 0 0; box-shadow:none; }
-#googleLoginWebviewHelp { margin:16px 0; padding:14px; border:1px solid #c5ddcd; border-radius:12px; background:#f0faf3; color:#16482c; text-align:left; }
-#googleLoginWebviewHelp strong { display:block; font-size:16px; color:#16482c; }
-#googleLoginWebviewHelp p { margin:8px 0 12px; font-size:14px; line-height:1.5; color:#24553a; }
-#googleLoginWebviewHelp a,#googleLoginWebviewHelp button { box-sizing:border-box; display:flex; align-items:center; justify-content:center; width:100%; min-height:44px; margin:8px 0 0; padding:11px 12px; border:1px solid #b4ccbd; border-radius:8px; background:#fff; color:#16482c; font:700 14px Arial,sans-serif; text-decoration:none; cursor:pointer; box-shadow:none; }
-#googleLoginWebviewHelp .googleLoginWebviewOpen { background:#087d43; border-color:#087d43; color:#fff; }
-#googleLoginWebviewHelp small { display:block; margin-top:10px; color:#365c44; font-size:12px; line-height:1.5; }
-#googleLoginWebviewHelp :focus-visible { outline:3px solid #205eff; outline-offset:3px; }
+#authVisitanteModal.socialGoogleFirst .modalCard { background:#fff; border:1px solid #d7e4db; }
+#authVisitanteModal.socialGoogleFirst .modalTop { background:#fff; border:0; justify-content:flex-end; padding:8px 12px; }
+#authVisitanteModal.socialGoogleFirst .modalTitle,#authVisitanteModal.socialGoogleFirst .authPromoBox,#authVisitanteModal.socialGoogleFirst #googleLoginSeparator { display:none !important; }
+#authVisitanteModal.socialGoogleFirst .modalClose { min-width:40px; min-height:40px; background:#fff; color:#294a37; border:1px solid #d7e4db; font-size:22px; }
+#authVisitanteModal.socialGoogleFirst .authVisitanteBody { background:#fff; padding:4px 20px 20px; }
+#authVisitanteModal.socialGoogleFirst .googleLoginBox { margin:0; padding:0; }
+#authVisitanteModal.socialGoogleFirst .googleLoginBox > div { max-width:340px; transform:none; }
+#authVisitanteModal.socialGoogleFirst #googleLoginModal { display:flex; justify-content:center; margin:20px 0; }
+#vitrineHome > .ia4WebviewNotice.socialSignupNotice { box-sizing:border-box; display:block; width:100%; margin:18px 0 0; padding:20px; border:1px solid #d2e5d7; border-radius:12px; background:#fff; color:#16482c; box-shadow:none; }
+#googleLoginWebviewHelp { margin:0; padding:0; color:#16482c; text-align:left; }
+.socialSignupTitle,#ia4WebviewNotice .socialSignupTitle,#googleLoginBox .socialSignupTitle { display:block; margin:0 0 18px !important; font:700 20px/1.35 Arial,Helvetica,sans-serif; color:#16482c; text-align:left !important; }
+.socialSignupActions,#ia4WebviewNotice.socialSignupNotice .ia4WebviewNoticeActions { display:grid; gap:8px; margin:0; }
+#googleLoginWebviewHelp a,#googleLoginWebviewHelp button,#ia4WebviewNotice.socialSignupNotice .ia4WebviewNoticeActions a,#ia4WebviewNotice.socialSignupNotice .ia4WebviewNoticeActions button { box-sizing:border-box; display:flex; align-items:center; justify-content:center; width:100%; min-height:46px; margin:0; padding:12px; border:1px solid #bed4c6; border-radius:8px; background:#fff; color:#16482c; font:700 15px Arial,sans-serif; text-decoration:none; cursor:pointer; box-shadow:none; }
+#googleLoginWebviewHelp .googleLoginWebviewOpen,#ia4WebviewNotice.socialSignupNotice .ia4WebviewNoticeOpen { background:#087d43; border-color:#087d43; color:#fff; }
+.socialSignupNote,#ia4WebviewNotice.socialSignupNotice .socialSignupNote { margin:14px 0 10px; font:13px/1.5 Arial,sans-serif; color:#496353; }
+.socialSignupSignature,#ia4WebviewNotice.socialSignupNotice .socialSignupSignature { margin:10px 0 0; font:12px/1.5 Arial,sans-serif; color:#496353; }
+.socialSignupStatus { position:absolute; width:1px; height:1px; padding:0; margin:-1px; overflow:hidden; clip-path:inset(50%); white-space:nowrap; }
+.socialPasswordOptions { margin-top:22px; border-top:1px solid #dce7df; padding-top:10px; color:#365541; }
+.socialPasswordOptions > summary { display:flex; justify-content:space-between; align-items:center; gap:12px; min-height:44px; cursor:pointer; list-style:none; font:600 14px Arial,sans-serif; }
+.socialPasswordOptions > summary::-webkit-details-marker { display:none; }
+.socialPasswordOptions > summary::after { content:'⌄'; font-size:22px; }
+.socialPasswordOptions[open] > summary::after { transform:rotate(180deg); }
+.socialPasswordFields { padding-top:12px; }
+.socialPasswordFields > label { display:block; color:#334155; }
+#googleLoginWebviewHelp :focus-visible,.socialPasswordOptions > summary:focus-visible { outline:3px solid #205eff; outline-offset:3px; }

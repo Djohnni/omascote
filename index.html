@@ -191,7 +191,8 @@ const API_BASE = "https://api.omascote.com.br";
     "utm_source_platform",
     "utm_creative_format",
     "utm_marketing_tactic",
-    "produto"
+    "produto",
+    "cadastro"
   ]);
   const CONTROLES_RE = /[\u0000-\u001f\u007f]/;
 
@@ -208,6 +209,7 @@ const API_BASE = "https://api.omascote.com.br";
       const limite = chave === "produto" ? 64 : 300;
       if(!valor || valor.length > limite || CONTROLES_RE.test(valorBruto)) continue;
       if(chave === "produto" && !/^[a-z0-9_-]+$/i.test(valor)) continue;
+      if(chave === "cadastro" && valor !== "google") continue;
 
       destino.searchParams.set(chave, valor);
     }
