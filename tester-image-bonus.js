@@ -65,6 +65,7 @@
     const crestChoice = document.querySelector('#escudo3dExamples [data-delivery-choice="image"]');
     crestChoice?.setAttribute('aria-label','Escolher somente imagem — ' + (count > 0 ? 'GRÁTIS' : 'R$ 4,00'));
     const admin = account?.tester_bonus_admin === true;
+    window.OmascoteAdminOrders?.setAccount(account);
     const temporary = account?.senha_temporaria === true;
     node('[data-tester-admin]').hidden = !admin;
     node('[data-tester-password-form]').hidden = !temporary;
