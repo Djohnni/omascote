@@ -1,4 +1,4 @@
-const OMASCOTE_SW_VERSION = "omascote-sw-v4-forms";
+const OMASCOTE_SW_VERSION = "omascote-sw-v6-location";
 
 self.addEventListener("install", () => {
   self.skipWaiting();

@@ -6,7 +6,8 @@
   // Keep saved values and validators; these fields do not belong in the customer form.
   const appearanceKeys = new Set(['scenario_id','visual_style','style_id','coupon_code']);
   const visibleFields = (fields,flow) => fields.filter(field => !appearanceKeys.has(field.key) &&
-    !(flow === 'escalacao' && (field.key === 'headline' || (field.key === 'sport_context' && !field.required))));
+    !(field.key === 'sport_context' && !field.required && flows.has(flow)) &&
+    !(flow === 'escalacao' && field.key === 'headline'));
   const flows = new Set(['proximo_jogo','resultado','jogador_escudo','contratacao','escalacao',
     'patrocinador','escudo3d','proximo_jogo_jogador','resultado_jogo_jogador']);
   const plans = {

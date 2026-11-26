@@ -73,7 +73,7 @@
   <link rel="stylesheet" href="/escudo3d-examples.css?v=20261122-imagem-2-videos">
   <script defer src="/escudo3d-examples.js?v=20261001"></script>
   <link rel="stylesheet" href="/mascot-video-examples.css?v=20261122-imagem-bonus-1">
-  <link rel="stylesheet" href="/atendimento/futebol-examples.css?v=forms-v5">
+  <link rel="stylesheet" href="/atendimento/futebol-examples.css?v=forms-v6">
   <script defer src="/mascot-video-options.js?v=20261007-correct-preview-mapping"></script>
   <script defer src="/mascot-video-examples.js?v=gmail-2-imagens-1"></script>
   <link rel="stylesheet" href="/tester-image-bonus.css?v=20261122-selo-direita-2">
@@ -15933,7 +15933,7 @@ body.copaColombiaOrderMode.copaColombiaResultMode.copaColombiaShowScenario [data
         class="integratedChatFrame"
         id="integratedChatFrame"
         title="Atendimento O Mascote"
-        data-src="/atendimento/index.html?integrado=1&v=forms-v5"
+        data-src="/atendimento/index.html?integrado=1&v=forms-v6"
         allow="clipboard-write"
       ></iframe>
       <div class="integratedChatLoading" id="integratedChatLoading" hidden>
@@ -16255,7 +16255,7 @@ body.copaColombiaOrderMode.copaColombiaResultMode.copaColombiaShowScenario [data
               <button class="legalLinkBtn" id="btnExcluirContaFooter" type="button">Excluir Conta</button>
               <button class="legalLinkBtn" id="btnDenunciarIaFooter" type="button">Denunciar Conteúdo Gerado por IA</button>
               <button class="legalLinkBtn" id="btnAbrirSuporteFooter" type="button">Suporte</button>
-              <a class="legalLinkBtn" id="btnTesteNovoAtendimentoFooter" href="/atendimento/index.html?integrado=1&v=forms-v5">Novo atendimento</a>
+              <a class="legalLinkBtn" id="btnTesteNovoAtendimentoFooter" href="/atendimento/index.html?integrado=1&v=forms-v6">Novo atendimento</a>
             </div>
             <div class="brandFootnote">Meu Clube FC é uma plataforma da O Mascote</div>
           </div>
@@ -17540,7 +17540,7 @@ function omascoteChatLocalPreview(){
 }
 
 function omascoteChatUrl(){
-  return new URL(integratedChatFrame?.dataset.src || "/atendimento/index.html?integrado=1&v=forms-v5", window.location.origin).href;
+  return new URL(integratedChatFrame?.dataset.src || "/atendimento/index.html?integrado=1&v=forms-v6", window.location.origin).href;
 }
 
 let omascoteChatReady = false;
@@ -42925,7 +42925,7 @@ if(token){
 
 if("serviceWorker" in navigator){
   window.addEventListener("load", () => {
-    navigator.serviceWorker.register("/sw.js?v=forms-v5").catch(() => {});
+    navigator.serviceWorker.register("/sw.js?v=forms-v6").catch(() => {});
   });
 }
 
